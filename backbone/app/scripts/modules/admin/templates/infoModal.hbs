@@ -1,0 +1,50 @@
+<!-- Modal -->
+<div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" id="info_modal">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+				<h4 class="modal-title display">お知らせ追加</h4>
+			</div>
+			<div class="modal-body">
+				<div class="errors"></div>
+				<form>
+					<label class="index"></label>
+					<div class="form-group">
+						<label for="display_order">表示順</label>
+							<input type='text' class="form-control" id='display_order' maxlength='3'>
+					</div>
+					<div class="form-group">
+						<label for="open_date">公開開始日時</label>
+
+						<div class='input-group date datetimepicker'>
+							<input type='text' class="form-control" id='open_date'>
+							<div class="input-group-addon">
+							<span class="glyphicon glyphicon-calendar"></span>
+							</div>
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="close_date">公開終了日時</label>
+						<div class='input-group date datetimepicker'>
+							<input type='text' class="form-control" id='close_date'>
+							<div class="input-group-addon">
+							<span class="glyphicon glyphicon-calendar"></span>
+							</div>
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="message">表示メッセージ</label>
+						<textarea class="form-control" rows="3" id="message"></textarea>
+					</div>
+				</form>
+			</div>
+			<input type='hidden' id='display_type'>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default cancel" data-dismiss="modal">キャンセル</button>
+				<button type="button" class="btn btn-success update">追加</button>
+			</div>
+		</div>
+	</div>
+</div>
+<!-- Modal -->

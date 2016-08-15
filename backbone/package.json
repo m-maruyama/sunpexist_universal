@@ -1,0 +1,29 @@
+{
+  "name": "mx.cmdlab.co.jp",
+  "version": "0.0.2",
+  "description": "for monex",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "gulp": "^3.8.5",
+    "gulp-concat": "^2.3.3",
+    "gulp-declare": "^0.2.0",
+    "gulp-define-module": "^0.1.1",
+    "gulp-handlebars": "^2.1.0",
+    "gulp-jshint": "^1.7.1",
+    "gulp-rename": "^1.2.0",
+    "gulp-replace": "^0.5.0",
+    "gulp-rimraf": "^0.1.1",
+    "gulp-sourcemaps": "^0.4.5",
+    "gulp-uglify": "^0.3.1",
+    "gulp-util": "^2.2.20",
+    "gulp-watch": "^0.6.8",
+    "gulp-wrapper": "^0.1.42",
+    "jshint-stylish": "^0.4.0",
+    "requirejs": "^2.1.14"
+  }
+}

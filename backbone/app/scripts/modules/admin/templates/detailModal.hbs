@@ -1,0 +1,66 @@
+<!-- Modal -->
+<div class="modal fade" tabindex="-2" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" id="detail_modal">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+				<h4 class="modal-title">出荷実績明細</h4>
+			</div>
+			<div class="modal-body">
+				<div class="listTable col-sm-17 orderDetail">
+					<div>
+						<table class="table table-bordered">
+							<thead>
+							<tr>
+								<th>よろず発注No</th>
+								<th>よろず発注行No</th>
+								<th>社員番号</th>
+								<th>拠点</th>
+								<th>貸与パターン</th>
+								<th>発注日</th>
+								<th>ステータス</th>
+								<th>よろず発注区分</th>
+								<th>出荷日</th>
+								<th>メーカー受注番号</th>
+								<th>メーカー伝票番号</th>
+								<th>商品名</th>
+								<th>商品コード</th>
+								<th>色コード</th>
+								<th>サイズ</th>
+								<th>出荷数</th>
+								<th>受領数</th>
+							</tr>
+							</thead>
+							<tbody>
+							{{#if list}}
+							{{#each list}}
+							<tr><td>{{order_req_no}}</td>
+								<td>{{order_req_line_no}}</td>
+								<td>{{cster_emply_cd}}</td>
+								<td>{{rntl_sect_name}}</td>
+								<td>{{job_type_name}}</td>
+								<td>{{order_req_ymd}}</td>
+								<td>{{statusText}}</td>
+								<td>{{kubunText}}</td>
+								<td>{{ship_ymd}}</td>
+								<td>{{rec_order_no}}</td>
+								<td>{{ship_no}}</td>
+								<td>{{item_name}}</td>
+								<td>{{item_cd}}</td>
+								<td>{{color_cd}}</td>
+								<td>{{size_cd}}</td>
+								<td>{{ship_qty}}</td>
+								<td>{{receipt_num}}</td>
+							</tr>
+							{{/each}}
+							{{else}}
+							<td colspan="17">対象データがありません。</td>
+							{{/if}}
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

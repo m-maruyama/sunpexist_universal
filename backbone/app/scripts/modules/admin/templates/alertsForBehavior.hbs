@@ -1,0 +1,9 @@
+<ul class="list-group">
+	{{#each messages}}
+	<li class="list-group-item list-group-item-{{../type}}">
+		<span class="glyphicon glyphicon-{{../icon}}" aria-hidden="true"></span>
+		<span class="sr-only">Error:</span>
+		{{this}}
+	</li>
+	{{/each}}
+</ul>

@@ -1,0 +1,48 @@
+<div class="container" role="order">
+<nav class="row navbar navbar-default">
+	<div class="navbar-header">
+		<div class="navbar-brand">SIRIUS</div>
+		<button class="navbar-toggle" data-toggle="collapse" data-target="#mainNav">
+			<span class="sr-only"></span>
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+		</button>
+	</div>
+	<div class="collapse navbar-collapse" id="mainNav">
+		<ul class="nav navbar-nav">
+			<li class="nav_home"><a href="home.html" title="ホーム">ホーム <span class="glyphicon glyphicon-home"></span></a></li>
+			<li class="nav_importCsv"><a href="importCsv.html" title="CSV取込">CSV取込</a></li>
+			<li class="dropdown">
+		<a href="#" class="dropdown-toggle" data-toggle="dropdown" title="検索・照会">検索・照会 <span class="caret"></span></a>
+			<ul class="dropdown-menu">
+				<li class="nav_history"><a href="history.html" title="発注状況照会">発注状況照会</a></li>
+				<li class="nav_delivery"><a href="delivery.html" title="納品実績照会">納品実績照会</a></li>
+				<li class="nav_unreturn"><a href="unreturn.html" title="返却状況照会">返却状況照会</a></li>
+				<li class="nav_unreturned"><a href="unreturned.html" title="返却実績照会">返却実績照会</a></li>
+				<li class="nav_lend"><a href="lend.html" title="貸与リスト">貸与リスト</a></li>
+				<li class="nav_stock"><a href="stock.html" title="在庫照会">在庫照会</a></li>
+			</ul>
+			
+			<li class="nav_receive"><a href="receive.html" title="受領確認">受領確認</a></li>
+			<li class="dropdown">
+			
+		{{#if admin}}
+		<a href="#" class="dropdown-toggle" data-toggle="dropdown" title="管理">管理 <span class="caret"></span></a>
+			<ul class="dropdown-menu">
+				<li class="nav_acount"><a href="acount.html" title="アカウント管理">アカウント管理</a></li>
+				<li class="nav_info"><a href="info.html" title="おしらせ管理">おしらせ管理</a></li>
+			</ul>
+		{{/if}}
+		</ul>
+		<ul class="nav navbar-nav navbar-right">
+			<li class="dropdown">
+				 <a href="#" class="dropdown-toggle" data-toggle="dropdown">こんにちは{{user_name}}さん <span class="glyphicon glyphicon-user"></span> <span class="caret"></span></a>
+				<ul class="dropdown-menu">
+					<li class="logout"><a href="#"><span class="glyphicon glyphicon-log-out" aria-hidden="true"></span>ログアウト</a></li>
+				</ul>
+			</li>
+		</ul>
+	</div>
+</nav>
+</div>

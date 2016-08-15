@@ -1,0 +1,153 @@
+define([
+		'backbone.marionette',
+		'underscore',
+		'jquery',
+		'jquery-spin',
+	],
+	function(Marionette,_,$) {
+		'use strict';
+		var App = new Backbone.Marionette.Application();
+		App.moduleList = {
+			'AdminHome': 'modules/admin/Home',
+			'AdminLogin': 'modules/admin/Login',
+			'AdminImportCsv': 'modules/admin/ImportCsv',
+			'AdminHistory': 'modules/admin/History',
+			'AdminDelivery': 'modules/admin/Delivery',
+			'AdminUnreturn': 'modules/admin/Unreturn',
+			'AdminUnreturned': 'modules/admin/Unreturned',
+			'AdminStock': 'modules/admin/Stock',
+			'AdminLend': 'modules/admin/Lend',
+			'AdminReceive': 'modules/admin/Receive',
+			'AdminAcount': 'modules/admin/Acount',
+			'AdminInfo': 'modules/admin/Info',
+			'AdminPassword': 'modules/admin/Password',
+		};
+		App.addRegions({
+			// "alert": "#alert",
+		});
+
+		App.on("start", function(){
+			if (Backbone.history) {
+				App.currentModule = $module;
+				if(!App.moduleList[$module]) {
+					throw "Invalid Module Name.";
+				}
+				require([App.moduleList[$module]], function () {
+					Backbone.history.start();
+				});
+			}
+
+			App.log('Initialization Finished', 'App', 2);
+		});
+
+		// An init function for your main application object
+		App.addInitializer(function() {
+			this.debug = 1;
+			this.root = '/'; // <- insert app name here? eg: app-name/
+		});
+
+		App.navigate = function(route, options) {
+			Backbone.history.navigate(route, options || {});
+		};
+
+		App.getCurrentRoute = function() {
+			return Backbone.history.fragment;
+		};
+
+		/**
+		 * Log function.
+		 * Pass all messages through here so we can disable for prod
+		 */
+		App.log = function(message, domain, level) {
+			if (App.debug < level) {
+				return;
+			}
+			if (typeof message !== 'string') {
+				console.log('Fancy object (' + domain + ')', message);
+			} else {
+				console.log((domain || false ? '(' + domain + ') ' : '') + message);
+			}
+		};
+		//共通の関数を定義
+		App.fn = [];
+
+		//定数もどき
+		App.const = {};
+
+		App.const.logedOutUrl = "//" + location.host + '/universal/login.html';//403の時の飛び先
+
+		//アカウントロックの時の飛び先
+		App.const.accountLockText = 'ログインが規定回数以上失敗したためアカウントがロックされました。';
+		App.const.accountLockUrl = 'https://xxxxxx/AccountLock.jsp';
+
+
+		//グローバルに変数を使いたかったらこれを使うこと！！
+		App.container = {};
+		App.container.logout = false;
+
+
+		/**
+		 * APIのURL
+		 * @type {{}}
+		 */
+		
+		var host = "//" + location.host;
+		App.container.withCredentials = true;//CORSでアクセスしたいときはこれをtrueにすること。
+		App.api = {
+			"CM0010": host + "/job_type",
+			"CM0020": host + "/suggest",
+			"CM0030": host + "/detail",
+			"CM0040": host + "/log",
+			"CM0050": host + "/job_type_zaiko",
+			"IM0010": host + "/import_csv",
+			"IM0020": host + "/csv",
+			"HI0010": host + "/history/search",
+			"DE0010": host + "/delivery/search",
+			"DE0020": host + "/delivery/download",
+			"UN0010": host + "/unreturn/search",
+			"UD0010": host + "/unreturned/search",
+			"UD0020": host + "/unreturned/download",
+			"ST0010": host + "/stock/search",
+			"ST0020": host + "/stock/download",
+			"LE0010": host + "/lend/search",
+			"LE0020": host + "/lend/download",
+			"RE0010": host + "/receive/search",
+			"RE0020": host + "/receive/update",
+			"AC0010": host + "/acount/search",
+			"AC0020": host + "/acount/modal",
+			"IN0010": host + "/info/search",
+			"IN0020": host + "/info/modal",
+			"HM0010": host + "/home",
+			"LO0010": host + "/login",
+			"OU0010": host + "/logout",
+			"GL0010": host + "/global_menu",
+			"PA0010": host + "/password",
+			"CM9010": host + "/api/CM9010"
+		};
+
+
+		App.error = function (message) {
+			alert(message);
+		};
+
+		/**
+		 * クルクルマーク
+		 * @param target jQueryオブジェクト
+		 * @param preset
+		 */
+		App.fn.spin = function (target, preset) {
+			if(preset === 'destroy'){
+				target.spin(false);
+				return;
+			}
+			if(!preset) {
+				preset = 'default';
+			}
+			setTimeout(function(){
+				target.spin(preset);
+			},10);
+		};
+		return App;
+
+	}
+);

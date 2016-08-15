@@ -1,0 +1,76 @@
+
+	  <!-- start 本文エリア -->
+		<div class="row">
+			<h1>発注状況照会</h1>
+			<!-- <div class="topmargin alert alert-info text-center">
+			メッセージ表示列
+			</div> -->
+			<!-- start フォーム -->
+			<form class="form-horizontal">
+				<div class="form-group">
+					<label class="col-md-2 control-label" for="no">よろず発注No</label>
+					<div class="col-md-2">
+						<input type="text" id="no" name="no" class="form-control input-sm" maxlength="20" placeholder="" />					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-md-2 control-label" for="member_no">社員番号</label>
+					<div class="col-md-2">
+						<input type="text" id="member_no" name="member_no" class="form-control input-sm" maxlength="10" placeholder="" />					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-md-2 control-label" for="office">拠点</label>
+					<div class="col-md-6">
+						<input type="text" id="office" name="office" class="form-control input-sm typeahead" placeholder="文字を入力すると候補が表示されます" />					</div>
+				</div>
+				
+				<!-- 貸与パターン -->
+				<div class="job_type"></div>
+				
+				<div class="form-group">
+					<label class="col-md-2 control-label" for="order_day">発注日</label>
+					<div class="col-md-8 form-inline">
+					<div class='input-group date datepicker'>
+						<input type='text' class="form-control  input-sm datepicker" id='order_day_from' name="order_day_from">
+						<div class="input-group-addon">
+							<span class="glyphicon glyphicon-calendar"></span>
+						</div>
+					</div>&nbsp;―
+					<div class='input-group date datepicker'>
+						<input type='text' class="form-control  input-sm datepicker" id='order_day_to' name="order_day_to">
+						<div class="input-group-addon">
+							<span class="glyphicon glyphicon-calendar"></span>
+						</div>
+					</div>&nbsp;
+					</div>&nbsp;
+				</div>
+				<div class="form-group">
+					<div class="col-md-2 control-label"><b>ステータス</b></div>
+					<div class="col-md-18">
+						<label class="checkbox-inline"><input type="checkbox" id="status0" name="status[]" value="1" class="checkbox-inline" checked="1" />未出荷（一部出荷も含む）</label>
+						<label class="checkbox-inline"><input type="checkbox" id="status1" name="status[]" value="2" class="checkbox-inline" checked="1" />出荷済</label>
+						<label class="checkbox-inline"><input type="checkbox" id="status4" name="status[]" value="9" class="checkbox-inline" />キャンセル（一部キャンセルも含む）</label>
+					</div>
+					<div class="col-md-2 control-label"></div>
+					<div class="col-md-18">
+						<label class="checkbox-inline"><input type="checkbox" id="status2" name="status[]" value="3" class="checkbox-inline" checked="1" />未受領（一部受領済も含む）</label>
+						<label class="checkbox-inline"><input type="checkbox" id="status3" name="status[]" value="4" class="checkbox-inline" />受領済</label>
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="col-md-2 control-label"><b>よろず発注区分</b></div>
+					<div class="col-md-18">
+						<label class="checkbox-inline"><input type="checkbox" id="order_kbn0" name="order_kbn[]" value="1" class="checkbox-inline" checked="1" />貸与</label>
+						<label class="checkbox-inline"><input type="checkbox" id="order_kbn1" name="order_kbn[]" value="3" class="checkbox-inline" checked="1" />サイズ交換</label>
+						<label class="checkbox-inline"><input type="checkbox" id="order_kbn2" name="order_kbn[]" value="4" class="checkbox-inline" checked="1" />消耗交換</label>
+						<label class="checkbox-inline"><input type="checkbox" id="order_kbn3" name="order_kbn[]" value="5" class="checkbox-inline" checked="1" />異動</label>
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="col-md-2 col-md-push-2 " style="margin-left: 500px">
+						<a type="button" data-page="1" class="btn btn-primary btn-sm btn-block search" title="実 行" id="button1">実 行</a>
+					</div>
+				</div>
+			</form>
+			<!-- end フォーム -->
+			
+			<hr>

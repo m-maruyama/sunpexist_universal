@@ -1,0 +1,189 @@
+/*---- 追加・更新 -----------------------------------------*/
+form {
+	margin-top: 1.5em;
+}
+
+label.control-label strong {
+	color: #D24945;
+}
+
+.form-control[disabled],
+.form-control[readonly] {
+	background: #FFF;
+	box-shadow: none;
+	cursor: deault;
+	resize: none;
+	border-color: #dcdcdc;
+}
+
+.btn-primary.disabled,
+.btn-primary:disabled,
+.btn-primary[disabled],
+.btn-danger.disabled,
+.btn-danger:disabled,
+.btn-danger[disabled] {
+	display: none;
+}
+
+#btn_lock {
+	margin-bottom: 1em;
+}
+
+.col-sm-2.control-label {
+	text-align: left;
+}
+
+.text_bold {
+	font-weight: bold;
+}
+
+.text_bold p {
+	line-height: 150%;
+}
+
+.item_image p {
+	margin-bottom: 0.4em;
+}
+
+.item_image p:last-child {
+	margin-bottom: 1em;
+}
+
+.item_text {
+	padding-bottom: 0.5em;
+}
+
+.form-group-sm textarea.form-control {
+	height: 7em;
+}
+
+
+.form-group-sm textarea.creative-header {
+	height: 12em;
+}
+
+.form-group-sm textarea.creative-body {
+	height: 24em;
+}
+
+.block {
+	border-bottom: 1px dotted #ddd;
+	margin-bottom: 1em;
+}
+
+.block.last {
+	border: none;
+	margin-bottom: 0.5em;
+}
+
+.form-horizontal .checkbox,
+.form-horizontal .radio {
+	color: #555;
+	font-size: 12px;
+}
+
+/* 案件管理「メディア/ジャンル選択」専用 */
+dl.select_media-genre dl {
+	display: table;
+	margin-bottom: 0.6em;
+}
+
+dl.select_media-genre dt,
+dl.select_media-genre dd {
+	display: table-cell;
+	vertical-align: top;
+}
+
+dl.select_media-genre > dt {
+	width: 2em;
+	white-space: nowrap;
+}
+
+dl.select_media-genre dl dt {
+	width: 6em;
+	padding-right: 0.5em;
+	border-right: 1px solid #ddd;
+	text-align: right;
+}
+
+dl.select_media-genre dl dd {
+	padding-left: 0.5em;
+}
+
+dl.select_media-genre dl dd .form-control {
+	display: inline-block;
+	width: auto;
+	margin: 0.2em;
+}
+
+dl.select_media-genre dl dd .form-control label {
+	margin-left: 0.5em;
+	cursor: pointer;
+}
+
+span.item_genre_init input {
+	display: none;
+}
+
+dl.select_media-genre .checklist_text .form-control {
+	border: none;
+	box-shadow: none;
+	margin: 0;
+	padding: 0;
+	height: auto;
+	display: inline;
+}
+
+dl.select_media-genre .checklist_text .form-control input,
+dl.select_media-genre .checklist_text .form-control label {
+	margin: 0;
+	padding: 0;
+	line-height: 1em;
+}
+
+dl.select_media-genre .checklist_text .form-control input[type=checkbox],
+dl.select_media-genre .checklist_text .form-control input[type=checkbox] + label {
+	display: none;
+}
+
+dl.select_media-genre .checklist_text .form-control input[type=checkbox]:checked + label {
+	cursor: default;
+	display: inline-block;
+	font-weight: normal;
+	font-size: 1.1em;
+}
+
+dl.select_media-genre .checklist_text .form-control input[type=checkbox]:checked + label:after {
+	content: '／';
+}
+
+/* クリエイティブ管理「商品」用 */
+dl.select_product {
+	font-size: 12px;
+	line-height: 1.5;
+	color: #555;
+}
+
+dl.select_product dd {
+	width: 50%;
+	float: left;
+}
+
+dl.select_product dd:last-child {
+	padding: 0 0 0 1em;
+}
+
+/* 商品管理専用 */
+div.current_image img {
+	max-width: 200px;
+	margin-bottom: 1em;
+}
+
+
+/* クリエイティブ作成専用 */
+div.img_upload{
+	float:left;
+	margin-left:10px;
+}
+
+

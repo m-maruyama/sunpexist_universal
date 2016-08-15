@@ -1,0 +1,271 @@
+/*
+ * Copyright 2015 PRESSMAN Co., Ltd.
+ #4b67a7, #c9d1e4
+*/
+
+
+h1{
+    font-size:20px;
+    font-weight:bold;
+    padding-bottom:8px;
+    border-bottom:solid 1px #4b67a7;
+}
+h2{
+    font-size:18px;
+    font-weight:bold;
+}
+
+h3{
+    font-size:18px;
+    padding-left:8px;
+    border-left:solid 3px #c9d1e4;
+}
+h4{
+    font-size:14px;
+    font-weight:bold;
+}
+
+/*-----------------------------
+ Bootstrap class
+------------------------------- */
+.container{
+    max-width:950px;
+}
+.container-list{
+    margin-left: 8%;
+    max-width:1260px;
+}
+
+/* navbar */
+.navbar, .navbar-default{
+    margin-bottom:5px;
+}
+  .navbar .navbar-nav .open .dropdown-menu > .active > a,
+  .navbar .navbar-nav .open .dropdown-menu > .active > a:hover,
+  .navbar .navbar-nav .open .dropdown-menu > .active > a:focus {
+    color: #fff;
+    background-image: -webkit-linear-gradient(top, #4b67a7 0%, #4b67a7 100%);
+    background-image:      -o-linear-gradient(top, #4b67a7 0%, #4b67a7 100%);
+    background-image: -webkit-gradient(linear, left top, left bottom, from(#4b67a7), to(#4b67a7));
+    background-image:         linear-gradient(to bottom, #4b67a7 0%, #4b67a7 100%);
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff4b67a7', endColorstr='#ff4b67a7', GradientType=0);
+    background-repeat: repeat-x;
+  }
+/* pagenation */
+.pagination li a{
+    color:#4b67a7;
+}
+.pagination > .active > a,
+.pagination > .active > span,
+.pagination > .active > a:hover,
+.pagination > .active > span:hover,
+.pagination > .active > a:focus,
+.pagination > .active > span:focus {
+    background-color: #4b67a7;
+    border-color: #4b67a7;
+}
+
+.form-horizontal{
+    margin:20px auto 30px;
+}
+
+.form-horizontal .control-label {
+    text-align:center;
+}
+
+/*-----------------------------
+ original class
+------------------------------- */
+.footerarea{
+    padding-top:10px;
+    padding-bottom:10px;
+    font-size:12px;
+    color:#999;
+    border-top:solid 1px #ccc;
+}
+/* table */
+/*#fixedTable{
+    position:relative;
+    overflow:hidden;
+    white-space: nowrap;
+    width:98.5%;
+}
+#fixedTable table{
+    padding:0;
+    margin:0;
+    position:relative;
+    color:#4b67a7;
+    background-color:#c9d1e4;
+    text-align:center;
+    vertical-align:middle;
+}*/
+
+.listTable{
+    max-height:850px;
+    overflow-y:auto;
+    width:100%;
+    white-space: nowrap;
+    
+    border-bottom:solid 1px #c9d1e4;
+}
+/*#fixedTable table th, .listTable table td{
+    vertical-align:middle;
+}*/
+.table th{
+    table-layout: fixed;
+    color:#4b67a7;
+    background-color:#c9d1e4;
+    text-align:center;
+    display:table-cell;
+    vertical-align:middle;
+}
+
+thead{
+    position:relative;
+    overflow:hidden;
+    width:93%;
+    padding:0;
+    margin:0;
+    position:relative; 
+}
+/*.listDiv{
+    position:relative;
+    height:200px;
+    overflow:scroll;
+}
+tr.fix{
+    position:fixed;
+}
+tbody{
+    margin-top:30px;
+}*/
+
+.listTable table th, .scrollTable table td{
+	vertical-align:middle;
+}
+.listTable table th{
+	color:#4b67a7;
+	background-color:#c9d1e4;
+	text-align:center;
+}
+.listTable table td{
+	text-align:center;
+}
+.table tbody tr td{
+	vertical-align: middle;
+}
+.listTable table .td_login_id{
+	width:100px;
+}
+.listTable table .td_user_name{
+	width:400px;
+}
+.listTable table .td_position_name{
+	width:250px;
+}
+.listTable table .td_user_type{
+	width:150px;
+}
+.listTable table .td_lock{
+	width:50px;
+}
+.listTable table .td_edit{
+	width:50px;
+}
+.listTable table .td_delete{
+	width:50px;
+}
+.tb_status{
+	width:80px;
+}
+
+.listTable table .th_message{
+	text-align:left;
+}
+.listTable table .td_message{
+	text-align:left;
+}
+
+/*-----------------------------
+ login
+------------------------------- */
+#login_panel{
+    width:50%;
+    margin:50px 25% 0 25%;
+}
+
+
+/*-----------------------------
+ 共通
+------------------------------- */
+.text_center {
+    text-align: center
+}
+
+.btncatgory {
+    width:120px;
+}
+
+.topmargin{
+    margin-top: 15px;
+}
+
+.radius {
+    -moz-border-radius: 4px; /* Firefox */
+    -webkit-border-radius: 4px; /* Safari and Chrome */
+    border-radius: 4px;
+    behavior: url(border-radius.htc); /* IE */
+}
+.box {
+    width: 120px;
+    height: 30px;
+    padding: 5px;
+    vertical-align: middle;
+    background: #4b67a7;
+    color:#FFFFFF;
+    text-align: center;
+    font-weight: bold;
+}
+    
+.dspilb{
+    display:inline-block;
+}
+    
+.tltlemargin{
+    width:20px;
+}
+.border_radius {
+    border-radius: 5px;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+}
+.menubuton{
+    width:110px;
+}
+#loading {
+	position:absolute;
+	left:50%;
+	top:20%;
+	margin-left:-30px;
+}
+
+#overlay{
+    display: none;
+    width: 100%;
+    height:100%;
+    text-align: center;
+    position: fixed;
+    top: 0;
+    z-index: 100;
+    background: rgba(0,0,0,0.7);
+}
+.pager_count{
+	position:absolute;
+	top:25px;
+	/*left:0px;
+	width:100%;*/
+	text-align:right;
+}
+/*input:-webkit-autofill {
+    -webkit-box-shadow: 0 0 0px 1000px #FFFFFF inset;
+}*/

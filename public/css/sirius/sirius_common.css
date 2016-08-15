@@ -1,0 +1,253 @@
+/*
+ * Copyright 2015 PRESSMAN Co., Ltd.
+ #4b67a7, #c9d1e4
+*/
+
+
+h1{
+	font-size:20px;
+	font-weight:bold;
+	padding-bottom:8px;
+	border-bottom:solid 1px #4b67a7;
+}
+h2{
+	font-size:18px;
+	font-weight:bold;
+}
+
+h3{
+	font-size:18px;
+	padding-left:8px;
+	border-left:solid 3px #c9d1e4;
+}
+h4{
+	font-size:14px;
+	font-weight:bold;
+}
+
+/*-----------------------------
+ Bootstrap class
+------------------------------- */
+.container{
+	max-width:950px;
+}
+.container-list{
+	margin-left: 8%;
+	max-width:1260px;
+}
+
+/* navbar */
+.navbar, .navbar-default{
+	margin-bottom:5px;
+}
+  .navbar .navbar-nav .open .dropdown-menu > .active > a,
+  .navbar .navbar-nav .open .dropdown-menu > .active > a:hover,
+  .navbar .navbar-nav .open .dropdown-menu > .active > a:focus {
+    color: #fff;
+    background-image: -webkit-linear-gradient(top, #4b67a7 0%, #4b67a7 100%);
+    background-image:      -o-linear-gradient(top, #4b67a7 0%, #4b67a7 100%);
+    background-image: -webkit-gradient(linear, left top, left bottom, from(#4b67a7), to(#4b67a7));
+    background-image:         linear-gradient(to bottom, #4b67a7 0%, #4b67a7 100%);
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff4b67a7', endColorstr='#ff4b67a7', GradientType=0);
+    background-repeat: repeat-x;
+  }
+/* pagenation */
+.pagination li a{
+	color:#4b67a7;
+}
+.pagination > .active > a,
+.pagination > .active > span,
+.pagination > .active > a:hover,
+.pagination > .active > span:hover,
+.pagination > .active > a:focus,
+.pagination > .active > span:focus {
+	background-color: #4b67a7;
+	border-color: #4b67a7;
+}
+
+.form-horizontal{
+	margin:20px auto 30px;
+}
+
+.form-horizontal .control-label {
+	text-align:center;
+}
+
+/*-----------------------------
+ original class
+------------------------------- */
+.footerarea{
+	padding-top:10px;
+	padding-bottom:10px;
+	font-size:12px;
+	color:#999;
+	border-top:solid 1px #ccc;
+}
+/* table */
+/*#fixedTable{
+	position:relative;
+	overflow:hidden;
+	white-space: nowrap;
+	width:98.5%;
+}
+#fixedTable table{
+	padding:0;
+	margin:0;
+	position:relative;
+	color:#4b67a7;
+	background-color:#c9d1e4;
+	text-align:center;
+	vertical-align:middle;
+}*/
+
+
+#scrollTable{
+	max-height:450px;
+	overflow-y:auto;
+	width:100%;
+	white-space: nowrap;
+	
+	border-bottom:solid 1px #c9d1e4;
+}
+#scrollTable table{
+	width:100%;
+	
+}
+
+/*#fixedTable table th, #scrollTable table td{
+	vertical-align:middle;
+}*/
+.table th{
+	table-layout: fixed;
+	color:#4b67a7;
+	background-color:#c9d1e4;
+	text-align:center;
+	display:table-cell;
+	vertical-align:middle;
+}
+
+
+/*-----------------------------
+ account administration
+------------------------------- */
+
+.tb_message{
+	text-align:left;
+	width:400px;
+}
+
+.tb_item_loginid{
+	text-align: center;
+	width:150px;
+}
+
+.tb_item_loginname{
+	text-align: center;
+	width:300px;
+}
+
+.tb_item_admin{
+	text-align: center;
+	width:75px;
+}
+
+.tb_item_lock{
+	text-align: center;
+	width:50px;
+}
+
+.tb_item_edit{
+	text-align: center;
+	width:56px;
+}
+
+.tb_item_sel{
+	text-align: center;
+	width:56px;
+}
+
+#fixedTable_admin{
+	position:relative;
+	overflow:hidden;
+	width:93%;
+}
+#fixedTable_admin table{
+	padding:0;
+	margin:0;
+	position:relative; 
+}
+
+#scrollTable_admin{
+	max-height:450px;
+	overflow:auto;
+	width:95%;
+	border-bottom:solid 1px #c9d1e4;
+}
+#scrollTable_admin table{
+	width:100%;
+}
+	#fixedTable_admin table th, #scrollTable table td{
+		vertical-align:middle;
+	}
+	#fixedTable_admin table th{
+		color:#4b67a7;
+		background-color:#c9d1e4;
+		text-align:center;
+	}
+
+/*-----------------------------
+ login
+------------------------------- */
+#login_panel{
+	width:50%;
+	margin:50px 25% 0 25%;
+}
+
+
+/*-----------------------------
+ 共通
+------------------------------- */
+.text_center {
+	text-align: center
+}
+
+.btncatgory {
+	width:120px;
+}
+
+.topmargin{
+	margin-top: 15px;
+}
+
+.radius {
+	-moz-border-radius: 4px; /* Firefox */
+	-webkit-border-radius: 4px; /* Safari and Chrome */
+	border-radius: 4px;
+	behavior: url(border-radius.htc); /* IE */
+}
+.box {
+	width: 120px;
+	height: 30px;
+	padding: 5px;
+	vertical-align: middle;
+	background: #4b67a7;
+	color:#FFFFFF;
+	text-align: center;
+	font-weight: bold;
+}
+	
+.dspilb{
+	display:inline-block;
+}
+	
+.tltlemargin{
+	width:20px;
+}
+.border_radius {
+	border-radius: 5px;
+	-webkit-border-radius: 5px;
+	-moz-border-radius: 5px;
+}
+.menubuton{
+	width:110px;
+}

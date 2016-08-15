@@ -1,0 +1,24 @@
+/*
+ * Copyright 2015 PRESSMAN Co., Ltd.
+ #4b67a7, #c9d1e4
+*/
+/*-----------------------------
+ ホーム
+------------------------------- */
+.index-body-margin{
+    margin-bottom:20px;
+}
+.index-body{
+    overflow:auto;
+    width:950px;
+    height:480px;
+    border:1.8px
+    solid #999999;
+}
+.head_1 {
+    padding-left: 25px;
+}
+.text_1 {
+    padding-left: 40px;
+}
+
