@@ -11,7 +11,8 @@ return new \Phalcon\Config(array(
         // // 'charset'     => 'utf8',
     // ),
     'database' => array(
-        'host'        => 'testdb.cedx29aizopt.ap-northeast-1.rds.amazonaws.com',
+        'host'        => '10.0.2.2', //ローカル
+//        'host'        => 'testdb.cedx29aizopt.ap-northeast-1.rds.amazonaws.com', //開発用RDS
         'username'    => 'pman',
         'password'    => 'NBs73j(Dhqe#',
         'dbname'      => 'sunpexist_universal_db',

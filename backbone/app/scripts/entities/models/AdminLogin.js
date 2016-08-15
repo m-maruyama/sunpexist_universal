@@ -10,6 +10,12 @@ define([
 				_.extend(this, Backbone.Validation.mixin);
 			},
 			validation:  {
+				// "company_id": [
+				// 	{
+				// 		required:true,
+				// 		msg: "企業IDを入力して下さい。"
+				// 	}
+				// ],
 				"login_id": [
 					{
 						required:true,
