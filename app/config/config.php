@@ -13,6 +13,7 @@ return new \Phalcon\Config(array(
     'database' => array(
         'host'        => '10.0.2.2', //ローカル
 //        'host'        => 'testdb.cedx29aizopt.ap-northeast-1.rds.amazonaws.com', //開発用RDS
+//        'adapter' => 'Postgresql',
         'username'    => 'pman',
         'password'    => 'NBs73j(Dhqe#',
         'dbname'      => 'sunpexist_universal_db',

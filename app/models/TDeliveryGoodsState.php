@@ -7,6 +7,12 @@ class TDeliveryGoodsState extends \Phalcon\Mvc\Model
      *
      * @var string
      */
+    protected $corporate_id;
+
+    /**
+     *
+     * @var string
+     */
     protected $ship_no;
 
     /**
@@ -95,21 +101,28 @@ class TDeliveryGoodsState extends \Phalcon\Mvc\Model
 
     /**
      *
-     * @var string
+     * @var integer
      */
-    protected $receipt_status;
-
-    /**
-     *
-     * @var string
-     */
-    protected $receipt_date;
+    protected $return_qty;
 
     /**
      *
      * @var string
      */
     protected $t_order_state_comb_hkey;
+
+    /**
+     * Method to set the value of field corporate_id
+     *
+     * @param string $corporate_id
+     * @return $this
+     */
+    public function setCorporateId($corporate_id)
+    {
+        $this->corporate_id = $corporate_id;
+
+        return $this;
+    }
 
     /**
      * Method to set the value of field ship_no
@@ -307,27 +320,14 @@ class TDeliveryGoodsState extends \Phalcon\Mvc\Model
     }
 
     /**
-     * Method to set the value of field receipt_status
+     * Method to set the value of field return_qty
      *
-     * @param string $receipt_status
+     * @param integer $return_qty
      * @return $this
      */
-    public function setReceiptStatus($receipt_status)
+    public function setReturnQty($return_qty)
     {
-        $this->receipt_status = $receipt_status;
-
-        return $this;
-    }
-
-    /**
-     * Method to set the value of field receipt_date
-     *
-     * @param string $receipt_date
-     * @return $this
-     */
-    public function setReceiptDate($receipt_date)
-    {
-        $this->receipt_date = $receipt_date;
+        $this->return_qty = $return_qty;
 
         return $this;
     }
@@ -343,6 +343,16 @@ class TDeliveryGoodsState extends \Phalcon\Mvc\Model
         $this->t_order_state_comb_hkey = $t_order_state_comb_hkey;
 
         return $this;
+    }
+
+    /**
+     * Returns the value of field corporate_id
+     *
+     * @return string
+     */
+    public function getCorporateId()
+    {
+        return $this->corporate_id;
     }
 
     /**
@@ -496,6 +506,52 @@ class TDeliveryGoodsState extends \Phalcon\Mvc\Model
     }
 
     /**
+     * Returns the value of field return_qty
+     *
+     * @return integer
+     */
+    public function getReturnQty()
+    {
+        return $this->return_qty;
+    }
+
+    /**
+     * Returns the value of field t_order_state_comb_hkey
+     *
+     * @return string
+     */
+    public function getTOrderStateCombHkey()
+    {
+        return $this->t_order_state_comb_hkey;
+    }
+
+    /**
+     * Method to set the value of field receipt_status
+     *
+     * @param string $receipt_status
+     * @return $this
+     */
+    public function setReceiptStatus($receipt_status)
+    {
+        $this->receipt_status = $receipt_status;
+
+        return $this;
+    }
+
+    /**
+     * Method to set the value of field receipt_date
+     *
+     * @param string $receipt_date
+     * @return $this
+     */
+    public function setReceiptDate($receipt_date)
+    {
+        $this->receipt_date = $receipt_date;
+
+        return $this;
+    }
+
+    /**
      * Returns the value of field receipt_status
      *
      * @return string
@@ -516,16 +572,6 @@ class TDeliveryGoodsState extends \Phalcon\Mvc\Model
     }
 
     /**
-     * Returns the value of field t_order_state_comb_hkey
-     *
-     * @return string
-     */
-    public function getTOrderStateCombHkey()
-    {
-        return $this->t_order_state_comb_hkey;
-    }
-
-    /**
      * Initialize method for model.
      */
     public function initialize()
@@ -533,16 +579,6 @@ class TDeliveryGoodsState extends \Phalcon\Mvc\Model
         $this->setSchema("public");
         $this->belongsTo("t_order_state_comb_hkey", "TOrderState", "t_order_state_comb_hkey");
         // $this->hasOne('t_order_state_comb_hkey', 'TOrderState', 't_order_state_comb_hkey');
-    }
-
-    /**
-     * Returns table name mapped in the model.
-     *
-     * @return string
-     */
-    public function getSource()
-    {
-        return 't_delivery_goods_state';
     }
 
     /**
@@ -565,6 +601,16 @@ class TDeliveryGoodsState extends \Phalcon\Mvc\Model
     public static function findFirst($parameters = null)
     {
         return parent::findFirst($parameters);
+    }
+
+    /**
+     * Returns table name mapped in the model.
+     *
+     * @return string
+     */
+    public function getSource()
+    {
+        return 't_delivery_goods_state';
     }
 
 }

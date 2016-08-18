@@ -13,6 +13,12 @@ class TOrderState extends \Phalcon\Mvc\Model
      *
      * @var string
      */
+    protected $corporate_id;
+
+    /**
+     *
+     * @var string
+     */
     protected $rec_order_no;
 
     /**
@@ -32,6 +38,12 @@ class TOrderState extends \Phalcon\Mvc\Model
      * @var integer
      */
     protected $order_req_line_no;
+
+    /**
+     *
+     * @var string
+     */
+    protected $emply_order_req_no;
 
     /**
      *
@@ -269,6 +281,19 @@ class TOrderState extends \Phalcon\Mvc\Model
     }
 
     /**
+     * Method to set the value of field corporate_id
+     *
+     * @param string $corporate_id
+     * @return $this
+     */
+    public function setCorporateId($corporate_id)
+    {
+        $this->corporate_id = $corporate_id;
+
+        return $this;
+    }
+
+    /**
      * Method to set the value of field rec_order_no
      *
      * @param string $rec_order_no
@@ -316,6 +341,19 @@ class TOrderState extends \Phalcon\Mvc\Model
     public function setOrderReqLineNo($order_req_line_no)
     {
         $this->order_req_line_no = $order_req_line_no;
+
+        return $this;
+    }
+
+    /**
+     * Method to set the value of field emply_order_req_no
+     *
+     * @param string $emply_order_req_no
+     * @return $this
+     */
+    public function setEmplyOrderReqNo($emply_order_req_no)
+    {
+        $this->emply_order_req_no = $emply_order_req_no;
 
         return $this;
     }
@@ -812,6 +850,16 @@ class TOrderState extends \Phalcon\Mvc\Model
     }
 
     /**
+     * Returns the value of field corporate_id
+     *
+     * @return string
+     */
+    public function getCorporateId()
+    {
+        return $this->corporate_id;
+    }
+
+    /**
      * Returns the value of field rec_order_no
      *
      * @return string
@@ -849,6 +897,16 @@ class TOrderState extends \Phalcon\Mvc\Model
     public function getOrderReqLineNo()
     {
         return $this->order_req_line_no;
+    }
+
+    /**
+     * Returns the value of field emply_order_req_no
+     *
+     * @return string
+     */
+    public function getEmplyOrderReqNo()
+    {
+        return $this->emply_order_req_no;
     }
 
     /**
@@ -1235,16 +1293,6 @@ class TOrderState extends \Phalcon\Mvc\Model
     }
 
     /**
-     * Returns table name mapped in the model.
-     *
-     * @return string
-     */
-    public function getSource()
-    {
-        return 't_order_state';
-    }
-
-    /**
      * Allows to query a set of records that match the specified conditions
      *
      * @param mixed $parameters
@@ -1264,6 +1312,16 @@ class TOrderState extends \Phalcon\Mvc\Model
     public static function findFirst($parameters = null)
     {
         return parent::findFirst($parameters);
+    }
+
+    /**
+     * Returns table name mapped in the model.
+     *
+     * @return string
+     */
+    public function getSource()
+    {
+        return 't_order_state';
     }
 
 }

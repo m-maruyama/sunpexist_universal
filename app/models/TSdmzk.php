@@ -7,6 +7,18 @@ class TSdmzk extends \Phalcon\Mvc\Model
      *
      * @var string
      */
+    protected $corporate_id;
+
+    /**
+     *
+     * @var string
+     */
+    protected $rntl_cont_no;
+
+    /**
+     *
+     * @var string
+     */
     protected $zkzkcd;
 
     /**
@@ -29,15 +41,15 @@ class TSdmzk extends \Phalcon\Mvc\Model
 
     /**
      *
-     * @var string
+     * @var integer
      */
-    protected $zksize;
+    protected $zksize_display_order;
 
     /**
      *
-     * @var integer
+     * @var string
      */
-    protected $zkrc2;
+    protected $zksize;
 
     /**
      *
@@ -53,6 +65,54 @@ class TSdmzk extends \Phalcon\Mvc\Model
 
     /**
      *
+     * @var integer
+     */
+    protected $total_qty;
+
+    /**
+     *
+     * @var integer
+     */
+    protected $new_qty;
+
+    /**
+     *
+     * @var integer
+     */
+    protected $used_qty;
+
+    /**
+     *
+     * @var integer
+     */
+    protected $rtn_proc_qty;
+
+    /**
+     *
+     * @var integer
+     */
+    protected $rtn_plan_qty;
+
+    /**
+     *
+     * @var integer
+     */
+    protected $in_use_qty;
+
+    /**
+     *
+     * @var integer
+     */
+    protected $other_ship_qty;
+
+    /**
+     *
+     * @var integer
+     */
+    protected $discarded_qty;
+
+    /**
+     *
      * @var string
      */
     protected $rent_pattern_data;
@@ -62,6 +122,32 @@ class TSdmzk extends \Phalcon\Mvc\Model
      * @var string
      */
     protected $m_item_comb_hkey;
+
+    /**
+     * Method to set the value of field corporate_id
+     *
+     * @param string $corporate_id
+     * @return $this
+     */
+    public function setCorporateId($corporate_id)
+    {
+        $this->corporate_id = $corporate_id;
+
+        return $this;
+    }
+
+    /**
+     * Method to set the value of field rntl_cont_no
+     *
+     * @param string $rntl_cont_no
+     * @return $this
+     */
+    public function setRntlContNo($rntl_cont_no)
+    {
+        $this->rntl_cont_no = $rntl_cont_no;
+
+        return $this;
+    }
 
     /**
      * Method to set the value of field zkzkcd
@@ -116,6 +202,19 @@ class TSdmzk extends \Phalcon\Mvc\Model
     }
 
     /**
+     * Method to set the value of field zksize_display_order
+     *
+     * @param integer $zksize_display_order
+     * @return $this
+     */
+    public function setZksizeDisplayOrder($zksize_display_order)
+    {
+        $this->zksize_display_order = $zksize_display_order;
+
+        return $this;
+    }
+
+    /**
      * Method to set the value of field zksize
      *
      * @param string $zksize
@@ -124,19 +223,6 @@ class TSdmzk extends \Phalcon\Mvc\Model
     public function setZksize($zksize)
     {
         $this->zksize = $zksize;
-
-        return $this;
-    }
-
-    /**
-     * Method to set the value of field zkrc2
-     *
-     * @param integer $zkrc2
-     * @return $this
-     */
-    public function setZkrc2($zkrc2)
-    {
-        $this->zkrc2 = $zkrc2;
 
         return $this;
     }
@@ -168,6 +254,110 @@ class TSdmzk extends \Phalcon\Mvc\Model
     }
 
     /**
+     * Method to set the value of field total_qty
+     *
+     * @param integer $total_qty
+     * @return $this
+     */
+    public function setTotalQty($total_qty)
+    {
+        $this->total_qty = $total_qty;
+
+        return $this;
+    }
+
+    /**
+     * Method to set the value of field new_qty
+     *
+     * @param integer $new_qty
+     * @return $this
+     */
+    public function setNewQty($new_qty)
+    {
+        $this->new_qty = $new_qty;
+
+        return $this;
+    }
+
+    /**
+     * Method to set the value of field used_qty
+     *
+     * @param integer $used_qty
+     * @return $this
+     */
+    public function setUsedQty($used_qty)
+    {
+        $this->used_qty = $used_qty;
+
+        return $this;
+    }
+
+    /**
+     * Method to set the value of field rtn_proc_qty
+     *
+     * @param integer $rtn_proc_qty
+     * @return $this
+     */
+    public function setRtnProcQty($rtn_proc_qty)
+    {
+        $this->rtn_proc_qty = $rtn_proc_qty;
+
+        return $this;
+    }
+
+    /**
+     * Method to set the value of field rtn_plan_qty
+     *
+     * @param integer $rtn_plan_qty
+     * @return $this
+     */
+    public function setRtnPlanQty($rtn_plan_qty)
+    {
+        $this->rtn_plan_qty = $rtn_plan_qty;
+
+        return $this;
+    }
+
+    /**
+     * Method to set the value of field in_use_qty
+     *
+     * @param integer $in_use_qty
+     * @return $this
+     */
+    public function setInUseQty($in_use_qty)
+    {
+        $this->in_use_qty = $in_use_qty;
+
+        return $this;
+    }
+
+    /**
+     * Method to set the value of field other_ship_qty
+     *
+     * @param integer $other_ship_qty
+     * @return $this
+     */
+    public function setOtherShipQty($other_ship_qty)
+    {
+        $this->other_ship_qty = $other_ship_qty;
+
+        return $this;
+    }
+
+    /**
+     * Method to set the value of field discarded_qty
+     *
+     * @param integer $discarded_qty
+     * @return $this
+     */
+    public function setDiscardedQty($discarded_qty)
+    {
+        $this->discarded_qty = $discarded_qty;
+
+        return $this;
+    }
+
+    /**
      * Method to set the value of field rent_pattern_data
      *
      * @param string $rent_pattern_data
@@ -191,6 +381,26 @@ class TSdmzk extends \Phalcon\Mvc\Model
         $this->m_item_comb_hkey = $m_item_comb_hkey;
 
         return $this;
+    }
+
+    /**
+     * Returns the value of field corporate_id
+     *
+     * @return string
+     */
+    public function getCorporateId()
+    {
+        return $this->corporate_id;
+    }
+
+    /**
+     * Returns the value of field rntl_cont_no
+     *
+     * @return string
+     */
+    public function getRntlContNo()
+    {
+        return $this->rntl_cont_no;
     }
 
     /**
@@ -234,6 +444,16 @@ class TSdmzk extends \Phalcon\Mvc\Model
     }
 
     /**
+     * Returns the value of field zksize_display_order
+     *
+     * @return integer
+     */
+    public function getZksizeDisplayOrder()
+    {
+        return $this->zksize_display_order;
+    }
+
+    /**
      * Returns the value of field zksize
      *
      * @return string
@@ -241,16 +461,6 @@ class TSdmzk extends \Phalcon\Mvc\Model
     public function getZksize()
     {
         return $this->zksize;
-    }
-
-    /**
-     * Returns the value of field zkrc2
-     *
-     * @return integer
-     */
-    public function getZkrc2()
-    {
-        return $this->zkrc2;
     }
 
     /**
@@ -274,6 +484,86 @@ class TSdmzk extends \Phalcon\Mvc\Model
     }
 
     /**
+     * Returns the value of field total_qty
+     *
+     * @return integer
+     */
+    public function getTotalQty()
+    {
+        return $this->total_qty;
+    }
+
+    /**
+     * Returns the value of field new_qty
+     *
+     * @return integer
+     */
+    public function getNewQty()
+    {
+        return $this->new_qty;
+    }
+
+    /**
+     * Returns the value of field used_qty
+     *
+     * @return integer
+     */
+    public function getUsedQty()
+    {
+        return $this->used_qty;
+    }
+
+    /**
+     * Returns the value of field rtn_proc_qty
+     *
+     * @return integer
+     */
+    public function getRtnProcQty()
+    {
+        return $this->rtn_proc_qty;
+    }
+
+    /**
+     * Returns the value of field rtn_plan_qty
+     *
+     * @return integer
+     */
+    public function getRtnPlanQty()
+    {
+        return $this->rtn_plan_qty;
+    }
+
+    /**
+     * Returns the value of field in_use_qty
+     *
+     * @return integer
+     */
+    public function getInUseQty()
+    {
+        return $this->in_use_qty;
+    }
+
+    /**
+     * Returns the value of field other_ship_qty
+     *
+     * @return integer
+     */
+    public function getOtherShipQty()
+    {
+        return $this->other_ship_qty;
+    }
+
+    /**
+     * Returns the value of field discarded_qty
+     *
+     * @return integer
+     */
+    public function getDiscardedQty()
+    {
+        return $this->discarded_qty;
+    }
+
+    /**
      * Returns the value of field rent_pattern_data
      *
      * @return string
@@ -294,6 +584,29 @@ class TSdmzk extends \Phalcon\Mvc\Model
     }
 
     /**
+     * Method to set the value of field zkrc2
+     *
+     * @param integer $zkrc2
+     * @return $this
+     */
+    public function setZkrc2($zkrc2)
+    {
+        $this->zkrc2 = $zkrc2;
+
+        return $this;
+    }
+
+    /**
+     * Returns the value of field zkrc2
+     *
+     * @return integer
+     */
+    public function getZkrc2()
+    {
+        return $this->zkrc2;
+    }
+
+    /**
      * Initialize method for model.
      */
     public function initialize()
@@ -301,16 +614,6 @@ class TSdmzk extends \Phalcon\Mvc\Model
         $this->setSchema("public");
         $this->hasOne('m_item_comb_hkey', 'MItem', 'm_item_comb_hkey');
         $this->hasOne('rent_pattern_data', 'MRentPatternForSdmzk', 'rent_pattern_data');
-    }
-
-    /**
-     * Returns table name mapped in the model.
-     *
-     * @return string
-     */
-    public function getSource()
-    {
-        return 't_sdmzk';
     }
 
     /**
@@ -333,6 +636,16 @@ class TSdmzk extends \Phalcon\Mvc\Model
     public static function findFirst($parameters = null)
     {
         return parent::findFirst($parameters);
+    }
+
+    /**
+     * Returns table name mapped in the model.
+     *
+     * @return string
+     */
+    public function getSource()
+    {
+        return 't_sdmzk';
     }
 
 }

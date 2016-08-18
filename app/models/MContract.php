@@ -7,6 +7,12 @@ class MContract extends \Phalcon\Mvc\Model
      *
      * @var string
      */
+    protected $corporate_id;
+
+    /**
+     *
+     * @var string
+     */
     protected $rntl_cont_no;
 
     /**
@@ -86,6 +92,67 @@ class MContract extends \Phalcon\Mvc\Model
      * @var string
      */
     protected $upd_pg_id;
+
+    /**
+     *
+     * @var string
+     */
+    protected $rntl_emply_cont_name;
+
+    /**
+     *
+     * @var integer
+     */
+    protected $individual_flg;
+
+    /**
+     *
+     * @var integer
+     */
+    protected $receipt_flg;
+
+    /**
+     *
+     * @var string
+     */
+    protected $rntl_cont_flg;
+
+    /**
+     *
+     * @var string
+     */
+    protected $purchase_cont_flg;
+
+    /**
+     *
+     * @var string
+     */
+    protected $sub_cont_flg1;
+
+    /**
+     *
+     * @var string
+     */
+    protected $sub_cont_flg2;
+
+    /**
+     *
+     * @var string
+     */
+    protected $sub_cont_flg3;
+
+    /**
+     * Method to set the value of field corporate_id
+     *
+     * @param string $corporate_id
+     * @return $this
+     */
+    public function setCorporateId($corporate_id)
+    {
+        $this->corporate_id = $corporate_id;
+
+        return $this;
+    }
 
     /**
      * Method to set the value of field rntl_cont_no
@@ -270,6 +337,120 @@ class MContract extends \Phalcon\Mvc\Model
     }
 
     /**
+     * Method to set the value of field rntl_emply_cont_name
+     *
+     * @param string $rntl_emply_cont_name
+     * @return $this
+     */
+    public function setRntlEmplyContName($rntl_emply_cont_name)
+    {
+        $this->rntl_emply_cont_name = $rntl_emply_cont_name;
+
+        return $this;
+    }
+
+    /**
+     * Method to set the value of field individual_flg
+     *
+     * @param integer $individual_flg
+     * @return $this
+     */
+    public function setIndividualFlg($individual_flg)
+    {
+        $this->individual_flg = $individual_flg;
+
+        return $this;
+    }
+
+    /**
+     * Method to set the value of field receipt_flg
+     *
+     * @param integer $receipt_flg
+     * @return $this
+     */
+    public function setReceiptFlg($receipt_flg)
+    {
+        $this->receipt_flg = $receipt_flg;
+
+        return $this;
+    }
+
+    /**
+     * Method to set the value of field rntl_cont_flg
+     *
+     * @param string $rntl_cont_flg
+     * @return $this
+     */
+    public function setRntlContFlg($rntl_cont_flg)
+    {
+        $this->rntl_cont_flg = $rntl_cont_flg;
+
+        return $this;
+    }
+
+    /**
+     * Method to set the value of field purchase_cont_flg
+     *
+     * @param string $purchase_cont_flg
+     * @return $this
+     */
+    public function setPurchaseContFlg($purchase_cont_flg)
+    {
+        $this->purchase_cont_flg = $purchase_cont_flg;
+
+        return $this;
+    }
+
+    /**
+     * Method to set the value of field sub_cont_flg1
+     *
+     * @param string $sub_cont_flg1
+     * @return $this
+     */
+    public function setSubContFlg1($sub_cont_flg1)
+    {
+        $this->sub_cont_flg1 = $sub_cont_flg1;
+
+        return $this;
+    }
+
+    /**
+     * Method to set the value of field sub_cont_flg2
+     *
+     * @param string $sub_cont_flg2
+     * @return $this
+     */
+    public function setSubContFlg2($sub_cont_flg2)
+    {
+        $this->sub_cont_flg2 = $sub_cont_flg2;
+
+        return $this;
+    }
+
+    /**
+     * Method to set the value of field sub_cont_flg3
+     *
+     * @param string $sub_cont_flg3
+     * @return $this
+     */
+    public function setSubContFlg3($sub_cont_flg3)
+    {
+        $this->sub_cont_flg3 = $sub_cont_flg3;
+
+        return $this;
+    }
+
+    /**
+     * Returns the value of field corporate_id
+     *
+     * @return string
+     */
+    public function getCorporateId()
+    {
+        return $this->corporate_id;
+    }
+
+    /**
      * Returns the value of field rntl_cont_no
      *
      * @return string
@@ -410,21 +591,91 @@ class MContract extends \Phalcon\Mvc\Model
     }
 
     /**
+     * Returns the value of field rntl_emply_cont_name
+     *
+     * @return string
+     */
+    public function getRntlEmplyContName()
+    {
+        return $this->rntl_emply_cont_name;
+    }
+
+    /**
+     * Returns the value of field individual_flg
+     *
+     * @return integer
+     */
+    public function getIndividualFlg()
+    {
+        return $this->individual_flg;
+    }
+
+    /**
+     * Returns the value of field receipt_flg
+     *
+     * @return integer
+     */
+    public function getReceiptFlg()
+    {
+        return $this->receipt_flg;
+    }
+
+    /**
+     * Returns the value of field rntl_cont_flg
+     *
+     * @return string
+     */
+    public function getRntlContFlg()
+    {
+        return $this->rntl_cont_flg;
+    }
+
+    /**
+     * Returns the value of field purchase_cont_flg
+     *
+     * @return string
+     */
+    public function getPurchaseContFlg()
+    {
+        return $this->purchase_cont_flg;
+    }
+
+    /**
+     * Returns the value of field sub_cont_flg1
+     *
+     * @return string
+     */
+    public function getSubContFlg1()
+    {
+        return $this->sub_cont_flg1;
+    }
+
+    /**
+     * Returns the value of field sub_cont_flg2
+     *
+     * @return string
+     */
+    public function getSubContFlg2()
+    {
+        return $this->sub_cont_flg2;
+    }
+
+    /**
+     * Returns the value of field sub_cont_flg3
+     *
+     * @return string
+     */
+    public function getSubContFlg3()
+    {
+        return $this->sub_cont_flg3;
+    }
+
+    /**
      * Initialize method for model.
      */
     public function initialize()
     {
         $this->setSchema("public");
-    }
-
-    /**
-     * Returns table name mapped in the model.
-     *
-     * @return string
-     */
-    public function getSource()
-    {
-        return 'm_contract';
     }
 
     /**
@@ -447,6 +698,16 @@ class MContract extends \Phalcon\Mvc\Model
     public static function findFirst($parameters = null)
     {
         return parent::findFirst($parameters);
+    }
+
+    /**
+     * Returns table name mapped in the model.
+     *
+     * @return string
+     */
+    public function getSource()
+    {
+        return 'm_contract';
     }
 
 }

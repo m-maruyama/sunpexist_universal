@@ -13,6 +13,12 @@ class MItem extends \Phalcon\Mvc\Model
      *
      * @var string
      */
+    protected $corporate_id;
+
+    /**
+     *
+     * @var string
+     */
     protected $item_cd;
 
     /**
@@ -78,6 +84,19 @@ class MItem extends \Phalcon\Mvc\Model
     public function setMItemCombHkey($m_item_comb_hkey)
     {
         $this->m_item_comb_hkey = $m_item_comb_hkey;
+
+        return $this;
+    }
+
+    /**
+     * Method to set the value of field corporate_id
+     *
+     * @param string $corporate_id
+     * @return $this
+     */
+    public function setCorporateId($corporate_id)
+    {
+        $this->corporate_id = $corporate_id;
 
         return $this;
     }
@@ -223,6 +242,16 @@ class MItem extends \Phalcon\Mvc\Model
     }
 
     /**
+     * Returns the value of field corporate_id
+     *
+     * @return string
+     */
+    public function getCorporateId()
+    {
+        return $this->corporate_id;
+    }
+
+    /**
      * Returns the value of field item_cd
      *
      * @return string
@@ -334,16 +363,6 @@ class MItem extends \Phalcon\Mvc\Model
     }
 
     /**
-     * Returns table name mapped in the model.
-     *
-     * @return string
-     */
-    public function getSource()
-    {
-        return 'm_item';
-    }
-
-    /**
      * Allows to query a set of records that match the specified conditions
      *
      * @param mixed $parameters
@@ -363,6 +382,16 @@ class MItem extends \Phalcon\Mvc\Model
     public static function findFirst($parameters = null)
     {
         return parent::findFirst($parameters);
+    }
+
+    /**
+     * Returns table name mapped in the model.
+     *
+     * @return string
+     */
+    public function getSource()
+    {
+        return 'm_item';
     }
 
 }

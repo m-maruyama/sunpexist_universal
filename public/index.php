@@ -35,6 +35,8 @@ try {
      * Incude Application
      */
     include __DIR__ . '/../app/app.php';
+    include __DIR__ . '/../app/login.php';
+    include __DIR__ . '/../app/ChromePhp.php';
 
     /**
      * Handle the request

@@ -7,6 +7,18 @@ class MRentPatternForSdmzk extends \Phalcon\Mvc\Model
      *
      * @var string
      */
+    protected $corporate_id;
+
+    /**
+     *
+     * @var string
+     */
+    protected $rntl_cont_no;
+
+    /**
+     *
+     * @var string
+     */
     protected $rent_pattern_data;
 
     /**
@@ -50,6 +62,32 @@ class MRentPatternForSdmzk extends \Phalcon\Mvc\Model
      * @var string
      */
     protected $upd_pg_id;
+
+    /**
+     * Method to set the value of field corporate_id
+     *
+     * @param string $corporate_id
+     * @return $this
+     */
+    public function setCorporateId($corporate_id)
+    {
+        $this->corporate_id = $corporate_id;
+
+        return $this;
+    }
+
+    /**
+     * Method to set the value of field rntl_cont_no
+     *
+     * @param string $rntl_cont_no
+     * @return $this
+     */
+    public function setRntlContNo($rntl_cont_no)
+    {
+        $this->rntl_cont_no = $rntl_cont_no;
+
+        return $this;
+    }
 
     /**
      * Method to set the value of field rent_pattern_data
@@ -156,6 +194,26 @@ class MRentPatternForSdmzk extends \Phalcon\Mvc\Model
     }
 
     /**
+     * Returns the value of field corporate_id
+     *
+     * @return string
+     */
+    public function getCorporateId()
+    {
+        return $this->corporate_id;
+    }
+
+    /**
+     * Returns the value of field rntl_cont_no
+     *
+     * @return string
+     */
+    public function getRntlContNo()
+    {
+        return $this->rntl_cont_no;
+    }
+
+    /**
      * Returns the value of field rent_pattern_data
      *
      * @return string
@@ -245,16 +303,6 @@ class MRentPatternForSdmzk extends \Phalcon\Mvc\Model
     }
 
     /**
-     * Returns table name mapped in the model.
-     *
-     * @return string
-     */
-    public function getSource()
-    {
-        return 'm_rent_pattern_for_sdmzk';
-    }
-
-    /**
      * Allows to query a set of records that match the specified conditions
      *
      * @param mixed $parameters
@@ -274,6 +322,16 @@ class MRentPatternForSdmzk extends \Phalcon\Mvc\Model
     public static function findFirst($parameters = null)
     {
         return parent::findFirst($parameters);
+    }
+
+    /**
+     * Returns table name mapped in the model.
+     *
+     * @return string
+     */
+    public function getSource()
+    {
+        return 'm_rent_pattern_for_sdmzk';
     }
 
 }

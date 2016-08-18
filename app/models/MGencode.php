@@ -29,39 +29,15 @@ class MGencode extends \Phalcon\Mvc\Model
 
     /**
      *
-     * @var integer
+     * @var string
      */
-    protected $gen_num1;
-
-    /**
-     *
-     * @var integer
-     */
-    protected $gen_num2;
-
-    /**
-     *
-     * @var integer
-     */
-    protected $gen_num3;
-
-    /**
-     *
-     * @var integer
-     */
-    protected $gen_chr1;
+    protected $relation_cls_cd;
 
     /**
      *
      * @var string
      */
-    protected $gen_chr2;
-
-    /**
-     *
-     * @var string
-     */
-    protected $gen_chr3;
+    protected $relation_gen_cd;
 
     /**
      *
@@ -146,79 +122,27 @@ class MGencode extends \Phalcon\Mvc\Model
     }
 
     /**
-     * Method to set the value of field gen_num1
+     * Method to set the value of field relation_cls_cd
      *
-     * @param integer $gen_num1
+     * @param string $relation_cls_cd
      * @return $this
      */
-    public function setGenNum1($gen_num1)
+    public function setRelationClsCd($relation_cls_cd)
     {
-        $this->gen_num1 = $gen_num1;
+        $this->relation_cls_cd = $relation_cls_cd;
 
         return $this;
     }
 
     /**
-     * Method to set the value of field gen_num2
+     * Method to set the value of field relation_gen_cd
      *
-     * @param integer $gen_num2
+     * @param string $relation_gen_cd
      * @return $this
      */
-    public function setGenNum2($gen_num2)
+    public function setRelationGenCd($relation_gen_cd)
     {
-        $this->gen_num2 = $gen_num2;
-
-        return $this;
-    }
-
-    /**
-     * Method to set the value of field gen_num3
-     *
-     * @param integer $gen_num3
-     * @return $this
-     */
-    public function setGenNum3($gen_num3)
-    {
-        $this->gen_num3 = $gen_num3;
-
-        return $this;
-    }
-
-    /**
-     * Method to set the value of field gen_chr1
-     *
-     * @param integer $gen_chr1
-     * @return $this
-     */
-    public function setGenChr1($gen_chr1)
-    {
-        $this->gen_chr1 = $gen_chr1;
-
-        return $this;
-    }
-
-    /**
-     * Method to set the value of field gen_chr2
-     *
-     * @param string $gen_chr2
-     * @return $this
-     */
-    public function setGenChr2($gen_chr2)
-    {
-        $this->gen_chr2 = $gen_chr2;
-
-        return $this;
-    }
-
-    /**
-     * Method to set the value of field gen_chr3
-     *
-     * @param string $gen_chr3
-     * @return $this
-     */
-    public function setGenChr3($gen_chr3)
-    {
-        $this->gen_chr3 = $gen_chr3;
+        $this->relation_gen_cd = $relation_gen_cd;
 
         return $this;
     }
@@ -329,6 +253,154 @@ class MGencode extends \Phalcon\Mvc\Model
     }
 
     /**
+     * Returns the value of field relation_cls_cd
+     *
+     * @return string
+     */
+    public function getRelationClsCd()
+    {
+        return $this->relation_cls_cd;
+    }
+
+    /**
+     * Returns the value of field relation_gen_cd
+     *
+     * @return string
+     */
+    public function getRelationGenCd()
+    {
+        return $this->relation_gen_cd;
+    }
+
+    /**
+     * Returns the value of field rgst_date
+     *
+     * @return string
+     */
+    public function getRgstDate()
+    {
+        return $this->rgst_date;
+    }
+
+    /**
+     * Returns the value of field rgst_user_id
+     *
+     * @return string
+     */
+    public function getRgstUserId()
+    {
+        return $this->rgst_user_id;
+    }
+
+    /**
+     * Returns the value of field upd_date
+     *
+     * @return string
+     */
+    public function getUpdDate()
+    {
+        return $this->upd_date;
+    }
+
+    /**
+     * Returns the value of field upd_user_id
+     *
+     * @return string
+     */
+    public function getUpdUserId()
+    {
+        return $this->upd_user_id;
+    }
+
+    /**
+     * Returns the value of field upd_pg_id
+     *
+     * @return string
+     */
+    public function getUpdPgId()
+    {
+        return $this->upd_pg_id;
+    }
+
+    /**
+     * Method to set the value of field gen_num1
+     *
+     * @param integer $gen_num1
+     * @return $this
+     */
+    public function setGenNum1($gen_num1)
+    {
+        $this->gen_num1 = $gen_num1;
+
+        return $this;
+    }
+
+    /**
+     * Method to set the value of field gen_num2
+     *
+     * @param integer $gen_num2
+     * @return $this
+     */
+    public function setGenNum2($gen_num2)
+    {
+        $this->gen_num2 = $gen_num2;
+
+        return $this;
+    }
+
+    /**
+     * Method to set the value of field gen_num3
+     *
+     * @param integer $gen_num3
+     * @return $this
+     */
+    public function setGenNum3($gen_num3)
+    {
+        $this->gen_num3 = $gen_num3;
+
+        return $this;
+    }
+
+    /**
+     * Method to set the value of field gen_chr1
+     *
+     * @param integer $gen_chr1
+     * @return $this
+     */
+    public function setGenChr1($gen_chr1)
+    {
+        $this->gen_chr1 = $gen_chr1;
+
+        return $this;
+    }
+
+    /**
+     * Method to set the value of field gen_chr2
+     *
+     * @param string $gen_chr2
+     * @return $this
+     */
+    public function setGenChr2($gen_chr2)
+    {
+        $this->gen_chr2 = $gen_chr2;
+
+        return $this;
+    }
+
+    /**
+     * Method to set the value of field gen_chr3
+     *
+     * @param string $gen_chr3
+     * @return $this
+     */
+    public function setGenChr3($gen_chr3)
+    {
+        $this->gen_chr3 = $gen_chr3;
+
+        return $this;
+    }
+
+    /**
      * Returns the value of field gen_num1
      *
      * @return integer
@@ -389,71 +461,11 @@ class MGencode extends \Phalcon\Mvc\Model
     }
 
     /**
-     * Returns the value of field rgst_date
-     *
-     * @return string
-     */
-    public function getRgstDate()
-    {
-        return $this->rgst_date;
-    }
-
-    /**
-     * Returns the value of field rgst_user_id
-     *
-     * @return string
-     */
-    public function getRgstUserId()
-    {
-        return $this->rgst_user_id;
-    }
-
-    /**
-     * Returns the value of field upd_date
-     *
-     * @return string
-     */
-    public function getUpdDate()
-    {
-        return $this->upd_date;
-    }
-
-    /**
-     * Returns the value of field upd_user_id
-     *
-     * @return string
-     */
-    public function getUpdUserId()
-    {
-        return $this->upd_user_id;
-    }
-
-    /**
-     * Returns the value of field upd_pg_id
-     *
-     * @return string
-     */
-    public function getUpdPgId()
-    {
-        return $this->upd_pg_id;
-    }
-
-    /**
      * Initialize method for model.
      */
     public function initialize()
     {
         $this->setSchema("public");
-    }
-
-    /**
-     * Returns table name mapped in the model.
-     *
-     * @return string
-     */
-    public function getSource()
-    {
-        return 'm_gencode';
     }
 
     /**
@@ -476,6 +488,16 @@ class MGencode extends \Phalcon\Mvc\Model
     public static function findFirst($parameters = null)
     {
         return parent::findFirst($parameters);
+    }
+
+    /**
+     * Returns table name mapped in the model.
+     *
+     * @return string
+     */
+    public function getSource()
+    {
+        return 'm_gencode';
     }
 
 }

@@ -13,7 +13,25 @@ class TReturnedPlanInfo extends \Phalcon\Mvc\Model
      *
      * @var string
      */
-    protected $order_no;
+    protected $corporate_id;
+
+    /**
+     *
+     * @var string
+     */
+    protected $order_req_no;
+
+    /**
+     *
+     * @var integer
+     */
+    protected $order_req_line_no;
+
+    /**
+     *
+     * @var string
+     */
+    protected $rntl_cont_no;
 
     /**
      *
@@ -32,6 +50,12 @@ class TReturnedPlanInfo extends \Phalcon\Mvc\Model
      * @var string
      */
     protected $size_cd;
+
+    /**
+     *
+     * @var string
+     */
+    protected $werer_cd;
 
     /**
      *
@@ -67,13 +91,19 @@ class TReturnedPlanInfo extends \Phalcon\Mvc\Model
      *
      * @var string
      */
-    protected $order_kbn;
+    protected $order_sts_kbn;
 
     /**
      *
      * @var integer
      */
     protected $return_plan_qty;
+
+    /**
+     *
+     * @var string
+     */
+    protected $m_section_comb_hkey;
 
     /**
      * Method to set the value of field t_returned_plan_info_comb_hkey
@@ -89,14 +119,53 @@ class TReturnedPlanInfo extends \Phalcon\Mvc\Model
     }
 
     /**
-     * Method to set the value of field order_no
+     * Method to set the value of field corporate_id
      *
-     * @param string $order_no
+     * @param string $corporate_id
      * @return $this
      */
-    public function setOrderNo($order_no)
+    public function setCorporateId($corporate_id)
     {
-        $this->order_no = $order_no;
+        $this->corporate_id = $corporate_id;
+
+        return $this;
+    }
+
+    /**
+     * Method to set the value of field order_req_no
+     *
+     * @param string $order_req_no
+     * @return $this
+     */
+    public function setOrderReqNo($order_req_no)
+    {
+        $this->order_req_no = $order_req_no;
+
+        return $this;
+    }
+
+    /**
+     * Method to set the value of field order_req_line_no
+     *
+     * @param integer $order_req_line_no
+     * @return $this
+     */
+    public function setOrderReqLineNo($order_req_line_no)
+    {
+        $this->order_req_line_no = $order_req_line_no;
+
+        return $this;
+    }
+
+    /**
+     * Method to set the value of field rntl_cont_no
+     *
+     * @param string $rntl_cont_no
+     * @return $this
+     */
+    public function setRntlContNo($rntl_cont_no)
+    {
+        $this->rntl_cont_no = $rntl_cont_no;
 
         return $this;
     }
@@ -136,6 +205,19 @@ class TReturnedPlanInfo extends \Phalcon\Mvc\Model
     public function setSizeCd($size_cd)
     {
         $this->size_cd = $size_cd;
+
+        return $this;
+    }
+
+    /**
+     * Method to set the value of field werer_cd
+     *
+     * @param string $werer_cd
+     * @return $this
+     */
+    public function setWererCd($werer_cd)
+    {
+        $this->werer_cd = $werer_cd;
 
         return $this;
     }
@@ -198,7 +280,7 @@ class TReturnedPlanInfo extends \Phalcon\Mvc\Model
      * @param string $return_status
      * @return $this
      */
-    public function setreturnStatus($return_status)
+    public function setReturnStatus($return_status)
     {
         $this->return_status = $return_status;
 
@@ -206,14 +288,14 @@ class TReturnedPlanInfo extends \Phalcon\Mvc\Model
     }
 
     /**
-     * Method to set the value of field order_kbn
+     * Method to set the value of field order_sts_kbn
      *
-     * @param string $order_kbn
+     * @param string $order_sts_kbn
      * @return $this
      */
-    public function setOrderKbn($order_kbn)
+    public function setOrderStsKbn($order_sts_kbn)
     {
-        $this->order_kbn = $order_kbn;
+        $this->order_sts_kbn = $order_sts_kbn;
 
         return $this;
     }
@@ -224,9 +306,22 @@ class TReturnedPlanInfo extends \Phalcon\Mvc\Model
      * @param integer $return_plan_qty
      * @return $this
      */
-    public function setreturnPlanQty($return_plan_qty)
+    public function setReturnPlanQty($return_plan_qty)
     {
         $this->return_plan_qty = $return_plan_qty;
+
+        return $this;
+    }
+
+    /**
+     * Method to set the value of field m_section_comb_hkey
+     *
+     * @param string $m_section_comb_hkey
+     * @return $this
+     */
+    public function setMSectionCombHkey($m_section_comb_hkey)
+    {
+        $this->m_section_comb_hkey = $m_section_comb_hkey;
 
         return $this;
     }
@@ -242,13 +337,43 @@ class TReturnedPlanInfo extends \Phalcon\Mvc\Model
     }
 
     /**
-     * Returns the value of field order_no
+     * Returns the value of field corporate_id
      *
      * @return string
      */
-    public function getOrderNo()
+    public function getCorporateId()
     {
-        return $this->order_no;
+        return $this->corporate_id;
+    }
+
+    /**
+     * Returns the value of field order_req_no
+     *
+     * @return string
+     */
+    public function getOrderReqNo()
+    {
+        return $this->order_req_no;
+    }
+
+    /**
+     * Returns the value of field order_req_line_no
+     *
+     * @return integer
+     */
+    public function getOrderReqLineNo()
+    {
+        return $this->order_req_line_no;
+    }
+
+    /**
+     * Returns the value of field rntl_cont_no
+     *
+     * @return string
+     */
+    public function getRntlContNo()
+    {
+        return $this->rntl_cont_no;
     }
 
     /**
@@ -279,6 +404,16 @@ class TReturnedPlanInfo extends \Phalcon\Mvc\Model
     public function getSizeCd()
     {
         return $this->size_cd;
+    }
+
+    /**
+     * Returns the value of field werer_cd
+     *
+     * @return string
+     */
+    public function getWererCd()
+    {
+        return $this->werer_cd;
     }
 
     /**
@@ -326,6 +461,108 @@ class TReturnedPlanInfo extends \Phalcon\Mvc\Model
      *
      * @return string
      */
+    public function getReturnStatus()
+    {
+        return $this->return_status;
+    }
+
+    /**
+     * Returns the value of field order_sts_kbn
+     *
+     * @return string
+     */
+    public function getOrderStsKbn()
+    {
+        return $this->order_sts_kbn;
+    }
+
+    /**
+     * Returns the value of field return_plan_qty
+     *
+     * @return integer
+     */
+    public function getReturnPlanQty()
+    {
+        return $this->return_plan_qty;
+    }
+
+    /**
+     * Returns the value of field m_section_comb_hkey
+     *
+     * @return string
+     */
+    public function getMSectionCombHkey()
+    {
+        return $this->m_section_comb_hkey;
+    }
+
+    /**
+     * Method to set the value of field order_no
+     *
+     * @param string $order_no
+     * @return $this
+     */
+    public function setOrderNo($order_no)
+    {
+        $this->order_no = $order_no;
+
+        return $this;
+    }
+
+    /**
+     * Method to set the value of field return_status
+     *
+     * @param string $return_status
+     * @return $this
+     */
+    public function setreturnStatus($return_status)
+    {
+        $this->return_status = $return_status;
+
+        return $this;
+    }
+
+    /**
+     * Method to set the value of field order_kbn
+     *
+     * @param string $order_kbn
+     * @return $this
+     */
+    public function setOrderKbn($order_kbn)
+    {
+        $this->order_kbn = $order_kbn;
+
+        return $this;
+    }
+
+    /**
+     * Method to set the value of field return_plan_qty
+     *
+     * @param integer $return_plan_qty
+     * @return $this
+     */
+    public function setreturnPlanQty($return_plan_qty)
+    {
+        $this->return_plan_qty = $return_plan_qty;
+
+        return $this;
+    }
+
+    /**
+     * Returns the value of field order_no
+     *
+     * @return string
+     */
+    public function getOrderNo()
+    {
+        return $this->order_no;
+    }
+
+    /**
+     * Returns the value of field return_status
+     *
+     * @return string
+     */
     public function getreturnStatus()
     {
         return $this->return_status;
@@ -363,16 +600,6 @@ class TReturnedPlanInfo extends \Phalcon\Mvc\Model
     }
 
     /**
-     * Returns table name mapped in the model.
-     *
-     * @return string
-     */
-    public function getSource()
-    {
-        return 't_returned_plan_info';
-    }
-
-    /**
      * Allows to query a set of records that match the specified conditions
      *
      * @param mixed $parameters
@@ -392,6 +619,16 @@ class TReturnedPlanInfo extends \Phalcon\Mvc\Model
     public static function findFirst($parameters = null)
     {
         return parent::findFirst($parameters);
+    }
+
+    /**
+     * Returns table name mapped in the model.
+     *
+     * @return string
+     */
+    public function getSource()
+    {
+        return 't_returned_plan_info';
     }
 
 }

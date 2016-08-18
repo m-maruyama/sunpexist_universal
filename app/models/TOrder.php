@@ -13,6 +13,12 @@ class TOrder extends \Phalcon\Mvc\Model
      *
      * @var string
      */
+    protected $corporate_id;
+
+    /**
+     *
+     * @var string
+     */
     protected $order_req_no;
 
     /**
@@ -31,7 +37,7 @@ class TOrder extends \Phalcon\Mvc\Model
      *
      * @var string
      */
-    protected $order_kbn;
+    protected $order_sts_kbn;
 
     /**
      *
@@ -157,12 +163,6 @@ class TOrder extends \Phalcon\Mvc\Model
      *
      * @var string
      */
-    protected $order_sts_kbn;
-
-    /**
-     *
-     * @var string
-     */
     protected $snd_kbn;
 
     /**
@@ -217,6 +217,18 @@ class TOrder extends \Phalcon\Mvc\Model
      *
      * @var string
      */
+    protected $emply_order_req_no;
+
+    /**
+     *
+     * @var string
+     */
+    protected $order_reason_kbn;
+
+    /**
+     *
+     * @var string
+     */
     protected $m_item_comb_hkey;
 
     /**
@@ -252,6 +264,19 @@ class TOrder extends \Phalcon\Mvc\Model
     public function setTOrderCombHkey($t_order_comb_hkey)
     {
         $this->t_order_comb_hkey = $t_order_comb_hkey;
+
+        return $this;
+    }
+
+    /**
+     * Method to set the value of field corporate_id
+     *
+     * @param string $corporate_id
+     * @return $this
+     */
+    public function setCorporateId($corporate_id)
+    {
+        $this->corporate_id = $corporate_id;
 
         return $this;
     }
@@ -296,14 +321,14 @@ class TOrder extends \Phalcon\Mvc\Model
     }
 
     /**
-     * Method to set the value of field order_kbn
+     * Method to set the value of field order_sts_kbn
      *
-     * @param string $order_kbn
+     * @param string $order_sts_kbn
      * @return $this
      */
-    public function setOrderKbn($order_kbn)
+    public function setOrderStsKbn($order_sts_kbn)
     {
-        $this->order_kbn = $order_kbn;
+        $this->order_sts_kbn = $order_sts_kbn;
 
         return $this;
     }
@@ -569,19 +594,6 @@ class TOrder extends \Phalcon\Mvc\Model
     }
 
     /**
-     * Method to set the value of field order_sts_kbn
-     *
-     * @param string $order_sts_kbn
-     * @return $this
-     */
-    public function setOrderStsKbn($order_sts_kbn)
-    {
-        $this->order_sts_kbn = $order_sts_kbn;
-
-        return $this;
-    }
-
-    /**
      * Method to set the value of field snd_kbn
      *
      * @param string $snd_kbn
@@ -699,6 +711,32 @@ class TOrder extends \Phalcon\Mvc\Model
     }
 
     /**
+     * Method to set the value of field emply_order_req_no
+     *
+     * @param string $emply_order_req_no
+     * @return $this
+     */
+    public function setEmplyOrderReqNo($emply_order_req_no)
+    {
+        $this->emply_order_req_no = $emply_order_req_no;
+
+        return $this;
+    }
+
+    /**
+     * Method to set the value of field order_reason_kbn
+     *
+     * @param string $order_reason_kbn
+     * @return $this
+     */
+    public function setOrderReasonKbn($order_reason_kbn)
+    {
+        $this->order_reason_kbn = $order_reason_kbn;
+
+        return $this;
+    }
+
+    /**
      * Method to set the value of field m_item_comb_hkey
      *
      * @param string $m_item_comb_hkey
@@ -774,6 +812,16 @@ class TOrder extends \Phalcon\Mvc\Model
     }
 
     /**
+     * Returns the value of field corporate_id
+     *
+     * @return string
+     */
+    public function getCorporateId()
+    {
+        return $this->corporate_id;
+    }
+
+    /**
      * Returns the value of field order_req_no
      *
      * @return string
@@ -804,13 +852,13 @@ class TOrder extends \Phalcon\Mvc\Model
     }
 
     /**
-     * Returns the value of field order_kbn
+     * Returns the value of field order_sts_kbn
      *
      * @return string
      */
-    public function getOrderKbn()
+    public function getOrderStsKbn()
     {
-        return $this->order_kbn;
+        return $this->order_sts_kbn;
     }
 
     /**
@@ -1014,16 +1062,6 @@ class TOrder extends \Phalcon\Mvc\Model
     }
 
     /**
-     * Returns the value of field order_sts_kbn
-     *
-     * @return string
-     */
-    public function getOrderStsKbn()
-    {
-        return $this->order_sts_kbn;
-    }
-
-    /**
      * Returns the value of field snd_kbn
      *
      * @return string
@@ -1114,6 +1152,26 @@ class TOrder extends \Phalcon\Mvc\Model
     }
 
     /**
+     * Returns the value of field emply_order_req_no
+     *
+     * @return string
+     */
+    public function getEmplyOrderReqNo()
+    {
+        return $this->emply_order_req_no;
+    }
+
+    /**
+     * Returns the value of field order_reason_kbn
+     *
+     * @return string
+     */
+    public function getOrderReasonKbn()
+    {
+        return $this->order_reason_kbn;
+    }
+
+    /**
      * Returns the value of field m_item_comb_hkey
      *
      * @return string
@@ -1162,6 +1220,30 @@ class TOrder extends \Phalcon\Mvc\Model
     {
         return $this->m_wearer_item_comb_hkey;
     }
+
+    /**
+     * Method to set the value of field order_kbn
+     *
+     * @param string $order_kbn
+     * @return $this
+     */
+    public function setOrderKbn($order_kbn)
+    {
+        $this->order_kbn = $order_kbn;
+
+        return $this;
+    }
+
+    /**
+     * Returns the value of field order_kbn
+     *
+     * @return string
+     */
+    public function getOrderKbn()
+    {
+        return $this->order_kbn;
+    }
+
     /**
      * Initialize method for model.
      */
@@ -1179,16 +1261,6 @@ class TOrder extends \Phalcon\Mvc\Model
         // $this->belongsTo("t_order_comb_hkey", "TDeliveryGoodsState", "t_order_comb_hkey"); array(
             // 'alias' => 'Robot'
         // ));
-    }
-
-    /**
-     * Returns table name mapped in the model.
-     *
-     * @return string
-     */
-    public function getSource()
-    {
-        return 't_order';
     }
 
     /**
@@ -1211,6 +1283,16 @@ class TOrder extends \Phalcon\Mvc\Model
     public static function findFirst($parameters = null)
     {
         return parent::findFirst($parameters);
+    }
+
+    /**
+     * Returns table name mapped in the model.
+     *
+     * @return string
+     */
+    public function getSource()
+    {
+        return 't_order';
     }
 
 }

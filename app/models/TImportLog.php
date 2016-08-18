@@ -14,16 +14,30 @@ class TImportLog extends \Phalcon\Mvc\Model
      * @var integer
      */
     protected $order_req_line_no;
+
     /**
      *
      * @var string
      */
     protected $cster_emply_cd;
+
     /**
      *
      * @var string
      */
-    protected $werer_cd;
+    protected $werer_name;
+
+    /**
+     *
+     * @var string
+     */
+    protected $werer_name_kana;
+
+    /**
+     *
+     * @var string
+     */
+    protected $sex_kbn;
 
     /**
      *
@@ -59,6 +73,12 @@ class TImportLog extends \Phalcon\Mvc\Model
      *
      * @var string
      */
+    protected $order_reason_kbn;
+
+    /**
+     *
+     * @var string
+     */
     protected $item_cd;
 
     /**
@@ -72,6 +92,12 @@ class TImportLog extends \Phalcon\Mvc\Model
      * @var string
      */
     protected $color_cd;
+
+    /**
+     *
+     * @var string
+     */
+    protected $werer_cd;
 
     /**
      *
@@ -90,6 +116,12 @@ class TImportLog extends \Phalcon\Mvc\Model
      * @var integer
      */
     protected $send_flg;
+
+    /**
+     *
+     * @var string
+     */
+    protected $emply_order_req_no;
 
     /**
      *
@@ -165,15 +197,42 @@ class TImportLog extends \Phalcon\Mvc\Model
 
         return $this;
     }
+
     /**
-     * Method to set the value of field werer_cd
+     * Method to set the value of field werer_name
      *
-     * @param string $werer_cd
+     * @param string $werer_name
      * @return $this
      */
-    public function setWererCd($werer_cd)
+    public function setWererName($werer_name)
     {
-        $this->werer_cd = $werer_cd;
+        $this->werer_name = $werer_name;
+
+        return $this;
+    }
+
+    /**
+     * Method to set the value of field werer_name_kana
+     *
+     * @param string $werer_name_kana
+     * @return $this
+     */
+    public function setWererNameKana($werer_name_kana)
+    {
+        $this->werer_name_kana = $werer_name_kana;
+
+        return $this;
+    }
+
+    /**
+     * Method to set the value of field sex_kbn
+     *
+     * @param string $sex_kbn
+     * @return $this
+     */
+    public function setSexKbn($sex_kbn)
+    {
+        $this->sex_kbn = $sex_kbn;
 
         return $this;
     }
@@ -244,6 +303,19 @@ class TImportLog extends \Phalcon\Mvc\Model
     }
 
     /**
+     * Method to set the value of field order_reason_kbn
+     *
+     * @param string $order_reason_kbn
+     * @return $this
+     */
+    public function setOrderReasonKbn($order_reason_kbn)
+    {
+        $this->order_reason_kbn = $order_reason_kbn;
+
+        return $this;
+    }
+
+    /**
      * Method to set the value of field item_cd
      *
      * @param string $item_cd
@@ -283,6 +355,19 @@ class TImportLog extends \Phalcon\Mvc\Model
     }
 
     /**
+     * Method to set the value of field werer_cd
+     *
+     * @param string $werer_cd
+     * @return $this
+     */
+    public function setWererCd($werer_cd)
+    {
+        $this->werer_cd = $werer_cd;
+
+        return $this;
+    }
+
+    /**
      * Method to set the value of field quantity
      *
      * @param integer $quantity
@@ -317,6 +402,19 @@ class TImportLog extends \Phalcon\Mvc\Model
     public function setSendFlg($send_flg)
     {
         $this->send_flg = $send_flg;
+
+        return $this;
+    }
+
+    /**
+     * Method to set the value of field emply_order_req_no
+     *
+     * @param string $emply_order_req_no
+     * @return $this
+     */
+    public function setEmplyOrderReqNo($emply_order_req_no)
+    {
+        $this->emply_order_req_no = $emply_order_req_no;
 
         return $this;
     }
@@ -428,14 +526,35 @@ class TImportLog extends \Phalcon\Mvc\Model
     {
         return $this->cster_emply_cd;
     }
+
     /**
-     * Returns the value of field werer_cd
+     * Returns the value of field werer_name
      *
      * @return string
      */
-    public function getWererCd()
+    public function getWererName()
     {
-        return $this->werer_cd;
+        return $this->werer_name;
+    }
+
+    /**
+     * Returns the value of field werer_name_kana
+     *
+     * @return string
+     */
+    public function getWererNameKana()
+    {
+        return $this->werer_name_kana;
+    }
+
+    /**
+     * Returns the value of field sex_kbn
+     *
+     * @return string
+     */
+    public function getSexKbn()
+    {
+        return $this->sex_kbn;
     }
 
     /**
@@ -489,6 +608,16 @@ class TImportLog extends \Phalcon\Mvc\Model
     }
 
     /**
+     * Returns the value of field order_reason_kbn
+     *
+     * @return string
+     */
+    public function getOrderReasonKbn()
+    {
+        return $this->order_reason_kbn;
+    }
+
+    /**
      * Returns the value of field item_cd
      *
      * @return string
@@ -519,6 +648,16 @@ class TImportLog extends \Phalcon\Mvc\Model
     }
 
     /**
+     * Returns the value of field werer_cd
+     *
+     * @return string
+     */
+    public function getWererCd()
+    {
+        return $this->werer_cd;
+    }
+
+    /**
      * Returns the value of field quantity
      *
      * @return integer
@@ -546,6 +685,16 @@ class TImportLog extends \Phalcon\Mvc\Model
     public function getSendFlg()
     {
         return $this->send_flg;
+    }
+
+    /**
+     * Returns the value of field emply_order_req_no
+     *
+     * @return string
+     */
+    public function getEmplyOrderReqNo()
+    {
+        return $this->emply_order_req_no;
     }
 
     /**
@@ -617,16 +766,6 @@ class TImportLog extends \Phalcon\Mvc\Model
     }
 
     /**
-     * Returns table name mapped in the model.
-     *
-     * @return string
-     */
-    public function getSource()
-    {
-        return 't_import_log';
-    }
-
-    /**
      * Allows to query a set of records that match the specified conditions
      *
      * @param mixed $parameters
@@ -646,6 +785,16 @@ class TImportLog extends \Phalcon\Mvc\Model
     public static function findFirst($parameters = null)
     {
         return parent::findFirst($parameters);
+    }
+
+    /**
+     * Returns table name mapped in the model.
+     *
+     * @return string
+     */
+    public function getSource()
+    {
+        return 't_import_log';
     }
 
 }

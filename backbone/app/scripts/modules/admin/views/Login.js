@@ -16,6 +16,7 @@ define([
 				}
 			},
 			ui: {
+				"corporate_id": "#corporate_id",
 				"login_id": "#login_id",
 				"password": "#password",
 				"submit": "button",
@@ -25,6 +26,7 @@ define([
 				"click @ui.submit": function(e){
 					e.preventDefault();
 					var that = this;
+					this.model.set('corporate_id', this.ui.corporate_id.val());
 					this.model.set('login_id', this.ui.login_id.val());
 					this.model.set('password', this.ui.password.val());
 					var errors = this.model.validate();
@@ -34,6 +36,7 @@ define([
 					}
 					var cond = {
 						"scr": 'ログイン',
+						"corporate_id": this.ui.corporate_id.val(),
 						"login_id": this.ui.login_id.val(),
 						"password": this.ui.password.val()
 					};
@@ -43,7 +46,7 @@ define([
 							if(model.get('status') === 0){
 								that.triggerMethod('success');
 							} else if(model.get('status') === 1){
-								that.triggerMethod('showAlerts', ['ログイン名かパスワードが正しくありません。']);
+								that.triggerMethod('showAlerts', ['企業名、ログイン名、パスワードのいづれかが正しくありません。']);
 								that.triggerMethod('failed');
 							} else if(model.get('status') === 2){
 								that.triggerMethod('showAlerts', ['このアカウントはロックされています。サイト管理者にお問い合わせください。']);

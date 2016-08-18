@@ -13,6 +13,12 @@ class MJobType extends \Phalcon\Mvc\Model
      *
      * @var string
      */
+    protected $corporate_id;
+
+    /**
+     *
+     * @var string
+     */
     protected $rntl_cont_no;
 
     /**
@@ -26,6 +32,12 @@ class MJobType extends \Phalcon\Mvc\Model
      * @var string
      */
     protected $job_type_name;
+
+    /**
+     *
+     * @var string
+     */
+    protected $order_control_unit;
 
     /**
      *
@@ -71,6 +83,19 @@ class MJobType extends \Phalcon\Mvc\Model
     }
 
     /**
+     * Method to set the value of field corporate_id
+     *
+     * @param string $corporate_id
+     * @return $this
+     */
+    public function setCorporateId($corporate_id)
+    {
+        $this->corporate_id = $corporate_id;
+
+        return $this;
+    }
+
+    /**
      * Method to set the value of field rntl_cont_no
      *
      * @param string $rntl_cont_no
@@ -105,6 +130,19 @@ class MJobType extends \Phalcon\Mvc\Model
     public function setJobTypeName($job_type_name)
     {
         $this->job_type_name = $job_type_name;
+
+        return $this;
+    }
+
+    /**
+     * Method to set the value of field order_control_unit
+     *
+     * @param string $order_control_unit
+     * @return $this
+     */
+    public function setOrderControlUnit($order_control_unit)
+    {
+        $this->order_control_unit = $order_control_unit;
 
         return $this;
     }
@@ -185,6 +223,16 @@ class MJobType extends \Phalcon\Mvc\Model
     }
 
     /**
+     * Returns the value of field corporate_id
+     *
+     * @return string
+     */
+    public function getCorporateId()
+    {
+        return $this->corporate_id;
+    }
+
+    /**
      * Returns the value of field rntl_cont_no
      *
      * @return string
@@ -212,6 +260,16 @@ class MJobType extends \Phalcon\Mvc\Model
     public function getJobTypeName()
     {
         return $this->job_type_name;
+    }
+
+    /**
+     * Returns the value of field order_control_unit
+     *
+     * @return string
+     */
+    public function getOrderControlUnit()
+    {
+        return $this->order_control_unit;
     }
 
     /**
@@ -276,16 +334,6 @@ class MJobType extends \Phalcon\Mvc\Model
     }
 
     /**
-     * Returns table name mapped in the model.
-     *
-     * @return string
-     */
-    public function getSource()
-    {
-        return 'm_job_type';
-    }
-
-    /**
      * Allows to query a set of records that match the specified conditions
      *
      * @param mixed $parameters
@@ -305,6 +353,16 @@ class MJobType extends \Phalcon\Mvc\Model
     public static function findFirst($parameters = null)
     {
         return parent::findFirst($parameters);
+    }
+
+    /**
+     * Returns table name mapped in the model.
+     *
+     * @return string
+     */
+    public function getSource()
+    {
+        return 'm_job_type';
     }
 
 }

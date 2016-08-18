@@ -13,6 +13,12 @@ class MInputItem extends \Phalcon\Mvc\Model
      *
      * @var string
      */
+    protected $corporate_id;
+
+    /**
+     *
+     * @var string
+     */
     protected $rntl_cont_no;
 
     /**
@@ -89,6 +95,12 @@ class MInputItem extends \Phalcon\Mvc\Model
 
     /**
      *
+     * @var integer
+     */
+    protected $size_add_flg;
+
+    /**
+     *
      * @var string
      */
     protected $rgst_date;
@@ -132,6 +144,19 @@ class MInputItem extends \Phalcon\Mvc\Model
     public function setMInputItemCombHkey($m_input_item_comb_hkey)
     {
         $this->m_input_item_comb_hkey = $m_input_item_comb_hkey;
+
+        return $this;
+    }
+
+    /**
+     * Method to set the value of field corporate_id
+     *
+     * @param string $corporate_id
+     * @return $this
+     */
+    public function setCorporateId($corporate_id)
+    {
+        $this->corporate_id = $corporate_id;
 
         return $this;
     }
@@ -306,6 +331,19 @@ class MInputItem extends \Phalcon\Mvc\Model
     }
 
     /**
+     * Method to set the value of field size_add_flg
+     *
+     * @param integer $size_add_flg
+     * @return $this
+     */
+    public function setSizeAddFlg($size_add_flg)
+    {
+        $this->size_add_flg = $size_add_flg;
+
+        return $this;
+    }
+
+    /**
      * Method to set the value of field rgst_date
      *
      * @param string $rgst_date
@@ -391,6 +429,16 @@ class MInputItem extends \Phalcon\Mvc\Model
     public function getMInputItemCombHkey()
     {
         return $this->m_input_item_comb_hkey;
+    }
+
+    /**
+     * Returns the value of field corporate_id
+     *
+     * @return string
+     */
+    public function getCorporateId()
+    {
+        return $this->corporate_id;
     }
 
     /**
@@ -524,6 +572,16 @@ class MInputItem extends \Phalcon\Mvc\Model
     }
 
     /**
+     * Returns the value of field size_add_flg
+     *
+     * @return integer
+     */
+    public function getSizeAddFlg()
+    {
+        return $this->size_add_flg;
+    }
+
+    /**
      * Returns the value of field rgst_date
      *
      * @return string
@@ -592,16 +650,6 @@ class MInputItem extends \Phalcon\Mvc\Model
     }
 
     /**
-     * Returns table name mapped in the model.
-     *
-     * @return string
-     */
-    public function getSource()
-    {
-        return 'm_input_item';
-    }
-
-    /**
      * Allows to query a set of records that match the specified conditions
      *
      * @param mixed $parameters
@@ -621,6 +669,16 @@ class MInputItem extends \Phalcon\Mvc\Model
     public static function findFirst($parameters = null)
     {
         return parent::findFirst($parameters);
+    }
+
+    /**
+     * Returns table name mapped in the model.
+     *
+     * @return string
+     */
+    public function getSource()
+    {
+        return 'm_input_item';
     }
 
 }

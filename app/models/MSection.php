@@ -13,6 +13,12 @@ class MSection extends \Phalcon\Mvc\Model
      *
      * @var string
      */
+    protected $corporate_id;
+
+    /**
+     *
+     * @var string
+     */
     protected $rntl_cont_no;
 
     /**
@@ -78,6 +84,19 @@ class MSection extends \Phalcon\Mvc\Model
     public function setMSectionCombHkey($m_section_comb_hkey)
     {
         $this->m_section_comb_hkey = $m_section_comb_hkey;
+
+        return $this;
+    }
+
+    /**
+     * Method to set the value of field corporate_id
+     *
+     * @param string $corporate_id
+     * @return $this
+     */
+    public function setCorporateId($corporate_id)
+    {
+        $this->corporate_id = $corporate_id;
 
         return $this;
     }
@@ -223,6 +242,16 @@ class MSection extends \Phalcon\Mvc\Model
     }
 
     /**
+     * Returns the value of field corporate_id
+     *
+     * @return string
+     */
+    public function getCorporateId()
+    {
+        return $this->corporate_id;
+    }
+
+    /**
      * Returns the value of field rntl_cont_no
      *
      * @return string
@@ -336,16 +365,6 @@ class MSection extends \Phalcon\Mvc\Model
     }
 
     /**
-     * Returns table name mapped in the model.
-     *
-     * @return string
-     */
-    public function getSource()
-    {
-        return 'm_section';
-    }
-
-    /**
      * Allows to query a set of records that match the specified conditions
      *
      * @param mixed $parameters
@@ -365,6 +384,16 @@ class MSection extends \Phalcon\Mvc\Model
     public static function findFirst($parameters = null)
     {
         return parent::findFirst($parameters);
+    }
+
+    /**
+     * Returns table name mapped in the model.
+     *
+     * @return string
+     */
+    public function getSource()
+    {
+        return 'm_section';
     }
 
 }
