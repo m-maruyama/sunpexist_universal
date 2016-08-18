@@ -24,7 +24,7 @@ $app->post('/login', function ()use($app) {
     $account = MAccount::query()
         ->where("MAccount.user_id = '".$params['login_id']."' AND MAccount.corporate_id = '".$params['corporate_id']."'")
         ->columns(array('MAccount.*','MContractResource.*'))
-        ->join('MContractResource','MContractResource.account_no = MAccount.accnt_no')
+        ->join('MContractResource','MContractResource.accnt_no = MAccount.accnt_no')
         ->execute();
 
     if($account->count() === 0){
@@ -79,6 +79,7 @@ $app->post('/login', function ()use($app) {
                 //認証情報をセッションに格納
                 ChromePhp::log($account[0]->mContractResource);
                 $app->session->set("auth", array(
+                    'accnt_no' => $account[0]->mAccount->accnt_no,
                     'corporate_id' => $account[0]->mAccount->corporate_id,
                     'user_id' => $account[0]->mAccount->user_id,
                     'user_name' => $account[0]->mAccount->user_name,
