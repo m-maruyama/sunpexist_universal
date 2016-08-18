@@ -46,7 +46,7 @@ define([
 							if(model.get('status') === 0){
 								that.triggerMethod('success');
 							} else if(model.get('status') === 1){
-								that.triggerMethod('showAlerts', ['企業名、ログイン名、パスワードのいづれかが正しくありません。']);
+								that.triggerMethod('showAlerts', ['企業名、ログイン名、パスワードのいずれかが正しくありません。']);
 								that.triggerMethod('failed');
 							} else if(model.get('status') === 2){
 								that.triggerMethod('showAlerts', ['このアカウントはロックされています。サイト管理者にお問い合わせください。']);
