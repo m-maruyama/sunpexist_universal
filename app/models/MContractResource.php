@@ -31,7 +31,7 @@ class MContractResource extends \Phalcon\Mvc\Model
      *
      * @var integer
      */
-    protected $account_no;
+    protected $accnt_no;
 
     /**
      *
@@ -133,9 +133,9 @@ class MContractResource extends \Phalcon\Mvc\Model
      * @param integer $account_no
      * @return $this
      */
-    public function setAccountNo($account_no)
+    public function setAccountNo($accnt_no)
     {
-        $this->account_no = $account_no;
+        $this->accnt_no = $accnt_no;
 
         return $this;
     }
@@ -278,7 +278,7 @@ class MContractResource extends \Phalcon\Mvc\Model
      */
     public function getAccountNo()
     {
-        return $this->account_no;
+        return $this->accnt_no;
     }
 
     /**
@@ -357,7 +357,7 @@ class MContractResource extends \Phalcon\Mvc\Model
     public function initialize()
     {
         $this->setSchema("public");
-        $this->hasOne('account_no', 'MAccount', 'account_no');
+        $this->hasOne('accnt_no', 'MAccount', 'accnt_no');
     }
 
     /**
