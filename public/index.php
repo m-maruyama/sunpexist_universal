@@ -30,11 +30,12 @@ try {
      * Assign service locator to the application
      */
     $app->setDi($di);
- 
+
     /**
      * Incude Application
      */
     include __DIR__ . '/../app/app.php';
+    include __DIR__ . '/../app/history.php';
     include __DIR__ . '/../app/login.php';
     include __DIR__ . '/../app/ChromePhp.php';
 
@@ -42,15 +43,15 @@ try {
      * Handle the request
      */
     $app->handle();
-    
+
     //確認用
     // /**
      // * Handle the request
      // */
     // $app = new \Phalcon\Mvc\Application($di);
     // echo $app->handle()->getContent();
-	
-	
+
+
 } catch (\Exception $e) {
     echo $e->getMessage();
 }
