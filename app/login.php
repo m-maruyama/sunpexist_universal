@@ -9,18 +9,7 @@ $app->post('/login', function ()use($app) {
     $params = json_decode(file_get_contents("php://input"), true);
     $json_list = array();
     $json_list['status'] = 0;
-    //企業IDチェック
-    $account_c = MAccount::find(array(
-        "conditions" => "corporate_id = ?1",
-        "bind"	=> array(1 => $params['corporate_id'])
-    ));
-    if($account_c->count() === 0){
-        //ログインIDが間違っている場合（アカウントマスタにログインIDが存在しない）
-        // エラーメッセージ：ログイン名かパスワードが正しくありません。
-        $json_list['status'] = 1;
-        echo json_encode($json_list);
-        return true;
-    }
+    //アカウントチェック
     $account = MAccount::query()
         ->where("MAccount.user_id = '".$params['login_id']."' AND MAccount.corporate_id = '".$params['corporate_id']."'")
         ->columns(array('MAccount.*','MContractResource.*'))
@@ -28,15 +17,32 @@ $app->post('/login', function ()use($app) {
         ->execute();
 
     if($account->count() === 0){
-        //ログインIDが間違っている場合（アカウントマスタにログインIDが存在しない）
-        // エラーメッセージ：ログイン名かパスワードが正しくありません。
+        //ログインIDが間違っている場合
+        // エラーメッセージ：企業名、ログイン名、パスワードのいずれかが正しくありません。
         $json_list['status'] = 1;
         echo json_encode($json_list);
         return true;
     }
 
+    //アカウントマスタに企業ID、ログインID、仮パスワードが一致するデータが存在する場合（パスワード未発行時）
+    $account = MAccount::query()
+        ->where("MAccount.user_id = '".$params['login_id']."' AND MAccount.corporate_id = '".$params['corporate_id'].
+            "' AND MAccount.tentative_pass_word = ".$params['password'])
+        ->columns(array('MAccount.*','MContractResource.*'))
+        ->join('MContractResource','MContractResource.accnt_no = MAccount.accnt_no')
+        ->execute();
+
+    if($account->count() > 0){
+        //仮パスワードが発行されている場合、パスワード
+        $json_list['status'] = 3;
+        $app->session->set("corporate_id",$account[0]->mAccount->corporate_id);
+        $app->session->set("user_id",$account[0]->mAccount->user_id);
+        echo json_encode($json_list);
+        return true;
+    }
+
     if (!$app->security->checkHash($params['password'], $account[0]->mAccount->pass_word)) {
-        // ログインIDがあっているが、PWが間違っている場合（アカウントマスタにログインIDが存在する）
+        // PWが間違っている場合
         // アカウントマスタのログインエラー回数をチェックする。
         // ログインエラー回数＋１＜５の場合
         if($account[0]->mAccount->login_err_count + 1 < 5 ){
@@ -57,7 +63,7 @@ $app->post('/login', function ()use($app) {
         }
         return true;
     } else {
-        //アカウントマスタにログインID、パスワードが一致するデータが存在する場合
+        //アカウントマスタに企業IDログインID、パスワードが一致するデータが存在する場合
         if($account[0]->mAccount->login_err_count + 1 >= 5 ){
             // 当該ユーザーのアカウントマスタをログインエラー回数を＋１した値で更新し、画面に下記エラーメッセージを表示して処理を終了する。
             $account[0]->mAccount->login_err_count = $account[0]->mAccount->login_err_count + 1;
@@ -127,6 +133,7 @@ $app->post('/login', function ()use($app) {
                 // 現在日付が、アカウント管理テーブル．パスワード最終変更時間＋９０日以上の場合
                 // パスワードの有効期限が切れている為、新しいパスワードを設定するパスワード変更画面を表示する。
                 $json_list['status'] = 3;
+                $app->session->set("corporate_id",$account[0]->mAccount->corporate_id);
                 $app->session->set("user_id",$account[0]->mAccount->user_id);
                 echo json_encode($json_list);
             }

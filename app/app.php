@@ -54,30 +54,7 @@ $app->before(function()use($app){
 //
 // });
 /**
- * トップページ
- */
-$app->post('/home', function ()use($app){
-ChromePhp::log($app->session->get("auth")['rntl_cont_no']);
-	$now = date( "Y/m/d H:i:s", time() );
-	$results = TInfo::find(array(
-	"conditions" => "open_date < ?1 AND close_date > ?1",
-	"bind"	=> array(1 => $now),
-	'order'	  => "display_order asc"
-	));
-	// $results = TInfo::find();
-	$list = array();
-	$all_list = array();
-	$json_list = array();
-	foreach ($results as $result) {
-		// $list['open_date'] = date('Y/m/d H:i',strtotime($result->open_date));
-		// $list['message'] = '・'.nl2br(htmlspecialchars( $result->message, ENT_QUOTES, 'UTF-8'));
-		$list['message'] = '・'.$result->message;
-		array_push($all_list,$list);
-	}
-	$json_list['info_list'] = $all_list;
-	json_encode($json_list);
-	echo json_encode($json_list);
-});
+
 /**
  * グローバルメニュー
  */
