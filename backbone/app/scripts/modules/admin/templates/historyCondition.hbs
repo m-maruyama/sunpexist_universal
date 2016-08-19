@@ -33,18 +33,12 @@
 						<input type="text" id="member_no" name="member_no" class="form-control input-sm" maxlength="10" placeholder="" />
 					</div>
 				</div>
-					<div class="form-group">
-						<label class="col-md-2 control-label" for="">拠点</label>
-						<div class="col-md-8">
-							<select class="input-sm" name="">
-								<option selected="selected">全て</option>
-								<option>○○金町南口店</option>
-								<option>○○東村山店</option>
-								<option>○○砂町銀座店</option>
-							</select>
-							<a href="" type="button" class="btn btn-primary btn-sm" title="絞り込み" data-toggle="modal" data-target="#modal-example">絞り込み</a>
-						</div>
-					</div>
+
+				<!-- 拠点 -->
+				<div class="form-group">
+					<div class="section"></div>
+				</div>
+
 				<!--div class="form-group">
 					<label class="col-md-2 control-label" for="office">拠点</label>
 					<div class="col-md-6">
@@ -57,7 +51,15 @@
 
 				<!-- 貸与パターン、商品、色、サイズ、リセットボタン -->
 				<div class="form-group row">
-					<div class="job_type"></div>
+					<label class="col-md-2 control-label" for="">貸与パターン</label>
+					<div class="col-md-10">
+						<div class="job_type"></div>
+						<div class="input_item"></div>
+						<div class="item_color"></div>
+						<b>　サイズ</b>
+						<input type="text" id="item_size" name="item_size" class="input-sm" maxlength="5" placeholder="" >
+						<a href="" type="button" class="btn btn-primary btn-sm" title="リセット">リセット</a>
+					</div>
 				</div>
 
 				<div class="form-group">

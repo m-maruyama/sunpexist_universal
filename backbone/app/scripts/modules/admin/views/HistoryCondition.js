@@ -17,8 +17,11 @@ define([
 				}
 			},
 			regions: {
+				"agreement_no": ".agreement_no",
+				"section": ".section",
 				"job_type": ".job_type",
-				"agreement_no": ".agreement_no"
+				"input_item": ".input_item",
+				"item_color": ".item_color",
 			},
 			ui: {
 				'no': '#no',
@@ -26,7 +29,10 @@ define([
 				'office': '#office',
 				'office_cd': '#office_cd',
 				'agreement_no': '#agreement_no',
+				'section': '#section',
 				'job_type': '#job_type',
+				"input_item": "#input_item",
+				"item_color": "#item_color",
 				'order_day_from': '#order_day_from',
 				'order_day_to': '#order_day_to',
 				'status0': '#status0',
@@ -48,7 +54,10 @@ define([
 				'#office': 'office',
 				'#office_cd': 'office_cd',
 				'#agreement_no': 'agreement_no',
+				'#section': 'section',
 				'#job_type': 'job_type',
+				"#input_item": "input_item",
+				"#item_color": "item_color",
 				'#order_day_from': 'order_day_from',
 				'#order_day_to': 'order_day_to',
 				'#status0': 'status0',
@@ -181,6 +190,7 @@ define([
 				this.model.set('office', this.ui.office.val());
 				this.model.set('office_cd', this.ui.office_cd.val());
 				this.model.set('agreement_no', this.ui.agreement_no.val());
+				this.model.set('section', this.ui.section.val());
 				this.model.set('job_type', this.ui.job_type.val());
 				this.model.set('order_day_from', this.ui.order_day_from.val());
 				this.model.set('order_day_to', this.ui.order_day_to.val());
