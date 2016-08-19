@@ -7,27 +7,79 @@
 			</div> -->
 			<!-- start フォーム -->
 			<form class="form-horizontal">
+
+				<!-- 契約No -->
 				<div class="form-group">
-					<label class="col-md-2 control-label" for="no">よろず発注No</label>
-					<div class="col-md-2">
-						<input type="text" id="no" name="no" class="form-control input-sm" maxlength="20" placeholder="" />					</div>
+					<div class="agreement_no"></div>
+				</div>
+
+				<div class="form-group">
+					<label class="col-md-2 control-label" for="no">発注No</label>
+					<div class="col-md-3">
+						<input type="text" id="no" name="no" class="form-control input-sm" maxlength="20" placeholder="" />
+					</div>
+					<label class="col-md-2 control-label" for="no">お客様発注No</label>
+					<div class="col-md-3">
+						<input type="text" id="no" name="no" class="form-control input-sm" maxlength="20" placeholder="" />
+					</div>
 				</div>
 				<div class="form-group">
 					<label class="col-md-2 control-label" for="member_no">社員番号</label>
-					<div class="col-md-2">
-						<input type="text" id="member_no" name="member_no" class="form-control input-sm" maxlength="10" placeholder="" />					</div>
+					<div class="col-md-3">
+						<input type="text" id="member_no" name="member_no" class="form-control input-sm" maxlength="10" placeholder="" />
+					</div>
+					<label class="col-md-2 control-label" for="member_no">着用者名</label>
+					<div class="col-md-3">
+						<input type="text" id="member_no" name="member_no" class="form-control input-sm" maxlength="10" placeholder="" />
+					</div>
 				</div>
-				<div class="form-group">
+					<div class="form-group">
+						<label class="col-md-2 control-label" for="">拠点</label>
+						<div class="col-md-8">
+							<select class="input-sm" name="">
+								<option selected="selected">全て</option>
+								<option>○○金町南口店</option>
+								<option>○○東村山店</option>
+								<option>○○砂町銀座店</option>
+							</select>
+							<a href="" type="button" class="btn btn-primary btn-sm" title="絞り込み" data-toggle="modal" data-target="#modal-example">絞り込み</a>
+						</div>
+					</div>
+				<!--div class="form-group">
 					<label class="col-md-2 control-label" for="office">拠点</label>
 					<div class="col-md-6">
-						<input type="text" id="office" name="office" class="form-control input-sm typeahead" placeholder="文字を入力すると候補が表示されます" />					</div>
+						<input type="text" id="office" name="office" class="form-control input-sm typeahead" placeholder="文字を入力すると候補が表示されます" />
+					</div>
+					<div class="col-md-2">
+						<a type="button" data-page="1" class="btn btn-primary btn-sm btn-block search" title="絞り込み検索" id="button1">絞り込み検索</a>
+					</div>
+				</div-->
+
+				<!-- 貸与パターン、商品、色、サイズ、リセットボタン -->
+				<div class="form-group row">
+					<div class="job_type"></div>
 				</div>
-				
-				<!-- 貸与パターン -->
-				<div class="job_type"></div>
-				
+
 				<div class="form-group">
 					<label class="col-md-2 control-label" for="order_day">発注日</label>
+					<div class="col-md-8 form-inline">
+					<div class='input-group date datepicker'>
+						<input type='text' class="form-control  input-sm datepicker" id='order_day_from' name="order_day_from">
+						<div class="input-group-addon">
+							<span class="glyphicon glyphicon-calendar"></span>
+						</div>
+					</div>&nbsp;―
+					<div class='input-group date datepicker'>
+						<input type='text' class="form-control  input-sm datepicker" id='order_day_to' name="order_day_to">
+						<div class="input-group-addon">
+							<span class="glyphicon glyphicon-calendar"></span>
+						</div>
+					</div>&nbsp;
+					</div>&nbsp;
+				</div>
+
+				<div class="form-group">
+					<label class="col-md-2 control-label" for="order_day">出荷日</label>
 					<div class="col-md-8 form-inline">
 					<div class='input-group date datepicker'>
 						<input type='text' class="form-control  input-sm datepicker" id='order_day_from' name="order_day_from">
@@ -48,29 +100,86 @@
 					<div class="col-md-18">
 						<label class="checkbox-inline"><input type="checkbox" id="status0" name="status[]" value="1" class="checkbox-inline" checked="1" />未出荷（一部出荷も含む）</label>
 						<label class="checkbox-inline"><input type="checkbox" id="status1" name="status[]" value="2" class="checkbox-inline" checked="1" />出荷済</label>
-						<label class="checkbox-inline"><input type="checkbox" id="status4" name="status[]" value="9" class="checkbox-inline" />キャンセル（一部キャンセルも含む）</label>
+						<!--label class="checkbox-inline"><input type="checkbox" id="status4" name="status[]" value="9" class="checkbox-inline" />キャンセル（一部キャンセルも含む）</label-->
 					</div>
-					<div class="col-md-2 control-label"></div>
+					<!--div class="col-md-2 control-label"></div>
 					<div class="col-md-18">
 						<label class="checkbox-inline"><input type="checkbox" id="status2" name="status[]" value="3" class="checkbox-inline" checked="1" />未受領（一部受領済も含む）</label>
 						<label class="checkbox-inline"><input type="checkbox" id="status3" name="status[]" value="4" class="checkbox-inline" />受領済</label>
+					</div-->
+				</div>
+				<div class="form-group row">
+					<label class="col-md-2 control-label" for="">発注区分</label>
+					<div class="col-md-2">
+						<label class="checkbox-inline allCheck"><input type="checkbox" id="order_kbn0" name="order_kbn[]" value="1" checked="1">貸与開始</label>
+						<p class="btn btn-default plus" data-toggle="collapse" data-target="#start" aria-expanded="false"></p>
+						<ul id="start" class="sub_checkbox collapse">
+							<li><label class="checkbox-block"><input type="checkbox" checked>入社</label></li>
+							<li><label class="checkbox-block"><input type="checkbox" checked>復職</label></li>
+							<li><label class="checkbox-block"><input type="checkbox" checked>追加貸与</label></li>
+							<li><label class="checkbox-block"><input type="checkbox" checked>非着用部署からの異動</label></li>
+							<li><label class="checkbox-block"><input type="checkbox" checked>なし</label></li>
+						</ul>
+					</div>
+					<div class="col-md-2">
+						<label class="checkbox-inline allCheck"><input type="checkbox" id="order_kbn1" name="order_kbn[]" value="3" checked="1">交換</label>
+						<p class="btn btn-default plus" data-toggle="collapse" data-target="#exchange" aria-expanded="false"></p>
+						<ul id="exchange" class="sub_checkbox collapse">
+							<li><label class="checkbox-block"><input type="checkbox" checked>サイズ交換</label></li>
+							<li><label class="checkbox-block"><input type="checkbox" checked>消耗交換</label></li>
+							<li><label class="checkbox-block"><input type="checkbox" checked>破損</label></li>
+							<li><label class="checkbox-block"><input type="checkbox" checked>紛失</label></li>
+							<li><label class="checkbox-block"><input type="checkbox" checked>不良品</label></li>
+							<li><label class="checkbox-block"><input type="checkbox" checked>着用前</label></li>
+							<li><label class="checkbox-block"><input type="checkbox" checked>着用後</label></li>
+							<li><label class="checkbox-block"><input type="checkbox" checked>なし</label></li>
+						</ul>
+					</div>
+					<div class="col-md-2">
+						<label class="checkbox-inline allCheck"><input type="checkbox" id="order_kbn2" name="order_kbn[]" value="4" class="checkbox-inline" checked="1">職種変更または異動</label>
+						<p class="btn btn-default plus" data-toggle="collapse" data-target="#change" aria-expanded="false"></p>
+						<ul id="change" class="sub_checkbox collapse">
+							<li><label class="checkbox-block"><input type="checkbox" checked>貸与パターン変更</label></li>
+							<li><label class="checkbox-block"><input type="checkbox" checked>拠点変更</label></li>
+							<li><label class="checkbox-block"><input type="checkbox" checked>拠点と貸与パターン変更</label></li>
+						</ul>
+					</div>
+					<div class="col-md-2">
+						<label class="checkbox-inline allCheck"><input type="checkbox" id="order_kbn3" name="order_kbn[]" value="5" class="checkbox-inline" checked="1">貸与終了</label>
+						<p class="btn btn-default plus" data-toggle="collapse" data-target="#end" aria-expanded="false"></p>
+						<ul id="end" class="sub_checkbox collapse">
+							<li><label class="checkbox-block"><input type="checkbox" checked>退社</label></li>
+							<li><label class="checkbox-block"><input type="checkbox" checked>休職</label></li>
+							<li><label class="checkbox-block"><input type="checkbox" checked>不用品返却</label></li>
+							<li><label class="checkbox-block"><input type="checkbox" checked>非着用部門への異動</label></li>
+							<li><label class="checkbox-block"><input type="checkbox" checked>なし</label></li>
+						</ul>
+					</div>
+					<div class="col-md-2">
+						<label class="checkbox-inline"><input type="checkbox" id="order_kbn4" name="order_kbn[]" value="6" class="checkbox-inline" checked="1">その他</label>
 					</div>
 				</div>
-				<div class="form-group">
-					<div class="col-md-2 control-label"><b>よろず発注区分</b></div>
+				<!--div class="form-group">
+					<div class="col-md-2 control-label"><b>発注区分</b></div>
 					<div class="col-md-18">
 						<label class="checkbox-inline"><input type="checkbox" id="order_kbn0" name="order_kbn[]" value="1" class="checkbox-inline" checked="1" />貸与</label>
 						<label class="checkbox-inline"><input type="checkbox" id="order_kbn1" name="order_kbn[]" value="3" class="checkbox-inline" checked="1" />サイズ交換</label>
 						<label class="checkbox-inline"><input type="checkbox" id="order_kbn2" name="order_kbn[]" value="4" class="checkbox-inline" checked="1" />消耗交換</label>
 						<label class="checkbox-inline"><input type="checkbox" id="order_kbn3" name="order_kbn[]" value="5" class="checkbox-inline" checked="1" />異動</label>
 					</div>
+				</div-->
+				<div class="form-group">
+					<label class="col-md-2 control-label" for="office">個体管理番号</label>
+					<div class="col-md-5">
+						<input type="text" class="form-control input-sm" id="" value="">
+					</div>
 				</div>
 				<div class="form-group">
 					<div class="col-md-2 col-md-push-2 " style="margin-left: 500px">
-						<a type="button" data-page="1" class="btn btn-primary btn-sm btn-block search" title="実 行" id="button1">実 行</a>
+						<a type="button" data-page="1" class="btn btn-primary btn-sm btn-block search" title="検索" id="button1">検索</a>
 					</div>
 				</div>
 			</form>
 			<!-- end フォーム -->
-			
+
 			<hr>

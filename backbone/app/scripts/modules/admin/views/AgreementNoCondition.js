@@ -5,21 +5,22 @@ define([
 ], function(App) {
 	'use strict';
 	App.module('Admin.Views', function(Views, App, Backbone, Marionette, $, _){
-		Views.JobTypeCondition = Marionette.ItemView.extend({
-			template: App.Admin.Templates.jobTypeCondition,
+		Views.AgreementNoCondition = Marionette.ItemView.extend({
+			template: App.Admin.Templates.agreementNoCondition,
 			model: new Backbone.Model(),
 			ui: {
-				'job_type': '.job_type'
+				'agreement_no': '.agreement_no'
 			},
 			bindings: {
-				'.job_type': 'job_type',
+				'.agreement_no': 'agreement_no'
 			},
 			onShow: function() {
 				var that = this;
 				var modelForUpdate = this.model;
-					modelForUpdate.url = App.api.CM0010;
+console.log(modelForUpdate);
+					modelForUpdate.url = App.api.CM0060;
 				var cond = {
-					"scr": '貸与パターン'
+					"scr": '契約No'
 				};
 					modelForUpdate.fetchMx({
 						data:cond,

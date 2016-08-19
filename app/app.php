@@ -51,13 +51,13 @@ $app->before(function()use($app){
 	}
 });
 // $app->after(function()use($app){
-// 	
+//
 // });
 /**
  * トップページ
  */
 $app->post('/home', function ()use($app){
-	
+ChromePhp::log($app->session->get("auth")['rntl_cont_no']);
 	$now = date( "Y/m/d H:i:s", time() );
 	$results = TInfo::find(array(
 	"conditions" => "open_date < ?1 AND close_date > ?1",
@@ -98,7 +98,7 @@ $app->post('/import_csv', function()use($app){
 	$error_list = array();
 	try{
 		$file = file($_FILES['file']['tmp_name']);
-		mb_convert_variables("UTF-8", "SJIS-win", $file); 
+		mb_convert_variables("UTF-8", "SJIS-win", $file);
 		$chk_file = $file;
 		unset($chk_file[0]); //チェック時はヘッダーを無視する
 	} catch(Exception $e){
@@ -252,13 +252,13 @@ $app->post('/import_csv', function()use($app){
 				array_push($no_list,strval($line_list[0]));
 				array_push($no_chk_list,strval($line_list[0]).strval($line_list[1]));
 			}
-			
+
 			//よろず発注No DB重複チェック
 			$result = TOrder::find(array('conditions' => 'order_req_no = '."'".$line_list[0]."'"));
 			if(count($result) > 0){
 				  array_push($error_list , $line_cnt.'行目のよろず発注Noは、発注で既に使用されています。');
 			}
-			
+
 			// インポートログテーブル重複チェック
 			// CSVファイル内の「よろず発注No」が、インポートログテーブルの送信フラグ＝1：送信済のレコードで存在しない事。
 			$result = TImportLog::find(array('conditions' => 'order_req_no = '."'".$line_list[0]."'".' AND send_flg = 1'));
@@ -273,7 +273,7 @@ $app->post('/import_csv', function()use($app){
 		if(empty($error_list)){
 			//新規データと既存データをよろず発注Noで並べ替え
 			array_multisort($new_list, array_column($new_list, 0));
-			
+
 			$before_no='';
 			$no_line = 1;
 			$transaction = $app->transactionManager->get();
@@ -330,7 +330,7 @@ $app->post('/import_csv', function()use($app){
  *
  *  関数の詳細:
  *  インポートされたCSVのデータが正常な場合、DBに登録する。
- *  
+ *
  * @param array $line_list １行データ
  * @param integer $cnt 着用者コード新規発行時の連番
  * @param integer $no_line よろず発注行No
@@ -360,7 +360,7 @@ function data_save($line_list,&$cnt,$no_line,$auth,&$order_no_list){
 		$order_no_list[$t_i_log->werer_cd] = $line_list[0];
 	}
 	$t_i_log->order_req_no = $line_list[0]; //よろず発注No
-	$t_i_log->order_req_line_no = $no_line; // よろず発注行No 
+	$t_i_log->order_req_line_no = $no_line; // よろず発注行No
 	$t_i_log->cster_emply_cd = $line_list[1]; //社員番号
 	$t_i_log->rntl_sect_cd = $line_list[2]; //支店コード
 	$t_i_log->rent_pattern_code = $line_list[3]; //貸与パターン
@@ -381,7 +381,7 @@ function data_save($line_list,&$cnt,$no_line,$auth,&$order_no_list){
 	$t_i_log->upd_date = date( "Y/m/d H:i:s.sss", time() ); //更新日時
 	$t_i_log->rgst_user_id = $auth['user_id']; //登録ユーザーID
 	$t_i_log->rgst_date = date( "Y/m/d H:i:s.sss", time() ); //登録日時
-	
+
 	if ($t_i_log->create() == false) {
 		$json_list['errors'] = array('csvファイルの登録に失敗しました。');
 		echo json_encode($json_list);
@@ -394,7 +394,7 @@ function data_save($line_list,&$cnt,$no_line,$auth,&$order_no_list){
  *  関数の詳細:
  *  行数と項目名を渡して、
  *  フォーマットエラー時のメッセージを生成する。
- *  
+ *
  * @param integer $line_cnt 行数
  * @param string $item_name 項目名
  * @return string エラーメッセージ
@@ -408,7 +408,7 @@ function error_msg_format($line_cnt,$item_name){
  *  関数の詳細:
  *  行数と項目名を渡して、
  *  フォーマットエラー時のメッセージを生成する。
- *  
+ *
  * @param integer $line_cnt 行数
  * @param string $item_name 項目名
  * @return string エラーメッセージ
@@ -418,9 +418,9 @@ function error_msg_master($line_cnt,$item_name){
 }
 /**
  * ・フォーマットチェッカー
- * 
+ *
  * インポートされたCSVのデータが正しいフォーマットで作成されているかのチェックを行う
- * 
+ *
  * @param array $error_list エラーメッセージを格納した配列
  * @param array $line_list １行データ
  * @param integer $line_cnt 行数
@@ -503,9 +503,9 @@ function chk_format($error_list,$line_list,$line_cnt){
 }
 /**
  * ・パターンチェッカー
- * 
+ *
  * ステータスパターンに応じてフォーマットのチェックを行う
- * 
+ *
  * @param string $val チェックする値
  * @param integer $pattaern チェックパターン
  * @return boolean チェック結果
@@ -586,7 +586,7 @@ function chk_pattern($val,$pattaern){
 			}
 			break;
 		default:
-			
+
 			break;
 	}
 }
@@ -594,13 +594,13 @@ function chk_pattern($val,$pattaern){
  * 発注状況照会検索
  */
 $app->post('/history/search', function ()use($app){
-	
+
 	$params = json_decode(file_get_contents("php://input"), true);
-	
+
 	$cond = $params['cond'];
 	$page = $params['page'];
 	$query_list = array();
-	
+
 	//よろず発注No
 	if(isset($cond['no'])){
 		array_push($query_list,"TOrder.order_req_no LIKE '%".$cond['no']."%'");
@@ -613,7 +613,7 @@ $app->post('/history/search', function ()use($app){
 	if(isset($cond['office'])){
 		array_push($query_list,"MSection.rntl_sect_name LIKE '%".$cond['office']."%'");
 	}
-	
+
 	//貸与パターン
 	if(isset($cond['job_type'])){
 		array_push($query_list,"MJobType.job_type_cd = '".$cond['job_type']."'");
@@ -652,7 +652,7 @@ $app->post('/history/search', function ()use($app){
 	if($status_list){
 		$status_query = implode(' OR ', $status_list);
 	}
-	
+
 	//よろず発注区分
 	$order_kbn = array();
 	if($cond['order_kbn0']){
@@ -678,7 +678,7 @@ $app->post('/history/search', function ()use($app){
 	//ソートキー
 	if(isset($page['sort_key'])){
 		$sort_key = $page['sort_key'];
-		
+
 		if($sort_key=='job_type_cd'){
 			$sort_key = 'as_job_type_name';
 		}else{
@@ -726,11 +726,11 @@ $app->post('/history/search', function ()use($app){
 		->join('MSection','MSection.m_section_comb_hkey = TOrder.m_section_comb_hkey')
 		->join('MJobType','MJobType.m_job_type_comb_hkey = TOrder.m_job_type_comb_hkey')
 		->groupBy('TOrder.order_req_no');
-		
+
 	//総件数取得用(phalconのバグでgroup by時の検索総件数が取れないため)
 	$sql = $builder->getQuery()->getSql();
 	$cnt = $app->db->fetchColumn('select count(*) from ('.$sql['sql'].') as cnt');
-	
+
 	$builder->orderBy($sort_key.' '.$order);
 	$paginator_model = new PaginatorQueryBuilder(
 		array(
@@ -753,7 +753,7 @@ $app->post('/history/search', function ()use($app){
 			$list['cster_emply_cd'] = $result->as_cster_emply_cd;
 			$list['rntl_sect_name'] = $result->as_rntl_sect_name;
 			$list['job_type_name'] = $result->as_job_type_name;
-			
+
 			if($result->as_order_req_ymd){
 				$list['order_req_ymd'] =  date('Y/m/d',strtotime($result->as_order_req_ymd));
 			}else{
@@ -790,7 +790,7 @@ $app->post('/history/search', function ()use($app){
 			}
 			array_push($all_list,$list);
 		}
-		
+
 	}
 
 	$page_list['records_per_page'] = $page['records_per_page'];
@@ -806,12 +806,12 @@ $app->post('/history/search', function ()use($app){
  * 納品実績照会検索
  */
 $app->post('/delivery/search', function ()use($app){
-	
+
 	$params = json_decode(file_get_contents("php://input"), true);
-	
+
 	$cond = $params['cond'];
 	$page = $params['page'];
-	
+
 	$query_list = array();
 	//出荷日from
 	if(isset($cond['send_day_from'])){
@@ -836,7 +836,7 @@ $app->post('/delivery/search', function ()use($app){
 		array_push($order_kbn,'5');
 	}
 	$order_kbn_str = implode("','",$order_kbn);
-	
+
 	//発注情報テーブルを検索(副問い合わせ風)
 	$order_status = '';
 	$order_sts_kbn = '';
@@ -853,7 +853,7 @@ $app->post('/delivery/search', function ()use($app){
 	if(isset($cond['office'])){
 		array_push($query_list,"MSection.rntl_sect_name LIKE '%".$cond['office']."%'");
 	}
-	
+
 	//貸与パターン
 	if(isset($cond['job_type'])){
 		array_push($query_list,"MJobType.job_type_cd = '".$cond['job_type']."'");
@@ -865,7 +865,7 @@ $app->post('/delivery/search', function ()use($app){
 	//発注日to
 	if(isset($cond['order_day_to'])){
 		array_push($query_list,"TO_DATE(TOrder.order_req_ymd,'YYYYMMDD') <= TO_DATE('".$cond['order_day_to']."','YYYY/MM/DD')");
-	}	
+	}
 	if($order_kbn_str){
 		$order_sts_kbn = "TOrder.order_sts_kbn in ('".$order_kbn_str."')";
 		array_push($query_list,$order_sts_kbn);
@@ -947,7 +947,7 @@ $app->post('/delivery/search', function ()use($app){
 	$json_list = array();
 	$start = ($page['page_number'] - 1) * $page['records_per_page'];
 	$end = $page['page_number'] * $page['records_per_page'];
-	
+
 	foreach($results as $result){
 		if(!isset($result)){
 			break;
@@ -990,13 +990,13 @@ $app->post('/delivery/search', function ()use($app){
 		}
 		array_push($all_list,$list);
 	}
-	
+
 	$page_list['records_per_page'] = $page['records_per_page'];
 	$page_list['page_number'] = $page['page_number'];
 	$page_list['total_records'] = $paginator->total_items;
 	$json_list['page'] = $page_list;
 	$json_list['list'] = $all_list;
-	
+
 	echo json_encode($json_list);
 
 });
@@ -1008,7 +1008,7 @@ $app->post('/delivery/download', function ()use($app){
 	$params = json_decode($_POST['data'], true);
 	$cond = $params['cond'];
 	$page = $params['page'];
-	
+
 	$query_list = array();
 	//出荷日from
 	if(isset($cond['send_day_from'])){
@@ -1033,7 +1033,7 @@ $app->post('/delivery/download', function ()use($app){
 		array_push($order_kbn,'5');
 	}
 	$order_kbn_str = implode("','",$order_kbn);
-	
+
 	//発注情報テーブルを検索(副問い合わせ風)
 	$order_status = '';
 	$order_sts_kbn = '';
@@ -1050,7 +1050,7 @@ $app->post('/delivery/download', function ()use($app){
 	if(isset($cond['office'])){
 		array_push($query_list,"MSection.rntl_sect_name LIKE '%".$cond['office']."%'");
 	}
-	
+
 	//貸与パターン
 	if(isset($cond['job_type'])){
 		array_push($query_list,"MJobType.job_type_cd = '".$cond['job_type']."'");
@@ -1062,7 +1062,7 @@ $app->post('/delivery/download', function ()use($app){
 	//発注日to
 	if(isset($cond['order_day_to'])){
 		array_push($query_list,"TO_DATE(TOrder.order_req_ymd,'YYYYMMDD') <= TO_DATE('".$cond['order_day_to']."','YYYY/MM/DD')");
-	}	
+	}
 	if($order_kbn_str){
 		$order_sts_kbn = "TOrder.order_sts_kbn in ('".$order_kbn_str."')";
 		array_push($query_list,$order_sts_kbn);
@@ -1150,13 +1150,13 @@ $app->post('/delivery/download', function ()use($app){
 		$list['rntl_sect_name'] = $result->mSection->rntl_sect_name;
 		$list['job_type_name'] = $result->mJobType->job_type_name;
 		// $list['order_req_ymd'] = $result->TOrderState->TOrder->order_req_ymd;
-		
+
 		if($result->tOrder->order_req_ymd){
 			$list['order_req_ymd'] =  date('Y/m/d',strtotime($result->tOrder->order_req_ymd));
 		}else{
 			$list['order_req_ymd'] = '-';
 		}
-		
+
 		$list['statusText'] = statusText($result->tOrder->order_status,$result->tDeliveryGoodsState->receipt_status);
 		$list['kubunText'] = kubunText($result->tOrder->order_sts_kbn);
 		//受領ステータス
@@ -1171,7 +1171,7 @@ $app->post('/delivery/download', function ()use($app){
 		}else{
 			$list['ship_ymd'] = '-';
 		}
-		
+
 		$list['rec_order_no'] = $result->tDeliveryGoodsState->rec_order_no;//納品状況情報．受注No.
 		$list['ship_no'] = $result->tDeliveryGoodsState->ship_no;//納品状況情報．配送伝票No.
 		$list['item_name'] = $result->mItem->item_name;//商品マスタ．商品名（漢字）
@@ -1193,13 +1193,13 @@ $app->post('/delivery/download', function ()use($app){
  * 返却状況照会検索
  */
 $app->post('/unreturn/search', function ()use($app){
-	
+
 	$params = json_decode(file_get_contents("php://input"), true);
-	
+
 	$cond = $params['cond'];
 	$page = $params['page'];
 	$query_list = array();
-	
+
 	//よろず発注No
 	if(isset($cond['no'])){
 		array_push($query_list,"TReturnedPlanInfo.order_req_no LIKE '%".$cond['no']."%'");
@@ -1212,7 +1212,7 @@ $app->post('/unreturn/search', function ()use($app){
 	if(isset($cond['office'])){
 		array_push($query_list,"MSection.rntl_sect_name LIKE '%".$cond['office']."%'");
 	}
-	
+
 	//貸与パターン
 	if(isset($cond['job_type'])){
 		array_push($query_list,"TReturnedPlanInfo.rent_pattern_code = '".$cond['job_type']."'");
@@ -1317,7 +1317,7 @@ $app->post('/unreturn/search', function ()use($app){
 		$list['item_cd'] = $result->tReturnedPlanInfo->item_cd;//返却予定情報．商品コード
 		$list['color_cd'] = $result->tReturnedPlanInfo->color_cd;//返却予定情報．色コード
 		$list['size_cd'] = $result->tReturnedPlanInfo->size_cd;//返却予定情報．サイズコード
-		
+
 		$list['status'] = $result->tReturnedPlanInfo->return_status;
 		$list['kubun'] = $result->tReturnedPlanInfo->order_sts_kbn;
 		$list['return_plan_qty'] = $result->tReturnedPlanInfo->return_plan_qty;
@@ -1343,13 +1343,13 @@ $app->post('/unreturn/search', function ()use($app){
  * 返却実績照会検索
  */
 $app->post('/unreturned/search',function ()use($app){
-	
+
 	$params = json_decode(file_get_contents("php://input"), true);
-	
+
 	$cond = $params['cond'];
 	$page = $params['page'];
 	$query_list = array();
-	
+
 	//よろず発注No
 	if(isset($cond['no'])){
 		array_push($query_list,"TReturnedResults.order_req_no LIKE '%".$cond['no']."%'");
@@ -1362,7 +1362,7 @@ $app->post('/unreturned/search',function ()use($app){
 	if(isset($cond['office'])){
 		array_push($query_list,"MSection.rntl_sect_name LIKE '%".$cond['office']."%'");
 	}
-	
+
 	//貸与パターン
 	if(isset($cond['job_type'])){
 		array_push($query_list,"MJobType.job_type_cd = '".$cond['job_type']."'");
@@ -1502,11 +1502,11 @@ $app->post('/unreturned/search',function ()use($app){
  */
 $app->post('/unreturned/download',function ()use($app){
 	$params = json_decode($_POST['data'], true);
-	
+
 	$cond = $params['cond'];
 	$page = $params['page'];
 	$query_list = array();
-	
+
 	//よろず発注No
 	if(isset($cond['no'])){
 		array_push($query_list,"TReturnedResults.order_req_no LIKE '%".$cond['no']."%'");
@@ -1519,7 +1519,7 @@ $app->post('/unreturned/download',function ()use($app){
 	if(isset($cond['office'])){
 		array_push($query_list,"MSection.rntl_sect_name LIKE '%".$cond['office']."%'");
 	}
-	
+
 	//貸与パターン
 	if(isset($cond['job_type'])){
 		array_push($query_list,"MJobType.job_type_cd = '".$cond['job_type']."'");
@@ -1618,7 +1618,7 @@ $app->post('/unreturned/download',function ()use($app){
 		if(!isset($result)){
 			break;
 		}
-		
+
 		$list['order_req_no'] = $result->tReturnedResults->order_req_no;
 		$list['cster_emply_cd'] = $result->tReturnedResults->cster_emply_cd;
 		$list['rntl_sect_name'] = $result->mSection->rntl_sect_name;
@@ -1650,10 +1650,10 @@ $app->post('/unreturned/download',function ()use($app){
 $app->post('/lend/search', function ()use($app) {
 
 	$params = json_decode(file_get_contents("php://input"), true);
-	
+
 	$cond = $params['cond'];
 	$page = $params['page'];
-	
+
 	$query_list = array();
 	//社員番号
 	if(isset($cond['member_no'])){
@@ -1667,7 +1667,7 @@ $app->post('/lend/search', function ()use($app) {
 	if(isset($cond['job_type'])){
 		array_push($query_list,"MJobType.job_type_cd = '".$cond['job_type']."'");
 	}
-	
+
 	//商品コード
 	if(isset($cond['item_cd'])){
 		array_push($query_list,"MWearerItem.item_cd LIKE '%".$cond['item_cd']."%'");
@@ -1683,7 +1683,7 @@ $app->post('/lend/search', function ()use($app) {
 	array_push($query_list,"MWearerItem.input_qty > 0");
 	//sql文字列を' AND 'で結合
 	$query = implode(' AND ', $query_list);
-	
+
 	//ソートキー
 	if(isset($page['sort_key'])){
 		$sort_key = $page['sort_key'];
@@ -1738,7 +1738,7 @@ $app->post('/lend/search', function ()use($app) {
 		$paginator = $paginator_model->getPaginate();
 		$results = $paginator->items;
 	}
-	
+
 		// $results = $builder->getQuery()->execute();
 	$list = array();
 	$all_list = array();
@@ -1781,7 +1781,7 @@ $app->post('/lend/download', function ()use($app) {
 	$params = json_decode($_POST['data'], true);
 	$cond = $params['cond'];
 	$page = $params['page'];
-	
+
 	$query_list = array();
 	//社員番号
 	if(isset($cond['member_no'])){
@@ -1795,7 +1795,7 @@ $app->post('/lend/download', function ()use($app) {
 	if(isset($cond['job_type'])){
 		array_push($query_list,"MJobType.job_type_cd = '".$cond['job_type']."'");
 	}
-	
+
 	//商品コード
 	if(isset($cond['item_cd'])){
 		array_push($query_list,"MWearerItem.item_cd LIKE '%".$cond['item_cd']."%'");
@@ -1811,7 +1811,7 @@ $app->post('/lend/download', function ()use($app) {
 	array_push($query_list,"MWearerItem.input_qty > 0");
 	//sql文字列を' AND 'で結合
 	$query = implode(' AND ', $query_list);
-	
+
 	//ソートキー
 	if(isset($page['sort_key'])){
 		$sort_key = $page['sort_key'];
@@ -1856,7 +1856,7 @@ $app->post('/lend/download', function ()use($app) {
 		->orderBy($sort_key.' '.$order)
 		->getQuery()
 		->execute();
-		
+
 	$all_list = array();
 	$json_list = array();
 	header("Content-Type: application/octet-stream");
@@ -1905,10 +1905,10 @@ $app->post('/lend/download', function ()use($app) {
 $app->post('/stock/search', function ()use($app) {
 
 	$params = json_decode(file_get_contents("php://input"), true);
-	
+
 	$cond = $params['cond'];
 	$page = $params['page'];
-	
+
 	$query_list = array();
 	//貸与パターン
 	if(isset($cond['job_type'])){
@@ -1941,10 +1941,10 @@ $app->post('/stock/search', function ()use($app) {
 		$status_str = implode("','",$status);
 		array_push($query_list,"zk_status_cd in ('".$status_str."')");
 	}
-	
+
 	//sql文字列を' AND 'で結合
 	$query = implode(' AND ', $query_list);
-	
+
 	$sort_key ='';
 	$order ='';
 	//ソートキー
@@ -1962,7 +1962,7 @@ $app->post('/stock/search', function ()use($app) {
 		$sort_key = "TSdmzk.rent_pattern_data, zkprcd, zkclor, zksize_display_order, zksize";
 		$order = 'asc';
 	}
-	
+
 	$builder = $app->modelsManager->createBuilder()
 		->where($query)
 		->from('TSdmzk')
@@ -2009,12 +2009,12 @@ $app->post('/stock/search', function ()use($app) {
  * 在庫照会ダウンロード
  */
 $app->post('/stock/download', function ()use($app) {
-	
+
 	$params = json_decode($_POST['data'], true);
-	
+
 	$cond = $params['cond'];
 	$page = $params['page'];
-	
+
 	$query_list = array();
 	//貸与パターン
 	if(isset($cond['job_type'])){
@@ -2047,10 +2047,10 @@ $app->post('/stock/download', function ()use($app) {
 		$status_str = implode("','",$status);
 		array_push($query_list,"zk_status_cd in ('".$status_str."')");
 	}
-	
+
 	//sql文字列を' AND 'で結合
 	$query = implode(' AND ', $query_list);
-	
+
 	$sort_key ='';
 	$order ='';
 	//ソートキー
@@ -2068,7 +2068,7 @@ $app->post('/stock/download', function ()use($app) {
 		$sort_key = "TSdmzk.rent_pattern_data, zkprcd, zkclor, zksize_display_order, zksize";
 		$order = 'asc';
 	}
-	
+
 	$results = $app->modelsManager->createBuilder()
 		->where($query)
 		->from('TSdmzk')
@@ -2078,7 +2078,7 @@ $app->post('/stock/download', function ()use($app) {
 		->orderBy($sort_key.' '.$order)
 		->getQuery()
 		->execute();
-		
+
 	$all_list = array();
 	$json_list = array();
 	header("Content-Type: application/octet-stream");
@@ -2103,12 +2103,12 @@ $app->post('/stock/download', function ()use($app) {
  * 受領確認検索
  */
 $app->post('/receive/search', function ()use($app) {
-	
+
 	$params = json_decode(file_get_contents("php://input"), true);
-	
+
 	$cond = $params['cond'];
 	$page = $params['page'];
-	
+
 	$query_list = array();
 	//メーカー伝票番号
 	if(isset($cond['ship_no'])){
@@ -2174,7 +2174,7 @@ $app->post('/receive/search', function ()use($app) {
 		array_push($order_kbn,'5');
 	}
 	$order_kbn_str = implode("','",$order_kbn);
-	
+
 	if($order_kbn_str){
 		$order_sts_kbn = "TOrder.order_sts_kbn in ('".$order_kbn_str."')";
 		array_push($query_list,$order_sts_kbn);
@@ -2211,7 +2211,7 @@ $app->post('/receive/search', function ()use($app) {
 		$sort_key = 'TOrder.order_req_no';
 		$order = 'asc';
 	}
-	
+
 	$builder = $app->modelsManager->createBuilder()
 		->where($query)
 		->from('TDeliveryGoodsState')
@@ -2248,7 +2248,7 @@ $app->post('/receive/search', function ()use($app) {
 			//受領済み
 			$list['receipt_chk'] = 'checked';
 			$list['receipt_status'] = $result->tDeliveryGoodsState->receipt_status;
-			
+
 		}
 		$list['disabled'] = '';
 		if($result->tDeliveryGoodsState->receipt_date){
@@ -2265,7 +2265,7 @@ $app->post('/receive/search', function ()use($app) {
 		$list['cster_emply_cd'] = $result->tOrder->cster_emply_cd;
 		$list['rntl_sect_name'] = $result->mSection->rntl_sect_name;
 		$list['job_type_name'] = $result->mJobType->job_type_name;
-		
+
 		if($result->tOrder->order_req_ymd){
 			$list['order_req_ymd'] =  date('Y/m/d',strtotime($result->tOrder->order_req_ymd));
 		}else{
@@ -2296,7 +2296,7 @@ $app->post('/receive/search', function ()use($app) {
 	$page_list['total_records'] = $paginator->total_items;
 	$json_list['page'] = $page_list;
 	$json_list['list'] = $all_list;
-	
+
 	echo json_encode($json_list);
 
 });
@@ -2333,7 +2333,7 @@ $app->post('/receive/update', function ()use($app) {
 	if($on_list){
 		//sql文字列を' AND 'で結合
 		$query = implode(' OR ', $on_list);
-			
+
 		$tDeliveryGoodsStates = TDeliveryGoodsState::find(array(
 		'conditions' => $query
 		));
@@ -2376,7 +2376,7 @@ $app->post('/receive/update', function ()use($app) {
  * アカウント検索
  */
 $app->post('/acount/search', function ()use($app) {
-	
+
 	$json_list = array();
 	$auth = $app->session->get("auth");
 	if($auth['user_type'] == '1'){
@@ -2384,12 +2384,12 @@ $app->post('/acount/search', function ()use($app) {
 		echo json_encode($json_list);
 		return;
 	}
-	
+
 	$params = json_decode(file_get_contents("php://input"), true);
-	
+
 	$cond = $params['cond'];
 	$page = $params['page'];
-	
+
 	$results = MAccount::find(array(
 		'order'	  => "rgst_date desc"
 	));
@@ -2409,16 +2409,16 @@ $app->post('/acount/search', function ()use($app) {
 	$page_list['total_records'] = count($results);
 	$json_list['page'] = $page_list;
 	$json_list['list'] = $all_list;
-	
+
 	echo json_encode($json_list);
 });
 /**
  * アカウントモーダル機能
  */
 $app->post('/acount/modal', function ()use($app) {
-	
+
 	$params = json_decode(file_get_contents("php://input"), true);
-	
+
 	$cond = $params['cond'];
 	$json_list = array();
 	$error_list = array();
@@ -2481,7 +2481,7 @@ $app->post('/acount/modal', function ()use($app) {
 	if(!preg_match("/(?=.{8,})(?=.*\d+.*)(?=.*[a-zA-Z]+.*).*+.*/",$cond['user_id'])){
 		$error_list['user_id_preg'] = 'ログインIDは半角英数字混合、8文字以上で入力してください。';
 	}
-	
+
 	//パスワード
 	if($cond['password']){
 		//パスワード
@@ -2519,7 +2519,7 @@ $app->post('/acount/modal', function ()use($app) {
 			array_push($old_pass_list,$hash_pass);
 		}
 		if(!$error_list){
-			$m_account->pass_word = $hash_pass; 
+			$m_account->pass_word = $hash_pass;
 			$m_account->old_pass_word = json_encode($old_pass_list);
 			$m_account->last_pass_word_upd_date = date( "Y/m/d H:i:s.sss", time() ); //パスワード変更日時
 		}
@@ -2529,9 +2529,9 @@ $app->post('/acount/modal', function ()use($app) {
 		echo json_encode($json_list);
 		return true;
 	}
-	$m_account->user_id = $cond['user_id']; //ユーザ名 
-	$m_account->user_name = $cond['user_name']; //ユーザ名 
-	$m_account->position_name = $cond['position_name']; //所属 
+	$m_account->user_id = $cond['user_id']; //ユーザ名
+	$m_account->user_name = $cond['user_name']; //ユーザ名
+	$m_account->position_name = $cond['position_name']; //所属
 	$m_account->user_type = $cond['user_type']; //管理権限(ユーザ区分)
 	$m_account->upd_user_id = $auth['user_id']; //更新ユーザー
 	$m_account->upd_date = date( "Y/m/d H:i:s.sss", time() ); //更新日時
@@ -2543,17 +2543,17 @@ $app->post('/acount/modal', function ()use($app) {
 	} else {
 		$transaction->commit();
 	}
-	
+
 	echo json_encode($json_list);
-	
+
 });
 /**
  * お知らせモーダル機能
  */
 $app->post('/info/modal', function ()use($app) {
-	
+
 	$params = json_decode(file_get_contents("php://input"), true);
-	
+
 	$cond = $params['cond'];
 	$json_list = array();
 	$error_list = array();
@@ -2617,13 +2617,13 @@ $app->post('/info/modal', function ()use($app) {
 		$transaction->commit();
 	}
 	echo json_encode($json_list);
-	
+
 });
 /**
  * お知らせ検索
  */
 $app->post('/info/search', function ()use($app) {
-	
+
 	$json_list = array();
 	$auth = $app->session->get("auth");
 	if($auth['user_type'] == '1'){
@@ -2632,10 +2632,10 @@ $app->post('/info/search', function ()use($app) {
 		return;
 	}
 	$params = json_decode(file_get_contents("php://input"), true);
-	
+
 	$cond = $params['cond'];
 	$page = $params['page'];
-	
+
 	$results = TInfo::find(array(
 		'order'	  => "index asc"
 	));
@@ -2656,30 +2656,7 @@ $app->post('/info/search', function ()use($app) {
 	$json_list['page'] = $page_list;
 	$json_list['list'] = $all_list;
 	// ChromePhp::log($json_list);
-	
-	echo json_encode($json_list);
-});
-/**
- * 貸与パターン取得
- */
-$app->post('/job_type', function () {
-	$params = json_decode(file_get_contents("php://input"), true);
-	$results = MJobType::find(array(
-		'order'	  => "cast(job_type_cd as integer) asc"
-	));
-	$list = array();
-	$all_list = array();
-	$json_list = array();
-	//初っ端は空データ
-	$list['job_type_cd'] = null;
-	$list['job_type_name'] = null;
-	array_push($all_list,$list);
-	foreach ($results as $result) {
-		$list['job_type_cd'] = $result->job_type_cd;
-		$list['job_type_name'] = $result->job_type_name;
-		array_push($all_list,$list);
-	}
-	$json_list['job_type_list'] = $all_list;
+
 	echo json_encode($json_list);
 });
 /**
@@ -2711,7 +2688,7 @@ $app->post('/job_type_zaiko', function () {
  */
 $app->post('/suggest', function () {
 	$params = json_decode(file_get_contents("php://input"), true);
-	
+
 	//拠点
 	if(isset($params['text'])){
 		$query = "rntl_sect_name LIKE '%".$params['text']."%'";
@@ -2734,16 +2711,16 @@ $app->post('/suggest', function () {
  * 詳細画面
  */
 $app->post('/detail', function ()use($app) {
-	
+
 	$params = json_decode(file_get_contents("php://input"), true);
-	
+
 	$order_list = array();
 	$sort_key ='';
 	$order ='';
 	//ソートキー
 	$sort_key = 'TOrder.order_req_no asc, TOrder.order_req_line_no';
 	$order = 'asc';
-	
+
 	$results = TOrder::query()
 		->where("TOrder.order_req_no = '".$params['no']."'")
 		->columns(array('TDeliveryGoodsState.*','TOrderState.*','TOrder.*','MItem.*','MSection.*','MJobType.*'))
@@ -2768,7 +2745,7 @@ $app->post('/detail', function ()use($app) {
 	$all_list = array();
 	$json_list = array();
 	$receipt_status = array();
-	
+
 	foreach($results as $result){
 		$receipt_status = array();
 		if(!isset($result)){
@@ -2822,7 +2799,7 @@ $app->post('/detail', function ()use($app) {
 		array_push($all_list,$list);
 	}
 	$json_list['list'] = $all_list;
-	
+
 	echo json_encode($json_list);
 });
 /**
@@ -2882,7 +2859,7 @@ $app->post('/password', function ()use($app) {
 		//パスワード更新
 		//パスワード
 		$hash_pass = $app->security->hash($params['password']);
-		$account[0]->pass_word = $hash_pass; 
+		$account[0]->pass_word = $hash_pass;
 		//履歴パスワード
 		if($old_pass_list){
 			//パスワードが変更されたら
@@ -2896,7 +2873,7 @@ $app->post('/password', function ()use($app) {
 			//パスワード履歴がない場合はパスワード登録
 			array_push($old_pass_list,$hash_pass);
 		}
-		
+
 		$account[0]->old_pass_word = json_encode($old_pass_list);
 		$account[0]->last_pass_word_upd_date = date( "Y/m/d H:i:s.sss", time() ); //パスワード変更日時
 		if ($account[0]->save() == false) {
@@ -2908,16 +2885,16 @@ $app->post('/password', function ()use($app) {
 			$transaction->commit();
 		}
 		$app->session->remove("user_id");
-		
+
 		echo json_encode($json_list);
-	
+
 	} catch(Exception $e){
 		$error_list['update'] = 'アカウント情報の更新に失敗しました。';
 		$json_list['errors'] = $error_list;
 		echo json_encode($json_list);
 		return true;
 	}
-		
+
 	});
 /*}
  * ログアウト
@@ -2958,11 +2935,11 @@ $app->post('/api/CM9010', function () {
 
 /**
  * ・ステータス名変換
- * 
+ *
  * 引数で受け取ったステータスを、ステータス名に変換する
- * 
+ *
  * @param string $order_status 発注ステータス
- * @param string $receipt_status 受領ステータス 
+ * @param string $receipt_status 受領ステータス
  * @return string ステータス名
  */
 function statusText($order_status,$receipt_status){
@@ -2987,9 +2964,9 @@ function statusText($order_status,$receipt_status){
 }
 /**
  * ・よろず発注区分名変換
- * 
+ *
  * 引数で受け取ったよろず発注区分を、よろず発注区分名に変換する
- * 
+ *
  * @param string $order_sts_kbn よろず発注区分
  * @return string よろず発注区分名
  */
@@ -3007,9 +2984,9 @@ function kubunText($order_sts_kbn){
 }
 /**
  * ・よろず発注区分名変換(返却実績用)
- * 
+ *
  * 引数で受け取ったよろず発注区分を、よろず発注区分名に変換する
- * 
+ *
  * @param string $order_sts_kbn よろず発注区分
  * @return string よろず発注区分名
  */
@@ -3027,9 +3004,9 @@ function kubunRdText($order_sts_kbn){
 }
 /**
  * ・在庫状態名変換
- * 
+ *
  * 引数で受け取った在庫状態を、在庫状態名に変換する
- * 
+ *
  * @param string $zk_status_cd 在庫状態
  * @return string 在庫状態名
  */
@@ -3044,13 +3021,13 @@ function zaikoText($zk_status_cd){
 	}
 }
 /**
- * 
+ *
  * ・fputcsv風の自前関数
- * 
+ *
  * 1と2番目の引数はオリジナルのfputcsvと同じ。最初がファイルポインタ、次が値の配列
  * 項目は全てダブルクォーテーションで括られます
  * 項目内のダブルクォーテーションはダブルクォーテーションでエスケープされます
- * 
+ *
  * @param file $fp ファイルポインタ
  * @param array $data データ配列
  * @return string 在庫状態名
@@ -3059,14 +3036,14 @@ function zaikoText($zk_status_cd){
 function _fputcsv($fp, $data) {
 	require_once 'mb_str_replace.php';
 
-	mb_convert_variables("SJIS-win", "UTF-8", $data); 
+	mb_convert_variables("SJIS-win", "UTF-8", $data);
 	$csv = '';
 	foreach ($data as $col) {
 		$col = mb_str_replace('"', '""', $col);
 		$csv .= "\"$col\",";
 	}
 	$csv = preg_replace("/,$/", "", $csv);
-	
+
 	fwrite($fp, "$csv\r\n");
 }
 ?>

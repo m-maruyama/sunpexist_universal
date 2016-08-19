@@ -4,6 +4,7 @@ define([
 	'../views/History',
 	'../views/HistoryCondition',
 	'../views/HistoryListList',
+	'../views/AgreementNoCondition',
 	'../views/JobTypeCondition',
 	'../views/DetailModal',
 	'../views/Pagination',
@@ -26,9 +27,10 @@ define([
 				var detailModalView = new App.Admin.Views.DetailModal();
 				var historyView = new App.Admin.Views.History();
 				var historyListListCollection = new App.Entities.Collections.AdminHistoryListList();
-				
+
+				var agreementNoConditionView = new App.Admin.Views.AgreementNoCondition();
 				var jobTypeConditionView = new App.Admin.Views.JobTypeCondition();
-				
+
 				var historyListConditionModel = new App.Entities.Models.AdminHistoryListCondition();
 				var historyConditionView = new App.Admin.Views.HistoryCondition({
 					model:historyListConditionModel
@@ -56,7 +58,7 @@ define([
 				this.listenTo(detailModalView, 'fetched', function(){
 					historyView.detailModal.show(detailModalView.render());
 					detailModalView.ui.modal.modal('show');
-				});				
+				});
 				this.listenTo(paginationView, 'selected', function(pageNumber){
 					fetchList(pageNumber);
 				});
@@ -70,6 +72,7 @@ define([
 				historyView.page.show(paginationView);
 				historyView.condition.show(historyConditionView);
 				historyConditionView.job_type.show(jobTypeConditionView);
+				historyConditionView.agreement_no.show(agreementNoConditionView);
 			}
 		});
 	});

@@ -90,7 +90,7 @@ define([
 		 * APIのURL
 		 * @type {{}}
 		 */
-		
+
 		var host = "//" + location.host;
 		App.container.withCredentials = true;//CORSでアクセスしたいときはこれをtrueにすること。
 		App.api = {
@@ -99,6 +99,7 @@ define([
 			"CM0030": host + "/detail",
 			"CM0040": host + "/log",
 			"CM0050": host + "/job_type_zaiko",
+			"CM0060": host + "/agreement_no",
 			"IM0010": host + "/import_csv",
 			"IM0020": host + "/csv",
 			"HI0010": host + "/history/search",

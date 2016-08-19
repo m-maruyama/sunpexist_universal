@@ -17,13 +17,15 @@ define([
 				}
 			},
 			regions: {
-				"job_type": ".job_type"
+				"job_type": ".job_type",
+				"agreement_no": ".agreement_no"
 			},
 			ui: {
 				'no': '#no',
 				'member_no': '#member_no',
 				'office': '#office',
 				'office_cd': '#office_cd',
+				'agreement_no': '#agreement_no',
 				'job_type': '#job_type',
 				'order_day_from': '#order_day_from',
 				'order_day_to': '#order_day_to',
@@ -45,6 +47,7 @@ define([
 				'#member_no': 'member_no',
 				'#office': 'office',
 				'#office_cd': 'office_cd',
+				'#agreement_no': 'agreement_no',
 				'#job_type': 'job_type',
 				'#order_day_from': 'order_day_from',
 				'#order_day_to': 'order_day_to',
@@ -87,7 +90,7 @@ define([
 				});
 
 				//this.stickit();
-				
+
 				var options = {
 					url: null,
 					index: null,
@@ -96,10 +99,10 @@ define([
 					fuzziness:0,
 				};
 				options = $.extend({}, options);
-		
+
 				var url = App.api.CM0020;
 				var suggestItems;
-		
+
 				var htmlentities = function (str) {
 					if (typeof str !== 'string') {
 						return str;
@@ -109,7 +112,7 @@ define([
 						.replace(/</g, "&lt;")
 						.replace(/>/g, "&gt;");
 				};
-		
+
 				var suggester = new Bloodhound({
 					datumTokenizer: Bloodhound.tokenizers.obj.whitespace(options.displayKey),
 					queryTokenizer: Bloodhound.tokenizers.whitespace,
@@ -158,13 +161,13 @@ define([
 					source: suggester,
 					limit:options.limit
 				});
-				
+
 				var $office_cd = $('<input type="hidden" id="office_cd" name="office_cd"/>');
-									  
+
 				target.after($office_cd);
 				target.on('typeahead:select',function(e, item){
 					$office_cd.val(htmlentities(item.office_cd));
-					
+
 				});
 				// 拠点コードを要素に代入
 				this.ui.office_cd = $office_cd;
@@ -177,6 +180,7 @@ define([
 				this.model.set('member_no', this.ui.member_no.val());
 				this.model.set('office', this.ui.office.val());
 				this.model.set('office_cd', this.ui.office_cd.val());
+				this.model.set('agreement_no', this.ui.agreement_no.val());
 				this.model.set('job_type', this.ui.job_type.val());
 				this.model.set('order_day_from', this.ui.order_day_from.val());
 				this.model.set('order_day_to', this.ui.order_day_to.val());
@@ -199,7 +203,7 @@ define([
 				}
 				this.triggerMethod('click:search','order_req_no','asc');
 			},
-			
+
 			'change @ui.job_type': function(){
 				this.ui.job_type = $('#job_type');
 			}
