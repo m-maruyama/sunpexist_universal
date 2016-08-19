@@ -1,20 +1,27 @@
 <div class="container" role="home">
 	<div class="row index-body-margin">
-		<h1>トップメニュー</h1>
+		<h1>ホーム</h1>
 		<div class="topmargin pull-left dspilb border_radius index-body">
+			<div class="head_1">
+				正社員番号未登録件数　{{emply_cd_no_regist_cnt}}
+				<br />
+				未受領件数　{{no_recieve_cnt}}
+				<br />
+				未返却件数　{{no_return_cnt}}
+			</div>
 			<div class="head_1">
 				<br />
 				■お知らせ
 				<br />
 			</div>
 			<div class="text_1">
-				
+
 				{{#each info_list}}
 				<br />
 				{{breaklines message}}
 				<br /><br />
 				{{/each}}
-				
+
 				<br />
 				<br />
 				<br />

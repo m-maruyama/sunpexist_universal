@@ -510,19 +510,6 @@ class TReturnedPlanInfo extends \Phalcon\Mvc\Model
     }
 
     /**
-     * Method to set the value of field return_status
-     *
-     * @param string $return_status
-     * @return $this
-     */
-    public function setreturnStatus($return_status)
-    {
-        $this->return_status = $return_status;
-
-        return $this;
-    }
-
-    /**
      * Method to set the value of field order_kbn
      *
      * @param string $order_kbn
@@ -531,19 +518,6 @@ class TReturnedPlanInfo extends \Phalcon\Mvc\Model
     public function setOrderKbn($order_kbn)
     {
         $this->order_kbn = $order_kbn;
-
-        return $this;
-    }
-
-    /**
-     * Method to set the value of field return_plan_qty
-     *
-     * @param integer $return_plan_qty
-     * @return $this
-     */
-    public function setreturnPlanQty($return_plan_qty)
-    {
-        $this->return_plan_qty = $return_plan_qty;
 
         return $this;
     }
@@ -559,16 +533,6 @@ class TReturnedPlanInfo extends \Phalcon\Mvc\Model
     }
 
     /**
-     * Returns the value of field return_status
-     *
-     * @return string
-     */
-    public function getreturnStatus()
-    {
-        return $this->return_status;
-    }
-
-    /**
      * Returns the value of field order_kbn
      *
      * @return string
@@ -576,16 +540,6 @@ class TReturnedPlanInfo extends \Phalcon\Mvc\Model
     public function getOrderKbn()
     {
         return $this->order_kbn;
-    }
-
-    /**
-     * Returns the value of field return_plan_qty
-     *
-     * @return integer
-     */
-    public function getreturnPlanQty()
-    {
-        return $this->return_plan_qty;
     }
 
     /**

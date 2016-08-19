@@ -9,25 +9,24 @@ $app->post('/login', function ()use($app) {
     $params = json_decode(file_get_contents("php://input"), true);
     $json_list = array();
     $json_list['status'] = 0;
-    //アカウントチェック
-    $account = MAccount::query()
-        ->where("MAccount.user_id = '".$params['login_id']."' AND MAccount.corporate_id = '".$params['corporate_id']."'")
-        ->columns(array('MAccount.*','MContractResource.*'))
-        ->join('MContractResource','MContractResource.accnt_no = MAccount.accnt_no')
-        ->execute();
-
-    if($account->count() === 0){
-        //ログインIDが間違っている場合
-        // エラーメッセージ：企業名、ログイン名、パスワードのいずれかが正しくありません。
-        $json_list['status'] = 1;
-        echo json_encode($json_list);
-        return true;
-    }
-
+//    //アカウントチェック
+//    $account = MAccount::query()
+//        ->where("MAccount.user_id = '".$params['login_id']."' AND MAccount.corporate_id = '".$params['corporate_id']."'")
+//        ->columns(array('MAccount.*','MContractResource.*'))
+//        ->join('MContractResource','MContractResource.accnt_no = MAccount.accnt_no')
+//        ->execute();
+//
+//    if($account->count() === 0){
+//        //ログインIDが間違っている場合
+//        // エラーメッセージ：企業名、ログイン名、パスワードのいずれかが正しくありません。
+//        $json_list['status'] = 1;
+//        echo json_encode($json_list);
+//        return true;
+//    }
     //アカウントマスタに企業ID、ログインID、仮パスワードが一致するデータが存在する場合（パスワード未発行時）
     $account = MAccount::query()
         ->where("MAccount.user_id = '".$params['login_id']."' AND MAccount.corporate_id = '".$params['corporate_id'].
-            "' AND MAccount.tentative_pass_word = ".$params['password'])
+            "' AND MAccount.tentative_pass_word = '".$params['password']."'")
         ->columns(array('MAccount.*','MContractResource.*'))
         ->join('MContractResource','MContractResource.accnt_no = MAccount.accnt_no')
         ->execute();
@@ -40,7 +39,12 @@ $app->post('/login', function ()use($app) {
         echo json_encode($json_list);
         return true;
     }
-
+    //アカウントチェック
+    $account = MAccount::query()
+        ->where("MAccount.user_id = '".$params['login_id']."' AND MAccount.corporate_id = '".$params['corporate_id']."'")
+        ->columns(array('MAccount.*','MContractResource.*'))
+        ->join('MContractResource','MContractResource.accnt_no = MAccount.accnt_no')
+        ->execute();
     if (!$app->security->checkHash($params['password'], $account[0]->mAccount->pass_word)) {
         // PWが間違っている場合
         // アカウントマスタのログインエラー回数をチェックする。
