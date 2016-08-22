@@ -42,8 +42,9 @@ $app->post('/login', function ()use($app) {
     //アカウントチェック
     $account = MAccount::query()
         ->where("MAccount.user_id = '".$params['login_id']."' AND MAccount.corporate_id = '".$params['corporate_id']."'")
-        ->columns(array('MAccount.*','MContractResource.*'))
+        ->columns(array('MAccount.*','MContractResource.*','MContract.*'))
         ->join('MContractResource','MContractResource.accnt_no = MAccount.accnt_no')
+        ->join('MContract','MContract.corporate_id = MContractResource.corporate_id AND MContract.rntl_cont_no = MContractResource.rntl_cont_no')
         ->execute();
     if (!$app->security->checkHash($params['password'], $account[0]->mAccount->pass_word)) {
         // PWが間違っている場合
@@ -130,6 +131,13 @@ $app->post('/login', function ()use($app) {
                     'mail_address' => $account[0]->mAccount->mail_address,
                     'rntl_cont_no' => $account[0]->mContractResource->rntl_cont_no,
                     'rntl_sect_cd' => $account[0]->mContractResource->rntl_sect_cd,
+                    'individual_flg' => $account[0]->mContract->individual_flg,
+                    'receipt_flg' => $account[0]->mContract->receipt_flg,
+                    'rntl_cont_flg' => $account[0]->mContract->rntl_cont_flg,
+                    'purchase_cont_flg' => $account[0]->mContract->purchase_cont_flg,
+                    'sub_cont_flg1' => $account[0]->mContract->sub_cont_flg1,
+                    'sub_cont_flg2' => $account[0]->mContract->sub_cont_flg2,
+                    'sub_cont_flg3' => $account[0]->mContract->sub_cont_flg3,
                 ));
                 echo json_encode($json_list);
 
