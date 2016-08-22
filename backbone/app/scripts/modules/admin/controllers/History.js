@@ -9,6 +9,8 @@ define([
 	'../views/JobTypeCondition',
 	'../views/InputItemCondition',
 	'../views/ItemColorCondition',
+	'../views/ItemColorCondition',
+	'../views/IndividualNumberCondition',
 	'../views/DetailModal',
 	'../views/SectionModal',
 	'../views/Pagination',
@@ -36,8 +38,9 @@ define([
 				var agreementNoConditionView = new App.Admin.Views.AgreementNoCondition();
 				var sectionConditionView = new App.Admin.Views.SectionCondition();
 				var jobTypeConditionView = new App.Admin.Views.JobTypeCondition();
-				var inputItemCondition = new App.Admin.Views.InputItemCondition();
-				var itemColorCondition = new App.Admin.Views.ItemColorCondition();
+				var inputItemConditionView = new App.Admin.Views.InputItemCondition();
+				var itemColorConditionView = new App.Admin.Views.ItemColorCondition();
+				var individualNumberConditionView = new App.Admin.Views.IndividualNumberCondition();
 
 				var historyListConditionModel = new App.Entities.Models.AdminHistoryListCondition();
 				var historyConditionView = new App.Admin.Views.HistoryCondition({
@@ -89,8 +92,9 @@ define([
 				historyConditionView.agreement_no.show(agreementNoConditionView);
 				historyConditionView.job_type.show(jobTypeConditionView);
 				historyConditionView.section.show(sectionConditionView);
-				historyConditionView.input_item.show(inputItemCondition);
-				historyConditionView.item_color.show(itemColorCondition);
+				historyConditionView.input_item.show(inputItemConditionView);
+				historyConditionView.item_color.show(itemColorConditionView);
+				historyConditionView.individual_number.show(individualNumberConditionView);
 			}
 		});
 	});

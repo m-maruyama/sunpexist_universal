@@ -94,6 +94,7 @@ define([
 		var host = "//" + location.host;
 		App.container.withCredentials = true;//CORSでアクセスしたいときはこれをtrueにすること。
 		App.api = {
+			"CM0001": host + "/account_session",
 			"CM0010": host + "/job_type",
 //			"CM0020": host + "/suggest",
 			"CM0020": host + "/section",

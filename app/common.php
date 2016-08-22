@@ -64,6 +64,20 @@ $app->post('/global_menu', function ()use($app){
 });
 
 /**
+ * アカウントセッション取得
+ */
+$app->post('/account_session', function ()use($app) {
+	$params = json_decode(file_get_contents("php://input"), true);
+
+	// アカウントセッション取得
+	$auth = $app->session->get("auth");
+
+	$json_list = $auth;
+	echo json_encode($json_list);
+});
+
+
+/**
  * 検索項目：契約No
  */
 $app->post('/agreement_no', function ()use($app) {
