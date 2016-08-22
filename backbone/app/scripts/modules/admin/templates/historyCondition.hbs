@@ -52,14 +52,28 @@
 				<!-- 貸与パターン、商品、色、サイズ、リセットボタン -->
 				<div class="form-group row">
 					<label class="col-md-2 control-label" for="">貸与パターン</label>
-					<div class="col-md-10">
-						<div class="job_type"></div>
-						<div class="input_item"></div>
-						<div class="item_color"></div>
-						<b>　サイズ</b>
-						<input type="text" id="item_size" name="item_size" class="input-sm" maxlength="5" placeholder="" >
-						<a href="" type="button" class="btn btn-primary btn-sm" title="リセット">リセット</a>
-					</div>
+					<table>
+						<tr>
+							<!--div class="col-md-10"-->
+								<th>
+									<div class="job_type"></div>
+								</th>
+								<th>
+									<div class="input_item"></div>
+								</th>
+								<th>
+									<div class="item_color"></div>
+								</th>
+								<th>
+									<b>　サイズ</b>
+									<input type="text" id="item_size" name="item_size" class="input-sm" maxlength="5" placeholder="" >　
+								</th>
+								<th>
+									<a href="" type="button" class="btn btn-primary btn-sm" title="リセット">リセット</a>
+								</th>
+							<!--/div-->
+						</tr>
+					</table>
 				</div>
 
 				<div class="form-group">
@@ -170,12 +184,7 @@
 						<label class="checkbox-inline"><input type="checkbox" id="order_kbn3" name="order_kbn[]" value="5" class="checkbox-inline" checked="1" />異動</label>
 					</div>
 				</div-->
-				<div class="form-group">
-					<label class="col-md-2 control-label" for="office">個体管理番号</label>
-					<div class="col-md-5">
-						<input type="text" class="form-control input-sm" id="" value="">
-					</div>
-				</div>
+				<div class="individual_number"></div>
 				<div class="form-group">
 					<div class="col-md-2 col-md-push-2 " style="margin-left: 500px">
 						<a type="button" data-page="1" class="btn btn-primary btn-sm btn-block search" title="検索" id="button1">検索</a>

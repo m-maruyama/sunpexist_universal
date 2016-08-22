@@ -22,6 +22,7 @@ define([
 				"job_type": ".job_type",
 				"input_item": ".input_item",
 				"item_color": ".item_color",
+				"individual_number": ".individual_number",
 			},
 			ui: {
 				'no': '#no',
@@ -44,6 +45,7 @@ define([
 				'order_kbn1': '#order_kbn1',
 				'order_kbn2': '#order_kbn2',
 				'order_kbn3': '#order_kbn3',
+				"individual_number": "#individual_number",
 				"search": '.search',
 				'datepicker': '.datepicker',
 				'timepicker': '.timepicker'
@@ -69,6 +71,7 @@ define([
 				'#order_kbn1': 'order_kbn1',
 				'#order_kbn2': 'order_kbn2',
 				'#order_kbn4': 'order_kbn3',
+				"#individual_number": "individual_number",
 				'#search': 'search',
 				'#datepicker': 'datepicker',
 				'#timepicker': 'timepicker'
@@ -192,6 +195,8 @@ define([
 				this.model.set('agreement_no', this.ui.agreement_no.val());
 				this.model.set('section', this.ui.section.val());
 				this.model.set('job_type', this.ui.job_type.val());
+				this.model.set('input_item', this.ui.input_item.val());
+				this.model.set('item_color', this.ui.item_color.val());
 				this.model.set('order_day_from', this.ui.order_day_from.val());
 				this.model.set('order_day_to', this.ui.order_day_to.val());
 				this.model.set('status0', this.ui.status0.prop('checked'));
@@ -203,6 +208,7 @@ define([
 				this.model.set('order_kbn1', this.ui.order_kbn1.prop('checked'));
 				this.model.set('order_kbn2', this.ui.order_kbn2.prop('checked'));
 				this.model.set('order_kbn3', this.ui.order_kbn3.prop('checked'));
+				this.model.set('individual_number', this.ui.individual_number.val());
 				this.model.set('search', this.ui.search.val());
 				this.model.set('datepicker', this.ui.datepicker.val());
 				this.model.set('timepicker', this.ui.timepicker.val());

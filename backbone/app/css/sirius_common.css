@@ -25,11 +25,19 @@ h4{
     font-weight:bold;
 }
 
+table{
+    font-size:12px;
+}
+
+td{
+  text-align:center;
+}
+
 /*-----------------------------
  Bootstrap class
 ------------------------------- */
 .container{
-    max-width:950px;
+    max-width:1200px;
 }
 .container-list{
     margin-left: 8%;
