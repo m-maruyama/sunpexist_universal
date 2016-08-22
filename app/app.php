@@ -3,70 +3,12 @@ use Phalcon\Mvc\Model\Resultset;
 use Phalcon\Paginator\Adapter\Model as PaginatorModel;
 use Phalcon\Paginator\Adapter\NativeArray as PaginatorArray;
 use Phalcon\Paginator\Adapter\QueryBuilder as PaginatorQueryBuilder;
-//前処理
-$app->before(function()use($app){
-	$params = json_decode(file_get_contents("php://input"), true);
-	if(!$params&&isset($_FILES['file'])){
-		$params['scr'] = 'upfile:'.$_FILES['file']['name'];
-	}
-	//操作ログ
-	$log	= new TLog();
-	if(isset($params['scr'])){
-		if($params['scr'] != 'ログイン'&&$params['scr'] != 'パスワード変更'){
-			if (!$app->session->has("auth")) {
-				http_response_code(403);
-				exit();
-			}
-		}
-		$log->scr_name = $params['scr']; //画面名
-	} else {
-		$log->scr_name = '{}';
-	}
-	$log->log_type = 1; //ログ種別 1:操作ログ
-	$log->log_level = 1; //ログレベル 1:INFO
-	$auth = $app->session->get("auth");
-	if(isset($auth['user_id'])){
-		$log->user_id = $auth['user_id']; //操作ユーザーID
-	} else {
-		$log->user_id = '{}';
-	}
-	$now = date('Y/m/d H:i:s.sss');
-	$log->ctrl_date = $now; //操作日時
-	$log->access_url = $_SERVER["HTTP_REFERER"]; //アクセスURL
-	if(file_get_contents("php://input")){
-		$log->post_param = file_get_contents("php://input"); //POSTパラメーター
-	}else if($_FILES){
-		$log->post_param = $_FILES;
-	}else{
-		$log->post_param = '{}';
-	}
-	$log->ip_address = $_SERVER["REMOTE_ADDR"]; //端末識別情報
-	$log->user_agent = $_SERVER["HTTP_USER_AGENT"]; //USER_AGENT
-	$log->memo = "メモ"; //   メモ
-	if ($log->save() == false) {
-		// $error_list['update'] = '操作ログの登録に失敗しました。';
-		// $json_list['errors'] = $error_list;
-		// echo json_encode($json_list);
-		return true;
-	}
-});
+
 // $app->after(function()use($app){
 //
 // });
 /**
 
-/**
- * グローバルメニュー
- */
-$app->post('/global_menu', function ()use($app){
-	$auth = $app->session->get("auth");
-	$user_name = array();
-	$json_list['user_name'] = $auth['user_name'];
-	if($auth['user_type'] != '1'){
-		$json_list['admin'] = $auth['user_type'];
-	}
-	echo json_encode($json_list);
-});
 /**
  * CSV取込
  */
