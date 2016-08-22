@@ -95,11 +95,14 @@ define([
 		App.container.withCredentials = true;//CORSでアクセスしたいときはこれをtrueにすること。
 		App.api = {
 			"CM0010": host + "/job_type",
-			"CM0020": host + "/suggest",
+//			"CM0020": host + "/suggest",
+			"CM0020": host + "/section",
 			"CM0030": host + "/detail",
 			"CM0040": host + "/log",
 			"CM0050": host + "/job_type_zaiko",
 			"CM0060": host + "/agreement_no",
+			"CM0070": host + "/input_item",
+			"CM0080": host + "/item_color",
 			"IM0010": host + "/import_csv",
 			"IM0020": host + "/csv",
 			"HI0010": host + "/history/search",

@@ -5,7 +5,10 @@ define([
 	'../views/HistoryCondition',
 	'../views/HistoryListList',
 	'../views/AgreementNoCondition',
+	'../views/SectionCondition',
 	'../views/JobTypeCondition',
+	'../views/InputItemCondition',
+	'../views/ItemColorCondition',
 	'../views/DetailModal',
 	'../views/Pagination',
 	"entities/models/Pager",
@@ -29,7 +32,10 @@ define([
 				var historyListListCollection = new App.Entities.Collections.AdminHistoryListList();
 
 				var agreementNoConditionView = new App.Admin.Views.AgreementNoCondition();
+				var sectionConditionView = new App.Admin.Views.SectionCondition();
 				var jobTypeConditionView = new App.Admin.Views.JobTypeCondition();
+				var inputItemCondition = new App.Admin.Views.InputItemCondition();
+				var itemColorCondition = new App.Admin.Views.ItemColorCondition();
 
 				var historyListConditionModel = new App.Entities.Models.AdminHistoryListCondition();
 				var historyConditionView = new App.Admin.Views.HistoryCondition({
@@ -71,8 +77,11 @@ define([
 				App.main.show(historyView);
 				historyView.page.show(paginationView);
 				historyView.condition.show(historyConditionView);
-				historyConditionView.job_type.show(jobTypeConditionView);
 				historyConditionView.agreement_no.show(agreementNoConditionView);
+				historyConditionView.job_type.show(jobTypeConditionView);
+				historyConditionView.section.show(sectionConditionView);
+				historyConditionView.input_item.show(inputItemCondition);
+				historyConditionView.item_color.show(itemColorCondition);
 			}
 		});
 	});
