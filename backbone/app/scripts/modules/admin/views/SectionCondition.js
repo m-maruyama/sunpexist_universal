@@ -9,10 +9,12 @@ define([
 			template: App.Admin.Templates.sectionCondition,
 			model: new Backbone.Model(),
 			ui: {
-				'section': '.section'
+				'section': '.section',
+				'section_btn': '#section_btn'
 			},
 			bindings: {
-				'.section': 'section'
+				'.section': 'section',
+				'.section_btn': 'section_btn'
 			},
 			onShow: function() {
 				var that = this;
@@ -37,6 +39,10 @@ define([
 					});
 			},
 			events: {
+				'click @ui.section_btn': function(e){
+					e.preventDefault();
+					this.triggerMethod('click:section_btn', this.model);
+				}
 			}
 		});
 	});

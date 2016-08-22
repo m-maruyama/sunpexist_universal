@@ -10,6 +10,7 @@ define([
 	'../views/InputItemCondition',
 	'../views/ItemColorCondition',
 	'../views/DetailModal',
+	'../views/SectionModal',
 	'../views/Pagination',
 	"entities/models/Pager",
 	"entities/models/AdminHistory",
@@ -28,6 +29,7 @@ define([
 
 				var historyModel = null;
 				var detailModalView = new App.Admin.Views.DetailModal();
+				var sectionModalView = new App.Admin.Views.SectionModal();
 				var historyView = new App.Admin.Views.History();
 				var historyListListCollection = new App.Entities.Collections.AdminHistoryListList();
 
@@ -65,6 +67,13 @@ define([
 					historyView.detailModal.show(detailModalView.render());
 					detailModalView.ui.modal.modal('show');
 				});
+
+				this.listenTo(sectionConditionView, 'click:section_btn', function(view, model){
+					historyView.detailModal.show(sectionModalView.render());
+					sectionModalView.ui.modal.modal('show');
+				});
+
+
 				this.listenTo(paginationView, 'selected', function(pageNumber){
 					fetchList(pageNumber);
 				});
