@@ -286,7 +286,7 @@ $app->post('/input_item', function ()use($app) {
 	// アカウントセッション取得
 	$auth = $app->session->get("auth");
 
-	//--- 検索条件 ---//
+	//--- 検索条件 ---//	
 	// 投入商品マスタ. 企業ID
 	array_push($query_list, "corporate_id = '".$auth['corporate_id']."'");
 	// 投入商品マスタ. レンタル契約No
@@ -295,12 +295,20 @@ $app->post('/input_item', function ()use($app) {
 	//sql文字列を' AND 'で結合
 	$query = implode(' AND ', $query_list);
 
+	$sql = $app->modelsManager->createQuery(
+		"select distinct item_cd, input_item_name from MInputItem where "
+		.$query
+	);
+	$results  = $sql->execute();
+
+/*
 	//--- クエリー実行・取得 ---//
 	$results = MInputItem::query()
+		->distinct('item_cd')
 		->where($query)
 		->columns('*')
 		->execute();
-
+*/
 	// デフォルト「全て」を設定
 	$list['item_cd'] = null;
 	$list['input_item_name'] = '全て';
