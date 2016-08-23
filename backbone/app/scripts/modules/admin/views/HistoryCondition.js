@@ -300,9 +300,25 @@ define([
 				this.triggerMethod('click:search','order_req_no','asc');
 			},
 
+			'change @ui.agreement_no': function(){
+				this.ui.agreement_no = $('#agreement_no');
+			},
+			'change @ui.section': function(){
+				this.ui.section = $('#section');
+			},
 			'change @ui.job_type': function(){
 				this.ui.job_type = $('#job_type');
+			},
+			'change @ui.input_item': function(){
+				this.ui.input_item = $('#input_item');
+			},
+			'change @ui.item_color': function(){
+				this.ui.item_color = $('#item_color');
+			},
+			'change @ui.individual_number': function(){
+				this.ui.individual_number = $('#individual_number');
 			}
+
 		}
 		});
 	});

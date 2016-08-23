@@ -1,10 +1,24 @@
-<td>{{order_req_no}}</td>
-<td>{{#if cster_emply_cd}}{{cster_emply_cd}}{{else}}-{{/if}}</td>
-<td>{{#if rntl_sect_name}}{{rntl_sect_name}}{{else}}-{{/if}}</td>
-<td>{{#if job_type_name}}{{job_type_name}}{{else}}-{{/if}}</td>
-<td>{{#if order_req_ymd}}{{order_req_ymd}}{{else}}-{{/if}}</td>
-<td>{{#if statusText}}{{statusText}}{{else}}-{{/if}}</td>
-<td>{{#if kubunText}}{{kubunText}}{{else}}-{{/if}}</td>
-<td>{{#if ship_ymd}}{{ship_ymd}}{{else}}-{{/if}}</td>
-<td>{{#if ship_qty}}{{ship_qty}}{{else}}0{{/if}}</td>
-<td>{{#if receipt_num}}{{receipt_num}}{{else}}0{{/if}}</td>
+<!--tr class="blue"-->
+  <td>{{order_req_no}}<br>
+  {{order_req_ymd}}</td>
+  <td>{{order_sts_name}}<br>
+  ( {{order_reason_name}} )</td>
+  <td>{{#if rntl_sect_name}}{{rntl_sect_name}}{{else}}-{{/if}}<br>
+    {{#if job_type_name}}{{job_type_name}}{{else}}-{{/if}}</td>
+  <td>{{#if cster_emply_cd}}{{cster_emply_cd}}{{else}}-{{/if}}<br>
+    {{#if werer_name}}{{werer_name}}{{else}}-{{/if}}</td>
+  <td>{{shin_item_code}}<br>
+   {{input_item_name}}</td>
+  <td>{{#if order_qty}}{{order_qty}}{{else}}-{{/if}}</td>
+  <td>{{#if ship_no}}{{rec_order_no}}{{else}}-{{/if}}<br>
+  {{#if send_shd_ymd}}{{send_shd_ymd}}{{else}}-{{/if}}</td>
+  <td>{{order_qty}}</td>
+  <td>{{order_status_name}}</td>
+  <td>{{#if ship_no}}{{ship_no}}{{else}}-{{/if}}<br>
+  {{#if ship_ymd}}{{ship_ymd}}{{else}}-{{/if}}</td>
+  <td>{{#if ship_qty}}{{ship_qty}}{{else}}-{{/if}}</td>
+  <td>{{#if individual_num}}{{individual_num}}{{else}}-{{/if}}</td>
+  <td>{{#if order_res_ymd}}{{order_res_ymd}}{{else}}-{{/if}}</td>
+  <td>{{rntl_cont_no}}<br>
+    {{rntl_cont_name}}</td>
+<!--/tr-->

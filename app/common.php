@@ -115,6 +115,11 @@ $app->post('/agreement_no', function ()use($app) {
 //		->orderBy('cast(MContract.rntl_cont_no asc as integer)')
 		->execute();
 
+	// デフォルトは空を設定
+	$list['rntl_cont_no'] = null;
+	$list['rntl_cont_name'] = null;
+	array_push($all_list,$list);
+
 	foreach ($results as $result) {
 		$list['rntl_cont_no'] = $result->mContract->rntl_cont_no;
 		$list['rntl_cont_name'] = $result->mContract->rntl_cont_name;
@@ -286,7 +291,7 @@ $app->post('/input_item', function ()use($app) {
 	// アカウントセッション取得
 	$auth = $app->session->get("auth");
 
-	//--- 検索条件 ---//	
+	//--- 検索条件 ---//
 	// 投入商品マスタ. 企業ID
 	array_push($query_list, "corporate_id = '".$auth['corporate_id']."'");
 	// 投入商品マスタ. レンタル契約No

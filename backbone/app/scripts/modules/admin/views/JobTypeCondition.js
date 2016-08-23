@@ -17,7 +17,7 @@ define([
 			onShow: function() {
 				var that = this;
 				var modelForUpdate = this.model;
-					modelForUpdate.url = App.api.CM0010;
+				modelForUpdate.url = App.api.CM0010;
 				var cond = {
 					"scr": '貸与パターン'
 				};
