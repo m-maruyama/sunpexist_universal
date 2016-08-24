@@ -4,6 +4,8 @@ define([
 	'../views/SectionModal',
 	'../views/SectionModalCondition',
 	'../views/SectionModalListList',
+	'../views/SectionCondition',
+	'../views/JobTypeCondition',
 	'../views/Pagination',
 	"entities/models/Pager",
 	"entities/models/AdminSectionModal",
@@ -13,28 +15,26 @@ define([
 ], function(App) {
 	'use strict';
 	App.module('Admin.Controllers', function(Controllers,App, Backbone, Marionette, $, _){
-		Controllers.Section = App.Admin.Controllers.Abstract.extend({
+		Controllers.SectionModal = App.Admin.Controllers.Abstract.extend({
 			_sync : function(){
 				var that = this;
-				this.setNav('section');
+				this.setNav('SectionModal');
 				var pagerModel = new App.Entities.Models.Pager();
 
-				var sectionModel = null;
+
+				var sectionModalModel = null;
 				var sectionModalView = new App.Admin.Views.SectionModal();
-				var sectionModalListListCollection = new App.Entities.Collections.AdminSectionModalListList();
+				var sectionListListCollection = new App.Entities.Collections.AdminSectionModalListList();
 
 				var sectionModalListConditionModel = new App.Entities.Models.AdminSectionModalListCondition();
-				var sectionConditionView = new App.Admin.Views.SectionCondition({
-					model:sectionModalListConditionModel,
-					pagerModel: pagerModel
+				var sectionModalConditionView = new App.Admin.Views.SectionModalCondition({
+					model:sectionModalListConditionModel
 				});
 				var sectionModalListListView = new App.Admin.Views.SectionModalListList({
-					collection: sectionModalListListCollection,
-					model:sectionModalListConditionModel,
+					collection: sectionListListCollection,
 					pagerModel: pagerModel
 				});
 				var paginationView = new App.Admin.Views.Pagination({model: pagerModel});
-
 				var fetchList = function(pageNumber,sortKey,order){
 					if(pageNumber){
 						pagerModel.set('page_number', pageNumber);
@@ -44,28 +44,31 @@ define([
 						pagerModel.set('order', order);
 					}
 					sectionModalListListView.fetch(sectionModalListConditionModel);
-					sectionView.listTable.show(sectionModalListListView);
+					sectionModalView.listTable.show(sectionModalListListView);
 				};
+				this.listenTo(sectionModalListListView, 'childview:click:a', function(view, model){
+					sectionModalModel = new App.Entities.Models.AdminSectionModal({no:model.get('order_req_no')});
+					detailModalView.fetchDetail(sectionModalModel);
+				});
+
+				this.listenTo(sectionModalView, 'click:search', function(sortKey, order){
+					fetchList_section(1,sortKey,order);
+				});
 
 				this.listenTo(paginationView, 'selected', function(pageNumber){
 					fetchList(pageNumber);
 				});
-
 				this.listenTo(sectionModalListListView, 'sort', function(sortKey,order){
-					sectionModalListConditionModel.set('mode',null);
 					fetchList(null,sortKey,order);
 				});
-
-				this.listenTo(sectionConditionView, 'click:search', function(sortKey,order){
-					sectionModalListConditionModel.set('mode',null);
+				this.listenTo(sectionModalConditionView, 'click:search', function(sortKey,order){
 					fetchList(1,sortKey,order);
 				});
-
-				App.main.show(sectionView);
-				sectionView.page.show(paginationView);
-				sectionView.condition.show(sectionConditionView);
+				App.main.show(sectionModalView);
+				sectionModalView.page.show(paginationView);
+				sectionModalView.condition.show(sectionModalConditionView);
 			}
 		});
 	});
-	return App.Admin.Controllers.Section;
+	return App.Admin.Controllers.SectionModal;
 });

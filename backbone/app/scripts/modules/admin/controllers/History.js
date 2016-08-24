@@ -6,6 +6,8 @@ define([
 	'../views/HistoryListList',
 	'../views/AgreementNoCondition',
 	'../views/SectionCondition',
+	'../views/SectionModalCondition',
+	'../views/SectionModalListList',
 	'../views/JobTypeCondition',
 	'../views/InputItemCondition',
 	'../views/ItemColorCondition',
@@ -13,11 +15,14 @@ define([
 	'../views/IndividualNumberCondition',
 	'../views/DetailModal',
 	'../views/SectionModal',
+	'../views/SectionModalListList',
 	'../views/Pagination',
 	"entities/models/Pager",
 	"entities/models/AdminHistory",
 	"entities/models/AdminHistoryListCondition",
+	"entities/models/AdminSectionModalListCondition",
 	"entities/collections/AdminHistoryListList",
+	"entities/collections/AdminSectionModalListList",
 	'bootstrap'
 ], function(App) {
 	'use strict';
@@ -31,9 +36,9 @@ define([
 
 				var historyModel = null;
 				var detailModalView = new App.Admin.Views.DetailModal();
-				var sectionModalView = new App.Admin.Views.SectionModal();
 				var historyView = new App.Admin.Views.History();
 				var historyListListCollection = new App.Entities.Collections.AdminHistoryListList();
+				var sectionListListCollection = new App.Entities.Collections.AdminSectionModalListList();
 
 				var agreementNoConditionView = new App.Admin.Views.AgreementNoCondition();
 				var sectionConditionView = new App.Admin.Views.SectionCondition();
@@ -48,6 +53,10 @@ define([
 				});
 				var historyListListView = new App.Admin.Views.HistoryListList({
 					collection: historyListListCollection,
+					pagerModel: pagerModel
+				});
+				var sectionModalListListView = new App.Admin.Views.SectionModalListList({
+					collection: sectionListListCollection,
 					pagerModel: pagerModel
 				});
 				var paginationView = new App.Admin.Views.Pagination({model: pagerModel});
@@ -71,11 +80,40 @@ define([
 					detailModalView.ui.modal.modal('show');
 				});
 
+				var sectionListCondition = new App.Entities.Models.AdminSectionModalListCondition();
+				var sectionModalView = new App.Admin.Views.SectionModal({
+					model:sectionListCondition
+				});
+				var sectionModalConditionView = new App.Admin.Views.SectionModalCondition({
+					model:sectionListCondition
+				});
 				this.listenTo(sectionConditionView, 'click:section_btn', function(view, model){
+					historyView.sectionModal.show(sectionModalView.render());
+					sectionModalView.page.show(paginationView);
+					sectionModalView.condition.show(sectionModalConditionView);
+					sectionModalView.ui.modal.modal('show');
+				});
+				var fetchList_section = function(pageNumber,sortKey,order){
+					if(pageNumber){
+						pagerModel.set('page_number', pageNumber);
+					}
+					if(sortKey){
+						pagerModel.set('sort_key', sortKey);
+						pagerModel.set('order', order);
+					}
+					sectionModalListListView.fetch(sectionListCondition);
+					sectionModalView.listTable.show(sectionModalListListView);
+				};
+				this.listenTo(sectionModalConditionView, 'click:section_search', function(sortKey, order){
+					fetchList_section(1,sortKey,order);
+				});
+
+				this.listenTo(sectionModalView, 'fetched', function(){
+					// historyView.detailModal.show();
+					// sectionModalView.render();
 					historyView.detailModal.show(sectionModalView.render());
 					sectionModalView.ui.modal.modal('show');
 				});
-
 
 				this.listenTo(paginationView, 'selected', function(pageNumber){
 					fetchList(pageNumber);

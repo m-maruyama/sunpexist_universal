@@ -12,6 +12,7 @@ define([
 				"page": ".page",
 				"condition": ".condition",
 				"listTable": ".listTable",
+				"sectionModal": ".section_modal",
 				"detailModal": '.detail_modal'
 			},
 			model: new Backbone.Model(),

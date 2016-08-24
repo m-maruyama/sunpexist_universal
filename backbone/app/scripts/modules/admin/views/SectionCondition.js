@@ -1,11 +1,10 @@
 define([
 	'app',
 	'../Templates',
-	'backbone.stickit',
 ], function(App) {
 	'use strict';
 	App.module('Admin.Views', function(Views, App, Backbone, Marionette, $, _){
-		Views.SectionCondition = Marionette.ItemView.extend({
+		Views.SectionCondition = Marionette.LayoutView.extend({
 			template: App.Admin.Templates.sectionCondition,
 			model: new Backbone.Model(),
 			ui: {
