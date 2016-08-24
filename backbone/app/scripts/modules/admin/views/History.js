@@ -10,8 +10,10 @@ define([
 			},
 			regions: {
 				"page": ".page",
+				"page_2": ".page_2",
 				"condition": ".condition",
 				"listTable": ".listTable",
+				"download": ".download",
 				"detailModal": '.detail_modal'
 			},
 			model: new Backbone.Model(),
