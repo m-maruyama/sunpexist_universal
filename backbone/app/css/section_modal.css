@@ -1,0 +1,11 @@
+.section_1{
+    text-align: center;
+    width:180px;
+}
+.section_2{
+    text-align: center;
+    width:380px;
+}
+.select_section_button {
+    padding: 1px!important;
+}

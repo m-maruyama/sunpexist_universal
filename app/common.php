@@ -401,4 +401,33 @@ $app->post('/job_type_zaiko', function () {
 	echo json_encode($json_list);
 });
 
+/**
+ * 拠点絞り込み検索
+ */
+$app->post('/section_modal', function () {
+	$params = json_decode(file_get_contents("php://input"), true);
+	$query_list = array();
+	//拠点
+	if(isset($params['rntl_sect_cd'])) {
+		array_push($query_list,"rntl_sect_cd LIKE '" . $params['rntl_sect_cd'] . "%'");
+	}
+	if(isset($params['rntl_sect_name'])) {
+		array_push($query_list,"rntl_sect_name LIKE '%" . $params['rntl_sect_name'] . "%'");
+	}
+	//sql文字列を' AND 'で結合
+	$query = implode(' AND ', $query_list);
+	$results = MSection::find(array(
+		'conditions' => $query
+	));
+	$all_list = array();
+	$json_list = array();
+	$i = 0;
+	foreach ($results as $result) {
+		$all_list[$i]['rntl_sect_cd'] = $result->rntl_sect_cd;
+		$all_list[$i]['rntl_sect_name'] = $result->rntl_sect_name;
+		$i++;
+	}
+	$json_list['list'] = $all_list;
+	echo json_encode($json_list);
+});
 ?>

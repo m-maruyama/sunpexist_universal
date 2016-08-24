@@ -14,6 +14,7 @@ define([
 				"condition": ".condition",
 				"listTable": ".listTable",
 				"download": ".download",
+				"sectionModal": ".section_modal",
 				"detailModal": '.detail_modal'
 			},
 			model: new Backbone.Model(),
