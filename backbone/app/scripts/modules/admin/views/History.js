@@ -13,7 +13,7 @@ define([
 				"page_2": ".page_2",
 				"condition": ".condition",
 				"listTable": ".listTable",
-				"download": ".download",
+				"csv_download": ".csv_download",
 				"sectionModal": ".section_modal",
 				"detailModal": '.detail_modal'
 			},

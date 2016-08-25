@@ -22,88 +22,87 @@ $app->post('/history/search', function ()use($app){
 
 	//---検索条件---//
 	//企業ID
-	array_push($query_list,"TOrder.corporate_id = '".$auth['corporate_id']."'");
+	array_push($query_list,"t_order.corporate_id = '".$auth['corporate_id']."'");
 	//契約No
 	if(isset($cond['agreement_no'])){
-		array_push($query_list,"TOrder.rntl_cont_no = '".$cond['agreement_no']."'");
+		array_push($query_list,"t_order.rntl_cont_no = '".$cond['agreement_no']."'");
 	}
 	//発注No
 	if(isset($cond['no'])){
-		array_push($query_list,"TOrder.order_req_no LIKE '".$cond['no']."%'");
+		array_push($query_list,"t_order.order_req_no LIKE '".$cond['no']."%'");
 	}
 	//お客様発注No
 	if(isset($cond['emply_order'])){
-		array_push($query_list,"TOrder.emply_req_no LIKE '".$cond['emply_order_no']."%'");
+		array_push($query_list,"t_order.emply_req_no LIKE '".$cond['emply_order_no']."%'");
 	}
 	//社員番号
 	if(isset($cond['member_no'])){
-		array_push($query_list,"TOrder.cster_emply_cd LIKE '".$cond['member_no']."%'");
+		array_push($query_list,"t_order.cster_emply_cd LIKE '".$cond['member_no']."%'");
 	}
 	//着用者名
 	if(isset($cond['member_name'])){
-		array_push($query_list,"TOrder.werer_name LIKE '%".$cond['member_name']."%'");
+		array_push($query_list,"t_order.werer_name LIKE '%".$cond['member_name']."%'");
 	}
 	//拠点
 	if(isset($cond['section'])){
-		array_push($query_list,"TOrder.rntl_sect_cd = '".$cond['section']."'");
+		array_push($query_list,"t_order.rntl_sect_cd = '".$cond['section']."'");
 	}
 //	if(isset($cond['office'])){
 //		array_push($query_list,"MSection.rntl_sect_name LIKE '%".$cond['office']."%'");
 //	}
 	//貸与パターン
 	if(isset($cond['job_type'])){
-		array_push($query_list,"TOrder.job_type_cd = '".$cond['job_type']."'");
+		array_push($query_list,"t_order.job_type_cd = '".$cond['job_type']."'");
 	}
 	//商品
 	if(isset($cond['input_item'])){
-		array_push($query_list,"TOrder.item_cd = '".$cond['input_item']."'");
+		array_push($query_list,"t_order.item_cd = '".$cond['input_item']."'");
 	}
 	//色
 	if(isset($cond['item_color'])){
-		array_push($query_list,"TOrder.color_cd = '".$cond['item_color']."'");
+		array_push($query_list,"t_order.color_cd = '".$cond['item_color']."'");
 	}
 	//サイズ
 	if(isset($cond['item_size'])){
-		array_push($query_list,"TOrder.size_cd = '".$cond['item_size']."'");
+		array_push($query_list,"t_order.size_cd = '".$cond['item_size']."'");
 	}
 	//発注日from
 	if(isset($cond['order_day_from'])){
-		array_push($query_list,"TO_DATE(TOrder.order_req_ymd,'YYYYMMDD') >= TO_DATE('".$cond['order_day_from']."','YYYY/MM/DD')");
+		array_push($query_list,"TO_DATE(t_order.order_req_ymd,'YYYY/MM/DD') >= TO_DATE('".$cond['order_day_from']."','YYYY/MM/DD')");
 	}
 	//発注日to
 	if(isset($cond['order_day_to'])){
-		array_push($query_list,"TO_DATE(TOrder.order_req_ymd,'YYYYMMDD') <= TO_DATE('".$cond['order_day_to']."','YYYY/MM/DD')");
+		array_push($query_list,"TO_DATE(t_order.order_req_ymd,'YYYY/MM/DD') <= TO_DATE('".$cond['order_day_to']."','YYYY/MM/DD')");
 	}
 	//出荷日from
 	if(isset($cond['send_day_from'])){
-		array_push($query_list,"TO_DATE(TOrderState.ship_ymd,'YYYYMMDD') >= TO_DATE('".$cond['send_day_from']."','YYYY/MM/DD')");
+		array_push($query_list,"TO_DATE(t_order_state.ship_ymd,'YYYY/MM/DD') >= TO_DATE('".$cond['send_day_from']."','YYYY/MM/DD')");
 	}
 	//出荷日to
 	if(isset($cond['send_day_to'])){
-		array_push($query_list,"TO_DATE(TOrderState.ship_ymd,'YYYYMMDD') <= TO_DATE('".$cond['send_day_to']."','YYYY/MM/DD')");
+		array_push($query_list,"TO_DATE(t_order_state.ship_ymd,'YYYY/MM/DD') <= TO_DATE('".$cond['send_day_to']."','YYYY/MM/DD')");
 	}
 	//個体管理番号
 	if(isset($cond['individual_number'])){
-		array_push($query_list,"TDeliveryGoodsStateDetails.individual_ctrl_no LIKE '".$cond['individual_number']."%'");
+		array_push($query_list,"t_delivery_goods_state_details.individual_ctrl_no LIKE '".$cond['individual_number']."%'");
 	}
+
+	$status_kbn_list = array();
+
 	//ステータス
-	//havingを使ってgroup化後のデータで検索
-	$status = array();
 	$status_list = array();
 	if($cond['status0']){
 		// 未出荷
-		array_push($status_list,"sum(CASE TOrder.order_status WHEN '1' THEN 1 ELSE 0 END ) > 0");
+		array_push($status_list,"1");
 	}
 	if($cond['status1']){
 		// 出荷済み
-		array_push($status_list,"sum(CASE TOrder.order_status WHEN '2' THEN 1 ELSE 0 END ) = count(TOrder.order_req_no)");
+		array_push($status_list,"2");
 	}
 /*
 	if($cond['status4']){
 		array_push($status_list,"sum(CASE TOrder.order_status WHEN '9' THEN 1 ELSE 0 END ) > 0");
 	}
-*/
-/*
 	//受領ステータス
 	$r_status = '';
 	if($cond['status2']){
@@ -114,12 +113,12 @@ $app->post('/history/search', function ()use($app){
 		array_push($status_list,"sum(CASE TDeliveryGoodsState.receipt_status WHEN '2' THEN TDeliveryGoodsState.ship_qty ELSE 0 END ) = sum(TDeliveryGoodsState.ship_qty)");
 	}
 */
-
-	$status_query ='';
-	if($status_list){
-		$status_query = implode(' OR ', $status_list);
+	if(!empty($status_list)) {
+		$status_str = implode("','",$status_list);
+//		$status_query = "order_status IN ('".$status_str."')";
+		array_push($query_list,"order_status IN ('".$status_str."')");
+//		array_push($status_kbn_list,$status_query);
 	}
-
 	//発注区分
 	$order_kbn = array();
 	if($cond['order_kbn0']){
@@ -137,126 +136,116 @@ $app->post('/history/search', function ()use($app){
 	if($cond['order_kbn4']){
 		array_push($order_kbn,'9');
 	}
-	if($order_kbn){
+	if(!empty($order_kbn)){
 		$order_kbn_str = implode("','",$order_kbn);
-		array_push($query_list,"order_sts_kbn IN ('".$order_kbn_str."')");
+		$order_kbn_query = "order_sts_kbn IN ('".$order_kbn_str."')";
+//		array_push($query_list,"order_sts_kbn IN ('".$order_kbn_str."')");
+		array_push($status_kbn_list,$order_kbn_query);
 	}
-
 	// 理由区分
 	$reason_kbn = array();
 	if($cond['reason_kbn0']){
 		array_push($reason_kbn,'1');
 	}
-	$reason_kbn = array();
 	if($cond['reason_kbn1']){
-		array_push($reason_kbn,'1');
-	}
-	$reason_kbn = array();
-	if($cond['reason_kbn2']){
 		array_push($reason_kbn,'2');
 	}
-	$reason_kbn = array();
-	if($cond['reason_kbn3']){
+	if($cond['reason_kbn2']){
 		array_push($reason_kbn,'3');
 	}
-	$reason_kbn = array();
+	if($cond['reason_kbn3']){
+		array_push($reason_kbn,'4');
+	}
 	if($cond['reason_kbn4']){
 		array_push($reason_kbn,'19');
 	}
-	$reason_kbn = array();
 	if($cond['reason_kbn5']){
 		array_push($reason_kbn,'14');
 	}
-	$reason_kbn = array();
 	if($cond['reason_kbn6']){
 		array_push($reason_kbn,'15');
 	}
-	$reason_kbn = array();
 	if($cond['reason_kbn7']){
 		array_push($reason_kbn,'16');
 	}
-	$reason_kbn = array();
 	if($cond['reason_kbn8']){
 		array_push($reason_kbn,'17');
 	}
-	$reason_kbn = array();
 	if($cond['reason_kbn9']){
 		array_push($reason_kbn,'21');
 	}
-	$reason_kbn = array();
 	if($cond['reason_kbn10']){
 		array_push($reason_kbn,'22');
 	}
-	$reason_kbn = array();
 	if($cond['reason_kbn11']){
 		array_push($reason_kbn,'23');
 	}
-	$reason_kbn = array();
 	if($cond['reason_kbn12']){
 		array_push($reason_kbn,'9');
 	}
-	$reason_kbn = array();
 	if($cond['reason_kbn13']){
 		array_push($reason_kbn,'10');
 	}
-	$reason_kbn = array();
 	if($cond['reason_kbn14']){
 		array_push($reason_kbn,'11');
 	}
-	$reason_kbn = array();
 	if($cond['reason_kbn15']){
 		array_push($reason_kbn,'5');
 	}
-	$reason_kbn = array();
 	if($cond['reason_kbn16']){
 		array_push($reason_kbn,'6');
 	}
-	$reason_kbn = array();
 	if($cond['reason_kbn17']){
 		array_push($reason_kbn,'7');
 	}
-	$reason_kbn = array();
 	if($cond['reason_kbn18']){
 		array_push($reason_kbn,'8');
 	}
-	$reason_kbn = array();
 	if($cond['reason_kbn19']){
 		array_push($reason_kbn,'24');
 	}
-	if($reason_kbn){
+	if(!empty($reason_kbn)){
 		$reason_kbn_str = implode("','",$reason_kbn);
-		array_push($query_list,"order_reason_kbn IN ('".$reason_kbn_str."')");
+		$reason_kbn_query = "order_sts_kbn IN ('".$reason_kbn_str."')";
+//		array_push($query_list,"order_reason_kbn IN ('".$reason_kbn_str."')");
+		array_push($status_kbn_list,$reason_kbn_query);
+	}
+
+	//各区分を' OR 'で結合
+	if (!empty($status_kbn_list)) {
+		$status_kbn_map = implode(' OR ', $status_kbn_list);
+		array_push($query_list,"(".$status_kbn_map.")");
 	}
 
 	//sql文字列を' AND 'で結合
 	$query = implode(' AND ', $query_list);
 	$sort_key ='';
 	$order ='';
+
 	//ソートキー
 	if(isset($page['sort_key'])){
 		$sort_key = $page['sort_key'];
-
-		if($sort_key=='job_type_cd'){
-			$sort_key = 'as_job_type_name';
+		if($sort_key == 'job_type_cd'){
+			$sort_key = 't_order.'.$sort_key;
 		}else{
-			$sort_key = 'as_'.$sort_key;
+			$sort_key = 't_order.'.$sort_key;
 		}
-		// if($sort_key=='cster_emply_cd'){
-			// $sort_key = 'as_cster_emply_cd';
-		// }
-		// if($sort_key=='order_req_no'||$sort_key=='order_req_ymd'||$sort_key=='order_status'||$sort_key=='order_sts_kbn'){
-			// $sort_key = 'TOrder.'.$sort_key;
-		// }
-		// if($sort_key=='ship_ymd'){
-			// $sort_key = 'TDeliveryGoodsState.'.$sort_key;
-		// }
-		// if($sort_key=='rntl_sect_name'){
-			// $sort_key = 'MSection.'.$sort_key;
-		// }
+		if($sort_key == 'cster_emply_cd'){
+			$sort_key = 'cster_emply_cd';
+		}
+		if($sort_key == 'order_req_no' || $sort_key == 'order_req_ymd' || $sort_key == 'order_status' || $sort_key == 'order_sts_kbn'){
+			$sort_key = 't_order.'.$sort_key;
+		}
+		if($sort_key == 'ship_ymd'){
+			$sort_key = 't_order_state'.$sort_key;
+		}
+		if($sort_key == 'rntl_sect_name'){
+			$sort_key = 't_order.'.$sort_key;
+		}
 		$order = $page['order'];
 	} else {
-		//なければ発注No
-		$sort_key = "TOrder.order_req_no";
+		//指定がなければ発注No
+		$sort_key = "t_order.order_req_no";
 		$order = 'asc';
 	}
 
@@ -283,8 +272,9 @@ $app->post('/history/search', function ()use($app){
 		$arg_str .= "t_order_state.ship_qty as as_ship_qty,";
 		$arg_str .= "t_order.rntl_cont_no as as_rntl_cont_no,";
 		$arg_str .= "m_contract.rntl_cont_name as as_rntl_cont_name";
+
 		$arg_str .= " FROM t_order LEFT JOIN";
-		$arg_str .= " (t_order_state LEFT JOIN t_delivery_goods_state ";
+		$arg_str .= " (t_order_state LEFT JOIN (t_delivery_goods_state LEFT JOIN t_delivery_goods_state_details ON t_delivery_goods_state.ship_no = t_delivery_goods_state_details.ship_no)";
 		$arg_str .= " ON t_order_state.t_order_state_comb_hkey = t_delivery_goods_state.t_order_state_comb_hkey)";
 		$arg_str .= " ON t_order.t_order_comb_hkey = t_order_state.t_order_comb_hkey";
 		$arg_str .= " INNER JOIN m_section";
@@ -293,6 +283,12 @@ $app->post('/history/search', function ()use($app){
 		$arg_str .= " ON t_order.m_job_type_comb_hkey = m_job_type.m_job_type_comb_hkey";
 		$arg_str .= " INNER JOIN m_contract";
 		$arg_str .= " ON t_order.rntl_cont_no = m_contract.rntl_cont_no";
+
+		$arg_str .= " WHERE ";
+		$arg_str .= $query;
+
+		$arg_str .= " ORDER BY ";
+		$arg_str .= $sort_key." ".$order;
 
 		$t_order = new TOrder();
 		$results = new Resultset(null, $t_order, $t_order->getReadConnection()->query($arg_str));
@@ -476,7 +472,6 @@ $app->post('/history/search', function ()use($app){
 				$list['individual_num'] = "-";
 				$list['order_res_ymd'] = "-";
 			}
-
 /*
 			// 未出荷＝発注情報テーブル．発注数のサマリ != 納品状況情報テーブル．出荷数のサマリ の場合
 			// キャンセル＝発注情報テーブル．発注ステータス = 9のデータが存在する場合
@@ -508,6 +503,7 @@ $app->post('/history/search', function ()use($app){
 				$list['ship_ymd'] = '-';
 			}
 */
+
 			array_push($all_list,$list);
 		}
 	}

@@ -36,6 +36,7 @@ try {
      */
     include __DIR__ . '/../app/app.php';
     include __DIR__ . '/../app/common.php';
+    include __DIR__ . '/../app/csv_download.php';
     include __DIR__ . '/../app/history.php';
     include __DIR__ . '/../app/login.php';
     include __DIR__ . '/../app/home.php';

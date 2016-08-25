@@ -12,8 +12,8 @@ define([
 			template: App.Admin.Templates.historyListList,
 			emptyView: Backbone.Marionette.ItemView.extend({
                 tagName: "tr",
-				template: App.Admin.Templates.historyEmpty,
-            }),
+								template: App.Admin.Templates.historyEmpty,
+      }),
 			childView: Views.HistoryListItem,
 			childViewContainer: "tbody",
 			ui: {
@@ -29,7 +29,7 @@ define([
 					var that = this;
 					//同じソートキーの場合は昇順降順切り替え
 					if(sort_key == e.target.id){
-						if(order=='asc'){
+						if(order == 'asc'){
 							order = 'desc';
 						}else{
 							order = 'asc';
