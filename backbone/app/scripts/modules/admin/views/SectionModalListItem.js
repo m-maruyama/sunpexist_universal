@@ -10,14 +10,14 @@ define([
 			template: App.Admin.Templates.sectionModalListItem,
 			tagName: "tr",
 			ui: {
-				"sectionSelect": "a.section_select"
+				"sectionSelect": ".select_section"
 			},
 			onRender: function() {
 			},
 			events: {
 				'click @ui.sectionSelect': function(e){
 					e.preventDefault();
-					this.triggerMethod('click:a', this.model);
+					this.triggerMethod('click:section_select', this.model);
 				}
 			},
 			templateHelpers: {

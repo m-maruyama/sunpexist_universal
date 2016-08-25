@@ -8,7 +8,7 @@ define([
 			template: App.Admin.Templates.sectionCondition,
 			model: new Backbone.Model(),
 			ui: {
-				'section': '.section',
+				'section': '#section',
 				'section_btn': '#section_btn'
 			},
 			bindings: {
