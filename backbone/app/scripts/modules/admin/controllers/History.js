@@ -18,6 +18,7 @@ define([
 	'../views/SectionModal',
 	'../views/SectionModalListList',
 	'../views/Pagination',
+	'../views/Download',
 	"entities/models/Pager",
 	"entities/models/AdminHistory",
 	"entities/models/AdminHistoryListCondition",
@@ -56,6 +57,9 @@ define([
 					pagerModel: pagerModel
 				});
 				var paginationView = new App.Admin.Views.Pagination({model: pagerModel});
+				var paginationView2 = new App.Admin.Views.Pagination({model: pagerModel});
+				var downloadView = new App.Admin.Views.Download();
+
 				var fetchList = function(pageNumber,sortKey,order){
 					if(pageNumber){
 						pagerModel.set('page_number', pageNumber);
@@ -66,6 +70,7 @@ define([
 					}
 					historyListListView.fetch(historyListConditionModel);
 					historyView.listTable.show(historyListListView);
+					historyView.download.show(downloadView);
 				};
 				this.listenTo(historyListListView, 'childview:click:a', function(view, model){
 					historyModel = new App.Entities.Models.AdminHistory({no:model.get('order_req_no')});
@@ -123,6 +128,10 @@ define([
 						fetchList(pageNumber);
 					}
 				});
+				this.listenTo(paginationView2, 'selected', function(pageNumber){
+					fetchList(pageNumber);
+				});
+
 				this.listenTo(historyListListView, 'sort', function(sortKey,order){
 					fetchList(null,sortKey,order);
 				});
@@ -132,6 +141,7 @@ define([
 				});
 				App.main.show(historyView);
 				historyView.page.show(paginationView);
+				historyView.page_2.show(paginationView2);
 				historyView.condition.show(historyConditionView);
 				historyConditionView.agreement_no.show(agreementNoConditionView);
 				historyConditionView.job_type.show(jobTypeConditionView);
