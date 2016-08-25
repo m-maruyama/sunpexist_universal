@@ -11,19 +11,20 @@ define([
 	'../views/JobTypeCondition',
 	'../views/InputItemCondition',
 	'../views/ItemColorCondition',
-	'../views/ItemColorCondition',
 	'../views/IndividualNumberCondition',
 	'../views/DetailModal',
 	'../views/SectionModal',
 	'../views/SectionModalListList',
 	'../views/Pagination',
-	'../views/Download',
+	'../views/CsvDownload',
 	"entities/models/Pager",
 	"entities/models/AdminHistory",
 	"entities/models/AdminHistoryListCondition",
 	"entities/models/AdminSectionModalListCondition",
+	"entities/models/AdminCsvDownloadCondition",
 	"entities/collections/AdminHistoryListList",
 	"entities/collections/AdminSectionModalListList",
+	"entities/collections/AdminCsvDownload",
 	'bootstrap'
 ], function(App) {
 	'use strict';
@@ -33,7 +34,6 @@ define([
 				var that = this;
 				this.setNav('history');
 				var pagerModel = new App.Entities.Models.Pager();
-
 
 				var historyModel = null;
 				var detailModalView = new App.Admin.Views.DetailModal();
@@ -62,7 +62,7 @@ define([
 				});
 				var paginationView = new App.Admin.Views.Pagination({model: pagerModel});
 				var paginationView2 = new App.Admin.Views.Pagination({model: pagerModel});
-				var downloadView = new App.Admin.Views.Download();
+				var csvDownloadView = new App.Admin.Views.CsvDownload();
 
 				var fetchList = function(pageNumber,sortKey,order){
 					if(pageNumber){
@@ -74,7 +74,7 @@ define([
 					}
 					historyListListView.fetch(historyListConditionModel);
 					historyView.listTable.show(historyListListView);
-					historyView.download.show(downloadView);
+					historyView.csv_download.show(csvDownloadView);
 				};
 				this.listenTo(historyListListView, 'childview:click:a', function(view, model){
 					historyModel = new App.Entities.Models.AdminHistory({no:model.get('order_req_no')});
@@ -112,26 +112,26 @@ define([
 				this.listenTo(sectionModalConditionView, 'click:section_search', function(sortKey, order){
 					fetchList_section(1,sortKey,order);
 				});
-
 				this.listenTo(sectionModalView, 'fetched', function(){
 					// historyView.detailModal.show();
 					// sectionModalView.render();
 					historyView.detailModal.show(sectionModalView.render());
 					sectionModalView.ui.modal.modal('show');
 				});
-
 				this.listenTo(paginationView, 'selected', function(pageNumber){
 					fetchList(pageNumber);
 				});
 				this.listenTo(paginationView2, 'selected', function(pageNumber){
 					fetchList(pageNumber);
 				});
-
 				this.listenTo(historyListListView, 'sort', function(sortKey,order){
 					fetchList(null,sortKey,order);
 				});
 				this.listenTo(historyConditionView, 'click:search', function(sortKey,order){
 					fetchList(1,sortKey,order);
+				});
+				this.listenTo(csvDownloadView, 'click:download_btn', function(cond_map){
+					csvDownloadView.fetch(cond_map);
 				});
 				App.main.show(historyView);
 				historyView.page.show(paginationView);
@@ -146,5 +146,6 @@ define([
 			}
 		});
 	});
+
 	return App.Admin.Controllers.History;
 });
