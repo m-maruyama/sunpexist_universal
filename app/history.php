@@ -286,8 +286,8 @@ $app->post('/history/search', function ()use($app){
 	}
 
 	//---SQLクエリー実行---//
-//		$arg_str = "SELECT distinct on (t_order.order_req_no, t_order.order_req_line_no) ";
-		$arg_str = "SELECT ";
+		$arg_str = "SELECT distinct on (t_order.order_req_no, t_order.order_req_line_no) ";
+//		$arg_str = "SELECT ";
 		$arg_str .= "t_order.order_req_no as as_order_req_no,";
 		$arg_str .= "t_order.order_req_ymd as as_order_req_ymd,";
 		$arg_str .= "t_order.order_sts_kbn as as_order_sts_kbn,";
