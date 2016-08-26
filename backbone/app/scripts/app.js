@@ -21,6 +21,7 @@ define([
 			'AdminAcount': 'modules/admin/Acount',
 			'AdminInfo': 'modules/admin/Info',
 			'AdminPassword': 'modules/admin/Password',
+			'AdminWearerInput': 'modules/admin/WearerInput',
 		};
 		App.addRegions({
 			// "alert": "#alert",
@@ -130,6 +131,7 @@ define([
 			"OU0010": host + "/logout",
 			"GL0010": host + "/global_menu",
 			"PA0010": host + "/password",
+			"WI0010": host + "/wearer_input/input",
 			"CM9010": host + "/api/CM9010"
 		};
 

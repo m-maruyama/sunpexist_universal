@@ -404,21 +404,38 @@ $app->post('/job_type_zaiko', function () {
 /**
  * 拠点絞り込み検索
  */
-$app->post('/section_modal', function () {
+$app->post('/section_modal', function ()use($app) {
 	$params = json_decode(file_get_contents("php://input"), true);
 	$query_list = array();
+	$cond = $params['cond'];
+	$page = $params['page'];
+
 	//拠点
-	if(isset($params['rntl_sect_cd'])) {
-		array_push($query_list,"rntl_sect_cd LIKE '" . $params['rntl_sect_cd'] . "%'");
+	if(isset($cond['rntl_sect_cd'])) {
+		array_push($query_list,"rntl_sect_cd LIKE '" . $cond['rntl_sect_cd'] . "%'");
 	}
-	if(isset($params['rntl_sect_name'])) {
-		array_push($query_list,"rntl_sect_name LIKE '%" . $params['rntl_sect_name'] . "%'");
+	if(isset($cond['rntl_sect_name'])) {
+		array_push($query_list,"rntl_sect_name LIKE '%" . $cond['rntl_sect_name'] . "%'");
 	}
 	//sql文字列を' AND 'で結合
 	$query = implode(' AND ', $query_list);
-	$results = MSection::find(array(
-		'conditions' => $query
-	));
+
+	$builder = $app->modelsManager->createBuilder()
+		->where($query)
+		->from('MSection');
+//		->orderBy('MSection.rntl_sect_cd'.' '.'asc');
+	$paginator_model = new PaginatorQueryBuilder(
+		array(
+			"builder"  => $builder,
+			"limit" => $page['records_per_page'],
+			"page" => $page['page_number']
+		)
+	);
+	$results = array();
+	if($paginator_model){
+		$paginator = $paginator_model->getPaginate();
+		$results = $paginator->items;
+	}
 	$all_list = array();
 	$json_list = array();
 	$i = 0;
@@ -428,6 +445,10 @@ $app->post('/section_modal', function () {
 		$i++;
 	}
 	$json_list['list'] = $all_list;
+	$page_list['records_per_page'] = $page['records_per_page'];
+	$page_list['page_number'] = $page['page_number'];
+	$page_list['total_records'] = $paginator->total_items;
+	$json_list['page'] = $page_list;
 	echo json_encode($json_list);
 });
 ?>

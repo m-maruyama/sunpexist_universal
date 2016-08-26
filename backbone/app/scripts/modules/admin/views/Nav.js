@@ -20,6 +20,7 @@ define([
 				"receive": "li.nav_receive",
 				"acount": "li.nav_acount",
 				"info": "li.nav_info",
+				"wearerInput": "li.nav_wearerInput",
 				"logout": "li.logout a"
 			},
 			onShow: function() {
