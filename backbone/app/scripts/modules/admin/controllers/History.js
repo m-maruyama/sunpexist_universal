@@ -153,7 +153,7 @@ define([
 				});
 				App.main.show(historyView);
 				historyView.page.show(paginationView);
-				// historyView.page_2.show(paginationView2);
+				historyView.page_2.show(paginationView2);
 				historyView.condition.show(historyConditionView);
 				historyConditionView.agreement_no.show(agreementNoConditionView);
 				historyConditionView.job_type.show(jobTypeConditionView);

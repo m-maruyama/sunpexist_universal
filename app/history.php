@@ -1,5 +1,4 @@
 <?php
-//use Phalcon\Mvc\Model\Resultset;
 use Phalcon\Mvc\Model;
 use Phalcon\Mvc\Model\Resultset\Simple as Resultset;
 use Phalcon\Paginator\Adapter\Model as PaginatorModel;
@@ -222,27 +221,64 @@ $app->post('/history/search', function ()use($app){
 	$sort_key ='';
 	$order ='';
 
-	//ソートキー
+	//ソート設定
 	if(isset($page['sort_key'])){
 		$sort_key = $page['sort_key'];
-		if($sort_key == 'job_type_cd'){
-			$sort_key = 't_order.'.$sort_key;
-		}else{
-			$sort_key = 't_order.'.$sort_key;
-		}
-		if($sort_key == 'cster_emply_cd'){
-			$sort_key = 'cster_emply_cd';
-		}
+		$order = $page['order'];
 		if($sort_key == 'order_req_no' || $sort_key == 'order_req_ymd' || $sort_key == 'order_status' || $sort_key == 'order_sts_kbn'){
 			$sort_key = 't_order.'.$sort_key;
+		}
+		if($sort_key == 'job_type_cd'){
+			$sort_key = 'as_job_type_name';
+		}
+		if($sort_key == 'cster_emply_cd'){
+			$sort_key = 't_order.'.$sort_key;
+		}
+		if($sort_key == 'rntl_sect_name'){
+			$sort_key = 'as_rntl_sect_name';
+		}
+		if($sort_key == 'werer_name'){
+			$sort_key = 'as_werer_name';
+		}
+		if($sort_key == 'item_code'){
+			$sort_key = 'as_item_cd';
+		}
+		if($sort_key == 'item_code'){
+			$sort_key = 'as_item_cd';
+		}
+		if($sort_key == 'item_name'){
+			$sort_key = 'as_input_item_name';
+		}
+		if($sort_key == 'maker_rec_no'){
+			$sort_key = 'as_rec_order_no';
+		}
+		if($sort_key == 'send_shd_ymd'){
+			$sort_key = 'as_order_req_ymd';
+		}
+		if($sort_key == 'order_status'){
+			$sort_key = 'as_order_status';
+		}
+		if($sort_key == 'maker_send_no'){
+			$sort_key = 'as_ship_no';
 		}
 		if($sort_key == 'ship_ymd'){
 			$sort_key = 't_order_state'.$sort_key;
 		}
-		if($sort_key == 'rntl_sect_name'){
-			$sort_key = 't_order.'.$sort_key;
+		if($sort_key == 'send_ymd'){
+			$sort_key = 'as_ship_ymd';
 		}
-		$order = $page['order'];
+		if($sort_key == 'individual_num'){
+			$sort_key = 'as_individual_ctrl_no';
+		}
+		if($sort_key == 'order_res_ymd'){
+			$sort_key = 'as_receipt_date';
+		}
+		if($sort_key == 'rental_no'){
+			$sort_key = 'as_rntl_cont_no';
+		}
+		if($sort_key == 'rental_name'){
+			$sort_key = 'as_rntl_cont_name';
+		}
 	} else {
 		//指定がなければ発注No
 		$sort_key = "t_order.order_req_no";
@@ -250,8 +286,9 @@ $app->post('/history/search', function ()use($app){
 	}
 
 	//---SQLクエリー実行---//
-		$arg_str = "SELECT distinct on (t_order.order_req_no, t_order.order_req_line_no) ";
-		$arg_str .= "t_order.order_req_no AS as_order_req_no,";
+//		$arg_str = "SELECT distinct on (t_order.order_req_no, t_order.order_req_line_no) ";
+		$arg_str = "SELECT ";
+		$arg_str .= "t_order.order_req_no as as_order_req_no,";
 		$arg_str .= "t_order.order_req_ymd as as_order_req_ymd,";
 		$arg_str .= "t_order.order_sts_kbn as as_order_sts_kbn,";
 		$arg_str .= "t_order.order_reason_kbn as as_order_reason_kbn,";
@@ -270,6 +307,8 @@ $app->post('/history/search', function ()use($app){
 		$arg_str .= "t_delivery_goods_state.ship_no as as_ship_no,";
 		$arg_str .= "t_order_state.ship_ymd as as_ship_ymd,";
 		$arg_str .= "t_order_state.ship_qty as as_ship_qty,";
+		$arg_str .= "t_delivery_goods_state_details.individual_ctrl_no as as_individual_ctrl_no,";
+		$arg_str .= "t_delivery_goods_state_details.receipt_date as as_receipt_date,";
 		$arg_str .= "t_order.rntl_cont_no as as_rntl_cont_no,";
 		$arg_str .= "m_contract.rntl_cont_name as as_rntl_cont_name";
 
@@ -292,6 +331,9 @@ $app->post('/history/search', function ()use($app){
 
 		$t_order = new TOrder();
 		$results = new Resultset(null, $t_order, $t_order->getReadConnection()->query($arg_str));
+		// 取得オブジェクトを配列化→クラス内propety：protected値を取得する→リストカウント
+		$result_obj = (array)$results;
+		$results_cnt = $result_obj["\0*\0_count"];
 
 /*
 	$builder = $app->modelsManager->createBuilder()
@@ -472,37 +514,6 @@ $app->post('/history/search', function ()use($app){
 				$list['individual_num'] = "-";
 				$list['order_res_ymd'] = "-";
 			}
-/*
-			// 未出荷＝発注情報テーブル．発注数のサマリ != 納品状況情報テーブル．出荷数のサマリ の場合
-			// キャンセル＝発注情報テーブル．発注ステータス = 9のデータが存在する場合
-			// 出荷済＝発注情報テーブル．発注数のサマリ == 納品状況情報テーブル．出荷数のサマリ の場合
-			$list['order_status'] = null;
-			if($result->as_misyukka > 0){
-				$list['order_status'] = '1';
-			} elseif($result->as_cancel > 0) {
-				$list['order_status'] = '9';
-			}else{
-				$list['order_status'] = '2';
-			}
-			$list['order_sts_kbn'] = $result->as_order_sts_kbn;
-			//出荷数
-			$list['ship_qty'] = 0;
-			$list['ship_qty'] = $result->as_ship_qty;//納品状況情報．出荷数
-			//受領数
-			$list['receipt_num'] = $result->receipt_num;
-			//受領ステータス
-			if($result->as_receipt_status){
-				$list['receipt_status'] = $result->as_receipt_status;
-			} else {
-				$list['receipt_status'] = 1;
-			}
-			//最新出荷日
-			if($result->as_ship_ymd){
-				$list['ship_ymd'] =  date('Y/m/d',strtotime($result->as_ship_ymd));//納品状況情報．出荷日
-			}else{
-				$list['ship_ymd'] = '-';
-			}
-*/
 
 			array_push($all_list,$list);
 		}
@@ -510,8 +521,9 @@ $app->post('/history/search', function ()use($app){
 
 	$page_list['records_per_page'] = $page['records_per_page'];
 	$page_list['page_number'] = $page['page_number'];
-//	$page_list['total_records'] = $cnt;
+	$page_list['total_records'] = $results_cnt;
 	$json_list['page'] = $page_list;
 	$json_list['list'] = $all_list;
+
 	echo json_encode($json_list);
 });
