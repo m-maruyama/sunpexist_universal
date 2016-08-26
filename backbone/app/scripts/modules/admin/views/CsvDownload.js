@@ -62,10 +62,25 @@ define([
 
 					var msg = "データ量により、ダウンロード処理に時間がかかる可能性があります。ダウンロードを実施してよろしいですか？";
 					if (window.confirm(msg)) {
-						this.triggerMethod('click:download_btn', cond_map);
+						var cond = {
+							"scr": 'CSVダウンロード',
+							"cond": cond_map
+						};
+						var form = $('<form action="' + App.api.DL0010 + '" method="post"></form>');
+						var data = $('<input type="hidden" name="data" />');
+						data.val(JSON.stringify(cond));
+						form.append(data);
+						$('body').append(form);
+						form.submit();
+						data.remove();
+						form.remove();
+						form=null;
+						return;
+//						this.triggerMethod('click:download_btn', cond_map);
 					}
 				}
 			},
+/*
 			fetch:function(cond_map){
 				var modelForUpdate = this.model;
 				var cond = {
@@ -86,6 +101,7 @@ define([
 					}
 				});
 			}
+*/
 		});
 	});
 });

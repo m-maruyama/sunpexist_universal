@@ -7,6 +7,7 @@ use Phalcon\Paginator\Adapter\QueryBuilder as PaginatorQueryBuilder;
 
 /**
  * 画面区別コード一覧
+ *
  * @param csv_code
  *
  * 0001:発注状況照会
@@ -14,11 +15,23 @@ use Phalcon\Paginator\Adapter\QueryBuilder as PaginatorQueryBuilder;
  */
 
 /**
+  * エラーコード一覧
+  *
+  * @param err_code
+  *
+  * 0000:正常
+	* 9001:検索結果０件
+	* 9002:CSVダウンロード処理エラー
+	*
+  */
+
+/**
  * CSVダウンロード機能
  */
 $app->post('/csv_download', function ()use($app){
 
-	$params = json_decode(file_get_contents("php://input"), true);
+//	$params = json_decode(file_get_contents("php://input"), true);
+	$params = json_decode($_POST['data'], true);
 
 	//---アカウントセッション取得---//
 	$auth = $app->session->get("auth");
@@ -30,9 +43,10 @@ $app->post('/csv_download', function ()use($app){
 	$result = array();
 	// 処理結果コード　0:成功　1:失敗
 	$result["result"] = "0";
-	// 画面コード　0000:デフォルト　9999:エラーコード　その他は各照会系画面区別コード参照
+	// 画面コード　上記画面区別コード参照
 	$result["csv_code"] = "0000";
-
+	// エラーコード　上記エラーコード参照
+	$result["err_code"] = "0000";
 	//--検索条件配列生成--//
 	$query_list = array();
 
@@ -42,10 +56,9 @@ $app->post('/csv_download', function ()use($app){
 	if ($cond["ui_type"] === "history") {
 		$result["csv_code"] = "0001";
 
-		//---検索条件---//
+		//---発注状況検索処理---//
 		//企業ID
 		array_push($query_list,"t_order.corporate_id = '".$auth['corporate_id']."'");
-
 		//契約No
 		if(!empty($cond['agreement_no'])){
 			array_push($query_list,"t_order.rntl_cont_no = '".$cond['agreement_no']."'");
@@ -257,7 +270,7 @@ $app->post('/csv_download', function ()use($app){
 		}
 */
 
-		//---SQLクエリー実行---//
+		// SQLクエリー実行
 		$arg_str = "SELECT distinct on (t_order.order_req_no, t_order.order_req_line_no) ";
 		$arg_str .= "t_order.order_req_no AS as_order_req_no,";
 		$arg_str .= "t_order.order_req_ymd as as_order_req_ymd,";
@@ -310,9 +323,6 @@ $app->post('/csv_download', function ()use($app){
 
 		if(!empty($t_order_list)){
 			foreach($t_order_list as $t_order_map){
-				if(!isset($t_order_map)){
-					break;
-				}
 				$list['order_req_no'] = $t_order_map["as_order_req_no"];
 				$list['order_req_ymd'] = $t_order_map["as_order_req_ymd"];
 				$list['order_sts_kbn'] = $t_order_map["as_order_sts_kbn"];
@@ -421,10 +431,10 @@ $app->post('/csv_download', function ()use($app){
 						array_push($day_list, date('Y/m/d',strtotime($del_gd_std_map->receipt_date)));
 					}
 					// 個体管理番号
-					$individual_ctrl_no = implode("<br>", $num_list);
+					$individual_ctrl_no = implode(PHP_EOL, $num_list);
 					$list['individual_num'] = $individual_ctrl_no;
 					// 受領日
-					$receipt_date = implode("<br>", $day_list);
+					$receipt_date = implode(PHP_EOL, $day_list);
 					$list['order_res_ymd'] = $receipt_date;
 				} else {
 					$list['individual_num'] = "-";
@@ -434,16 +444,18 @@ $app->post('/csv_download', function ()use($app){
 				array_push($all_list,$list);
 			}
 		} else {
+			// 検索結果がない場合はエラーとして終了
 			$result["result"] = "1";
-			$result["csv_code"] = "9999";
+			$result["csv_code"] = "9001";
+			echo json_encode($result);
+			return;
 		}
 	}
 
-/*
-	// CSV出力
-	header("Content-Type: application/octet-stream");
-	header("Content-Disposition: attachment; filename=delivery_".$now = date('YmdHis').".csv");
-	$fp = fopen('php://output','w');
+	//---CSV出力---//
+	$csv_datas = array();
+
+	// ヘッダー作成
 	$header_1 = array(
 		'発注No',
 		'発注区分',
@@ -458,13 +470,13 @@ $app->post('/csv_download', function ()use($app){
 		'出荷数',
 		'個体管理番号',
 		'受領日',
-		'契約No',
+		'契約No'
 	);
+	array_push($csv_datas, $header_1);
 	$header_2 = array(
 		'発注日',
 		'',
 		'貸与パターン',
-		'',
 		'着用者名',
 		'商品名',
 		'',
@@ -475,59 +487,72 @@ $app->post('/csv_download', function ()use($app){
 		'',
 		'',
 		'',
-		'契約名',
+		'契約名'
 	);
-	_fputcsv($fp,$header);
-	foreach ($results as $result) {
-		$list = array();
-		if(!isset($result)){
-			break;
-		}
-		$list['order_req_no'] = $result->tOrder->order_req_no;
-		$list['order_req_line_no'] = $result->tOrder->order_req_line_no;
-		$list['cster_emply_cd'] = $result->tOrder->cster_emply_cd;
-		$list['rntl_sect_name'] = $result->mSection->rntl_sect_name;
-		$list['job_type_name'] = $result->mJobType->job_type_name;
-		// $list['order_req_ymd'] = $result->TOrderState->TOrder->order_req_ymd;
+	array_push($csv_datas, $header_2);
 
-		if($result->tOrder->order_req_ymd){
-			$list['order_req_ymd'] =  date('Y/m/d',strtotime($result->tOrder->order_req_ymd));
-		}else{
-			$list['order_req_ymd'] = '-';
-		}
+	// ボディ作成
+	foreach ($all_list as $all_map) {
+		$csv_body_list = array();
 
-		$list['statusText'] = statusText($result->tOrder->order_status,$result->tDeliveryGoodsState->receipt_status);
-		$list['kubunText'] = kubunText($result->tOrder->order_sts_kbn);
-		//受領ステータス
-		// if(!in_array($result->receipt_status, $receipt_status)){
-			// array_push($receipt_status,$result->receipt_status);
-		// }
-		// $list['receipt_status'] = $result->receipt_status;
-		// $list['order_sts_kbn'] = $result->TOrderState->TOrder->order_sts_kbn;
-		//納品状況情報．出荷日
-		if($result->tDeliveryGoodsState->ship_ymd){
-			$list['ship_ymd'] =  date('Y/m/d',strtotime($result->tDeliveryGoodsState->ship_ymd));
-		}else{
-			$list['ship_ymd'] = '-';
-		}
+		// 発注No・発注日
+		$str = $all_map["order_req_no"].PHP_EOL.$all_map["order_req_ymd"];
+		$str = str_replace('"', '""', $str);
+		array_push($csv_body_list, $str);
+		// 発注区分
+		$str = $all_map["order_sts_name"].PHP_EOL."(".$all_map["order_reason_name"];
+		array_push($csv_body_list, $str);
+		// 拠点・貸与パターン
+		$str = $all_map["rntl_sect_name"].PHP_EOL.$all_map["job_type_name"];
+		array_push($csv_body_list, $str);
+		// 社員番号・着用者名
+		$str = $all_map["cster_emply_cd"].PHP_EOL.$all_map["werer_name"];
+		array_push($csv_body_list, $str);
+		// 商品-色(サイズ-サイズ2)・商品名
+		$str = $all_map["shin_item_code"].PHP_EOL.$all_map["input_item_name"];
+		array_push($csv_body_list, $str);
+		// 発注数
+		$str = $all_map["order_qty"];
+		array_push($csv_body_list, $str);
+		// メーカー受注番号・出荷予定日
+		$str = $all_map["rec_order_no"].PHP_EOL.$all_map["send_shd_ymd"];
+		array_push($csv_body_list, $str);
+		// 受注数
+		$str = $all_map["order_qty"];
+		array_push($csv_body_list, $str);
+		// ステータス
+		$str = $all_map["order_status_name"];
+		array_push($csv_body_list, $str);
+		// メーカー伝票番号・出荷日
+		$str = $all_map["ship_no"].PHP_EOL.$all_map["ship_ymd"];
+		array_push($csv_body_list, $str);
+		// 出荷数
+		$str = $all_map["ship_qty"];
+		array_push($csv_body_list, $str);
+		// 個体管理番号
+		$str = $all_map["individual_num"];
+		array_push($csv_body_list, $str);
+		// 受領日
+		$str = $all_map["order_res_ymd"];
+		array_push($csv_body_list, $str);
+		// 契約No・契約名
+		$str = $all_map["rntl_cont_no"].PHP_EOL.$all_map["rntl_cont_name"];
+		array_push($csv_body_list, $str);
 
-		$list['rec_order_no'] = $result->tDeliveryGoodsState->rec_order_no;//納品状況情報．受注No.
-		$list['ship_no'] = $result->tDeliveryGoodsState->ship_no;//納品状況情報．配送伝票No.
-		$list['item_name'] = $result->mItem->item_name;//商品マスタ．商品名（漢字）
-		$list['item_cd'] = $result->tOrderState->item_cd;//発注状況情報．商品コード
-		$list['color_cd'] = $result->tOrderState->color_cd;//発注状況情報．色コード
-		$list['size_cd'] = $result->tOrderState->size_cd;//発注状況情報．サイズコード
-		$list['ship_qty'] = $result->tDeliveryGoodsState->ship_qty;//出荷数
-		//受領数
-		if($result->tDeliveryGoodsState->receipt_status == 2){
-			$list['receipt_num'] = $result->tDeliveryGoodsState->ship_qty;
-		} else {
-			$list['receipt_num'] = '0';
-		}
-		_fputcsv($fp,$list);
+		// CSVレコード配列にマージ
+		array_push($csv_datas, $csv_body_list);
 	}
+
+	// CSVデータ書き込み
+	$file_name = "history_".date("YmdHis", time()).".csv";
+	header("Content-Type: application/octet-stream");
+	header("Content-Disposition: attachment; filename=".$file_name);
+
+	$fp = fopen('php://output','w');
+	foreach ($csv_datas as $csv_data) {
+		mb_convert_variables("SJIS-win", "UTF-8", $csv_data);
+		fputcsv($fp, $csv_data);
+	}
+
 	fclose($fp);
-*/
-	echo json_encode($result);
-	return;
 });
