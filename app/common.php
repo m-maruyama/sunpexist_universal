@@ -115,10 +115,12 @@ $app->post('/agreement_no', function ()use($app) {
 //		->orderBy('cast(MContract.rntl_cont_no asc as integer)')
 		->execute();
 
+/*
 	// デフォルトは空を設定
 	$list['rntl_cont_no'] = null;
 	$list['rntl_cont_name'] = null;
 	array_push($all_list,$list);
+*/
 
 	foreach ($results as $result) {
 		$list['rntl_cont_no'] = $result->mContract->rntl_cont_no;
