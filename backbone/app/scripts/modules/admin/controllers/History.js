@@ -135,7 +135,11 @@ define([
 					}
 				});
 				this.listenTo(paginationView2, 'selected', function(pageNumber){
-					fetchList(pageNumber);
+					if(modal){
+						fetchList_section(pageNumber);
+					}else{
+						fetchList(pageNumber);
+					}
 				});
 				this.listenTo(historyListListView, 'sort', function(sortKey,order){
 					fetchList(null,sortKey,order);
@@ -149,7 +153,7 @@ define([
 				});
 				App.main.show(historyView);
 				historyView.page.show(paginationView);
-				historyView.page_2.show(paginationView2);
+				// historyView.page_2.show(paginationView2);
 				historyView.condition.show(historyConditionView);
 				historyConditionView.agreement_no.show(agreementNoConditionView);
 				historyConditionView.job_type.show(jobTypeConditionView);
