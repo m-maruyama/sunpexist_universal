@@ -28,9 +28,6 @@ define([
 					send_day_to : null,
 					status0: this.get('status0'),
 					status1: this.get('status1'),
-//					status2: this.get('status2'),
-//					status3: this.get('status3'),
-//					status4: this.get('status4'),
 					order_kbn0: this.get('order_kbn0'),
 					order_kbn1: this.get('order_kbn1'),
 					order_kbn2: this.get('order_kbn2'),
@@ -107,12 +104,6 @@ define([
 				if(this.get('send_day_to')) {
 					result.send_day_to = this.get('send_day_to');
 				}
-				// if(this.get('time_from')) {
-					// result.time_from = parseInt(this.get('time_from').replace(/:/g, ''), 10);
-				// }
-				// if(this.get('time_to')) {
-					// result.time_to = parseInt(this.get('time_to').replace(/:/g, ''), 10);
-				// }
 				if(this.get('individual_number')) {
 					result.individual_number = this.get('individual_number');
 				}

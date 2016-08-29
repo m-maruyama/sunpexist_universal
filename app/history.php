@@ -75,11 +75,15 @@ $app->post('/history/search', function ()use($app){
 	}
 	//出荷日from
 	if(isset($cond['send_day_from'])){
-		array_push($query_list,"TO_DATE(t_order_state.ship_ymd,'YYYY/MM/DD') >= TO_DATE('".$cond['send_day_from']."','YYYY/MM/DD')");
+		$cond['send_day_from'] = date('Y/m/d 00:00:00', strtotime($cond['send_day_from']));
+		array_push($query_list,"t_order_state.ship_ymd >= '".$cond['send_day_from']."'");
+//		array_push($query_list,"TO_DATE(t_order_state.ship_ymd,'YYYY/MM/DD') >= TO_DATE('".$cond['send_day_from']."','YYYY/MM/DD')");
 	}
 	//出荷日to
 	if(isset($cond['send_day_to'])){
-		array_push($query_list,"TO_DATE(t_order_state.ship_ymd,'YYYY/MM/DD') <= TO_DATE('".$cond['send_day_to']."','YYYY/MM/DD')");
+		$cond['send_day_to'] = date('Y/m/d 23:59:59', strtotime($cond['send_day_to']));
+		array_push($query_list,"t_order_state.ship_ymd <= '".$cond['send_day_to']."'");
+//		array_push($query_list,"TO_DATE(t_order_state.ship_ymd,'YYYY/MM/DD') <= TO_DATE('".$cond['send_day_to']."','YYYY/MM/DD')");
 	}
 	//個体管理番号
 	if(isset($cond['individual_number'])){
@@ -115,7 +119,7 @@ $app->post('/history/search', function ()use($app){
 	if(!empty($status_list)) {
 		$status_str = implode("','",$status_list);
 //		$status_query = "order_status IN ('".$status_str."')";
-		array_push($query_list,"order_status IN ('".$status_str."')");
+		array_push($query_list,"t_order.order_status IN ('".$status_str."')");
 //		array_push($status_kbn_list,$status_query);
 	}
 	//発注区分
@@ -137,7 +141,7 @@ $app->post('/history/search', function ()use($app){
 	}
 	if(!empty($order_kbn)){
 		$order_kbn_str = implode("','",$order_kbn);
-		$order_kbn_query = "order_sts_kbn IN ('".$order_kbn_str."')";
+		$order_kbn_query = "t_order.order_sts_kbn IN ('".$order_kbn_str."')";
 //		array_push($query_list,"order_sts_kbn IN ('".$order_kbn_str."')");
 		array_push($status_kbn_list,$order_kbn_query);
 	}
@@ -205,7 +209,7 @@ $app->post('/history/search', function ()use($app){
 	}
 	if(!empty($reason_kbn)){
 		$reason_kbn_str = implode("','",$reason_kbn);
-		$reason_kbn_query = "order_sts_kbn IN ('".$reason_kbn_str."')";
+		$reason_kbn_query = "t_order.order_reason_kbn IN ('".$reason_kbn_str."')";
 //		array_push($query_list,"order_reason_kbn IN ('".$reason_kbn_str."')");
 		array_push($status_kbn_list,$reason_kbn_query);
 	}
@@ -239,9 +243,6 @@ $app->post('/history/search', function ()use($app){
 		}
 		if($sort_key == 'werer_name'){
 			$sort_key = 'as_werer_name';
-		}
-		if($sort_key == 'item_code'){
-			$sort_key = 'as_item_cd';
 		}
 		if($sort_key == 'item_code'){
 			$sort_key = 'as_item_cd';
@@ -376,15 +377,16 @@ $app->post('/history/search', function ()use($app){
 			$list['rntl_cont_no'] = $result->as_rntl_cont_no;
 			$list['rntl_cont_name'] = $result->as_rntl_cont_name;
 
-			// 日付設定
+			//---日付設定---//
+			// 発注依頼日、出荷予定日
 			if($list['order_req_ymd']){
 				$list['order_req_ymd'] = date('Y/m/d',strtotime($list['order_req_ymd']));
-				// 出荷予定日
 				$list['send_shd_ymd'] = date('Y/m/d',strtotime($list['order_req_ymd'].' +7 day'));
 			}else{
 				$list['order_req_ymd'] = '-';
 				$list['send_shd_ymd'] = '-';
 			}
+			// 出荷日
 			if($list['ship_ymd']){
 				$list['ship_ymd'] =  date('Y/m/d',strtotime($list['ship_ymd']));
 			}else{
