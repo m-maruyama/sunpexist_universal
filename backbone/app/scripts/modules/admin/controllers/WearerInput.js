@@ -4,11 +4,9 @@ define([
 	'../views/WearerInput',
 	'../views/WearerInputCondition',
 	'../views/AgreementNoConditionInput',
-	'../views/SectionConditionInput',
 	'../views/SectionModalCondition',
 	'../views/SectionModalListList',
 	'../views/SectionModalListItem',
-	'../views/JobTypeConditionInput',
 	'../views/InputItemCondition',
 	'../views/ItemColorCondition',
 	'../views/IndividualNumberCondition',
@@ -16,6 +14,7 @@ define([
 	'../views/SectionModalListList',
 	'../views/Pagination',
 	"entities/models/Pager",
+	"entities/models/AdminWearerInput",
 	"entities/models/AdminWearerInputListCondition",
 	"entities/models/AdminSectionModalListCondition",
 	"entities/collections/AdminWearerInputListList",
@@ -30,15 +29,13 @@ define([
 				this.setNav('wearerInput');
 				var pagerModel = new App.Entities.Models.Pager();
 				var modal = false;
-				var wearerInputModel = null;
-				var wearerInputView = new App.Admin.Views.WearerInput();
+				var wearerInputModel = new App.Entities.Models.AdminWearerInput();
+				var wearerInputView = new App.Admin.Views.WearerInput({
+					model:wearerInputModel
+				});
 				var wearerInputListListCollection = new App.Entities.Collections.AdminWearerInputListList();
 
 				var agreementNoConditionView = new App.Admin.Views.AgreementNoConditionInput();
-				var sectionConditionView = new App.Admin.Views.SectionConditionInput();
-				var jobTypeConditionView = new App.Admin.Views.JobTypeConditionInput();
-				var inputItemConditionView = new App.Admin.Views.InputItemCondition();
-				var itemColorConditionView = new App.Admin.Views.ItemColorCondition();
 				var individualNumberConditionView = new App.Admin.Views.IndividualNumberCondition();
 
 				var wearerInputListConditionModel = new App.Entities.Models.AdminWearerInputListCondition();
@@ -60,7 +57,7 @@ define([
 				var sectionModalView = new App.Admin.Views.SectionModal({
 					model:sectionModalListCondition
 				});
-				this.listenTo(sectionConditionView, 'click:section_btn', function(view, model){
+				this.listenTo(wearerInputConditionView, 'click:section_btn', function(view, model){
 					// sectionModalView.page.reset();
 					// sectionModalView.listTable.reset();
 					sectionModalView.ui.modal.modal('show');
@@ -86,19 +83,23 @@ define([
 				});
 				var sectionModalListItemView = new App.Admin.Views.SectionModalListItem();
 				this.listenTo(sectionModalListListView, 'childview:click:section_select', function(model){
-					sectionConditionView.ui.section[0].value = model.model.attributes.rntl_sect_cd;
+					wearerInputConditionView.ui.section[0].value = model.model.attributes.rntl_sect_cd;
 					sectionModalView.ui.modal.modal('hide');
 				});
 				//拠点絞り込み--ここまで
+
+				//契約No選択イベント
+				this.listenTo(wearerInputView, 'change:agreement_no', function(){
+					wearerInputView.condition.show(wearerInputConditionView);
+				});
+				//契約No選択イベント
 
 				this.listenTo(paginationView, 'selected', function(pageNumber){
 						fetchList_section(pageNumber);
 				});
 				App.main.show(wearerInputView);
-				wearerInputView.condition.show(wearerInputConditionView);
-				wearerInputConditionView.agreement_no.show(agreementNoConditionView);
-				wearerInputConditionView.job_type.show(jobTypeConditionView);
-				wearerInputConditionView.section.show(sectionConditionView);
+				// wearerInputView.condition.show(wearerInputConditionView);
+				wearerInputView.agreement_no.show(agreementNoConditionView);
 				wearerInputView.sectionModal.show(sectionModalView.render());
 				sectionModalView.page.show(paginationView);
 				sectionModalView.condition.show(sectionModalConditionView);

@@ -8,7 +8,6 @@ define([
 			initialize: function() {
 				_.extend(this,Backbone.Validation.mixin);
 			},
-			url: App.api.CM0090,
 			getReq: function() {
 				var result = {
 					rntl_sect_cd : null,

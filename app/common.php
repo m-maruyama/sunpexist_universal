@@ -453,4 +453,5 @@ $app->post('/section_modal', function ()use($app) {
 	$json_list['page'] = $page_list;
 	echo json_encode($json_list);
 });
+
 ?>
