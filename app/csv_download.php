@@ -239,40 +239,75 @@ $app->post('/csv_download', function ()use($app){
 		//sql文字列を' AND 'で結合
 		$query = implode(' AND ', $query_list);
 
-/*
-		$sort_key ='';
-		$order ='';
-		//ソートキー
 		if(isset($page['sort_key'])){
 			$sort_key = $page['sort_key'];
+			$order = $page['order'];
+			if($sort_key == 'order_req_no' || $sort_key == 'order_req_ymd' || $sort_key == 'order_status' || $sort_key == 'order_sts_kbn'){
+				$sort_key = 'as_'.$sort_key;
+			}
 			if($sort_key == 'job_type_cd'){
-				$sort_key = 't_order.'.$sort_key;
-			}else{
-				$sort_key = 't_order.'.$sort_key;
+				$sort_key = 'as_job_type_name';
 			}
 			if($sort_key == 'cster_emply_cd'){
-				$sort_key = 'cster_emply_cd';
-			}
-			if($sort_key == 'order_req_no' || $sort_key == 'order_req_ymd' || $sort_key == 'order_status' || $sort_key == 'order_sts_kbn'){
-				$sort_key = 't_order.'.$sort_key;
-			}
-			if($sort_key == 'ship_ymd'){
-				$sort_key = 't_order_state'.$sort_key;
+				$sort_key = 'as_cster_emply_cd';
 			}
 			if($sort_key == 'rntl_sect_name'){
-				$sort_key = 't_order.'.$sort_key;
+				$sort_key = 'as_rntl_sect_name';
 			}
-			$order = $page['order'];
+			if($sort_key == 'werer_name'){
+				$sort_key = 'as_werer_name';
+			}
+			if($sort_key == 'item_code'){
+				$sort_key = 'as_item_cd';
+			}
+			if($sort_key == 'item_code'){
+				$sort_key = 'as_item_cd';
+			}
+			if($sort_key == 'item_name'){
+				$sort_key = 'as_input_item_name';
+			}
+			if($sort_key == 'maker_rec_no'){
+				$sort_key = 'as_rec_order_no';
+			}
+			if($sort_key == 'send_shd_ymd'){
+				$sort_key = 'as_order_req_ymd';
+			}
+			if($sort_key == 'order_status'){
+				$sort_key = 'as_order_status';
+			}
+			if($sort_key == 'maker_send_no'){
+				$sort_key = 'as_ship_no';
+			}
+			if($sort_key == 'ship_ymd'){
+				$sort_key = 'as_ship_ymd';
+			}
+			if($sort_key == 'send_ymd'){
+				$sort_key = 'as_ship_ymd';
+			}
+			if($sort_key == 'individual_num'){
+				$sort_key = 'as_individual_ctrl_no';
+			}
+			if($sort_key == 'order_res_ymd'){
+				$sort_key = 'as_receipt_date';
+			}
+			if($sort_key == 'rental_no'){
+				$sort_key = 'as_rntl_cont_no';
+			}
+			if($sort_key == 'rental_name'){
+				$sort_key = 'as_rntl_cont_name';
+			}
 		} else {
 			//指定がなければ発注No
-			$sort_key = "t_order.order_req_no";
+			$sort_key = "as_order_req_no";
 			$order = 'asc';
 		}
-*/
 
 		// SQLクエリー実行
-		$arg_str = "SELECT distinct on (t_order.order_req_no, t_order.order_req_line_no) ";
-		$arg_str .= "t_order.order_req_no AS as_order_req_no,";
+		$arg_str = "SELECT ";
+		$arg_str .= " * ";
+		$arg_str .= " FROM ";
+		$arg_str .= "(SELECT distinct on (t_order.order_req_no, t_order.order_req_line_no) ";
+		$arg_str .= "t_order.order_req_no as as_order_req_no,";
 		$arg_str .= "t_order.order_req_ymd as as_order_req_ymd,";
 		$arg_str .= "t_order.order_sts_kbn as as_order_sts_kbn,";
 		$arg_str .= "t_order.order_reason_kbn as as_order_reason_kbn,";
@@ -291,9 +326,10 @@ $app->post('/csv_download', function ()use($app){
 		$arg_str .= "t_delivery_goods_state.ship_no as as_ship_no,";
 		$arg_str .= "t_order_state.ship_ymd as as_ship_ymd,";
 		$arg_str .= "t_order_state.ship_qty as as_ship_qty,";
+		$arg_str .= "t_delivery_goods_state_details.individual_ctrl_no as as_individual_ctrl_no,";
+		$arg_str .= "t_delivery_goods_state_details.receipt_date as as_receipt_date,";
 		$arg_str .= "t_order.rntl_cont_no as as_rntl_cont_no,";
 		$arg_str .= "m_contract.rntl_cont_name as as_rntl_cont_name";
-
 		$arg_str .= " FROM t_order LEFT JOIN";
 		$arg_str .= " (t_order_state LEFT JOIN (t_delivery_goods_state LEFT JOIN t_delivery_goods_state_details ON t_delivery_goods_state.ship_no = t_delivery_goods_state_details.ship_no)";
 		$arg_str .= " ON t_order_state.t_order_state_comb_hkey = t_delivery_goods_state.t_order_state_comb_hkey)";
@@ -304,12 +340,11 @@ $app->post('/csv_download', function ()use($app){
 		$arg_str .= " ON t_order.m_job_type_comb_hkey = m_job_type.m_job_type_comb_hkey";
 		$arg_str .= " INNER JOIN m_contract";
 		$arg_str .= " ON t_order.rntl_cont_no = m_contract.rntl_cont_no";
-
 		$arg_str .= " WHERE ";
 		$arg_str .= $query;
-
+		$arg_str .= ") as distinct_table";
 		$arg_str .= " ORDER BY ";
-		$arg_str .= "t_order.order_req_no ASC";
+		$arg_str .= $sort_key." ".$order;
 
 		$t_order = new TOrder();
 		$t_order_list = new Resultset(null, $t_order, $t_order->getReadConnection()->query($arg_str));

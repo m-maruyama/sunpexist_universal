@@ -226,13 +226,13 @@ $app->post('/history/search', function ()use($app){
 		$sort_key = $page['sort_key'];
 		$order = $page['order'];
 		if($sort_key == 'order_req_no' || $sort_key == 'order_req_ymd' || $sort_key == 'order_status' || $sort_key == 'order_sts_kbn'){
-			$sort_key = 't_order.'.$sort_key;
+			$sort_key = 'as_'.$sort_key;
 		}
 		if($sort_key == 'job_type_cd'){
 			$sort_key = 'as_job_type_name';
 		}
 		if($sort_key == 'cster_emply_cd'){
-			$sort_key = 't_order.'.$sort_key;
+			$sort_key = 'as_cster_emply_cd';
 		}
 		if($sort_key == 'rntl_sect_name'){
 			$sort_key = 'as_rntl_sect_name';
@@ -262,7 +262,7 @@ $app->post('/history/search', function ()use($app){
 			$sort_key = 'as_ship_no';
 		}
 		if($sort_key == 'ship_ymd'){
-			$sort_key = 't_order_state'.$sort_key;
+			$sort_key = 'as_ship_ymd';
 		}
 		if($sort_key == 'send_ymd'){
 			$sort_key = 'as_ship_ymd';
@@ -281,102 +281,59 @@ $app->post('/history/search', function ()use($app){
 		}
 	} else {
 		//指定がなければ発注No
-		$sort_key = "t_order.order_req_no";
+		$sort_key = "as_order_req_no";
 		$order = 'asc';
 	}
 
 	//---SQLクエリー実行---//
-		$arg_str = "SELECT distinct on (t_order.order_req_no, t_order.order_req_line_no) ";
-//		$arg_str = "SELECT ";
-		$arg_str .= "t_order.order_req_no as as_order_req_no,";
-		$arg_str .= "t_order.order_req_ymd as as_order_req_ymd,";
-		$arg_str .= "t_order.order_sts_kbn as as_order_sts_kbn,";
-		$arg_str .= "t_order.order_reason_kbn as as_order_reason_kbn,";
-		$arg_str .= "m_section.rntl_sect_name as as_rntl_sect_name,";
-		$arg_str .= "m_job_type.job_type_name as as_job_type_name,";
-		$arg_str .= "t_order.cster_emply_cd as as_cster_emply_cd,";
-		$arg_str .= "t_order.werer_name as as_werer_name,";
-		$arg_str .= "t_order.item_cd as as_item_cd,";
-		$arg_str .= "t_order.color_cd as as_color_cd,";
-		$arg_str .= "t_order.size_cd as as_size_cd,";
-		$arg_str .= "t_order.size_two_cd as as_size_two_cd,";
-		$arg_str .= "m_input_item.input_item_name as as_input_item_name,";
-		$arg_str .= "t_order.order_qty as as_order_qty,";
-		$arg_str .= "t_order_state.rec_order_no as as_rec_order_no,";
-		$arg_str .= "t_order.order_status as as_order_status,";
-		$arg_str .= "t_delivery_goods_state.ship_no as as_ship_no,";
-		$arg_str .= "t_order_state.ship_ymd as as_ship_ymd,";
-		$arg_str .= "t_order_state.ship_qty as as_ship_qty,";
-		$arg_str .= "t_delivery_goods_state_details.individual_ctrl_no as as_individual_ctrl_no,";
-		$arg_str .= "t_delivery_goods_state_details.receipt_date as as_receipt_date,";
-		$arg_str .= "t_order.rntl_cont_no as as_rntl_cont_no,";
-		$arg_str .= "m_contract.rntl_cont_name as as_rntl_cont_name";
+	$arg_str = "SELECT ";
+	$arg_str .= " * ";
+	$arg_str .= " FROM ";
+	$arg_str .= "(SELECT distinct on (t_order.order_req_no, t_order.order_req_line_no) ";
+	$arg_str .= "t_order.order_req_no as as_order_req_no,";
+	$arg_str .= "t_order.order_req_ymd as as_order_req_ymd,";
+	$arg_str .= "t_order.order_sts_kbn as as_order_sts_kbn,";
+	$arg_str .= "t_order.order_reason_kbn as as_order_reason_kbn,";
+	$arg_str .= "m_section.rntl_sect_name as as_rntl_sect_name,";
+	$arg_str .= "m_job_type.job_type_name as as_job_type_name,";
+	$arg_str .= "t_order.cster_emply_cd as as_cster_emply_cd,";
+	$arg_str .= "t_order.werer_name as as_werer_name,";
+	$arg_str .= "t_order.item_cd as as_item_cd,";
+	$arg_str .= "t_order.color_cd as as_color_cd,";
+	$arg_str .= "t_order.size_cd as as_size_cd,";
+	$arg_str .= "t_order.size_two_cd as as_size_two_cd,";
+	$arg_str .= "m_input_item.input_item_name as as_input_item_name,";
+	$arg_str .= "t_order.order_qty as as_order_qty,";
+	$arg_str .= "t_order_state.rec_order_no as as_rec_order_no,";
+	$arg_str .= "t_order.order_status as as_order_status,";
+	$arg_str .= "t_delivery_goods_state.ship_no as as_ship_no,";
+	$arg_str .= "t_order_state.ship_ymd as as_ship_ymd,";
+	$arg_str .= "t_order_state.ship_qty as as_ship_qty,";
+	$arg_str .= "t_delivery_goods_state_details.individual_ctrl_no as as_individual_ctrl_no,";
+	$arg_str .= "t_delivery_goods_state_details.receipt_date as as_receipt_date,";
+	$arg_str .= "t_order.rntl_cont_no as as_rntl_cont_no,";
+	$arg_str .= "m_contract.rntl_cont_name as as_rntl_cont_name";
+	$arg_str .= " FROM t_order LEFT JOIN";
+	$arg_str .= " (t_order_state LEFT JOIN (t_delivery_goods_state LEFT JOIN t_delivery_goods_state_details ON t_delivery_goods_state.ship_no = t_delivery_goods_state_details.ship_no)";
+	$arg_str .= " ON t_order_state.t_order_state_comb_hkey = t_delivery_goods_state.t_order_state_comb_hkey)";
+	$arg_str .= " ON t_order.t_order_comb_hkey = t_order_state.t_order_comb_hkey";
+	$arg_str .= " INNER JOIN m_section";
+	$arg_str .= " ON t_order.m_section_comb_hkey = m_section.m_section_comb_hkey";
+	$arg_str .= " INNER JOIN (m_job_type INNER JOIN m_input_item ON m_job_type.m_job_type_comb_hkey = m_input_item.m_job_type_comb_hkey)";
+	$arg_str .= " ON t_order.m_job_type_comb_hkey = m_job_type.m_job_type_comb_hkey";
+	$arg_str .= " INNER JOIN m_contract";
+	$arg_str .= " ON t_order.rntl_cont_no = m_contract.rntl_cont_no";
+	$arg_str .= " WHERE ";
+	$arg_str .= $query;
+	$arg_str .= ") as distinct_table";
+	$arg_str .= " ORDER BY ";
+	$arg_str .= $sort_key." ".$order;
 
-		$arg_str .= " FROM t_order LEFT JOIN";
-		$arg_str .= " (t_order_state LEFT JOIN (t_delivery_goods_state LEFT JOIN t_delivery_goods_state_details ON t_delivery_goods_state.ship_no = t_delivery_goods_state_details.ship_no)";
-		$arg_str .= " ON t_order_state.t_order_state_comb_hkey = t_delivery_goods_state.t_order_state_comb_hkey)";
-		$arg_str .= " ON t_order.t_order_comb_hkey = t_order_state.t_order_comb_hkey";
-		$arg_str .= " INNER JOIN m_section";
-		$arg_str .= " ON t_order.m_section_comb_hkey = m_section.m_section_comb_hkey";
-		$arg_str .= " INNER JOIN (m_job_type INNER JOIN m_input_item ON m_job_type.m_job_type_comb_hkey = m_input_item.m_job_type_comb_hkey)";
-		$arg_str .= " ON t_order.m_job_type_comb_hkey = m_job_type.m_job_type_comb_hkey";
-		$arg_str .= " INNER JOIN m_contract";
-		$arg_str .= " ON t_order.rntl_cont_no = m_contract.rntl_cont_no";
-
-		$arg_str .= " WHERE ";
-		$arg_str .= $query;
-
-		$arg_str .= " ORDER BY ";
-		$arg_str .= $sort_key." ".$order;
-
-		$t_order = new TOrder();
-		$results = new Resultset(null, $t_order, $t_order->getReadConnection()->query($arg_str));
-		// 取得オブジェクトを配列化→クラス内propety：protected値を取得する→リストカウント
-		$result_obj = (array)$results;
-		$results_cnt = $result_obj["\0*\0_count"];
-
-/*
-	$builder = $app->modelsManager->createBuilder()
-//		->where($query)
-		->from('TOrder')
-		->columns(
-		array('TOrder.order_req_no as as_order_req_no',
-		'TOrder.order_req_ymd as as_order_req_ymd',
-		'TOrder.order_sts_kbn as as_order_sts_kbn',
-		'TOrder.order_reason_kbn as as_order_reason_kbn',
-		'MSection.rntl_sect_name as as_rntl_sect_name',
-		'MJobType.job_type_name as as_job_type_name',
-		'TOrder.cster_emply_cd as as_cster_emply_cd',
-		'TOrder.werer_name as as_werer_name',
-		'TOrder.item_cd as as_item_cd',
-		'TOrder.color_cd as as_color_cd',
-		'TOrder.size_cd as as_size_cd',
-		'TOrder.size_two_cd as as_size_two_cd',
-		'MInputItem.input_item_name as as_input_item_name',
-		'TOrder.order_qty as as_order_qty',
-		'TOrderState.rec_order_no as as_rec_order_no',
-		'TOrder.order_status as as_order_status',
-		'TDeliveryGoodsState.ship_no as as_ship_no',
-		'TOrderState.ship_ymd as as_ship_ymd',
-		'TOrderState.ship_qty as as_ship_qty',
-		'TOrder.rntl_cont_no as as_rntl_cont_no',
-		'MContract.rntl_cont_name as as_rntl_cont_name')
-		)
-//		->having($status_query)
-		->leftJoin('TOrderState','TOrderState.t_order_comb_hkey = TOrder.t_order_comb_hkey')
-		->leftJoin('TDeliveryGoodsState','TDeliveryGoodsState.t_order_state_comb_hkey = TOrderState.t_order_state_comb_hkey')
-		->leftJoin('TDeliveryGoodsStateDetails','TDeliveryGoodsStateDetails.ship_no = TDeliveryGoodsState.ship_no')
-		->join('MSection','MSection.m_section_comb_hkey = TOrder.m_section_comb_hkey')
-		->join('MJobType','MJobType.m_job_type_comb_hkey = TOrder.m_job_type_comb_hkey')
-		->join('MInputItem','MInputItem.m_job_type_comb_hkey = MJobType.m_job_type_comb_hkey')
-		->join('MContract','MContract.rntl_cont_no = TOrder.rntl_cont_no')
-		->distinct('TOrder.order_req_no');
-
-	//総件数取得用(phalconのバグでgroup by時の検索総件数が取れないため)
-	$sql = $builder->getQuery()->getSql();
-	$cnt = $app->db->fetchColumn('select count(*) from ('.$sql['sql'].') as cnt');
-//	$builder->orderBy($sort_key.' '.$order);
-*/
+	$t_order = new TOrder();
+	$results = new Resultset(null, $t_order, $t_order->getReadConnection()->query($arg_str));
+	// 取得オブジェクトを配列化→クラス内propety：protected値を取得する→リストカウント
+	$result_obj = (array)$results;
+	$results_cnt = $result_obj["\0*\0_count"];
 
 	$paginator_model = new PaginatorModel(
 		array(
@@ -524,6 +481,5 @@ $app->post('/history/search', function ()use($app){
 	$page_list['total_records'] = $results_cnt;
 	$json_list['page'] = $page_list;
 	$json_list['list'] = $all_list;
-
 	echo json_encode($json_list);
 });

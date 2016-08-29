@@ -56,6 +56,7 @@ define([
 					},
 					complete:function(res){
 						$.unblockUI();
+						$('.tb_individual_num').hide();
 					}
 				});
 			}
