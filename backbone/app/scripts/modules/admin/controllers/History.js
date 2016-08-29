@@ -70,6 +70,8 @@ define([
 					}
 					historyListListView.fetch(historyListConditionModel);
 					historyView.listTable.show(historyListListView);
+					historyView.page.show(paginationView);
+					historyView.page_2.show(paginationView2);
 					historyView.csv_download.show(csvDownloadView);
 				};
 				this.listenTo(historyListListView, 'childview:click:a', function(view, model){
@@ -152,8 +154,6 @@ define([
 					csvDownloadView.fetch(cond_map);
 				});
 				App.main.show(historyView);
-				historyView.page.show(paginationView);
-				historyView.page_2.show(paginationView2);
 				historyView.condition.show(historyConditionView);
 				historyConditionView.agreement_no.show(agreementNoConditionView);
 				historyConditionView.job_type.show(jobTypeConditionView);
