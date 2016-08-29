@@ -103,10 +103,10 @@ define([
 			"CM0040": host + "/log",
 			"CM0050": host + "/job_type_zaiko",
 			"CM0060": host + "/agreement_no",
+			"CM0061": host + "/agreement_no_input",
 			"CM0070": host + "/input_item",
 			"CM0080": host + "/item_color",
 			"CM0090": host + "/section_modal",
-			"CM0091": host + "/section_modal_select",
 			"IM0010": host + "/import_csv",
 			"IM0020": host + "/csv",
 			"DL0010": host + "/csv_download",
@@ -131,7 +131,7 @@ define([
 			"OU0010": host + "/logout",
 			"GL0010": host + "/global_menu",
 			"PA0010": host + "/password",
-			"WI0010": host + "/wearer_input/input",
+			"WI0010": host + "/wearer_input",
 			"CM9010": host + "/api/CM9010"
 		};
 
