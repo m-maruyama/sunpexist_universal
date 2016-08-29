@@ -40,6 +40,7 @@ try {
     include __DIR__ . '/../app/history.php';
     include __DIR__ . '/../app/login.php';
     include __DIR__ . '/../app/home.php';
+    include __DIR__ . '/../app/wearer_input.php';
     include __DIR__ . '/../app/ChromePhp.php';
 
     /**
