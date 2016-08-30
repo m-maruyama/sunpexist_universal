@@ -1,12 +1,17 @@
-<td>{{#if member_no}}{{member_no}}{{else}}-{{/if}}</td>
-<td>{{#if rntl_sect_name}}{{rntl_sect_name}}{{else}}-{{/if}}</td>
-<td>{{#if job_type_name}}{{job_type_name}}{{else}}-{{/if}}</td>
-<td>{{#if item_name}}{{item_name}}{{else}}-{{/if}}</td>
-<td>{{#if item_cd}}{{item_cd}}{{else}}-{{/if}}</td>
-<td>{{#if color_cd}}{{color_cd}}{{else}}-{{/if}}</td>
-<td>{{#if size}}{{size}}{{else}}-{{/if}}</td>
-<td>{{#if send_num}}{{send_num}}{{else}}0{{/if}}</td>
-<td>{{#if rec_order_no}}{{rec_order_no}}{{else}}-{{/if}}</td>
-<td>{{#if ship_no}}{{ship_no}}{{else}}-{{/if}}</td>
-<td>{{#if send_day}}{{send_day}}{{else}}-{{/if}}</td>
-<td>{{#if order_req_no}}<a href="#" class="detail">{{order_req_no}}</a>{{else}}-{{/if}}</td>
+<!--tr class="blue"-->
+  <td>{{cster_emply_cd}}<br>
+  {{werer_name}}</td>
+  <td>{{now_rntl_sect_name}}<br>
+  {{now_job_type_name}}</td>
+  <td>{{old_rntl_sect_name}}<br>
+    {{old_job_type_name}}</td>
+  <td>{{shin_item_code}}<br>
+    {{input_item_name}}</td>
+  <td class="tb_individual_num">{{individual_ctrl_no}}</td>
+  <td>{{ship_qty}}</td>
+  <td>{{ship_ymd}}</td>
+  <td>{{re_order_date}}</td>
+  <td>{{order_req_no}}</td>
+  <td>{{rec_order_no}}<br>
+  {{ship_no}}</td>
+<!--/tr-->

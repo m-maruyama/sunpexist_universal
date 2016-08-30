@@ -242,13 +242,13 @@ define([
 			'click @ui.search': function(e){
 				e.preventDefault();
 				this.triggerMethod('hideAlerts');
-				this.model.set('agreement_no', this.ui.agreement_no.val());
+				var agreement_no = $("select[name='agreement_no']").val();
+				this.model.set('agreement_no', agreement_no);
+//				this.model.set('agreement_no', this.ui.agreement_no.val());
 				this.model.set('no', this.ui.no.val());
 				this.model.set('emply_order_no', this.ui.emply_order_no.val());
 				this.model.set('member_no', this.ui.member_no.val());
 				this.model.set('member_name', this.ui.member_name.val());
-//				this.model.set('office', this.ui.office.val());
-//				this.model.set('office_cd', this.ui.office_cd.val());
 				this.model.set('section', this.ui.section.val());
 				this.model.set('job_type', this.ui.job_type.val());
 				this.model.set('input_item', this.ui.input_item.val());
@@ -260,9 +260,6 @@ define([
 				this.model.set('send_day_to', this.ui.send_day_to.val());
 				this.model.set('status0', this.ui.status0.prop('checked'));
 				this.model.set('status1', this.ui.status1.prop('checked'));
-//				this.model.set('status2', this.ui.status2.prop('checked'));
-//				this.model.set('status3', this.ui.status3.prop('checked'));
-//				this.model.set('status4', this.ui.status4.prop('checked'));
 				this.model.set('order_kbn0', this.ui.order_kbn0.prop('checked'));
 				this.model.set('order_kbn1', this.ui.order_kbn1.prop('checked'));
 				this.model.set('order_kbn2', this.ui.order_kbn2.prop('checked'));

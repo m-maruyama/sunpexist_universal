@@ -24,8 +24,6 @@ define([
 				'emply_order_no': '#emply_order_no',
 				'member_no': '#member_no',
 				'member_name': '#member_name',
-//				'office': '#office',
-//				'office_cd': '#office_cd',
 				'section': '#section',
 				'job_type': '#job_type',
 				"input_item": "#input_item",
@@ -41,7 +39,6 @@ define([
 				'order_kbn1': '#order_kbn1',
 				'order_kbn2': '#order_kbn2',
 				'order_kbn3': '#order_kbn3',
-//				'order_kbn4': '#order_kbn4',
 				'reason_kbn0': '#reason_kbn0',
 				'reason_kbn1': '#reason_kbn1',
 				'reason_kbn2': '#reason_kbn2',
@@ -57,11 +54,6 @@ define([
 				'reason_kbn12': '#reason_kbn12',
 				'reason_kbn13': '#reason_kbn13',
 				'reason_kbn14': '#reason_kbn14',
-//				'reason_kbn15': '#reason_kbn15',
-//				'reason_kbn16': '#reason_kbn16',
-//				'reason_kbn17': '#reason_kbn17',
-//				'reason_kbn18': '#reason_kbn18',
-//				'reason_kbn19': '#reason_kbn19',
 				"individual_number": "#individual_number",
 				"search": '.search',
 				'datepicker': '.datepicker',
@@ -73,8 +65,6 @@ define([
 				'#emply_order_no': 'emply_order_no',
 				'#member_no': 'member_no',
 				'#member_name': 'member_name',
-//				'#office': 'office',
-//				'#office_cd': 'office_cd',
 				'#section': 'section',
 				'#job_type': 'job_type',
 				"#input_item": "input_item",
@@ -90,7 +80,6 @@ define([
 				'#order_kbn1': 'order_kbn1',
 				'#order_kbn2': 'order_kbn2',
 				'#order_kbn3': 'order_kbn3',
-//				'#order_kbn4': 'order_kbn4',
 				'#reason_kbn0': 'reason_kbn0',
 				'#reason_kbn1': 'reason_kbn1',
 				'#reason_kbn2': 'reason_kbn2',
@@ -106,11 +95,6 @@ define([
 				'#reason_kbn12': 'reason_kbn12',
 				'#reason_kbn13': 'reason_kbn13',
 				'#reason_kbn14': 'reason_kbn14',
-//				'#reason_kbn15': 'reason_kbn15',
-//				'#reason_kbn16': 'reason_kbn16',
-//				'#reason_kbn17': 'reason_kbn17',
-//				'#reason_kbn18': 'reason_kbn18',
-//				'#reason_kbn19': 'reason_kbn19',
 				"#individual_number": "individual_number",
 				'#search': 'search',
 				'#datepicker': 'datepicker',
@@ -233,13 +217,13 @@ define([
 			'click @ui.search': function(e){
 				e.preventDefault();
 				this.triggerMethod('hideAlerts');
-				this.model.set('agreement_no', this.ui.agreement_no.val());
+				var agreement_no = $("select[name='agreement_no']").val();
+				this.model.set('agreement_no', agreement_no);
+//				this.model.set('agreement_no', this.ui.agreement_no.val());
 				this.model.set('no', this.ui.no.val());
 				this.model.set('emply_order_no', this.ui.emply_order_no.val());
 				this.model.set('member_no', this.ui.member_no.val());
 				this.model.set('member_name', this.ui.member_name.val());
-//				this.model.set('office', this.ui.office.val());
-//				this.model.set('office_cd', this.ui.office_cd.val());
 				this.model.set('section', this.ui.section.val());
 				this.model.set('job_type', this.ui.job_type.val());
 				this.model.set('input_item', this.ui.input_item.val());
@@ -255,7 +239,6 @@ define([
 				this.model.set('order_kbn1', this.ui.order_kbn1.prop('checked'));
 				this.model.set('order_kbn2', this.ui.order_kbn2.prop('checked'));
 				this.model.set('order_kbn3', this.ui.order_kbn3.prop('checked'));
-//				this.model.set('order_kbn4', this.ui.order_kbn4.prop('checked'));
 				this.model.set('reason_kbn0', this.ui.reason_kbn0.prop('checked'));
 				this.model.set('reason_kbn1', this.ui.reason_kbn1.prop('checked'));
 				this.model.set('reason_kbn2', this.ui.reason_kbn2.prop('checked'));
@@ -271,11 +254,6 @@ define([
 				this.model.set('reason_kbn12', this.ui.reason_kbn12.prop('checked'));
 				this.model.set('reason_kbn13', this.ui.reason_kbn13.prop('checked'));
 				this.model.set('reason_kbn14', this.ui.reason_kbn14.prop('checked'));
-//				this.model.set('reason_kbn15', this.ui.reason_kbn15.prop('checked'));
-//				this.model.set('reason_kbn16', this.ui.reason_kbn16.prop('checked'));
-//				this.model.set('reason_kbn17', this.ui.reason_kbn17.prop('checked'));
-//				this.model.set('reason_kbn18', this.ui.reason_kbn18.prop('checked'));
-//				this.model.set('reason_kbn19', this.ui.reason_kbn19.prop('checked'));
 				this.model.set('individual_number', this.ui.individual_number.val());
 				this.model.set('search', this.ui.search.val());
 				this.model.set('datepicker', this.ui.datepicker.val());
