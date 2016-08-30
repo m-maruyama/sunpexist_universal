@@ -12,6 +12,9 @@ define([
 				var result = {
 					rntl_sect_cd : null,
 					rntl_sect_name : null,
+					agreement_no : null,
+					// sort_key : null,
+					// order : null,
 				};
 				if(this.get('rntl_sect_cd')) {
 					result.rntl_sect_cd = this.get('rntl_sect_cd');
@@ -19,6 +22,15 @@ define([
 				if(this.get('rntl_sect_name')) {
 					result.rntl_sect_name = this.get('rntl_sect_name');
 				}
+				if(this.get('agreement_no')) {
+					result.agreement_no = this.get('agreement_no');
+				}
+				// if(this.get('sort_key')) {
+				// 	result.sort_key = this.get('sort_key');
+				// }
+				// if(this.get('order')) {
+				// 	result.order = this.get('order');
+				// }
 				return result;
 			}
 		});

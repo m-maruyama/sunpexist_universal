@@ -5,34 +5,34 @@
 			<div class="form-group">
 				<label class="col-md-3 control-label" for="">社員コード</label>
 				<div class="col-md-6">
-					<label class="checkbox-inline"><input type="checkbox">社員コードあり　</label> <input type="text" class="input-sm" id="" value="">
+					<label class="checkbox-inline"><input type="checkbox">社員コードあり　</label> <input type="text" class="input-sm" id="cster_emply_cd" name="cster_emply_cd">
 				</div>
 			</div>
 			<div class="form-group">
 				<label class="col-md-3 control-label" for="">着用者名（漢字）</label>
 				<div class="col-md-7">
-					<input type="text" class="form-control input-sm" id="" value="">
+					<input type="text" class="form-control input-sm" id="werer_name" name="werer_name">
 				</div>
 			</div>
 			<div class="form-group">
-				<label class="col-md-3 control-label" for="">着用者名（読み仮名）</label>
+				<label class="col-md-3 control-label" for="">着用者名（カナ）</label>
 				<div class="col-md-7">
-					<input type="text" class="form-control input-sm" id="" value="">
+					<input type="text" class="form-control input-sm" id="werer_name_kana" name="werer_name_kana">
 				</div>
 			</div>
 			<div class="form-group" style="margin-bottom: 40px">
 				<label class="col-md-3 control-label" for="">性別</label>
 				<div class="col-md-2">
-					<select class="form-control input-sm" name="">
+					<select class="form-control input-sm" name="sex_kbn" id="sex_kbn">
 						<option selected="selected"></option>
-						{{#each gender_list}}<option value="{{cls_cd}}">{{gen_name}}</option>{{/each}}
+						{{#each sex_kbn_list}}<option value="{{cls_cd}}">{{gen_name}}</option>{{/each}}
 					</select>
 				</div>
 			</div>
 			<div class="form-group">
 				<label class="col-md-3 control-label" for="">異動日</label>
 				<div class="col-md-3">
-					<input type="text" class="form-control input-sm" id="" value="">
+					<input type="text" class="form-control input-sm" id="resfl_ymd" name="resfl_ymd" value="">
 				</div>
 			</div>
 
@@ -40,19 +40,19 @@
 			<div class="form-group">
 				<label class="col-md-3 control-label" for="">拠点</label>
 				<div class="col-md-5 dspilb">
-					<select class="form-control input-sm" name="section">
+					<select class="form-control input-sm" id="section" name="section">
 						<option selected="selected"></option>
 						{{#each m_section_list}}<option value="{{rntl_sect_cd}}">{{rntl_sect_name}}</option>{{/each}}
 					</select>
 				</div>
 				<div class="col-md-2 dspilb">
-					<a href="" type="button" class="btn btn-primary btn-sm btn-block" title="絞り込み" data-toggle="modal" data-target="#modal-example">絞り込み</a>
+					<a href="" type="button" id="section_btn" class="btn btn-primary btn-sm btn-block" title="絞り込み" data-toggle="modal" data-target="#modal-example">絞り込み</a>
 				</div>
 			</div>
 			<div class="form-group">
 				<label class="col-md-3 control-label" for="">貸与パターン</label>
 				<div class="col-md-5">
-					<select class="form-control input-sm" name="job_type">
+					<select class="form-control input-sm" id="job_type" name="job_type">
 						<option selected="selected"></option>
 						{{#each job_type_list}}<option value="{{job_type_cd}}">{{job_type_name}}</option>{{/each}}
 					</select>
@@ -61,9 +61,8 @@
 			<div class="form-group">
 				<label class="col-md-3 control-label" for="">出荷先</label>
 				<div class="col-md-5">
-					<select class="form-control input-sm" name="m_shipment_to">
-						<option selected="selected"></option>
-						{{#each m_section_list}}<option value="{{job_type_cd}}">{{job_type_name}}</option>{{/each}}
+					<select class="form-control input-sm" id="m_shipment_to" name="m_shipment_to">
+						{{#each m_shipment_to_list}}<option value="{{ship_to_cd}}">{{cust_to_brnch_name1}}{{cust_to_brnch_name2}}</option>{{/each}}
 					</select>
 				</div>
 			</div>

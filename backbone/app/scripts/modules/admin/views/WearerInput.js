@@ -17,10 +17,10 @@ define([
 				"listTable": ".listTable",
 				"csv_download": ".csv_download",
 				"sectionModal": ".section_modal",
-				"detailModal": '.detail_modal'
+				"detailModal": '.detail_modal',
 			},
 			binding: {
-				".agreement_no": "agreement_no",
+				"#agreement_no": "agreement_no",
 			},
 			model: new Backbone.Model(),
 			onShow: function() {
@@ -29,16 +29,18 @@ define([
 				'change @ui.agreement_no': function(e){
 					e.preventDefault();
 					this.triggerMethod('hideAlerts');
-					this.model.set('agreement_no', this.ui.agreement_no.val());
-
+					this.ui.agreement_no = $('#agreement_no');
 					var errors = this.model.validate();
 					if(errors) {
 						this.triggerMethod('showAlerts', errors);
 						return;
 					}
-					this.triggerMethod('change:agreement_no');
+					this.triggerMethod('change:agreement_no',this.ui.agreement_no.val());
 				},
-			}
+				'change @ui.job_type': function(){
+					this.ui.job_type = $('#job_type');
+				},
+			},
 
 		});
 	});

@@ -132,6 +132,7 @@ define([
 			"GL0010": host + "/global_menu",
 			"PA0010": host + "/password",
 			"WI0010": host + "/wearer_input",
+			"WI0020": host + "/wearer_input",
 			"CM9010": host + "/api/CM9010"
 		};
 

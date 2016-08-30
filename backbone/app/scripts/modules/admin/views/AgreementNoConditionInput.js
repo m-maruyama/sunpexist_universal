@@ -35,6 +35,9 @@ define([
                     }
                 });
             },
+            'change @ui.agreement_no': function(){
+                this.ui.agreement_no = $('.agreement_no');
+            },
             events: {
             }
         });

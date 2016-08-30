@@ -88,7 +88,6 @@ $app->post('/login', function ()use($app) {
                 // ホーム画面を表示する。
                 $json_list['status'] = 0;
                 //認証情報をセッションに格納
-                ChromePhp::log($account[0]->mContractResource);
                 $app->session->set("auth", array(
                     'accnt_no' => $account[0]->mAccount->accnt_no,
                     'corporate_id' => $account[0]->mAccount->corporate_id,

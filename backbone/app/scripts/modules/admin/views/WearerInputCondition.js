@@ -24,6 +24,7 @@ define([
 			ui: {
 				"agreement_no": ".agreement_no",
 				"section_modal": ".section_modal",
+				'section_btn': '#section_btn',
 				'no': '#no',
 				'emply_order_no': '#emply_order_no',
 				'member_no': '#member_no',
@@ -45,13 +46,14 @@ define([
 				'timepicker': '.timepicker'
 			},
 			bindings: {
-				".agreement_no": "agreement_no",
+				"#agreement_no": "agreement_no",
 				".section_modal": "section_modal",
+				'.section_btn': 'section_btn',
 				'#no': 'no',
 				'#emply_order_no': 'emply_order_no',
 				'#member_no': 'member_no',
 				'#member_name': 'member_name',
-				'#section': 'section',
+				'.section': 'section',
 				'.job_type': 'job_type',
 				"#input_item": "input_item",
 				"#item_color": "item_color",
@@ -94,18 +96,21 @@ define([
 					$(this).data('DateTimePicker').hide();
 					//$(this).find('input').trigger('input');
 				});
-				var that = this;
-				var modelForUpdate = this.model;
-				console.log(this.model);
-				modelForUpdate.url = App.api.WI0010;
+			},
+
+			fetch:function(agreement_no){
 				var cond = {
 					"scr": '着用者入力',
-					"cond": this.model.getReq(),
-
+					"cond": {"agreement_no" : agreement_no}
 				};
+				$.blockUI({ message: '<p><img src="ajax-loader.gif" style="margin: 0 auto;" /> 読み込み中...</p>' });
+				var that = this;
+				var modelForUpdate = this.model;
+				modelForUpdate.url = App.api.WI0010;
 				modelForUpdate.fetchMx({
-					data:cond,
-					success:function(res){
+					data: cond,
+					success: function(res){
+						$.unblockUI();
 						var errors = res.get('errors');
 						if(errors) {
 							var errorMessages = errors.map(function(v){
@@ -113,11 +118,23 @@ define([
 							});
 							that.triggerMethod('showAlerts', errorMessages);
 						}
+						$('#agreement_no').prop("disabled", true);
 						that.render();
+					},
+					complete:function(res){
+						$.unblockUI();
+						// $('.tb_individual_num').hide();
 					}
 				});
 			},
 		events: {
+			'change @ui.agreement_no': function(){
+				$('#agreement_no').disabled();
+			},
+			'click @ui.section_btn': function(e){
+				e.preventDefault();
+				this.triggerMethod('click:section_btn', this.model);
+			}
 		// 	'click @ui.search': function(e){
 		// 		e.preventDefault();
 		// 		this.triggerMethod('hideAlerts');
@@ -176,9 +193,6 @@ define([
 
 			// 'change @ui.section': function(){
 			// 	this.ui.section = $('#section');
-			// },
-			// 'change @ui.job_type': function(){
-			// 	this.ui.job_type = $('#job_type');
 			// },
 		});
 	});

@@ -27,8 +27,9 @@ define([
 					this.triggerMethod('hideAlerts');
 					this.model.set('rntl_sect_cd', this.ui.rntl_sect_cd.val());
 					this.model.set('rntl_sect_name', this.ui.rntl_sect_name.val());
-					this.model.set('sort_key', 'rntl_sect_cd');
-					this.model.set('order','asc');
+					this.model.set('agreement_no', $('#agreement_no').val());
+					// this.model.set('sort_key', 'rntl_sect_cd');
+					// this.model.set('order','asc');
 					var errors = this.model.validate();
 					if(errors) {
 						this.triggerMethod('showAlerts', errors);

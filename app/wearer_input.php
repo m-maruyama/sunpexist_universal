@@ -42,7 +42,6 @@ $app->post('/agreement_no_input', function ()use($app) {
         ->columns(array('MContract.*','MContractResource.*','MAccount.*'))
         ->leftJoin('MContractResource','MContract.corporate_id = MContractResource.corporate_id')
         ->join('MAccount','MAccount.accnt_no = MContractResource.accnt_no')
-//		->orderBy('cast(MContract.rntl_cont_no asc as integer)')
         ->execute();
 
     // デフォルトは空を設定
@@ -70,14 +69,13 @@ $app->post('/wearer_input', function ()use($app){
 	// アカウントセッション取得
 	$auth = $app->session->get("auth");
 	$cond = $params['cond'];
-    ChromePhp::LOG($params);
 
     $query_list = array();
     $list = array();
     $json_list = array();
 
     //--性別ここから
-    $gender_list = array();
+    $sex_kbn_list = array();
     //--- 検索条件 ---//
     // 汎用コードマスタ. 分類コード
     array_push($query_list, "cls_cd = '004'");
@@ -93,11 +91,40 @@ $app->post('/wearer_input', function ()use($app){
     foreach ($m_gencode_results as $m_gencode_result) {
         $list['cls_cd'] = $m_gencode_result->cls_cd;
         $list['gen_name'] = $m_gencode_result->gen_name;
-        array_push($gender_list,$list);
+        array_push($sex_kbn_list,$list);
     }
     //--性別ここまで
 
     //拠点--ここから
+    $query_list = array();
+    //--- 検索条件 ---//
+    // 契約マスタ. 企業ID
+    array_push($query_list,"MContract.corporate_id = '".$auth['corporate_id']."'");
+    // 契約マスタ. レンタル契約フラグ
+    array_push($query_list,"MContract.rntl_cont_flg = '1'");
+    // 契約リソースマスタ. 企業ID
+    array_push($query_list,"MContractResource.corporate_id = '".$auth['corporate_id']."'");
+    // 契約リソースマスタ. レンタル契約No = 画面で選択されている契約No.
+    array_push($query_list,"MContractResource.rntl_cont_no = '".$cond['agreement_no']."'");
+    // アカウントマスタ.企業ID
+    array_push($query_list,"MAccount.corporate_id = '".$auth['corporate_id']."'");
+    // アカウントマスタ. ユーザーID
+    array_push($query_list,"MAccount.user_id = '".$auth['user_id']."'");
+
+    //sql文字列を' AND 'で結合
+    $query = implode(' AND ', $query_list);
+
+    //--- クエリー実行・取得 ---//
+    $m_contract_resources = MContract::query()
+        ->where($query)
+        ->columns(array('MContractResource.rntl_sect_cd'))
+        ->leftJoin('MContractResource','MContract.corporate_id = MContractResource.corporate_id')
+        ->join('MAccount','MAccount.accnt_no = MContractResource.accnt_no')
+        ->execute();
+    $rntl_sect_cd = null;
+    foreach ($m_contract_resources as $m_contract_resource) {
+        $rntl_sect_cd = $m_contract_resource->rntl_sect_cd;
+    }
     $query_list = array();
     $list = array();
     $m_section_list = array();
@@ -105,7 +132,11 @@ $app->post('/wearer_input', function ()use($app){
     // 部門マスタ. 企業ID
     array_push($query_list, "corporate_id = '".$auth['corporate_id']."'");
     // 部門マスタ. レンタル契約No
-    array_push($query_list, "rntl_cont_no = '".$auth['rntl_cont_no']."'");
+    array_push($query_list, "rntl_cont_no = '".$cond['agreement_no']."'");
+    if($rntl_sect_cd){
+        // 部門マスタ. レンタル部門コード
+//        array_push($query_list, "rntl_sect_cd = '".$rntl_sect_cd."'");
+    }
 
     //sql文字列を' AND 'で結合
     $query = implode(' AND ', $query_list);
@@ -131,7 +162,7 @@ $app->post('/wearer_input', function ()use($app){
     // 職種マスタ. 企業ID
     array_push($query_list, "corporate_id = '".$auth['corporate_id']."'");
     // 職種マスタ. レンタル契約No
-    array_push($query_list, "rntl_cont_no = '".$auth['rntl_cont_no']."'");
+    array_push($query_list, "rntl_cont_no = '".$cond['agreement_no']."'");
 
     //sql文字列を' AND 'で結合
     $query = implode(' AND ', $query_list);
@@ -157,7 +188,7 @@ $app->post('/wearer_input', function ()use($app){
     // 職種マスタ. 企業ID
     array_push($query_list, "corporate_id = '".$auth['corporate_id']."'");
     // 職種マスタ. レンタル契約No
-    array_push($query_list, "rntl_cont_no = '".$auth['rntl_cont_no']."'");
+    array_push($query_list, "rntl_cont_no = '".$cond['agreement_no']."'");
 
     //sql文字列を' AND 'で結合
     $query = implode(' AND ', $query_list);
@@ -167,17 +198,39 @@ $app->post('/wearer_input', function ()use($app){
         ->where($query)
         ->columns('*')
         ->execute();
-
-    foreach ($m_shipment_to_results as $m_shipment_to_result) {
-        $list['ship_to_cd'] = $m_shipment_to_result->ship_to_cd;
-        $list['cust_to_brnch_name'] = $m_shipment_to_result->cust_to_brnch_name1.$m_shipment_to_result->cust_to_brnch_name2;
-        array_push($m_shipment_to_list,$list);
+    //該当する出荷先マスタのレコードが１件だった場合は、「支店店舗と同じ」という選択肢とセレクトボックスを表示。
+    if(count($m_shipment_to_results) === 1) {
+        foreach ($m_shipment_to_results as $m_shipment_to_result) {
+            $list['ship_to_cd'] = $m_shipment_to_result->ship_to_cd;
+            $list['ship_to_brnch_cd'] = $m_shipment_to_result->ship_to_brnch_cd;
+            $list['cust_to_brnch_name1'] = '支店店舗と同じ';
+            $list['cust_to_brnch_name2'] = '';
+            $list['zip_no'] = $m_shipment_to_result->zip_no;
+            $list['address1'] = $m_shipment_to_result->address1;
+            $list['address2'] = $m_shipment_to_result->address2;
+            $list['address3'] = $m_shipment_to_result->address3;
+            $list['address4'] = $m_shipment_to_result->address4;
+            array_push($m_shipment_to_list,$list);
+        }
+    }else {
+        foreach ($m_shipment_to_results as $m_shipment_to_result) {
+            $list['ship_to_cd'] = $m_shipment_to_result->ship_to_cd;
+            $list['ship_to_brnch_cd'] = $m_shipment_to_result->ship_to_brnch_cd;
+            $list['cust_to_brnch_name1'] = $m_shipment_to_result->cust_to_brnch_name1;
+            $list['cust_to_brnch_name2'] = $m_shipment_to_result->cust_to_brnch_name2;
+            $list['zip_no'] = $m_shipment_to_result->zip_no;
+            $list['address1'] = $m_shipment_to_result->address1;
+            $list['address2'] = $m_shipment_to_result->address2;
+            $list['address3'] = $m_shipment_to_result->address3;
+            $list['address4'] = $m_shipment_to_result->address4;
+            array_push($m_shipment_to_list,$list);
+        }
     }
     //出荷先--ここまで
 
-    $json_list['m_shipment_to'] = $m_shipment_to_list;
+    $json_list['m_shipment_to_list'] = $m_shipment_to_list;
     $json_list['job_type_list'] = $job_type_list;
-    $json_list['gender_list'] = $gender_list;
+    $json_list['sex_kbn_list'] = $sex_kbn_list;
     $json_list['m_section_list'] = $m_section_list;
     echo json_encode($json_list);
 });

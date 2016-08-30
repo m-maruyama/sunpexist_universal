@@ -412,11 +412,18 @@ $app->post('/section_modal', function ()use($app) {
 	$cond = $params['cond'];
 	$page = $params['page'];
 
+	// アカウントセッション取得
+	$auth = $app->session->get("auth");
 	//拠点
+	//--- 検索条件 ---//
+	// 部門マスタ. 企業ID
+	array_push($query_list, "corporate_id = '".$auth['corporate_id']."'");
+	// 部門マスタ. レンタル契約No
+	array_push($query_list, "rntl_cont_no = '".$cond['agreement_no']."'");
 	if(isset($cond['rntl_sect_cd'])) {
 		array_push($query_list,"rntl_sect_cd LIKE '" . $cond['rntl_sect_cd'] . "%'");
 	}
-	if(isset($cond['rntl_sect_name'])) {
+	if(isset($cond['corporate_id'])) {
 		array_push($query_list,"rntl_sect_name LIKE '%" . $cond['rntl_sect_name'] . "%'");
 	}
 	//sql文字列を' AND 'で結合
@@ -425,7 +432,6 @@ $app->post('/section_modal', function ()use($app) {
 	$builder = $app->modelsManager->createBuilder()
 		->where($query)
 		->from('MSection');
-//		->orderBy('MSection.rntl_sect_cd'.' '.'asc');
 	$paginator_model = new PaginatorQueryBuilder(
 		array(
 			"builder"  => $builder,

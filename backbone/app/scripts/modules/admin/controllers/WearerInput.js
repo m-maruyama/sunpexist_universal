@@ -84,12 +84,14 @@ define([
 				var sectionModalListItemView = new App.Admin.Views.SectionModalListItem();
 				this.listenTo(sectionModalListListView, 'childview:click:section_select', function(model){
 					wearerInputConditionView.ui.section[0].value = model.model.attributes.rntl_sect_cd;
+					console.log(model.model.attributes.rntl_sect_cd);
 					sectionModalView.ui.modal.modal('hide');
 				});
 				//拠点絞り込み--ここまで
 
 				//契約No選択イベント
-				this.listenTo(wearerInputView, 'change:agreement_no', function(){
+				this.listenTo(wearerInputView, 'change:agreement_no', function(agreement_no){
+					wearerInputConditionView.fetch(agreement_no);
 					wearerInputView.condition.show(wearerInputConditionView);
 				});
 				//契約No選択イベント
