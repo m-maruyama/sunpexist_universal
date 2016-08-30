@@ -650,18 +650,18 @@ $app->post('/csv_download', function ()use($app){
 		//返却日from
 		if(!empty($cond['return_day_from'])){
 			$cond['return_day_from'] = date('Y/m/d 00:00:00', strtotime($cond['return_day_from']));
-			array_push($query_list,"t_returned_results.return_date >= '".$cond['return_day_from']."'");
+			array_push($query_list,"t_returned_plan_info.return_date >= '".$cond['return_day_from']."'");
 	//		array_push($query_list,"TO_DATE(t_returned_results.return_date,'YYYY/MM/DD') >= TO_DATE('".$cond['return_day_from']."','YYYY/MM/DD')");
 		}
 		//返却日to
 		if(!empty($cond['return_day_to'])){
 			$cond['return_day_to'] = date('Y/m/d 23:59:59', strtotime($cond['return_day_to']));
-			array_push($query_list,"t_returned_results.return_date <= '".$cond['return_day_to']."'");
+			array_push($query_list,"t_returned_plan_info.return_date <= '".$cond['return_day_to']."'");
 	//		array_push($query_list,"TO_DATE(t_returned_results.return_date,'YYYY/MM/DD') <= TO_DATE('".$cond['return_day_to']."','YYYY/MM/DD')");
 		}
 		//個体管理番号
 		if(!empty($cond['individual_number'])){
-			array_push($query_list,"t_delivery_goods_state_details.individual_ctrl_no LIKE '".$cond['individual_number']."%'");
+			array_push($query_list,"t_returned_plan_info.individual_ctrl_no LIKE '".$cond['individual_number']."%'");
 		}
 
 		$status_kbn_list = array();
@@ -696,11 +696,6 @@ $app->post('/csv_download', function ()use($app){
 		if($cond['order_kbn3']){
 			array_push($order_kbn,'9');
 		}
-	/*
-		if($cond['order_kbn4']){
-			array_push($order_kbn,'9');
-		}
-	*/
 		if(!empty($order_kbn)){
 			$order_kbn_str = implode("','",$order_kbn);
 			$order_kbn_query = "t_returned_plan_info.order_sts_kbn IN ('".$order_kbn_str."')";
@@ -834,7 +829,6 @@ $app->post('/csv_download', function ()use($app){
 		$arg_str = "SELECT ";
 		$arg_str .= " * ";
 		$arg_str .= " FROM ";
-	//	$arg_str .= "(SELECT ";
 		$arg_str .= "(SELECT distinct on (t_returned_plan_info.order_req_no, t_returned_plan_info.order_req_line_no) ";
 		$arg_str .= "t_returned_plan_info.order_req_no as as_order_req_no,";
 		$arg_str .= "t_order.order_req_ymd as as_order_req_ymd,";
@@ -852,7 +846,7 @@ $app->post('/csv_download', function ()use($app){
 		$arg_str .= "t_order.order_qty as as_order_qty,";
 		$arg_str .= "t_returned_plan_info.order_date as as_re_order_date,";
 		$arg_str .= "t_returned_plan_info.return_status as as_return_status,";
-		$arg_str .= "t_returned_results.return_date as as_return_date,";
+		$arg_str .= "t_returned_plan_info.return_date as as_return_date,";
 		$arg_str .= "t_delivery_goods_state.rec_order_no as as_rec_order_no,";
 		$arg_str .= "t_delivery_goods_state.ship_no as as_ship_no,";
 		$arg_str .= "t_delivery_goods_state.ship_ymd as as_ship_ymd,";
@@ -863,7 +857,7 @@ $app->post('/csv_download', function ()use($app){
 		$arg_str .= "t_returned_plan_info.rntl_cont_no as as_rntl_cont_no,";
 		$arg_str .= "m_contract.rntl_cont_name as as_rntl_cont_name";
 		$arg_str .= " FROM t_order LEFT JOIN";
-		$arg_str .= " ((t_returned_plan_info LEFT JOIN t_returned_results ON t_returned_plan_info.t_returned_plan_info_comb_hkey = t_returned_results.t_returned_plan_info_comb_hkey) LEFT JOIN";
+		$arg_str .= " (t_returned_plan_info LEFT JOIN";
 		$arg_str .= " (t_order_state LEFT JOIN ";
 		$arg_str .= " (t_delivery_goods_state LEFT JOIN t_delivery_goods_state_details ON t_delivery_goods_state.ship_no = t_delivery_goods_state_details.ship_no)";
 		$arg_str .= " ON t_order_state.t_order_state_comb_hkey = t_delivery_goods_state.t_order_state_comb_hkey)";
