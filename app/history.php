@@ -18,75 +18,73 @@ $app->post('/history/search', function ()use($app){
 	$cond = $params['cond'];
 	$page = $params['page'];
 	$query_list = array();
+	ChromePhp::log($cond);
 
 	//---検索条件---//
 	//企業ID
 	array_push($query_list,"t_order.corporate_id = '".$auth['corporate_id']."'");
 	//契約No
-	if(isset($cond['agreement_no'])){
+	if(!empty($cond['agreement_no'])){
 		array_push($query_list,"t_order.rntl_cont_no = '".$cond['agreement_no']."'");
 	}
 	//発注No
-	if(isset($cond['no'])){
+	if(!empty($cond['no'])){
 		array_push($query_list,"t_order.order_req_no LIKE '".$cond['no']."%'");
 	}
 	//お客様発注No
-	if(isset($cond['emply_order'])){
+	if(!empty($cond['emply_order'])){
 		array_push($query_list,"t_order.emply_req_no LIKE '".$cond['emply_order_no']."%'");
 	}
 	//社員番号
-	if(isset($cond['member_no'])){
+	if(!empty($cond['member_no'])){
 		array_push($query_list,"t_order.cster_emply_cd LIKE '".$cond['member_no']."%'");
 	}
 	//着用者名
-	if(isset($cond['member_name'])){
+	if(!empty($cond['member_name'])){
 		array_push($query_list,"t_order.werer_name LIKE '%".$cond['member_name']."%'");
 	}
 	//拠点
-	if(isset($cond['section'])){
+	if(!empty($cond['section'])){
 		array_push($query_list,"t_order.rntl_sect_cd = '".$cond['section']."'");
 	}
-//	if(isset($cond['office'])){
-//		array_push($query_list,"MSection.rntl_sect_name LIKE '%".$cond['office']."%'");
-//	}
 	//貸与パターン
-	if(isset($cond['job_type'])){
+	if(!empty($cond['job_type'])){
 		array_push($query_list,"t_order.job_type_cd = '".$cond['job_type']."'");
 	}
 	//商品
-	if(isset($cond['input_item'])){
+	if(!empty($cond['input_item'])){
 		array_push($query_list,"t_order.item_cd = '".$cond['input_item']."'");
 	}
 	//色
-	if(isset($cond['item_color'])){
+	if(!empty($cond['item_color'])){
 		array_push($query_list,"t_order.color_cd = '".$cond['item_color']."'");
 	}
 	//サイズ
-	if(isset($cond['item_size'])){
+	if(!empty($cond['item_size'])){
 		array_push($query_list,"t_order.size_cd = '".$cond['item_size']."'");
 	}
 	//発注日from
-	if(isset($cond['order_day_from'])){
+	if(!empty($cond['order_day_from'])){
 		array_push($query_list,"TO_DATE(t_order.order_req_ymd,'YYYY/MM/DD') >= TO_DATE('".$cond['order_day_from']."','YYYY/MM/DD')");
 	}
 	//発注日to
-	if(isset($cond['order_day_to'])){
+	if(!empty($cond['order_day_to'])){
 		array_push($query_list,"TO_DATE(t_order.order_req_ymd,'YYYY/MM/DD') <= TO_DATE('".$cond['order_day_to']."','YYYY/MM/DD')");
 	}
 	//出荷日from
-	if(isset($cond['send_day_from'])){
-		$cond['send_day_from'] = date('Y/m/d 00:00:00', strtotime($cond['send_day_from']));
+	if(!empty($cond['send_day_from'])){
+		$cond['send_day_from'] = date('Y-m-d 00:00:00', strtotime($cond['send_day_from']));
 		array_push($query_list,"t_order_state.ship_ymd >= '".$cond['send_day_from']."'");
 //		array_push($query_list,"TO_DATE(t_order_state.ship_ymd,'YYYY/MM/DD') >= TO_DATE('".$cond['send_day_from']."','YYYY/MM/DD')");
 	}
 	//出荷日to
-	if(isset($cond['send_day_to'])){
-		$cond['send_day_to'] = date('Y/m/d 23:59:59', strtotime($cond['send_day_to']));
+	if(!empty($cond['send_day_to'])){
+		$cond['send_day_to'] = date('Y-m-d 23:59:59', strtotime($cond['send_day_to']));
 		array_push($query_list,"t_order_state.ship_ymd <= '".$cond['send_day_to']."'");
 //		array_push($query_list,"TO_DATE(t_order_state.ship_ymd,'YYYY/MM/DD') <= TO_DATE('".$cond['send_day_to']."','YYYY/MM/DD')");
 	}
 	//個体管理番号
-	if(isset($cond['individual_number'])){
+	if(!empty($cond['individual_number'])){
 		array_push($query_list,"t_delivery_goods_state_details.individual_ctrl_no LIKE '".$cond['individual_number']."%'");
 	}
 
@@ -102,20 +100,6 @@ $app->post('/history/search', function ()use($app){
 		// 出荷済み
 		array_push($status_list,"2");
 	}
-/*
-	if($cond['status4']){
-		array_push($status_list,"sum(CASE TOrder.order_status WHEN '9' THEN 1 ELSE 0 END ) > 0");
-	}
-	//受領ステータス
-	$r_status = '';
-	if($cond['status2']){
-		//未受領のみ
-		array_push($status_list,"sum(CASE TDeliveryGoodsState.receipt_status WHEN '1' THEN 1 WHEN null THEN 1 ELSE 0 END ) > 0");
-	}
-	if($cond['status3']){
-		array_push($status_list,"sum(CASE TDeliveryGoodsState.receipt_status WHEN '2' THEN TDeliveryGoodsState.ship_qty ELSE 0 END ) = sum(TDeliveryGoodsState.ship_qty)");
-	}
-*/
 	if(!empty($status_list)) {
 		$status_str = implode("','",$status_list);
 //		$status_query = "order_status IN ('".$status_str."')";
@@ -226,7 +210,7 @@ $app->post('/history/search', function ()use($app){
 	$order ='';
 
 	//ソート設定
-	if(isset($page['sort_key'])){
+	if(!empty($page['sort_key'])){
 		$sort_key = $page['sort_key'];
 		$order = $page['order'];
 		if($sort_key == 'order_req_no' || $sort_key == 'order_req_ymd' || $sort_key == 'order_status' || $sort_key == 'order_sts_kbn'){
@@ -352,9 +336,6 @@ $app->post('/history/search', function ()use($app){
 		$paginator = $paginator_model->getPaginate();
 		$results = $paginator->items;
 		foreach($results as $result){
-			if(!isset($result)){
-				break;
-			}
 			$list['order_req_no'] = $result->as_order_req_no;
 			$list['order_req_ymd'] = $result->as_order_req_ymd;
 			$list['order_sts_kbn'] = $result->as_order_sts_kbn;

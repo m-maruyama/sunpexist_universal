@@ -31,6 +31,8 @@ define([
 					cond_map["order_day_to"] = $("input[name='order_day_to']").val();
 					cond_map["send_day_from"] = $("input[name='send_day_from']").val();
 					cond_map["send_day_to"] = $("input[name='send_day_to']").val();
+					cond_map["return_day_from"] = $("input[name='return_day_from']").val();
+					cond_map["return_day_to"] = $("input[name='return_day_to']").val();
 					cond_map["status0"] = $("#status0").prop("checked");
 					cond_map["status1"] = $("#status1").prop("checked");
 					cond_map["order_kbn0"] = $("#order_kbn0").prop("checked");
@@ -76,7 +78,6 @@ define([
 						form.remove();
 						form=null;
 						return;
-//						this.triggerMethod('click:download_btn', cond_map);
 					}
 				}
 			},

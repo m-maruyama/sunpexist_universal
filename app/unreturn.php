@@ -23,70 +23,67 @@ $app->post('/unreturn/search', function ()use($app){
 	//企業ID
 	array_push($query_list,"t_returned_plan_info.corporate_id = '".$auth['corporate_id']."'");
 	//契約No
-	if(isset($cond['agreement_no'])){
+	if(!empty($cond['agreement_no'])){
 		array_push($query_list,"t_returned_plan_info.rntl_cont_no = '".$cond['agreement_no']."'");
 	}
 	//発注No
-	if(isset($cond['no'])){
+	if(!empty($cond['no'])){
 		array_push($query_list,"t_returned_plan_info.order_req_no LIKE '".$cond['no']."%'");
 	}
 	//お客様発注No
-	if(isset($cond['emply_order'])){
+	if(!empty($cond['emply_order'])){
 		array_push($query_list,"t_returned_plan_info.emply_req_no LIKE '".$cond['emply_order_no']."%'");
 	}
 	//社員番号
-	if(isset($cond['member_no'])){
+	if(!empty($cond['member_no'])){
 		array_push($query_list,"t_returned_plan_info.cster_emply_cd LIKE '".$cond['member_no']."%'");
 	}
 	//着用者名
-	if(isset($cond['member_name'])){
+	if(!empty($cond['member_name'])){
 		array_push($query_list,"t_order.werer_name LIKE '%".$cond['member_name']."%'");
 	}
 	//拠点
-	if(isset($cond['section'])){
+	if(!empty($cond['section'])){
 		array_push($query_list,"t_returned_plan_info.rntl_sect_cd = '".$cond['section']."'");
 	}
-//	if(isset($cond['office'])){
-//		array_push($query_list,"MSection.rntl_sect_name LIKE '%".$cond['office']."%'");
-//	}
 	//貸与パターン
-	if(isset($cond['job_type'])){
+	if(!empty($cond['job_type'])){
 		array_push($query_list,"t_returned_plan_info.rent_pattern_code = '".$cond['job_type']."'");
 	}
 	//商品
-	if(isset($cond['input_item'])){
+	if(!empty($cond['input_item'])){
 		array_push($query_list,"t_returned_plan_info.item_cd = '".$cond['input_item']."'");
 	}
 	//色
-	if(isset($cond['item_color'])){
+	if(!empty($cond['item_color'])){
 		array_push($query_list,"t_returned_plan_info.color_cd = '".$cond['item_color']."'");
 	}
 	//サイズ
-	if(isset($cond['item_size'])){
+	if(!empty($cond['item_size'])){
 		array_push($query_list,"t_returned_plan_info.size_cd = '".$cond['item_size']."'");
 	}
 	//発注日from
-	if(isset($cond['order_day_from'])){
+	if(!empty($cond['order_day_from'])){
 		array_push($query_list,"TO_DATE(t_order.order_req_ymd,'YYYY/MM/DD') >= TO_DATE('".$cond['order_day_from']."','YYYY/MM/DD')");
 	}
 	//発注日to
-	if(isset($cond['order_day_to'])){
+	if(!empty($cond['order_day_to'])){
 		array_push($query_list,"TO_DATE(t_order.order_req_ymd,'YYYY/MM/DD') <= TO_DATE('".$cond['order_day_to']."','YYYY/MM/DD')");
 	}
 	//返却日from
-	if(isset($cond['return_day_from'])){
+	if(!empty($cond['return_day_from'])){
 		$cond['return_day_from'] = date('Y/m/d 00:00:00', strtotime($cond['return_day_from']));
 		array_push($query_list,"t_returned_results.return_date >= '".$cond['return_day_from']."'");
 //		array_push($query_list,"TO_DATE(t_returned_results.return_date,'YYYY/MM/DD') >= TO_DATE('".$cond['return_day_from']."','YYYY/MM/DD')");
 	}
 	//返却日to
-	if(isset($cond['return_day_to'])){
+	if(!empty($cond['return_day_to'])){
 		$cond['return_day_to'] = date('Y/m/d 23:59:59', strtotime($cond['return_day_to']));
 		array_push($query_list,"t_returned_results.return_date <= '".$cond['return_day_to']."'");
 //		array_push($query_list,"TO_DATE(t_returned_results.return_date,'YYYY/MM/DD') <= TO_DATE('".$cond['return_day_to']."','YYYY/MM/DD')");
 	}
 	//個体管理番号
-	if(isset($cond['individual_number'])){
+	if(!empty($cond['individual_number'])){
 		array_push($query_list,"t_delivery_goods_state_details.individual_ctrl_no LIKE '".$cond['individual_number']."%'");
 	}
 
@@ -180,23 +177,6 @@ $app->post('/unreturn/search', function ()use($app){
 	if($cond['reason_kbn14']){
 		array_push($reason_kbn,'24');
 	}
-/*
-	if($cond['reason_kbn15']){
-		array_push($reason_kbn,'5');
-	}
-	if($cond['reason_kbn16']){
-		array_push($reason_kbn,'6');
-	}
-	if($cond['reason_kbn17']){
-		array_push($reason_kbn,'7');
-	}
-	if($cond['reason_kbn18']){
-		array_push($reason_kbn,'8');
-	}
-	if($cond['reason_kbn19']){
-		array_push($reason_kbn,'24');
-	}
-*/
 	if(!empty($reason_kbn)){
 		$reason_kbn_str = implode("','",$reason_kbn);
 		$reason_kbn_query = "t_order.order_reason_kbn IN ('".$reason_kbn_str."')";
@@ -346,9 +326,6 @@ $app->post('/unreturn/search', function ()use($app){
 		$paginator = $paginator_model->getPaginate();
 		$results = $paginator->items;
 		foreach($results as $result){
-			if(!isset($result)){
-				break;
-			}
 			$list['order_req_no'] = $result->as_order_req_no;
 			$list['order_req_ymd'] = $result->as_order_req_ymd;
 			$list['order_sts_kbn'] = $result->as_order_sts_kbn;
