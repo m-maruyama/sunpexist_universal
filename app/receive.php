@@ -6,9 +6,9 @@ use Phalcon\Paginator\Adapter\NativeArray as PaginatorArray;
 use Phalcon\Paginator\Adapter\QueryBuilder as PaginatorQueryBuilder;
 
 /**
- * 発注状況照会検索
+ * 受領照会検索
  */
-$app->post('/history/search', function ()use($app){
+$app->post('/receive/search', function ()use($app){
 
 	$params = json_decode(file_get_contents("php://input"), true);
 
@@ -273,45 +273,57 @@ $app->post('/history/search', function ()use($app){
 	$arg_str = "SELECT ";
 	$arg_str .= " * ";
 	$arg_str .= " FROM ";
-	$arg_str .= "(SELECT distinct on (t_order.order_req_no, t_order.order_req_line_no) ";
-	$arg_str .= "t_order.order_req_no as as_order_req_no,";
-	$arg_str .= "t_order.order_req_ymd as as_order_req_ymd,";
-	$arg_str .= "t_order.order_sts_kbn as as_order_sts_kbn,";
-	$arg_str .= "t_order.order_reason_kbn as as_order_reason_kbn,";
-	$arg_str .= "m_section.rntl_sect_name as as_rntl_sect_name,";
-	$arg_str .= "m_job_type.job_type_name as as_job_type_name,";
-	$arg_str .= "t_order.cster_emply_cd as as_cster_emply_cd,";
-	$arg_str .= "t_order.werer_name as as_werer_name,";
+	$arg_str .= "(SELECT distinct on ";
+//	$arg_str .= "(t_order.order_req_no,";
+//	$arg_str .= "t_order.order_req_line_no,";
+	$arg_str .= "(t_order_state.order_req_no,";
+	$arg_str .= "t_order_state.order_req_line_no)";
+/*
+	$arg_str .= "t_order_state.rec_order_no,";
+	$arg_str .= "t_order_state.rec_order_line_no,";
+	$arg_str .= "t_delivery_goods_state.ship_no,";
+	$arg_str .= "t_delivery_goods_state.ship_line_no,";
+	$arg_str .= "t_delivery_goods_state.rec_order_no,";
+	$arg_str .= "t_delivery_goods_state.rec_order_line_no,";
+	$arg_str .= "t_delivery_goods_state_details.ship_no,";
+	$arg_str .= "t_delivery_goods_state_details.ship_line_no) ";
+*/
+	$arg_str .= "t_delivery_goods_state_details.receipt_status as as_receipt_status,";
+	$arg_str .= "t_delivery_goods_state_details.receipt_date as as_receipt_date,";
+	$arg_str .= "t_delivery_goods_state.ship_no as as_ship_no,";
 	$arg_str .= "t_order.item_cd as as_item_cd,";
 	$arg_str .= "t_order.color_cd as as_color_cd,";
 	$arg_str .= "t_order.size_cd as as_size_cd,";
 	$arg_str .= "t_order.size_two_cd as as_size_two_cd,";
 	$arg_str .= "m_input_item.input_item_name as as_input_item_name,";
-	$arg_str .= "t_order.order_qty as as_order_qty,";
-	$arg_str .= "t_order_state.rec_order_no as as_rec_order_no,";
-	$arg_str .= "t_order.order_status as as_order_status,";
-	$arg_str .= "t_delivery_goods_state.ship_no as as_ship_no,";
-	$arg_str .= "t_order_state.ship_ymd as as_ship_ymd,";
 	$arg_str .= "t_order_state.ship_qty as as_ship_qty,";
 	$arg_str .= "t_delivery_goods_state_details.individual_ctrl_no as as_individual_ctrl_no,";
-	$arg_str .= "t_delivery_goods_state_details.receipt_date as as_receipt_date,";
-	$arg_str .= "t_order.rntl_cont_no as as_rntl_cont_no,";
-	$arg_str .= "m_contract.rntl_cont_name as as_rntl_cont_name";
-	$arg_str .= " FROM t_order LEFT JOIN";
-	$arg_str .= " (t_order_state LEFT JOIN (t_delivery_goods_state LEFT JOIN t_delivery_goods_state_details ON t_delivery_goods_state.ship_no = t_delivery_goods_state_details.ship_no)";
-	$arg_str .= " ON t_order_state.t_order_state_comb_hkey = t_delivery_goods_state.t_order_state_comb_hkey)";
-	$arg_str .= " ON t_order.t_order_comb_hkey = t_order_state.t_order_comb_hkey";
-	$arg_str .= " INNER JOIN m_section";
-	$arg_str .= " ON t_order.m_section_comb_hkey = m_section.m_section_comb_hkey";
+	$arg_str .= "t_order.order_req_no as as_order_req_no,";
+	$arg_str .= "t_order.order_req_line_no as as_order_req_line_no,";
+	$arg_str .= "t_order.cster_emply_cd as as_cster_emply_cd,";
+	$arg_str .= "m_wearer_std.werer_name as as_werer_name,";
+	$arg_str .= "m_section.rntl_sect_name as as_rntl_sect_name,";
+	$arg_str .= "m_job_type.job_type_name as as_job_type_name,";
+	$arg_str .= "t_order.order_sts_kbn as as_order_sts_kbn,";
+//	$arg_str .= "t_order.order_reason_kbn as as_order_reason_kbn,";
+	$arg_str .= "t_order.order_req_ymd as as_order_req_ymd,";
+	$arg_str .= "t_delivery_goods_state.ship_ymd as as_ship_ymd,";
+	$arg_str .= "t_delivery_goods_state.rec_order_no as as_rec_order_no";
+	$arg_str .= " FROM t_delivery_goods_state_details LEFT JOIN";
+	$arg_str .= " (t_delivery_goods_state LEFT JOIN";
+	$arg_str .= " (t_order_state LEFT JOIN";
+	$arg_str .= " (t_order INNER JOIN m_section ON t_order.m_section_comb_hkey = m_section.m_section_comb_hkey";
+	$arg_str .= " INNER JOIN m_wearer_std ON t_order.m_wearer_std_comb_hkey = m_wearer_std.m_wearer_std_comb_hkey";
 	$arg_str .= " INNER JOIN (m_job_type INNER JOIN m_input_item ON m_job_type.m_job_type_comb_hkey = m_input_item.m_job_type_comb_hkey)";
-	$arg_str .= " ON t_order.m_job_type_comb_hkey = m_job_type.m_job_type_comb_hkey";
-	$arg_str .= " INNER JOIN m_contract";
-	$arg_str .= " ON t_order.rntl_cont_no = m_contract.rntl_cont_no";
-	$arg_str .= " WHERE ";
-	$arg_str .= $query;
+	$arg_str .= " ON t_order.m_job_type_comb_hkey = m_job_type.m_job_type_comb_hkey)";
+	$arg_str .= " ON t_order.t_order_comb_hkey = t_order_state.t_order_comb_hkey)";
+	$arg_str .= " ON t_order_state.t_order_state_comb_hkey = t_delivery_goods_state.t_order_state_comb_hkey)";
+	$arg_str .= " ON t_delivery_goods_state_details.ship_no = t_delivery_goods_state.ship_no";
+//	$arg_str .= " WHERE ";
+//	$arg_str .= $query;
 	$arg_str .= ") as distinct_table";
-	$arg_str .= " ORDER BY ";
-	$arg_str .= $sort_key." ".$order;
+//	$arg_str .= " ORDER BY ";
+//	$arg_str .= $sort_key." ".$order;
 
 	$t_order = new TOrder();
 	$results = new Resultset(null, $t_order, $t_order->getReadConnection()->query($arg_str));
@@ -335,36 +347,105 @@ $app->post('/history/search', function ()use($app){
 		$paginator = $paginator_model->getPaginate();
 		$results = $paginator->items;
 		foreach($results as $result){
-			$list['order_req_no'] = $result->as_order_req_no;
-			$list['order_req_ymd'] = $result->as_order_req_ymd;
-			$list['order_sts_kbn'] = $result->as_order_sts_kbn;
-			$list['order_reason_kbn'] = $result->as_order_reason_kbn;
-			$list['rntl_sect_name'] = $result->as_rntl_sect_name;
-			$list['job_type_name'] = $result->as_job_type_name;
-			$list['cster_emply_cd'] = $result->as_cster_emply_cd;
-			$list['werer_name'] = $result->as_werer_name;
+			// 受領ステータス
+			$list['receipt_status'] = $result->as_receipt_status;
+			// 受領日
+			$list['receipt_date'] = $result->as_receipt_date;
+			// メーカー伝票番号
+			if (!empty($result->as_ship_no)) {
+				$list['ship_no'] = $result->as_ship_no;
+			} else {
+				$list['ship_no'] = "-";
+			}
+			// 商品コード
 			$list['item_cd'] = $result->as_item_cd;
+			// 色コード
 			$list['color_cd'] = $result->as_color_cd;
+			// サイズ
 			$list['size_cd'] = $result->as_size_cd;
+			// サイズ２
 			$list['size_two_cd'] = $result->as_size_two_cd;
-			$list['input_item_name'] = $result->as_input_item_name;
-			$list['order_qty'] = $result->as_order_qty;
-			$list['rec_order_no'] = $result->as_rec_order_no;
-			$list['order_status'] = $result->as_order_status;
-			$list['ship_no'] = $result->as_ship_no;
+			// 商品名
+			if (!empty($result->as_input_item_name)) {
+				$list['input_item_name'] = $result->as_input_item_name;
+			} else {
+				$list['input_item_name'] = "-";
+			}
+			// 出荷数
+			if (!empty($result->as_ship_qty)) {
+				$list['ship_qty'] = $result->as_ship_qty;
+			} else {
+				$list['ship_qty'] = "-";
+			}
+			// 個体管理番号
+			if (!empty($result->as_individual_ctrl_no)) {
+				$list['individual_ctrl_no'] = $result->as_individual_ctrl_no;
+			} else {
+				$list['individual_ctrl_no'] = "-";
+			}
+			// 発注No
+			if (!empty($result->as_order_req_no)) {
+				$list['order_req_no'] = $result->as_order_req_no;
+			} else {
+				$list['order_req_no'] = "-";
+			}
+			// 発注行No
+			if (!empty($result->as_order_req_line_no)) {
+				$list['order_req_line_no'] = $result->as_order_req_line_no;
+			} else {
+				$list['order_req_line_no'] = "-";
+			}
+			// 社員番号
+			if (!empty($result->as_cster_emply_cd)) {
+				$list['cster_emply_cd'] = $result->as_cster_emply_cd;
+			} else {
+				$list['cster_emply_cd'] = "-";
+			}
+			// 着用者名
+			if (!empty($result->as_werer_name)) {
+				$list['werer_name'] = $result->as_werer_name;
+			} else {
+				$list['werer_name'] = "-";
+			}
+			// 拠点
+			if (!empty($result->as_rntl_sect_name)) {
+				$list['rntl_sect_name'] = $result->as_rntl_sect_name;
+			} else {
+				$list['rntl_sect_name'] = "-";
+			}
+			// 貸与パターン
+			if (!empty($result->as_job_type_name)) {
+				$list['job_type_name'] = $result->as_job_type_name;
+			} else {
+				$list['job_type_name'] = "-";
+			}
+			// 発注区分
+			$list['order_sts_kbn'] = $result->as_order_sts_kbn;
+			// 理由区分
+//			$list['order_reason_kbn'] = $result->as_order_reason_kbn;
+			// 発注日
+			$list['order_req_ymd'] = $result->as_order_req_ymd;
+			// 出荷日
 			$list['ship_ymd'] = $result->as_ship_ymd;
-			$list['ship_qty'] = $result->as_ship_qty;
-			$list['rntl_cont_no'] = $result->as_rntl_cont_no;
-			$list['rntl_cont_name'] = $result->as_rntl_cont_name;
+			// メーカー受注番号
+			if (!empty($result->as_rec_order_no)) {
+				$list['rec_order_no'] = $result->as_rec_order_no;
+			} else {
+				$list['rec_order_no'] = "-";
+			}
 
 			//---日付設定---//
-			// 発注依頼日、出荷予定日
-			if($list['order_req_ymd']){
+			// 受領日
+			if(!empty($list['receipt_date'])){
+				$list['receipt_date'] = date('Y/m/d',strtotime($list['receipt_date']));
+			}else{
+				$list['receipt_date'] = '-';
+			}
+			// 発注日
+			if(!empty($list['order_req_ymd'])){
 				$list['order_req_ymd'] = date('Y/m/d',strtotime($list['order_req_ymd']));
-				$list['send_shd_ymd'] = date('Y/m/d',strtotime($list['order_req_ymd'].' +7 day'));
 			}else{
 				$list['order_req_ymd'] = '-';
-				$list['send_shd_ymd'] = '-';
 			}
 			// 出荷日
 			if($list['ship_ymd']){
@@ -391,7 +472,7 @@ $app->post('/history/search', function ()use($app){
 			foreach ($gencode as $gencode_map) {
 				$list['order_sts_name'] = $gencode_map->gen_name;
 			}
-
+/*
 			//---理由区分名称---//
 			$query_list = array();
 			// 汎用コードマスタ.分類コード
@@ -407,13 +488,13 @@ $app->post('/history/search', function ()use($app){
 			foreach ($gencode as $gencode_map) {
 				$list['order_reason_name'] = $gencode_map->gen_name;
 			}
-
-			//---発注ステータス名称---//
+*/
+			//---受領ステータス名称---//
 			$query_list = array();
 			// 汎用コードマスタ.分類コード
-			array_push($query_list, "cls_cd = '006'");
+			array_push($query_list, "cls_cd = '007'");
 			// 汎用コードマスタ. レンタル契約No
-			array_push($query_list, "gen_cd = '".$list['order_status']."'");
+			array_push($query_list, "gen_cd = '".$list['receipt_status']."'");
 			//sql文字列を' AND 'で結合
 			$query = implode(' AND ', $query_list);
 			$gencode = MGencode::query()
@@ -421,37 +502,7 @@ $app->post('/history/search', function ()use($app){
 				->columns('*')
 				->execute();
 			foreach ($gencode as $gencode_map) {
-				$list['order_status_name'] = $gencode_map->gen_name;
-			}
-
-			//---個体管理番号・受領日時の取得---//
-			$query_list = array();
-			// 納品状況明細情報. 企業ID
-			array_push($query_list, "corporate_id = '".$auth['corporate_id']."'");
-			// 納品状況明細情報. 出荷No
-			array_push($query_list, "ship_no = '".$list['ship_no']."'");
-			//sql文字列を' AND 'で結合
-			$query = implode(' AND ', $query_list);
-			$del_gd_std = TDeliveryGoodsStateDetails::query()
-				->where($query)
-				->columns('*')
-				->execute();
-			if ($del_gd_std) {
-				$num_list = array();
-				$day_list = array();
-				foreach ($del_gd_std as $del_gd_std_map) {
-					array_push($num_list, $del_gd_std_map->individual_ctrl_no);
-					array_push($day_list, date('Y/m/d',strtotime($del_gd_std_map->receipt_date)));
-				}
-				// 個体管理番号
-				$individual_ctrl_no = implode("<br>", $num_list);
-				$list['individual_num'] = $individual_ctrl_no;
-				// 受領日
-				$receipt_date = implode("<br>", $day_list);
-				$list['order_res_ymd'] = $receipt_date;
-			} else {
-				$list['individual_num'] = "-";
-				$list['order_res_ymd'] = "-";
+				$list['receipt_status_name'] = $gencode_map->gen_name;
 			}
 
 			array_push($all_list,$list);

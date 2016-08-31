@@ -1,26 +1,30 @@
-<table class="table table-bordered">
-		<thead>
-		<tr>
-			<th class="tb_receive">受領</th>
-			<th class="tb_receive_day"><a href="#" id='receipt_date' class="sort">受領日</a></th>
-			<th class="tb_maker_sheet_number"><a href="#" id='ship_no' class="sort">メーカー伝票番号</a></th>
-			<th class="tb_no"><a href="#" id='order_req_no' class="sort">よろず発注No</a></th>
-			<th class="tb_member"><a href="#" id='cster_emply_cd' class="sort">社員番号</a></th>
-			<th class="tb_office"><a href="#" id='rntl_sect_name' class="sort">拠点</a></th>
-			<th class="tb_job_type"><a href="#" id='job_type_cd' class="sort">貸与パターン</a></th>
-			<th class="tb_order_day"><a href="#" id='order_req_ymd' class="sort">発注日</a></th>
-			<th class="tb_send_day"><a href="#" id='ship_ymd' class="sort">出荷日</a></th>
-			<th class="tb_status"><a href="#" id='order_status' class="sort">ステータス</a></th>
-			<th class="tb_kubun"><a href="#" id='order_sts_kbn' class="sort">よろず発注区分</a></th>
-			<th class="tb_kubun"><a href="#" id='rec_order_no' class="sort">メーカー受注番号</a></th>
-			<th class="tb_item_name"><a href="#" id='item_name' class="sort">商品名</a></th>
-			<th class="tb_item_cd"><a href="#" id='item_cd' class="sort">商品コード</a></th>
-			<th class="tb_color"><a href="#" id='color_cd' class="sort">色</a></th>
-			<th class="tb_size"><a href="#" id='size_cd' class="sort">サイズ</a></th>
-			<th class="tb_send_num">出荷数</th>
-			<th class="tb_receive_num">受領数</th>
-		</tr>
+<div id="scrollTable" style="border-bottom: none">
+	<table class="table table-bordered">
+		<thead class="grad_head">
+			<tr>
+				<th rowspan="2" class="tb_juryo_ck">受領</th>
+				<th rowspan="2" class="tb_order_rec_day"><a href="#" id='order_res_ymd' class="sort">受領日</a></th>
+				<th rowspan="2" class="tb_maker_send_no"><a href="#" id='maker_send_no' class="sort">メーカー伝票番号</a></th>
+				<th class="tb_item_cd"><a href="#" id='item_code' class="sort">商品-色(サイズ-サイズ2)</a></th>
+				<th rowspan="2" class="tb_send_num">出荷数</th>
+				<th rowspan="2" class="tb_individual_num"><a href="#" id='individual_num' class="sort">個体管理番号</a></th>
+				<th class="tb_no"><a href="#" id='order_req_no' class="sort">発注No</a></th>
+				<th class="tb_member"><a href="#" id='cster_emply_cd' class="sort">社員番号</a></th>
+				<th class="tb_office"><a href="#" id='rntl_sect_name' class="sort">拠点</a></th>
+				<th class="tb_status"><a href="#" id='order_status' class="sort">ステータス</a></th>
+				<th rowspan="2" class="tb_order_day"><a href="#" id='order_req_ymd' class="sort">発注日</a></th>
+				<th rowspan="2" class="tb_send_day"><a href="#" id='send_ymd' class="sort">出荷日</a></th>
+				<th rowspan="2" class="tb_maker_rec_no"><a href="#" id='maker_rec_no' class="sort">メーカー受注番号</a></th>
+			</tr>
+			<tr>
+				<th class="tb_item_name"><a href="#" id='item_name' class="sort">商品名</a></th>
+				<th class="tb_line_no"><a href="#" id='order_line_no' class="sort">発注行No</a></th>
+				<th class="tb_werer_name"><a href="#" id='werer_name' class="sort">着用者名</a></th>
+				<th class="tb_job_type"><a href="#" id='job_type_cd' class="sort">貸与パターン</a></th>
+				<th class="tb_kubun"><a href="#" id='order_sts_kbn' class="sort">発注区分</a></th>
+			</tr>
 		</thead>
 		<tbody>
 		</tbody>
 	</table>
+</div>

@@ -15,13 +15,11 @@ define([
 					emply_order_no : null,
 					member_no : null,
 					member_name : null,
-	//				office : null,
 					section : null,
 					job_type : null,
 					input_item : null,
 					item_color : null,
 					item_size : null,
-//					office_cd : null,
 					order_day_from : null,
 					order_day_to : null,
 					send_day_from : null,
@@ -71,12 +69,6 @@ define([
 				if(this.get('member_name')) {
 					result.member_name = this.get('member_name');
 				}
-//				if(this.get('office')) {
-//					result.office = this.get('office');
-//				}
-//				if(this.get('office_cd')) {
-//					result.office_cd = this.get('office_cd');
-//				}
 				if(this.get('section')) {
 					result.section = this.get('section');
 				}

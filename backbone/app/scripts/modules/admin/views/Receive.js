@@ -11,9 +11,12 @@ define([
 			},
 			regions: {
 				"page": ".page",
+				"page_2": ".page_2",
 				"condition": ".condition",
 				"listTable": ".listTable",
 				"receive_button": ".receive_button",
+				"csv_download": ".csv_download",
+				"sectionModal": ".section_modal",
 				"detailModal": '.detail_modal'
 			},
 			model: new Backbone.Model(),
