@@ -66,6 +66,7 @@ define([
 					complete:function(res){
 						that.model.set('mode',null);
 						$.unblockUI();
+						$('.tb_individual_num').hide();
 					}
 				});
 			}

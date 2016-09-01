@@ -325,8 +325,8 @@ $app->post('/receive/search', function ()use($app){
 		$arg_str .= $q_sort_key." ".$order;
 	}
 
-	$t_order = new TOrder();
-	$results = new Resultset(null, $t_order, $t_order->getReadConnection()->query($arg_str));
+	$t_delivery_goods_state_details = new TDeliveryGoodsStateDetails();
+	$results = new Resultset(null, $t_delivery_goods_state_details, $t_delivery_goods_state_details->getReadConnection()->query($arg_str));
 	// 取得オブジェクトを配列化→クラス内propety：protected値を取得する→リストカウント
 	$result_obj = (array)$results;
 	$results_cnt = $result_obj["\0*\0_count"];
@@ -343,7 +343,7 @@ $app->post('/receive/search', function ()use($app){
 	$all_list = array();
 	$json_list = array();
 
-	if($results){
+	if($results_cnt !== 0){
 		$paginator = $paginator_model->getPaginate();
 		$results = $paginator->items;
 		foreach($results as $result){
