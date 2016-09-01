@@ -18,7 +18,7 @@ $app->post('/history/search', function ()use($app){
 	$cond = $params['cond'];
 	$page = $params['page'];
 	$query_list = array();
-//
+
 	//---検索条件---//
 	//企業ID
 	array_push($query_list,"t_order.corporate_id = '".$auth['corporate_id']."'");
@@ -377,11 +377,8 @@ $app->post('/history/search', function ()use($app){
 
 			//---発注区分名称---//
 			$query_list = array();
-			// 汎用コードマスタ.分類コード
 			array_push($query_list, "cls_cd = '001'");
-			// 汎用コードマスタ. レンタル契約No
 			array_push($query_list, "gen_cd = '".$list['order_sts_kbn']."'");
-			//sql文字列を' AND 'で結合
 			$query = implode(' AND ', $query_list);
 			$gencode = MGencode::query()
 				->where($query)
@@ -393,11 +390,8 @@ $app->post('/history/search', function ()use($app){
 
 			//---理由区分名称---//
 			$query_list = array();
-			// 汎用コードマスタ.分類コード
 			array_push($query_list, "cls_cd = '002'");
-			// 汎用コードマスタ. レンタル契約No
 			array_push($query_list, "gen_cd = '".$list['order_reason_kbn']."'");
-			//sql文字列を' AND 'で結合
 			$query = implode(' AND ', $query_list);
 			$gencode = MGencode::query()
 				->where($query)
@@ -409,11 +403,8 @@ $app->post('/history/search', function ()use($app){
 
 			//---発注ステータス名称---//
 			$query_list = array();
-			// 汎用コードマスタ.分類コード
 			array_push($query_list, "cls_cd = '006'");
-			// 汎用コードマスタ. レンタル契約No
 			array_push($query_list, "gen_cd = '".$list['order_status']."'");
-			//sql文字列を' AND 'で結合
 			$query = implode(' AND ', $query_list);
 			$gencode = MGencode::query()
 				->where($query)
@@ -425,11 +416,8 @@ $app->post('/history/search', function ()use($app){
 
 			//---個体管理番号・受領日時の取得---//
 			$query_list = array();
-			// 納品状況明細情報. 企業ID
 			array_push($query_list, "corporate_id = '".$auth['corporate_id']."'");
-			// 納品状況明細情報. 出荷No
 			array_push($query_list, "ship_no = '".$list['ship_no']."'");
-			//sql文字列を' AND 'で結合
 			$query = implode(' AND ', $query_list);
 			$del_gd_std = TDeliveryGoodsStateDetails::query()
 				->where($query)
@@ -453,9 +441,6 @@ $app->post('/history/search', function ()use($app){
 				$list['order_res_ymd'] = "-";
 			}
 
-			// 個体管理番号表示/非表示フラグ設定
-
-
 			array_push($all_list,$list);
 		}
 	}
@@ -469,11 +454,35 @@ $app->post('/history/search', function ()use($app){
 			array_multisort(array_column($all_list, 'shin_item_code'), SORT_ASC, $all_list);
 		}
 	}
-
+/*
+	// 個体管理番号表示/非表示フラグ設定
+	$query_list = array();
+	array_push($query_list, "corporate_id = '".$auth['corporate_id']."'");
+	array_push($query_list, "rntl_cont_no = '".$cond['agreement_no']."'");
+	$query = implode(' AND ', $query_list);
+	$m_contract = MContract::query()
+		->where($query)
+		->columns('*')
+		->execute();
+	$m_contract_obj = (array)$m_contract;
+	$cnt = $m_contract_obj["\0*\0_count"];
+	$individual_flg = "";
+	if (!empty($cnt)) {
+		foreach ($m_contract as $m_contract_map) {
+			$individual_flg = $m_contract_map->individual_flg;
+		}
+		if ($individual_flg == 0) {
+			$individual_flg = "true";
+		} else {
+			$individual_flg = "false";
+		}
+	}
+*/
 	$page_list['records_per_page'] = $page['records_per_page'];
 	$page_list['page_number'] = $page['page_number'];
 	$page_list['total_records'] = $results_cnt;
 	$json_list['page'] = $page_list;
 	$json_list['list'] = $all_list;
+//	$json_list['individual_flag'] = $individual_flg;
 	echo json_encode($json_list);
 });
