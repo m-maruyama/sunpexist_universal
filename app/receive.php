@@ -21,18 +21,18 @@ $app->post('/receive/search', function ()use($app){
 
 	//---検索条件---//
 	//企業ID
-	array_push($query_list,"t_order.corporate_id = '".$auth['corporate_id']."'");
+	array_push($query_list,"t_delivery_goods_state_details.corporate_id = '".$auth['corporate_id']."'");
 	//契約No
 	if(!empty($cond['agreement_no'])){
-		array_push($query_list,"t_order.rntl_cont_no = '".$cond['agreement_no']."'");
+		array_push($query_list,"t_delivery_goods_state_details.rntl_cont_no = '".$cond['agreement_no']."'");
 	}
 	//発注No
 	if(!empty($cond['no'])){
 		array_push($query_list,"t_order.order_req_no LIKE '".$cond['no']."%'");
 	}
 	//お客様発注No
-	if(!empty($cond['emply_order'])){
-		array_push($query_list,"t_order.emply_req_no LIKE '".$cond['emply_order_no']."%'");
+	if(!empty($cond['emply_order_no'])){
+		array_push($query_list,"t_order.emply_order_req_no LIKE '".$cond['emply_order_no']."%'");
 	}
 	//社員番号
 	if(!empty($cond['member_no'])){
@@ -52,15 +52,15 @@ $app->post('/receive/search', function ()use($app){
 	}
 	//商品
 	if(!empty($cond['input_item'])){
-		array_push($query_list,"t_order.item_cd = '".$cond['input_item']."'");
+		array_push($query_list,"t_delivery_goods_state_details.item_cd = '".$cond['input_item']."'");
 	}
 	//色
 	if(!empty($cond['item_color'])){
-		array_push($query_list,"t_order.color_cd = '".$cond['item_color']."'");
+		array_push($query_list,"t_delivery_goods_state_details.color_cd = '".$cond['item_color']."'");
 	}
 	//サイズ
 	if(!empty($cond['item_size'])){
-		array_push($query_list,"t_order.size_cd = '".$cond['item_size']."'");
+		array_push($query_list,"t_delivery_goods_state_details.size_cd = '".$cond['item_size']."'");
 	}
 	//発注日from
 	if(!empty($cond['order_day_from'])){
@@ -70,16 +70,16 @@ $app->post('/receive/search', function ()use($app){
 	if(!empty($cond['order_day_to'])){
 		array_push($query_list,"TO_DATE(t_order.order_req_ymd,'YYYY/MM/DD') <= TO_DATE('".$cond['order_day_to']."','YYYY/MM/DD')");
 	}
-	//出荷日from
-	if(!empty($cond['send_day_from'])){
-		$cond['send_day_from'] = date('Y-m-d 00:00:00', strtotime($cond['send_day_from']));
-		array_push($query_list,"t_order_state.ship_ymd >= '".$cond['send_day_from']."'");
+	//受領日from
+	if(!empty($cond['receipt_day_from'])){
+		$cond['receipt_day_from'] = date('Y-m-d 00:00:00', strtotime($cond['receipt_day_from']));
+		array_push($query_list,"t_delivery_goods_state_details.receipt_date >= '".$cond['receipt_day_from']."'");
 //		array_push($query_list,"TO_DATE(t_order_state.ship_ymd,'YYYY/MM/DD') >= TO_DATE('".$cond['send_day_from']."','YYYY/MM/DD')");
 	}
-	//出荷日to
-	if(!empty($cond['send_day_to'])){
-		$cond['send_day_to'] = date('Y-m-d 23:59:59', strtotime($cond['send_day_to']));
-		array_push($query_list,"t_order_state.ship_ymd <= '".$cond['send_day_to']."'");
+	//受領日to
+	if(!empty($cond['receipt_day_to'])){
+		$cond['receipt_day_to'] = date('Y-m-d 23:59:59', strtotime($cond['receipt_day_to']));
+		array_push($query_list,"t_delivery_goods_state_details.receipt_date <= '".$cond['receipt_day_to']."'");
 //		array_push($query_list,"TO_DATE(t_order_state.ship_ymd,'YYYY/MM/DD') <= TO_DATE('".$cond['send_day_to']."','YYYY/MM/DD')");
 	}
 	//個体管理番号
@@ -92,17 +92,17 @@ $app->post('/receive/search', function ()use($app){
 	//ステータス
 	$status_list = array();
 	if($cond['status0']){
-		// 未出荷
+		// 未受領
 		array_push($status_list,"1");
 	}
 	if($cond['status1']){
-		// 出荷済み
+		// 受領済み
 		array_push($status_list,"2");
 	}
 	if(!empty($status_list)) {
 		$status_str = implode("','",$status_list);
 //		$status_query = "order_status IN ('".$status_str."')";
-		array_push($query_list,"t_order.order_status IN ('".$status_str."')");
+		array_push($query_list,"t_delivery_goods_state_details.receipt_status IN ('".$status_str."')");
 //		array_push($status_kbn_list,$status_query);
 	}
 	//発注区分
@@ -212,60 +212,69 @@ $app->post('/receive/search', function ()use($app){
 	if(!empty($page['sort_key'])){
 		$sort_key = $page['sort_key'];
 		$order = $page['order'];
-		if($sort_key == 'order_req_no' || $sort_key == 'order_req_ymd' || $sort_key == 'order_status' || $sort_key == 'order_sts_kbn'){
-			$sort_key = 'as_'.$sort_key;
+		// 受領日
+		if($sort_key == 'receipt_date'){
+			$q_sort_key = 'as_receipt_date';
 		}
-		if($sort_key == 'job_type_cd'){
-			$sort_key = 'as_job_type_name';
-		}
-		if($sort_key == 'cster_emply_cd'){
-			$sort_key = 'as_cster_emply_cd';
-		}
-		if($sort_key == 'rntl_sect_name'){
-			$sort_key = 'as_rntl_sect_name';
-		}
-		if($sort_key == 'werer_name'){
-			$sort_key = 'as_werer_name';
-		}
-		if($sort_key == 'item_code'){
-			$sort_key = 'as_item_cd';
-		}
-		if($sort_key == 'item_name'){
-			$sort_key = 'as_input_item_name';
-		}
+		// メーカー伝票番号
 		if($sort_key == 'maker_rec_no'){
-			$sort_key = 'as_rec_order_no';
+			$q_sort_key = 'as_rec_order_no';
 		}
-		if($sort_key == 'send_shd_ymd'){
-			$sort_key = 'as_order_req_ymd';
+		// 商品名
+		if($sort_key == 'item_name'){
+			$q_sort_key = 'as_input_item_name';
 		}
-		if($sort_key == 'order_status'){
-			$sort_key = 'as_order_status';
-		}
-		if($sort_key == 'maker_send_no'){
-			$sort_key = 'as_ship_no';
-		}
-		if($sort_key == 'ship_ymd'){
-			$sort_key = 'as_ship_ymd';
-		}
-		if($sort_key == 'send_ymd'){
-			$sort_key = 'as_ship_ymd';
-		}
+		// 個体管理番号
 		if($sort_key == 'individual_num'){
-			$sort_key = 'as_individual_ctrl_no';
+			$q_sort_key = 'as_individual_ctrl_no';
 		}
-		if($sort_key == 'order_res_ymd'){
-			$sort_key = 'as_receipt_date';
+		// 発注No
+		if($sort_key == 'order_req_no'){
+			$q_sort_key = 'as_order_req_no';
 		}
-		if($sort_key == 'rental_no'){
-			$sort_key = 'as_rntl_cont_no';
+		// 発注行No
+		if($sort_key == 'order_line_no'){
+			$q_sort_key = 'as_order_req_line_no';
 		}
-		if($sort_key == 'rental_name'){
-			$sort_key = 'as_rntl_cont_name';
+		// 社員番号
+		if($sort_key == 'cster_emply_cd'){
+			$q_sort_key = 'as_cster_emply_cd';
+		}
+		// 着用者名
+		if($sort_key == 'werer_name'){
+			$q_sort_key = 'as_werer_name';
+		}
+		// 拠点
+		if($sort_key == 'rntl_sect_name'){
+			$q_sort_key = 'as_rntl_sect_name';
+		}
+		// 貸与パターン
+		if($sort_key == 'job_type_cd'){
+			$q_sort_key = 'as_job_type_name';
+		}
+		// 受領ステータス
+		if($sort_key == 'receipt_status'){
+			$q_sort_key = 'as_receipt_status';
+		}
+		// 発注区分
+		if($sort_key == 'order_sts_kbn'){
+			$q_sort_key = 'as_order_sts_kbn';
+		}
+		// 発注日
+		if($sort_key == 'order_req_ymd'){
+			$q_sort_key = 'as_order_req_ymd';
+		}
+		// 出荷日
+		if($sort_key == 'send_ymd'){
+			$q_sort_key = 'as_ship_ymd';
+		}
+		// メーカー受注番号
+		if($sort_key == 'maker_send_no'){
+			$q_sort_key = 'as_ship_no';
 		}
 	} else {
 		//指定がなければ発注No
-		$sort_key = "as_order_req_no";
+		$q_sort_key = "as_order_req_no";
 		$order = 'asc';
 	}
 
@@ -274,20 +283,8 @@ $app->post('/receive/search', function ()use($app){
 	$arg_str .= " * ";
 	$arg_str .= " FROM ";
 	$arg_str .= "(SELECT distinct on ";
-//	$arg_str .= "(t_order.order_req_no,";
-//	$arg_str .= "t_order.order_req_line_no,";
 	$arg_str .= "(t_order_state.order_req_no,";
 	$arg_str .= "t_order_state.order_req_line_no)";
-/*
-	$arg_str .= "t_order_state.rec_order_no,";
-	$arg_str .= "t_order_state.rec_order_line_no,";
-	$arg_str .= "t_delivery_goods_state.ship_no,";
-	$arg_str .= "t_delivery_goods_state.ship_line_no,";
-	$arg_str .= "t_delivery_goods_state.rec_order_no,";
-	$arg_str .= "t_delivery_goods_state.rec_order_line_no,";
-	$arg_str .= "t_delivery_goods_state_details.ship_no,";
-	$arg_str .= "t_delivery_goods_state_details.ship_line_no) ";
-*/
 	$arg_str .= "t_delivery_goods_state_details.receipt_status as as_receipt_status,";
 	$arg_str .= "t_delivery_goods_state_details.receipt_date as as_receipt_date,";
 	$arg_str .= "t_delivery_goods_state.ship_no as as_ship_no,";
@@ -301,7 +298,8 @@ $app->post('/receive/search', function ()use($app){
 	$arg_str .= "t_order.order_req_no as as_order_req_no,";
 	$arg_str .= "t_order.order_req_line_no as as_order_req_line_no,";
 	$arg_str .= "t_order.cster_emply_cd as as_cster_emply_cd,";
-	$arg_str .= "m_wearer_std.werer_name as as_werer_name,";
+	$arg_str .= "t_order.werer_name as as_werer_name,";
+//	$arg_str .= "m_wearer_std.werer_name as as_werer_name,";
 	$arg_str .= "m_section.rntl_sect_name as as_rntl_sect_name,";
 	$arg_str .= "m_job_type.job_type_name as as_job_type_name,";
 	$arg_str .= "t_order.order_sts_kbn as as_order_sts_kbn,";
@@ -319,11 +317,13 @@ $app->post('/receive/search', function ()use($app){
 	$arg_str .= " ON t_order.t_order_comb_hkey = t_order_state.t_order_comb_hkey)";
 	$arg_str .= " ON t_order_state.t_order_state_comb_hkey = t_delivery_goods_state.t_order_state_comb_hkey)";
 	$arg_str .= " ON t_delivery_goods_state_details.ship_no = t_delivery_goods_state.ship_no";
-//	$arg_str .= " WHERE ";
-//	$arg_str .= $query;
+	$arg_str .= " WHERE ";
+	$arg_str .= $query;
 	$arg_str .= ") as distinct_table";
-//	$arg_str .= " ORDER BY ";
-//	$arg_str .= $sort_key." ".$order;
+	if (!empty($q_sort_key)) {
+		$arg_str .= " ORDER BY ";
+		$arg_str .= $q_sort_key." ".$order;
+	}
 
 	$t_order = new TOrder();
 	$results = new Resultset(null, $t_order, $t_order->getReadConnection()->query($arg_str));
@@ -506,6 +506,16 @@ $app->post('/receive/search', function ()use($app){
 			}
 
 			array_push($all_list,$list);
+		}
+	}
+
+	//ソート設定(配列ソート)
+	// 商品-色(サイズ-サイズ2)
+	if($sort_key == 'item_code'){
+		if ($order == 'asc') {
+			array_multisort(array_column($all_list, 'shin_item_code'), SORT_DESC, $all_list);
+		} else {
+			array_multisort(array_column($all_list, 'shin_item_code'), SORT_ASC, $all_list);
 		}
 	}
 

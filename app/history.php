@@ -31,8 +31,8 @@ $app->post('/history/search', function ()use($app){
 		array_push($query_list,"t_order.order_req_no LIKE '".$cond['no']."%'");
 	}
 	//お客様発注No
-	if(!empty($cond['emply_order'])){
-		array_push($query_list,"t_order.emply_req_no LIKE '".$cond['emply_order_no']."%'");
+	if(!empty($cond['emply_order_no'])){
+		array_push($query_list,"t_order.emply_order_req_no LIKE '".$cond['emply_order_no']."%'");
 	}
 	//社員番号
 	if(!empty($cond['member_no'])){
@@ -213,59 +213,56 @@ $app->post('/history/search', function ()use($app){
 		$sort_key = $page['sort_key'];
 		$order = $page['order'];
 		if($sort_key == 'order_req_no' || $sort_key == 'order_req_ymd' || $sort_key == 'order_status' || $sort_key == 'order_sts_kbn'){
-			$sort_key = 'as_'.$sort_key;
+			$q_sort_key = 'as_'.$sort_key;
 		}
 		if($sort_key == 'job_type_cd'){
-			$sort_key = 'as_job_type_name';
+			$q_sort_key = 'as_job_type_name';
 		}
 		if($sort_key == 'cster_emply_cd'){
-			$sort_key = 'as_cster_emply_cd';
+			$q_sort_key = 'as_cster_emply_cd';
 		}
 		if($sort_key == 'rntl_sect_name'){
-			$sort_key = 'as_rntl_sect_name';
+			$q_sort_key = 'as_rntl_sect_name';
 		}
 		if($sort_key == 'werer_name'){
-			$sort_key = 'as_werer_name';
-		}
-		if($sort_key == 'item_code'){
-			$sort_key = 'as_item_cd';
+			$q_sort_key = 'as_werer_name';
 		}
 		if($sort_key == 'item_name'){
-			$sort_key = 'as_input_item_name';
+			$q_sort_key = 'as_input_item_name';
 		}
 		if($sort_key == 'maker_rec_no'){
-			$sort_key = 'as_rec_order_no';
+			$q_sort_key = 'as_rec_order_no';
 		}
 		if($sort_key == 'send_shd_ymd'){
-			$sort_key = 'as_order_req_ymd';
+			$q_sort_key = 'as_order_req_ymd';
 		}
 		if($sort_key == 'order_status'){
-			$sort_key = 'as_order_status';
+			$q_sort_key = 'as_order_status';
 		}
 		if($sort_key == 'maker_send_no'){
-			$sort_key = 'as_ship_no';
+			$q_sort_key = 'as_ship_no';
 		}
 		if($sort_key == 'ship_ymd'){
-			$sort_key = 'as_ship_ymd';
+			$q_sort_key = 'as_ship_ymd';
 		}
 		if($sort_key == 'send_ymd'){
-			$sort_key = 'as_ship_ymd';
+			$q_sort_key = 'as_ship_ymd';
 		}
 		if($sort_key == 'individual_num'){
-			$sort_key = 'as_individual_ctrl_no';
+			$q_sort_key = 'as_individual_ctrl_no';
 		}
 		if($sort_key == 'order_res_ymd'){
-			$sort_key = 'as_receipt_date';
+			$q_sort_key = 'as_receipt_date';
 		}
 		if($sort_key == 'rental_no'){
-			$sort_key = 'as_rntl_cont_no';
+			$q_sort_key = 'as_rntl_cont_no';
 		}
 		if($sort_key == 'rental_name'){
-			$sort_key = 'as_rntl_cont_name';
+			$q_sort_key = 'as_rntl_cont_name';
 		}
 	} else {
 		//指定がなければ発注No
-		$sort_key = "as_order_req_no";
+		$q_sort_key = "as_order_req_no";
 		$order = 'asc';
 	}
 
@@ -310,8 +307,10 @@ $app->post('/history/search', function ()use($app){
 	$arg_str .= " WHERE ";
 	$arg_str .= $query;
 	$arg_str .= ") as distinct_table";
-	$arg_str .= " ORDER BY ";
-	$arg_str .= $sort_key." ".$order;
+	if (!empty($q_sort_key)) {
+		$arg_str .= " ORDER BY ";
+		$arg_str .= $q_sort_key." ".$order;
+	}
 
 	$t_order = new TOrder();
 	$results = new Resultset(null, $t_order, $t_order->getReadConnection()->query($arg_str));
@@ -454,7 +453,20 @@ $app->post('/history/search', function ()use($app){
 				$list['order_res_ymd'] = "-";
 			}
 
+			// 個体管理番号表示/非表示フラグ設定
+			
+
 			array_push($all_list,$list);
+		}
+	}
+
+	//ソート設定(配列ソート)
+	// 商品-色(サイズ-サイズ2)
+	if($sort_key == 'item_code'){
+		if ($order == 'asc') {
+			array_multisort(array_column($all_list, 'shin_item_code'), SORT_DESC, $all_list);
+		} else {
+			array_multisort(array_column($all_list, 'shin_item_code'), SORT_ASC, $all_list);
 		}
 	}
 
