@@ -18,7 +18,7 @@ $app->post('/history/search', function ()use($app){
 	$cond = $params['cond'];
 	$page = $params['page'];
 	$query_list = array();
-
+//
 	//---検索条件---//
 	//企業ID
 	array_push($query_list,"t_order.corporate_id = '".$auth['corporate_id']."'");
@@ -454,7 +454,7 @@ $app->post('/history/search', function ()use($app){
 			}
 
 			// 個体管理番号表示/非表示フラグ設定
-			
+
 
 			array_push($all_list,$list);
 		}
