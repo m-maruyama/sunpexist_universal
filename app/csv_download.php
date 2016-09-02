@@ -488,6 +488,29 @@ $app->post('/csv_download', function ()use($app){
 			}
 		}
 
+		// 個体管理番号表示/非表示フラグ設定
+		$query_list = array();
+		array_push($query_list, "corporate_id = '".$auth['corporate_id']."'");
+		array_push($query_list, "rntl_cont_no = '".$cond['agreement_no']."'");
+		$query = implode(' AND ', $query_list);
+		$m_contract = MContract::query()
+			->where($query)
+			->columns('*')
+			->execute();
+		$m_contract_obj = (array)$m_contract;
+		$cnt = $m_contract_obj["\0*\0_count"];
+		$individual_flg = "";
+		if (!empty($cnt)) {
+			foreach ($m_contract as $m_contract_map) {
+				$individual_flg = $m_contract_map->individual_flg;
+			}
+			if ($individual_flg == 1) {
+				$individual_flg = true;
+			} else {
+				$individual_flg = false;
+			}
+		}
+
 		//---CSV出力---//
 		$csv_datas = array();
 
@@ -496,29 +519,31 @@ $app->post('/csv_download', function ()use($app){
 			'抽出件数：'.$t_order_list_cnt.'件'
 		);
 		array_push($csv_datas, $header_1);
-		$header_2 = array(
-			'発注No',
-			'発注日',
-			'発注区分',
-			'拠点',
-			'貸与パターン',
-			'社員番号',
-			'着用者名',
-			'商品-色(サイズ-サイズ2)',
-			'商品名',
-			'発注数',
-			'メーカー受注番号',
-			'出荷予定日',
-			'受注数',
-			'ステータス',
-			'メーカー伝票番号',
-			'出荷日',
-			'出荷数',
-			'個体管理番号',
-			'受領日',
-			'契約No',
-			'契約名'
-		);
+
+		$header_2 = array();
+		array_push($header_2, "発注No");
+		array_push($header_2, "発注日");
+		array_push($header_2, "発注区分");
+		array_push($header_2, "拠点");
+		array_push($header_2, "貸与パターン");
+		array_push($header_2, "社員番号");
+		array_push($header_2, "着用者名");
+		array_push($header_2, "商品-色(サイズ-サイズ2)");
+		array_push($header_2, "商品名");
+		array_push($header_2, "発注数");
+		array_push($header_2, "メーカー受注番号");
+		array_push($header_2, "出荷予定日");
+		array_push($header_2, "受注数");
+		array_push($header_2, "ステータス");
+		array_push($header_2, "メーカー伝票番号");
+		array_push($header_2, "出荷日");
+		array_push($header_2, "出荷数");
+		if ($individual_flg) {
+			array_push($header_2, "個体管理番号");
+		}
+		array_push($header_2, "受領日");
+		array_push($header_2, "契約No");
+		array_push($header_2, "契約名");
 		array_push($csv_datas, $header_2);
 
 		// ボディ作成
@@ -561,7 +586,9 @@ $app->post('/csv_download', function ()use($app){
 				// 出荷数
 				array_push($csv_body_list, $all_map["ship_qty"]);
 				// 個体管理番号
-				array_push($csv_body_list, $all_map["individual_num"]);
+				if ($individual_flg) {
+					array_push($csv_body_list, $all_map["individual_num"]);
+				}
 				// 受領日
 				array_push($csv_body_list, $all_map["order_res_ymd"]);
 				// 契約No
@@ -1032,6 +1059,29 @@ $app->post('/csv_download', function ()use($app){
 			}
 		}
 
+		// 個体管理番号表示/非表示フラグ設定
+		$query_list = array();
+		array_push($query_list, "corporate_id = '".$auth['corporate_id']."'");
+		array_push($query_list, "rntl_cont_no = '".$cond['agreement_no']."'");
+		$query = implode(' AND ', $query_list);
+		$m_contract = MContract::query()
+			->where($query)
+			->columns('*')
+			->execute();
+		$m_contract_obj = (array)$m_contract;
+		$cnt = $m_contract_obj["\0*\0_count"];
+		$individual_flg = "";
+		if (!empty($cnt)) {
+			foreach ($m_contract as $m_contract_map) {
+				$individual_flg = $m_contract_map->individual_flg;
+			}
+			if ($individual_flg == 1) {
+				$individual_flg = true;
+			} else {
+				$individual_flg = false;
+			}
+		}
+
 		//---CSV出力---//
 		$csv_datas = array();
 
@@ -1040,29 +1090,31 @@ $app->post('/csv_download', function ()use($app){
 			'抽出件数：'.$results_cnt.'件'
 		);
 		array_push($csv_datas, $header_1);
-		$header_2 = array(
-			'発注No',
-			'発注日',
-			'発注区分',
-			'拠点',
-			'貸与パターン',
-			'社員番号',
-			'着用者名',
-			'商品-色(サイズ-サイズ2)',
-			'商品名',
-			'発注数',
-			'メーカー受注番号',
-			'返却予定日',
-			'返却数',
-			'ステータス',
-			'メーカー伝票番号',
-			'出荷日',
-			'出荷数',
-			'個体管理番号',
-			'受領日',
-			'契約No',
-			'契約名'
-		);
+
+		$header_2 = array();
+		array_push($header_2, "発注No");
+		array_push($header_2, "発注日");
+		array_push($header_2, "発注区分");
+		array_push($header_2, "拠点");
+		array_push($header_2, "貸与パターン");
+		array_push($header_2, "社員番号");
+		array_push($header_2, "着用者名");
+		array_push($header_2, "商品-色(サイズ-サイズ2)");
+		array_push($header_2, "商品名");
+		array_push($header_2, "発注数");
+		array_push($header_2, "メーカー受注番号");
+		array_push($header_2, "返却予定日");
+		array_push($header_2, "返却数");
+		array_push($header_2, "ステータス");
+		array_push($header_2, "メーカー伝票番号");
+		array_push($header_2, "出荷日");
+		array_push($header_2, "出荷数");
+		if ($individual_flg) {
+			array_push($header_2, "個体管理番号");
+		}
+		array_push($header_2, "受領日");
+		array_push($header_2, "契約No");
+		array_push($header_2, "契約名");
 		array_push($csv_datas, $header_2);
 
 		// ボディ作成
@@ -1105,7 +1157,9 @@ $app->post('/csv_download', function ()use($app){
 				// 出荷数
 				array_push($csv_body_list, $all_map["ship_qty"]);
 				// 個体管理番号
-				array_push($csv_body_list, $all_map["individual_num"]);
+				if ($individual_flg) {
+					array_push($csv_body_list, $all_map["individual_num"]);
+				}
 				// 受領日
 				array_push($csv_body_list, $all_map["order_res_ymd"]);
 				// 契約No
@@ -1629,6 +1683,29 @@ $app->post('/csv_download', function ()use($app){
 			}
 		}
 
+		// 個体管理番号表示/非表示フラグ設定
+		$query_list = array();
+		array_push($query_list, "corporate_id = '".$auth['corporate_id']."'");
+		array_push($query_list, "rntl_cont_no = '".$cond['agreement_no']."'");
+		$query = implode(' AND ', $query_list);
+		$m_contract = MContract::query()
+			->where($query)
+			->columns('*')
+			->execute();
+		$m_contract_obj = (array)$m_contract;
+		$cnt = $m_contract_obj["\0*\0_count"];
+		$individual_flg = "";
+		if (!empty($cnt)) {
+			foreach ($m_contract as $m_contract_map) {
+				$individual_flg = $m_contract_map->individual_flg;
+			}
+			if ($individual_flg == 1) {
+				$individual_flg = true;
+			} else {
+				$individual_flg = false;
+			}
+		}
+
 		//---CSV出力---//
 		$csv_datas = array();
 
@@ -1637,25 +1714,28 @@ $app->post('/csv_download', function ()use($app){
 			'抽出件数：'.$results_cnt.'件'
 		);
 		array_push($csv_datas, $header_1);
-		$header_2 = array(
-			'受領日',
-			'メーカー伝票番号',
-			'商品-色(サイズ-サイズ2)',
-			'商品名',
-			'出荷数',
-			'個体管理番号',
-			'発注No',
-			'発注行No',
-			'社員番号',
-			'着用者名',
-			'拠点',
-			'貸与パターン',
-			'ステータス',
-			'発注区分',
-			'発注日',
-			'出荷日',
-			'メーカー受注番号'
-		);
+
+		$header_2 = array();
+		array_push($header_2, "受領日");
+		array_push($header_2, "メーカー伝票番号");
+		array_push($header_2, "商品-色(サイズ-サイズ2)");
+		array_push($header_2, "商品名");
+		array_push($header_2, "出荷数");
+		if ($individual_flg) {
+			array_push($header_2, "個体管理番号");
+		}
+		array_push($header_2, "発注No");
+		array_push($header_2, "発注行No");
+		array_push($header_2, "社員番号");
+		array_push($header_2, "着用者名");
+		array_push($header_2, "拠点");
+		array_push($header_2, "貸与パターン");
+		array_push($header_2, "ステータス");
+		array_push($header_2, "発注区分");
+		array_push($header_2, "発注日");
+		array_push($header_2, "出荷日");
+		array_push($header_2, "発注数");
+		array_push($header_2, "メーカー受注番号");
 		array_push($csv_datas, $header_2);
 
 		// ボディ作成
@@ -1673,7 +1753,9 @@ $app->post('/csv_download', function ()use($app){
 				// 出荷数
 				array_push($csv_body_list, $all_map["ship_qty"]);
 				// 個体管理番号
-				array_push($csv_body_list, $all_map["individual_ctrl_no"]);
+				if ($individual_flg) {
+					array_push($csv_body_list, $all_map["individual_ctrl_no"]);
+				}
 				// 発注No
 				array_push($csv_body_list, $all_map["order_req_no"]);
 				// 発注行No
@@ -2110,6 +2192,29 @@ $app->post('/csv_download', function ()use($app){
 			}
 		}
 
+		// 個体管理番号表示/非表示フラグ設定
+		$query_list = array();
+		array_push($query_list, "corporate_id = '".$auth['corporate_id']."'");
+		array_push($query_list, "rntl_cont_no = '".$cond['agreement_no']."'");
+		$query = implode(' AND ', $query_list);
+		$m_contract = MContract::query()
+			->where($query)
+			->columns('*')
+			->execute();
+		$m_contract_obj = (array)$m_contract;
+		$cnt = $m_contract_obj["\0*\0_count"];
+		$individual_flg = "";
+		if (!empty($cnt)) {
+			foreach ($m_contract as $m_contract_map) {
+				$individual_flg = $m_contract_map->individual_flg;
+			}
+			if ($individual_flg == 1) {
+				$individual_flg = true;
+			} else {
+				$individual_flg = false;
+			}
+		}
+
 		//---CSV出力---//
 		$csv_datas = array();
 
@@ -2118,23 +2223,25 @@ $app->post('/csv_download', function ()use($app){
 			'抽出件数：'.$results_cnt.'件'
 		);
 		array_push($csv_datas, $header_1);
-		$header_2 = array(
-			'社員番号',
-			'着用者名',
-			'現在の拠点',
-			'現在の貸与パターン',
-			'納品時の拠点',
-			'納品時の貸与パターン',
-			'商品-色(サイズ-サイズ2)',
-			'商品名',
-			'個体管理番号',
-			'出荷数',
-			'出荷日',
-			'返却予定日',
-			'発注No',
-			'メーカー受注番号',
-			'メーカー伝票番号'
-		);
+
+		$header_2 = array();
+		array_push($header_2, "社員番号");
+		array_push($header_2, "着用者名");
+		array_push($header_2, "現在の拠点");
+		array_push($header_2, "納品時の貸与パターン");
+		array_push($header_2, "納品時の拠点");
+		array_push($header_2, "現在の貸与パターン");
+		array_push($header_2, "商品-色(サイズ-サイズ2)");
+		array_push($header_2, "商品名");
+		if ($individual_flg) {
+			array_push($header_2, "個体管理番号");
+		}
+		array_push($header_2, "出荷数");
+		array_push($header_2, "出荷日");
+		array_push($header_2, "返却予定日");
+		array_push($header_2, "発注No");
+		array_push($header_2, "メーカー受注番号");
+		array_push($header_2, "メーカー伝票番号");
 		array_push($csv_datas, $header_2);
 
 		// ボディ作成
@@ -2158,7 +2265,9 @@ $app->post('/csv_download', function ()use($app){
 				// 商品名
 				array_push($csv_body_list, $all_map["input_item_name"]);
 				// 個体管理番号
-				array_push($csv_body_list, $all_map["individual_ctrl_no"]);
+				if ($individual_flg) {
+					array_push($csv_body_list, $all_map["individual_ctrl_no"]);
+				}
 				// 出荷数
 				array_push($csv_body_list, $all_map["ship_qty"]);
 				// 出荷日
