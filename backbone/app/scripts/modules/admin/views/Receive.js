@@ -7,7 +7,7 @@ define([
 		Views.Receive = Marionette.LayoutView.extend({
 			template: App.Admin.Templates.receive,
 			ui: {
-                'updateBtn': 'button.update'
+//				'updateBtn': 'button.update'
 			},
 			regions: {
 				"page": ".page",

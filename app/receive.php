@@ -283,11 +283,12 @@ $app->post('/receive/search', function ()use($app){
 	$arg_str .= " * ";
 	$arg_str .= " FROM ";
 	$arg_str .= "(SELECT distinct on ";
-	$arg_str .= "(t_order_state.order_req_no,";
-	$arg_str .= "t_order_state.order_req_line_no)";
+	$arg_str .= "(t_delivery_goods_state_details.ship_no,";
+	$arg_str .= "t_delivery_goods_state_details.ship_line_no) ";
 	$arg_str .= "t_delivery_goods_state_details.receipt_status as as_receipt_status,";
 	$arg_str .= "t_delivery_goods_state_details.receipt_date as as_receipt_date,";
-	$arg_str .= "t_delivery_goods_state.ship_no as as_ship_no,";
+	$arg_str .= "t_delivery_goods_state_details.ship_no as as_ship_no,";
+	$arg_str .= "t_delivery_goods_state_details.ship_line_no as as_ship_line_no,";
 	$arg_str .= "t_order.item_cd as as_item_cd,";
 	$arg_str .= "t_order.color_cd as as_color_cd,";
 	$arg_str .= "t_order.size_cd as as_size_cd,";
@@ -314,8 +315,8 @@ $app->post('/receive/search', function ()use($app){
 	$arg_str .= " INNER JOIN m_wearer_std ON t_order.m_wearer_std_comb_hkey = m_wearer_std.m_wearer_std_comb_hkey";
 	$arg_str .= " INNER JOIN (m_job_type INNER JOIN m_input_item ON m_job_type.m_job_type_comb_hkey = m_input_item.m_job_type_comb_hkey)";
 	$arg_str .= " ON t_order.m_job_type_comb_hkey = m_job_type.m_job_type_comb_hkey)";
-	$arg_str .= " ON t_order.t_order_comb_hkey = t_order_state.t_order_comb_hkey)";
-	$arg_str .= " ON t_order_state.t_order_state_comb_hkey = t_delivery_goods_state.t_order_state_comb_hkey)";
+	$arg_str .= " ON t_order_state.t_order_comb_hkey = t_order.t_order_comb_hkey)";
+	$arg_str .= " ON t_delivery_goods_state.t_order_state_comb_hkey = t_order_state.t_order_state_comb_hkey)";
 	$arg_str .= " ON t_delivery_goods_state_details.ship_no = t_delivery_goods_state.ship_no";
 	$arg_str .= " WHERE ";
 	$arg_str .= $query;
@@ -433,6 +434,8 @@ $app->post('/receive/search', function ()use($app){
 			} else {
 				$list['rec_order_no'] = "-";
 			}
+			// 出荷行No
+			$list['ship_line_no'] = $result->as_ship_line_no;
 
 			//---日付設定---//
 			// 受領日
@@ -548,5 +551,136 @@ $app->post('/receive/search', function ()use($app){
 	$json_list['page'] = $page_list;
 	$json_list['list'] = $all_list;
 	$json_list['individual_flag'] = $individual_flg;
+	echo json_encode($json_list);
+});
+
+
+
+/**
+ * 受領ステータス更新
+ */
+$app->post('/receive/update', function ()use($app) {
+	//---処理時間帯チェック---//
+	$start_time = '18:00:00';
+	$end_time = '6:00:00';
+	$now = date('H:i:s');
+	$auth = $app->session->get("auth");
+	if($auth['user_type']!=3){//スーパーユーザーは操作可能
+		if(strtotime($now) > strtotime($start_time) || strtotime($now) < strtotime($end_time)){
+				$json_list['errors'] = '18時〜6時までは受領更新不可となります。';
+				echo json_encode($json_list);
+				return true;
+		}
+	}
+
+	//---受領・未受領更新処理---//
+	$data = json_decode(file_get_contents("php://input"), true);
+	$cond = $data['cond'];
+	$page = $data['page'];
+
+	$on_list = array();
+	$off_list = array();
+	$json_list = array();
+
+	if (!empty($cond)) {
+		foreach ($cond as $key) {
+			// チェック/未チェック確認、受領ステータス条件リスト生成
+			$chk_val = explode(',', $key);
+			// チェックされていない場合(未受領)
+			if ($chk_val[1] == "1") {
+				array_push($off_list, $chk_val[0]);
+			}
+			// チェックされる場合(受領済み)
+			if ($chk_val[1] == "2") {
+				array_push($on_list, $chk_val[0]);
+			}
+		}
+	}
+
+	try {
+		// トランザクション開始
+		$transaction = $app->transactionManager->get();
+
+		// 受領ステータス「未受領」更新
+		if(!empty($off_list)){
+			foreach ($off_list as $off_map) {
+				// 検索条件
+				$query_list = array();
+				$arr = explode(' ', $off_map);
+				$ship_no = $arr[0];
+				$ship_no_qy = "ship_no = '".$ship_no."'";
+				array_push($query_list, $ship_no_qy);
+				$ship_line_no = $arr[1];
+				$ship_line_no_qy = "ship_line_no = '".$ship_line_no."'";
+				array_push($query_list, $ship_line_no_qy);
+				$query = implode(' AND ', $query_list);
+
+				// データ参照
+				$tDeliveryGoodsStateDetails = TDeliveryGoodsStateDetails::find(
+					array(
+						'conditions' => $query
+				));
+
+				// データ更新
+				foreach ($tDeliveryGoodsStateDetails as $tDeliveryGoodsStateDetail) {
+					$tDeliveryGoodsStateDetail->receipt_status = '1';
+					$now = date('Y/m/d H:i:s.sss');
+					$tDeliveryGoodsStateDetail->receipt_date = $now;
+					if($tDeliveryGoodsStateDetail->update() == false) {
+							$error_list['update'] = '受領ステータスの更新に失敗しました。';
+							$json_list['errors'] = $error_list;
+							echo json_encode($json_list);
+							return true;
+					}
+				}
+			}
+		}
+		// 受領ステータス「受領済み」更新
+		if($on_list){
+			foreach ($on_list as $on_map) {
+				// 検索条件
+				$query_list = array();
+				$arr = explode(' ', $on_map);
+				$ship_no = $arr[0];
+				$ship_no_qy = "ship_no = '".$ship_no."'";
+				array_push($query_list, $ship_no_qy);
+				$ship_line_no = $arr[1];
+				$ship_line_no_qy = "ship_line_no = '".$ship_line_no."'";
+				array_push($query_list, $ship_line_no_qy);
+				$query = implode(' AND ', $query_list);
+
+				// データ参照
+				$tDeliveryGoodsStateDetails = TDeliveryGoodsStateDetails::find(
+					array(
+						'conditions' => $query
+				));
+
+				// データ更新
+				foreach ($tDeliveryGoodsStateDetails as $tDeliveryGoodsStateDetail) {
+					$tDeliveryGoodsStateDetail->receipt_status = '2';
+					$now = date('Y/m/d H:i:s.sss');
+					$tDeliveryGoodsStateDetail->receipt_date = $now;
+					if($tDeliveryGoodsStateDetail->update() == false) {
+							$error_list['update'] = '受領ステータスの更新に失敗しました。';
+							$json_list['errors'] = $error_list;
+							echo json_encode($json_list);
+							return true;
+					}
+				}
+			}
+		}
+
+		$transaction->commit();
+	} catch (Exception $e) {
+		$transaction->rollback();
+
+		$error_list['update'] = '受領ステータスの更新に失敗しました。';
+		$json_list['errors'] = $error_list;
+		echo json_encode($json_list);
+		return true;
+	}
+
+	$page_list['page_number'] = $page['page_number'];
+	$json_list['page'] = $page_list;
 	echo json_encode($json_list);
 });

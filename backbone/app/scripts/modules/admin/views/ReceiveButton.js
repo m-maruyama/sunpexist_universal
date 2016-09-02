@@ -13,7 +13,7 @@ define([
 			regions: {
 			},
 			ui: {
-				'updateBtn': 'button.update_button',
+				'receive_button': '#receive_button',
 			},
 			bindings: {
 			},
@@ -22,32 +22,27 @@ define([
 			onRender: function() {
 			},
 			events: {
-				'click @ui.updateBtn': function(e){
-					if(confirm('受領ステータスを更新しまします。')){
-						e.preventDefault();
+				'click @ui.receive_button': function(e){
+					var msg = "受領ステータスを更新してよろしいですか？";
+					if (window.confirm(msg)) {
 						var that = this;
-						this.triggerMethod('hideAlerts');
-						var m;
-						var reqData = {
-							on:[],
-							off:[]
-						};
-						for(var i=0;i<this.collection.length;i++){
-							m = this.collection.models[i];
-							if (m.get('updateFlag')) {
-								if (m.get('receipt_id')&&!m.get('disabled')) {
-									reqData.on.push(m.get('receipt_id'));
-								}
-							}else{
-								if (m.get('receipt_id')) {
-									reqData.off.push(m.get('receipt_id'));
-								}
-							}
+						var receive_chk_box = 'receive_check[]';
+						var receive_chk_arr = new Array();
+
+						// 個体管理番号毎のチェック(受領済み)、未チェック(未受領)
+						for (var i=0; i<document.receive_list.elements[receive_chk_box].length; i++ ){
+						    if(document.receive_list.elements[receive_chk_box][i].checked == false){
+						        receive_chk_arr.push(document.receive_list.elements[receive_chk_box][i].value + ',1');
+						    }
+								if(document.receive_list.elements[receive_chk_box][i].checked == true){
+						        receive_chk_arr.push(document.receive_list.elements[receive_chk_box][i].value + ',2');
+						    }
 						}
+
 						var cond = {
 							"scr": '受領更新',
 							"page":this.options.pagerModel.getPageRequest(),
-							"cond": reqData
+							"cond": receive_chk_arr
 						};
 						var modelForUpdate = new Backbone.Model();
 						modelForUpdate.url = App.api.RE0020;
