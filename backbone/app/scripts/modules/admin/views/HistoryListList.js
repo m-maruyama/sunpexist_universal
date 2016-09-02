@@ -56,7 +56,10 @@ define([
 					},
 					complete:function(res){
 						$.unblockUI();
-						$('.tb_individual_num').hide();
+						// 個体管理番号表示/非表示制御
+						if (res.responseJSON.individual_flag.valueOf()) {
+							$('.tb_individual_num').css('display','');
+						}
 					}
 				});
 			}

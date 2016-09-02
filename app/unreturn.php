@@ -459,10 +459,34 @@ $app->post('/unreturn/search', function ()use($app){
 		}
 	}
 
+	// 個体管理番号表示/非表示フラグ設定
+	$query_list = array();
+	array_push($query_list, "corporate_id = '".$auth['corporate_id']."'");
+	array_push($query_list, "rntl_cont_no = '".$cond['agreement_no']."'");
+	$query = implode(' AND ', $query_list);
+	$m_contract = MContract::query()
+		->where($query)
+		->columns('*')
+		->execute();
+	$m_contract_obj = (array)$m_contract;
+	$cnt = $m_contract_obj["\0*\0_count"];
+	$individual_flg = "";
+	if (!empty($cnt)) {
+		foreach ($m_contract as $m_contract_map) {
+			$individual_flg = $m_contract_map->individual_flg;
+		}
+		if ($individual_flg == 1) {
+			$individual_flg = true;
+		} else {
+			$individual_flg = false;
+		}
+	}
+
 	$page_list['records_per_page'] = $page['records_per_page'];
 	$page_list['page_number'] = $page['page_number'];
 	$page_list['total_records'] = $results_cnt;
 	$json_list['page'] = $page_list;
 	$json_list['list'] = $all_list;
+	$json_list['individual_flag'] = $individual_flg;
 	echo json_encode($json_list);
 });

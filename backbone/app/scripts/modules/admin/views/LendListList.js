@@ -43,7 +43,7 @@ define([
 						order = 'asc';
 					}
 					var sort_key = e.target.id;
-					
+
 					this.model.set('sort_key',sort_key);
 					this.model.set('order',order);
 					this.triggerMethod('sort', e.target.id,order);
@@ -70,6 +70,10 @@ define([
 					},
 					complete:function(res){
 						$.unblockUI();
+						// 個体管理番号表示/非表示制御
+						if (res.responseJSON.individual_flag.valueOf()) {
+							$('.tb_individual_num').css('display','');
+						}
 					},
 				});
 			}

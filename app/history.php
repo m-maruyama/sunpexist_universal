@@ -454,7 +454,7 @@ $app->post('/history/search', function ()use($app){
 			array_multisort(array_column($all_list, 'shin_item_code'), SORT_ASC, $all_list);
 		}
 	}
-/*
+
 	// 個体管理番号表示/非表示フラグ設定
 	$query_list = array();
 	array_push($query_list, "corporate_id = '".$auth['corporate_id']."'");
@@ -471,18 +471,18 @@ $app->post('/history/search', function ()use($app){
 		foreach ($m_contract as $m_contract_map) {
 			$individual_flg = $m_contract_map->individual_flg;
 		}
-		if ($individual_flg == 0) {
-			$individual_flg = "true";
+		if ($individual_flg == 1) {
+			$individual_flg = true;
 		} else {
-			$individual_flg = "false";
+			$individual_flg = false;
 		}
 	}
-*/
+
 	$page_list['records_per_page'] = $page['records_per_page'];
 	$page_list['page_number'] = $page['page_number'];
 	$page_list['total_records'] = $results_cnt;
 	$json_list['page'] = $page_list;
 	$json_list['list'] = $all_list;
-//	$json_list['individual_flag'] = $individual_flg;
+	$json_list['individual_flag'] = $individual_flg;
 	echo json_encode($json_list);
 });

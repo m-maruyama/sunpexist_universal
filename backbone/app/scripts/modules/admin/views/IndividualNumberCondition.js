@@ -15,6 +15,7 @@ define([
 				'.individual_number': 'individual_number',
 			},
 			onShow: function() {
+				$('.individual_number').hide();
 				var that = this;
 				var modelForUpdate = this.model;
 				modelForUpdate.url = App.api.CM0001;
@@ -32,8 +33,8 @@ define([
 							});
 							that.triggerMethod('showAlerts', errorMessages);
 						}
-						if (accout.individual_flg.valueOf() == '0') {
-							$('.individual_number').hide();
+						if (accout.individual_flg.valueOf() == '1') {
+							$('.individual_number').css('display','');
 						}
 						that.render();
 					}
