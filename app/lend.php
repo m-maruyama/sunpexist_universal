@@ -416,6 +416,12 @@ $app->post('/lend/search', function ()use($app){
 	}
 
 	// 個体管理番号表示/非表示フラグ設定
+	if ($auth["individual_flg"] == 1) {
+		$individual_flg = true;
+	} else {
+		$individual_flg = false;
+	}
+/*
 	$query_list = array();
 	array_push($query_list, "corporate_id = '".$auth['corporate_id']."'");
 	array_push($query_list, "rntl_cont_no = '".$cond['agreement_no']."'");
@@ -437,6 +443,7 @@ $app->post('/lend/search', function ()use($app){
 			$individual_flg = false;
 		}
 	}
+*/
 
 	$page_list['records_per_page'] = $page['records_per_page'];
 	$page_list['page_number'] = $page['page_number'];

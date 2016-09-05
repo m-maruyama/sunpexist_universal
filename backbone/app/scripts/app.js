@@ -97,7 +97,6 @@ define([
 		App.api = {
 			"CM0001": host + "/account_session",
 			"CM0010": host + "/job_type",
-//			"CM0020": host + "/suggest",
 			"CM0020": host + "/section",
 			"CM0030": host + "/detail",
 			"CM0040": host + "/log",
@@ -107,6 +106,7 @@ define([
 			"CM0070": host + "/input_item",
 			"CM0080": host + "/item_color",
 			"CM0090": host + "/section_modal",
+			"CM0100": host + "/individual_num",
 			"IM0010": host + "/import_csv",
 			"IM0020": host + "/csv",
 			"DL0010": host + "/csv_download",

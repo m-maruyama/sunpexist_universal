@@ -489,6 +489,12 @@ $app->post('/csv_download', function ()use($app){
 		}
 
 		// 個体管理番号表示/非表示フラグ設定
+		if ($auth["individual_flg"] == 1) {
+			$individual_flg = true;
+		} else {
+			$individual_flg = false;
+		}
+/*
 		$query_list = array();
 		array_push($query_list, "corporate_id = '".$auth['corporate_id']."'");
 		array_push($query_list, "rntl_cont_no = '".$cond['agreement_no']."'");
@@ -510,6 +516,7 @@ $app->post('/csv_download', function ()use($app){
 				$individual_flg = false;
 			}
 		}
+*/
 
 		//---CSV出力---//
 		$csv_datas = array();
@@ -1060,6 +1067,12 @@ $app->post('/csv_download', function ()use($app){
 		}
 
 		// 個体管理番号表示/非表示フラグ設定
+		if ($auth["individual_flg"] == 1) {
+			$individual_flg = true;
+		} else {
+			$individual_flg = false;
+		}
+/*
 		$query_list = array();
 		array_push($query_list, "corporate_id = '".$auth['corporate_id']."'");
 		array_push($query_list, "rntl_cont_no = '".$cond['agreement_no']."'");
@@ -1081,6 +1094,7 @@ $app->post('/csv_download', function ()use($app){
 				$individual_flg = false;
 			}
 		}
+*/
 
 		//---CSV出力---//
 		$csv_datas = array();
@@ -1457,11 +1471,12 @@ $app->post('/csv_download', function ()use($app){
 		$arg_str .= " * ";
 		$arg_str .= " FROM ";
 		$arg_str .= "(SELECT distinct on ";
-		$arg_str .= "(t_order_state.order_req_no,";
-		$arg_str .= "t_order_state.order_req_line_no)";
+		$arg_str .= "(t_delivery_goods_state_details.ship_no,";
+		$arg_str .= "t_delivery_goods_state_details.ship_line_no) ";
 		$arg_str .= "t_delivery_goods_state_details.receipt_status as as_receipt_status,";
 		$arg_str .= "t_delivery_goods_state_details.receipt_date as as_receipt_date,";
-		$arg_str .= "t_delivery_goods_state.ship_no as as_ship_no,";
+		$arg_str .= "t_delivery_goods_state_details.ship_no as as_ship_no,";
+		$arg_str .= "t_delivery_goods_state_details.ship_line_no as as_ship_line_no,";
 		$arg_str .= "t_order.item_cd as as_item_cd,";
 		$arg_str .= "t_order.color_cd as as_color_cd,";
 		$arg_str .= "t_order.size_cd as as_size_cd,";
@@ -1488,8 +1503,8 @@ $app->post('/csv_download', function ()use($app){
 		$arg_str .= " INNER JOIN m_wearer_std ON t_order.m_wearer_std_comb_hkey = m_wearer_std.m_wearer_std_comb_hkey";
 		$arg_str .= " INNER JOIN (m_job_type INNER JOIN m_input_item ON m_job_type.m_job_type_comb_hkey = m_input_item.m_job_type_comb_hkey)";
 		$arg_str .= " ON t_order.m_job_type_comb_hkey = m_job_type.m_job_type_comb_hkey)";
-		$arg_str .= " ON t_order.t_order_comb_hkey = t_order_state.t_order_comb_hkey)";
-		$arg_str .= " ON t_order_state.t_order_state_comb_hkey = t_delivery_goods_state.t_order_state_comb_hkey)";
+		$arg_str .= " ON t_order_state.t_order_comb_hkey = t_order.t_order_comb_hkey)";
+		$arg_str .= " ON t_delivery_goods_state.t_order_state_comb_hkey = t_order_state.t_order_state_comb_hkey)";
 		$arg_str .= " ON t_delivery_goods_state_details.ship_no = t_delivery_goods_state.ship_no";
 		$arg_str .= " WHERE ";
 		$arg_str .= $query;
@@ -1684,6 +1699,12 @@ $app->post('/csv_download', function ()use($app){
 		}
 
 		// 個体管理番号表示/非表示フラグ設定
+		if ($auth["individual_flg"] == 1) {
+			$individual_flg = true;
+		} else {
+			$individual_flg = false;
+		}
+/*
 		$query_list = array();
 		array_push($query_list, "corporate_id = '".$auth['corporate_id']."'");
 		array_push($query_list, "rntl_cont_no = '".$cond['agreement_no']."'");
@@ -1705,6 +1726,7 @@ $app->post('/csv_download', function ()use($app){
 				$individual_flg = false;
 			}
 		}
+*/
 
 		//---CSV出力---//
 		$csv_datas = array();
@@ -1734,7 +1756,6 @@ $app->post('/csv_download', function ()use($app){
 		array_push($header_2, "発注区分");
 		array_push($header_2, "発注日");
 		array_push($header_2, "出荷日");
-		array_push($header_2, "発注数");
 		array_push($header_2, "メーカー受注番号");
 		array_push($csv_datas, $header_2);
 
@@ -2193,6 +2214,12 @@ $app->post('/csv_download', function ()use($app){
 		}
 
 		// 個体管理番号表示/非表示フラグ設定
+		if ($auth["individual_flg"] == 1) {
+			$individual_flg = true;
+		} else {
+			$individual_flg = false;
+		}
+/*
 		$query_list = array();
 		array_push($query_list, "corporate_id = '".$auth['corporate_id']."'");
 		array_push($query_list, "rntl_cont_no = '".$cond['agreement_no']."'");
@@ -2214,6 +2241,7 @@ $app->post('/csv_download', function ()use($app){
 				$individual_flg = false;
 			}
 		}
+*/
 
 		//---CSV出力---//
 		$csv_datas = array();
