@@ -5,7 +5,12 @@ define([
 	'bootstrap-datetimepicker',
 	'typeahead',
 	'blockUI',
-	'bloodhound'
+	'bloodhound',
+	'./SectionCondition',
+	'./JobTypeCondition',
+	'./InputItemCondition',
+	'./ItemColorCondition',
+	'./IndividualNumberCondition',
 ], function(App) {
 	'use strict';
 	App.module('Admin.Views', function(Views, App, Backbone, Marionette, $, _){
@@ -51,89 +56,6 @@ define([
 			},
 			onRender: function() {
 				var that = this;
-/*
-				var options = {
-					url: null,
-					index: null,
-					//type: null,
-					suggestFields: ['office_cd','office_name'],
-					displayKey:'office_name',
-					fuzziness:0,
-					// limit: 5
-				};
-				//options.transform = function(res){
-				//	return res[options.type][0].options;
-				//};
-				options = $.extend({}, options);
-
-				var url = App.api.CM0020;
-				// url = './suggest.php';
-				// url = options.url;
-				var suggestItems;
-
-				var htmlentities = function (str) {
-					if (typeof str !== 'string') {
-						return str;
-					}
-					return str.replace(/&/g, "&amp;")
-						.replace(/"/g, "&quot;")
-						.replace(/</g, "&lt;")
-						.replace(/>/g, "&gt;");
-				};
-				var suggester = new Bloodhound({
-					datumTokenizer: Bloodhound.tokenizers.obj.whitespace(options.displayKey),
-					queryTokenizer: Bloodhound.tokenizers.whitespace,
-					remote: {
-						url: url,
-						prepare: function(query, settings){
-							//検索文字列に怪しい文字があったら削除
-							//query = query.replace(/[\?%\$\&=\-\+\'\"\*\^;:\/\[\]\{\}]/g, '');
-							//検索文字列の全角数字を半角にしている。
-							query = query.replace(/[０-９]/g, function(s) {
-								return String.fromCharCode(s.charCodeAt(0) - 0xFEE0);
-							});
-							var data = {
-								"text" : query,
-								index: options.index,
-								//type: options.type,
-								suggestFields: options.suggestFields,
-								fuzziness:options.fuzziness,
-								size: options.limit
-							};
-							settings.type = 'POST';
-							settings.contentType = 'application/json';
-							settings.xhrFields = {
-								withCredentials: false
-							};
-							settings.data = JSON.stringify(data);
-							return settings;
-						},
-						//transform: options.transform,
-						transform: function(items){
-							suggestItems = items;
-							return items;
-						},
-						rateLimitWait: 300//検索し出すまでの待機時間 ms
-					}
-				});
-				var target = this.ui.office;
-				target.typeahead({
-					//highlight:false,
-					//hint:true,
-					//minLength:1
-				}, {
-					name: 'office',
-					display: 'office_name',
-					source: suggester,
-					limit:options.limit
-				});
-
-				var $suggestRank = $('<input type="hidden" name="suggest_rank" value="" class="suggest_rank">');
-				target.after($suggestRank);
-				target.on('typeahead:select',function(e, item){
-					$suggestRank.val(htmlentities(item.office_cd));
-				});
-*/
 			},
 			events: {
 				'click @ui.search': function(e){
@@ -143,10 +65,14 @@ define([
 					this.model.set('agreement_no', agreement_no);
 					this.model.set('member_no', this.ui.member_no.val());
 					this.model.set('member_name', this.ui.member_name.val());
-					this.model.set('section', this.ui.section.val());
-					this.model.set('job_type', this.ui.job_type.val());
-					this.model.set('input_item', this.ui.input_item.val());
-					this.model.set('item_color', this.ui.item_color.val());
+					var section = $("select[name='section']").val();
+					this.model.set('section', section);
+					var job_type = $("select[name='job_type']").val();
+					this.model.set('job_type', job_type);
+					var input_item = $("select[name='input_item']").val();
+					this.model.set('input_item', input_item);
+					var item_color = $("select[name='item_color']").val();
+					this.model.set('item_color', item_color);
 					this.model.set('item_size', this.ui.item_size.val());
 					this.model.set('individual_number', this.ui.individual_number.val());
 					this.model.set('search', this.ui.search.val());
@@ -160,43 +86,84 @@ define([
 					search_flg = 'on';
 					this.triggerMethod('click:search',this.model.get('sort_key'),this.model.get('order'));
 				},
-/*
-			'click @ui.download': function(e){
-				if(!search_flg){
-					alert('実行ボタンをクリックして検索を行ってください。');
-					return;
-				}
-				//$.blockUI({ message: '<p><img src="ajax-loader.gif" style="margin: 0 auto;" /> 読み込み中...</p>' });
-				var that = this;
-				var cond = {
-					"scr": '貸与リストダウンロード',
-					"page":this.options.pagerModel.getPageRequest(),
-					"cond": this.model.getReq()
-				};
-				var form = $('<form action="' + App.api.LE0020 + '" method="post"></form>');
-				var data = $('<input type="hidden" name="data" />');
-				data.val(JSON.stringify(cond));
-				form.append(data);
-				$('body').append(form);
-				form.submit();
-				data.remove();
-				form.remove();
-				form=null;
-				//$.unblockUI();
-				return;
-			},
-*/
+
 				'change @ui.agreement_no': function(){
 					this.ui.agreement_no = $('#agreement_no');
+
+					// 検索セレクトボックス連動--ここから
+					var agreement_no = $("select[name='agreement_no']").val();
+					// 拠点セレクト
+					var sectionConditionView = new App.Admin.Views.SectionCondition({
+						agreement_no:agreement_no,
+					});
+					sectionConditionView.onShow();
+					this.section.show(sectionConditionView);
+					// 貸与パターンセレクト
+					var jobTypeConditionView = new App.Admin.Views.JobTypeCondition({
+						agreement_no:agreement_no,
+					});
+					jobTypeConditionView.onShow();
+					this.job_type.show(jobTypeConditionView);
+					// 商品セレクト
+					var inputItemConditionView = new App.Admin.Views.InputItemCondition({
+						agreement_no:agreement_no,
+					});
+					inputItemConditionView.onShow();
+					this.input_item.show(inputItemConditionView);
+					// 色セレクト
+					var itemColorConditionView = new App.Admin.Views.ItemColorCondition({
+						agreement_no:agreement_no,
+					});
+					itemColorConditionView.onShow();
+					this.item_color.show(itemColorConditionView);
+					// 個体管理番号
+					var individualNumberConditionView = new App.Admin.Views.IndividualNumberCondition({
+						agreement_no:agreement_no,
+					});
+					individualNumberConditionView.onShow();
+					// セレクトボックス連動--ここまで
 				},
 				'change @ui.section': function(){
 					this.ui.section = $('#section');
 				},
 				'change @ui.job_type': function(){
 					this.ui.job_type = $('#job_type');
+
+					// 検索セレクトボックス連動--ここから
+					var agreement_no = $("select[name='agreement_no']").val();
+					var job_type = $("select[name='job_type']").val();
+					// 商品セレクト
+					var inputItemConditionView = new App.Admin.Views.InputItemCondition({
+						agreement_no:agreement_no,
+						job_type:job_type,
+					});
+					inputItemConditionView.onShow();
+					this.input_item.show(inputItemConditionView);
+					// 色セレクト
+					var itemColorConditionView = new App.Admin.Views.ItemColorCondition({
+						agreement_no:agreement_no,
+						job_type:job_type,
+					});
+					itemColorConditionView.onShow();
+					this.item_color.show(itemColorConditionView);
+					// セレクトボックス連動--ここまで
 				},
 				'change @ui.input_item': function(){
 					this.ui.input_item = $('#input_item');
+
+					// 検索セレクトボックス連動--ここから
+					var agreement_no = $("select[name='agreement_no']").val();
+					var job_type = $("select[name='job_type']").val();
+					var input_item = $("select[name='input_item']").val();
+					// 色セレクト
+					var itemColorConditionView = new App.Admin.Views.ItemColorCondition({
+						agreement_no:agreement_no,
+						job_type:job_type,
+						input_item:input_item,
+					});
+					itemColorConditionView.onShow();
+					this.item_color.show(itemColorConditionView);
+					// セレクトボックス連動--ここまで
 				},
 				'change @ui.item_color': function(){
 					this.ui.item_color = $('#item_color');

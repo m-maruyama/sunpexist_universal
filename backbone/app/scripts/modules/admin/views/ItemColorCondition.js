@@ -6,6 +6,15 @@ define([
 	'use strict';
 	App.module('Admin.Views', function(Views, App, Backbone, Marionette, $, _){
 		Views.ItemColorCondition = Marionette.ItemView.extend({
+			defaults: {
+				agreement_no: '',
+				job_type: '',
+				input_item: '',
+			},
+			initialize: function(options) {
+			    this.options = options || {};
+			    this.options = _.extend(this.defaults, this.options);
+			},
 			template: App.Admin.Templates.itemColorCondition,
 			model: new Backbone.Model(),
 			ui: {
@@ -15,11 +24,18 @@ define([
 				'.item_color': 'item_color',
 			},
 			onShow: function() {
+				var agreement_no = this.options.agreement_no;
+				var job_type = this.options.job_type;
+				var input_item = this.options.input_item;
 				var that = this;
+
 				var modelForUpdate = this.model;
 					modelForUpdate.url = App.api.CM0080;
 				var cond = {
-					"scr": '色'
+					"scr": '色',
+					"agreement_no": agreement_no,
+					"job_type": job_type,
+					"input_item": input_item,
 				};
 					modelForUpdate.fetchMx({
 						data:cond,

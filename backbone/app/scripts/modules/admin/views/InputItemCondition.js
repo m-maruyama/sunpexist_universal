@@ -6,6 +6,14 @@ define([
 	'use strict';
 	App.module('Admin.Views', function(Views, App, Backbone, Marionette, $, _){
 		Views.InputItemCondition = Marionette.ItemView.extend({
+			defaults: {
+				agreement_no: '',
+				job_type: '',
+			},
+			initialize: function(options) {
+			    this.options = options || {};
+			    this.options = _.extend(this.defaults, this.options);
+			},
 			template: App.Admin.Templates.inputItemCondition,
 			model: new Backbone.Model(),
 			ui: {
@@ -15,11 +23,16 @@ define([
 				'.input_item': 'input_item',
 			},
 			onShow: function() {
+				var agreement_no = this.options.agreement_no;
+				var job_type = this.options.job_type;
 				var that = this;
+
 				var modelForUpdate = this.model;
 					modelForUpdate.url = App.api.CM0070;
 				var cond = {
-					"scr": '商品'
+					"scr": '商品',
+					"agreement_no": agreement_no,
+					"job_type": job_type,
 				};
 					modelForUpdate.fetchMx({
 						data:cond,

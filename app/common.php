@@ -1,5 +1,6 @@
 <?php
-use Phalcon\Mvc\Model\Resultset;
+//use Phalcon\Mvc\Model\Resultset;
+use Phalcon\Mvc\Model\Resultset\Simple as Resultset;
 use Phalcon\Paginator\Adapter\Model as PaginatorModel;
 use Phalcon\Paginator\Adapter\NativeArray as PaginatorArray;
 use Phalcon\Paginator\Adapter\QueryBuilder as PaginatorQueryBuilder;
@@ -138,7 +139,6 @@ $app->post('/agreement_no', function ()use($app) {
  */
 $app->post('/section', function ()use($app) {
 	$params = json_decode(file_get_contents("php://input"), true);
-
 	$query_list = array();
 	$list = array();
 	$all_list = array();
@@ -146,57 +146,29 @@ $app->post('/section', function ()use($app) {
 
 	// アカウントセッション取得
 	$auth = $app->session->get("auth");
-/*
-	// 契約上の部門コードを参照
-	// 契約マスタ. 企業ID
-	array_push($query_list,"MContract.corporate_id = '".$auth['corporate_id']."'");
-	// 契約マスタ. レンタル契約フラグ
-	array_push($query_list,"MContract.rntl_cont_flg = '1'");
-	// 契約リソースマスタ. 企業ID
-	array_push($query_list,"MContractResource.corporate_id = '".$auth['corporate_id']."'");
-	// アカウントマスタ.企業ID
-	array_push($query_list,"MAccount.corporate_id = '".$auth['corporate_id']."'");
-	// アカウントマスタ. ユーザーID
-	array_push($query_list,"MAccount.user_id = '".$auth['user_id']."'");
-
-	//sql文字列を' AND 'で結合
-	$query = implode(' AND ', $query_list);
-
-	$results = MContract::query()
-		->where($query)
-		->columns(array('MContract.*','MContractResource.*','MAccount.*'))
-		->leftJoin('MContractResource','MContract.corporate_id = MContractResource.corporate_id')
-		->join('MAccount','MAccount.accnt_no = MContractResource.accnt_no')
-//		->orderBy('cast(MContract.rntl_cont_no asc as integer)')
-		->execute();
-
-	// レンタル部門コードのオール「0」チェック
-	$all_zero_flag = 0;
-	foreach ($results as $result) {
-		if (preg_match("/^[0]+$/", $result->mContractResource->rntl_sect_cd)) {
-			$all_zero_flag = 1;
-		}
-	}
-	if ($all_zero_flag == 0) {
-		// レンタル部門コードにオール「0」のコードが含まれていない場合
-
-	}
-*/
 
 	//--- 検索条件 ---//
-	// 部門マスタ. 企業ID
 	array_push($query_list, "corporate_id = '".$auth['corporate_id']."'");
-	// 部門マスタ. レンタル契約No
-	array_push($query_list, "rntl_cont_no = '".$auth['rntl_cont_no']."'");
-
-	//sql文字列を' AND 'で結合
+	if (!empty($params["agreement_no"])) {
+		array_push($query_list, "rntl_cont_no = '".$params["agreement_no"]."'");
+	} else {
+		array_push($query_list, "rntl_cont_no = '".$auth['rntl_cont_no']."'");
+	}
 	$query = implode(' AND ', $query_list);
 
-	//--- クエリー実行・取得 ---//
-	$results = MSection::query()
-		->where($query)
-		->columns('*')
-		->execute();
+	// SQLクエリー実行
+	$arg_str = "SELECT ";
+	$arg_str .= " distinct on (rntl_sect_cd) *";
+	$arg_str .= " FROM m_section";
+	$arg_str .= " WHERE ";
+	$arg_str .= $query;
+	$arg_str .= " ORDER BY rntl_sect_cd asc";
+
+	$m_section = new MSection();
+	$results = new Resultset(null, $m_section, $m_section->getReadConnection()->query($arg_str));
+	$results_array = (array)$results;
+	$results = $results_array["\0*\0_rows"];
+	$results_cnt = $results_array["\0*\0_count"];
 
 	// デフォルト「全て」を設定
 	$list['rntl_sect_cd'] = null;
@@ -204,33 +176,13 @@ $app->post('/section', function ()use($app) {
 	array_push($all_list,$list);
 
 	foreach ($results as $result) {
-		$list['rntl_sect_cd'] = $result->rntl_sect_cd;
-		$list['rntl_sect_name'] = $result->rntl_sect_name;
+		$list['rntl_sect_cd'] = $result['rntl_sect_cd'];
+		$list['rntl_sect_name'] = $result['rntl_sect_name'];
 		array_push($all_list,$list);
 	}
 
 	$json_list['section_list'] = $all_list;
 	echo json_encode($json_list);
-
-/* 前項目：拠点-テキスト形式
-	//拠点
-	if(isset($params['text'])){
-		$query = "rntl_sect_name LIKE '%".$params['text']."%'";
-		$results = MSection::find(array(
-		'conditions' => $query
-		));
-		$json_list = array();
-		$i = 0;
-		foreach ($results as $result) {
-		$json_list[$i]['office_cd'] = $result->rntl_sect_cd;
-		$json_list[$i]['office_name'] = $result->rntl_sect_name;
-		$i++;
-		}
-		echo json_encode($json_list);
-	} else {
-		return true;
-	}
-*/
 });
 
 
@@ -249,19 +201,27 @@ $app->post('/job_type', function ()use($app) {
 	$auth = $app->session->get("auth");
 
 	//--- 検索条件 ---//
-	// 職種マスタ. 企業ID
 	array_push($query_list, "corporate_id = '".$auth['corporate_id']."'");
-	// 職種マスタ. レンタル契約No
-	array_push($query_list, "rntl_cont_no = '".$auth['rntl_cont_no']."'");
-
-	//sql文字列を' AND 'で結合
+	if (!empty($params["agreement_no"])) {
+		array_push($query_list, "rntl_cont_no = '".$params["agreement_no"]."'");
+	} else {
+		array_push($query_list, "rntl_cont_no = '".$auth['rntl_cont_no']."'");
+	}
 	$query = implode(' AND ', $query_list);
 
-	//--- クエリー実行・取得 ---//
-	$results = MJobType::query()
-		->where($query)
-		->columns('*')
-		->execute();
+	// SQLクエリー実行
+	$arg_str = "SELECT ";
+	$arg_str .= " distinct on (job_type_cd) *";
+	$arg_str .= " FROM m_job_type";
+	$arg_str .= " WHERE ";
+	$arg_str .= $query;
+	$arg_str .= " ORDER BY job_type_cd asc";
+
+	$m_job_type = new MJobType();
+	$results = new Resultset(null, $m_job_type, $m_job_type->getReadConnection()->query($arg_str));
+	$results_array = (array)$results;
+	$results = $results_array["\0*\0_rows"];
+	$results_cnt = $results_array["\0*\0_count"];
 
 	// デフォルト「全て」を設定
 	$list['job_type_cd'] = null;
@@ -269,8 +229,8 @@ $app->post('/job_type', function ()use($app) {
 	array_push($all_list,$list);
 
 	foreach ($results as $result) {
-		$list['job_type_cd'] = $result->job_type_cd;
-		$list['job_type_name'] = $result->job_type_name;
+		$list['job_type_cd'] = $result["job_type_cd"];
+		$list['job_type_name'] = $result["job_type_name"];
 		array_push($all_list,$list);
 	}
 
@@ -294,36 +254,39 @@ $app->post('/input_item', function ()use($app) {
 	$auth = $app->session->get("auth");
 
 	//--- 検索条件 ---//
-	// 投入商品マスタ. 企業ID
 	array_push($query_list, "corporate_id = '".$auth['corporate_id']."'");
-	// 投入商品マスタ. レンタル契約No
-	array_push($query_list, "rntl_cont_no = '".$auth['rntl_cont_no']."'");
-
-	//sql文字列を' AND 'で結合
+	if (!empty($params["agreement_no"])) {
+		array_push($query_list, "rntl_cont_no = '".$params["agreement_no"]."'");
+	} else {
+		array_push($query_list, "rntl_cont_no = '".$auth['rntl_cont_no']."'");
+	}
+	if (!empty($params["job_type"])) {
+		array_push($query_list, "job_type_cd = '".$params["job_type"]."'");
+	}
 	$query = implode(' AND ', $query_list);
 
-	$sql = $app->modelsManager->createQuery(
-		"select distinct item_cd, input_item_name from MInputItem where "
-		.$query
-	);
-	$results  = $sql->execute();
+	// SQLクエリー実行
+	$arg_str = "SELECT ";
+	$arg_str .= " distinct on (item_cd, job_type_item_cd) *";
+	$arg_str .= " FROM m_input_item";
+	$arg_str .= " WHERE ";
+	$arg_str .= $query;
+	$arg_str .= " ORDER BY item_cd,job_type_item_cd asc";
 
-/*
-	//--- クエリー実行・取得 ---//
-	$results = MInputItem::query()
-		->distinct('item_cd')
-		->where($query)
-		->columns('*')
-		->execute();
-*/
+	$m_input_item = new MInputItem();
+	$results = new Resultset(null, $m_input_item, $m_input_item->getReadConnection()->query($arg_str));
+	$results_array = (array)$results;
+	$results = $results_array["\0*\0_rows"];
+	$results_cnt = $results_array["\0*\0_count"];
+
 	// デフォルト「全て」を設定
 	$list['item_cd'] = null;
 	$list['input_item_name'] = '全て';
 	array_push($all_list,$list);
 
 	foreach ($results as $result) {
-		$list['item_cd'] = $result->item_cd;
-		$list['input_item_name'] = $result->input_item_name;
+		$list['item_cd'] = $result["item_cd"];
+		$list['input_item_name'] = $result["input_item_name"];
 		array_push($all_list,$list);
 	}
 
@@ -347,9 +310,69 @@ $app->post('/item_color', function ()use($app) {
 	$auth = $app->session->get("auth");
 
 	//--- 検索条件 ---//
-	// 投入商品マスタ. 企業ID
 	array_push($query_list, "corporate_id = '".$auth['corporate_id']."'");
-	// 投入商品マスタ. レンタル契約No
+	if (!empty($params["agreement_no"])) {
+		array_push($query_list, "rntl_cont_no = '".$params["agreement_no"]."'");
+	} else {
+		array_push($query_list, "rntl_cont_no = '".$auth['rntl_cont_no']."'");
+	}
+	if (!empty($params["job_type"])) {
+		array_push($query_list, "job_type_cd = '".$params["job_type"]."'");
+	}
+	if (!empty($params["input_item"])) {
+		array_push($query_list, "item_cd = '".$params["input_item"]."'");
+	}
+	$query = implode(' AND ', $query_list);
+
+	// SQLクエリー実行
+	$arg_str = "SELECT ";
+	$arg_str .= " distinct on (color_cd) *";
+	$arg_str .= " FROM m_input_item";
+	$arg_str .= " WHERE ";
+	$arg_str .= $query;
+	$arg_str .= " ORDER BY color_cd asc";
+
+	$m_input_item = new MInputItem();
+	$results = new Resultset(null, $m_input_item, $m_input_item->getReadConnection()->query($arg_str));
+	$results_array = (array)$results;
+	$results = $results_array["\0*\0_rows"];
+	$results_cnt = $results_array["\0*\0_count"];
+
+	// デフォルト「全て」を設定
+	$list['color_cd_id'] = null;
+	$list['color_cd_name'] = '全て';
+	array_push($all_list,$list);
+
+	foreach ($results as $result) {
+		$list['color_cd_id'] = $result['color_cd'];
+		$list['color_cd_name'] = $result['color_cd'];
+		array_push($all_list,$list);
+	}
+
+	$json_list['item_color_list'] = $all_list;
+	echo json_encode($json_list);
+});
+
+
+/**
+　* 検索項目：個体管理番号(表示有無フラグ)
+　*/
+$app->post('/individual_num', function ()use($app) {
+	$params = json_decode(file_get_contents("php://input"), true);
+
+	$query_list = array();
+	$list = array();
+	$all_list = array();
+	$json_list = array();
+
+	// アカウントセッション取得
+	$auth = $app->session->get("auth");
+
+	$json_list = $auth;
+	echo json_encode($json_list);
+/*
+	//--- 検索条件 ---//
+	array_push($query_list, "corporate_id = '".$auth['corporate_id']."'");
 	array_push($query_list, "rntl_cont_no = '".$auth['rntl_cont_no']."'");
 
 	//sql文字列を' AND 'で結合
@@ -359,24 +382,17 @@ $app->post('/item_color', function ()use($app) {
 	$results = MInputItem::query()
 		->where($query)
 		->columns('*')
-//		->group('color_cd')
 		->execute();
-
-	// デフォルト「全て」を設定
-	$list['color_cd_id'] = null;
-	$list['color_cd_name'] = '全て';
-	array_push($all_list,$list);
 
 	foreach ($results as $result) {
 		$list['color_cd_id'] = $result->color_cd;
-		$list['color_cd_name'] = $result->color_cd;
 		array_push($all_list,$list);
 	}
 
 	$json_list['item_color_list'] = $all_list;
 	echo json_encode($json_list);
+*/
 });
-
 
 /**
  * 検索項目：在庫専用貸与パターン
