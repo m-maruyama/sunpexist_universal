@@ -8,6 +8,10 @@ define([
 			template: App.Admin.Templates.wearerInput,
 			ui: {
 				"agreement_no": ".agreement_no",
+				"cancel": "#cancel",
+                "input_cancel": "#input_cancel",
+                "input_cancel_button": "#input_cancel_button",
+                "input_insert": "#input_insert",
 			},
 			regions: {
 				"agreement_no": ".agreement_no",
@@ -23,7 +27,11 @@ define([
 				"#agreement_no": "agreement_no",
 			},
 			model: new Backbone.Model(),
-			onShow: function() {
+			onRender: function() {
+				// 検索画面以外から遷移してきた場合は「着用者入力取消」ボタンを隠す
+                if (document.referrer.indexOf("wearer_search") != -1) {
+                    this.ui.input_cancel_button.hide();
+                }
 			},
 			events: {
 				'change @ui.agreement_no': function(e){
@@ -37,9 +45,24 @@ define([
 					}
 					this.triggerMethod('change:agreement_no',this.ui.agreement_no.val());
 				},
-				'change @ui.job_type': function(){
-					this.ui.job_type = $('#job_type');
+				'click @ui.cancel': function(){
+					//・ホーム画面の「貸与開始」ボタン、「着用者入力」から遷移した場合はホーム画面へ戻る。
+					// ・発注管理の検索結果画面から遷移した場合は、発注管理の検索結果画面へ戻る。
+
+                    // ホームから遷移してきた場合
+                    if (document.referrer.indexOf("home") != -1) {
+                        location.href = './home.html';
+                        return;
+                    }
+                    // 検索画面から遷移してきた場合
+                    if (document.referrer.indexOf("wearer_search") != -1) {
+                        location.href = './wearer_search.html';
+                        return;
+                    }
 				},
+                'click @ui.input_insert': function(){
+                    this.triggerMethod('click:input_insert',this.model);
+                },
 			},
 
 		});

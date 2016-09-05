@@ -3,25 +3,25 @@
 				<!--<div class="agreement_no"></div>-->
 			<!--</div>-->
 			<div class="form-group">
-				<label class="col-md-3 control-label" for="">社員コード</label>
+				<label class="col-md-3 control-label" for="cster_emply_cd">社員コード</label>
 				<div class="col-md-6">
 					<label class="checkbox-inline"><input type="checkbox">社員コードあり　</label> <input type="text" class="input-sm" id="cster_emply_cd" name="cster_emply_cd">
 				</div>
 			</div>
 			<div class="form-group">
-				<label class="col-md-3 control-label" for="">着用者名（漢字）</label>
+				<label class="col-md-3 control-label" for="werer_name">着用者名（漢字）</label>
 				<div class="col-md-7">
 					<input type="text" class="form-control input-sm" id="werer_name" name="werer_name">
 				</div>
 			</div>
 			<div class="form-group">
-				<label class="col-md-3 control-label" for="">着用者名（カナ）</label>
+				<label class="col-md-3 control-label" for="werer_name_kana">着用者名（カナ）</label>
 				<div class="col-md-7">
 					<input type="text" class="form-control input-sm" id="werer_name_kana" name="werer_name_kana">
 				</div>
 			</div>
 			<div class="form-group" style="margin-bottom: 40px">
-				<label class="col-md-3 control-label" for="">性別</label>
+				<label class="col-md-3 control-label" for="sex_kbn">性別</label>
 				<div class="col-md-2">
 					<select class="form-control input-sm" name="sex_kbn" id="sex_kbn">
 						<option selected="selected"></option>
@@ -30,15 +30,20 @@
 				</div>
 			</div>
 			<div class="form-group">
-				<label class="col-md-3 control-label" for="">異動日</label>
+				<label class="col-md-3 control-label" for="resfl_ymd">異動日</label>
 				<div class="col-md-3">
-					<input type="text" class="form-control input-sm" id="resfl_ymd" name="resfl_ymd" value="">
+					<div class='input-group date datepicker'>
+					<input type="text" class="form-control  input-sm datepicker" id="resfl_ymd" name="resfl_ymd" value="">
+					<div class="input-group-addon">
+						<span class="glyphicon glyphicon-calendar"></span>
+					</div>
+					</div>
 				</div>
 			</div>
 
 			<!-- 拠点 -->
 			<div class="form-group">
-				<label class="col-md-3 control-label" for="">拠点</label>
+				<label class="col-md-3 control-label" for="section">拠点</label>
 				<div class="col-md-5 dspilb">
 					<select class="form-control input-sm" id="section" name="section">
 						<option selected="selected"></option>
@@ -50,31 +55,32 @@
 				</div>
 			</div>
 			<div class="form-group">
-				<label class="col-md-3 control-label" for="">貸与パターン</label>
+				<label class="col-md-3 control-label" for="job_type">貸与パターン</label>
 				<div class="col-md-5">
 					<select class="form-control input-sm" id="job_type" name="job_type">
 						<option selected="selected"></option>
-						{{#each job_type_list}}<option value="{{job_type_cd}}">{{job_type_name}}</option>{{/each}}
+						{{#each job_type_list}}<option value="{{job_type_cd}},{{sp_job_type_flg}}">{{job_type_name}}</option>{{/each}}
 					</select>
 				</div>
 			</div>
 			<div class="form-group">
-				<label class="col-md-3 control-label" for="">出荷先</label>
+				<label class="col-md-3 control-label" for="m_shipment_to">出荷先</label>
 				<div class="col-md-5">
 					<select class="form-control input-sm" id="m_shipment_to" name="m_shipment_to">
-						{{#each m_shipment_to_list}}<option value="{{ship_to_cd}}">{{cust_to_brnch_name1}}{{cust_to_brnch_name2}}</option>{{/each}}
+						<option selected="selected">支店店舗と同じ</option>
+						{{#each m_shipment_to_list}}<option value="{{ship_to_cd}},{{ship_to_brnch_cd}}">{{cust_to_brnch_name1}}{{cust_to_brnch_name2}}</option>{{/each}}
 					</select>
 				</div>
 			</div>
 			<div class="form-group">
-				<label class="col-md-3 control-label" for="">郵便番号</label>
+				<label class="col-md-3 control-label" for="zip_no">郵便番号</label>
 				<div class="col-md-3">
-					<input type="text" class="form-control input-sm" id="" disabled="disabled" value="">
+					<input type="text" class="form-control input-sm" id="zip_no" disabled="disabled" value="{{zip_no}}">
 				</div>
 			</div>
 			<div class="form-group" style="margin-bottom: 40px">
-				<label class="col-md-3 control-label" for="">住所</label>
+				<label class="col-md-3 control-label" for="address">住所</label>
 				<div class="col-md-8">
-					<textarea rows="3" class="form-control input-sm" id="" disabled="disabled"></textarea>
+					<textarea rows="3" class="form-control input-sm" id="address" disabled="disabled">{{address1}}{{address2}}{{address3}}{{address4}}</textarea>
 				</div>
 			</div>
