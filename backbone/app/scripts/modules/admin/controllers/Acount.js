@@ -4,6 +4,7 @@ define([
 	'../views/Acount',
 	//コンディション追加
 	'../views/AcountCondition',
+	'../views/CorporateIdCondition',
 	'../views/AgreementNoCondition',
 	'../views/AcountListList',
 	'../views/AcountModal',
@@ -31,8 +32,9 @@ define([
 					collection: AdminAcountModal
 				});
 
-
-
+				//追加
+				var corporateIdConditionView = new App.Admin.Views.CorporateIdCondition();
+				//追加
 				var agreementNoConditionView = new App.Admin.Views.AgreementNoCondition();
 
 
@@ -40,7 +42,7 @@ define([
 
 				var acountListConditionModel = new App.Entities.Models.AdminAcountListCondition();
 				//コンディション追加
-				//console.log(acountListConditionModel.toJSON());
+				console.log(acountListConditionModel.toJSON());
 				var acountConditionView = new App.Admin.Views.AcountCondition({
 					collection: acountListListCollection,
 					model:acountListConditionModel,//追加
@@ -56,6 +58,7 @@ define([
 					pagerModel: pagerModel
 				});
 				var paginationView = new App.Admin.Views.Pagination({model: pagerModel});
+				var paginationView2 = new App.Admin.Views.Pagination({model: pagerModel});
 
 				var fetchList = function(pageNumber,sortKey,order){
 					if(pageNumber){
@@ -67,17 +70,29 @@ define([
 					}
 					acountListListView.fetch(acountListConditionModel);
 					acountView.listTable.show(acountListListView);
+					acountView.page.show(paginationView);
+					acountView.page_2.show(paginationView2);
 				};
 
+
+
+
+
 				this.listenTo(paginationView, 'selected', function(pageNumber){
-					fetchList(pageNumber);
+						fetchList(pageNumber);
+				});
+				this.listenTo(paginationView2, 'selected', function(pageNumber){
+						fetchList(pageNumber);
+				});
+
+				this.listenTo(acountListListView, 'sort', function(sortKey,order){
+					fetchList(null,sortKey,order);
 				});
 
 				//検索ボタンを押したらfetchwを追加
-				this.listenTo(acountConditionView, 'click:search', function(){
-					fetchList();
+				this.listenTo(acountConditionView, 'click:search', function(sortKey,order){
+					fetchList(1,sortKey,order);
 				});
-
 
 				this.listenTo(acountModalView, 'reload', function(){
 					fetchList();
@@ -128,6 +143,7 @@ define([
 				App.main.show(acountView);
 				//コンディション追加
 				acountView.condition.show(acountConditionView);
+				acountConditionView.corporate_id.show(corporateIdConditionView);
 				acountConditionView.agreement_no.show(agreementNoConditionView);
 				acountView.page.show(paginationView);
 				acountView.listTable.show(acountListListView);

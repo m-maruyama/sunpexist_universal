@@ -20,6 +20,7 @@ define([
 			},
 			regions: {
 				"page": ".page",
+				"page_2": ".page_2",
 				"condition": ".condition",
 				"acountModal": '.acount_modal',
 				"listTable": '.listTable'

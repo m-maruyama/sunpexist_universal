@@ -15,7 +15,6 @@ $app->post('/acount/search', function ()use($app) {
     //ChromePhp::log($params);
 
 
-
     // アカウントセッション取得
     $auth = $app->session->get("auth");
     if($auth['user_type'] == '1'){
@@ -27,41 +26,97 @@ $app->post('/acount/search', function ()use($app) {
     $cond = $params['cond'];
     $page = $params['page'];
     $query_list = array();//追加
-    //ChromePhp::log($cond);
-
-
+    ChromePhp::log($page);
     //---検索条件---//
     //企業ID
-  	array_push($query_list,"m_account.corporate_id = '".$auth['corporate_id']."'");
+  	//array_push($query_list,"m_account.corporate_id = '".$auth['corporate_id']."'");
 
     //契約No
-  	if(!empty($cond['agreement_no'])){
-  		array_push($query_list,"m_account.rntl_cont_no = '".$cond['agreement_no']."'");
-  	}
+  	//if(!empty($cond['agreement_no'])){
+  	//	array_push($query_list,"m_account.rntl_cont_no = '".$cond['agreement_no']."'");
+  	//}
 
     //ログインid
-  	if(!empty($cond['user_id'])){
-  		array_push($query_list,"m_account.user_id = '".$cond['user_id']."'");
-  	}
+  	//if(!empty($cond['user_id'])){
+  	//	array_push($query_list,"m_account.user_id = '".$cond['user_id']."'");
+  	//}
 
     //ユーザー名称
-  	if(!empty($cond['user_name'])){
-  		array_push($query_list,"m_account.user_name = '".$cond['user_name']."'");
-  	}
+  	//if(!empty($cond['user_name'])){
+  	//	array_push($query_list,"m_account.user_name = '".$cond['user_name']."'");
+  	//}
 
     //ユーザー名称
-  	if(!empty($cond['mail_address'])){
-  		array_push($query_list,"m_account.mail_address = '".$cond['mail_address']."'");
-  	}
+  	//if(!empty($cond['mail_address'])){
+  	//	array_push($query_list,"m_account.mail_address = '".$cond['mail_address']."'");
+  	//}
+    //ChromePhp::log($query_list);
 
-    $user_name_val = $cond['user_name'];
-    ChromePhp::log($user_name_val);
-
+//ChromePhp::log($page);
 
     //sql文字列を' AND 'で結合
     $query = implode(' AND ', $query_list);
   	$sort_key ='';
   	$order ='';
+    //ChromePhp::log($query);
+    //ChromePhp::log($page['sort_key']);
+
+
+    //第一ソート設定
+  	if(!empty($page['sort_key'])){
+  		$sort_key = $page['sort_key'];
+        if(!empty($page['order'])){
+    		$order = $page['order'];
+        }
+      //ChromePhp::log($page['order']);
+  		// 社員番号
+  		if($sort_key == 'accnt_no'){
+  			$q_sort_key = 'accnt_no';
+  		}
+  		// 着用者名
+  		if($sort_key == 'corporate_id'){
+  			$q_sort_key = 'corporate_id';
+  		}
+  		// 商品コード
+  		if($sort_key == 'rntl_cntl_no'){
+  			$q_sort_key = 'rntl_cntl_no';
+  		}
+  		// 出荷日
+  		if($sort_key == 'user_id'){
+  			$q_sort_key = 'user_id';
+  		}
+  		// 返却予定日
+  		if($sort_key == 'user_name'){
+  			$q_sort_key = 'user_name';
+  		}
+  		// 発注No
+  		if($sort_key == 'login_name'){
+  			$q_sort_key = 'login_name';
+  		}
+  		// メーカー受注番号
+  		if($sort_key == 'position_name'){
+  			$q_sort_key = 'position_name';
+  		}
+  		// メーカー伝票番号
+  		if($sort_key == 'user_type'){
+  			$q_sort_key = 'user_type';
+  		}
+      // メーカー伝票番号
+      if($sort_key == 'mail_address'){
+        $q_sort_key = 'mail_address';
+      }
+      // メーカー伝票番号
+      if($sort_key == 'last_pass_word_upd_date'){
+        $q_sort_key = 'last_pass_word_upd_date';
+      }
+  	} else {
+  		//指定がなければ社員番号
+  		$sort_key = "accnt_no";
+  		$order = 'ASC';
+  	}
+    ChromePhp::log($sort_key);
+    ChromePhp::log($order);
+
 
 
     //$results = $app->modelsManager->createBuilder()
@@ -89,10 +144,27 @@ $app->post('/acount/search', function ()use($app) {
     //$paginator = $paginator_model->getPaginate();
 
 
+    $corporate_id_val = $cond['corporate_id'];
+
+    if(!$corporate_id_val == null){
+      $corporate_id_val;
+    }else {
+      $corporate_id_val = '%%';
+    }
+
+    $user_id_val = $cond['user_id'];
+    $user_name_val = $cond['user_name'];
+    $mail_address = $cond['mail_address'];
+
+
+    //$acount = MAccount::find();
+    //ChromePhp::log(count($acount));カウント
+    //count($robots);
+    //$conditions = "name = :name: AND type = :type:";
     //全検索
     $results = MAccount::find(array(
-        'order'	  => "rgst_date desc",
-        'conditions'  => "user_name LIKE '$user_name_val%'"
+        'order'	  => "$sort_key $order",
+        'conditions'  => "corporate_id LIKE '$corporate_id_val' AND user_name LIKE '%$user_name_val%' AND user_id LIKE '$user_id_val%' AND mail_address LIKE '$mail_address%'"
         //'conditions'  => "'$user_name_val%"
     ));
 
@@ -109,7 +181,6 @@ $app->post('/acount/search', function ()use($app) {
         $list['accnt_no'] = $result->accnt_no;//アカウントno
         $list['corporate_id'] = $result->corporate_id;//コーポレートid
         //$list['agreement_no'] = $result->agreement_no;//契約id
-
         $list['user_id'] = $result->user_id;
         $list['user_name'] = $result->user_name;//ユーザー名称
         $list['login_disp_name'] = $result->login_disp_name;//ログイン表示名
@@ -124,7 +195,6 @@ $app->post('/acount/search', function ()use($app) {
     }
     //ChromePhp::log($all_list);
     //ChromePhp::log($list);
-
     $page_list['records_per_page'] = $page['records_per_page'];
     $page_list['page_number'] = $page['page_number'];
     $page_list['total_records'] = count($results);

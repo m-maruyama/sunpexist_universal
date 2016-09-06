@@ -159,6 +159,39 @@ $app->post('/agreement_no', function ()use($app) {
 
 
 /**
+ * 検索項目：企業ID
+ */
+$app->post('/corporate_id', function ()use($app) {
+	$params = json_decode(file_get_contents("php://input"), true);
+
+	$query_list = array();
+	$list = array();
+	$all_list = array();
+	$json_list = array();
+
+
+	//コーポレートテーブルを全て取得//
+	$results = MCorporate::find(array(
+		'order'	  => "corporate_id ASC",
+	));
+	//ChromePhp::log($results);
+
+// デフォルト「全て」を設定
+$list['corporate_id'] = null;
+$list['corporate_name'] = '全て';
+array_push($all_list,$list);
+	foreach ($results as $result) {
+		$list['corporate_id'] = $result->corporate_id;
+		$list['corporate_name'] = $result->corporate_name;
+		array_push($all_list,$list);
+	}
+
+	$json_list['corporate_id_list'] = $all_list;
+	echo json_encode($json_list);
+});
+
+
+/**
  * 検索項目：拠点
  */
 $app->post('/section', function ()use($app) {
