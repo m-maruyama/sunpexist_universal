@@ -15,6 +15,7 @@ define([
 				"listTable": ".listTable",
 				"csv_download": ".csv_download",
 				"sectionModal": ".section_modal",
+				"sectionModal_2": ".section_modal_2",
 				"detailModal": '.detail_modal'
 			},
 			model: new Backbone.Model(),

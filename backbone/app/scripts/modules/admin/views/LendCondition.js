@@ -36,6 +36,7 @@ define([
 				"item_color": "#item_color",
 				"item_size": "#item_size",
 				"individual_number": "#individual_number",
+				"reset": '.reset',
 				"search": '.search',
 //				'datepicker': '.datepicker',
 //				'timepicker': '.timepicker'
@@ -50,6 +51,7 @@ define([
 				"#item_color": "item_color",
 				"#item_size": "item_size",
 				"#individual_number": "individual_number",
+				"#reset": 'reset',
 				'#search': 'search',
 //				'#datepicker': 'datepicker',
 //				'#timepicker': 'timepicker'
@@ -58,6 +60,29 @@ define([
 				var that = this;
 			},
 			events: {
+				'click @ui.reset': function(){
+					// 検索項目リセット
+					var agreement_no = $("select[name='agreement_no']").val();
+
+					// 貸与パターンセレクト
+					var jobTypeConditionView = new App.Admin.Views.JobTypeCondition({
+						agreement_no:agreement_no,
+					});
+					jobTypeConditionView.onShow();
+					this.job_type.show(jobTypeConditionView);
+					// 商品セレクト
+					var inputItemConditionView = new App.Admin.Views.InputItemCondition({
+						agreement_no:agreement_no,
+					});
+					inputItemConditionView.onShow();
+					this.input_item.show(inputItemConditionView);
+					// 色セレクト
+					var itemColorConditionView = new App.Admin.Views.ItemColorCondition({
+						agreement_no:agreement_no,
+					});
+					itemColorConditionView.onShow();
+					this.item_color.show(itemColorConditionView);
+				},
 				'click @ui.search': function(e){
 					e.preventDefault();
 					this.triggerMethod('hideAlerts');
@@ -93,11 +118,7 @@ define([
 					// 検索セレクトボックス連動--ここから
 					var agreement_no = $("select[name='agreement_no']").val();
 					// 拠点セレクト
-					var sectionConditionView = new App.Admin.Views.SectionCondition({
-						agreement_no:agreement_no,
-					});
-					sectionConditionView.onShow();
-					this.section.show(sectionConditionView);
+					this.triggerMethod('change:section_select',agreement_no);
 					// 貸与パターンセレクト
 					var jobTypeConditionView = new App.Admin.Views.JobTypeCondition({
 						agreement_no:agreement_no,

@@ -2,9 +2,6 @@
 	  <!-- start 本文エリア -->
 		<div class="row">
 			<h1>発注状況照会</h1>
-			<!-- <div class="topmargin alert alert-info text-center">
-			メッセージ表示列
-			</div> -->
 			<!-- start フォーム -->
 			<form class="form-horizontal">
 				<!-- 契約No -->
@@ -38,16 +35,6 @@
 					<div class="section"></div>
 				</div>
 
-				<!--div class="form-group">
-					<label class="col-md-2 control-label" for="office">拠点</label>
-					<div class="col-md-6">
-						<input type="text" id="office" name="office" class="form-control input-sm typeahead" placeholder="文字を入力すると候補が表示されます" />
-					</div>
-					<div class="col-md-2">
-						<a type="button" data-page="1" class="btn btn-primary btn-sm btn-block search" title="絞り込み検索" id="button1">絞り込み検索</a>
-					</div>
-				</div-->
-
 				<!-- 貸与パターン、商品、色、サイズ、リセットボタン -->
 				<div class="form-group row">
 					<label class="col-md-2 control-label" for="">貸与パターン</label>
@@ -68,7 +55,7 @@
 									<input type="text" id="item_size" name="item_size" class="input-sm" maxlength="5" placeholder=""  style="font-weight:normal;">　
 								</th>
 								<th>
-									<a href="" type="button" class="btn btn-primary btn-sm" title="リセット">リセット</a>
+									<a type="button" class="btn btn-primary btn-sm reset" id="reset_button" title="リセット">リセット</a>
 								</th>
 							<!--/div-->
 						</tr>
@@ -92,7 +79,6 @@
 					</div>&nbsp;
 					</div>&nbsp;
 				</div>
-
 				<div class="form-group">
 					<label class="col-md-2 control-label" for="send_day">出荷日</label>
 					<div class="col-md-8 form-inline">
@@ -115,13 +101,7 @@
 					<div class="col-md-18">
 						<label class="checkbox-inline"><input type="checkbox" id="status0" name="status[]" value="1" class="checkbox-inline" checked="1" />未出荷（一部出荷も含む）</label>
 						<label class="checkbox-inline"><input type="checkbox" id="status1" name="status[]" value="2" class="checkbox-inline" checked="1" />出荷済</label>
-						<!--label class="checkbox-inline"><input type="checkbox" id="status4" name="status[]" value="9" class="checkbox-inline" />キャンセル（一部キャンセルも含む）</label-->
 					</div>
-					<!--div class="col-md-2 control-label"></div>
-					<div class="col-md-18">
-						<label class="checkbox-inline"><input type="checkbox" id="status2" name="status[]" value="3" class="checkbox-inline" checked="1" />未受領（一部受領済も含む）</label>
-						<label class="checkbox-inline"><input type="checkbox" id="status3" name="status[]" value="4" class="checkbox-inline" />受領済</label>
-					</div-->
 				</div>
 				<div class="form-group row">
 					<label class="col-md-2 control-label" for="">発注区分</label>

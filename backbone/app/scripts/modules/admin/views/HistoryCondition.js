@@ -6,6 +6,7 @@ define([
 	'../behaviors/Alerts',
 	'typeahead',
 	'bloodhound',
+	'../controllers/History',
 	'./SectionCondition',
 	'./JobTypeCondition',
 	'./InputItemCondition',
@@ -72,6 +73,7 @@ define([
 				'reason_kbn18': '#reason_kbn18',
 				'reason_kbn19': '#reason_kbn19',
 				"individual_number": "#individual_number",
+				"reset": '.reset',
 				"search": '.search',
 				'datepicker': '.datepicker',
 				'timepicker': '.timepicker'
@@ -119,6 +121,7 @@ define([
 				'#reason_kbn18': 'reason_kbn18',
 				'#reason_kbn19': 'reason_kbn19',
 				"#individual_number": "individual_number",
+				"#reset": 'reset',
 				'#search': 'search',
 				'#datepicker': 'datepicker',
 				'#timepicker': 'timepicker'
@@ -211,6 +214,29 @@ define([
 				});
 			},
 			events: {
+				'click @ui.reset': function(){
+					// 検索項目リセット
+					var agreement_no = $("select[name='agreement_no']").val();
+
+					// 貸与パターンセレクト
+					var jobTypeConditionView = new App.Admin.Views.JobTypeCondition({
+						agreement_no:agreement_no,
+					});
+					jobTypeConditionView.onShow();
+					this.job_type.show(jobTypeConditionView);
+					// 商品セレクト
+					var inputItemConditionView = new App.Admin.Views.InputItemCondition({
+						agreement_no:agreement_no,
+					});
+					inputItemConditionView.onShow();
+					this.input_item.show(inputItemConditionView);
+					// 色セレクト
+					var itemColorConditionView = new App.Admin.Views.ItemColorCondition({
+						agreement_no:agreement_no,
+					});
+					itemColorConditionView.onShow();
+					this.item_color.show(itemColorConditionView);
+				},
 				'click @ui.search': function(e){
 					e.preventDefault();
 					this.triggerMethod('hideAlerts');
@@ -270,19 +296,15 @@ define([
 						return;
 					}
 					this.triggerMethod('click:search','order_req_no','asc');
-				},
 
+				},
 				'change @ui.agreement_no': function(){
 					this.ui.agreement_no = $('#agreement_no');
 
 					// 検索セレクトボックス連動--ここから
 					var agreement_no = $("select[name='agreement_no']").val();
 					// 拠点セレクト
-					var sectionConditionView = new App.Admin.Views.SectionCondition({
-						agreement_no:agreement_no,
-					});
-					sectionConditionView.onShow();
-					this.section.show(sectionConditionView);
+					this.triggerMethod('change:section_select',agreement_no);
 					// 貸与パターンセレクト
 					var jobTypeConditionView = new App.Admin.Views.JobTypeCondition({
 						agreement_no:agreement_no,
@@ -355,7 +377,7 @@ define([
 				},
 				'change @ui.individual_number': function(){
 					this.ui.individual_number = $('#individual_number');
-				}
+				},
 			}
 		});
 	});
