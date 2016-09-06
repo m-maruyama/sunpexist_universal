@@ -161,10 +161,6 @@ define([
 					csvDownloadView.fetch(cond_map);
 				});
 
-				// this.listenTo(lendConditionView, 'click:download', function(sortKey,order){
-					// fetchList(null,sortKey,order);
-				// });
-
 				// 拠点セレクト変更時の絞り込み処理 --ここから
 				this.listenTo(lendConditionView, 'change:section_select', function(agreement_no){
 					var sectionConditionView2 = new App.Admin.Views.SectionCondition({

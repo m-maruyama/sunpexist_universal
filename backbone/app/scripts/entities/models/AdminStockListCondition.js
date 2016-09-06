@@ -10,47 +10,28 @@ define([
 			},
 			getReq: function() {
 				var result = {
-					job_type : null,
-					item_cd : null,
-					color_cd : null,
-					size : null,
-					zk_status_cd1 : null,
-					zk_status_cd2 : null,
-					zk_status_cd3 : null,
-					order : null,
-					mode : null,
-					sort_key : null
+					agreement_no : null,
+					job_type_zaiko : null,
+					item : null,
+					item_color : null,
+					item_size : null,
 				};
-				if(this.get('job_type')) {
-					result.job_type = this.get('job_type');
+				if(this.get('agreement_no')) {
+					result.agreement_no = this.get('agreement_no');
 				}
-				if(this.get('item_cd')) {
-					result.item_cd = this.get('item_cd');
+				if(this.get('job_type_zaiko')) {
+					result.job_type_zaiko = this.get('job_type_zaiko');
 				}
-				if(this.get('color_cd')) {
-					result.color_cd = this.get('color_cd');
+				if(this.get('item')) {
+					result.item = this.get('item');
 				}
-				if(this.get('size')) {
-					result.size = this.get('size');
+				if(this.get('item_color')) {
+					result.item_color = this.get('item_color');
 				}
-				if(this.get('zk_status_cd1')) {
-					result.zk_status_cd1 = this.get('zk_status_cd1');
+				if(this.get('item_size')) {
+					result.item_size = this.get('item_size');
 				}
-				if(this.get('zk_status_cd2')) {
-					result.zk_status_cd2 = this.get('zk_status_cd2');
-				}
-				if(this.get('zk_status_cd3')) {
-					result.zk_status_cd3 = this.get('zk_status_cd3');
-				}
-				if(this.get('order')) {
-					result.order = this.get('order');
-				}
-				if(this.get('mode')) {
-					result.mode = this.get('mode');
-				}
-				if(this.get('sort_key')) {
-					result.sort_key = this.get('sort_key');
-				}
+
 				return result;
 			}
 		});

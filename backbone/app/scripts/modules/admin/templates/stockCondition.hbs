@@ -1,50 +1,46 @@
 
-	  <!-- start 本文エリア -->
-		<div class="row">
-			<h1>在庫照会</h1>
-			<!-- <div class="topmargin alert alert-info text-center">
-			メッセージ表示列
-			</div> -->
-			<!-- start フォーム -->
-			<form class="form-horizontal">
-				<!-- 貸与パターン -->
-				<div class="job_type"></div>
-				
-				<div class="form-group">
-					<label class="col-md-2 control-label" for="item_cd">商品コード</label>
-					<div class="col-md-3">
-						<input type="text" id="item_cd" name="item_cd" class="form-control input-sm" maxlength="15" placeholder="" />					</div>
-				</div>
-				<div class="form-group">
-					<label class="col-md-2 control-label" for="color_cd">色コード</label>
-					<div class="col-md-2">
-						<input type="text" id="color_cd" name="color_cd" class="form-control input-sm" maxlength="5" placeholder="" />					</div>
-				</div>
-				<div class="form-group">
-					<label class="col-md-2 control-label" for="size">サイズ</label>
-					<div class="col-md-2">
-						<input type="text" id="size" name="size" class="form-control input-sm" maxlength="5" placeholder="" />					</div>
-				</div>
-				<div class="form-group">
-					<div class="col-md-2 control-label"><b>在庫状態</b></div>
-					<div class="col-md-18">
-						<label class="checkbox-inline"><input type="checkbox" id="zk_status_cd1" name="zk_status_cd[]" class="checkbox-inline" checked="1" />新品</label>
-						<label class="checkbox-inline"><input type="checkbox" id="zk_status_cd2" name="zk_status_cd[]" class="checkbox-inline" checked="1" />中古A</label>
-						<label class="checkbox-inline"><input type="checkbox" id="zk_status_cd3" name="zk_status_cd[]" class="checkbox-inline" checked="1" />中古B</label>
-					</div>
-				</div>
-				<div class="form-group">
-					<div class="col-md-2 col-md-push-2" style="margin-left: 500px">
-						<a type="button" class="btn btn-primary btn-sm btn-block search" title="実 行" id="button1">実 行</a>
-					</div>
-				</div>
-				<div class="form-group">
-					<div class="col-md-2 col-md-push-2" style="margin-left: 500px">
-						<a type="button" class="btn btn-primary btn-sm btn-block download" title="ダウンロード" id="download">ダウンロード</a>
-					</div>
-					<div style="display: none;" class="dl-parent"> </div>
-				</div>
-			</form>
-			<!-- end フォーム -->
-			
-			<hr>
+<!-- start 本文エリア -->
+<div class="row">
+	<h1>在庫照会</h1>
+	<!-- start フォーム -->
+	<form class="form-horizontal">
+		<!-- 契約No -->
+		<div class="form-group">
+			<div class="agreement_no"></div>
+		</div>
+
+		<!-- 貸与パターン、商品、色、サイズ、リセットボタン -->
+		<div class="form-group row">
+			<label class="col-md-2 control-label" for="">貸与パターン</label>
+			<table>
+				<tr>
+					<th>
+						<div class="job_type_zaiko" style="font-weight:normal;"></div>
+					</th>
+					<th>
+						<div class="item" style="font-weight:normal;"></div>
+					</th>
+					<th>
+						<div class="item_color" style="font-weight:normal;"></div>
+					</th>
+					<th>
+						<b>　サイズ</b>
+						<input type="text" id="item_size" name="item_size" class="input-sm" maxlength="5" placeholder=""  style="font-weight:normal;">　
+					</th>
+					<th>
+						<a type="button" class="btn btn-primary btn-sm reset" id="reset_button" title="リセット">リセット</a>
+					</th>
+				</tr>
+			</table>
+		</div>
+
+		<div class="form-group">
+			<div class="col-md-2 col-md-push-2 " style="margin-left: 500px">
+				<input type="hidden" class="ui_type" id="ui_type" name="ui_type" value="lend">
+				<a type="button" data-page="1" class="btn btn-primary btn-sm btn-block search" title="検索" id="button1">検索</a>
+			</div>
+		</div>
+	</form>
+	<!-- end フォーム -->
+
+	<hr>

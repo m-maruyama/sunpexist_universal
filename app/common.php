@@ -4,6 +4,9 @@ use Phalcon\Mvc\Model\Resultset\Simple as Resultset;
 use Phalcon\Paginator\Adapter\Model as PaginatorModel;
 use Phalcon\Paginator\Adapter\NativeArray as PaginatorArray;
 use Phalcon\Paginator\Adapter\QueryBuilder as PaginatorQueryBuilder;
+
+
+
 //前処理
 $app->before(function()use($app){
 	$params = json_decode(file_get_contents("php://input"), true);
@@ -51,6 +54,8 @@ $app->before(function()use($app){
 		return true;
 	}
 });
+
+
 /**
  * グローバルメニュー
  */
@@ -63,6 +68,7 @@ $app->post('/global_menu', function ()use($app){
 	}
 	echo json_encode($json_list);
 });
+
 
 /**
  * アカウントセッション取得
@@ -94,27 +100,39 @@ $app->post('/agreement_no', function ()use($app) {
 
 	//--- 検索条件 ---//
 	// 契約マスタ. 企業ID
-	array_push($query_list,"MContract.corporate_id = '".$auth['corporate_id']."'");
+	array_push($query_list,"m_contract.corporate_id = '".$auth['corporate_id']."'");
 	// 契約マスタ. レンタル契約フラグ
-	array_push($query_list,"MContract.rntl_cont_flg = '1'");
+	array_push($query_list,"m_contract.rntl_cont_flg = '1'");
 	// 契約リソースマスタ. 企業ID
-	array_push($query_list,"MContractResource.corporate_id = '".$auth['corporate_id']."'");
+	array_push($query_list,"m_contract_resource.corporate_id = '".$auth['corporate_id']."'");
 	// アカウントマスタ.企業ID
-	array_push($query_list,"MAccount.corporate_id = '".$auth['corporate_id']."'");
+	array_push($query_list,"m_account.corporate_id = '".$auth['corporate_id']."'");
 	// アカウントマスタ. ユーザーID
-	array_push($query_list,"MAccount.user_id = '".$auth['user_id']."'");
+	array_push($query_list,"m_account.user_id = '".$auth['user_id']."'");
 
 	//sql文字列を' AND 'で結合
 	$query = implode(' AND ', $query_list);
 
-	//--- クエリー実行・取得 ---//
-	$results = MContract::query()
-		->where($query)
-		->columns(array('MContract.*','MContractResource.*','MAccount.*'))
-		->leftJoin('MContractResource','MContract.corporate_id = MContractResource.corporate_id')
-		->join('MAccount','MAccount.accnt_no = MContractResource.accnt_no')
-//		->orderBy('cast(MContract.rntl_cont_no asc as integer)')
-		->execute();
+	// SQLクエリー実行
+	$arg_str = "SELECT ";
+	$arg_str .= " * ";
+	$arg_str .= " FROM ";
+	$arg_str .= "(SELECT distinct on (m_contract.rntl_cont_no) ";
+	$arg_str .= "m_contract.rntl_cont_no as as_rntl_cont_no,";
+	$arg_str .= "m_contract.rntl_cont_name as as_rntl_cont_name";
+	$arg_str .= " FROM m_contract LEFT JOIN";
+	$arg_str .= " (m_contract_resource INNER JOIN m_account ON m_contract_resource.accnt_no = m_account.accnt_no)";
+	$arg_str .= " ON m_contract.corporate_id = m_contract_resource.corporate_id";
+	$arg_str .= " WHERE ";
+	$arg_str .= $query;
+	$arg_str .= ") as distinct_table";
+	$arg_str .= " ORDER BY as_rntl_cont_no asc";
+
+	$m_contract = new MContract();
+	$results = new Resultset(null, $m_contract, $m_contract->getReadConnection()->query($arg_str));
+	$results_array = (array)$results;
+	$results = $results_array["\0*\0_rows"];
+	$results_cnt = $results_array["\0*\0_count"];
 
 /*
 	// デフォルトは空を設定
@@ -123,9 +141,15 @@ $app->post('/agreement_no', function ()use($app) {
 	array_push($all_list,$list);
 */
 
-	foreach ($results as $result) {
-		$list['rntl_cont_no'] = $result->mContract->rntl_cont_no;
-		$list['rntl_cont_name'] = $result->mContract->rntl_cont_name;
+	if ($results_cnt > 0) {
+		foreach ($results as $result) {
+			$list['rntl_cont_no'] = $result["as_rntl_cont_no"];
+			$list['rntl_cont_name'] = $result["as_rntl_cont_name"];
+			array_push($all_list,$list);
+		}
+	} else {
+		$list['rntl_cont_no'] = null;
+		$list['rntl_cont_name'] = '';
 		array_push($all_list,$list);
 	}
 
@@ -171,13 +195,21 @@ $app->post('/section', function ()use($app) {
 	$results_cnt = $results_array["\0*\0_count"];
 
 	// デフォルト「全て」を設定
-	$list['rntl_sect_cd'] = null;
-	$list['rntl_sect_name'] = '全て';
-	array_push($all_list,$list);
+	if ($results_cnt > 1) {
+		$list['rntl_sect_cd'] = null;
+		$list['rntl_sect_name'] = '全て';
+		array_push($all_list,$list);
+	}
 
-	foreach ($results as $result) {
-		$list['rntl_sect_cd'] = $result['rntl_sect_cd'];
-		$list['rntl_sect_name'] = $result['rntl_sect_name'];
+	if ($results_cnt > 0) {
+		foreach ($results as $result) {
+			$list['rntl_sect_cd'] = $result['rntl_sect_cd'];
+			$list['rntl_sect_name'] = $result['rntl_sect_name'];
+			array_push($all_list,$list);
+		}
+	} else {
+		$list['rntl_sect_cd'] = null;
+		$list['rntl_sect_name'] = '';
 		array_push($all_list,$list);
 	}
 
@@ -224,13 +256,21 @@ $app->post('/job_type', function ()use($app) {
 	$results_cnt = $results_array["\0*\0_count"];
 
 	// デフォルト「全て」を設定
-	$list['job_type_cd'] = null;
-	$list['job_type_name'] = '全て';
-	array_push($all_list,$list);
+	if ($results_cnt > 1) {
+		$list['job_type_cd'] = null;
+		$list['job_type_name'] = '全て';
+		array_push($all_list,$list);
+	}
 
-	foreach ($results as $result) {
-		$list['job_type_cd'] = $result["job_type_cd"];
-		$list['job_type_name'] = $result["job_type_name"];
+	if ($results_cnt > 0) {
+		foreach ($results as $result) {
+			$list['job_type_cd'] = $result["job_type_cd"];
+			$list['job_type_name'] = $result["job_type_name"];
+			array_push($all_list,$list);
+		}
+	} else {
+		$list['job_type_cd'] = null;
+		$list['job_type_name'] = '';
 		array_push($all_list,$list);
 	}
 
@@ -280,13 +320,21 @@ $app->post('/input_item', function ()use($app) {
 	$results_cnt = $results_array["\0*\0_count"];
 
 	// デフォルト「全て」を設定
-	$list['item_cd'] = null;
-	$list['input_item_name'] = '全て';
-	array_push($all_list,$list);
+	if ($results_cnt > 1) {
+		$list['item_cd'] = null;
+		$list['input_item_name'] = '全て';
+		array_push($all_list,$list);
+	}
 
-	foreach ($results as $result) {
-		$list['item_cd'] = $result["item_cd"];
-		$list['input_item_name'] = $result["input_item_name"];
+	if ($results_cnt > 0) {
+		foreach ($results as $result) {
+			$list['item_cd'] = $result["item_cd"];
+			$list['input_item_name'] = $result["input_item_name"];
+			array_push($all_list,$list);
+		}
+	} else {
+		$list['item_cd'] = null;
+		$list['input_item_name'] = '';
 		array_push($all_list,$list);
 	}
 
@@ -339,13 +387,21 @@ $app->post('/item_color', function ()use($app) {
 	$results_cnt = $results_array["\0*\0_count"];
 
 	// デフォルト「全て」を設定
-	$list['color_cd_id'] = null;
-	$list['color_cd_name'] = '全て';
-	array_push($all_list,$list);
+	if ($results_cnt > 1) {
+		$list['color_cd_id'] = null;
+		$list['color_cd_name'] = '全て';
+		array_push($all_list,$list);
+	}
 
-	foreach ($results as $result) {
-		$list['color_cd_id'] = $result['color_cd'];
-		$list['color_cd_name'] = $result['color_cd'];
+	if ($results_cnt > 0) {
+		foreach ($results as $result) {
+			$list['color_cd_id'] = $result['color_cd'];
+			$list['color_cd_name'] = $result['color_cd'];
+			array_push($all_list,$list);
+		}
+	} else {
+		$list['color_cd_id'] = null;
+		$list['color_cd_name'] = '';
 		array_push($all_list,$list);
 	}
 
@@ -394,30 +450,202 @@ $app->post('/individual_num', function ()use($app) {
 */
 });
 
+
 /**
- * 検索項目：在庫専用貸与パターン
+ * 検索項目：在庫照会専用-貸与パターン
  */
-$app->post('/job_type_zaiko', function () {
+$app->post('/zaiko_job_type', function ()use($app) {
 	$params = json_decode(file_get_contents("php://input"), true);
-	$results = MRentPatternForSdmzk::find(array(
-		'order'	  => "rent_pattern_data asc"
-	));
+
+	$query_list = array();
 	$list = array();
 	$all_list = array();
 	$json_list = array();
-	//初っ端は空データ
-	$list['job_type_cd'] = null;
-	$list['job_type_name'] = null;
-	array_push($all_list,$list);
-	foreach ($results as $result) {
-		$list['job_type_cd'] = $result->rent_pattern_data;
-		$list['job_type_name'] = $result->rent_pattern_name;
-		// $list['sort'] = $result->sort;
+
+	// アカウントセッション取得
+	$auth = $app->session->get("auth");
+
+	//--- 検索条件 ---//
+	array_push($query_list, "corporate_id = '".$auth['corporate_id']."'");
+	if (!empty($params["agreement_no"])) {
+		array_push($query_list, "rntl_cont_no = '".$params["agreement_no"]."'");
+	} else {
+		array_push($query_list, "rntl_cont_no = '".$auth['rntl_cont_no']."'");
+	}
+	$query = implode(' AND ', $query_list);
+
+	// SQLクエリー実行
+	$arg_str = "SELECT ";
+	$arg_str .= " distinct on (rent_pattern_data) *";
+	$arg_str .= " FROM m_rent_pattern_for_sdmzk";
+	$arg_str .= " WHERE ";
+	$arg_str .= $query;
+	$arg_str .= " ORDER BY rent_pattern_data asc";
+
+	$m_rent_pattern_for_sdmzk = new MRentPatternForSdmzk();
+	$results = new Resultset(null, $m_rent_pattern_for_sdmzk, $m_rent_pattern_for_sdmzk->getReadConnection()->query($arg_str));
+	$results_array = (array)$results;
+	$results = $results_array["\0*\0_rows"];
+	$results_cnt = $results_array["\0*\0_count"];
+
+	// デフォルト「全て」を設定
+	if ($results_cnt > 1) {
+		$list['rent_pattern_data'] = null;
+		$list['rent_pattern_name'] = '全て';
 		array_push($all_list,$list);
 	}
-	$json_list['job_type_list'] = $all_list;
+	if ($results_cnt > 0) {
+		foreach ($results as $result) {
+			$list['rent_pattern_data'] = $result["rent_pattern_data"];
+			$list['rent_pattern_name'] = $result["rent_pattern_name"];
+			array_push($all_list,$list);
+		}
+	} else {
+		$list['rent_pattern_data'] = null;
+		$list['rent_pattern_name'] = '';
+		array_push($all_list,$list);
+	}
+
+	$json_list['rent_pattern_list'] = $all_list;
 	echo json_encode($json_list);
 });
+
+
+/**
+　* 検索項目：在庫照会専用-商品
+　*/
+$app->post('/zaiko_item', function ()use($app) {
+	$params = json_decode(file_get_contents("php://input"), true);
+
+	$query_list = array();
+	$list = array();
+	$all_list = array();
+	$json_list = array();
+
+	// アカウントセッション取得
+	$auth = $app->session->get("auth");
+
+	//--- 検索条件 ---//
+	array_push($query_list, "m_item.corporate_id = '".$auth['corporate_id']."'");
+	if (!empty($params["agreement_no"])) {
+		array_push($query_list, "t_sdmzk.rntl_cont_no = '".$params["agreement_no"]."'");
+	} else {
+		array_push($query_list, "t_sdmzk.rntl_cont_no = '".$auth['rntl_cont_no']."'");
+	}
+	if (!empty($params["job_type_zaiko"])) {
+		array_push($query_list, "t_sdmzk.rent_pattern_data = '".$params["job_type_zaiko"]."'");
+	}
+	$query = implode(' AND ', $query_list);
+
+	// SQLクエリー実行
+	$arg_str = "SELECT ";
+	$arg_str .= " distinct on (m_item.item_cd)";
+	$arg_str .= " m_item.item_cd as as_item_cd,";
+	$arg_str .= " m_item.item_name as as_item_name";
+	$arg_str .= " FROM m_item";
+	$arg_str .= " INNER JOIN t_sdmzk ON m_item.m_item_comb_hkey = t_sdmzk.m_item_comb_hkey";
+	$arg_str .= " WHERE ";
+	$arg_str .= $query;
+	$arg_str .= " ORDER BY as_item_cd asc";
+
+	$m_item = new MItem();
+	$results = new Resultset(null, $m_item, $m_item->getReadConnection()->query($arg_str));
+	$results_array = (array)$results;
+	$results = $results_array["\0*\0_rows"];
+	$results_cnt = $results_array["\0*\0_count"];
+
+	// デフォルト「全て」を設定
+	if ($results_cnt > 1) {
+		$list['item_cd'] = null;
+		$list['item_name'] = '全て';
+		array_push($all_list,$list);
+	}
+
+	if ($results_cnt > 0) {
+		foreach ($results as $result) {
+			$list['item_cd'] = $result["as_item_cd"];
+			$list['item_name'] = $result["as_item_name"];
+			array_push($all_list,$list);
+		}
+	} else {
+		$list['item_cd'] = null;
+		$list['item_name'] = '';
+		array_push($all_list,$list);
+	}
+
+	$json_list['item_list'] = $all_list;
+	echo json_encode($json_list);
+});
+
+
+/**
+　* 検索項目：在庫照会専用-色
+　*/
+$app->post('/zaiko_item_color', function ()use($app) {
+	$params = json_decode(file_get_contents("php://input"), true);
+
+	$query_list = array();
+	$list = array();
+	$all_list = array();
+	$json_list = array();
+
+	// アカウントセッション取得
+	$auth = $app->session->get("auth");
+
+	//--- 検索条件 ---//
+	array_push($query_list, "m_item.corporate_id = '".$auth['corporate_id']."'");
+	if (!empty($params["agreement_no"])) {
+		array_push($query_list, "t_sdmzk.rntl_cont_no = '".$params["agreement_no"]."'");
+	} else {
+		array_push($query_list, "t_sdmzk.rntl_cont_no = '".$auth['rntl_cont_no']."'");
+	}
+	if (!empty($params["job_type_zaiko"])) {
+		array_push($query_list, "t_sdmzk.rent_pattern_data = '".$params["job_type_zaiko"]."'");
+	}
+	if (!empty($params["item"])) {
+		array_push($query_list, "m_item.item_cd = '".$params["item"]."'");
+	}
+	$query = implode(' AND ', $query_list);
+
+	// SQLクエリー実行
+	$arg_str = "SELECT ";
+	$arg_str .= " distinct on (m_item.color_cd)";
+	$arg_str .= " m_item.color_cd as as_color_cd";
+	$arg_str .= " FROM m_item";
+	$arg_str .= " INNER JOIN t_sdmzk ON m_item.m_item_comb_hkey = t_sdmzk.m_item_comb_hkey";
+	$arg_str .= " WHERE ";
+	$arg_str .= $query;
+	$arg_str .= " ORDER BY as_color_cd asc";
+
+	$m_item = new MItem();
+	$results = new Resultset(null, $m_item, $m_item->getReadConnection()->query($arg_str));
+	$results_array = (array)$results;
+	$results = $results_array["\0*\0_rows"];
+	$results_cnt = $results_array["\0*\0_count"];
+
+	// デフォルト「全て」を設定
+	if ($results_cnt > 1) {
+		$list['color_cd_id'] = null;
+		$list['color_cd_name'] = '全て';
+		array_push($all_list,$list);
+	}
+
+	if ($results_cnt > 0) {
+		foreach ($results as $result) {
+			$list['color_cd_id'] = $result['as_color_cd'];
+			$list['color_cd_name'] = $result['as_color_cd'];
+			array_push($all_list,$list);
+		}
+	} else {
+		$list['color_cd_id'] = null;
+		$list['color_cd_name'] = '';
+		array_push($all_list,$list);
+	}
+
+	$json_list['item_color_list'] = $all_list;
+	echo json_encode($json_list);
+});
+
 
 /**
  * 拠点絞り込み検索

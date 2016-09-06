@@ -5,31 +5,34 @@ define([
 ], function(App) {
 	'use strict';
 	App.module('Admin.Views', function(Views, App, Backbone, Marionette, $, _){
-		Views.JobTypeZaikoCondition = Marionette.ItemView.extend({
+		Views.ItemZaikoCondition = Marionette.ItemView.extend({
 			defaults: {
 				agreement_no: '',
+				job_type_zaiko: '',
 			},
 			initialize: function(options) {
 			    this.options = options || {};
 			    this.options = _.extend(this.defaults, this.options);
 			},
-			template: App.Admin.Templates.jobTypeZaikoCondition,
+			template: App.Admin.Templates.itemZaikoCondition,
 			model: new Backbone.Model(),
 			ui: {
-				'job_type_zaiko': '.job_type_zaiko'
+				'item': '.item'
 			},
 			bindings: {
-				'.job_type_zaiko': 'job_type_zaiko',
+				'.item': 'item',
 			},
 			onShow: function() {
 				var agreement_no = this.options.agreement_no;
+				var job_type_zaiko = this.options.job_type_zaiko;
 				var that = this;
 
 				var modelForUpdate = this.model;
-					modelForUpdate.url = App.api.CM0050;
+					modelForUpdate.url = App.api.CM0051;
 				var cond = {
-					"scr": '在庫照会専用貸与パターン',
+					"scr": '商品',
 					"agreement_no": agreement_no,
+					"job_type_zaiko": job_type_zaiko,
 				};
 					modelForUpdate.fetchMx({
 						data:cond,

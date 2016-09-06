@@ -4,13 +4,19 @@ define([
 	'../views/Stock',
 	'../views/StockCondition',
 	'../views/StockListList',
+	'../views/AgreementNoCondition',
 	'../views/JobTypeZaikoCondition',
+	'../views/ItemZaikoCondition',
+	'../views/ItemColorZaikoCondition',
 	'../views/DetailModal',
 	'../views/Pagination',
+	'../views/CsvDownload',
 	"entities/models/Pager",
 	"entities/models/AdminStock",
 	"entities/models/AdminStockListCondition",
+	"entities/models/AdminCsvDownloadCondition",
 	"entities/collections/AdminStockListList",
+	"entities/collections/AdminCsvDownload",
 	'bootstrap'
 ], function(App) {
 	'use strict';
@@ -24,9 +30,12 @@ define([
 				var stockModel = null;
 				var stockView = new App.Admin.Views.Stock();
 				var stockListListCollection = new App.Entities.Collections.AdminStockListList();
-				
-				var jobTypeConditionView = new App.Admin.Views.JobTypeZaikoCondition();
-				
+
+				var agreementNoConditionView = new App.Admin.Views.AgreementNoCondition();
+				var jobTypeZaikoConditionView = new App.Admin.Views.JobTypeZaikoCondition();
+				var itemZaikoConditionView = new App.Admin.Views.ItemZaikoCondition();
+				var itemColorZaikoConditionView = new App.Admin.Views.ItemColorZaikoCondition();
+
 				var stockListConditionModel = new App.Entities.Models.AdminStockListCondition();
 				var stockConditionView = new App.Admin.Views.StockCondition({
 					collection: stockListListCollection,
@@ -38,7 +47,10 @@ define([
 					model:stockListConditionModel,
 					pagerModel: pagerModel
 				});
+
 				var paginationView = new App.Admin.Views.Pagination({model: pagerModel});
+				var paginationView2 = new App.Admin.Views.Pagination({model: pagerModel});
+				var csvDownloadView = new App.Admin.Views.CsvDownload();
 
 				var fetchList = function(pageNumber,sortKey,order){
 					if(pageNumber){
@@ -50,9 +62,16 @@ define([
 					}
 					stockListListView.fetch(stockListConditionModel);
 					stockView.listTable.show(stockListListView);
+					stockView.page.show(paginationView);
+					stockView.page_2.show(paginationView2);
+					stockView.csv_download.show(csvDownloadView);
 				};
+
 				this.listenTo(paginationView, 'selected', function(pageNumber){
-					fetchList(pageNumber);
+						fetchList(pageNumber);
+				});
+				this.listenTo(paginationView2, 'selected', function(pageNumber){
+						fetchList(pageNumber);
 				});
 
 				this.listenTo(stockListListView, 'sort', function(sortKey,order){
@@ -64,10 +83,17 @@ define([
 				this.listenTo(stockConditionView, 'click:download', function(sortKey,order){
 					fetchList(null,sortKey,order);
 				});
+				this.listenTo(csvDownloadView, 'click:download_btn', function(cond_map){
+					csvDownloadView.fetch(cond_map);
+				});
+
 				App.main.show(stockView);
 				stockView.page.show(paginationView);
 				stockView.condition.show(stockConditionView);
-				stockConditionView.job_type.show(jobTypeConditionView);
+				stockConditionView.agreement_no.show(agreementNoConditionView);
+				stockConditionView.job_type_zaiko.show(jobTypeZaikoConditionView);
+				stockConditionView.item.show(itemZaikoConditionView);
+				stockConditionView.item_color.show(itemColorZaikoConditionView);
 			}
 		});
 	});

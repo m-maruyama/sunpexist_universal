@@ -5,6 +5,9 @@ define([
 	'bootstrap-datetimepicker',
 	'../behaviors/Alerts',
 	'typeahead',
+	'./JobTypeZaikoCondition',
+	'./ItemZaikoCondition',
+	'./ItemColorZaikoCondition',
 	'bloodhound'
 ], function(App) {
 	'use strict';
@@ -19,46 +22,69 @@ define([
 				}
 			},
 			regions: {
-				"job_type": ".job_type"
+				"agreement_no": ".agreement_no",
+				"job_type_zaiko": ".job_type_zaiko",
+				"item": ".item",
+				"item_color": ".item_color",
 			},
 			ui: {
-				'job_type': '#job_type',
-				'item_cd': '#item_cd',
-				'color_cd': '#color_cd',
-				'size': '#size',
-				'zk_status_cd1': '#zk_status_cd1',
-				'zk_status_cd2': '#zk_status_cd2',
-				'zk_status_cd3': '#zk_status_cd3',
+				'agreement_no': '#agreement_no',
+				'job_type_zaiko': '#job_type_zaiko',
+				"item": "#item",
+				"item_color": "#item_color",
+				"item_size": "#item_size",
+				"reset": '.reset',
 				"search": '.search',
-				"download": '.download',
 			},
 			bindings: {
-				'#job_type': 'job_type',
-				'#item_cd': 'item_cd',
-				'#color_cd': 'color_cd',
-				'#size': 'size',
-				'#zk_status_cd1': 'zk_status_cd1',
-				'#zk_status_cd2': 'zk_status_cd2',
-				'#zk_status_cd3': 'zk_status_cd3',
+				'#agreement_no': 'agreement_no',
+				'#job_type_zaiko': 'job_type_zaiko',
+				"#item": "item",
+				"#item_color": "item_color",
+				"#item_size": "item_size",
+				"#reset": 'reset',
 				'#search': 'search',
-				'#download': 'download',
 			},
 			onRender: function() {
 				var that = this;
 			},
 			events: {
+				'click @ui.reset': function(){
+					// 検索項目リセット
+					var agreement_no = $("select[name='agreement_no']").val();
+
+					// 貸与パターンセレクト
+					var jobTypeZaikoConditionView = new App.Admin.Views.JobTypeZaikoCondition({
+						agreement_no:agreement_no,
+					});
+					jobTypeZaikoConditionView.onShow();
+					this.job_type_zaiko.show(jobTypeZaikoConditionView);
+					// 商品セレクト
+					var itemZaikoConditionView = new App.Admin.Views.ItemZaikoCondition({
+						agreement_no:agreement_no,
+					});
+					itemZaikoConditionView.onShow();
+					this.item.show(itemZaikoConditionView);
+					// 色セレクト
+					var itemColorZaikoConditionView = new App.Admin.Views.ItemColorZaikoCondition({
+						agreement_no:agreement_no,
+					});
+					itemColorZaikoConditionView.onShow();
+					this.item_color.show(itemColorZaikoConditionView);
+				},
 				'click @ui.search': function(e){
 					e.preventDefault();
 					this.triggerMethod('hideAlerts');
-					this.model.set('job_type', this.ui.job_type.val());
-					this.model.set('item_cd', this.ui.item_cd.val());
-					this.model.set('color_cd', this.ui.color_cd.val());
-					this.model.set('size', this.ui.size.val());
-					this.model.set('zk_status_cd1', this.ui.zk_status_cd1.prop('checked'));
-					this.model.set('zk_status_cd2', this.ui.zk_status_cd2.prop('checked'));
-					this.model.set('zk_status_cd3', this.ui.zk_status_cd3.prop('checked'));
-					this.model.set('sort_key', 'TSdmzk.rent_pattern_data, zkprcd, zkclor, zksize_display_order, zksize');
-					this.model.set('order','asc');
+					var agreement_no = $("select[name='agreement_no']").val();
+					this.model.set('agreement_no', agreement_no);
+					var job_type_zaiko = $("select[name='job_type_zaiko']").val();
+					this.model.set('job_type_zaiko', job_type_zaiko);
+					var item = $("select[name='item']").val();
+					this.model.set('item', item);
+					var item_color = $("select[name='item_color']").val();
+					this.model.set('item_color', item_color);
+					this.model.set('item_size', this.ui.item_size.val());
+					this.model.set('search', this.ui.search.val());
 					var errors = this.model.validate();
 					if(errors) {
 						this.triggerMethod('showAlerts', errors);
@@ -67,6 +93,74 @@ define([
 				search_flg = 'on';
 					this.triggerMethod('click:search',this.model.get('sort_key'),this.model.get('order'));
 				},
+				'change @ui.agreement_no': function(){
+					this.ui.agreement_no = $('#agreement_no');
+
+					// 検索セレクトボックス連動--ここから
+					var agreement_no = $("select[name='agreement_no']").val();
+					// 貸与パターンセレクト
+					var jobTypeZaikoConditionView = new App.Admin.Views.JobTypeZaikoCondition({
+						agreement_no:agreement_no,
+					});
+					jobTypeZaikoConditionView.onShow();
+					this.job_type_zaiko.show(jobTypeZaikoConditionView);
+					// 商品セレクト
+					var itemZaikoConditionView = new App.Admin.Views.ItemZaikoCondition({
+						agreement_no:agreement_no,
+					});
+					itemZaikoConditionView.onShow();
+					this.item.show(itemZaikoConditionView);
+					// 色セレクト
+					var itemColorZaikoConditionView = new App.Admin.Views.ItemColorZaikoCondition({
+						agreement_no:agreement_no,
+					});
+					itemColorZaikoConditionView.onShow();
+					this.item_color.show(itemColorZaikoConditionView);
+					// セレクトボックス連動--ここまで
+				},
+				'change @ui.job_type_zaiko': function(){
+					this.ui.job_type_zaiko = $('#job_type_zaiko');
+
+					// 検索セレクトボックス連動--ここから
+					var agreement_no = $("select[name='agreement_no']").val();
+					var job_type_zaiko = $("select[name='job_type_zaiko']").val();
+					// 商品セレクト
+					var itemZaikoConditionView = new App.Admin.Views.ItemZaikoCondition({
+						agreement_no:agreement_no,
+						job_type_zaiko:job_type_zaiko,
+					});
+					itemZaikoConditionView.onShow();
+					this.item.show(itemZaikoConditionView);
+					// 色セレクト
+					var itemColorZaikoConditionView = new App.Admin.Views.ItemColorZaikoCondition({
+						agreement_no:agreement_no,
+						job_type_zaiko:job_type_zaiko,
+					});
+					itemColorZaikoConditionView.onShow();
+					this.item_color.show(itemColorZaikoConditionView);
+					// セレクトボックス連動--ここまで
+				},
+				'change @ui.item': function(){
+					this.ui.item = $('#item');
+
+					// 検索セレクトボックス連動--ここから
+					var agreement_no = $("select[name='agreement_no']").val();
+					var job_type_zaiko = $("select[name='job_type_zaiko']").val();
+					var item = $("select[name='item']").val();
+					// 色セレクト
+					var itemColorZaikoConditionView = new App.Admin.Views.ItemColorZaikoCondition({
+						agreement_no:agreement_no,
+						job_type_zaiko:job_type_zaiko,
+						item:item,
+					});
+					itemColorZaikoConditionView.onShow();
+					this.item_color.show(itemColorZaikoConditionView);
+					// セレクトボックス連動--ここまで
+				},
+				'change @ui.item_color': function(){
+					this.ui.item_color = $('#item_color');
+				},
+/*
 				'click @ui.download': function(e){
 					if(!search_flg){
 						alert('実行ボタンをクリックして検索を行ってください。');
@@ -91,9 +185,7 @@ define([
 					//$.unblockUI();
 					return;
 				},
-				'change @ui.job_type': function(){
-					this.ui.job_type = $('#job_type');
-				}
+*/
 			}
 		});
 	});

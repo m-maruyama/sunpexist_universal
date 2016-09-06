@@ -1,15 +1,23 @@
-<table class="table table-bordered">
-		<thead class="scrollHead">
-		<tr class="fix">
-			<th class="tb_item_name"><a href="#" id='item_name' class="sort">商品名</a></th>
-			<th class="tb_item_code"><a href="#" id='item_cd' class="sort">商品コード</a></th>
-			<th class="tb_item_color"><a href="#" id='color_cd' class="sort">色コード</a></th>
-			<th class="tb_item_size"><a href="#" id='zksize_display_order' class="sort">サイズ</a></th>
-			<th class="tb_zk_status_cd"><a href="#" id='zk_status_cd' class="sort">在庫状態</a></th>
-			<th class="tb_zkwhcd"><a href="#" id='zkwhcd' class="sort">倉庫コード</a></th>
-			<th class="tb_zkrc2">数量</th>
-		</tr>
+<div id="scrollTable" style="border-bottom: none">
+	<table class="table table-bordered">
+		<thead class="grad_head">
+			<tr>
+				<th class="tb_item_cd"><a href="#" id='item_code' class="sort">商品-色(サイズ-サイズ2)</a></th>
+				<th class="tb_item_name"><a href="#" id='item_name' class="sort">商品名</a></th>
+				<th class="tb_stock_status"><a href="#" id='stock_status' class="sort">在庫状態</a></th>
+				<th class="tb_zkwhcd"><a href="#" id='zkwhcd' class="sort">倉庫コード</a></th>
+				<th class="tb_label"><a href="#" id='label' class="sort">ラベル</a></th>
+				<th class="tb_total_qty">在庫数(総数)</th>
+				<th class="tb_new_qty">在庫数(新品)</th>
+				<th class="tb_used_qty">在庫数(中古)</th>
+				<th class="tb_rtn_proc_qty">返却処理中</th>
+				<th class="tb_rtn_plan_qty">返却予定</th>
+				<th class="tb_in_use_qty">貸与中</th>
+				<th class="tb_other_ship_qty">その他出荷</th>
+				<th class="tb_discarded_qty">廃棄済み</th>
+			</tr>
 		</thead>
-		<tbody class="scrollBody">
+		<tbody>
 		</tbody>
 	</table>
+</div>
