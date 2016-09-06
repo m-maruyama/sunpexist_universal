@@ -13,6 +13,7 @@ define([
 	'../views/SectionModal',
 	'../views/SectionModalListList',
 	'../views/Pagination',
+    '../behaviors/Alerts',
 	"entities/models/Pager",
 	"entities/models/AdminWearerInput",
 	"entities/models/AdminWearerInputListCondition",
@@ -23,6 +24,11 @@ define([
 	'use strict';
 	App.module('Admin.Controllers', function(Controllers,App, Backbone, Marionette, $, _){
 		Controllers.WearerInput = App.Admin.Controllers.Abstract.extend({
+            behaviors: {
+                "Alerts": {
+                    behaviorClass: App.Admin.Behaviors.Alerts
+                }
+            },
 			_sync : function(){
 				var that = this;
 				this.setNav('wearerInput');
@@ -94,8 +100,9 @@ define([
 				//契約No選択イベント--ここまで
 
 				//着用者のみ登録して終了
-				this.listenTo(wearerInputView, 'click:input_insert', function(sortKey, order){
-					fetchList(1,sortKey,order);
+				this.listenTo(wearerInputView, 'click:input_insert', function(agreement_no){
+					var errors = wearerInputConditionView.insert_wearer(agreement_no);
+                    wearerInputView.triggerMethod('showAlerts', errors);
 				});
 
 				this.listenTo(paginationView, 'selected', function(pageNumber){

@@ -1,11 +1,17 @@
 define([
 	'app',
-	'../Templates'
+	'../Templates',
+    '../behaviors/Alerts',
 ], function(App) {
 	'use strict';
 	App.module('Admin.Views', function(Views, App, Backbone, Marionette, $, _){
 		Views.WearerInput = Marionette.LayoutView.extend({
 			template: App.Admin.Templates.wearerInput,
+            behaviors: {
+                "Alerts": {
+                    behaviorClass: App.Admin.Behaviors.Alerts
+                }
+            },
 			ui: {
 				"agreement_no": ".agreement_no",
 				"cancel": "#cancel",
@@ -25,6 +31,7 @@ define([
 			},
 			binding: {
 				"#agreement_no": "agreement_no",
+                "#input_insert": "input_insert",
 			},
 			model: new Backbone.Model(),
 			onRender: function() {
@@ -61,10 +68,26 @@ define([
                     }
 				},
                 'click @ui.input_insert': function(){
-                    this.triggerMethod('click:input_insert',this.model);
+                    this.triggerMethod('click:input_insert',this.ui.agreement_no.val());
                 },
 			},
 
 		});
+        function insert_wearer(agreement_no) {
+            var model = this.model;
+            var cond = {
+                "scr": '着用者登録',
+                "cond": model.getReq()
+            };
+            model.url = App.api.WI0012;
+            model.fetchMx({
+                data: cond,
+                success: function (res) {
+                    console.log(res);
+                },
+                complete: function (res) {
+                }
+            });
+        }
 	});
 });

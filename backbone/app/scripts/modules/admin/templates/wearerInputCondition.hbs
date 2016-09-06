@@ -5,11 +5,11 @@
 			<div class="form-group">
 				<label class="col-md-3 control-label" for="cster_emply_cd">社員コード</label>
 				<div class="col-md-6">
-					<label class="checkbox-inline"><input type="checkbox">社員コードあり　</label> <input type="text" class="input-sm" id="cster_emply_cd" name="cster_emply_cd">
+					<label class="checkbox-inline"><input type="checkbox" id="cster_emply_cd_chk">社員コードあり　</label> <input type="text" class="input-sm" id="cster_emply_cd" name="cster_emply_cd" maxlength="10">
 				</div>
 			</div>
 			<div class="form-group">
-				<label class="col-md-3 control-label" for="werer_name">着用者名（漢字）</label>
+				<label class="col-md-3 control-label" for="werer_name">着用者名（漢字）<span style="color:red">＊</span></label>
 				<div class="col-md-7">
 					<input type="text" class="form-control input-sm" id="werer_name" name="werer_name">
 				</div>
@@ -30,7 +30,7 @@
 				</div>
 			</div>
 			<div class="form-group">
-				<label class="col-md-3 control-label" for="resfl_ymd">異動日</label>
+				<label class="col-md-3 control-label" for="resfl_ymd">異動日<span style="color:red">＊</span></label>
 				<div class="col-md-3">
 					<div class='input-group date datepicker'>
 					<input type="text" class="form-control  input-sm datepicker" id="resfl_ymd" name="resfl_ymd" value="">

@@ -217,11 +217,10 @@ $app->post('/wearer_input', function ()use($app){
     echo json_encode($json_list);
 });
 
-
 /**
- *  着用者のみ登録して終了
+ * 「拠点」のセレクトボックス変更時
  */
-$app->post('/input_insert', function ()use($app) {
+$app->post('/change_section', function ()use($app) {
 
     $params = json_decode(file_get_contents("php://input"), true);
     // アカウントセッション取得
@@ -253,16 +252,53 @@ $app->post('/input_insert', function ()use($app) {
     $q_str = MShipmentTo::query()
         ->where($query)
         ->columns(array('MShipmentTo.*'));
-        // 「出荷先」のセレクトボックスが「支店店舗と同じ」が選択状態の場合
+    // 「出荷先」のセレクトボックスが「支店店舗と同じ」が選択状態の場合
     if($cond['m_shipment_to_name']=='支店店舗と同じ'){
         $q_str->join('MSection','MShipmentTo.ship_to_cd = MSection.std_ship_to_cd AND MShipmentTo.ship_to_brnch_cd = MSection.std_ship_to_brnch_cd');
 
     }
-    ChromePhp::LOG($q_str);
-    die();
     // 出荷先マスタ．出荷先コード　＝　部門マスタ．標準出荷先コード AND 出荷先マスタ．出荷先支店コード　＝　部門マスタ．標準出荷先支店コード
     $results = $q_str->execute();
 
+    foreach ($results as $result) {
+        $list['ship_to_cd'] = $result->ship_to_cd;
+        $list['ship_to_brnch_cd'] = $result->ship_to_brnch_cd;
+        $list['cust_to_brnch_name1'] = $result->cust_to_brnch_name1;
+        $list['cust_to_brnch_name2'] = $result->cust_to_brnch_name2;
+        $list['zip_no'] = $result->zip_no;
+        $list['address'] = $result->address1.$result->address2.$result->address3.$result->address4;
+        array_push($m_shipment_to_list,$list);
+    }
+    $json_list['change_m_shipment_to_list'] = $m_shipment_to_list;
+    echo json_encode($json_list);
+});
+
+/**
+ *  着用者のみ登録して終了
+ */
+$app->post('/input_insert', function ()use($app) {
+
+    $params = json_decode(file_get_contents("php://input"), true);
+    // アカウントセッション取得
+    $auth = $app->session->get("auth");
+    $cond = $params['cond'];
+    $query_list = array();
+    $list = array();
+    $json_list = array();
+    $m_shipment_to_list = array();
+    //--- 検索条件 ---//
+    // 契約マスタ．企業ID　＝　ログインしているアカウントの企業ID　AND
+    array_push($query_list,"corporate_id = '".$auth['corporate_id']."'");
+    // 契約マスタ．レンタル契約No.　＝　画面で選択されている契約No.
+    array_push($query_list,"rntl_cont_no = '".$cond['agreement_no']."'");
+
+    //sql文字列を' AND 'で結合
+    $query = implode(' AND ', $query_list);
+    //--- クエリー実行・取得 ---//
+    $mc_count = MContract::find(array(
+        'conditions' => $query
+	))->count();
+die();
     foreach ($results as $result) {
         $list['ship_to_cd'] = $result->ship_to_cd;
         $list['ship_to_brnch_cd'] = $result->ship_to_brnch_cd;
