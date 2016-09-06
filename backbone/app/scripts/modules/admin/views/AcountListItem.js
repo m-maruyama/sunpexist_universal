@@ -37,7 +37,7 @@ define([
 					var login_err_count = this.login_err_count;
 					if (login_err_count >= 5) {
 						return 'lock';
-					} else { 
+					} else {
 						return null;
 					}
 

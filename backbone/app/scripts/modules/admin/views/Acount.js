@@ -12,22 +12,22 @@ define([
 					behaviorClass: App.Admin.Behaviors.Alerts
 				}
 			},
-			regions: {
-				"page": ".page",
-				"acountModal": '.acount_modal',
-				"listTable": '.listTable'
-			},
 			ui: {
 				'modal': '#myModal',
 				'addBtn': '.add',
 				'message': '#message',
 				'updateBtn': 'button.update'
 			},
+			regions: {
+				"page": ".page",
+				"condition": ".condition",
+				"acountModal": '.acount_modal',
+				"listTable": '.listTable'
+			},
 			bindings: {
 			},
 			onRender: function() {
 				var that = this;
-
 			},
 			events: {
 				'click @ui.addBtn': function(e){
@@ -78,4 +78,5 @@ define([
 			},
 		});
 	});
+
 });

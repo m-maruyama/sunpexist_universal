@@ -1,13 +1,21 @@
-<td class='td_login_id'>{{user_id}}</td>
-<td class='td_user_name'>{{user_name}}</td>
-<td class='td_position_name'>{{position_name}}</td>
-<td class='td_user_type'>{{userType}}</td>
-<td class='td_lock'>{{#if lock}}
+<td>{{accnt_no}}</td>
+<td>{{corporate_id}}</td>
+<td>{{rntl_cont_no}}</td>
+<td>{{user_id}}</td>
+<td>{{user_name}}</td>
+<td>{{login_disp_name}}</td>
+<td>{{position_name}}</td>
+<td>{{userType}}</td>
+<td>{{#if lock}}
 	<a href="" class="btn btn-primary btn-large lock"><span class="glyphicon glyphicon-lock"></span></a>
 	{{/if}}</td><!-- lockの値によって鍵マークか空白かの表示分け <span class="glyphicon glyphicon-lock"> -->
-<td class='td_edit'>{{#if editDel}}
+<td>{{mail_address}}</td>
+<td>{{last_pass_word_upd_date}}</td>
+<td>{{#if editDel}}
 	<a href="" class="btn btn-primary btn-large edit"><span class="glyphicon glyphicon-pencil"></span></a>
 	{{/if}}</td>
+<td>1</td>
 <!-- <td class='td_edit'><button type="submit" class="btn btn-primary btn-large edit" data-toggle="modal" data-target="#acount_modal" value={{user_id}}><span class="glyphicon glyphicon-pencil"></span></td> -->
-<td class='td_delete'>{{#if editDel}}<a href="" class="btn btn-primary btn-large delete"><span class="glyphicon glyphicon-remove-circle"></span></a>
+
+<td>{{#if editDel}}<a href="" class="btn btn-primary btn-large delete"><span class="glyphicon glyphicon-remove-circle"></span></a>
 	{{/if}}</td>

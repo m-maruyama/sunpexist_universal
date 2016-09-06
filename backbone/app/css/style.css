@@ -74,6 +74,10 @@
   font-size: 14px;
 }
 
+.clear {
+  clear:both;
+}
+
 /* example specific styles */
 /* ----------------------- */
 

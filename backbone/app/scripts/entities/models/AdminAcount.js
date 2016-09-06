@@ -1,9 +1,10 @@
 define(["app"],function(App) {
 	'use strict';
+
 	App.module('Entities.Models', function(Models,App, Backbone, Marionette, $, _){
 		Models.AdminAcount = Backbone.Model.extend({
 			url: App.api.AC0010,
-			
+
 			getReq: function() {
 				var result = {
 					user_id : null,

@@ -2,6 +2,9 @@ define([
 	'app',
 	'./Abstract',
 	'../views/Acount',
+	//コンディション追加
+	'../views/AcountCondition',
+	'../views/AgreementNoCondition',
 	'../views/AcountListList',
 	'../views/AcountModal',
 	'../views/Pagination',
@@ -23,35 +26,63 @@ define([
 				var acountModel = null;
 				var acountListListCollection = new App.Entities.Collections.AdminAcountListList();
 				var AdminAcountModal = new App.Entities.Collections.AdminAcountModal();
-				
+
 				var acountModalView = new App.Admin.Views.AcountModal({
 					collection: AdminAcountModal
 				});
+
+
+
+				var agreementNoConditionView = new App.Admin.Views.AgreementNoCondition();
+
+
+
+
 				var acountListConditionModel = new App.Entities.Models.AdminAcountListCondition();
+				//コンディション追加
+				//console.log(acountListConditionModel.toJSON());
+				var acountConditionView = new App.Admin.Views.AcountCondition({
+					collection: acountListListCollection,
+					model:acountListConditionModel,//追加
+					pagerModel: pagerModel
+				});
+
 				var acountView = new App.Admin.Views.Acount({
 					model:acountListConditionModel
 				});
 				var acountListListView = new App.Admin.Views.AcountListList({
 					collection: acountListListCollection,
+					model:acountListConditionModel,//追加
 					pagerModel: pagerModel
 				});
 				var paginationView = new App.Admin.Views.Pagination({model: pagerModel});
 
-				var fetchList = function(pageNumber){
+				var fetchList = function(pageNumber,sortKey,order){
 					if(pageNumber){
 						pagerModel.set('page_number', pageNumber);
 					}
+					if(sortKey){
+						pagerModel.set('sort_key', sortKey);
+						pagerModel.set('order', order);
+					}
 					acountListListView.fetch(acountListConditionModel);
+					acountView.listTable.show(acountListListView);
 				};
 
 				this.listenTo(paginationView, 'selected', function(pageNumber){
 					fetchList(pageNumber);
 				});
-				
+
+				//検索ボタンを押したらfetchwを追加
+				this.listenTo(acountConditionView, 'click:search', function(){
+					fetchList();
+				});
+
+
 				this.listenTo(acountModalView, 'reload', function(){
 					fetchList();
 				});
-				
+
 				this.listenTo(acountView, 'updated', function(){
 					addFlag = false;
 					fetchList();
@@ -59,12 +90,12 @@ define([
 						collection: acountListListCollection
 					});
 				});
-				
+
 				this.listenTo(acountListListView, 'childview:click:a', function(view, model, display){
 					acountModalView.showMessage(model,display);
 				});
-				
-				
+
+
 				//遷移するときのアラート
 				var addFlag = false;
 
@@ -93,12 +124,15 @@ define([
 					// }
 					// acountListListView.fetch(acountListConditionModel);
 				// };
-				
+
 				App.main.show(acountView);
+				//コンディション追加
+				acountView.condition.show(acountConditionView);
+				acountConditionView.agreement_no.show(agreementNoConditionView);
 				acountView.page.show(paginationView);
 				acountView.listTable.show(acountListListView);
 				acountView.acountModal.show(acountModalView);
-				fetchList();
+				//fetchList(); 実行
 			}
 		});
 	});
