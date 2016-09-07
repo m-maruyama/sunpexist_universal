@@ -1,7 +1,7 @@
 define(["app"],function(App) {
 	'use strict';
 	App.module('Entities.Models', function(Models,App, Backbone, Marionette, $, _){
-		Models.AdminAcountModal = Backbone.Model.extend({
+		Models.AdminaccountModal = Backbone.Model.extend({
 			initialize: function() {
 				_.extend(this, Backbone.Validation.mixin);
 			},

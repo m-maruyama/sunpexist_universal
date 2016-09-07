@@ -1,13 +1,10 @@
-define([
-	"app",
-	"backbone.validation"
-],function(App) {
+define(["app"],function(App) {
 	'use strict';
+
 	App.module('Entities.Models', function(Models,App, Backbone, Marionette, $, _){
-		Models.AdminAcountListCondition = Backbone.Model.extend({
-			initialize: function() {
-				_.extend(this,Backbone.Validation.mixin);
-			},
+		Models.Adminaccount = Backbone.Model.extend({
+			url: App.api.AC0010,
+
 			getReq: function() {
 				var result = {
 					accnt_no : null,
@@ -24,6 +21,7 @@ define([
 					lock : null,
 					edit : null,
 					del : null
+
 				};
 				if(this.get('accnt_no')) {
 					result.accnt_no = this.get('accnt_no');

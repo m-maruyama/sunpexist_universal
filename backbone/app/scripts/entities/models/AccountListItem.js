@@ -1,7 +1,7 @@
 define(["app"],function(App) {
 	'use strict';
 	App.module('Entities.Models', function(Models,App, Backbone, Marionette, $, _){
-		Models.AdminAcountListItem = Backbone.Model.extend({
+		Models.accountListItem = Backbone.Model.extend({
 
 		});
 	});

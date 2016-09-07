@@ -2,13 +2,13 @@ define([
 	'app',
 	'handlebars',
 	'../Templates',
-	'./AcountListItem',
-	"entities/models/AcountAbstract"
+	'./accountListItem',
+	"entities/models/accountAbstract"
 ], function(App) {
 	'use strict';
 	App.module('Admin.Views', function(Views, App, Backbone, Marionette, $, _){
-		Views.AcountListItem = Marionette.ItemView.extend({
-			template: App.Admin.Templates.acountListItem,
+		Views.accountListItem = Marionette.ItemView.extend({
+			template: App.Admin.Templates.accountListItem,
 			tagName: "tr",
 			ui: {
 				"lockBtn": ".lock",

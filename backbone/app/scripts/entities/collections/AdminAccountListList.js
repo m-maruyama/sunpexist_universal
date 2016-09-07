@@ -1,11 +1,11 @@
 define([
 	"app",
-	"entities/models/AdminAcountListItem"
+	"entities/models/AdminaccountListItem"
 ],function(App) {
 	'use strict';
 	App.module('Entities.Collections', function(Collections, App, Backbone, Marionette, $, _){
-		Collections.AdminAcountListList = Backbone.Collection.extend({
-			model: App.Entities.Models.AdminAcountListItem,
+		Collections.AdminaccountListList = Backbone.Collection.extend({
+			model: App.Entities.Models.AdminaccountListItem,
 			url: App.api.AC0010,
 			parse:function(res, xhr){
 				if(res['redirect']=='1'){

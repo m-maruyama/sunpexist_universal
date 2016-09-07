@@ -5,8 +5,8 @@ define([
 ], function(App) {
 	'use strict';
 	App.module('Admin.Views', function(Views, App, Backbone, Marionette, $, _){
-		Views.Acount = Marionette.LayoutView.extend({
-			template: App.Admin.Templates.acount,
+		Views.account = Marionette.LayoutView.extend({
+			template: App.Admin.Templates.account,
 			behaviors: {
 				"Alerts": {
 					behaviorClass: App.Admin.Behaviors.Alerts
@@ -22,7 +22,7 @@ define([
 				"page": ".page",
 				"page_2": ".page_2",
 				"condition": ".condition",
-				"acountModal": '.acount_modal',
+				"accountModal": '.account_modal',
 				"listTable": '.listTable'
 			},
 			bindings: {
@@ -46,11 +46,11 @@ define([
 					// for(var i=0;i<this.collection.length;i++){
 						// m = this.collection.models[i];
 						// if (m.get('deleteFlag')) {
-							// if (m.get('acount_id')) {
-								// reqData.delete.push(m.get('acount_id'));
+							// if (m.get('account_id')) {
+								// reqData.delete.push(m.get('account_id'));
 							// }
 						// } else {
-							// if (!m.get('acount_id')) {
+							// if (!m.get('account_id')) {
 								// reqData.add.push(m.getReq());
 							// }
 						// }
