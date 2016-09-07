@@ -5,7 +5,7 @@ define([
 ], function(App) {
 	'use strict';
 	App.module('Admin.Views', function(Views, App, Backbone, Marionette, $, _){
-		Views.account = Marionette.LayoutView.extend({
+		Views.Account = Marionette.LayoutView.extend({
 			template: App.Admin.Templates.account,
 			behaviors: {
 				"Alerts": {

@@ -18,7 +18,7 @@ define([
 			'AdminStock': 'modules/admin/Stock',
 			'AdminLend': 'modules/admin/Lend',
 			'AdminReceive': 'modules/admin/Receive',
-			'Adminaccount': 'modules/admin/Account',
+			'AdminAccount': 'modules/admin/Account',
 			'AdminInfo': 'modules/admin/Info',
 			'AdminPassword': 'modules/admin/Password',
 			'AdminWearerInput': 'modules/admin/WearerInput',

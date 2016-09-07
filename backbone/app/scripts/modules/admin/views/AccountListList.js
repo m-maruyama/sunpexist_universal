@@ -7,7 +7,7 @@ define([
 	'use strict';
 	App.module('Admin.Views', function(Views, App, Backbone, Marionette, $, _){
 		Views.AccountListList = Marionette.CompositeView.extend({
-			template: App.Admin.Templates.AccountListList,
+			template: App.Admin.Templates.accountListList,
 			//emptyView: Backbone.Marionette.ItemView.extend({
       //          tagName: "tr",
 			//	template: App.Admin.Templates.lendEmpty,

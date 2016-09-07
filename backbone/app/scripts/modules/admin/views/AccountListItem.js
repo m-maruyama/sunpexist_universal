@@ -8,7 +8,7 @@ define([
 	'use strict';
 	App.module('Admin.Views', function(Views, App, Backbone, Marionette, $, _){
 		Views.AccountListItem = Marionette.ItemView.extend({
-			template: App.Admin.Templates.AccountListItem,
+			template: App.Admin.Templates.accountListItem,
 			tagName: "tr",
 			ui: {
 				"lockBtn": ".lock",

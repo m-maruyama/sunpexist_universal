@@ -11,7 +11,7 @@ define([
 	App.module('Admin.Views', function(Views, App, Backbone, Marionette, $, _){
 		var mode ='';
 		var search_flg ='';
-		Views.accountCondition = Marionette.LayoutView.extend({
+		Views.AccountCondition = Marionette.LayoutView.extend({
 			template: App.Admin.Templates.accountCondition,
 			behaviors: {
 				"Alerts": {
