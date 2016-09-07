@@ -2,7 +2,7 @@ define(["app"],function(App) {
 	'use strict';
 
 	App.module('Entities.Models', function(Models,App, Backbone, Marionette, $, _){
-		Models.Adminaccount = Backbone.Model.extend({
+		Models.AdminAccount = Backbone.Model.extend({
 			url: App.api.AC0010,
 
 			getReq: function() {

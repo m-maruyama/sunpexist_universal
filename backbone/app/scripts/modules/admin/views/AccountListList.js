@@ -2,17 +2,17 @@ define([
 	'app',
 	'../Templates',
 	'blockUI',
-	'./accountListItem'
+	'./AccountListItem'
 ], function(App) {
 	'use strict';
 	App.module('Admin.Views', function(Views, App, Backbone, Marionette, $, _){
-		Views.accountListList = Marionette.CompositeView.extend({
-			template: App.Admin.Templates.accountListList,
+		Views.AccountListList = Marionette.CompositeView.extend({
+			template: App.Admin.Templates.AccountListList,
 			//emptyView: Backbone.Marionette.ItemView.extend({
       //          tagName: "tr",
 			//	template: App.Admin.Templates.lendEmpty,
       //      }),
-			childView: Views.accountListItem,
+			childView: Views.AccountListItem,
 			childViewContainer: "tbody",
 			ui: {
 			},

@@ -7,7 +7,7 @@ define([
 ], function(App) {
 	'use strict';
 	App.module('Admin.Views', function(Views, App, Backbone, Marionette, $, _){
-		Views.accountModal = Marionette.ItemView.extend({
+		Views.AccountModal = Marionette.ItemView.extend({
 			template: App.Admin.Templates.accountModal,
 			behaviors: {
 				"Alerts": {
@@ -66,7 +66,7 @@ define([
 						this.triggerMethod('showAlerts', errors);
 						return;
 					}
-					
+
 					model.url = App.api.AC0020;
 					var cond = {
 						"scr": this.ui.display.text(),
@@ -96,9 +96,9 @@ define([
 							that.reset();
 							that.triggerMethod('reload');
 						}
-						
+
 					});
-					
+
 				}
 			},
 			reset: function(){
@@ -148,7 +148,7 @@ define([
 					this.ui.user_name.attr('readonly',true);
 					this.ui.position_name.attr('readonly',true);
 					this.ui.user_type.attr('readonly',true);
-				} else { 
+				} else {
 					var display_str = 'アカウント追加';
 					var button_str = '追加';
 				}

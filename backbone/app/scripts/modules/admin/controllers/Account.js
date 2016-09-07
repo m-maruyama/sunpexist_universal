@@ -1,35 +1,35 @@
 define([
 	'app',
 	'./Abstract',
-	'../views/account',
+	'../views/Account',
 	//コンディション追加
-	'../views/accountCondition',
+	'../views/AccountCondition',
 	'../views/CorporateIdCondition',
 	'../views/AgreementNoCondition',
-	'../views/accountListList',
-	'../views/accountModal',
+	'../views/AccountListList',
+	'../views/AccountModal',
 	'../views/Pagination',
 	"entities/models/Pager",
-	"entities/models/Adminaccount",
-	"entities/models/AdminaccountListCondition",
-	"entities/collections/AdminaccountListList",
-	"entities/collections/AdminaccountModal",
+	"entities/models/AdminAccount",
+	"entities/models/AdminAccountListCondition",
+	"entities/collections/AdminAccountListList",
+	"entities/collections/AdminAccountModal",
 	'bootstrap'
 ], function(App) {
 	'use strict';
 	App.module('Admin.Controllers', function(Controllers,App, Backbone, Marionette, $, _){
-		Controllers.account = App.Admin.Controllers.Abstract.extend({
+		Controllers.Account = App.Admin.Controllers.Abstract.extend({
 			_sync : function(){
 				var that = this;
 				this.setNav('account');
 				var pagerModel = new App.Entities.Models.Pager();
 
 				var accountModel = null;
-				var accountListListCollection = new App.Entities.Collections.AdminaccountListList();
-				var AdminaccountModal = new App.Entities.Collections.AdminaccountModal();
+				var accountListListCollection = new App.Entities.Collections.AdminAccountListList();
+				var AdminAccountModal = new App.Entities.Collections.AdminAccountModal();
 
-				var accountModalView = new App.Admin.Views.accountModal({
-					collection: AdminaccountModal
+				var accountModalView = new App.Admin.Views.AccountModal({
+					collection: AdminAccountModal
 				});
 
 				//追加
@@ -40,19 +40,19 @@ define([
 
 
 
-				var accountListConditionModel = new App.Entities.Models.AdminaccountListCondition();
+				var accountListConditionModel = new App.Entities.Models.AdminAccountListCondition();
 				//コンディション追加
 				console.log(accountListConditionModel.toJSON());
-				var accountConditionView = new App.Admin.Views.accountCondition({
+				var accountConditionView = new App.Admin.Views.AccountCondition({
 					collection: accountListListCollection,
 					model:accountListConditionModel,//追加
 					pagerModel: pagerModel
 				});
 
-				var accountView = new App.Admin.Views.account({
+				var accountView = new App.Admin.Views.Account({
 					model:accountListConditionModel
 				});
-				var accountListListView = new App.Admin.Views.accountListList({
+				var accountListListView = new App.Admin.Views.AccountListList({
 					collection: accountListListCollection,
 					model:accountListConditionModel,//追加
 					pagerModel: pagerModel
@@ -101,7 +101,7 @@ define([
 				this.listenTo(accountView, 'updated', function(){
 					addFlag = false;
 					fetchList();
-					accountView = new App.Admin.Views.account({
+					accountView = new App.Admin.Views.Account({
 						collection: accountListListCollection
 					});
 				});
@@ -152,5 +152,5 @@ define([
 			}
 		});
 	});
-	return App.Admin.Controllers.account;
+	return App.Admin.Controllers.Account;
 });

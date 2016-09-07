@@ -1,6 +1,6 @@
 define([
 	"app",
-	"./controllers/account"
+	"./controllers/Account"
 ], function(App) {
 	'use strict';
 
@@ -19,7 +19,7 @@ define([
 	App.module('Admin', function(Module, App, Backbone, Marionette, $, _){
 		Module.addInitializer(function(options){
 			var router = new App.Router({
-				controller: new App.Admin.Controllers.account()
+				controller: new App.Admin.Controllers.Account()
 			});
 		});
 
