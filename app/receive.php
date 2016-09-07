@@ -36,11 +36,11 @@ $app->post('/receive/search', function ()use($app){
 	}
 	//社員番号
 	if(!empty($cond['member_no'])){
-		array_push($query_list,"t_order.cster_emply_cd LIKE '".$cond['member_no']."%'");
+		array_push($query_list,"m_wearer_std.cster_emply_cd LIKE '".$cond['member_no']."%'");
 	}
 	//着用者名
 	if(!empty($cond['member_name'])){
-		array_push($query_list,"t_order.werer_name LIKE '%".$cond['member_name']."%'");
+		array_push($query_list,"m_wearer_std.werer_name LIKE '%".$cond['member_name']."%'");
 	}
 	//拠点
 	if(!empty($cond['section'])){
@@ -86,6 +86,8 @@ $app->post('/receive/search', function ()use($app){
 	if(!empty($cond['individual_number'])){
 		array_push($query_list,"t_delivery_goods_state_details.individual_ctrl_no LIKE '".$cond['individual_number']."%'");
 	}
+	// 着用者状況区分
+	array_push($query_list,"m_wearer_std.werer_sts_kbn = '1'");
 
 	$status_kbn_list = array();
 
@@ -298,8 +300,8 @@ $app->post('/receive/search', function ()use($app){
 	$arg_str .= "t_delivery_goods_state_details.individual_ctrl_no as as_individual_ctrl_no,";
 	$arg_str .= "t_order.order_req_no as as_order_req_no,";
 	$arg_str .= "t_order.order_req_line_no as as_order_req_line_no,";
-	$arg_str .= "t_order.cster_emply_cd as as_cster_emply_cd,";
-	$arg_str .= "t_order.werer_name as as_werer_name,";
+	$arg_str .= "m_wearer_std.cster_emply_cd as as_cster_emply_cd,";
+	$arg_str .= "m_wearer_std.werer_name as as_werer_name,";
 //	$arg_str .= "m_wearer_std.werer_name as as_werer_name,";
 	$arg_str .= "m_section.rntl_sect_name as as_rntl_sect_name,";
 	$arg_str .= "m_job_type.job_type_name as as_job_type_name,";
@@ -312,7 +314,7 @@ $app->post('/receive/search', function ()use($app){
 	$arg_str .= " (t_delivery_goods_state LEFT JOIN";
 	$arg_str .= " (t_order_state LEFT JOIN";
 	$arg_str .= " (t_order INNER JOIN m_section ON t_order.m_section_comb_hkey = m_section.m_section_comb_hkey";
-	$arg_str .= " INNER JOIN m_wearer_std ON t_order.m_wearer_std_comb_hkey = m_wearer_std.m_wearer_std_comb_hkey";
+	$arg_str .= " INNER JOIN m_wearer_std ON t_order.werer_cd = m_wearer_std.werer_cd";
 	$arg_str .= " INNER JOIN (m_job_type INNER JOIN m_input_item ON m_job_type.m_job_type_comb_hkey = m_input_item.m_job_type_comb_hkey)";
 	$arg_str .= " ON t_order.m_job_type_comb_hkey = m_job_type.m_job_type_comb_hkey)";
 	$arg_str .= " ON t_order_state.t_order_comb_hkey = t_order.t_order_comb_hkey)";

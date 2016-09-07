@@ -76,11 +76,11 @@ $app->post('/csv_download', function ()use($app){
 		}
 		//社員番号
 		if(!empty($cond['member_no'])){
-			array_push($query_list,"t_order.cster_emply_cd LIKE '".$cond['member_no']."%'");
+			array_push($query_list,"m_wearer_std.cster_emply_cd LIKE '".$cond['member_no']."%'");
 		}
 		//着用者名
 		if(!empty($cond['member_name'])){
-			array_push($query_list,"t_order.werer_name LIKE '%".$cond['member_name']."%'");
+			array_push($query_list,"m_wearer_std.werer_name LIKE '%".$cond['member_name']."%'");
 		}
 		//拠点
 		if(!empty($cond['section'])){
@@ -126,6 +126,8 @@ $app->post('/csv_download', function ()use($app){
 		if(!empty($cond['individual_number'])){
 			array_push($query_list,"t_delivery_goods_state_details.individual_ctrl_no LIKE '".$cond['individual_number']."%'");
 		}
+		// 着用者状況区分
+		array_push($query_list,"m_wearer_std.werer_sts_kbn = '1'");
 
 		$status_kbn_list = array();
 
@@ -164,7 +166,7 @@ $app->post('/csv_download', function ()use($app){
 		}
 		if(!empty($order_kbn)){
 			$order_kbn_str = implode("','",$order_kbn);
-			$order_kbn_query = "order_sts_kbn IN ('".$order_kbn_str."')";
+			$order_kbn_query = "t_order.order_sts_kbn IN ('".$order_kbn_str."')";
 	//		array_push($query_list,"order_sts_kbn IN ('".$order_kbn_str."')");
 			array_push($status_kbn_list,$order_kbn_query);
 		}
@@ -232,7 +234,7 @@ $app->post('/csv_download', function ()use($app){
 		}
 		if(!empty($reason_kbn)){
 			$reason_kbn_str = implode("','",$reason_kbn);
-			$reason_kbn_query = "order_sts_kbn IN ('".$reason_kbn_str."')";
+			$reason_kbn_query = "t_order.order_reason_kbn IN ('".$reason_kbn_str."')";
 	//		array_push($query_list,"order_reason_kbn IN ('".$reason_kbn_str."')");
 			array_push($status_kbn_list,$reason_kbn_query);
 		}
@@ -320,8 +322,8 @@ $app->post('/csv_download', function ()use($app){
 		$arg_str .= "t_order.order_reason_kbn as as_order_reason_kbn,";
 		$arg_str .= "m_section.rntl_sect_name as as_rntl_sect_name,";
 		$arg_str .= "m_job_type.job_type_name as as_job_type_name,";
-		$arg_str .= "t_order.cster_emply_cd as as_cster_emply_cd,";
-		$arg_str .= "t_order.werer_name as as_werer_name,";
+		$arg_str .= "m_wearer_std.cster_emply_cd as as_cster_emply_cd,";
+		$arg_str .= "m_wearer_std.werer_name as as_werer_name,";
 		$arg_str .= "t_order.item_cd as as_item_cd,";
 		$arg_str .= "t_order.color_cd as as_color_cd,";
 		$arg_str .= "t_order.size_cd as as_size_cd,";
@@ -345,6 +347,8 @@ $app->post('/csv_download', function ()use($app){
 		$arg_str .= " ON t_order.m_section_comb_hkey = m_section.m_section_comb_hkey";
 		$arg_str .= " INNER JOIN (m_job_type INNER JOIN m_input_item ON m_job_type.m_job_type_comb_hkey = m_input_item.m_job_type_comb_hkey)";
 		$arg_str .= " ON t_order.m_job_type_comb_hkey = m_job_type.m_job_type_comb_hkey";
+		$arg_str .= " INNER JOIN m_wearer_std";
+		$arg_str .= " ON t_order.werer_cd = m_wearer_std.werer_cd";
 		$arg_str .= " INNER JOIN m_contract";
 		$arg_str .= " ON t_order.rntl_cont_no = m_contract.rntl_cont_no";
 		$arg_str .= " WHERE ";
@@ -646,11 +650,11 @@ $app->post('/csv_download', function ()use($app){
 		}
 		//社員番号
 		if(!empty($cond['member_no'])){
-			array_push($query_list,"t_returned_plan_info.cster_emply_cd LIKE '".$cond['member_no']."%'");
+			array_push($query_list,"m_wearer_std.cster_emply_cd LIKE '".$cond['member_no']."%'");
 		}
 		//着用者名
 		if(!empty($cond['member_name'])){
-			array_push($query_list,"t_order.werer_name LIKE '%".$cond['member_name']."%'");
+			array_push($query_list,"m_wearer_std.werer_name LIKE '%".$cond['member_name']."%'");
 		}
 		//拠点
 		if(!empty($cond['section'])){
@@ -696,6 +700,8 @@ $app->post('/csv_download', function ()use($app){
 		if(!empty($cond['individual_number'])){
 			array_push($query_list,"t_returned_plan_info.individual_ctrl_no LIKE '".$cond['individual_number']."%'");
 		}
+		// 着用者状況区分(稼働)
+		array_push($query_list,"m_wearer_std.werer_sts_kbn = '1'");
 
 		$status_kbn_list = array();
 
@@ -869,8 +875,8 @@ $app->post('/csv_download', function ()use($app){
 		$arg_str .= "t_order.order_reason_kbn as as_order_reason_kbn,";
 		$arg_str .= "m_section.rntl_sect_name as as_rntl_sect_name,";
 		$arg_str .= "m_job_type.job_type_name as as_job_type_name,";
-		$arg_str .= "t_returned_plan_info.cster_emply_cd as as_cster_emply_cd,";
-		$arg_str .= "t_order.werer_name as as_werer_name,";
+		$arg_str .= "m_wearer_std.cster_emply_cd as as_cster_emply_cd,";
+		$arg_str .= "m_wearer_std.werer_name as as_werer_name,";
 		$arg_str .= "t_returned_plan_info.item_cd as as_item_cd,";
 		$arg_str .= "t_returned_plan_info.color_cd as as_color_cd,";
 		$arg_str .= "t_returned_plan_info.size_cd as as_size_cd,";
@@ -900,6 +906,8 @@ $app->post('/csv_download', function ()use($app){
 		$arg_str .= " ON t_order.m_section_comb_hkey = m_section.m_section_comb_hkey";
 		$arg_str .= " INNER JOIN (m_job_type INNER JOIN m_input_item ON m_job_type.m_job_type_comb_hkey = m_input_item.m_job_type_comb_hkey)";
 		$arg_str .= " ON t_order.m_job_type_comb_hkey = m_job_type.m_job_type_comb_hkey";
+		$arg_str .= " INNER JOIN m_wearer_std";
+		$arg_str .= " ON t_order.werer_cd = m_wearer_std.werer_cd";
 		$arg_str .= " INNER JOIN m_contract";
 		$arg_str .= " ON t_order.rntl_cont_no = m_contract.rntl_cont_no";
 		$arg_str .= " WHERE ";
@@ -1224,11 +1232,11 @@ $app->post('/csv_download', function ()use($app){
 		}
 		//社員番号
 		if(!empty($cond['member_no'])){
-			array_push($query_list,"t_order.cster_emply_cd LIKE '".$cond['member_no']."%'");
+			array_push($query_list,"m_wearer_std.cster_emply_cd LIKE '".$cond['member_no']."%'");
 		}
 		//着用者名
 		if(!empty($cond['member_name'])){
-			array_push($query_list,"t_order.werer_name LIKE '%".$cond['member_name']."%'");
+			array_push($query_list,"m_wearer_std.werer_name LIKE '%".$cond['member_name']."%'");
 		}
 		//拠点
 		if(!empty($cond['section'])){
@@ -1274,6 +1282,8 @@ $app->post('/csv_download', function ()use($app){
 		if(!empty($cond['individual_number'])){
 			array_push($query_list,"t_delivery_goods_state_details.individual_ctrl_no LIKE '".$cond['individual_number']."%'");
 		}
+		// 着用者状況区分(稼働)
+		array_push($query_list,"m_wearer_std.werer_sts_kbn = '1'");
 
 		$status_kbn_list = array();
 
@@ -1486,9 +1496,8 @@ $app->post('/csv_download', function ()use($app){
 		$arg_str .= "t_delivery_goods_state_details.individual_ctrl_no as as_individual_ctrl_no,";
 		$arg_str .= "t_order.order_req_no as as_order_req_no,";
 		$arg_str .= "t_order.order_req_line_no as as_order_req_line_no,";
-		$arg_str .= "t_order.cster_emply_cd as as_cster_emply_cd,";
-		$arg_str .= "t_order.werer_name as as_werer_name,";
-	//	$arg_str .= "m_wearer_std.werer_name as as_werer_name,";
+		$arg_str .= "m_wearer_std.cster_emply_cd as as_cster_emply_cd,";
+		$arg_str .= "m_wearer_std.werer_name as as_werer_name,";
 		$arg_str .= "m_section.rntl_sect_name as as_rntl_sect_name,";
 		$arg_str .= "m_job_type.job_type_name as as_job_type_name,";
 		$arg_str .= "t_order.order_sts_kbn as as_order_sts_kbn,";
@@ -1500,7 +1509,7 @@ $app->post('/csv_download', function ()use($app){
 		$arg_str .= " (t_delivery_goods_state LEFT JOIN";
 		$arg_str .= " (t_order_state LEFT JOIN";
 		$arg_str .= " (t_order INNER JOIN m_section ON t_order.m_section_comb_hkey = m_section.m_section_comb_hkey";
-		$arg_str .= " INNER JOIN m_wearer_std ON t_order.m_wearer_std_comb_hkey = m_wearer_std.m_wearer_std_comb_hkey";
+		$arg_str .= " INNER JOIN m_wearer_std ON t_order.werer_cd = m_wearer_std.werer_cd";
 		$arg_str .= " INNER JOIN (m_job_type INNER JOIN m_input_item ON m_job_type.m_job_type_comb_hkey = m_input_item.m_job_type_comb_hkey)";
 		$arg_str .= " ON t_order.m_job_type_comb_hkey = m_job_type.m_job_type_comb_hkey)";
 		$arg_str .= " ON t_order_state.t_order_comb_hkey = t_order.t_order_comb_hkey)";
@@ -1865,6 +1874,8 @@ $app->post('/csv_download', function ()use($app){
 		if(!empty($cond['individual_number'])){
 			array_push($query_list,"t_delivery_goods_state_details.individual_ctrl_no LIKE '".$cond['individual_number']."%'");
 		}
+		// 着用者状況区分(稼働)
+		array_push($query_list,"m_wearer_std.werer_sts_kbn = '1'");
 
 		//sql文字列を' AND 'で結合
 		$query = implode(' AND ', $query_list);

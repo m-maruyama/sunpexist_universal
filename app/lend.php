@@ -58,6 +58,8 @@ $app->post('/lend/search', function ()use($app){
 	if(!empty($cond['individual_number'])){
 		array_push($query_list,"t_delivery_goods_state_details.individual_ctrl_no LIKE '".$cond['individual_number']."%'");
 	}
+	// 着用者状況区分
+	array_push($query_list,"m_wearer_std.werer_sts_kbn = '1'");
 
 	//sql文字列を' AND 'で結合
 	$query = implode(' AND ', $query_list);

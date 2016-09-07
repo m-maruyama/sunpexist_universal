@@ -36,11 +36,11 @@ $app->post('/unreturn/search', function ()use($app){
 	}
 	//社員番号
 	if(!empty($cond['member_no'])){
-		array_push($query_list,"t_returned_plan_info.cster_emply_cd LIKE '".$cond['member_no']."%'");
+		array_push($query_list,"m_wearer_std.cster_emply_cd LIKE '".$cond['member_no']."%'");
 	}
 	//着用者名
 	if(!empty($cond['member_name'])){
-		array_push($query_list,"t_order.werer_name LIKE '%".$cond['member_name']."%'");
+		array_push($query_list,"m_wearer_std.werer_name LIKE '%".$cond['member_name']."%'");
 	}
 	//拠点
 	if(!empty($cond['section'])){
@@ -86,6 +86,8 @@ $app->post('/unreturn/search', function ()use($app){
 	if(!empty($cond['individual_number'])){
 		array_push($query_list,"t_returned_plan_info.individual_ctrl_no LIKE '".$cond['individual_number']."%'");
 	}
+	// 着用者状況区分
+	array_push($query_list,"m_wearer_std.werer_sts_kbn = '1'");
 
 	$status_kbn_list = array();
 
@@ -257,8 +259,8 @@ $app->post('/unreturn/search', function ()use($app){
 	$arg_str .= "t_order.order_reason_kbn as as_order_reason_kbn,";
 	$arg_str .= "m_section.rntl_sect_name as as_rntl_sect_name,";
 	$arg_str .= "m_job_type.job_type_name as as_job_type_name,";
-	$arg_str .= "t_returned_plan_info.cster_emply_cd as as_cster_emply_cd,";
-	$arg_str .= "t_order.werer_name as as_werer_name,";
+	$arg_str .= "m_wearer_std.cster_emply_cd as as_cster_emply_cd,";
+	$arg_str .= "m_wearer_std.werer_name as as_werer_name,";
 	$arg_str .= "t_returned_plan_info.item_cd as as_item_cd,";
 	$arg_str .= "t_returned_plan_info.color_cd as as_color_cd,";
 	$arg_str .= "t_returned_plan_info.size_cd as as_size_cd,";
@@ -288,6 +290,8 @@ $app->post('/unreturn/search', function ()use($app){
 	$arg_str .= " ON t_order.m_section_comb_hkey = m_section.m_section_comb_hkey";
 	$arg_str .= " INNER JOIN (m_job_type INNER JOIN m_input_item ON m_job_type.m_job_type_comb_hkey = m_input_item.m_job_type_comb_hkey)";
 	$arg_str .= " ON t_order.m_job_type_comb_hkey = m_job_type.m_job_type_comb_hkey";
+	$arg_str .= " INNER JOIN m_wearer_std";
+	$arg_str .= " ON t_order.werer_cd = m_wearer_std.werer_cd";
 	$arg_str .= " INNER JOIN m_contract";
 	$arg_str .= " ON t_order.rntl_cont_no = m_contract.rntl_cont_no";
 	$arg_str .= " WHERE ";
