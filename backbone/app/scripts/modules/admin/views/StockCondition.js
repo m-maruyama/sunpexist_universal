@@ -49,29 +49,6 @@ define([
 				var that = this;
 			},
 			events: {
-				'click @ui.reset': function(){
-					// 検索項目リセット
-					var agreement_no = $("select[name='agreement_no']").val();
-
-					// 貸与パターンセレクト
-					var jobTypeZaikoConditionView = new App.Admin.Views.JobTypeZaikoCondition({
-						agreement_no:agreement_no,
-					});
-					jobTypeZaikoConditionView.onShow();
-					this.job_type_zaiko.show(jobTypeZaikoConditionView);
-					// 商品セレクト
-					var itemZaikoConditionView = new App.Admin.Views.ItemZaikoCondition({
-						agreement_no:agreement_no,
-					});
-					itemZaikoConditionView.onShow();
-					this.item.show(itemZaikoConditionView);
-					// 色セレクト
-					var itemColorZaikoConditionView = new App.Admin.Views.ItemColorZaikoCondition({
-						agreement_no:agreement_no,
-					});
-					itemColorZaikoConditionView.onShow();
-					this.item_color.show(itemColorZaikoConditionView);
-				},
 				'click @ui.search': function(e){
 					e.preventDefault();
 					this.triggerMethod('hideAlerts');
@@ -98,6 +75,9 @@ define([
 
 					// 検索セレクトボックス連動--ここから
 					var agreement_no = $("select[name='agreement_no']").val();
+					var job_type_zaiko = '';
+					var item = '';
+
 					// 貸与パターンセレクト
 					var jobTypeZaikoConditionView = new App.Admin.Views.JobTypeZaikoCondition({
 						agreement_no:agreement_no,
@@ -107,12 +87,15 @@ define([
 					// 商品セレクト
 					var itemZaikoConditionView = new App.Admin.Views.ItemZaikoCondition({
 						agreement_no:agreement_no,
+						job_type_zaiko:job_type_zaiko,
 					});
 					itemZaikoConditionView.onShow();
 					this.item.show(itemZaikoConditionView);
 					// 色セレクト
 					var itemColorZaikoConditionView = new App.Admin.Views.ItemColorZaikoCondition({
 						agreement_no:agreement_no,
+						job_type_zaiko:job_type_zaiko,
+						item:item,
 					});
 					itemColorZaikoConditionView.onShow();
 					this.item_color.show(itemColorZaikoConditionView);
@@ -124,6 +107,8 @@ define([
 					// 検索セレクトボックス連動--ここから
 					var agreement_no = $("select[name='agreement_no']").val();
 					var job_type_zaiko = $("select[name='job_type_zaiko']").val();
+					var item = '';
+
 					// 商品セレクト
 					var itemZaikoConditionView = new App.Admin.Views.ItemZaikoCondition({
 						agreement_no:agreement_no,
@@ -135,6 +120,7 @@ define([
 					var itemColorZaikoConditionView = new App.Admin.Views.ItemColorZaikoCondition({
 						agreement_no:agreement_no,
 						job_type_zaiko:job_type_zaiko,
+						item:item,
 					});
 					itemColorZaikoConditionView.onShow();
 					this.item_color.show(itemColorZaikoConditionView);
@@ -147,6 +133,7 @@ define([
 					var agreement_no = $("select[name='agreement_no']").val();
 					var job_type_zaiko = $("select[name='job_type_zaiko']").val();
 					var item = $("select[name='item']").val();
+
 					// 色セレクト
 					var itemColorZaikoConditionView = new App.Admin.Views.ItemColorZaikoCondition({
 						agreement_no:agreement_no,
@@ -159,6 +146,34 @@ define([
 				},
 				'change @ui.item_color': function(){
 					this.ui.item_color = $('#item_color');
+				},
+				'click @ui.reset': function(){
+					// 検索項目リセット
+					var agreement_no = $("select[name='agreement_no']").val();
+					var job_type_zaiko = '';
+					var item = '';
+
+					// 貸与パターンセレクト
+					var jobTypeZaikoConditionView = new App.Admin.Views.JobTypeZaikoCondition({
+						agreement_no:agreement_no,
+					});
+					jobTypeZaikoConditionView.onShow();
+					this.job_type_zaiko.show(jobTypeZaikoConditionView);
+					// 商品セレクト
+					var itemZaikoConditionView = new App.Admin.Views.ItemZaikoCondition({
+						agreement_no:agreement_no,
+						job_type_zaiko:job_type_zaiko,
+					});
+					itemZaikoConditionView.onShow();
+					this.item.show(itemZaikoConditionView);
+					// 色セレクト
+					var itemColorZaikoConditionView = new App.Admin.Views.ItemColorZaikoCondition({
+						agreement_no:agreement_no,
+						job_type_zaiko:job_type_zaiko,
+						item:item,
+					});
+					itemColorZaikoConditionView.onShow();
+					this.item_color.show(itemColorZaikoConditionView);
 				},
 /*
 				'click @ui.download': function(e){

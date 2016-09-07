@@ -31,6 +31,7 @@ define([
 					"scr": '貸与パターン',
 					"agreement_no": agreement_no,
 				};
+
 				modelForUpdate.fetchMx({
 					data:cond,
 					success:function(res){

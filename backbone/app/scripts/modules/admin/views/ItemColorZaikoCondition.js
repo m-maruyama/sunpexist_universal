@@ -37,19 +37,20 @@ define([
 					"job_type_zaiko": job_type_zaiko,
 					"item": item,
 				};
-					modelForUpdate.fetchMx({
-						data:cond,
-						success:function(res){
-							var errors = res.get('errors');
-							if(errors) {
-								var errorMessages = errors.map(function(v){
-									return v.error_message;
-								});
-								that.triggerMethod('showAlerts', errorMessages);
-							}
-							that.render();
+
+				modelForUpdate.fetchMx({
+					data:cond,
+					success:function(res){
+						var errors = res.get('errors');
+						if(errors) {
+							var errorMessages = errors.map(function(v){
+								return v.error_message;
+							});
+							that.triggerMethod('showAlerts', errorMessages);
 						}
-					});
+						that.render();
+					}
+				});
 			},
 			events: {
 			}

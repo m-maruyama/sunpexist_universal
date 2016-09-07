@@ -30,26 +30,27 @@ define([
 				var that = this;
 
 				var modelForUpdate = this.model;
-					modelForUpdate.url = App.api.CM0080;
+				modelForUpdate.url = App.api.CM0080;
 				var cond = {
 					"scr": '色',
 					"agreement_no": agreement_no,
 					"job_type": job_type,
 					"input_item": input_item,
 				};
-					modelForUpdate.fetchMx({
-						data:cond,
-						success:function(res){
-							var errors = res.get('errors');
-							if(errors) {
-								var errorMessages = errors.map(function(v){
-									return v.error_message;
-								});
-								that.triggerMethod('showAlerts', errorMessages);
-							}
-							that.render();
+
+				modelForUpdate.fetchMx({
+					data:cond,
+					success:function(res){
+						var errors = res.get('errors');
+						if(errors) {
+							var errorMessages = errors.map(function(v){
+								return v.error_message;
+							});
+							that.triggerMethod('showAlerts', errorMessages);
 						}
-					});
+						that.render();
+					}
+				});
 			},
 			events: {
 			}

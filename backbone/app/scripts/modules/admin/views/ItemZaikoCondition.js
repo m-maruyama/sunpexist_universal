@@ -28,25 +28,26 @@ define([
 				var that = this;
 
 				var modelForUpdate = this.model;
-					modelForUpdate.url = App.api.CM0051;
+				modelForUpdate.url = App.api.CM0051;
 				var cond = {
-					"scr": '商品',
+					"scr": '在庫商品',
 					"agreement_no": agreement_no,
 					"job_type_zaiko": job_type_zaiko,
 				};
-					modelForUpdate.fetchMx({
-						data:cond,
-						success:function(res){
-							var errors = res.get('errors');
-							if(errors) {
-								var errorMessages = errors.map(function(v){
-									return v.error_message;
-								});
-								that.triggerMethod('showAlerts', errorMessages);
-							}
-							that.render();
+
+				modelForUpdate.fetchMx({
+					data:cond,
+					success:function(res){
+						var errors = res.get('errors');
+						if(errors) {
+							var errorMessages = errors.map(function(v){
+								return v.error_message;
+							});
+							that.triggerMethod('showAlerts', errorMessages);
 						}
-					});
+						that.render();
+					}
+				});
 			},
 			events: {
 			}

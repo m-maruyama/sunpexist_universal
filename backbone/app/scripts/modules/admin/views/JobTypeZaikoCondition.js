@@ -26,24 +26,24 @@ define([
 				var that = this;
 
 				var modelForUpdate = this.model;
-					modelForUpdate.url = App.api.CM0050;
+				modelForUpdate.url = App.api.CM0050;
 				var cond = {
 					"scr": '在庫照会専用貸与パターン',
 					"agreement_no": agreement_no,
 				};
-					modelForUpdate.fetchMx({
-						data:cond,
-						success:function(res){
-							var errors = res.get('errors');
-							if(errors) {
-								var errorMessages = errors.map(function(v){
-									return v.error_message;
-								});
-								that.triggerMethod('showAlerts', errorMessages);
-							}
-							that.render();
+				modelForUpdate.fetchMx({
+					data:cond,
+					success:function(res){
+						var errors = res.get('errors');
+						if(errors) {
+							var errorMessages = errors.map(function(v){
+								return v.error_message;
+							});
+							that.triggerMethod('showAlerts', errorMessages);
 						}
-					});
+						that.render();
+					}
+				});
 			},
 			events: {
 			}
