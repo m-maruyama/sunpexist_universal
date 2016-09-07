@@ -11,8 +11,8 @@ define([
 	App.module('Admin.Views', function(Views, App, Backbone, Marionette, $, _){
 		var mode ='';
 		var search_flg ='';
-		Views.AcountCondition = Marionette.LayoutView.extend({
-			template: App.Admin.Templates.acountCondition,
+		Views.accountCondition = Marionette.LayoutView.extend({
+			template: App.Admin.Templates.accountCondition,
 			behaviors: {
 				"Alerts": {
 					behaviorClass: App.Admin.Behaviors.Alerts
@@ -64,7 +64,7 @@ define([
 						return;
 					}
 					search_flg = 'on';
-					this.triggerMethod('click:search',this.model.get('sort_key'),this.model.get('acount'));
+					this.triggerMethod('click:search',this.model.get('sort_key'),this.model.get('account'));
 				},
 /*
 			'click @ui.download': function(e){

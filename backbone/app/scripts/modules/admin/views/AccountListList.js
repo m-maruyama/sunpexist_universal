@@ -2,17 +2,17 @@ define([
 	'app',
 	'../Templates',
 	'blockUI',
-	'./AcountListItem'
+	'./accountListItem'
 ], function(App) {
 	'use strict';
 	App.module('Admin.Views', function(Views, App, Backbone, Marionette, $, _){
-		Views.AcountListList = Marionette.CompositeView.extend({
-			template: App.Admin.Templates.acountListList,
+		Views.accountListList = Marionette.CompositeView.extend({
+			template: App.Admin.Templates.accountListList,
 			//emptyView: Backbone.Marionette.ItemView.extend({
       //          tagName: "tr",
 			//	template: App.Admin.Templates.lendEmpty,
       //      }),
-			childView: Views.AcountListItem,
+			childView: Views.accountListItem,
 			childViewContainer: "tbody",
 			ui: {
 			},
@@ -44,11 +44,11 @@ define([
 					this.triggerMethod('sort', e.target.id,order);
 				}
 			},
-			fetch:function(acountListConditionModel){
+			fetch:function(accountListConditionModel){
 				var cond = {
 					"scr": 'アカウント管理',
 					"page":this.options.pagerModel.getPageRequest(),
-					"cond": acountListConditionModel.getReq()
+					"cond": accountListConditionModel.getReq()
 				};
 				var that = this;
 				$.blockUI({ message: '<p><img src="ajax-loader.gif" style="margin: 0 auto;" /> 読み込み中...</p>' });

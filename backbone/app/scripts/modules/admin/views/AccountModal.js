@@ -7,8 +7,8 @@ define([
 ], function(App) {
 	'use strict';
 	App.module('Admin.Views', function(Views, App, Backbone, Marionette, $, _){
-		Views.AcountModal = Marionette.ItemView.extend({
-			template: App.Admin.Templates.acountModal,
+		Views.accountModal = Marionette.ItemView.extend({
+			template: App.Admin.Templates.accountModal,
 			behaviors: {
 				"Alerts": {
 					behaviorClass: App.Admin.Behaviors.Alerts
@@ -17,7 +17,7 @@ define([
 			ui: {
 				'display': '.display',
 				'pass': '.pass',
-				'modal': '#acount_modal',
+				'modal': '#account_modal',
 				'upBtn': '.update',
 				'close': '.close',
 				'cancel': '.cancel',

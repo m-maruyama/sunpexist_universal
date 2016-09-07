@@ -9,7 +9,7 @@ use Phalcon\Mvc\Model\Query;
 /**
  * アカウント検索
  */
-$app->post('/acount/search', function ()use($app) {
+$app->post('/account/search', function ()use($app) {
 
     $params = json_decode(file_get_contents("php://input"), true);
     //ChromePhp::log($params);
@@ -156,8 +156,8 @@ $app->post('/acount/search', function ()use($app) {
     $mail_address = $cond['mail_address'];
 
 
-    //$acount = MAccount::find();
-    //ChromePhp::log(count($acount));カウント
+    //$account = MAccount::find();
+    //ChromePhp::log(count($account));カウント
     //count($robots);
     //$conditions = "name = :name: AND type = :type:";
     //全検索
@@ -210,7 +210,7 @@ $app->post('/acount/search', function ()use($app) {
 /**
  * アカウントモーダル機能
  */
-$app->post('/acount/modal', function ()use($app) {
+$app->post('/account/modal', function ()use($app) {
 
     $params = json_decode(file_get_contents("php://input"), true);
 
@@ -243,7 +243,7 @@ $app->post('/acount/modal', function ()use($app) {
         //ロック解除の場合
         $ac[0]->login_err_count = 0;
         if ($ac[0]->save() == false) {
-            $error_list['acount'] = 'アカウントロックの解除に失敗しました。';
+            $error_list['account'] = 'アカウントロックの解除に失敗しました。';
             $json_list['errors'] = $error_list;
             echo json_encode($json_list);
             return true;
