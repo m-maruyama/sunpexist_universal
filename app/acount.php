@@ -26,7 +26,6 @@ $app->post('/acount/search', function ()use($app) {
     $cond = $params['cond'];
     $page = $params['page'];
     $query_list = array();//追加
-    ChromePhp::log($page);
     //---検索条件---//
     //企業ID
   	//array_push($query_list,"m_account.corporate_id = '".$auth['corporate_id']."'");
@@ -112,7 +111,7 @@ $app->post('/acount/search', function ()use($app) {
   	} else {
   		//指定がなければ社員番号
   		$sort_key = "accnt_no";
-  		$order = 'ASC';
+  		$order = 'asc';
   	}
     ChromePhp::log($sort_key);
     ChromePhp::log($order);
@@ -168,6 +167,7 @@ $app->post('/acount/search', function ()use($app) {
         //'conditions'  => "'$user_name_val%"
     ));
 
+    ChromePhp::log($results);
 
 
 
@@ -180,6 +180,7 @@ $app->post('/acount/search', function ()use($app) {
     foreach ($results as $result) {
         $list['accnt_no'] = $result->accnt_no;//アカウントno
         $list['corporate_id'] = $result->corporate_id;//コーポレートid
+        //$list['rntl_cntl_no'] = $result->rntl_cntl_no;//コーポレートid
         //$list['agreement_no'] = $result->agreement_no;//契約id
         $list['user_id'] = $result->user_id;
         $list['user_name'] = $result->user_name;//ユーザー名称
