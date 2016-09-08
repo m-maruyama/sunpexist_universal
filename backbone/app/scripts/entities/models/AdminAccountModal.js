@@ -14,6 +14,7 @@ define(["app"],function(App) {
 				user_type: null,
 				mail_address: null,
 				password: null,
+				password_confirm: null,
 				deleteFlag: false
 			},
 			getReq: function(){
@@ -25,8 +26,10 @@ define(["app"],function(App) {
 					position_name: this.get('position_name'),
 					mail_address: this.get('mail_address'),
 					user_type: this.get('user_type'),
-					password: this.get('password')
+					password: this.get('password'),
+					password_confirm: this.get('password_confirm')
 				};
+				//console.log(password);
 			},
 			validation:  {
 				"user_id": [
@@ -35,22 +38,18 @@ define(["app"],function(App) {
 						msg: "ログインIDを入力して下さい。"
 					}
 				],
-				//"corporate_id": [
-				//	{
-				//		required:true,
-				//		msg: "企業IDを入力して下さい。"
-				//	}
-				//],
-				// "password": [
-					// {
-						// required:true,
-						// msg: "パスワードを入力して下さい。"
-					// },
-					// {
-						// rangeLength: [8, 9999],
-						// msg: "パスワードは8文字以上で入力して下さい。"
-					// }
-				// ],
+				"user_name": [
+					{
+						required:true,
+						msg: "ユーザー名称を入力して下さい。"
+					}
+				],
+				"login_disp_name": [
+					{
+						required:true,
+						msg: "ログイン表示名を入力して下さい。"
+					}
+				],
 				"user_name": [
 					{
 						required:true,
@@ -61,15 +60,34 @@ define(["app"],function(App) {
 					{
 						required:true,
 						msg: "所属を入力して下さい。"
-					},
-				],
-				"user_type": [
-					{
-						required:true,
-						msg: "管理権限を入力して下さい。"
 					}
 				],
+				"mail_address": [
+					{
+						required:true,
+						msg: "メールアドレスを入力して下さい。"
+					}
+				],
+				"password": [
+					 {
+						 required:true,
+						 msg: "パスワードを入力して下さい。"
+					},
+				],
+					// {
+						// rangeLength: [8, 9999],
+						// msg: "パスワードは8文字以上で入力して下さい。"
+					// }
+				// ],
+
+				"password_confirm": [
+					{
+			      equalTo: 'password',
+						 msg: "パスワード確認がパスワードと一致していません。"
+			     }
+				]
 			},
+
 			// reset: function(){
 				// this.set('oldpassword', null);
 				// this.set('newpassword', null);

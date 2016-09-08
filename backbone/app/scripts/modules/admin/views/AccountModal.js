@@ -34,6 +34,7 @@ define([
 				'mail_address': '#mail_address',
 				'user_type': '#user_type',
 				'password': '#password',
+				'password_confirm': '#password_confirm',
 				'display_type': '#display_type',
 				'datetimepicker': '.datetimepicker',
 			},
@@ -73,6 +74,13 @@ define([
 					model.set('user_type', this.ui.user_type.val());
 					model.set('mail_address', this.ui.mail_address.val());
 					model.set('password', this.ui.password.val());
+					model.set('password_confirm', this.ui.password_confirm.val());
+					//if(this.ui.password.val() == this.ui.password_confirm.val()){
+					//	console.log('same');
+					//}else{
+					//	console.log('diffrent');
+					//}
+
 					var that = this;
 					var errors = model.validate();
 					if (errors){

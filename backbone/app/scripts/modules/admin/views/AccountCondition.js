@@ -50,7 +50,7 @@ define([
 					this.triggerMethod('hideAlerts');
 					var corporate_id = $("select[name='corporate_id']").val();
 					var agreement_no = $("select[name='agreement_no']").val();
-				
+
 					this.model.set('corporate_id', corporate_id);
 					this.model.set('agreement_no', agreement_no);
 					this.model.set('user_id', this.ui.user_id.val());
@@ -96,9 +96,9 @@ define([
 				'change @ui.corporate_id': function(){
 					this.ui.corporate_id = $('#corporate_id');
 				},
-				'change @ui.agreement_no': function(){
-					this.ui.agreement_no = $('#agreement_no');
-				},
+				//'change @ui.agreement_no': function(){
+				//	this.ui.agreement_no = $('#agreement_no');
+				//},
 				'change @ui.section': function(){
 					this.ui.user_id = $('#user_id');
 				},
