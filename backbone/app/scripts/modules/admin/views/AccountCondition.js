@@ -50,6 +50,7 @@ define([
 					this.triggerMethod('hideAlerts');
 					var corporate_id = $("select[name='corporate_id']").val();
 					var agreement_no = $("select[name='agreement_no']").val();
+				
 					this.model.set('corporate_id', corporate_id);
 					this.model.set('agreement_no', agreement_no);
 					this.model.set('user_id', this.ui.user_id.val());

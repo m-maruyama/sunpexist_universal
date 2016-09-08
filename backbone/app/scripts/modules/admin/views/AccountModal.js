@@ -64,7 +64,8 @@ define([
 				"click @ui.upBtn": function(e){
 					e.preventDefault();
 					var model = new this.collection.model();
-					model.set('corporate_id', this.ui.corporate_id.val());
+					var corporate_id = $("select[name='corporate_id_modal']").val();//モーダル用のコーポレートid
+					model.set('corporate_id', corporate_id);
 					model.set('user_id', this.ui.user_id.val());
 					model.set('user_name', this.ui.user_name.val());
 					model.set('login_disp_name', this.ui.login_disp_name.val());

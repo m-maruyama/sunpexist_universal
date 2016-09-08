@@ -35,12 +35,12 @@ define(["app"],function(App) {
 						msg: "ログインIDを入力して下さい。"
 					}
 				],
-				"corporate_id": [
-					{
-						required:true,
-						msg: "企業IDを入力して下さい。"
-					}
-				],
+				//"corporate_id": [
+				//	{
+				//		required:true,
+				//		msg: "企業IDを入力して下さい。"
+				//	}
+				//],
 				// "password": [
 					// {
 						// required:true,
