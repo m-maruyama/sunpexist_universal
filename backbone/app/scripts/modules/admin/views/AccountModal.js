@@ -1,18 +1,23 @@
 define([
 	'app',
 	'../Templates',
+	'backbone.stickit',
+	'bootstrap-datetimepicker',
 	'../behaviors/Alerts',
-	'bootstrap',
-	'bootstrap-datetimepicker'
+	'typeahead',
+	'bloodhound'
 ], function(App) {
 	'use strict';
 	App.module('Admin.Views', function(Views, App, Backbone, Marionette, $, _){
-		Views.AccountModal = Marionette.ItemView.extend({
+		Views.AccountModal = Marionette.LayoutView.extend({
 			template: App.Admin.Templates.accountModal,
 			behaviors: {
 				"Alerts": {
 					behaviorClass: App.Admin.Behaviors.Alerts
 				}
+			},
+			regions: {
+				"corporate_id": ".corporate_id",
 			},
 			ui: {
 				'display': '.display',
@@ -21,23 +26,27 @@ define([
 				'upBtn': '.update',
 				'close': '.close',
 				'cancel': '.cancel',
+				'corporate_id': '#corporate_id',
 				'user_id': '#user_id',
 				'user_name': '#user_name',
+				'login_disp_name': '#login_disp_name',
 				'position_name': '#position_name',
+				'mail_address': '#mail_address',
 				'user_type': '#user_type',
 				'password': '#password',
 				'display_type': '#display_type',
 				'datetimepicker': '.datetimepicker',
 			},
 			bindings: {
+				'#corporate_id': 'corporate_id',
+				'#agreement_no': 'agreement_no',
+				'#user_id': 'user_id',
+				'#user_name': 'user_name',
+				'#mail_address': 'mail_address',
+
 			},
 			onRender: function() {
-				// this.ui.datetimepicker.datetimepicker({
-					// format: 'YYYY/MM/DD HH:mm',
-					// //useCurrent: false,
-					// minDate: new Date(),
-					// sideBySide:true
-				// });
+				var that = this;
 			},
 			events: {
 				"click @ui.close": function(e){
@@ -55,10 +64,13 @@ define([
 				"click @ui.upBtn": function(e){
 					e.preventDefault();
 					var model = new this.collection.model();
+					model.set('corporate_id', this.ui.corporate_id.val());
 					model.set('user_id', this.ui.user_id.val());
 					model.set('user_name', this.ui.user_name.val());
+					model.set('login_disp_name', this.ui.login_disp_name.val());
 					model.set('position_name', this.ui.position_name.val());
 					model.set('user_type', this.ui.user_type.val());
+					model.set('mail_address', this.ui.mail_address.val());
 					model.set('password', this.ui.password.val());
 					var that = this;
 					var errors = model.validate();
@@ -103,19 +115,26 @@ define([
 			},
 			reset: function(){
 				this.triggerMethod('hideAlerts');
+				this.ui.corporate_id.val('');
 				this.ui.user_id.val('');
 				this.ui.password.val('');
 				this.ui.user_name.val('');
+				this.ui.login_disp_name.val('');
 				this.ui.position_name.val('');
 				this.ui.user_type.val('1');
+				this.ui.mail_address.val('');
 				this.ui.display.text('アカウント追加');
 				this.ui.upBtn.text('追加');
 				this.ui.display_type.val('');
+				this.ui.corporate_id.attr('readonly',false);
 				this.ui.user_id.attr('readonly',false);
 				this.ui.password.attr('readonly',false);
 				this.ui.user_name.attr('readonly',false);
+				this.ui.login_disp_name.attr('readonly',false);
 				this.ui.position_name.attr('readonly',false);
 				this.ui.user_type.attr('readonly',false);
+				this.ui.mail_address.attr('readonly',false);
+
 			},
 			showMessage: function(model, display_type) {
 				this.ui.modal.modal('show');

@@ -105,7 +105,8 @@ define([
 			"CM0052": host + "/zaiko_item_color",
 			"CM0060": host + "/agreement_no",
 			"CM0061": host + "/agreement_no_input",
-			"CM0062": host + "/corporate_id",
+			"CM0063": host + "/corporate_id",
+			"CM0064": host + "/corporate_id_all",//全て選択肢あり
 			"CM0070": host + "/input_item",
 			"CM0080": host + "/item_color",
 			"CM0090": host + "/section_modal",

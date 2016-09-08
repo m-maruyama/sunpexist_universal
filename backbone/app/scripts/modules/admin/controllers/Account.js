@@ -5,7 +5,8 @@ define([
 	//コンディション追加
 	'../views/AccountCondition',
 	'../views/CorporateIdCondition',
-	'../views/AgreementNoCondition',
+	'../views/CorporateIdAllCondition',
+	//'../views/AgreementNoCondition',
 	'../views/AccountListList',
 	'../views/AccountModal',
 	'../views/Pagination',
@@ -28,14 +29,15 @@ define([
 				var accountListListCollection = new App.Entities.Collections.AdminAccountListList();
 				var AdminAccountModal = new App.Entities.Collections.AdminAccountModal();
 
-				var accountModalView = new App.Admin.Views.AccountModal({
-					collection: AdminAccountModal
-				});
+
 
 				//追加
 				var corporateIdConditionView = new App.Admin.Views.CorporateIdCondition();
 				//追加
-				var agreementNoConditionView = new App.Admin.Views.AgreementNoCondition();
+				var corporateIdAllConditionView = new App.Admin.Views.CorporateIdAllCondition();
+				//追加
+
+				//var agreementNoConditionView = new App.Admin.Views.AgreementNoCondition();
 
 
 
@@ -48,6 +50,9 @@ define([
 					collection: accountListListCollection,
 					model:accountListConditionModel,//追加
 					pagerModel: pagerModel
+				});
+				var accountModalView = new App.Admin.Views.AccountModal({
+					collection: AdminAccountModal
 				});
 
 				var accountView = new App.Admin.Views.Account({
@@ -109,6 +114,8 @@ define([
 
 				this.listenTo(accountListListView, 'childview:click:a', function(view, model, display){
 					accountModalView.showMessage(model,display);
+
+
 				});
 
 
@@ -141,14 +148,20 @@ define([
 					// accountListListView.fetch(accountListConditionModel);
 				// };
 
+				// elに指定した要素が既にあることが前提
+
 				App.main.show(accountView);
 				//コンディション追加
 				accountView.condition.show(accountConditionView);
-				accountConditionView.corporate_id.show(corporateIdConditionView);
-				accountConditionView.agreement_no.show(agreementNoConditionView);
+				accountConditionView.corporate_id.show(corporateIdAllConditionView);
+				//accountConditionView.corporate_id.show(corporateIdConditionView);
+				//accountConditionView.agreement_no.show(agreementNoConditionView);
 				accountView.page.show(paginationView);
 				accountView.listTable.show(accountListListView);
 				accountView.accountModal.show(accountModalView);
+				accountModalView.corporate_id.show(corporateIdConditionView);
+				//モーダルにコーポレートidを追加
+
 				//fetchList(); 実行
 			}
 		});

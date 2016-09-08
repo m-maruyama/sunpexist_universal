@@ -5,8 +5,8 @@ define([
 ], function(App) {
 	'use strict';
 	App.module('Admin.Views', function(Views, App, Backbone, Marionette, $, _){
-		Views.CorporateIdCondition = Marionette.ItemView.extend({
-			template: App.Admin.Templates.corporateIdCondition,
+		Views.CorporateIdAllCondition = Marionette.ItemView.extend({
+			template: App.Admin.Templates.corporateIdAllCondition,
 			model: new Backbone.Model(),
 			ui: {
 				'corporate_id': '.corporate_id'
@@ -17,7 +17,7 @@ define([
 			onShow: function() {
 				var that = this;
 				var modelForUpdate = this.model;
-				modelForUpdate.url = App.api.CM0063;
+				modelForUpdate.url = App.api.CM0064;
 				var cond = {
 					"scr": '企業ID'
 				};

@@ -15,12 +15,6 @@ define([
 				this.trigger('parsed',res);
 				return res.list;
 			}
-
 		});
-
-
-
-
 	});
-
 });
