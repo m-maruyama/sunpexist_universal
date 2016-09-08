@@ -3,22 +3,22 @@
   {{order_req_ymd}}</td>
   <td>{{order_sts_name}}<br>
   ( {{order_reason_name}} )</td>
-  <td>{{#if rntl_sect_name}}{{rntl_sect_name}}{{else}}-{{/if}}<br>
-    {{#if job_type_name}}{{job_type_name}}{{else}}-{{/if}}</td>
-  <td>{{#if cster_emply_cd}}{{cster_emply_cd}}{{else}}-{{/if}}<br>
-    {{#if werer_name}}{{werer_name}}{{else}}-{{/if}}</td>
+  <td>{{rntl_sect_name}}<br>
+    {{job_type_name}}</td>
+  <td>{{cster_emply_cd}}<br>
+    {{werer_name}}</td>
   <td>{{shin_item_code}}<br>
    {{input_item_name}}</td>
-  <td>{{#if order_qty}}{{order_qty}}{{else}}-{{/if}}</td>
-  <td>{{#if rec_order_no}}{{rec_order_no}}{{else}}-{{/if}}<br>
-  {{#if re_order_date}}{{re_order_date}}{{else}}-{{/if}}</td>
+  <td>{{order_qty}}</td>
+  <td>{{rec_order_no}}<br>
+  {{re_order_date}}</td>
   <td>{{return_qty}}</td>
   <td>{{return_status_name}}</td>
-  <td>{{#if ship_no}}{{ship_no}}{{else}}-{{/if}}<br>
-  {{#if ship_ymd}}{{ship_ymd}}{{else}}-{{/if}}</td>
-  <td>{{#if ship_qty}}{{ship_qty}}{{else}}-{{/if}}</td>
-  <td class="tb_individual_num" style="display:none;">{{#if individual_num}}{{{individual_num}}}{{else}}-{{/if}}</td>
-  <td>{{#if order_res_ymd}}{{{order_res_ymd}}}{{else}}-{{/if}}</td>
+  <td>{{ship_no}}<br>
+  {{ship_ymd}}</td>
+  <td>{{ship_qty}}</td>
+  <td class="tb_individual_num" style="display:none;">{{{individual_num}}}</td>
+  <td>{{{order_res_ymd}}}</td>
   <td>{{rntl_cont_no}}<br>
     {{rntl_cont_name}}</td>
 <!--/tr-->

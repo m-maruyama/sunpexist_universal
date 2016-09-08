@@ -157,7 +157,6 @@ $app->post('/lend/search', function ()use($app){
 
 	$t_order = new TOrder();
 	$results = new Resultset(null, $t_order, $t_order->getReadConnection()->query($arg_str));
-	// 取得オブジェクトを配列化→クラス内propety：protected値を取得する→リストカウント
 	$result_obj = (array)$results;
 	$results_cnt = $result_obj["\0*\0_count"];
 
@@ -173,9 +172,10 @@ $app->post('/lend/search', function ()use($app){
 	$all_list = array();
 	$json_list = array();
 
-	if(!empty($results_cnt)){
+	if(!empty($results_cnt)) {
 		$paginator = $paginator_model->getPaginate();
 		$results = $paginator->items;
+
 		foreach($results as $result){
 			// 社員番号
 			if (!empty($result->as_cster_emply_cd)) {

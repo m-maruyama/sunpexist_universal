@@ -63,6 +63,8 @@ define([
 					cond_map["reason_kbn18"] = $("#reason_kbn18").prop("checked");
 					cond_map["reason_kbn19"] = $("#reason_kbn19").prop("checked");
 					cond_map["individual_number"] = $("input[name='individual_number']").val();
+					cond_map["job_type_zaiko"] = $("select[name='job_type_zaiko']").val();
+					cond_map["item"] = $("select[name='item']").val();
 
 					var msg = "データ量により、ダウンロード処理に時間がかかる可能性があります。ダウンロードを実施してよろしいですか？";
 					if (window.confirm(msg)) {

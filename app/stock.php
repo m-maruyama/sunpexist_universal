@@ -110,13 +110,11 @@ $app->post('/stock/search', function ()use($app){
 	$arg_str .= "t_sdmzk.discarded_qty as as_discarded_qty,";
 	$arg_str .= "t_sdmzk.rent_pattern_data as as_rent_pattern_data,";
 	$arg_str .= "m_item.item_name as as_item_name";
-//	$arg_str .= "(SELECT distinct on (t_sdmzk.individual_ctrl_no) ";
 	$arg_str .= " FROM t_sdmzk";
 	$arg_str .= " INNER JOIN m_item ON t_sdmzk.m_item_comb_hkey = m_item.m_item_comb_hkey";
 	$arg_str .= " INNER JOIN m_rent_pattern_for_sdmzk ON t_sdmzk.rent_pattern_data = m_rent_pattern_for_sdmzk.rent_pattern_data";
 	$arg_str .= " WHERE ";
 	$arg_str .= $query;
-//	$arg_str .= ") as distinct_table";
 	if (!empty($q_sort_key)) {
 		$arg_str .= " ORDER BY ";
 		$arg_str .= $q_sort_key."as_rent_pattern_data,as_zkprcd,as_zkclor,as_zksize_display_order,as_zksize ".$order;
@@ -179,14 +177,6 @@ $app->post('/stock/search', function ()use($app){
 			$list['other_ship_qty'] = $result->as_other_ship_qty;
 			// 廃棄済み
 			$list['discarded_qty'] = $result->as_discarded_qty;
-/*
-			// 在庫専用貸与パターン
-			if (!empty($result->as_rent_pattern_data)) {
-				$list['rent_pattern_data'] = $result->as_rent_pattern_data;
-			} else {
-				$list['rent_pattern_data'] = "-";
-			}
-*/
 			// 商品名
 			if (!empty($result->as_item_name)) {
 				$list['item_name'] = $result->as_item_name;

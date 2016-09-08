@@ -302,7 +302,6 @@ $app->post('/receive/search', function ()use($app){
 	$arg_str .= "t_order.order_req_line_no as as_order_req_line_no,";
 	$arg_str .= "m_wearer_std.cster_emply_cd as as_cster_emply_cd,";
 	$arg_str .= "m_wearer_std.werer_name as as_werer_name,";
-//	$arg_str .= "m_wearer_std.werer_name as as_werer_name,";
 	$arg_str .= "m_section.rntl_sect_name as as_rntl_sect_name,";
 	$arg_str .= "m_job_type.job_type_name as as_job_type_name,";
 	$arg_str .= "t_order.order_sts_kbn as as_order_sts_kbn,";
@@ -330,7 +329,6 @@ $app->post('/receive/search', function ()use($app){
 
 	$t_delivery_goods_state_details = new TDeliveryGoodsStateDetails();
 	$results = new Resultset(null, $t_delivery_goods_state_details, $t_delivery_goods_state_details->getReadConnection()->query($arg_str));
-	// 取得オブジェクトを配列化→クラス内propety：protected値を取得する→リストカウント
 	$result_obj = (array)$results;
 	$results_cnt = $result_obj["\0*\0_count"];
 
@@ -346,9 +344,10 @@ $app->post('/receive/search', function ()use($app){
 	$all_list = array();
 	$json_list = array();
 
-	if($results_cnt !== 0){
+	if(!empty($results_cnt)){
 		$paginator = $paginator_model->getPaginate();
 		$results = $paginator->items;
+
 		foreach($results as $result){
 			// 受領ステータス
 			$list['receipt_status'] = $result->as_receipt_status;

@@ -304,7 +304,6 @@ $app->post('/unreturn/search', function ()use($app){
 
 	$t_order = new TOrder();
 	$results = new Resultset(null, $t_order, $t_order->getReadConnection()->query($arg_str));
-	// 取得オブジェクトを配列化→クラス内propety：protected値を取得する→リストカウント
 	$result_obj = (array)$results;
 	$results_cnt = $result_obj["\0*\0_count"];
 
@@ -320,33 +319,97 @@ $app->post('/unreturn/search', function ()use($app){
 	$all_list = array();
 	$json_list = array();
 
-	if($results){
+	if(!empty($results_cnt)) {
 		$paginator = $paginator_model->getPaginate();
 		$results = $paginator->items;
+
 		foreach($results as $result){
-			$list['order_req_no'] = $result->as_order_req_no;
+			// 発注依頼No.
+			if (!empty($result->as_order_req_no)) {
+				$list['order_req_no'] = $result->as_order_req_no;
+			} else {
+				$list['order_req_no'] = "-";
+			}
+			// 発注依頼日
 			$list['order_req_ymd'] = $result->as_order_req_ymd;
+			// 発注区分
 			$list['order_sts_kbn'] = $result->as_order_sts_kbn;
+			// 理由区分
 			$list['order_reason_kbn'] = $result->as_order_reason_kbn;
-			$list['rntl_sect_name'] = $result->as_rntl_sect_name;
-			$list['job_type_name'] = $result->as_job_type_name;
-			$list['cster_emply_cd'] = $result->as_cster_emply_cd;
-			$list['werer_name'] = $result->as_werer_name;
+			// 拠点
+			if (!empty($result->as_rntl_sect_name)) {
+				$list['rntl_sect_name'] = $result->as_rntl_sect_name;
+			} else {
+				$list['rntl_sect_name'] = "-";
+			}
+			// 貸与パターン
+			if (!empty($result->as_job_type_name)) {
+				$list['job_type_name'] = $result->as_job_type_name;
+			} else {
+				$list['job_type_name'] = "-";
+			}
+			// 社員番号
+			if (!empty($result->as_cster_emply_cd)) {
+				$list['cster_emply_cd'] = $result->as_cster_emply_cd;
+			} else {
+				$list['cster_emply_cd'] = "-";
+			}
+			// 着用者名
+			if (!empty($result->as_werer_name)) {
+				$list['werer_name'] = $result->as_werer_name;
+			} else {
+				$list['werer_name'] = "-";
+			}
+			// 商品コード
 			$list['item_cd'] = $result->as_item_cd;
+			// 色コード
 			$list['color_cd'] = $result->as_color_cd;
+			// サイズコード
 			$list['size_cd'] = $result->as_size_cd;
+			// サイズ2コード
 			$list['size_two_cd'] = $result->as_size_two_cd;
-			$list['input_item_name'] = $result->as_input_item_name;
+			// 投入商品名
+			if (!empty($result->as_input_item_name)) {
+				$list['input_item_name'] = $result->as_input_item_name;
+			} else {
+				$list['input_item_name'] = "-";
+			}
+			// 発注数
 			$list['order_qty'] = $result->as_order_qty;
-			$list['rec_order_no'] = $result->as_rec_order_no;
+			// メーカー受注番号
+			if (!empty($result->as_rec_order_no)) {
+				$list['rec_order_no'] = $result->as_rec_order_no;
+			} else {
+				$list['rec_order_no'] = "-";
+			}
+			// 返却日
 			$list['re_order_date'] = $result->as_re_order_date;
+			// 返却ステータス
 			$list['return_status'] = $result->as_return_status;
+			// 返却数
 			$list['return_qty'] = $result->as_return_qty;
-			$list['ship_no'] = $result->as_ship_no;
+			// メーカー伝票番号
+			if (!empty($result->as_ship_no)) {
+				$list['ship_no'] = $result->as_ship_no;
+			} else {
+				$list['ship_no'] = "-";
+			}
+			// 出荷日
 			$list['ship_ymd'] = $result->as_ship_ymd;
+			// 出荷数
 			$list['ship_qty'] = $result->as_ship_qty;
-			$list['rntl_cont_no'] = $result->as_rntl_cont_no;
-			$list['rntl_cont_name'] = $result->as_rntl_cont_name;
+			// 契約No
+			if (!empty($result->as_rntl_cont_no)) {
+				$list['rntl_cont_no'] = $result->as_rntl_cont_no;
+			} else {
+				$list['rntl_cont_no'] = "-";
+			}
+			// 契約No
+			if (!empty($result->as_rntl_cont_name)) {
+				$list['rntl_cont_name'] = $result->as_rntl_cont_name;
+			} else {
+				$list['rntl_cont_name'] = "-";
+			}
 
 			//---日付設定---//
 			// 発注依頼日
