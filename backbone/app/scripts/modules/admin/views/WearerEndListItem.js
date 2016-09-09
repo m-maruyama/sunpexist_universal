@@ -1,13 +1,13 @@
 define([
 	'app',
 	'../Templates',
-	'./HistoryListItem',
-	"entities/models/HistoryAbstract"
+	'./WearerEndListItem',
+	"entities/models/WearerEndAbstract"
 ], function(App) {
 	'use strict';
 	App.module('Admin.Views', function(Views, App, Backbone, Marionette, $, _){
-		Views.HistoryListItem = Marionette.ItemView.extend({
-			template: App.Admin.Templates.historyListItem,
+		Views.WearerEndListItem = Marionette.ItemView.extend({
+			template: App.Admin.Templates.wearerEndListItem,
 			tagName: "tr",
 			ui: {
 				"detailLink": "a.detail"

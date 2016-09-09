@@ -1,9 +1,9 @@
 define([
 	'app',
 	'./Abstract',
-	'../views/History',
-	'../views/HistoryCondition',
-	'../views/HistoryListList',
+	'../views/WearerEnd',
+	'../views/WearerEndCondition',
+	'../views/WearerEndListList',
 	'../views/AgreementNoCondition',
 	'../views/SectionCondition',
 	'../views/SectionModalCondition',
@@ -19,27 +19,27 @@ define([
 	'../views/Pagination',
 	'../views/CsvDownload',
 	"entities/models/Pager",
-	"entities/models/AdminHistory",
-	"entities/models/AdminHistoryListCondition",
+	"entities/models/AdminWearerEnd",
+	"entities/models/AdminWearerEndListCondition",
 	"entities/models/AdminSectionModalListCondition",
 	"entities/models/AdminCsvDownloadCondition",
-	"entities/collections/AdminHistoryListList",
+	"entities/collections/AdminWearerEndListList",
 	"entities/collections/AdminSectionModalListList",
 	"entities/collections/AdminCsvDownload",
 	'bootstrap'
 ], function(App) {
 	'use strict';
 	App.module('Admin.Controllers', function(Controllers,App, Backbone, Marionette, $, _){
-		Controllers.History = App.Admin.Controllers.Abstract.extend({
+		Controllers.WearerEnd = App.Admin.Controllers.Abstract.extend({
 			_sync : function(){
 				var that = this;
-				this.setNav('history');
+				this.setNav('wearerEnd');
 				var pagerModel = new App.Entities.Models.Pager();
 				var modal = false;
-				var historyModel = null;
+				var wearerEndModel = null;
 				var detailModalView = new App.Admin.Views.DetailModal();
-				var historyView = new App.Admin.Views.History();
-				var historyListListCollection = new App.Entities.Collections.AdminHistoryListList();
+				var wearerEndView = new App.Admin.Views.WearerEnd();
+				var wearerEndListListCollection = new App.Entities.Collections.AdminWearerEndListList();
 
 				var agreementNoConditionView = new App.Admin.Views.AgreementNoCondition();
 				var sectionConditionView = new App.Admin.Views.SectionCondition();
@@ -48,12 +48,12 @@ define([
 				var itemColorConditionView = new App.Admin.Views.ItemColorCondition();
 				var individualNumberConditionView = new App.Admin.Views.IndividualNumberCondition();
 
-				var historyListConditionModel = new App.Entities.Models.AdminHistoryListCondition();
-				var historyConditionView = new App.Admin.Views.HistoryCondition({
-					model:historyListConditionModel
+				var wearerEndListConditionModel = new App.Entities.Models.AdminWearerEndListCondition();
+				var wearerEndConditionView = new App.Admin.Views.WearerEndCondition({
+					model:wearerEndListConditionModel
 				});
-				var historyListListView = new App.Admin.Views.HistoryListList({
-					collection: historyListListCollection,
+				var wearerEndListListView = new App.Admin.Views.WearerEndListList({
+					collection: wearerEndListListCollection,
 					pagerModel: pagerModel
 				});
 				var paginationView = new App.Admin.Views.Pagination({model: pagerModel});
@@ -68,18 +68,18 @@ define([
 						pagerModel.set('sort_key', sortKey);
 						pagerModel.set('order', order);
 					}
-					historyListListView.fetch(historyListConditionModel);
-					historyView.listTable.show(historyListListView);
-					historyView.page.show(paginationView);
-					historyView.page_2.show(paginationView2);
-					historyView.csv_download.show(csvDownloadView);
+					wearerEndListListView.fetch(wearerEndListConditionModel);
+					wearerEndView.listTable.show(wearerEndListListView);
+					wearerEndView.page.show(paginationView);
+					wearerEndView.page_2.show(paginationView2);
+					wearerEndView.csv_download.show(csvDownloadView);
 				};
-				this.listenTo(historyListListView, 'childview:click:a', function(view, model){
-					historyModel = new App.Entities.Models.AdminHistory({no:model.get('order_req_no')});
-					detailModalView.fetchDetail(historyModel);
+				this.listenTo(wearerEndListListView, 'childview:click:a', function(view, model){
+					wearerEndModel = new App.Entities.Models.AdminWearerEnd({no:model.get('order_req_no')});
+					detailModalView.fetchDetail(wearerEndModel);
 				});
 				this.listenTo(detailModalView, 'fetched', function(){
-					historyView.detailModal.show(detailModalView.render());
+					wearerEndView.detailModal.show(detailModalView.render());
 					detailModalView.ui.modal.modal('show');
 				});
 
@@ -117,9 +117,9 @@ define([
 					fetchList_section(1,sortKey,order);
 				});
 				this.listenTo(sectionModalView, 'fetched', function(){
-					// historyView.detailModal.show();
+					// wearerEndView.detailModal.show();
 					// sectionModalView.render();
-					historyView.detailModal.show(sectionModalView.render());
+					wearerEndView.detailModal.show(sectionModalView.render());
 					sectionModalView.ui.modal.modal('show');
 				});
 				var sectionModalListItemView = new App.Admin.Views.SectionModalListItem();
@@ -143,10 +143,10 @@ define([
 						fetchList(pageNumber);
 					}
 				});
-				this.listenTo(historyListListView, 'sort', function(sortKey,order){
+				this.listenTo(wearerEndListListView, 'sort', function(sortKey,order){
 					fetchList(null,sortKey,order);
 				});
-				this.listenTo(historyConditionView, 'click:search', function(sortKey,order){
+				this.listenTo(wearerEndConditionView, 'click:search', function(sortKey,order){
 					modal = false;
 					fetchList(1,sortKey,order);
 				});
@@ -155,11 +155,11 @@ define([
 				});
 
 				// 拠点セレクト変更時の絞り込み処理 --ここから
-				this.listenTo(historyConditionView, 'change:section_select', function(agreement_no){
+				this.listenTo(wearerEndConditionView, 'change:section_select', function(agreement_no){
 					var sectionConditionView2 = new App.Admin.Views.SectionCondition({
 						agreement_no:agreement_no,
 					});
-					historyConditionView.section.show(sectionConditionView2);
+					wearerEndConditionView.section.show(sectionConditionView2);
 
 					var sectionModalListListView2 = new App.Admin.Views.SectionModalListList({
 						collection: sectionListListCollection,
@@ -191,7 +191,7 @@ define([
 						fetchList_section_2(1,sortKey,order);
 					});
 					this.listenTo(sectionModalView2, 'fetched', function(){
-						historyView.detailModal.show(sectionModalView2.render());
+						wearerEndView.detailModal.show(sectionModalView2.render());
 						sectionModalView2.ui.modal.modal('show');
 					});
 					var sectionModalListItemView2 = new App.Admin.Views.SectionModalListItem();
@@ -200,25 +200,25 @@ define([
 						sectionModalView2.ui.modal.modal('hide');
 					});
 
-					historyView.sectionModal_2.show(sectionModalView2.render());
+					wearerEndView.sectionModal_2.show(sectionModalView2.render());
 					sectionModalView2.condition.show(sectionModalConditionView2);
 				});
 				// 拠点セレクト変更時の絞り込み処理 --ここまで
 
-				App.main.show(historyView);
-				historyView.condition.show(historyConditionView);
-				historyConditionView.agreement_no.show(agreementNoConditionView);
-				historyConditionView.section.show(sectionConditionView);
-				historyConditionView.job_type.show(jobTypeConditionView);
-				historyConditionView.input_item.show(inputItemConditionView);
-				historyConditionView.item_color.show(itemColorConditionView);
-				historyConditionView.individual_number.show(individualNumberConditionView);
-				historyView.sectionModal.show(sectionModalView.render());
+				App.main.show(wearerEndView);
+				wearerEndView.condition.show(wearerEndConditionView);
+				wearerEndConditionView.agreement_no.show(agreementNoConditionView);
+				wearerEndConditionView.section.show(sectionConditionView);
+				wearerEndConditionView.job_type.show(jobTypeConditionView);
+				wearerEndConditionView.input_item.show(inputItemConditionView);
+				wearerEndConditionView.item_color.show(itemColorConditionView);
+				wearerEndConditionView.individual_number.show(individualNumberConditionView);
+				wearerEndView.sectionModal.show(sectionModalView.render());
 				sectionModalView.page.show(paginationView);
 				sectionModalView.condition.show(sectionModalConditionView);
 			}
 		});
 	});
 
-	return App.Admin.Controllers.History;
+	return App.Admin.Controllers.WearerEnd;
 });

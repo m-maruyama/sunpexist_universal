@@ -2,19 +2,19 @@ define([
 	'app',
 	'../Templates',
 	'blockUI',
-	'./HistoryListItem'
+	'./WearerEndListItem'
 ], function(App) {
 	'use strict';
 	App.module('Admin.Views', function(Views, App, Backbone, Marionette, $, _){
 		var order = 'asc';
 		var sort_key = 'order_req_no';
-		Views.HistoryListList = Marionette.CompositeView.extend({
+		Views.WearerEndListList = Marionette.CompositeView.extend({
 			template: App.Admin.Templates.historyListList,
 			emptyView: Backbone.Marionette.ItemView.extend({
                 tagName: "tr",
 								template: App.Admin.Templates.historyEmpty,
       }),
-			childView: Views.HistoryListItem,
+			childView: Views.WearerEndListItem,
 			childViewContainer: "tbody",
 			ui: {
 			},
@@ -42,11 +42,11 @@ define([
 					this.triggerMethod('sort', e.target.id,order);
 				}
 			},
-			fetch:function(historyListConditionModel){
+			fetch:function(wearerEndListConditionModel){
 				var cond = {
-					"scr": '発注状況照会',
+					"scr": '貸与終了検索',
 					"page":this.options.pagerModel.getPageRequest(),
-					"cond": historyListConditionModel.getReq()
+					"cond": wearerEndListConditionModel.getReq()
 				};
 				$.blockUI({ message: '<p><img src="ajax-loader.gif" style="margin: 0 auto;" /> 読み込み中...</p>' });
 				this.collection.fetchMx({

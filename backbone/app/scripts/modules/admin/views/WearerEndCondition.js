@@ -6,7 +6,7 @@ define([
 	'../behaviors/Alerts',
 	'typeahead',
 	'bloodhound',
-	'../controllers/History',
+	'../controllers/WearerEnd',
 	'./SectionCondition',
 	'./JobTypeCondition',
 	'./InputItemCondition',
@@ -15,8 +15,8 @@ define([
 ], function(App) {
 	'use strict';
 	App.module('Admin.Views', function(Views, App, Backbone, Marionette, $, _){
-		Views.HistoryCondition = Marionette.LayoutView.extend({
-			template: App.Admin.Templates.historyCondition,
+		Views.WearerEndCondition = Marionette.LayoutView.extend({
+			template: App.Admin.Templates.wearerEndCondition,
 			behaviors: {
 				"Alerts": {
 					behaviorClass: App.Admin.Behaviors.Alerts

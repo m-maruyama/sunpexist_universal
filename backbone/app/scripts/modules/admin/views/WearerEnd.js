@@ -4,8 +4,8 @@ define([
 ], function(App) {
 	'use strict';
 	App.module('Admin.Views', function(Views, App, Backbone, Marionette, $, _){
-		Views.History = Marionette.LayoutView.extend({
-			template: App.Admin.Templates.history,
+		Views.WearerEnd = Marionette.LayoutView.extend({
+			template: App.Admin.Templates.wearerEnd,
 			ui: {
 			},
 			regions: {
