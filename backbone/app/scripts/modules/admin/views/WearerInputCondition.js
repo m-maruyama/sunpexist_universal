@@ -106,7 +106,7 @@ define([
                 });
             },
             insert_wearer: function (agreement_no) {
-                this.triggerMethod('hideAlerts');
+                var that = this;
                 var model = this.model;
                 model.set('agreement_no', agreement_no);
                 model.set('cster_emply_cd_chk', this.ui.cster_emply_cd_chk.prop('checked'));
@@ -114,15 +114,18 @@ define([
                 model.set('werer_name', this.ui.werer_name.val());
                 model.set('werer_name_kana', this.ui.werer_name_kana.val());
                 model.set('sex_kbn', this.ui.sex_kbn.val());
-                model.set('section', this.ui.section.val());
+                model.set('resfl_ymd', this.ui.resfl_ymd.val());
+                model.set('rntl_sect_cd', this.ui.section.val());
                 model.set('job_type', this.ui.job_type.val());
-                model.set('m_shipment_to', this.ui.m_shipment_to.val());
+                if(this.ui.m_shipment_to.val()){
+                    var m_shipment_to_array = this.ui.m_shipment_to.val().split(',');
+                    model.set('ship_to_cd', m_shipment_to_array[0]);
+                    model.set('ship_to_brnch_cd', m_shipment_to_array[1]);
+                }
                 model.set('zip_no', this.ui.zip_no.val());
                 model.set('address', this.ui.address.val());
                 var errors = model.validator(model);
                 if(errors) {
-                    // var wearerInputView = new App.Admin.Views.WearerInput();
-                    // wearerInputView.triggerMethod('showAlerts', errors);
                     return errors;
                 }
                 var cond = {
@@ -130,14 +133,38 @@ define([
                     "cond": model.getReq()
                 };
                 model.url = App.api.WI0012;
-                model.fetchMx({
-                    data: cond,
-                    success: function (res) {
-                        console.log(res);
-                    },
-                    complete: function (res) {
+
+
+
+                var fd = new FormData();
+                var data = $('<input type="hidden" name="data" />');
+                fd.append('data',JSON.stringify(cond));
+
+
+                var url = App.api.WI0012;
+                var postData = {
+                    type : "POST",
+                    data : fd,
+                    processData : false,
+                    contentType : false,
+                    dataType: "json"
+                };
+                errors = $.ajax( App.api.WI0012, postData ).done(function (res) {
+                    errors = res['errors'];
+                    console.log(errors);
+                    if(errors) {
+                        return errors;
+                    }else{
+                        alert('着用者を登録しました。');
+                        location.href = './wearer_input_complete.html';
                     }
+
                 });
+                if(errors){
+                    return errors;
+                }else{
+                    return;
+                }
             },
 
             events: {
@@ -164,6 +191,7 @@ define([
                     var sp_flg = this.ui.job_type.val().split(',');
                     if (sp_flg[1] === '1') {
                         alert('社内申請手続きを踏んでますか？');
+                        return;
                     }
                 },
             },

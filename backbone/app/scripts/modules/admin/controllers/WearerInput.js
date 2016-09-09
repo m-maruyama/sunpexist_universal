@@ -96,13 +96,16 @@ define([
 				this.listenTo(wearerInputView, 'change:agreement_no', function(agreement_no){
 					wearerInputConditionView.fetch(agreement_no);
 					wearerInputView.condition.show(wearerInputConditionView);
+					wearerInputView.ui.input_insert_button.show();
 				});
 				//契約No選択イベント--ここまで
 
 				//着用者のみ登録して終了
 				this.listenTo(wearerInputView, 'click:input_insert', function(agreement_no){
 					var errors = wearerInputConditionView.insert_wearer(agreement_no);
-                    wearerInputView.triggerMethod('showAlerts', errors);
+					if(errors){
+						wearerInputView.triggerMethod('showAlerts', errors);
+					}
 				});
 
 				this.listenTo(paginationView, 'selected', function(pageNumber){

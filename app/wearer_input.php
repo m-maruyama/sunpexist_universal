@@ -5,7 +5,7 @@ use Phalcon\Mvc\Model\Resultset\Simple as Resultset;
 use Phalcon\Paginator\Adapter\Model as PaginatorModel;
 use Phalcon\Paginator\Adapter\NativeArray as PaginatorArray;
 use Phalcon\Paginator\Adapter\QueryBuilder as PaginatorQueryBuilder;
-
+use Phalcon\Mvc\Model\Query;
 
 /**
  * 検索項目：契約No(入力系)
@@ -278,37 +278,250 @@ $app->post('/change_section', function ()use($app) {
  */
 $app->post('/input_insert', function ()use($app) {
 
-    $params = json_decode(file_get_contents("php://input"), true);
+//    $params = json_decode(file_get_contents("php://input"), true);
+    $params = json_decode($_POST['data'],true);
     // アカウントセッション取得
     $auth = $app->session->get("auth");
     $cond = $params['cond'];
     $query_list = array();
     $list = array();
     $json_list = array();
-    $m_shipment_to_list = array();
+    $error_list = array();
+
+    //更新可否チェック（更新可否チェック仕様書）
+
+    //  入力された内容を元に、着用者基本マスタトラン、着用者商品マスタトラン、発注情報トランに登録を行う。
     //--- 検索条件 ---//
-    // 契約マスタ．企業ID　＝　ログインしているアカウントの企業ID　AND
-    array_push($query_list,"corporate_id = '".$auth['corporate_id']."'");
-    // 契約マスタ．レンタル契約No.　＝　画面で選択されている契約No.
-    array_push($query_list,"rntl_cont_no = '".$cond['agreement_no']."'");
+    //  アカウントマスタ．企業ID　＝　ログインしているアカウントの企業ID　AND
+    array_push($query_list,"MAccount.corporate_id = '".$auth['corporate_id']."'");
+    //  アカウントマスタ．ユーザーID　＝　ログインしているアカウントのユーザーID　AND
+    array_push($query_list,"MAccount.user_id = '".$auth['user_id']."'");
+    //　契約マスタ．企業ID　＝　ログインしているアカウントの企業ID　AND
+    array_push($query_list,"MContract.corporate_id = '".$auth['corporate_id']."'");
+    //　契約マスタ．レンタル契約フラグ　＝　契約対象 AND
+    array_push($query_list,"MContract.rntl_cont_flg = '1'");
+    //  契約リソースマスタ．企業ID　＝　ログインしているアカウントの企業ID　AND
+    array_push($query_list,"MContractResource.corporate_id = '".$auth['corporate_id']."'");
 
     //sql文字列を' AND 'で結合
     $query = implode(' AND ', $query_list);
+
     //--- クエリー実行・取得 ---//
-    $mc_count = MContract::find(array(
-        'conditions' => $query
-	))->count();
-die();
-    foreach ($results as $result) {
-        $list['ship_to_cd'] = $result->ship_to_cd;
-        $list['ship_to_brnch_cd'] = $result->ship_to_brnch_cd;
-        $list['cust_to_brnch_name1'] = $result->cust_to_brnch_name1;
-        $list['cust_to_brnch_name2'] = $result->cust_to_brnch_name2;
-        $list['zip_no'] = $result->zip_no;
-        $list['address'] = $result->address1.$result->address2.$result->address3.$result->address4;
-        array_push($m_shipment_to_list,$list);
+//    $results = MContract::query()
+//        ->where($query)
+//        ->columns(array('MContractResource.*'))
+//        ->leftJoin('MContractResource','MContract.corporate_id = MContractResource.corporate_id')
+//        ->join('MAccount','MAccount.accnt_no = MContractResource.accnt_no')
+//        ->execute();
+//    if($results[0]->update_ok_flg == '0'){
+//      array_push($error_list,'こちらの契約リソースは更新出来ません。');
+//        $json_list['errors'] = $error_list;
+//        return;
+//    }
+//    //汎用コードマスタから更新不可時間を取得
+//    //--- 検索条件 ---//
+//    $query_list = array();
+//    // 汎用コードマスタ．分類コード　＝　更新不可時間
+//    array_push($query_list, "cls_cd = '015'");
+//
+//    //sql文字列を' AND 'で結合
+//    $query = implode(' AND ', $query_list);
+//
+//    //--- クエリー実行・取得 ---//
+//    $m_gencode_results = MGencode::query()
+//        ->where($query)
+//        ->columns('*')
+//        ->execute();
+//    foreach ($m_gencode_results as $m_gencode_result) {
+//        if($m_gencode_result->gen_cd =='1'){
+//            //更新不可開始時間
+//            $start = $m_gencode_result->gen_name;
+//        }elseif($m_gencode_result->gen_cd =='2'){
+//            //経過時間
+//            $hour = $m_gencode_result->gen_name;
+//
+//        }
+//    }
+//    $now_datetime = date("YmdHis");
+//    $now_date = date("Ymd");
+//    $start_datetime = $now_date.$start;
+//    $end_datetime = date("YmdHis", strtotime($start_datetime." + ".$hour." hour"));;
+//    if(strtotime($start_datetime) <= strtotime($now_datetime)||strtotime($now_datetime) >= strtotime($end_datetime)){
+//        array_push($error_list,'現在の時間は更新出来ません。');
+//        $json_list['errors'] = $error_list;
+//        return;
+//    }
+//
+//    //契約Noのマスタチェック
+//    $query_list = array();
+//    // 契約マスタ．企業ID　＝　ログインしているアカウントの企業ID　AND
+//    array_push($query_list,"corporate_id = '".$auth['corporate_id']."'");
+//    // 契約マスタ．レンタル契約No.　＝　画面で選択されている契約No.
+//    array_push($query_list,"rntl_cont_no = '".$cond['agreement_no']."'");
+//
+//    //sql文字列を' AND 'で結合
+//    $query = implode(' AND ', $query_list);
+//    //--- クエリー実行・取得 ---//
+//    $mc_count = MContract::find(array(
+//        'conditions' => $query
+//	))->count();
+//    //存在しない場合NG
+//    if($mc_count == 0){
+//        array_push($error_list,'契約Noの値が不正です。');
+//    }
+//    $query_list = array();
+//    //社員コードのマスタチェック(社員コードありの場合のみ)
+//    if($cond['cster_emply_cd']){
+//        // 着用者基本マスタ．客先社員コード ＝ 画面で入力された社員コード AND
+//        array_push($query_list,"cster_emply_cd = '".$cond['cster_emply_cd']."'");
+//        // 着用者基本マスタ．着用者状況区分 ＝ 稼働
+//        array_push($query_list,"werer_sts_kbn = '1'");
+//
+//        //sql文字列を' AND 'で結合
+//        $query = implode(' AND ', $query_list);
+//        //--- クエリー実行・取得 ---//
+//        $m_wearer_std_count = MWearerStd::find(array(
+//            'conditions' => $query
+//        ))->count();
+//        //存在する場合NG
+//        if($m_wearer_std_count > 0){
+//          array_push($error_list,'社員コードの値が不正です。');
+//        }
+//    }
+//    //拠点のマスタチェック
+//    $query_list = array();
+//    // 部門マスタ．企業ID　＝　ログインしているアカウントの企業ID　AND
+//    array_push($query_list,"corporate_id = '".$auth['corporate_id']."'");
+//    // 部門マスタ．レンタル契約No.　＝　画面で選択されている契約No.
+//    array_push($query_list,"rntl_cont_no = '".$cond['agreement_no']."'");
+//    // 部門マスタ．レンタル部門コード　＝　画面で選択されている拠点
+//    array_push($query_list,"rntl_sect_cd = '".$cond['rntl_sect_cd']."'");
+//
+//    //sql文字列を' AND 'で結合
+//    $query = implode(' AND ', $query_list);
+//    //--- クエリー実行・取得 ---//
+//    $m_section = MSection::find(array(
+//        'conditions' => $query
+//    ));
+//    $m_section_count = $m_section->count();
+//    //存在しない場合NG
+//    if($m_section_count == 0){
+//          array_push($error_list,'拠点の値が不正です。');
+//    }
+//    //貸与パターンのマスタチェック
+//    $query_list = array();
+//    // 職種マスタ．企業ID　＝　ログインしているアカウントの企業ID　AND
+//    array_push($query_list,"corporate_id = '".$auth['corporate_id']."'");
+//    // 職種マスタ．レンタル契約No.　＝　画面で選択されている契約No.
+//    array_push($query_list,"rntl_cont_no = '".$cond['agreement_no']."'");
+//    // 職種マスタ．レンタル部門コード　＝　画面で選択されている貸与パターン
+//    array_push($query_list,"job_type_cd = '".$cond['job_type']."'");
+//
+//    //sql文字列を' AND 'で結合
+//    $query = implode(' AND ', $query_list);
+//    //--- クエリー実行・取得 ---//
+//    $m_job_type_cnt = MJobType::find(array(
+//        'conditions' => $query
+//    ))->count();
+//    //存在しない場合NG
+//    if($m_job_type_cnt == 0){
+//          array_push($error_list,'貸与パターンの値が不正です。');
+//    }
+//    //出荷先のマスタチェック
+//    $query_list = array();
+//    // 出荷先マスタ．企業ID　＝　ログインしているアカウントの企業ID　AND
+//    array_push($query_list,"corporate_id = '".$auth['corporate_id']."'");
+//
+//    if($cond['ship_to_cd']){
+//        // 出荷先マスタ．出荷先コード　＝　画面で選択されている出荷先コード
+//        array_push($query_list,"ship_to_cd = '".$cond['ship_to_cd']."'");
+//        // 出荷先マスタ．出荷先支店コード　＝　画面で選択されている出荷先支店コード
+//        array_push($query_list,"ship_to_brnch_cd = '".$cond['ship_to_brnch_cd']."'");
+//    }else{
+//        // 部門マスタ．標準出荷先コード
+//        array_push($query_list,"ship_to_cd = '".$m_section->std_ship_to_cd."'");
+//        // 部門マスタ．標準出荷先支店コード
+//        array_push($query_list,"ship_to_cd = '".$m_section->std_ship_to_brnch_cd."'");
+//    }
+//    //sql文字列を' AND 'で結合
+//    $query = implode(' AND ', $query_list);
+//    //--- クエリー実行・取得 ---//
+//    $m_shipment_to_cnt = MShipmentTo::find(array(
+//        'conditions' => $query
+//    ))->count();
+//
+//    //存在しない場合NG
+//    if($m_shipment_to_cnt == 0){
+//          array_push($error_list,'出荷先の値が不正です。');
+//    }
+
+    if(byte_cnt($cond['cster_emply_cd'])>10){
+          array_push($error_list,'社員コードの文字数が多すぎます。');
     }
-    $json_list['change_m_shipment_to_list'] = $m_shipment_to_list;
+
+    if(byte_cnt($cond['werer_name'])>10){
+        array_push($error_list,'着用者名の文字数が多すぎます。');
+    }
+
+    if(byte_cnt($cond['werer_name_kana'])>10){
+        array_push($error_list,'着用者名(カナ)の文字数が多すぎます。');
+    }
+
+
+//    DB登録
+//    if($error_list){
+//        $json_list['errors'] = $error_list;
+//        echo json_encode($json_list);
+//        return true;
+//    }
+    $transaction = $app->transactionManager->get();
+    //着用者基本マスタトラン
+    $m_wearer_std_tran = new MWearerStdTran();
+    $m_wearer_std_tran->corporate_id = $auth['corporate_id']; //企業ID
+
+    $results = new Resultset(null, $m_wearer_std_tran, $m_wearer_std_tran->getReadConnection()->query("select nextval('werer_cd')"));
+    $m_wearer_std_tran->werer_cd = str_pad($results[0]->nextval, 10, "0",STR_PAD_LEFT); //着用者コード
+
+    $m_wearer_std_tran->rntl_cont_no = $cond['agreement_no']; //レンタル契約No.
+    $m_wearer_std_tran->rntl_sect_cd = $cond['rntl_sect_cd']; //レンタル部門コード
+    $m_wearer_std_tran->job_type_cd = $cond['job_type']; //職種コード
+    $m_wearer_std_tran->cster_emply_cd = $cond['cster_emply_cd']; //客先社員コード
+    $m_wearer_std_tran->werer_name = $cond['werer_name']; //着用者名（漢字）
+    $m_wearer_std_tran->werer_name_kana = $cond['werer_name_kana']; //着用者名（カナ）
+    $m_wearer_std_tran->sex_kbn = $cond['sex_kbn']; //性別区分
+    $m_wearer_std_tran->werer_sts_kbn = '7'; //着用者状況区分 '7':着用開始をセット
+    $m_wearer_std_tran->resfl_ymd = $cond['resfl_ymd']; //異動日
+    $m_wearer_std_tran->ship_to_cd = $cond['ship_to_cd']; //出荷先コード
+    $m_wearer_std_tran->ship_to_brnch_cd = $cond['ship_to_brnch_cd']; //出荷先支店コード
+    $m_wearer_std_tran->order_sts_kbn = '1'; //発注状況区分 '1':貸与をセット
+    $m_wearer_std_tran->upd_kbn = '1'; //更新区分 '1':WEB発注システム(新規登録)をセット
+    $m_wearer_std_tran->web_upd_date = date("Y/m/d"); //WEB更新日付
+    $m_wearer_std_tran->snd_kbn = '0'; //送信区分 「保存（後で送信）」時＝0：未送信、「発注送信」時＝1：送信済、「バッチ連携後」＝9：処理中
+    $m_wearer_std_tran->snd_date = date('Y/m/d H:i:s.sss'); //送信日時
+    $m_wearer_std_tran->del_kbn = '0'; //削除区分 0：削除対象外をセット
+    $m_wearer_std_tran->rgst_date = date('Y/m/d H:i:s.sss'); //登録日時
+    $m_wearer_std_tran->rgst_user_id = $cond['agreement_no']; //登録ユーザーID
+    $m_wearer_std_tran->upd_date = date('Y/m/d H:i:s.sss'); //更新日時
+    $m_wearer_std_tran->upd_user_id = $auth['user_id']; //更新ユーザーID
+    $m_wearer_std_tran->upd_pg_id = $auth['user_id']; //更新プログラムID
+    $m_wearer_std_tran->m_job_type_comb_hkey = '1'; //職種マスタ_統合ハッシュキー
+    $m_wearer_std_tran->m_section_comb_hkey = '1'; //部門マスタ_統合ハッシュキー
+    $m_wearer_std_tran->m_wearer_std_comb_hkey = md5(
+        $m_wearer_std_tran->corporate_id.
+        $m_wearer_std_tran->werer_cd.
+        $m_wearer_std_tran->rntl_cont_no.
+        $m_wearer_std_tran->rntl_sect_cd.
+        $m_wearer_std_tran->job_type_cd
+
+    ); //着用者基本マスタ_統合ハッシュキー
+    if ($m_wearer_std_tran->save() == false) {
+        array_push($error_list,'着用者の登録に失敗しました。');
+        $json_list['errors'] = $error_list;
+        echo json_encode($json_list);
+        return true;
+    } else {
+        $transaction->commit();
+    }
     echo json_encode($json_list);
 });
 
@@ -319,3 +532,11 @@ $app->post('/wearer_input_init', function ()use($app){
     $json_list['referrer'] = $_SERVER['HTTP_REFERRER'];
     echo json_encode($json_list);
 });
+
+function byte_cnt($data){
+    //変換前文字コード
+    $bf = 'UTF-8';
+    //変換後文字コード
+    $af = 'Shift-JIS';
+    return strlen(bin2hex(mb_convert_encoding($data, $af, $bf))) / 2;
+}

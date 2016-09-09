@@ -18,6 +18,7 @@ define([
                 "input_cancel": "#input_cancel",
                 "input_cancel_button": "#input_cancel_button",
                 "input_insert": "#input_insert",
+                "input_insert_button": "#input_insert_button",
 			},
 			regions: {
 				"agreement_no": ".agreement_no",
@@ -36,8 +37,12 @@ define([
 			model: new Backbone.Model(),
 			onRender: function() {
 				// 検索画面以外から遷移してきた場合は「着用者入力取消」ボタンを隠す
-                if (document.referrer.indexOf("wearer_search") != -1) {
+                if (document.referrer.indexOf("wearer_search") == -1) {
                     this.ui.input_cancel_button.hide();
+                }
+                // 初期表示時は「着用者のみ登録して終了」ボタンを隠す
+                if (!$('#agreement_no').val()) {
+                    this.ui.input_insert_button.hide();
                 }
 			},
 			events: {
@@ -66,6 +71,8 @@ define([
                         location.href = './wearer_search.html';
                         return;
                     }
+                    location.href = './home.html';
+                    return;
 				},
                 'click @ui.input_insert': function(){
                     this.triggerMethod('click:input_insert',this.ui.agreement_no.val());
@@ -73,21 +80,5 @@ define([
 			},
 
 		});
-        function insert_wearer(agreement_no) {
-            var model = this.model;
-            var cond = {
-                "scr": '着用者登録',
-                "cond": model.getReq()
-            };
-            model.url = App.api.WI0012;
-            model.fetchMx({
-                data: cond,
-                success: function (res) {
-                    console.log(res);
-                },
-                complete: function (res) {
-                }
-            });
-        }
 	});
 });

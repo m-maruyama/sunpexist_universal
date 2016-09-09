@@ -23,6 +23,8 @@ define([
 			'AdminInfo': 'modules/admin/Info',
 			'AdminPassword': 'modules/admin/Password',
 			'AdminWearerInput': 'modules/admin/WearerInput',
+			'AdminWearerEnd': 'modules/admin/WearerEnd',
+			'AdminWearerInputComplete': 'modules/admin/WearerInputComplete',
 		};
 		App.addRegions({
 			// "alert": "#alert",

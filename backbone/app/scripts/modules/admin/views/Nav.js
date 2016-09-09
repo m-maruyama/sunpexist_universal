@@ -22,6 +22,8 @@ define([
 				"account": "li.nav_account",
 				"info": "li.nav_info",
 				"wearerInput": "li.nav_wearerInput",
+				"wearerEnd": "li.nav_wearerEnd",
+				"wearerInputComplete": "li.nav_wearerInputComplete",
 				"logout": "li.logout a"
 			},
 			onShow: function() {
