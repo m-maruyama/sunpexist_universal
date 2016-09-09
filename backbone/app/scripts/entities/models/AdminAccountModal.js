@@ -7,6 +7,7 @@ define(["app"],function(App) {
 			},
 			defaults: {
 				corporate_id: null,
+				accnt_no : null,
 				user_id: null,
 				user_name: null,
 				login_disp_name: null,
@@ -20,6 +21,7 @@ define(["app"],function(App) {
 			getReq: function(){
 				return {
 					corporate_id: this.get('corporate_id'),
+					//accnt_no = this.get('accnt_no'),
 					user_id: this.get('user_id'),
 					user_name: this.get('user_name'),
 					login_disp_name: this.get('login_disp_name'),
@@ -70,7 +72,7 @@ define(["app"],function(App) {
 				],
 				"password": [
 					 {
-						 required:true,
+						 //required:true,
 						 msg: "パスワードを入力して下さい。"
 					},
 				],
@@ -86,6 +88,7 @@ define(["app"],function(App) {
 						 msg: "パスワード確認がパスワードと一致していません。"
 			     }
 				]
+
 			},
 
 			// reset: function(){

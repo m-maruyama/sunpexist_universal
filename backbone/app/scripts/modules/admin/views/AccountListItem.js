@@ -18,17 +18,23 @@ define([
 			onRender: function() {
 			},
 			events: {
+				//ロックボタンがクリックされた時の動作
 				'click @ui.lockBtn': function(e){
 					e.preventDefault();
 					this.triggerMethod('click:a', this.model, '3');
+					$(".accnt_no_group").removeClass("hidden");
 				},
+				//編集ボタンがクリックされた時の動作
 				'click @ui.editBtn': function(e){
 					e.preventDefault();
 					this.triggerMethod('click:a', this.model, '1');
+					$(".accnt_no_group").removeClass("hidden");
 				},
+				//削除ボタンがクリックされた時の動作
 				'click @ui.deleteBtn': function(e){
 					e.preventDefault();
 					this.triggerMethod('click:a', this.model, '2');
+					$(".accnt_no_group").removeClass("hidden");
 				},
 			},
 			templateHelpers: {
@@ -40,7 +46,6 @@ define([
 					} else {
 						return null;
 					}
-
 				},
 				//管理権限
 				userType: function(){

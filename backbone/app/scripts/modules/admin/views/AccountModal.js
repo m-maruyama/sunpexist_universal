@@ -26,7 +26,9 @@ define([
 				'upBtn': '.update',
 				'close': '.close',
 				'cancel': '.cancel',
-				'corporate_id': '#corporate_id',
+				'corporate_id_modal': '#corporate_id_modal',
+				'accnt_no_group' : '.accnt_no_group',
+				'accnt_no':'#accnt_no',
 				'user_id': '#user_id',
 				'user_name': '#user_name',
 				'login_disp_name': '#login_disp_name',
@@ -39,7 +41,7 @@ define([
 				'datetimepicker': '.datetimepicker',
 			},
 			bindings: {
-				'#corporate_id': 'corporate_id',
+				'#corporate_id_modal': 'corporate_id_modal',
 				'#agreement_no': 'agreement_no',
 				'#user_id': 'user_id',
 				'#user_name': 'user_name',
@@ -60,6 +62,8 @@ define([
 					var model = new this.collection.model();
 					this.collection.unshift(model);
 					this.ui.modal.modal('hide');
+					$("#password-group").removeClass("hidden");
+					$("#corporate_id_modal").attr('disabled',false);
 					this.reset();
 				},
 				"click @ui.upBtn": function(e){
@@ -75,6 +79,8 @@ define([
 					model.set('mail_address', this.ui.mail_address.val());
 					model.set('password', this.ui.password.val());
 					model.set('password_confirm', this.ui.password_confirm.val());
+					$("#corporate_id_modal").attr('disabled',false);
+
 					//if(this.ui.password.val() == this.ui.password_confirm.val()){
 					//	console.log('same');
 					//}else{
@@ -124,9 +130,11 @@ define([
 			},
 			reset: function(){
 				this.triggerMethod('hideAlerts');
-				this.ui.corporate_id.val('');
+				$('#corporate_id_modal').val('1');
+				this.ui.accnt_no.val('');
 				this.ui.user_id.val('');
 				this.ui.password.val('');
+				this.ui.password_confirm.val('');
 				this.ui.user_name.val('');
 				this.ui.login_disp_name.val('');
 				this.ui.position_name.val('');
@@ -135,54 +143,76 @@ define([
 				this.ui.display.text('アカウント追加');
 				this.ui.upBtn.text('追加');
 				this.ui.display_type.val('');
-				this.ui.corporate_id.attr('readonly',false);
+				$('#corporate_id_modal').attr('disabled',false);
+				this.ui.accnt_no.attr('readonly',true);
 				this.ui.user_id.attr('readonly',false);
 				this.ui.password.attr('readonly',false);
 				this.ui.user_name.attr('readonly',false);
 				this.ui.login_disp_name.attr('readonly',false);
 				this.ui.position_name.attr('readonly',false);
-				this.ui.user_type.attr('readonly',false);
+				this.ui.user_type.attr('disabled',false);
 				this.ui.mail_address.attr('readonly',false);
-
 			},
 			showMessage: function(model, display_type) {
 				this.ui.modal.modal('show');
+				$('#corporate_id_modal').val(model.get('corporate_id'));//モデルのコーポレートidを取得し、modalのvalに設定
 				this.ui.user_id.val(model.get('user_id'));
+				this.ui.accnt_no.val(model.get('accnt_no'));
 				this.ui.user_name.val(model.get('user_name'));
+				this.ui.login_disp_name.val(model.get('login_disp_name'));
 				this.ui.position_name.val(model.get('position_name'));
 				this.ui.user_type.val(model.get('user_type'));
+				this.ui.mail_address.val(model.get('mail_address'));
+
 				this.ui.display_type.val(display_type);
 				if (display_type === '1') {
-					this.ui.password.val('');
+
 					var display_str = 'アカウント編集';
 					var button_str = '更新';
 					this.ui.user_id.attr('readonly',true);
+					this.ui.accnt_no.attr('readonly',true);
+					this.ui.login_disp_name.attr('readonly',false);
+					this.ui.position_name.attr('readonly',false);
+					this.ui.user_type.attr('disabled',false);
+					this.ui.mail_address.attr('readonly',false);
 					this.ui.pass.text('※パスワードを変更する場合は入力して下さい。未入力の場合は変更されません。');
+					$("#password-group").addClass("hidden");
+					$("#corporate_id_modal").attr('disabled',true);
 				} else if (display_type === '2') {
 					var display_str = 'アカウント削除';
 					var button_str = '削除';
-					this.ui.password.val('********');
 					this.ui.user_id.attr('readonly',true);
-					this.ui.password.attr('readonly',true);
 					this.ui.user_name.attr('readonly',true);
+					this.ui.accnt_no.attr('readonly',true);
+					this.ui.login_disp_name.attr('readonly',true);
 					this.ui.position_name.attr('readonly',true);
-					this.ui.user_type.attr('readonly',true);
+					this.ui.user_type.attr('disabled',true);
+					this.ui.mail_address.attr('readonly',true);
+					$("#password-group").addClass("hidden");
+					$("#corporate_id_modal").attr('disabled',true);
 				} else if (display_type === '3') {
 					var display_str = 'アカウントロック解除';
 					var button_str = '解除';
-					this.ui.password.val('********');
+					//this.ui.password.val('********');
 					this.ui.user_id.attr('readonly',true);
-					this.ui.password.attr('readonly',true);
+					//this.ui.password.attr('readonly',true);
+					this.ui.accnt_no.attr('readonly',true);
+					this.ui.login_disp_name.attr('readonly',true);
 					this.ui.user_name.attr('readonly',true);
 					this.ui.position_name.attr('readonly',true);
-					this.ui.user_type.attr('readonly',true);
+					this.ui.user_type.attr('disabled',true);
+					this.ui.mail_address.attr('readonly',true);
+					$("#password-group").addClass("hidden");
+					$("#corporate_id_modal").attr('disabled',true);
 				} else {
 					var display_str = 'アカウント追加';
 					var button_str = '追加';
+					
+
 				}
 				this.ui.display.text(display_str);
 				this.ui.upBtn.text(button_str);
-			}
+			},
 		});
 	});
 });

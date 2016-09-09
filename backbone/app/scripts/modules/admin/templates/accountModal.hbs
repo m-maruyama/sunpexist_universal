@@ -9,23 +9,14 @@
 			<div class="modal-body">
 				<div class="errors"></div>
 				<form>
+					<!--企業ID-->
 					<div class="form-group corporate_id">
 					</div>
-					<!--<div class="form-group corporate_id">
-						<div>
-						<label for="corporate_id">企業ID</label>
-						<select id="corporate_id" name="corporate_id" class="form-control input-sm" value={{corporate_id}}>
-							<option value="1">1 company</option>
-							<option value="2">2 company2</option>
-							<option value="3">3 company3</option>
-							<option value="4">4 company4</option>
-							<option value="5">5 company5</option>
-							<option value="6">6 company6</option>
-							<option value="7">7 company7</option>
-							<option value="8">8 company8</option>
-						</select>
+					<!--アカウントID-->
+					<div class="form-group accnt_no_group">
+						<label for="accnt_no">アカウントNo.</label>
+						<input type='text' class="form-control" id='accnt_no' value={{accnt_no}}>
 					</div>
-					</div>-->
 					<div class="form-group">
 						<label for="user_id">ログインID（半角英数字混合、8文字以上で入力してください。）</label>
 						<input autocomplete="off" type='text' class="form-control" id='user_id' value={{user_id}}>
@@ -54,21 +45,14 @@
 						<label for="mail_address">メールアドレス</label>
 						<input type='text' class="form-control" id='mail_address' value={{mail_address}}>
 					</div>
-					<div class="form-group">
+					<div class="form-group" id="password-group">
 						<label for="password">パスワード<br>（半角英数字、半角記号(!#$%&*+@?)混合、8文字以上で入力してください。）</label>
 						<input autocomplete="off" type='text' class="form-control" id='password' value={{password}}>
 						<label for="password" class='pass'></label>
-					</div>
-					<div class="form-group">
-						<label for="password_confirm">パスワード確認<br>（半角英数字、半角記号(!#$%&*+@?)混合、8文字以上で入力してください。）</label>
+						<label for="password_confirm">パスワード確認</label>
 						<input autocomplete="off" type='text' class="form-control" id='password_confirm' value={{password_confirm}}>
 						<label for="password_confirm" class='password_confirm'></label>
 					</div>
-
-
-
-
-
 				</form>
 			</div>
 			<input type='hidden' id='display_type'>

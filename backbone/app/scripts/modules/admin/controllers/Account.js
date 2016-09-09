@@ -79,27 +79,19 @@ define([
 					accountView.page.show(paginationView);
 					accountView.page_2.show(paginationView2);
 				};
-
-
-
-
-
 				this.listenTo(paginationView, 'selected', function(pageNumber){
 						fetchList(pageNumber);
 				});
 				this.listenTo(paginationView2, 'selected', function(pageNumber){
 						fetchList(pageNumber);
 				});
-
 				this.listenTo(accountListListView, 'sort', function(sortKey,order){
 					fetchList(null,sortKey,order);
 				});
-
 				//検索ボタンを押したらfetchwを追加
 				this.listenTo(accountConditionView, 'click:search', function(sortKey,order){
 					fetchList(1,sortKey,order);
 				});
-
 				this.listenTo(accountModalView, 'reload', function(){
 					fetchList();
 				});
@@ -114,10 +106,7 @@ define([
 
 				this.listenTo(accountListListView, 'childview:click:a', function(view, model, display){
 					accountModalView.showMessage(model,display);
-
-
 				});
-
 
 				//遷移するときのアラート
 				var addFlag = false;
@@ -125,9 +114,9 @@ define([
 				this.listenTo(accountModalView, 'add', function(){
 					addFlag = true;
 				});
-				this.listenTo(accountModalView, 'delete', function(){
-					addFlag = false;
-				});
+				//this.listenTo(accountModalView, 'delete', function(){
+				//	addFlag = false;
+				//});
 				this.listenTo(accountListListCollection, 'sync', function(){
 					addFlag = false;
 				});

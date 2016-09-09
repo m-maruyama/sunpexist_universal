@@ -33,6 +33,8 @@ define([
 			events: {
 				'click @ui.addBtn': function(e){
 					e.preventDefault();
+					$("#password-group").removeClass("hidden");
+					$(".accnt_no_group").addClass("hidden");
 				},
 				// 'click @ui.updateBtn': function(e){
 					// e.preventDefault();

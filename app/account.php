@@ -152,7 +152,7 @@ $app->post('/account/search', function () use ($app) {
     //全検索
     $results = MAccount::find(array(
         'order' => "$sort_key $order",
-        'conditions' => "corporate_id LIKE '$corporate_id_val' AND user_name LIKE '%$user_name_val%' AND user_id LIKE '$user_id_val%' AND mail_address LIKE '$mail_address%'",
+        'conditions' => "corporate_id LIKE '$corporate_id_val' AND user_name LIKE '%$user_name_val%' AND user_id LIKE '$user_id_val%' AND mail_address LIKE '$mail_address%' AND del_flg LIKE '0'",
         //'conditions'  => "'$user_name_val%"
     ));
 
@@ -214,19 +214,22 @@ $app->post('/account/modal', function () use ($app) {
         //編集の場合
         $m_account = $ac[0];
     } elseif ($params['type'] == '2') {
+        //削除ボタンが押された場合に、削除フラグ１
+        $ac[0]->del_flg = '1';
+        $m_account = $ac[0];
         //削除の場合
-        if ($ac[0]->delete() == false) {
-            $error_list['delete'] = 'アカウントの削除に失敗しました。';
-            $json_list['errors'] = $error_list;
-            echo json_encode($json_list);
-
-            return true;
-        } else {
-            $transaction->commit();
-            echo json_encode($json_list);
-
-            return true;
-        }
+        //if ($ac[0]->delete() == false) {
+        //    $error_list['delete'] = 'アカウントの削除に失敗しました。';
+          //  $json_list['errors'] = $error_list;
+        //    echo json_encode($json_list);
+//
+        //    return true;
+        //} else {
+        //    $transaction->commit();
+        //    echo json_encode($json_list);
+//
+        //    return true;
+        //}
     } elseif ($params['type'] == '3') {
         //ロック解除の場合
         $ac[0]->login_err_count = 0;
