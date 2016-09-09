@@ -35,6 +35,7 @@ define([
 				var that = this;
 				this.setNav('wearerEnd');
 				var pagerModel = new App.Entities.Models.Pager();
+				var pagerModel2 = new App.Entities.Models.Pager();
 				var modal = false;
 				var wearerEndModel = null;
 				var detailModalView = new App.Admin.Views.DetailModal();
@@ -87,7 +88,7 @@ define([
 				var sectionListListCollection = new App.Entities.Collections.AdminSectionModalListList();
 				var sectionModalListListView = new App.Admin.Views.SectionModalListList({
 					collection: sectionListListCollection,
-					pagerModel: pagerModel
+					pagerModel: pagerModel2
 				});
 				var sectionModalListCondition = new App.Entities.Models.AdminSectionModalListCondition();
 				var sectionModalConditionView = new App.Admin.Views.SectionModalCondition({
@@ -103,11 +104,11 @@ define([
 				});
 				var fetchList_section = function(pageNumber,sortKey,order){
 					if(pageNumber){
-						pagerModel.set('page_number', pageNumber);
+						pagerModel2.set('page_number', pageNumber);
 					}
 					if(sortKey){
-						pagerModel.set('sort_key', sortKey);
-						pagerModel.set('order', order);
+						pagerModel2.set('sort_key', sortKey);
+						pagerModel2.set('order', order);
 					}
 					sectionModalListListView.fetch(sectionModalListCondition);
 					sectionModalView.listTable.show(sectionModalListListView);
@@ -154,65 +155,12 @@ define([
 					csvDownloadView.fetch(cond_map);
 				});
 
-				// 拠点セレクト変更時の絞り込み処理 --ここから
-				this.listenTo(wearerEndConditionView, 'change:section_select', function(agreement_no){
-					var sectionConditionView2 = new App.Admin.Views.SectionCondition({
-						agreement_no:agreement_no,
-					});
-					wearerEndConditionView.section.show(sectionConditionView2);
-
-					var sectionModalListListView2 = new App.Admin.Views.SectionModalListList({
-						collection: sectionListListCollection,
-						pagerModel: pagerModel
-					});
-					var sectionModalListCondition2 = new App.Entities.Models.AdminSectionModalListCondition();
-					var sectionModalConditionView2 = new App.Admin.Views.SectionModalCondition({
-						model:sectionModalListCondition2
-					});
-					var sectionModalView2 = new App.Admin.Views.SectionModal({
-						model:sectionModalListCondition2
-					});
-					this.listenTo(sectionConditionView2, 'click:section_btn', function(view, model){
-						sectionModalView2.ui.modal.modal('show');
-					});
-					var fetchList_section_2 = function(pageNumber,sortKey,order){
-						if(pageNumber){
-							pagerModel.set('page_number', pageNumber);
-						}
-						if(sortKey){
-							pagerModel.set('sort_key', sortKey);
-							pagerModel.set('order', order);
-						}
-						sectionModalListListView2.fetch(sectionModalListCondition2);
-						sectionModalView2.listTable.show(sectionModalListListView2);
-					};
-					this.listenTo(sectionModalConditionView2, 'click:section_search', function(sortKey, order){
-						modal = true;
-						fetchList_section_2(1,sortKey,order);
-					});
-					this.listenTo(sectionModalView2, 'fetched', function(){
-						wearerEndView.detailModal.show(sectionModalView2.render());
-						sectionModalView2.ui.modal.modal('show');
-					});
-					var sectionModalListItemView2 = new App.Admin.Views.SectionModalListItem();
-					this.listenTo(sectionModalListListView2, 'childview:click:section_select', function(model){
-						sectionConditionView2.ui.section[0].value = model.model.attributes.rntl_sect_cd;
-						sectionModalView2.ui.modal.modal('hide');
-					});
-
-					wearerEndView.sectionModal_2.show(sectionModalView2.render());
-					sectionModalView2.condition.show(sectionModalConditionView2);
-				});
-				// 拠点セレクト変更時の絞り込み処理 --ここまで
 
 				App.main.show(wearerEndView);
 				wearerEndView.condition.show(wearerEndConditionView);
 				wearerEndConditionView.agreement_no.show(agreementNoConditionView);
 				wearerEndConditionView.section.show(sectionConditionView);
 				wearerEndConditionView.job_type.show(jobTypeConditionView);
-				wearerEndConditionView.input_item.show(inputItemConditionView);
-				wearerEndConditionView.item_color.show(itemColorConditionView);
-				wearerEndConditionView.individual_number.show(individualNumberConditionView);
 				wearerEndView.sectionModal.show(sectionModalView.render());
 				sectionModalView.page.show(paginationView);
 				sectionModalView.condition.show(sectionModalConditionView);

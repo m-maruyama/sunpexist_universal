@@ -9,11 +9,11 @@ define([
 		var order = 'asc';
 		var sort_key = 'order_req_no';
 		Views.WearerEndListList = Marionette.CompositeView.extend({
-			template: App.Admin.Templates.historyListList,
+			template: App.Admin.Templates.wearerEndListList,
 			emptyView: Backbone.Marionette.ItemView.extend({
                 tagName: "tr",
-								template: App.Admin.Templates.historyEmpty,
-      }),
+				template: App.Admin.Templates.wearerEmpty,
+			}),
 			childView: Views.WearerEndListItem,
 			childViewContainer: "tbody",
 			ui: {
@@ -56,10 +56,6 @@ define([
 					},
 					complete:function(res){
 						$.unblockUI();
-						// 個体管理番号表示/非表示制御
-						if (res.responseJSON.individual_flag.valueOf()) {
-							$('.tb_individual_num').css('display','');
-						}
 					}
 				});
 			}

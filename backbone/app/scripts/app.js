@@ -142,6 +142,7 @@ define([
 			"WI0010": host + "/wearer_input",
 			"WI0011": host + "/change_section",
 			"WI0012": host + "/input_insert",
+			"WN0010": host + "/wearer_end/search",
 			"CM9010": host + "/api/CM9010"
 		};
 
