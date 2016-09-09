@@ -12,56 +12,24 @@ define([
 				var result = {
 					agreement_no : null,
 					no : null,
-					emply_order_no : null,
-					member_no : null,
 					member_name : null,
+					wearer_name_src1 : this.get('wearer_name_src1'),
+					wearer_name_src2 : this.get('wearer_name_src2'),
 					section : null,
 					job_type : null,
 					input_item : null,
 					item_color : null,
 					item_size : null,
-					order_day_from : null,
-					order_day_to : null,
-					send_day_from : null,
-					send_day_to : null,
-					status0: this.get('status0'),
-					status1: this.get('status1'),
-					order_kbn0: this.get('order_kbn0'),
-					order_kbn1: this.get('order_kbn1'),
-					order_kbn2: this.get('order_kbn2'),
-					order_kbn3: this.get('order_kbn3'),
-					order_kbn4: this.get('order_kbn4'),
-					reason_kbn0: this.get('reason_kbn0'),
-					reason_kbn1: this.get('reason_kbn1'),
-					reason_kbn2: this.get('reason_kbn2'),
-					reason_kbn3: this.get('reason_kbn3'),
-					reason_kbn4: this.get('reason_kbn4'),
-					reason_kbn5: this.get('reason_kbn5'),
-					reason_kbn6: this.get('reason_kbn6'),
-					reason_kbn7: this.get('reason_kbn7'),
-					reason_kbn8: this.get('reason_kbn8'),
-					reason_kbn9: this.get('reason_kbn9'),
-					reason_kbn10: this.get('reason_kbn10'),
-					reason_kbn11: this.get('reason_kbn11'),
-					reason_kbn12: this.get('reason_kbn12'),
-					reason_kbn13: this.get('reason_kbn13'),
-					reason_kbn14: this.get('reason_kbn14'),
-					reason_kbn15: this.get('reason_kbn15'),
-					reason_kbn16: this.get('reason_kbn16'),
-					reason_kbn17: this.get('reason_kbn17'),
-					reason_kbn18: this.get('reason_kbn18'),
-					reason_kbn19: this.get('reason_kbn19'),
 					individual_number : null,
+					wearer_kbn0: this.get('wearer_kbn0'),
+					wearer_kbn1: this.get('wearer_kbn1'),
+					wearer_kbn2: this.get('wearer_kbn2'),
+					wearer_kbn3: this.get('wearer_kbn3'),
+					wearer_kbn4: this.get('wearer_kbn4'),
 					td_no : null,
 				};
 				if(this.get('agreement_no')) {
 					result.agreement_no = this.get('agreement_no');
-				}
-				if(this.get('no')) {
-					result.no = this.get('no');
-				}
-				if(this.get('emply_order_no')) {
-					result.emply_order_no = this.get('emply_order_no');
 				}
 				if(this.get('member_no')) {
 					result.member_no = this.get('member_no');
@@ -83,18 +51,6 @@ define([
 				}
 				if(this.get('item_size')) {
 					result.item_size = this.get('item_size');
-				}
-				if(this.get('order_day_from')) {
-					result.order_day_from = this.get('order_day_from');
-				}
-				if(this.get('order_day_to')) {
-					result.order_day_to = this.get('order_day_to');
-				}
-				if(this.get('send_day_from')) {
-					result.send_day_from = this.get('send_day_from');
-				}
-				if(this.get('send_day_to')) {
-					result.send_day_to = this.get('send_day_to');
 				}
 				if(this.get('individual_number')) {
 					result.individual_number = this.get('individual_number');

@@ -44,7 +44,7 @@ define([
 			},
 			fetch:function(wearerListConditionModel){
 				var cond = {
-					"scr": '発注状況照会',
+					"scr": '着用者照会',
 					"page":this.options.pagerModel.getPageRequest(),
 					"cond": wearerListConditionModel.getReq()
 				};
@@ -56,10 +56,12 @@ define([
 					},
 					complete:function(res){
 						$.unblockUI();
+/*
 						// 個体管理番号表示/非表示制御
 						if (res.responseJSON.individual_flag.valueOf()) {
 							$('.tb_individual_num').css('display','');
 						}
+*/
 					}
 				});
 			}

@@ -17,15 +17,12 @@ define([
 	'../views/SectionModal',
 	'../views/SectionModalListList',
 	'../views/Pagination',
-	'../views/CsvDownload',
 	"entities/models/Pager",
 	"entities/models/AdminWearer",
 	"entities/models/AdminWearerListCondition",
 	"entities/models/AdminSectionModalListCondition",
-	"entities/models/AdminCsvDownloadCondition",
 	"entities/collections/AdminWearerListList",
 	"entities/collections/AdminSectionModalListList",
-	"entities/collections/AdminCsvDownload",
 	'bootstrap'
 ], function(App) {
 	'use strict';
@@ -58,7 +55,6 @@ define([
 				});
 				var paginationView = new App.Admin.Views.Pagination({model: pagerModel});
 				var paginationView2 = new App.Admin.Views.Pagination({model: pagerModel});
-				var csvDownloadView = new App.Admin.Views.CsvDownload();
 
 				var fetchList = function(pageNumber,sortKey,order){
 					if(pageNumber){
@@ -72,7 +68,6 @@ define([
 					wearerView.listTable.show(wearerListListView);
 					wearerView.page.show(paginationView);
 					wearerView.page_2.show(paginationView2);
-					wearerView.csv_download.show(csvDownloadView);
 				};
 				this.listenTo(wearerListListView, 'childview:click:a', function(view, model){
 					wearerModel = new App.Entities.Models.AdminWearer({no:model.get('order_req_no')});
@@ -149,9 +144,6 @@ define([
 				this.listenTo(wearerConditionView, 'click:search', function(sortKey,order){
 					modal = false;
 					fetchList(1,sortKey,order);
-				});
-				this.listenTo(csvDownloadView, 'click:download_btn', function(cond_map){
-					csvDownloadView.fetch(cond_map);
 				});
 
 				// 拠点セレクト変更時の絞り込み処理 --ここから
