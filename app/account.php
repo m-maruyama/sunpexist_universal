@@ -22,39 +22,11 @@ $app->post('/account/search', function () use ($app) {
     $cond = $params['cond'];
     $page = $params['page'];
     $query_list = array();//追加
-    //---検索条件---//
-    //企業ID
-    //array_push($query_list,"m_account.corporate_id = '".$auth['corporate_id']."'");
-
-    //契約No
-    //if(!empty($cond['agreement_no'])){
-    //	array_push($query_list,"m_account.rntl_cont_no = '".$cond['agreement_no']."'");
-    //}
-
-    //ログインid
-    //if(!empty($cond['user_id'])){
-    //	array_push($query_list,"m_account.user_id = '".$cond['user_id']."'");
-    //}
-
-    //ユーザー名称
-    //if(!empty($cond['user_name'])){
-    //	array_push($query_list,"m_account.user_name = '".$cond['user_name']."'");
-    //}
-
-    //ユーザー名称
-    //if(!empty($cond['mail_address'])){
-    //	array_push($query_list,"m_account.mail_address = '".$cond['mail_address']."'");
-    //}
-    //ChromePhp::log($query_list);
-
-//ChromePhp::log($page);
 
     //sql文字列を' AND 'で結合
     $query = implode(' AND ', $query_list);
     $sort_key = '';
     $order = '';
-    //ChromePhp::log($query);
-    //ChromePhp::log($page['sort_key']);
 
     //第一ソート設定
     if (!empty($page['sort_key'])) {
@@ -164,8 +136,6 @@ $app->post('/account/search', function () use ($app) {
     foreach ($results as $result) {
         $list['accnt_no'] = $result->accnt_no;//アカウントno
         $list['corporate_id'] = $result->corporate_id;//コーポレートid
-        //$list['rntl_cntl_no'] = $result->rntl_cntl_no;//コーポレートid
-        //$list['agreement_no'] = $result->agreement_no;//契約id
         $list['user_id'] = $result->user_id;
         $list['user_name'] = $result->user_name;//ユーザー名称
         $list['login_disp_name'] = $result->login_disp_name;//ログイン表示名
@@ -178,15 +148,11 @@ $app->post('/account/search', function () use ($app) {
         $list['login_err_count'] = $result->login_err_count;
         array_push($all_list, $list);//$all_listaに$listをpush
     }
-    //ChromePhp::log($all_list);
-    //ChromePhp::log($list);
     $page_list['records_per_page'] = $page['records_per_page'];
     $page_list['page_number'] = $page['page_number'];
     $page_list['total_records'] = count($results);
     $json_list['page'] = $page_list;
     $json_list['list'] = $all_list;
-    //ChromePhp::log($json_list);
-    //ChromePhp::log(json_encode($json_list));
 
     echo json_encode($json_list);
 });
@@ -329,7 +295,7 @@ $app->post('/account/modal', function () use ($app) {
     $m_account->login_disp_name = $cond['login_disp_name']; //表示ユーザー名
     $m_account->upd_user_id = $auth['user_id']; //更新ユーザー
     $m_account->upd_date = date('Y/m/d H:i:s.sss', time()); //更新日時
-    //ChromePhp::log($m_account);
+
     if ($m_account->save() == false) {
         $error_list['update'] = 'アカウント情報の更新に失敗しました。';
         $json_list['errors'] = $error_list;
