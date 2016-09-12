@@ -1,6 +1,8 @@
 <?php
 //use Phalcon\Mvc\Model\Resultset;
 use Phalcon\Mvc\Model\Resultset\Simple as Resultset;
+use Phalcon\Paginator\Adapter\Model as PaginatorModel;
+use Phalcon\Paginator\Adapter\NativeArray as PaginatorArray;
 use Phalcon\Paginator\Adapter\QueryBuilder as PaginatorQueryBuilder;
 
 //前処理
@@ -124,7 +126,6 @@ $app->post('/agreement_no', function () use ($app) {
     $m_contract = new MContract();
     $results = new Resultset(null, $m_contract, $m_contract->getReadConnection()->query($arg_str));
     $results_array = (array) $results;
-    $results = $results_array["\0*\0_rows"];
     $results_cnt = $results_array["\0*\0_count"];
 
 /*
@@ -135,11 +136,21 @@ $app->post('/agreement_no', function () use ($app) {
 */
 
     if ($results_cnt > 0) {
-        foreach ($results as $result) {
-            $list['rntl_cont_no'] = $result['as_rntl_cont_no'];
-            $list['rntl_cont_name'] = $result['as_rntl_cont_name'];
-            array_push($all_list, $list);
-        }
+      $paginator_model = new PaginatorModel(
+    		array(
+    			"data"  => $results,
+    			"limit" => $results_cnt,
+    			"page" => 1
+    		)
+    	);
+      $paginator = $paginator_model->getPaginate();
+  		$results = $paginator->items;
+
+      foreach ($results as $result) {
+          $list['rntl_cont_no'] = $result->as_rntl_cont_no;
+          $list['rntl_cont_name'] = $result->as_rntl_cont_name;
+          array_push($all_list, $list);
+      }
     } else {
         $list['rntl_cont_no'] = null;
         $list['rntl_cont_name'] = '';
@@ -242,7 +253,6 @@ $app->post('/section', function () use ($app) {
     $m_section = new MSection();
     $results = new Resultset(null, $m_section, $m_section->getReadConnection()->query($arg_str));
     $results_array = (array) $results;
-    $results = $results_array["\0*\0_rows"];
     $results_cnt = $results_array["\0*\0_count"];
 
     // デフォルト「全て」を設定
@@ -253,11 +263,21 @@ $app->post('/section', function () use ($app) {
     }
 
     if ($results_cnt > 0) {
-        foreach ($results as $result) {
-            $list['rntl_sect_cd'] = $result['rntl_sect_cd'];
-            $list['rntl_sect_name'] = $result['rntl_sect_name'];
-            array_push($all_list, $list);
-        }
+      $paginator_model = new PaginatorModel(
+    		array(
+    			"data"  => $results,
+    			"limit" => $results_cnt,
+    			"page" => 1
+    		)
+    	);
+      $paginator = $paginator_model->getPaginate();
+  		$results = $paginator->items;
+
+      foreach ($results as $result) {
+          $list['rntl_sect_cd'] = $result->rntl_sect_cd;
+          $list['rntl_sect_name'] = $result->rntl_sect_name;
+          array_push($all_list, $list);
+      }
     } else {
         $list['rntl_sect_cd'] = null;
         $list['rntl_sect_name'] = '';
@@ -302,7 +322,6 @@ $app->post('/job_type', function () use ($app) {
     $m_job_type = new MJobType();
     $results = new Resultset(null, $m_job_type, $m_job_type->getReadConnection()->query($arg_str));
     $results_array = (array) $results;
-    $results = $results_array["\0*\0_rows"];
     $results_cnt = $results_array["\0*\0_count"];
 
     // デフォルト「全て」を設定
@@ -313,11 +332,21 @@ $app->post('/job_type', function () use ($app) {
     }
 
     if ($results_cnt > 0) {
-        foreach ($results as $result) {
-            $list['job_type_cd'] = $result['job_type_cd'];
-            $list['job_type_name'] = $result['job_type_name'];
-            array_push($all_list, $list);
-        }
+      $paginator_model = new PaginatorModel(
+    		array(
+    			"data"  => $results,
+    			"limit" => $results_cnt,
+    			"page" => 1
+    		)
+    	);
+      $paginator = $paginator_model->getPaginate();
+  		$results = $paginator->items;
+
+      foreach ($results as $result) {
+          $list['job_type_cd'] = $result->job_type_cd;
+          $list['job_type_name'] = $result->job_type_name;
+          array_push($all_list, $list);
+      }
     } else {
         $list['job_type_cd'] = null;
         $list['job_type_name'] = '';
@@ -365,7 +394,6 @@ $app->post('/input_item', function () use ($app) {
     $m_input_item = new MInputItem();
     $results = new Resultset(null, $m_input_item, $m_input_item->getReadConnection()->query($arg_str));
     $results_array = (array) $results;
-    $results = $results_array["\0*\0_rows"];
     $results_cnt = $results_array["\0*\0_count"];
 
     // デフォルト「全て」を設定
@@ -376,11 +404,21 @@ $app->post('/input_item', function () use ($app) {
     }
 
     if ($results_cnt > 0) {
-        foreach ($results as $result) {
-            $list['item_cd'] = $result['item_cd'];
-            $list['input_item_name'] = $result['input_item_name'];
-            array_push($all_list, $list);
-        }
+      $paginator_model = new PaginatorModel(
+    		array(
+    			"data"  => $results,
+    			"limit" => $results_cnt,
+    			"page" => 1
+    		)
+    	);
+      $paginator = $paginator_model->getPaginate();
+  		$results = $paginator->items;
+
+      foreach ($results as $result) {
+          $list['item_cd'] = $result->item_cd;
+          $list['input_item_name'] = $result->input_item_name;
+          array_push($all_list, $list);
+      }
     } else {
         $list['item_cd'] = null;
         $list['input_item_name'] = '';
@@ -431,7 +469,6 @@ $app->post('/item_color', function () use ($app) {
     $m_input_item = new MInputItem();
     $results = new Resultset(null, $m_input_item, $m_input_item->getReadConnection()->query($arg_str));
     $results_array = (array) $results;
-    $results = $results_array["\0*\0_rows"];
     $results_cnt = $results_array["\0*\0_count"];
 
     // デフォルト「全て」を設定
@@ -442,11 +479,21 @@ $app->post('/item_color', function () use ($app) {
     }
 
     if ($results_cnt > 0) {
-        foreach ($results as $result) {
-            $list['color_cd_id'] = $result['color_cd'];
-            $list['color_cd_name'] = $result['color_cd'];
-            array_push($all_list, $list);
-        }
+      $paginator_model = new PaginatorModel(
+    		array(
+    			"data"  => $results,
+    			"limit" => $results_cnt,
+    			"page" => 1
+    		)
+    	);
+      $paginator = $paginator_model->getPaginate();
+  		$results = $paginator->items;
+
+      foreach ($results as $result) {
+          $list['color_cd_id'] = $result->color_cd;
+          $list['color_cd_name'] = $result->color_cd;
+          array_push($all_list, $list);
+      }
     } else {
         $list['color_cd_id'] = null;
         $list['color_cd_name'] = '';
@@ -531,7 +578,6 @@ $app->post('/zaiko_job_type', function () use ($app) {
     $m_rent_pattern_for_sdmzk = new MRentPatternForSdmzk();
     $results = new Resultset(null, $m_rent_pattern_for_sdmzk, $m_rent_pattern_for_sdmzk->getReadConnection()->query($arg_str));
     $results_array = (array) $results;
-    $results = $results_array["\0*\0_rows"];
     $results_cnt = $results_array["\0*\0_count"];
 
     // デフォルト「全て」を設定
@@ -541,11 +587,21 @@ $app->post('/zaiko_job_type', function () use ($app) {
         array_push($all_list, $list);
     }
     if ($results_cnt > 0) {
-        foreach ($results as $result) {
-            $list['rent_pattern_data'] = $result['rent_pattern_data'];
-            $list['rent_pattern_name'] = $result['rent_pattern_name'];
-            array_push($all_list, $list);
-        }
+      $paginator_model = new PaginatorModel(
+    		array(
+    			"data"  => $results,
+    			"limit" => $results_cnt,
+    			"page" => 1
+    		)
+    	);
+      $paginator = $paginator_model->getPaginate();
+  		$results = $paginator->items;
+
+      foreach ($results as $result) {
+          $list['rent_pattern_data'] = $result->rent_pattern_data;
+          $list['rent_pattern_name'] = $result->rent_pattern_name;
+          array_push($all_list, $list);
+      }
     } else {
         $list['rent_pattern_data'] = null;
         $list['rent_pattern_name'] = '';
@@ -596,7 +652,6 @@ $app->post('/zaiko_item', function () use ($app) {
     $m_item = new MItem();
     $results = new Resultset(null, $m_item, $m_item->getReadConnection()->query($arg_str));
     $results_array = (array) $results;
-    $results = $results_array["\0*\0_rows"];
     $results_cnt = $results_array["\0*\0_count"];
 
     // デフォルト「全て」を設定
@@ -607,11 +662,21 @@ $app->post('/zaiko_item', function () use ($app) {
     }
 
     if ($results_cnt > 0) {
-        foreach ($results as $result) {
-            $list['item_cd'] = $result['as_item_cd'];
-            $list['item_name'] = $result['as_item_name'];
-            array_push($all_list, $list);
-        }
+      $paginator_model = new PaginatorModel(
+    		array(
+    			"data"  => $results,
+    			"limit" => $results_cnt,
+    			"page" => 1
+    		)
+    	);
+      $paginator = $paginator_model->getPaginate();
+  		$results = $paginator->items;
+
+      foreach ($results as $result) {
+          $list['item_cd'] = $result->as_item_cd;
+          $list['item_name'] = $result->as_item_name;
+          array_push($all_list, $list);
+      }
     } else {
         $list['item_cd'] = null;
         $list['item_name'] = '';
@@ -664,7 +729,6 @@ $app->post('/zaiko_item_color', function () use ($app) {
     $m_item = new MItem();
     $results = new Resultset(null, $m_item, $m_item->getReadConnection()->query($arg_str));
     $results_array = (array) $results;
-    $results = $results_array["\0*\0_rows"];
     $results_cnt = $results_array["\0*\0_count"];
 
     // デフォルト「全て」を設定
@@ -675,11 +739,21 @@ $app->post('/zaiko_item_color', function () use ($app) {
     }
 
     if ($results_cnt > 0) {
-        foreach ($results as $result) {
-            $list['color_cd_id'] = $result['as_color_cd'];
-            $list['color_cd_name'] = $result['as_color_cd'];
-            array_push($all_list, $list);
-        }
+      $paginator_model = new PaginatorModel(
+    		array(
+    			"data"  => $results,
+    			"limit" => $results_cnt,
+    			"page" => 1
+    		)
+    	);
+      $paginator = $paginator_model->getPaginate();
+  		$results = $paginator->items;
+
+      foreach ($results as $result) {
+          $list['color_cd_id'] = $result->as_color_cd;
+          $list['color_cd_name'] = $result->as_color_cd;
+          array_push($all_list, $list);
+      }
     } else {
         $list['color_cd_id'] = null;
         $list['color_cd_name'] = '';

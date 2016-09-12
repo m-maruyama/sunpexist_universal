@@ -35,6 +35,8 @@ define([
 				var that = this;
 				this.setNav('history');
 				var pagerModel = new App.Entities.Models.Pager();
+				var pagerModel2 = new App.Entities.Models.Pager();
+				var pagerModel3 = new App.Entities.Models.Pager();
 				var modal = false;
 				var historyModel = null;
 				var detailModalView = new App.Admin.Views.DetailModal();
@@ -58,6 +60,7 @@ define([
 				});
 				var paginationView = new App.Admin.Views.Pagination({model: pagerModel});
 				var paginationView2 = new App.Admin.Views.Pagination({model: pagerModel});
+				var paginationSectionView = new App.Admin.Views.Pagination({model: pagerModel2});
 				var csvDownloadView = new App.Admin.Views.CsvDownload();
 
 				var fetchList = function(pageNumber,sortKey,order){
@@ -87,7 +90,7 @@ define([
 				var sectionListListCollection = new App.Entities.Collections.AdminSectionModalListList();
 				var sectionModalListListView = new App.Admin.Views.SectionModalListList({
 					collection: sectionListListCollection,
-					pagerModel: pagerModel
+					pagerModel: pagerModel2
 				});
 				var sectionModalListCondition = new App.Entities.Models.AdminSectionModalListCondition();
 				var sectionModalConditionView = new App.Admin.Views.SectionModalCondition({
@@ -103,11 +106,11 @@ define([
 				});
 				var fetchList_section = function(pageNumber,sortKey,order){
 					if(pageNumber){
-						pagerModel.set('page_number', pageNumber);
+						pagerModel2.set('page_number', pageNumber);
 					}
 					if(sortKey){
-						pagerModel.set('sort_key', sortKey);
-						pagerModel.set('order', order);
+						pagerModel2.set('sort_key', sortKey);
+						pagerModel2.set('order', order);
 					}
 					sectionModalListListView.fetch(sectionModalListCondition);
 					sectionModalView.listTable.show(sectionModalListListView);
@@ -143,6 +146,10 @@ define([
 						fetchList(pageNumber);
 					}
 				});
+				this.listenTo(paginationSectionView, 'selected', function(pageNumber){
+						fetchList_section(pageNumber);
+				});
+
 				this.listenTo(historyListListView, 'sort', function(sortKey,order){
 					fetchList(null,sortKey,order);
 				});
@@ -154,7 +161,7 @@ define([
 					csvDownloadView.fetch(cond_map);
 				});
 
-				// 拠点セレクト変更時の絞り込み処理 --ここから
+				// 契約No変更時の絞り込み処理 --ここから
 				this.listenTo(historyConditionView, 'change:section_select', function(agreement_no){
 					var sectionConditionView2 = new App.Admin.Views.SectionCondition({
 						agreement_no:agreement_no,
@@ -163,7 +170,7 @@ define([
 
 					var sectionModalListListView2 = new App.Admin.Views.SectionModalListList({
 						collection: sectionListListCollection,
-						pagerModel: pagerModel
+						pagerModel: pagerModel3
 					});
 					var sectionModalListCondition2 = new App.Entities.Models.AdminSectionModalListCondition();
 					var sectionModalConditionView2 = new App.Admin.Views.SectionModalCondition({
@@ -177,15 +184,20 @@ define([
 					});
 					var fetchList_section_2 = function(pageNumber,sortKey,order){
 						if(pageNumber){
-							pagerModel.set('page_number', pageNumber);
+							pagerModel3.set('page_number', pageNumber);
 						}
 						if(sortKey){
-							pagerModel.set('sort_key', sortKey);
-							pagerModel.set('order', order);
+							pagerModel3.set('sort_key', sortKey);
+							pagerModel3.set('order', order);
 						}
 						sectionModalListListView2.fetch(sectionModalListCondition2);
 						sectionModalView2.listTable.show(sectionModalListListView2);
+						sectionModalView2.page.show(paginationSectionView2);
 					};
+					var paginationSectionView2 = new App.Admin.Views.Pagination({model: pagerModel3});
+					this.listenTo(paginationSectionView2, 'selected', function(pageNumber){
+							fetchList_section_2(pageNumber);
+					});
 					this.listenTo(sectionModalConditionView2, 'click:section_search', function(sortKey, order){
 						modal = true;
 						fetchList_section_2(1,sortKey,order);
@@ -203,7 +215,7 @@ define([
 					historyView.sectionModal_2.show(sectionModalView2.render());
 					sectionModalView2.condition.show(sectionModalConditionView2);
 				});
-				// 拠点セレクト変更時の絞り込み処理 --ここまで
+				// 契約No変更時の絞り込み処理 --ここまで
 
 				App.main.show(historyView);
 				historyView.condition.show(historyConditionView);
@@ -214,7 +226,7 @@ define([
 				historyConditionView.item_color.show(itemColorConditionView);
 				historyConditionView.individual_number.show(individualNumberConditionView);
 				historyView.sectionModal.show(sectionModalView.render());
-				sectionModalView.page.show(paginationView);
+				sectionModalView.page.show(paginationSectionView);
 				sectionModalView.condition.show(sectionModalConditionView);
 			}
 		});
