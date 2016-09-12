@@ -130,6 +130,7 @@ define([
 			"RE0010": host + "/receive/search",
 			"RE0020": host + "/receive/update",
 			"WE0010": host + "/wearer/search",
+			"WE0020": host + "/wearer/detail",
 			"AC0010": host + "/account/search",
 			"AC0020": host + "/account/modal",
 			"IN0010": host + "/info/search",
