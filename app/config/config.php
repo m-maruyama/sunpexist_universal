@@ -13,10 +13,21 @@ return new \Phalcon\Config(array(
     'database' => array(
         'host'        => '10.0.2.2', //ローカル
 //        'host'        => 'testdb.cedx29aizopt.ap-northeast-1.rds.amazonaws.com', //開発用RDS
+//        'host'        => 'sirius.c2hsrkenxay5.ap-northeast-1.rds.amazonaws.com', //本番用RDS
 //        'adapter' => 'Postgresql',
+        //---ローカルDB接続情報▼---//
         'username'    => 'pman',
         'password'    => 'NBs73j(Dhqe#',
-        'dbname'      => 'sunpexist_universal_db',
+//        'dbname'      => 'sunpexist_universal_db',
+        'dbname'      => 'sp_universal_db',
+        //---ローカルDB接続情報▲---//
+/*
+        //---本番DB接続情報▼---//
+        'username'    => 'sp_universal_db',
+        'password'    => 'xom4xhn8lqufopui',
+        'dbname'      => 'sp_universal_db',
+        //---本番DB接続情報▲---//
+*/
         // 'charset'     => 'utf8',
     ),
     'application' => array(
