@@ -1,0 +1,29 @@
+
+	  <!-- start 本文エリア -->
+		<div class="row">
+			<h1>注文入力</h1>
+			<!-- start フォーム -->
+			<form class="form-horizontal">
+
+				<div class="form-group">
+					<div class="agreementNoCondition">
+						<label class="col-md-2 control-label" for="no">契約No</label>
+						<div class="col-md-5">
+							<select class="form-control input-sm" id="agreement_no" name="agreement_no">
+								{{#each agreement_no_list}}<option value="{{rntl_cont_no}}">{{rntl_cont_no}} {{rntl_cont_name}}</option>{{/each}}
+							</select>
+						</div>
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="section">
+						<label class="col-md-2 control-label" for="">拠点</label>
+						<div class="col-md-8">
+							<select class="input-sm" id="section" name="section">
+								{{#each section_list}}<option value="{{rntl_sect_cd}}">{{rntl_sect_name}}</option>{{/each}}
+							</select>
+						</div>
+					</div>
+				</div>
+			</form>
+			<!-- end フォーム -->

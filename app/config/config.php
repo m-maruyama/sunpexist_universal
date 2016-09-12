@@ -11,24 +11,25 @@ return new \Phalcon\Config(array(
         // // 'charset'     => 'utf8',
     // ),
     'database' => array(
-        'host'        => '10.0.2.2', //ローカル
+        'host' => '10.0.2.2', //ローカル
 //        'host'        => 'testdb.cedx29aizopt.ap-northeast-1.rds.amazonaws.com', //開発用RDS
 //        'adapter' => 'Postgresql',
-        'username'    => 'pman',
-        'password'    => 'NBs73j(Dhqe#',
-        'dbname'      => 'sunpexist_universal_db',
+        'username' => 'pman',
+        'password' => 'NBs73j(Dhqe#',
+        'dbname' => 'sp_universal_db',
+        //'dbname'      => 'sunpexist_universal_db',
         // 'charset'     => 'utf8',
     ),
     'application' => array(
-        'controllersDir' => APP_PATH . '/app/controllers/',
+        'controllersDir' => APP_PATH.'/app/controllers/',
         // 'formsDir' => APP_PATH . '/app/forms/',
-        'modelsDir'      => APP_PATH . '/app/models/',
-        'migrationsDir'  => APP_PATH . '/app/migrations/',
+        'modelsDir' => APP_PATH.'/app/models/',
+        'migrationsDir' => APP_PATH.'/app/migrations/',
         // 'viewsDir'       => APP_PATH . '/app/views/',
         // 'pluginsDir'     => APP_PATH . '/app/plugins/',
-        'libraryDir'     => APP_PATH . '/app/library/',
+        'libraryDir' => APP_PATH.'/app/library/',
         // 'cacheDir'       => APP_PATH . '/app/cache/',
-        'logDir'       => APP_PATH . '/app/log/',
-        'baseUri'        => '/universal/',
-    )
+        'logDir' => APP_PATH.'/app/log/',
+        'baseUri' => '/universal/',
+    ),
 ));
