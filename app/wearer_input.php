@@ -1,17 +1,13 @@
 <?php
 //use Phalcon\Mvc\Model\Resultset;
-use Phalcon\Mvc\Model;
 use Phalcon\Mvc\Model\Resultset\Simple as Resultset;
-use Phalcon\Paginator\Adapter\Model as PaginatorModel;
-use Phalcon\Paginator\Adapter\NativeArray as PaginatorArray;
-use Phalcon\Paginator\Adapter\QueryBuilder as PaginatorQueryBuilder;
 use Phalcon\Mvc\Model\Query;
 
-/**
+/*
  * 検索項目：契約No(入力系)
  */
-$app->post('/agreement_no_input', function ()use($app) {
-    $params = json_decode(file_get_contents("php://input"), true);
+$app->post('/agreement_no_input', function () use ($app) {
+    $params = json_decode(file_get_contents('php://input'), true);
 
     $query_list = array();
     $list = array();
@@ -19,19 +15,19 @@ $app->post('/agreement_no_input', function ()use($app) {
     $json_list = array();
 
     // アカウントセッション取得
-    $auth = $app->session->get("auth");
+    $auth = $app->session->get('auth');
 
     //--- 検索条件 ---//
     // 契約マスタ. 企業ID
-    array_push($query_list,"MContract.corporate_id = '".$auth['corporate_id']."'");
+    array_push($query_list, "MContract.corporate_id = '".$auth['corporate_id']."'");
     // 契約マスタ. レンタル契約フラグ
-    array_push($query_list,"MContract.rntl_cont_flg = '1'");
+    array_push($query_list, "MContract.rntl_cont_flg = '1'");
     // 契約リソースマスタ. 企業ID
-    array_push($query_list,"MContractResource.corporate_id = '".$auth['corporate_id']."'");
+    array_push($query_list, "MContractResource.corporate_id = '".$auth['corporate_id']."'");
     // アカウントマスタ.企業ID
-    array_push($query_list,"MAccount.corporate_id = '".$auth['corporate_id']."'");
+    array_push($query_list, "MAccount.corporate_id = '".$auth['corporate_id']."'");
     // アカウントマスタ. ユーザーID
-    array_push($query_list,"MAccount.user_id = '".$auth['user_id']."'");
+    array_push($query_list, "MAccount.user_id = '".$auth['user_id']."'");
 
     //sql文字列を' AND 'で結合
     $query = implode(' AND ', $query_list);
@@ -39,35 +35,35 @@ $app->post('/agreement_no_input', function ()use($app) {
     //--- クエリー実行・取得 ---//
     $results = MContract::query()
         ->where($query)
-        ->columns(array('MContract.*','MContractResource.*','MAccount.*'))
-        ->leftJoin('MContractResource','MContract.corporate_id = MContractResource.corporate_id')
-        ->join('MAccount','MAccount.accnt_no = MContractResource.accnt_no')
+        ->columns(array('MContract.*', 'MContractResource.*', 'MAccount.*'))
+        ->leftJoin('MContractResource', 'MContract.corporate_id = MContractResource.corporate_id')
+        ->join('MAccount', 'MAccount.accnt_no = MContractResource.accnt_no')
         ->execute();
 
     // デフォルトは空を設定
     $list['rntl_cont_no'] = null;
     $list['rntl_cont_name'] = null;
-    array_push($all_list,$list);
+    array_push($all_list, $list);
 
     foreach ($results as $result) {
         $list['rntl_cont_no'] = $result->mContract->rntl_cont_no;
         $list['rntl_cont_name'] = $result->mContract->rntl_cont_name;
-        array_push($all_list,$list);
+        array_push($all_list, $list);
     }
 
     $json_list['agreement_no_list'] = $all_list;
     echo json_encode($json_list);
 });
 
-/**
+/*
  * 着用者入力各フォーム
  */
-$app->post('/wearer_input', function ()use($app){
+$app->post('/wearer_input', function () use ($app) {
 
-	$params = json_decode(file_get_contents("php://input"), true);
-	// アカウントセッション取得
-	$auth = $app->session->get("auth");
-	$cond = $params['cond'];
+    $params = json_decode(file_get_contents('php://input'), true);
+    // アカウントセッション取得
+    $auth = $app->session->get('auth');
+    $cond = $params['cond'];
 
     $query_list = array();
     $list = array();
@@ -90,7 +86,7 @@ $app->post('/wearer_input', function ()use($app){
     foreach ($m_gencode_results as $m_gencode_result) {
         $list['cls_cd'] = $m_gencode_result->cls_cd;
         $list['gen_name'] = $m_gencode_result->gen_name;
-        array_push($sex_kbn_list,$list);
+        array_push($sex_kbn_list, $list);
     }
     //--性別ここまで
 
@@ -98,15 +94,15 @@ $app->post('/wearer_input', function ()use($app){
     $query_list = array();
     //--- 検索条件 ---//
     // 契約マスタ. 企業ID
-    array_push($query_list,"MContract.corporate_id = '".$auth['corporate_id']."'");
+    array_push($query_list, "MContract.corporate_id = '".$auth['corporate_id']."'");
     // 契約リソースマスタ. 企業ID
-    array_push($query_list,"MContractResource.corporate_id = '".$auth['corporate_id']."'");
+    array_push($query_list, "MContractResource.corporate_id = '".$auth['corporate_id']."'");
     // 契約リソースマスタ. レンタル契約No = 画面で選択されている契約No.
-    array_push($query_list,"MContractResource.rntl_cont_no = '".$cond['agreement_no']."'");
+    array_push($query_list, "MContractResource.rntl_cont_no = '".$cond['agreement_no']."'");
     // アカウントマスタ.企業ID
-    array_push($query_list,"MAccount.corporate_id = '".$auth['corporate_id']."'");
+    array_push($query_list, "MAccount.corporate_id = '".$auth['corporate_id']."'");
     // アカウントマスタ. ユーザーID
-    array_push($query_list,"MAccount.user_id = '".$auth['user_id']."'");
+    array_push($query_list, "MAccount.user_id = '".$auth['user_id']."'");
 
     //sql文字列を' AND 'で結合
     $query = implode(' AND ', $query_list);
@@ -115,8 +111,8 @@ $app->post('/wearer_input', function ()use($app){
     $m_contract_resources = MContract::query()
         ->where($query)
         ->columns(array('MContractResource.rntl_sect_cd'))
-        ->leftJoin('MContractResource','MContract.corporate_id = MContractResource.corporate_id')
-        ->join('MAccount','MAccount.accnt_no = MContractResource.accnt_no')
+        ->leftJoin('MContractResource', 'MContract.corporate_id = MContractResource.corporate_id')
+        ->join('MAccount', 'MAccount.accnt_no = MContractResource.accnt_no')
         ->execute();
     $rntl_sect_cd = null;
     foreach ($m_contract_resources as $m_contract_resource) {
@@ -130,7 +126,7 @@ $app->post('/wearer_input', function ()use($app){
     array_push($query_list, "corporate_id = '".$auth['corporate_id']."'");
     // 部門マスタ. レンタル契約No
     array_push($query_list, "rntl_cont_no = '".$cond['agreement_no']."'");
-    if($rntl_sect_cd){
+    if ($rntl_sect_cd) {
         // 部門マスタ. レンタル部門コード
         array_push($query_list, "rntl_sect_cd = '".$rntl_sect_cd."'");
     }
@@ -147,7 +143,7 @@ $app->post('/wearer_input', function ()use($app){
     foreach ($m_section_results as $m_section_result) {
         $list['rntl_sect_cd'] = $m_section_result->rntl_sect_cd;
         $list['rntl_sect_name'] = $m_section_result->rntl_sect_name;
-        array_push($m_section_list,$list);
+        array_push($m_section_list, $list);
     }
     //--拠点ここまで
 
@@ -174,7 +170,7 @@ $app->post('/wearer_input', function ()use($app){
         $list['job_type_cd'] = $m_job_type_result->job_type_cd;
         $list['job_type_name'] = $m_job_type_result->job_type_name;
         $list['sp_job_type_flg'] = $m_job_type_result->sp_job_type_flg;
-        array_push($job_type_list,$list);
+        array_push($job_type_list, $list);
     }
     //貸与パターン--ここまで
 
@@ -207,7 +203,7 @@ $app->post('/wearer_input', function ()use($app){
         $list['address2'] = $m_shipment_to_result->address2;
         $list['address3'] = $m_shipment_to_result->address3;
         $list['address4'] = $m_shipment_to_result->address4;
-        array_push($m_shipment_to_list,$list);
+        array_push($m_shipment_to_list, $list);
     }
     //出荷先--ここまで
     $json_list['m_shipment_to_list'] = $m_shipment_to_list;
@@ -217,14 +213,14 @@ $app->post('/wearer_input', function ()use($app){
     echo json_encode($json_list);
 });
 
-/**
+/*
  * 「拠点」のセレクトボックス変更時
  */
-$app->post('/change_section', function ()use($app) {
+$app->post('/change_section', function () use ($app) {
 
-    $params = json_decode(file_get_contents("php://input"), true);
+    $params = json_decode(file_get_contents('php://input'), true);
     // アカウントセッション取得
-    $auth = $app->session->get("auth");
+    $auth = $app->session->get('auth');
     $cond = $params['cond'];
 
     $query_list = array();
@@ -234,17 +230,17 @@ $app->post('/change_section', function ()use($app) {
     //画面の「郵便番号」欄、「住所」欄の内容を動的に書き換える
     //--- 検索条件 ---//
     // 出荷先マスタ．企業ID　＝　ログインしているアカウントの企業ID　AND
-    array_push($query_list,"MShipmentTo.corporate_id = '".$auth['corporate_id']."'");
+    array_push($query_list, "MShipmentTo.corporate_id = '".$auth['corporate_id']."'");
     // 出荷先マスタ．レンタル契約No.　＝　画面で選択されている契約No.
-    array_push($query_list,"MShipmentTo.rntl_cont_no = '".$cond['agreement_no']."'");
+    array_push($query_list, "MShipmentTo.rntl_cont_no = '".$cond['agreement_no']."'");
 
     //出荷先」のセレクトボックスが「支店店舗と同じ」以外が選択状態の場合
-    if($cond['m_shipment_to_name']!='支店店舗と同じ'){
-        $m_shipment_to = explode(',',$cond['m_shipment_to']);
+    if ($cond['m_shipment_to_name'] != '支店店舗と同じ') {
+        $m_shipment_to = explode(',', $cond['m_shipment_to']);
         //出荷先マスタ．出荷先コード　＝　画面で選択されている出荷先の出荷先コード　AND
-        array_push($query_list,"MShipmentTo.ship_to_cd = '".$m_shipment_to[0]."'");
+        array_push($query_list, "MShipmentTo.ship_to_cd = '".$m_shipment_to[0]."'");
         //出荷先マスタ．出荷先支店コード　＝　画面で選択されている出荷先の出荷先支店コード
-        array_push($query_list,"MShipmentTo.ship_to_brnch_cd = '".$m_shipment_to[1]."'");
+        array_push($query_list, "MShipmentTo.ship_to_brnch_cd = '".$m_shipment_to[1]."'");
     }
     //sql文字列を' AND 'で結合
     $query = implode(' AND ', $query_list);
@@ -253,9 +249,8 @@ $app->post('/change_section', function ()use($app) {
         ->where($query)
         ->columns(array('MShipmentTo.*'));
     // 「出荷先」のセレクトボックスが「支店店舗と同じ」が選択状態の場合
-    if($cond['m_shipment_to_name']=='支店店舗と同じ'){
-        $q_str->join('MSection','MShipmentTo.ship_to_cd = MSection.std_ship_to_cd AND MShipmentTo.ship_to_brnch_cd = MSection.std_ship_to_brnch_cd');
-
+    if ($cond['m_shipment_to_name'] == '支店店舗と同じ') {
+        $q_str->join('MSection', 'MShipmentTo.ship_to_cd = MSection.std_ship_to_cd AND MShipmentTo.ship_to_brnch_cd = MSection.std_ship_to_brnch_cd');
     }
     // 出荷先マスタ．出荷先コード　＝　部門マスタ．標準出荷先コード AND 出荷先マスタ．出荷先支店コード　＝　部門マスタ．標準出荷先支店コード
     $results = $q_str->execute();
@@ -267,21 +262,21 @@ $app->post('/change_section', function ()use($app) {
         $list['cust_to_brnch_name2'] = $result->cust_to_brnch_name2;
         $list['zip_no'] = $result->zip_no;
         $list['address'] = $result->address1.$result->address2.$result->address3.$result->address4;
-        array_push($m_shipment_to_list,$list);
+        array_push($m_shipment_to_list, $list);
     }
     $json_list['change_m_shipment_to_list'] = $m_shipment_to_list;
     echo json_encode($json_list);
 });
 
-/**
+/*
  *  着用者のみ登録して終了
  */
-$app->post('/input_insert', function ()use($app) {
+$app->post('/input_insert', function () use ($app) {
 
 //    $params = json_decode(file_get_contents("php://input"), true);
-    $params = json_decode($_POST['data'],true);
+    $params = json_decode($_POST['data'], true);
     // アカウントセッション取得
-    $auth = $app->session->get("auth");
+    $auth = $app->session->get('auth');
     $cond = $params['cond'];
     $query_list = array();
     $list = array();
@@ -293,15 +288,15 @@ $app->post('/input_insert', function ()use($app) {
     //  入力された内容を元に、着用者基本マスタトラン、着用者商品マスタトラン、発注情報トランに登録を行う。
     //--- 検索条件 ---//
     //  アカウントマスタ．企業ID　＝　ログインしているアカウントの企業ID　AND
-    array_push($query_list,"MAccount.corporate_id = '".$auth['corporate_id']."'");
+    array_push($query_list, "MAccount.corporate_id = '".$auth['corporate_id']."'");
     //  アカウントマスタ．ユーザーID　＝　ログインしているアカウントのユーザーID　AND
-    array_push($query_list,"MAccount.user_id = '".$auth['user_id']."'");
+    array_push($query_list, "MAccount.user_id = '".$auth['user_id']."'");
     //　契約マスタ．企業ID　＝　ログインしているアカウントの企業ID　AND
-    array_push($query_list,"MContract.corporate_id = '".$auth['corporate_id']."'");
+    array_push($query_list, "MContract.corporate_id = '".$auth['corporate_id']."'");
     //　契約マスタ．レンタル契約フラグ　＝　契約対象 AND
-    array_push($query_list,"MContract.rntl_cont_flg = '1'");
+    array_push($query_list, "MContract.rntl_cont_flg = '1'");
     //  契約リソースマスタ．企業ID　＝　ログインしているアカウントの企業ID　AND
-    array_push($query_list,"MContractResource.corporate_id = '".$auth['corporate_id']."'");
+    array_push($query_list, "MContractResource.corporate_id = '".$auth['corporate_id']."'");
 
     //sql文字列を' AND 'で結合
     $query = implode(' AND ', $query_list);
@@ -455,18 +450,17 @@ $app->post('/input_insert', function ()use($app) {
 //          array_push($error_list,'出荷先の値が不正です。');
 //    }
 
-    if(byte_cnt($cond['cster_emply_cd'])>10){
-          array_push($error_list,'社員コードの文字数が多すぎます。');
+    if (byte_cnt($cond['cster_emply_cd']) > 10) {
+        array_push($error_list, '社員コードの文字数が多すぎます。');
     }
 
-    if(byte_cnt($cond['werer_name'])>10){
-        array_push($error_list,'着用者名の文字数が多すぎます。');
+    if (byte_cnt($cond['werer_name']) > 10) {
+        array_push($error_list, '着用者名の文字数が多すぎます。');
     }
 
-    if(byte_cnt($cond['werer_name_kana'])>10){
-        array_push($error_list,'着用者名(カナ)の文字数が多すぎます。');
+    if (byte_cnt($cond['werer_name_kana']) > 10) {
+        array_push($error_list, '着用者名(カナ)の文字数が多すぎます。');
     }
-
 
 //    DB登録
 //    if($error_list){
@@ -480,44 +474,15 @@ $app->post('/input_insert', function ()use($app) {
     $m_wearer_std_tran->corporate_id = $auth['corporate_id']; //企業ID
 
     $results = new Resultset(null, $m_wearer_std_tran, $m_wearer_std_tran->getReadConnection()->query("select nextval('werer_cd')"));
-    $m_wearer_std_tran->werer_cd = str_pad($results[0]->nextval, 10, "0",STR_PAD_LEFT); //着用者コード
+    $m_wearer_std_tran->werer_cd = str_pad($results[0]->nextval, 10, '0', STR_PAD_LEFT); //着用者コード
 
     $m_wearer_std_tran->rntl_cont_no = $cond['agreement_no']; //レンタル契約No.
     $m_wearer_std_tran->rntl_sect_cd = $cond['rntl_sect_cd']; //レンタル部門コード
-    $m_wearer_std_tran->job_type_cd = $cond['job_type']; //職種コード
-    $m_wearer_std_tran->cster_emply_cd = $cond['cster_emply_cd']; //客先社員コード
-    $m_wearer_std_tran->werer_name = $cond['werer_name']; //着用者名（漢字）
-    $m_wearer_std_tran->werer_name_kana = $cond['werer_name_kana']; //着用者名（カナ）
-    $m_wearer_std_tran->sex_kbn = $cond['sex_kbn']; //性別区分
-    $m_wearer_std_tran->werer_sts_kbn = '7'; //着用者状況区分 '7':着用開始をセット
-    $m_wearer_std_tran->resfl_ymd = $cond['resfl_ymd']; //異動日
-    $m_wearer_std_tran->ship_to_cd = $cond['ship_to_cd']; //出荷先コード
-    $m_wearer_std_tran->ship_to_brnch_cd = $cond['ship_to_brnch_cd']; //出荷先支店コード
-    $m_wearer_std_tran->order_sts_kbn = '1'; //発注状況区分 '1':貸与をセット
-    $m_wearer_std_tran->upd_kbn = '1'; //更新区分 '1':WEB発注システム(新規登録)をセット
-    $m_wearer_std_tran->web_upd_date = date("Y/m/d"); //WEB更新日付
-    $m_wearer_std_tran->snd_kbn = '0'; //送信区分 「保存（後で送信）」時＝0：未送信、「発注送信」時＝1：送信済、「バッチ連携後」＝9：処理中
-    $m_wearer_std_tran->snd_date = date('Y/m/d H:i:s.sss'); //送信日時
-    $m_wearer_std_tran->del_kbn = '0'; //削除区分 0：削除対象外をセット
-    $m_wearer_std_tran->rgst_date = date('Y/m/d H:i:s.sss'); //登録日時
-    $m_wearer_std_tran->rgst_user_id = $cond['agreement_no']; //登録ユーザーID
-    $m_wearer_std_tran->upd_date = date('Y/m/d H:i:s.sss'); //更新日時
-    $m_wearer_std_tran->upd_user_id = $auth['user_id']; //更新ユーザーID
-    $m_wearer_std_tran->upd_pg_id = $auth['user_id']; //更新プログラムID
-    $m_wearer_std_tran->m_job_type_comb_hkey = '1'; //職種マスタ_統合ハッシュキー
-    $m_wearer_std_tran->m_section_comb_hkey = '1'; //部門マスタ_統合ハッシュキー
-    $m_wearer_std_tran->m_wearer_std_comb_hkey = md5(
-        $m_wearer_std_tran->corporate_id.
-        $m_wearer_std_tran->werer_cd.
-        $m_wearer_std_tran->rntl_cont_no.
-        $m_wearer_std_tran->rntl_sect_cd.
-        $m_wearer_std_tran->job_type_cd
-
-    ); //着用者基本マスタ_統合ハッシュキー
     if ($m_wearer_std_tran->save() == false) {
-        array_push($error_list,'着用者の登録に失敗しました。');
+        array_push($error_list, '着用者の登録に失敗しました。');
         $json_list['errors'] = $error_list;
         echo json_encode($json_list);
+
         return true;
     } else {
         $transaction->commit();
@@ -525,18 +490,12 @@ $app->post('/input_insert', function ()use($app) {
     echo json_encode($json_list);
 });
 
-/**
- * 着用者入力各フォーム
- */
-$app->post('/wearer_input_init', function ()use($app){
-    $json_list['referrer'] = $_SERVER['HTTP_REFERRER'];
-    echo json_encode($json_list);
-});
-
-function byte_cnt($data){
+function byte_cnt($data)
+{
     //変換前文字コード
     $bf = 'UTF-8';
     //変換後文字コード
     $af = 'Shift-JIS';
+
     return strlen(bin2hex(mb_convert_encoding($data, $af, $bf))) / 2;
 }

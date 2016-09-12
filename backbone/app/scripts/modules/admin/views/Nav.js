@@ -21,6 +21,7 @@ define([
 				"wearer": "li.nav_wearer",
 				"account": "li.nav_account",
 				"info": "li.nav_info",
+				"purchaseInput": "li.nav_purchaseInput",
 				"wearerInput": "li.nav_wearerInput",
 				"wearerEnd": "li.nav_wearerEnd",
 				"wearerInputComplete": "li.nav_wearerInputComplete",
