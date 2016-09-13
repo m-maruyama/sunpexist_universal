@@ -18,6 +18,7 @@ define([
 				"stock": "li.nav_stock",
 				"lend": "li.nav_lend",
 				"receive": "li.nav_receive",
+				"manpowerInfo": "li.nav_manpowerInfo",
 				"wearer": "li.nav_wearer",
 				"account": "li.nav_account",
 				"info": "li.nav_info",

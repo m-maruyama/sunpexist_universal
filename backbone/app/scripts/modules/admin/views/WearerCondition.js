@@ -256,9 +256,6 @@ define([
 				'change @ui.individual_number': function(){
 					this.ui.individual_number = $('#individual_number');
 				},
-				'change @ui.individual_number': function(){
-					this.ui.individual_number = $('#individual_number');
-				},
 				'click @ui.reset': function(){
 					// 検索項目リセット
 					var agreement_no = $("select[name='agreement_no']").val();
