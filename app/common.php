@@ -254,15 +254,19 @@ $app->post('/section', function () use ($app) {
     $results = new Resultset(null, $m_section, $m_section->getReadConnection()->query($arg_str));
     $results_array = (array) $results;
     $results_cnt = $results_array["\0*\0_count"];
-
+/*
     // デフォルト「全て」を設定
     if ($results_cnt > 1) {
         $list['rntl_sect_cd'] = null;
         $list['rntl_sect_name'] = '全て';
         array_push($all_list, $list);
     }
-
+*/
     if ($results_cnt > 0) {
+      $list['rntl_sect_cd'] = null;
+      $list['rntl_sect_name'] = '全て';
+      array_push($all_list, $list);
+
       $paginator_model = new PaginatorModel(
     		array(
     			"data"  => $results,
@@ -323,15 +327,19 @@ $app->post('/job_type', function () use ($app) {
     $results = new Resultset(null, $m_job_type, $m_job_type->getReadConnection()->query($arg_str));
     $results_array = (array) $results;
     $results_cnt = $results_array["\0*\0_count"];
-
+/*
     // デフォルト「全て」を設定
     if ($results_cnt > 1) {
         $list['job_type_cd'] = null;
         $list['job_type_name'] = '全て';
         array_push($all_list, $list);
     }
-
+*/
     if ($results_cnt > 0) {
+      $list['job_type_cd'] = null;
+      $list['job_type_name'] = '全て';
+      array_push($all_list, $list);
+
       $paginator_model = new PaginatorModel(
     		array(
     			"data"  => $results,
@@ -395,15 +403,21 @@ $app->post('/input_item', function () use ($app) {
     $results = new Resultset(null, $m_input_item, $m_input_item->getReadConnection()->query($arg_str));
     $results_array = (array) $results;
     $results_cnt = $results_array["\0*\0_count"];
-
+/*
     // デフォルト「全て」を設定
     if ($results_cnt > 1) {
         $list['item_cd'] = null;
         $list['input_item_name'] = '全て';
         array_push($all_list, $list);
     }
-
+*/
     if ($results_cnt > 0) {
+      if ($results_cnt > 1) {
+          $list['item_cd'] = null;
+          $list['input_item_name'] = '全て';
+          array_push($all_list, $list);
+      }
+
       $paginator_model = new PaginatorModel(
     		array(
     			"data"  => $results,
@@ -470,15 +484,19 @@ $app->post('/item_color', function () use ($app) {
     $results = new Resultset(null, $m_input_item, $m_input_item->getReadConnection()->query($arg_str));
     $results_array = (array) $results;
     $results_cnt = $results_array["\0*\0_count"];
-
+/*
     // デフォルト「全て」を設定
     if ($results_cnt > 1) {
         $list['color_cd_id'] = null;
         $list['color_cd_name'] = '全て';
         array_push($all_list, $list);
     }
-
+*/
     if ($results_cnt > 0) {
+      $list['color_cd_id'] = null;
+      $list['color_cd_name'] = '全て';
+      array_push($all_list, $list);
+
       $paginator_model = new PaginatorModel(
     		array(
     			"data"  => $results,
@@ -579,14 +597,19 @@ $app->post('/zaiko_job_type', function () use ($app) {
     $results = new Resultset(null, $m_rent_pattern_for_sdmzk, $m_rent_pattern_for_sdmzk->getReadConnection()->query($arg_str));
     $results_array = (array) $results;
     $results_cnt = $results_array["\0*\0_count"];
-
+/*
     // デフォルト「全て」を設定
     if ($results_cnt > 1) {
         $list['rent_pattern_data'] = null;
         $list['rent_pattern_name'] = '全て';
         array_push($all_list, $list);
     }
+*/
     if ($results_cnt > 0) {
+      $list['rent_pattern_data'] = null;
+      $list['rent_pattern_name'] = '全て';
+      array_push($all_list, $list);
+
       $paginator_model = new PaginatorModel(
     		array(
     			"data"  => $results,
@@ -653,15 +676,19 @@ $app->post('/zaiko_item', function () use ($app) {
     $results = new Resultset(null, $m_item, $m_item->getReadConnection()->query($arg_str));
     $results_array = (array) $results;
     $results_cnt = $results_array["\0*\0_count"];
-
+/*
     // デフォルト「全て」を設定
     if ($results_cnt > 1) {
         $list['item_cd'] = null;
         $list['item_name'] = '全て';
         array_push($all_list, $list);
     }
-
+*/
     if ($results_cnt > 0) {
+      $list['item_cd'] = null;
+      $list['item_name'] = '全て';
+      array_push($all_list, $list);
+
       $paginator_model = new PaginatorModel(
     		array(
     			"data"  => $results,
@@ -730,15 +757,19 @@ $app->post('/zaiko_item_color', function () use ($app) {
     $results = new Resultset(null, $m_item, $m_item->getReadConnection()->query($arg_str));
     $results_array = (array) $results;
     $results_cnt = $results_array["\0*\0_count"];
-
+/*
     // デフォルト「全て」を設定
     if ($results_cnt > 1) {
         $list['color_cd_id'] = null;
         $list['color_cd_name'] = '全て';
         array_push($all_list, $list);
     }
-
+*/
     if ($results_cnt > 0) {
+      $list['color_cd_id'] = null;
+      $list['color_cd_name'] = '全て';
+      array_push($all_list, $list);
+
       $paginator_model = new PaginatorModel(
     		array(
     			"data"  => $results,

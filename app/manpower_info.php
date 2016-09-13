@@ -8,7 +8,7 @@ use Phalcon\Paginator\Adapter\QueryBuilder as PaginatorQueryBuilder;
 /**
  * 着用者照会検索
  */
-$app->post('/wearer/search', function ()use($app){
+$app->post('/manpower_info/search', function ()use($app){
 
 	$params = json_decode(file_get_contents("php://input"), true);
 
@@ -252,7 +252,7 @@ $app->post('/wearer/search', function ()use($app){
 /**
  * 着用者詳細検索
  */
-$app->post('/wearer/detail', function ()use($app){
+$app->post('/manpower_info/detail', function ()use($app){
 
 	$params = json_decode(file_get_contents("php://input"), true);
 

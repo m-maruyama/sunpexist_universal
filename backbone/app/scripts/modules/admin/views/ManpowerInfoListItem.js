@@ -7,8 +7,8 @@ define([
 ], function(App) {
 	'use strict';
 	App.module('Admin.Views', function(Views, App, Backbone, Marionette, $, _){
-		Views.WearerListItem = Marionette.ItemView.extend({
-			template: App.Admin.Templates.wearerListItem,
+		Views.ManpowerInfoListItem = Marionette.ItemView.extend({
+			template: App.Admin.Templates.manpowerInfoListItem,
 			tagName: "tr",
 			ui: {
 				"wearerDetail": ".wearer_detail_btn"

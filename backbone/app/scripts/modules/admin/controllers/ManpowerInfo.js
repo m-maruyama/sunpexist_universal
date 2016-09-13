@@ -1,79 +1,71 @@
 define([
 	'app',
 	'./Abstract',
-	'../views/Wearer',
-	'../views/WearerCondition',
-	'../views/WearerListList',
+	'../views/ManpowerInfo',
+	'../views/ManpowerInfoCondition',
+	'../views/ManpowerInfoListList',
 	'../views/AgreementNoCondition',
 	'../views/SectionCondition',
 	'../views/SectionModalCondition',
 	'../views/SectionModalListList',
 	'../views/SectionModalListItem',
-	'../views/JobTypeCondition',
-	'../views/InputItemCondition',
-	'../views/ItemColorCondition',
-	'../views/IndividualNumberCondition',
 	'../views/DetailModal',
-	'../views/WearerDetailModal',
+	'../views/ManpowerInfoDetailModal',
 	'../views/SectionModal',
 	'../views/SectionModalListList',
 	'../views/Pagination',
 	"entities/models/Pager",
-	"entities/models/AdminWearer",
-	"entities/models/AdminWearerListCondition",
+	"entities/models/AdminManpowerInfo",
+	"entities/models/AdminManpowerInfoListCondition",
 	"entities/models/AdminSectionModalListCondition",
-	"entities/collections/AdminWearerListList",
+	"entities/collections/AdminManpowerInfoListList",
 	"entities/collections/AdminSectionModalListList",
 	'bootstrap'
 ], function(App) {
 	'use strict';
 	App.module('Admin.Controllers', function(Controllers,App, Backbone, Marionette, $, _){
-		Controllers.Wearer = App.Admin.Controllers.Abstract.extend({
+		Controllers.ManpowerInfo = App.Admin.Controllers.Abstract.extend({
 			_sync : function(){
 				var that = this;
-				this.setNav('wearer');
+				this.setNav('manpowerInfo');
 				var pagerModel = new App.Entities.Models.Pager();
 				var pagerModel2 = new App.Entities.Models.Pager();
 				var pagerModel3 = new App.Entities.Models.Pager();
 
 				var modal = false;
-				var wearerModel = null;
+				var manpowerInfoModel = null;
 				var detailModalView = new App.Admin.Views.DetailModal();
-				var wearerView = new App.Admin.Views.Wearer();
-				var wearerListListCollection = new App.Entities.Collections.AdminWearerListList();
+				var manpowerInfoView = new App.Admin.Views.ManpowerInfo();
+				var manpowerInfoListListCollection = new App.Entities.Collections.AdminManpowerInfoListList();
 
 				var agreementNoConditionView = new App.Admin.Views.AgreementNoCondition();
 				var sectionConditionView = new App.Admin.Views.SectionCondition();
-				var jobTypeConditionView = new App.Admin.Views.JobTypeCondition();
-				var inputItemConditionView = new App.Admin.Views.InputItemCondition();
-				var itemColorConditionView = new App.Admin.Views.ItemColorCondition();
-				var individualNumberConditionView = new App.Admin.Views.IndividualNumberCondition();
 
-				var wearerListConditionModel = new App.Entities.Models.AdminWearerListCondition();
-				var wearerConditionView = new App.Admin.Views.WearerCondition({
-					model:wearerListConditionModel
+				var manpowerInfoListConditionModel = new App.Entities.Models.AdminManpowerInfoListCondition();
+				var manpowerInfoConditionView = new App.Admin.Views.ManpowerInfoCondition({
+					model:manpowerInfoListConditionModel
 				});
-				var wearerListListView = new App.Admin.Views.WearerListList({
-					collection: wearerListListCollection,
-					model:wearerListConditionModel,//追加
+				var manpowerInfoListListView = new App.Admin.Views.ManpowerInfoListList({
+					collection: manpowerInfoListListCollection,
+					model:manpowerInfoListConditionModel,//追加
 					pagerModel: pagerModel
 				});
 
-				// 着用者詳細モーダル --ここから
-				this.listenTo(wearerListListView, 'childview:click:a', function(view, agreement_no, wearer_cd, cster_emply_cd){
-					var wearerDetailModalView = new App.Admin.Views.WearerDetailModal({
+				// 人員明細詳細モーダル --ここから
+				this.listenTo(manpowerInfoListListView, 'childview:click:a', function(view, agreement_no, manpowerInfo_cd, cster_emply_cd){
+					var manpowerInfoDetailModalView = new App.Admin.Views.ManpowerInfoDetailModal({
 						agreement_no: agreement_no,
-						wearer_cd: wearer_cd,
+						manpowerInfo_cd: manpowerInfo_cd,
 						cster_emply_cd: cster_emply_cd,
 					});
-					wearerDetailModalView.fetchDetail();
+					manpowerInfoDetailModalView.fetchDetail();
 
-					this.listenTo(wearerDetailModalView, 'fetched', function(){
-						wearerView.wearer_detail_modal.show(wearerDetailModalView.render());
-						wearerDetailModalView.ui.modal.modal('show');
+					this.listenTo(manpowerInfoDetailModalView, 'fetched', function(){
+						manpowerInfoView.manpowerInfo_detail_modal.show(manpowerInfoDetailModalView.render());
+						manpowerInfoDetailModalView.ui.modal.modal('show');
 					});
 				});
-				// 着用者詳細モーダル --ここまで
+				// 人員明細詳細モーダル --ここまで
 
 				var paginationView = new App.Admin.Views.Pagination({model: pagerModel});
 				var paginationView2 = new App.Admin.Views.Pagination({model: pagerModel});
@@ -87,10 +79,10 @@ define([
 						pagerModel.set('sort_key', sortKey);
 						pagerModel.set('order', order);
 					}
-					wearerListListView.fetch(wearerListConditionModel);
-					wearerView.listTable.show(wearerListListView);
-					wearerView.page.show(paginationView);
-					wearerView.page_2.show(paginationView2);
+					manpowerInfoListListView.fetch(manpowerInfoListConditionModel);
+					manpowerInfoView.listTable.show(manpowerInfoListListView);
+					manpowerInfoView.page.show(paginationView);
+					manpowerInfoView.page_2.show(paginationView2);
 				};
 
 				//拠点絞り込み--ここから
@@ -127,9 +119,9 @@ define([
 					fetchList_section(1,sortKey,order);
 				});
 				this.listenTo(sectionModalView, 'fetched', function(){
-					// wearerView.detailModal.show();
+					// manpowerInfoView.detailModal.show();
 					// sectionModalView.render();
-					wearerView.detailModal.show(sectionModalView.render());
+					manpowerInfoView.detailModal.show(sectionModalView.render());
 					sectionModalView.ui.modal.modal('show');
 				});
 				var sectionModalListItemView = new App.Admin.Views.SectionModalListItem();
@@ -157,20 +149,20 @@ define([
 						fetchList_section(pageNumber);
 				});
 
-				this.listenTo(wearerListListView, 'sort', function(sortKey,order){
+				this.listenTo(manpowerInfoListListView, 'sort', function(sortKey,order){
 					fetchList(null,sortKey,order);
 				});
-				this.listenTo(wearerConditionView, 'click:search', function(sortKey,order){
+				this.listenTo(manpowerInfoConditionView, 'click:search', function(sortKey,order){
 					modal = false;
 					fetchList(1,sortKey,order);
 				});
 
 				// 契約No変更時の絞り込み処理 --ここから
-				this.listenTo(wearerConditionView, 'change:section_select', function(agreement_no){
+				this.listenTo(manpowerInfoConditionView, 'change:section_select', function(agreement_no){
 					var sectionConditionView2 = new App.Admin.Views.SectionCondition({
 						agreement_no:agreement_no,
 					});
-					wearerConditionView.section.show(sectionConditionView2);
+					manpowerInfoConditionView.section.show(sectionConditionView2);
 
 					var sectionModalListListView2 = new App.Admin.Views.SectionModalListList({
 						collection: sectionListListCollection,
@@ -207,7 +199,7 @@ define([
 						fetchList_section_2(1,sortKey,order);
 					});
 					this.listenTo(sectionModalView2, 'fetched', function(){
-						wearerView.detailModal.show(sectionModalView2.render());
+						manpowerInfoView.detailModal.show(sectionModalView2.render());
 						sectionModalView2.ui.modal.modal('show');
 					});
 					var sectionModalListItemView2 = new App.Admin.Views.SectionModalListItem();
@@ -216,25 +208,21 @@ define([
 						sectionModalView2.ui.modal.modal('hide');
 					});
 
-					wearerView.sectionModal_2.show(sectionModalView2.render());
+					manpowerInfoView.sectionModal_2.show(sectionModalView2.render());
 					sectionModalView2.condition.show(sectionModalConditionView2);
 				});
 				// 契約No変更時の絞り込み処理 --ここまで
 
-				App.main.show(wearerView);
-				wearerView.condition.show(wearerConditionView);
-				wearerConditionView.agreement_no.show(agreementNoConditionView);
-				wearerConditionView.section.show(sectionConditionView);
-				wearerConditionView.job_type.show(jobTypeConditionView);
-				wearerConditionView.input_item.show(inputItemConditionView);
-				wearerConditionView.item_color.show(itemColorConditionView);
-				wearerConditionView.individual_number.show(individualNumberConditionView);
-				wearerView.sectionModal.show(sectionModalView.render());
+				App.main.show(manpowerInfoView);
+				manpowerInfoView.condition.show(manpowerInfoConditionView);
+				manpowerInfoConditionView.agreement_no.show(agreementNoConditionView);
+				manpowerInfoConditionView.section.show(sectionConditionView);
+				manpowerInfoView.sectionModal.show(sectionModalView.render());
 				sectionModalView.page.show(paginationSectionView);
 				sectionModalView.condition.show(sectionModalConditionView);
 			}
 		});
 	});
 
-	return App.Admin.Controllers.Wearer;
+	return App.Admin.Controllers.ManpowerInfo;
 });

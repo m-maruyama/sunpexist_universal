@@ -1,12 +1,10 @@
 define(["app"],function(App) {
 	'use strict';
 	App.module('Entities.Models', function(Models,App, Backbone, Marionette, $, _){
-		Models.AdminWearer = Backbone.Model.extend({
-			url: App.api.WE0020,
+		Models.manpowerInfoListCondition = Backbone.Model.extend({
+			defaults: {
+			},
 			getReq: function(){
-				return {
-					'no': this.get('no')
-				};
 			}
 		});
 	});
