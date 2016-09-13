@@ -1,5 +1,6 @@
 define([
 	'app',
+	'handlebars',
 	'../Templates',
 	'./WearerListItem',
 	"entities/models/WearerAbstract"
@@ -10,55 +11,21 @@ define([
 			template: App.Admin.Templates.wearerListItem,
 			tagName: "tr",
 			ui: {
-				"detailLink": "a.detail"
+				"wearerDetail": ".wearer_detail_btn"
 			},
 			onRender: function() {
 			},
 			events: {
-				'click @ui.detailLink': function(e){
+				'click @ui.wearerDetail': function(e){
 					e.preventDefault();
-					this.triggerMethod('click:a', this.model);
+					var target_ids = e.target.id;
+					var target_id = target_ids.split(':');
+					var agreement_no = target_id[0];
+					var wearer_cd = target_id[1];
+					var cster_emply_cd = target_id[2];
+					this.triggerMethod('click:a', agreement_no, wearer_cd, cster_emply_cd);
 				}
-			},
-			templateHelpers: {
-				//ステータス
-				statusText: function(){
-					var data = this.order_status;
-					var retunr_str = '';
-					if (data == 1) {
-						retunr_str = retunr_str + "未出荷";
-					} else if (data == 2) {
-						retunr_str = retunr_str + "出荷済";
-					} else if (data == 9) {
-						retunr_str = retunr_str + "キャンセル";
-					}
-					var data2 = this.receipt_status;
-						if (data2 == 1) {
-							retunr_str = retunr_str + " 未受領";
-						} else if (data2 == 2) {
-							retunr_str = retunr_str + " 受領済";
-						}
-					return retunr_str;
-
-				},
-				//よろず発注区分
-				kubunText: function(){
-					var data = this.order_sts_kbn;
-					if (data == 1) {
-						return "貸与";
-					} else if (data == 3) {
-						return "サイズ交換";
-					} else if (data == 4) {
-						return "消耗交換";
-					} else if (data == 5) {
-						return "異動";
-					}
-					//throw "invalid Data";
-					return 'invalid';
-
-				},
 			}
-
 		});
 	});
 });
