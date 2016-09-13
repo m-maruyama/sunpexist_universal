@@ -8,7 +8,7 @@ use Phalcon\Paginator\Adapter\QueryBuilder as PaginatorQueryBuilder;
 $app->post('/account/search', function () use ($app) {
 
     $params = json_decode(file_get_contents('php://input'), true);
-    //ChromePhp::log($params);
+//    ChromePhp::log($params);
 
     // アカウントセッション取得
     $auth = $app->session->get('auth');
@@ -128,11 +128,20 @@ $app->post('/account/search', function () use ($app) {
         //'conditions'  => "'$user_name_val%"
     ));
 
+    $paginator_model = new PaginatorModel(
+        array(
+            "data"  => $results,
+            "limit" => $page['records_per_page'],
+            "page" => $page['page_number']
+        )
+    );
     //リスト作成
     $list = array();
     $all_list = array();
     $json_list = array();
 
+    $paginator = $paginator_model->getPaginate();
+    $results = $paginator->items;
     foreach ($results as $result) {
         $list['accnt_no'] = $result->accnt_no;//アカウントno
         $list['corporate_id'] = $result->corporate_id;//コーポレートid
