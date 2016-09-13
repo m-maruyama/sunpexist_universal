@@ -24,8 +24,7 @@ define([
 			},
 			ui: {
 				'agreement_no': '#agreement_no',
-				'order_day_from': '#order_day_from',
-				'order_day_to': '#order_day_to',
+				'target_ym': '#target_ym',
 				'section': '#section',
 				"search": '.search',
 				'datepicker': '.datepicker',
@@ -33,8 +32,7 @@ define([
 			},
 			bindings: {
 				'#agreement_no': 'agreement_no',
-				'#order_day_from': 'order_day_from',
-				'#order_day_to': 'order_day_to',
+				'#target_ym': 'target_ym',
 				'#section': 'section',
 				'#search': 'search',
 				'#datepicker': 'datepicker',
@@ -51,7 +49,7 @@ define([
 				minTime.setHours(9);
 				minTime.setMinutes(0);
 				this.ui.datepicker.datetimepicker({
-					format: 'YYYY/MM/DD',
+					format: 'YYYY/MM',
 					//useCurrent: 'day',
 					//defaultDate: yesterday,
 					//maxDate: yesterday,
@@ -72,6 +70,7 @@ define([
 					this.triggerMethod('hideAlerts');
 					var agreement_no = $("select[name='agreement_no']").val();
 					this.model.set('agreement_no', agreement_no);
+					this.model.set('target_ym', this.ui.target_ym.val());
 					var section = $("select[name='section']").val();
 					this.model.set('section', section);
 					this.model.set('search', this.ui.search.val());
@@ -85,14 +84,9 @@ define([
 				},
 				'change @ui.agreement_no': function(){
 					this.ui.agreement_no = $('#agreement_no');
-
-					// 検索セレクトボックス連動--ここから
 					var agreement_no = $("select[name='agreement_no']").val();
-					var job_type = '';
-					var input_item = '';
-					// 拠点セレクト
+					// 拠点セレクト変更
 					this.triggerMethod('change:section_select',agreement_no);
-					// セレクトボックス連動--ここまで
 				},
 				'change @ui.section': function(){
 					this.ui.section = $('#section');
