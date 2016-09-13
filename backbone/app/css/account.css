@@ -678,3 +678,6 @@ label.allCheck {
 .order_table tr.edit td {
     background: #ee3;
 }
+.form-horizontal {
+    margin: 20px auto 0px;
+}

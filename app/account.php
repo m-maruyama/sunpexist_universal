@@ -1,8 +1,6 @@
 <?php
-use Phalcon\Mvc\Model;
-use Phalcon\Mvc\Model\Resultset\Simple as Resultset;
+
 use Phalcon\Paginator\Adapter\Model as PaginatorModel;
-use Phalcon\Paginator\Adapter\NativeArray as PaginatorArray;
 use Phalcon\Paginator\Adapter\QueryBuilder as PaginatorQueryBuilder;
 
 /*
@@ -11,7 +9,7 @@ use Phalcon\Paginator\Adapter\QueryBuilder as PaginatorQueryBuilder;
 $app->post('/account/search', function () use ($app) {
 
     $params = json_decode(file_get_contents('php://input'), true);
-//    ChromePhp::log($params);
+    ChromePhp::log($params);
 
     // アカウントセッション取得
     $auth = $app->session->get('auth');
@@ -130,14 +128,15 @@ $app->post('/account/search', function () use ($app) {
         'conditions' => "corporate_id LIKE '$corporate_id_val' AND user_name LIKE '%$user_name_val%' AND user_id LIKE '$user_id_val%' AND mail_address LIKE '$mail_address%' AND del_flg LIKE '0'",
         //'conditions'  => "'$user_name_val%"
     ));
-
+    $results_count = (count($results));//２０個制限の前に数を数える
     $paginator_model = new PaginatorModel(
         array(
-            "data"  => $results,
-            "limit" => $page['records_per_page'],
-            "page" => $page['page_number']
+            'data' => $results,
+            'limit' => $page['records_per_page'],
+            'page' => $page['page_number'],
         )
     );
+
     //リスト作成
     $list = array();
     $all_list = array();
@@ -162,7 +161,8 @@ $app->post('/account/search', function () use ($app) {
     }
     $page_list['records_per_page'] = $page['records_per_page'];
     $page_list['page_number'] = $page['page_number'];
-    $page_list['total_records'] = count($results);
+    $page_list['total_records'] = $results_count;//全件数をアップ
+
     $json_list['page'] = $page_list;
     $json_list['list'] = $all_list;
 
