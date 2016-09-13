@@ -782,9 +782,9 @@ $app->post('/section_modal', function () use ($app) {
     // 部門マスタ. レンタル契約No
     array_push($query_list, "rntl_cont_no = '".$cond['agreement_no']."'");
     if (isset($cond['rntl_sect_cd'])) {
-        array_push($query_list, "rntl_sect_cd LIKE '".$cond['rntl_sect_cd']."%'");
+        array_push($query_list, "rntl_sect_cd LIKE '%".$cond['rntl_sect_cd']."'");
     }
-    if (isset($cond['corporate_id'])) {
+    if (isset($cond['rntl_sect_name'])) {
         array_push($query_list, "rntl_sect_name LIKE '%".$cond['rntl_sect_name']."%'");
     }
     //sql文字列を' AND 'で結合

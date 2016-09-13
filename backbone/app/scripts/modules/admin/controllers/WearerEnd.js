@@ -17,7 +17,6 @@ define([
 	'../views/SectionModal',
 	'../views/SectionModalListList',
 	'../views/Pagination',
-	'../views/CsvDownload',
 	"entities/models/Pager",
 	"entities/models/AdminWearerEnd",
 	"entities/models/AdminWearerEndListCondition",
@@ -45,9 +44,6 @@ define([
 				var agreementNoConditionView = new App.Admin.Views.AgreementNoCondition();
 				var sectionConditionView = new App.Admin.Views.SectionCondition();
 				var jobTypeConditionView = new App.Admin.Views.JobTypeCondition();
-				var inputItemConditionView = new App.Admin.Views.InputItemCondition();
-				var itemColorConditionView = new App.Admin.Views.ItemColorCondition();
-				var individualNumberConditionView = new App.Admin.Views.IndividualNumberCondition();
 
 				var wearerEndListConditionModel = new App.Entities.Models.AdminWearerEndListCondition();
 				var wearerEndConditionView = new App.Admin.Views.WearerEndCondition({
@@ -59,7 +55,6 @@ define([
 				});
 				var paginationView = new App.Admin.Views.Pagination({model: pagerModel});
 				var paginationView2 = new App.Admin.Views.Pagination({model: pagerModel});
-				var csvDownloadView = new App.Admin.Views.CsvDownload();
 
 				var fetchList = function(pageNumber,sortKey,order){
 					if(pageNumber){
@@ -73,7 +68,6 @@ define([
 					wearerEndView.listTable.show(wearerEndListListView);
 					wearerEndView.page.show(paginationView);
 					wearerEndView.page_2.show(paginationView2);
-					wearerEndView.csv_download.show(csvDownloadView);
 				};
 				this.listenTo(wearerEndListListView, 'childview:click:a', function(view, model){
 					wearerEndModel = new App.Entities.Models.AdminWearerEnd({no:model.get('order_req_no')});
@@ -151,9 +145,9 @@ define([
 					modal = false;
 					fetchList(1,sortKey,order);
 				});
-				this.listenTo(csvDownloadView, 'click:download_btn', function(cond_map){
-					csvDownloadView.fetch(cond_map);
-				});
+				// this.listenTo(csvDownloadView, 'click:download_btn', function(cond_map){
+				// 	csvDownloadView.fetch(cond_map);
+				// });
 
 
 				App.main.show(wearerEndView);

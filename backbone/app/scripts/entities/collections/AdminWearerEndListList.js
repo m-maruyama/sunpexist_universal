@@ -6,7 +6,7 @@ define([
 	App.module('Entities.Collections', function(Collections, App, Backbone, Marionette, $, _){
 		Collections.AdminWearerEndListList = Backbone.Collection.extend({
 			model: App.Entities.Models.AdminWearerEndListItem,
-			url: App.api.WN0010,
+			url: App.api.WE0010,
 			parse:function(res, xhr){
 				this.trigger('parsed',res);
 				return res.list;
