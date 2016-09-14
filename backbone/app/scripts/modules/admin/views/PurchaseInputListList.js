@@ -26,6 +26,12 @@ define([
 			events: {
 
 			},
+			_sync : function(){
+
+
+			},
+
+
 			fetch:function(purchaseInputListConditionModel){
 				var cond = {
 					"scr": '商品注文入力',
@@ -39,20 +45,27 @@ define([
 					data: cond,
 					success: function(model,res,req){
 						//that.model.set('mode',null);
-						//$.unblockUI();
+						$.unblockUI();
 					},
 					complete:function(res){
 						$.unblockUI();
-						// 個体管理番号表示/非表示制御
-						//if (res.responseJSON.individual_flag.valueOf()) {
-						//	$('.tb_individual_num').css('display','');
-						//}
+						//数量セレクトに数量追加
+						var setSelectQuantity = function()
+						{
+							var select = $('.quantity');
+							var i = 1;
+							for (i = 1; i <= 99; i = i + 1){
+								var option = document.createElement('option');
+								option.setAttribute('value', i);
+								option.innerHTML = i;
+								$('.quantity').append(option);
+							}
+							$('.quantity').value = 1;
+						}
+						setSelectQuantity();
 					},
-
-
 				});
 			}
-
 
 		});
 	});

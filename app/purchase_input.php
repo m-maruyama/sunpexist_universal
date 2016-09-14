@@ -8,7 +8,6 @@ use Phalcon\Paginator\Adapter\QueryBuilder as PaginatorQueryBuilder;
 $app->post('/purchase_input', function () use ($app) {
 
     $params = json_decode(file_get_contents('php://input'), true);
-    ChromePhp::log($params);
 
     // アカウントセッション取得
     $auth = $app->session->get('auth');
@@ -77,7 +76,6 @@ $app->post('/purchase_input', function () use ($app) {
 
     $results = MSaleOrderItem::find();
 
-ChromePhp::log($results);
     //リスト作成
     $list = array();
     $all_list = array();
@@ -94,7 +92,7 @@ ChromePhp::log($results);
         $list['image_file_name'] = $result->image_file_name;
         array_push($all_list, $list);//$all_listに$listをpush
     }
-    ChromePhp::log($all_list);
+    //ChromePhp::log($all_list);
 
     //$page_list['records_per_page'] = $page['records_per_page'];
     //$page_list['page_number'] = $page['page_number'];

@@ -24,7 +24,7 @@ define([
 				//"agreement_no": ".agreement_no",
 				//"page": ".page",
 				//"page_2": ".page_2",
-				//"condition": ".condition",
+				"condition": ".condition",
 				"listTable": ".listTable",
 				//"csv_download": ".csv_download",
 				//"sectionModal": ".section_modal",

@@ -47,10 +47,10 @@ define([
 				//console.log(accountListConditionModel.toJSON());
 
 				var accountConditionView = new App.Admin.Views.AccountCondition({
-					collection: accountListListCollection,
 					model:accountListConditionModel,//追加
 					pagerModel: pagerModel
 				});
+				console.log(accountConditionView);
 				var accountModalView = new App.Admin.Views.AccountModal({
 					collection: AdminAccountModal
 				});

@@ -4,7 +4,10 @@ define([
 	'../views/PurchaseInput',
 	'../views/PurchaseInputCondition',
 	'../views/PurchaseInputListList',
-	'../views/AgreementNoConditionInput',
+	'../views/AgreementNoCondition',
+	'../views/SectionPurchaseCondition',
+	'../views/SectionCondition',
+
 	'../views/InputItemCondition',
 	'../views/ItemColorCondition',
 	'../views/IndividualNumberCondition',
@@ -35,13 +38,16 @@ define([
 				var purchaseInputView = new App.Admin.Views.PurchaseInput({
 					model:purchaseInputModel
 				});
+
 				var purchaseInputListListView = new App.Admin.Views.PurchaseInputListList({
 					collection: purchaseInputListListCollection,
 					model:purchaseInputListConditionModel,//追加
 				});
 
 
-				var agreementNoConditionView = new App.Admin.Views.AgreementNoConditionInput();
+				var agreementNoConditionView = new App.Admin.Views.AgreementNoCondition();
+				var sectionConditionView = new App.Admin.Views.SectionCondition();
+
 				var individualNumberConditionView = new App.Admin.Views.IndividualNumberCondition();
 
 				var purchaseInputListConditionModel = new App.Entities.Models.AdminPurchaseInputListCondition();
@@ -67,11 +73,10 @@ define([
 						//pagerModel.set('sort_key', sortKey);
 						pagerModel.set('order', order);
 					}
-					purchaseInputListListView.fetch(purchaseInputListConditionModel);
-					purchaseInputView.listTable.show(purchaseInputListListView);
 					//accountView.page.show(paginationView);
 					//accountView.page_2.show(paginationView2);
 				};
+
 
 
 				var fetchList_section = function(pageNumber,sortKey,order){
@@ -92,14 +97,15 @@ define([
 					purchaseInputView.ui.input_insert_button.show();
 				});
 				//契約No選択イベント--ここまで
-
+				//console.log(sectionConditionView);
 				App.main.show(purchaseInputView);
-				//purchaseInputView.listTable.show(purchaseInputListListView);
-				// wearerInputView.condition.show(wearerInputConditionView);
-				//purchaseInputView.agreement_no.show(agreementNoConditionView);
-				//purchaseInputView.sectionModal.show(sectionModalView.render());
-				//sectionModalView.page.show(paginationView);
-				//sectionModalView.condition.show(sectionModalConditionView);
+
+				purchaseInputView.condition.show(purchaseInputConditionView);
+				purchaseInputConditionView.agreement_no.show(agreementNoConditionView);
+				purchaseInputListListView.fetch(purchaseInputListConditionModel);
+				purchaseInputView.listTable.show(purchaseInputListListView);
+				purchaseInputConditionView.section.show(sectionConditionView);
+
 				fetchList();
 			}
 		});

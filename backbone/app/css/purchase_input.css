@@ -673,3 +673,12 @@ label.allCheck {
 .order_table tr.edit td {
 	background: #ee3;
 }
+.table {
+    margin-bottom: 0px;
+}
+td.item_name {
+    text-align: center;
+}
+#section_btn {
+    display: none;
+}

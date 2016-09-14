@@ -128,7 +128,7 @@ $app->post('/account/search', function () use ($app) {
         'conditions' => "corporate_id LIKE '$corporate_id_val' AND user_name LIKE '%$user_name_val%' AND user_id LIKE '$user_id_val%' AND mail_address LIKE '$mail_address%' AND del_flg LIKE '0'",
         //'conditions'  => "'$user_name_val%"
     ));
-    $results_count = (count($results));//２０個制限の前に数を数える
+    $results_count = (count($results));//ページング処理２０個制限の前に数を数える
     $paginator_model = new PaginatorModel(
         array(
             'data' => $results,
@@ -162,7 +162,6 @@ $app->post('/account/search', function () use ($app) {
     $page_list['records_per_page'] = $page['records_per_page'];
     $page_list['page_number'] = $page['page_number'];
     $page_list['total_records'] = $results_count;//全件数をアップ
-
     $json_list['page'] = $page_list;
     $json_list['list'] = $all_list;
 
