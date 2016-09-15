@@ -682,3 +682,15 @@ td.item_name {
 #section_btn {
     display: none;
 }
+
+.table tbody tr {
+	display: none;
+}
+
+.table tbody th {
+	table-layout: fixed;
+	color: #333;
+	background-color: #fff;
+	display: table-cell;
+	vertical-align: middle;
+}

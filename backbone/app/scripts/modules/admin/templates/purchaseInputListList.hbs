@@ -1,5 +1,5 @@
 <div id="scrollTable" style="border-bottom: none">
-    <table class="table table-bordered">
+    <table id="testTable" class="table table-bordered">
         <thead class="grad_head">
             <tr>
                 <th class="th_account_no">商品名</th>
@@ -13,4 +13,11 @@
 		</tbody>
 	</table>
 </div>
-<div class="total form-group"><div class="col-md-4 col-md-push-7">合計金額：￥9,260-</div></div>
+<input type="hidden" id="total_records" value="">
+<div class="total form-group">
+    <div class="col-md-4 col-md-push-7">合計金額：￥<span id="total_price"></span>-</div>
+</div>
+<div class="col-md-2 col-md-push-9">
+    <input type="hidden" class="ui_type" id="ui_type" name="ui_type" value="history">
+    <a type="button" data-page="1" class="btn btn-primary btn-sm btn-block confirm" title="確認" id="button1">確認</a>
+</div>

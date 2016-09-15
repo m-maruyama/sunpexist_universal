@@ -8,7 +8,10 @@ define([
 			model: App.Entities.Models.AdminPurchaseInputListCondition,
 			url: App.api.PI0010,
 			parse:function(res, xhr){
-				this.trigger('parsed',res);
+				this.trigger('parsed',res);//phpからjsonのデータを受け取る
+				// test.val() = res.page['total_record'];
+				$('#rntl_cont_no_val').val(res.list['rntl_cont_no']);
+				$('#total_records').val(res.page['total_records']);
 				return res.list;
 			}
 		});

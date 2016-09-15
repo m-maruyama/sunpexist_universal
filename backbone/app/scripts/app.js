@@ -103,6 +103,7 @@ define([
 			"CM0001": host + "/account_session",
 			"CM0010": host + "/job_type",
 			"CM0020": host + "/section",
+			"CM0021": host + "/section_purchase",
 			"CM0030": host + "/detail",
 			"CM0040": host + "/log",
 			"CM0050": host + "/zaiko_job_type",

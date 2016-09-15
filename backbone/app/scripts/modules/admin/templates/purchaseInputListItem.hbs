@@ -1,9 +1,9 @@
-<td class="item_name">{{item_name}}<br><img src="./images/{{image_file_name}}"></td>
+<th class="item_name">{{item_name}}<br><img src="./images/{{image_file_name}}"></th>
 <td>{{color_cd}}</td>
-<!--<td>{{agreement_no}}</td>-->
 <td>{{size_cd}}</td>
-<td>{{piece_rate}}</td>
+<td class="td_piece_rate{{counter}}">{{piece_rate}}</td>
 <td>
-<select id="quantity" name="quantity" class="form-control input-sm quantity" value={{quantity}}>
+<select id="quantity" name="quantity{{counter}}" class="form-control input-sm quantity quantity{{counter}}">
 </select>
+    <input type="hidden" id="rntl_cont_no_val{{counter}}" value="{{rntl_cont_no}}">
 </td>

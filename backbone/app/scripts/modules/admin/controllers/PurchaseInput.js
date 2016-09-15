@@ -47,6 +47,7 @@ define([
 
 				var agreementNoConditionView = new App.Admin.Views.AgreementNoCondition();
 				var sectionConditionView = new App.Admin.Views.SectionCondition();
+				var sectionPurchaseConditionView = new App.Admin.Views.SectionPurchaseCondition();
 
 				var individualNumberConditionView = new App.Admin.Views.IndividualNumberCondition();
 
@@ -97,6 +98,15 @@ define([
 					purchaseInputView.ui.input_insert_button.show();
 				});
 				//契約No選択イベント--ここまで
+
+				// 契約No変更時の絞り込み処理 --ここから
+				this.listenTo(purchaseInputConditionView, 'change:section_select', function(agreement_no){
+					var sectionConditionView2 = new App.Admin.Views.SectionPurchaseCondition({
+						agreement_no:agreement_no,
+					});
+					purchaseInputConditionView.section.show(sectionConditionView2);
+				});
+				// 契約No変更時の絞り込み処理 --ここまで
 				//console.log(sectionConditionView);
 				App.main.show(purchaseInputView);
 
@@ -104,7 +114,7 @@ define([
 				purchaseInputConditionView.agreement_no.show(agreementNoConditionView);
 				purchaseInputListListView.fetch(purchaseInputListConditionModel);
 				purchaseInputView.listTable.show(purchaseInputListListView);
-				purchaseInputConditionView.section.show(sectionConditionView);
+				purchaseInputConditionView.section.show(sectionPurchaseConditionView);
 
 				fetchList();
 			}

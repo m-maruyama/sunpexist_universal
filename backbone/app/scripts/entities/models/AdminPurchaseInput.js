@@ -11,7 +11,9 @@ define(["app"],function(App) {
 					item_name : null,
 					color_cd : null,
 					size_cd : null,
-					price_rate : null
+					price_rate : null,
+					counter : null,
+
 				};
 				if(this.get('agreement_no')) {
 					result.agreement_no = this.get('agreement_no');
@@ -28,7 +30,10 @@ define(["app"],function(App) {
 				if(this.get('price_rate')) {
 					result.price_rate = this.get('price_rate');
 				}
-				return result;
+				if(this.get('counter')) {
+					result.counter = this.get('counter');
+				}
+					return result;
 			}
 		});
 	});

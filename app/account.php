@@ -82,29 +82,8 @@ $app->post('/account/search', function () use ($app) {
         $order = 'asc';
     }
 
-    //$results = $app->modelsManager->createBuilder()
-    //->where($query)
-    //->from('m_account')
-    //->columns(array('m_account.*'))
-    //->orderBy($sort_key.' '.$order)
-    //->getQuery()
-        //->execute();
     $all_list = array();
     $json_list = array();
-
-    //$builder = $app->modelsManager->createBuilder()
-    //	->where($query)
-    //  ->orderBy($sort_key.' '.$order);
-    //ChromePhp::log($builder);
-
-    //$paginator_model = new PaginatorQueryBuilder(
-    //		array(
-    //			"builder"  => $builder,
-    //			"limit" => $page['records_per_page'],
-    //			"page" => $page['page_number']
-    //		)
-    //	);
-    //$paginator = $paginator_model->getPaginate();
 
     $corporate_id_val = $cond['corporate_id'];
 
@@ -128,6 +107,7 @@ $app->post('/account/search', function () use ($app) {
         'conditions' => "corporate_id LIKE '$corporate_id_val' AND user_name LIKE '%$user_name_val%' AND user_id LIKE '$user_id_val%' AND mail_address LIKE '$mail_address%' AND del_flg LIKE '0'",
         //'conditions'  => "'$user_name_val%"
     ));
+    //ChromePhp::log($results);
     $results_count = (count($results));//ページング処理２０個制限の前に数を数える
     $paginator_model = new PaginatorModel(
         array(
