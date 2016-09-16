@@ -13,6 +13,7 @@ define([
 	'../views/SectionModal',
 	'../views/SectionModalListList',
 	'../views/Pagination',
+	'../views/SexKbnCondition',
 	"entities/models/Pager",
 	"entities/models/AdminWearerEnd",
 	"entities/models/AdminWearerEndListCondition",
@@ -39,6 +40,7 @@ define([
 				var agreementNoConditionView = new App.Admin.Views.AgreementNoCondition();
 				var sectionConditionView = new App.Admin.Views.SectionCondition();
 				var jobTypeConditionView = new App.Admin.Views.JobTypeCondition();
+				var sexKbnConditionView = new App.Admin.Views.SexKbnCondition();
 
 				var wearerEndListConditionModel = new App.Entities.Models.AdminWearerEndListCondition();
 				var wearerEndConditionView = new App.Admin.Views.WearerEndCondition({
@@ -144,6 +146,7 @@ define([
 				wearerEndConditionView.agreement_no.show(agreementNoConditionView);
 				wearerEndConditionView.section.show(sectionConditionView);
 				wearerEndConditionView.job_type.show(jobTypeConditionView);
+				wearerEndConditionView.sex_kbn.show(sexKbnConditionView);
 				wearerEndView.sectionModal.show(sectionModalView.render());
 				sectionModalView.page.show(paginationView);
 				sectionModalView.condition.show(sectionModalConditionView);

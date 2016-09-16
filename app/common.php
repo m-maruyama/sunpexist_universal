@@ -924,3 +924,40 @@ $app->post('/section_purchase', function () use ($app) {
 
     echo json_encode($json_list);
 });
+
+/*
+* 性別
+*/
+$app->post('/sex_kbn', function () use ($app) {
+
+    $params = json_decode(file_get_contents('php://input'), true);
+    // アカウントセッション取得
+    $auth = $app->session->get('auth');
+
+    $query_list = array();
+    $list = array();
+    $json_list = array();
+
+    //--性別ここから
+    $sex_kbn_list = array();
+    //--- 検索条件 ---//
+    // 汎用コードマスタ. 分類コード
+    array_push($query_list, "cls_cd = '004'");
+
+    //sql文字列を' AND 'で結合
+    $query = implode(' AND ', $query_list);
+
+    //--- クエリー実行・取得 ---//
+    $m_gencode_results = MGencode::query()
+        ->where($query)
+        ->columns('*')
+        ->execute();
+    foreach ($m_gencode_results as $m_gencode_result) {
+        $list['cls_cd'] = $m_gencode_result->cls_cd;
+        $list['gen_name'] = $m_gencode_result->gen_name;
+        array_push($sex_kbn_list, $list);
+    }
+    //--性別ここまで
+    $json_list['sex_kbn_list'] = $sex_kbn_list;
+    echo json_encode($json_list);
+});

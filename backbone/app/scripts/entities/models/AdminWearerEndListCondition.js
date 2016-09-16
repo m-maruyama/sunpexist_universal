@@ -14,8 +14,7 @@ define([
 					cster_emply_cd : null,
 					werer_name : null,
 					sex_kbn : null,
-					resfl_ymd : null,
-					rntl_sect_cd : null,
+					section : null,
 					job_type : null,
 				};
 				if(this.get('agreement_no')) {
@@ -30,8 +29,8 @@ define([
 				if(this.get('sex_kbn')) {
 					result.sex_kbn = this.get('sex_kbn');
 				}
-				if(this.get('rntl_sect_cd')) {
-					result.rntl_sect_cd = this.get('rntl_sect_cd');
+				if(this.get('section')) {
+					result.section = this.get('section');
 				}
 				if(this.get('job_type')) {
 					result.job_type = this.get('job_type');

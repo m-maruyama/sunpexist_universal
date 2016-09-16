@@ -37,7 +37,6 @@ define([
 				});
 
 				var agreementNoConditionView = new App.Admin.Views.AgreementNoConditionInput();
-
 				var wearerEndOrderListConditionModel = new App.Entities.Models.AdminWearerEndOrderListCondition();
 				var wearerEndOrderConditionView = new App.Admin.Views.WearerEndOrderCondition({
 					model:wearerEndOrderListConditionModel
@@ -99,6 +98,7 @@ define([
 				this.listenTo(paginationView, 'selected', function(pageNumber){
 						fetchList_section(pageNumber);
 				});
+				console.log(333);
 				App.main.show(wearerEndOrderView);
 				wearerEndOrderView.condition.show(wearerEndOrderConditionView);
 				wearerEndOrderView.sectionModal.show(sectionModalView.render());

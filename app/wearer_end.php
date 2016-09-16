@@ -18,6 +18,7 @@ $app->post('/wearer_end/search', function ()use($app){
     $page = $params['page'];
     $query_list = array();
     $query_list2 = array();
+    ChromePhp::LOG($cond);
     //---検索条件---//
     //企業ID
     array_push($query_list,"m_wearer_std_tran.corporate_id = '".$auth['corporate_id']."'");

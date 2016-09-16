@@ -118,6 +118,7 @@ define([
 			"CM0080": host + "/item_color",
 			"CM0090": host + "/section_modal",
 			"CM0100": host + "/individual_num",
+			"CM0110": host + "/sex_kbn",
 			"IM0010": host + "/import_csv",
 			"IM0020": host + "/csv",
 			"DL0010": host + "/csv_download",

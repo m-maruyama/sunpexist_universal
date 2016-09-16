@@ -18,16 +18,14 @@
 				<input type="text" id="werer_name" name="werer_name" class="form-control input-sm" maxlength="" placeholder="" />
 			</div>
 		</div>
+
+		<!-- 性別 -->
 		<div class="form-group">
 			<label class="col-md-2 control-label" for="sex_kbn">性別</label>
 			<div class="col-md-2">
-				<select class="form-control input-sm" name="sex_kbn" id="sex_kbn">
-					<option selected="selected"></option>
-					{{#each sex_kbn_list}}<option value="{{cls_cd}}">{{gen_name}}</option>{{/each}}
-				</select>
+				<div class="sex_kbn"></div>
 			</div>
 		</div>
-
 		<!-- 拠点 -->
 		<div class="form-group">
 			<div class="section"></div>

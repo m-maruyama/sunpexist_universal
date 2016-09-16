@@ -12,7 +12,7 @@ define([
 			template: App.Admin.Templates.wearerEndListList,
 			emptyView: Backbone.Marionette.ItemView.extend({
                 tagName: "tr",
-				template: App.Admin.Templates.wearerEmpty,
+				template: App.Admin.Templates.wearerEndEmpty,
 			}),
 			childView: Views.WearerEndListItem,
 			childViewContainer: "tbody",
