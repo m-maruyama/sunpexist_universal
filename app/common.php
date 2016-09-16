@@ -851,3 +851,76 @@ $app->post('/section_modal', function () use ($app) {
     $json_list['page'] = $page_list;
     echo json_encode($json_list);
 });
+
+/*
+ * 検索項目：拠点
+ */
+$app->post('/section_purchase', function () use ($app) {
+    $params = json_decode(file_get_contents('php://input'), true);
+    $query_list = array();
+    $list = array();
+    $all_list = array();
+    $json_list = array();
+    ChromePhp::log($params);
+    // アカウントセッション取得
+    $auth = $app->session->get('auth');
+
+    //--- 検索条件 ---//
+    array_push($query_list, "corporate_id = '".$auth['corporate_id']."'");
+    if (!empty($params['agreement_no'])) {
+        array_push($query_list, "rntl_cont_no = '".$params['agreement_no']."'");
+    } else {
+        array_push($query_list, "rntl_cont_no = '".$auth['rntl_cont_no']."'");
+    }
+    $query = implode(' AND ', $query_list);
+
+    // SQLクエリー実行
+    $arg_str = 'SELECT ';
+    $arg_str .= ' distinct on (rntl_sect_cd) *';
+    $arg_str .= ' FROM m_section';
+    $arg_str .= ' WHERE ';
+    $arg_str .= $query;
+    $arg_str .= ' ORDER BY rntl_sect_cd asc';
+
+    $m_section = new MSection();
+    $results = new Resultset(null, $m_section, $m_section->getReadConnection()->query($arg_str));
+    $results_array = (array) $results;
+    $results_cnt = $results_array["\0*\0_count"];
+    /*
+        // デフォルト「全て」を設定
+        if ($results_cnt > 1) {
+            $list['rntl_sect_cd'] = null;
+            $list['rntl_sect_name'] = '全て';
+            array_push($all_list, $list);
+        }
+    */
+    if ($results_cnt > 0) {
+        //$list['rntl_sect_cd'] = null;
+        //$list['rntl_sect_name'] = '全て';
+        //array_push($all_list, $list);
+
+        $paginator_model = new PaginatorModel(
+            array(
+                'data' => $results,
+                'limit' => $results_cnt,
+                'page' => 1,
+            )
+        );
+        $paginator = $paginator_model->getPaginate();
+        $results = $paginator->items;
+
+        foreach ($results as $result) {
+            $list['rntl_sect_cd'] = $result->rntl_sect_cd;
+            $list['rntl_sect_name'] = $result->rntl_sect_name;
+            array_push($all_list, $list);
+        }
+    } else {
+        $list['rntl_sect_cd'] = null;
+        $list['rntl_sect_name'] = '';
+        array_push($all_list, $list);
+    }
+
+    $json_list['section_list'] = $all_list;
+
+    echo json_encode($json_list);
+});
