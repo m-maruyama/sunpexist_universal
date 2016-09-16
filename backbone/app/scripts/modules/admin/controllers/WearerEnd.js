@@ -10,10 +10,6 @@ define([
 	'../views/SectionModalListList',
 	'../views/SectionModalListItem',
 	'../views/JobTypeCondition',
-	'../views/InputItemCondition',
-	'../views/ItemColorCondition',
-	'../views/IndividualNumberCondition',
-	'../views/DetailModal',
 	'../views/SectionModal',
 	'../views/SectionModalListList',
 	'../views/Pagination',
@@ -37,7 +33,6 @@ define([
 				var pagerModel2 = new App.Entities.Models.Pager();
 				var modal = false;
 				var wearerEndModel = null;
-				var detailModalView = new App.Admin.Views.DetailModal();
 				var wearerEndView = new App.Admin.Views.WearerEnd();
 				var wearerEndListListCollection = new App.Entities.Collections.AdminWearerEndListList();
 
@@ -69,15 +64,6 @@ define([
 					wearerEndView.page.show(paginationView);
 					wearerEndView.page_2.show(paginationView2);
 				};
-				this.listenTo(wearerEndListListView, 'childview:click:a', function(view, model){
-					wearerEndModel = new App.Entities.Models.AdminWearerEnd({no:model.get('order_req_no')});
-					detailModalView.fetchDetail(wearerEndModel);
-				});
-				this.listenTo(detailModalView, 'fetched', function(){
-					wearerEndView.detailModal.show(detailModalView.render());
-					detailModalView.ui.modal.modal('show');
-				});
-
 				//拠点絞り込み--ここから
 				var sectionListListCollection = new App.Entities.Collections.AdminSectionModalListList();
 				var sectionModalListListView = new App.Admin.Views.SectionModalListList({
@@ -114,7 +100,6 @@ define([
 				this.listenTo(sectionModalView, 'fetched', function(){
 					// wearerEndView.detailModal.show();
 					// sectionModalView.render();
-					wearerEndView.detailModal.show(sectionModalView.render());
 					sectionModalView.ui.modal.modal('show');
 				});
 				var sectionModalListItemView = new App.Admin.Views.SectionModalListItem();
@@ -144,6 +129,10 @@ define([
 				this.listenTo(wearerEndConditionView, 'click:search', function(sortKey,order){
 					modal = false;
 					fetchList(1,sortKey,order);
+				});
+				//貸与終了ボタン
+				this.listenTo(wearerEndListListView, 'click:wearer_end', function(sortKey,order){
+					fetchList(null,sortKey,order);
 				});
 				// this.listenTo(csvDownloadView, 'click:download_btn', function(cond_map){
 				// 	csvDownloadView.fetch(cond_map);

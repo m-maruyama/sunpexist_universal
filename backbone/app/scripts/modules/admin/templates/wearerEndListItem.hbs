@@ -5,5 +5,5 @@
 <td>{{snd_kbn}}</td>
 <td>{{rntl_sect_name}}<br>
     {{job_type_name}}</td>
-<td>{{#if end_button}}<a href="#" class="btn btn-primary" title="貸与終了" id="wearer_end">貸与終了</a><br>{{/if}}
-    {{#if dl_button}}<a href="#" class="btn btn-primary" title="返却伝票ダウンロード" id="download">返却伝票ダウンロード</a>{{/if}}</td>
+<td>{{#if wearer_end_button}}<button type="button"  class="btn btn-primary" title="貸与終了" id="wearer_end" value="{{id}}" {{disabled}}>{{wearer_end_button}}{{#if wearer_end_red}}<span style='color:red'>{{wearer_end_red}}</span>{{/if}}</button>{{/if}}
+    {{#if return_reciept_button}}<button type="button" class="btn btn-primary" title="返却伝票ダウンロード" id="download">{{return_reciept_button}}</button>{{/if}}</td>

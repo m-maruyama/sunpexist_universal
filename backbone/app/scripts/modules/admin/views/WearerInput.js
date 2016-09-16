@@ -19,6 +19,7 @@ define([
                 "input_cancel_button": "#input_cancel_button",
                 "input_insert": "#input_insert",
                 "input_insert_button": "#input_insert_button",
+                "input_next" : "#input_next"
 			},
 			regions: {
 				"agreement_no": ".agreement_no",
@@ -76,6 +77,9 @@ define([
 				},
                 'click @ui.input_insert': function(){
                     this.triggerMethod('click:input_insert',this.ui.agreement_no.val());
+                },
+                'click @ui.input_next': function(){
+                    this.triggerMethod('click:input_next',this.ui.input_next.val());
                 },
 			},
 

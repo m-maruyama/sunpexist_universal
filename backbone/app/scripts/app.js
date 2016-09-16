@@ -26,6 +26,7 @@ define([
 			'AdminPurchaseInput': 'modules/admin/PurchaseInput',
 			'AdminWearerInput': 'modules/admin/WearerInput',
 			'AdminWearerEnd': 'modules/admin/WearerEnd',
+			'AdminWearerEndOrder': 'modules/admin/WearerEndOrder',
 			'AdminWearerInputComplete': 'modules/admin/WearerInputComplete',
 		};
 		App.addRegions({

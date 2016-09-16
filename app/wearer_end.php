@@ -66,8 +66,6 @@ $app->post('/wearer_end/search', function ()use($app){
     $sort_key ='';
     $order ='';
 
-    ChromePhp::LOG($query_list);
-    ChromePhp::LOG($query_list2);
     //ソート設定（指定がないので社員番号）
     $q_sort_key = "as_cster_emply_cd";
     $order = 'asc';
@@ -132,7 +130,6 @@ $app->post('/wearer_end/search', function ()use($app){
         )
     );
 
-    $list = array();
     $all_list = array();
     $json_list = array();
 
@@ -141,6 +138,7 @@ $app->post('/wearer_end/search', function ()use($app){
         $results = $paginator->items;
 
         foreach($results as $result) {
+            $list = array();
             // 社員番号
             if (!empty($result->as_cster_emply_cd)) {
                 $list['cster_emply_cd'] = $result->as_cster_emply_cd;
@@ -203,17 +201,19 @@ $app->post('/wearer_end/search', function ()use($app){
                 //パターンB： 発注情報トラン．発注状況区分 = 貸与終了 かつ、発注情報トラン．理由区分 = 不要品返却以外のデータがある場合、かつ、
                 //発注情報トラン．送信区分 = 未送信の場合、ボタンの文言は「貸与終了[済]」で表示する。
             } elseif ($result->as_order_sts_kbn == '2' && $result->as_order_reason_kbn != '7'&& $result->as_snd_kbn == '0') {
-                $list['wearer_end_button'] = "貸与終了[済]";
+                $list['wearer_end_button'] = "貸与終了";
+                $list['wearer_end_red'] = "[済]";
                 //パターンC： 発注情報トラン．発注状況区分 = 貸与終了 かつ、発注情報トラン．理由区分 = 不要品返却以外のデータがある場合、かつ、
                 //発注情報トラン．送信区分 = 送信済の場合、ボタンの文言は「貸与終了[済]」で非活性表示する。
             } elseif ($result->as_order_sts_kbn == '2' && $result->as_order_reason_kbn != '7'&& $result->as_snd_kbn == '1') {
                 $list['wearer_end_button'] = "貸与終了[済]";
-                $list['wearer_end_button_disabled'] = "disabled";
+                $list['wearer_end_red'] = "[済]";
+                $list['disabled'] = "disabled";
                 //パターンD： 発注情報トラン．発注状況区分 = 貸与終了以外のデータがある場合、かつ、
                 //その発注の送信区分 = 送信済の場合、ボタンの文言は「貸与終了」で非活性表示する。
             } elseif ($result->as_order_sts_kbn != '2' && $result->as_snd_kbn == '1') {
                 $list['wearer_end_button'] = "貸与終了";
-                $list['wearer_end_button_disabled'] = "disabled";
+                $list['disabled'] = "disabled";
             }
 
             //返却伝票ダウンロード(上記パターンBかCの場合表示)
