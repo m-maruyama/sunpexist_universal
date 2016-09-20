@@ -27,6 +27,7 @@ define([
 			'AdminWearerInput': 'modules/admin/WearerInput',
 			'AdminWearerEnd': 'modules/admin/WearerEnd',
 			'AdminWearerEndOrder': 'modules/admin/WearerEndOrder',
+			'AdminWearerChange': 'modules/admin/WearerChange',
 			'AdminWearerInputComplete': 'modules/admin/WearerInputComplete',
 		};
 		App.addRegions({
@@ -153,6 +154,7 @@ define([
 			"WI0011": host + "/change_section",
 			"WI0012": host + "/input_insert",
 			"WN0010": host + "/wearer_end/search",
+			"WC0010": host + "/wearer_change/search",
 			"CM9010": host + "/api/CM9010"
 		};
 
