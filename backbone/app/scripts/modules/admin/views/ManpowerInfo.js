@@ -16,7 +16,7 @@ define([
 				"csv_download": ".csv_download",
 				"sectionModal": ".section_modal",
 				"sectionModal_2": ".section_modal_2",
-				"wearer_detail_modal": '.wearer_detail_modal',
+				"manpower_detail_modal": '.manpower_detail_modal',
 				"detailModal": '.detail_modal',
 			},
 			model: new Backbone.Model(),
@@ -25,7 +25,7 @@ define([
 				var modelForUpdate = this.model;
 				modelForUpdate.url = App.api.CM0040;
 				var cond = {
-					"scr": '着用者照会'
+					"scr": '人員明細照会'
 				};
 
 				modelForUpdate.fetchMx({

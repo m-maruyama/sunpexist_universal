@@ -52,16 +52,18 @@ define([
 				});
 
 				// 人員明細詳細モーダル --ここから
-				this.listenTo(manpowerInfoListListView, 'childview:click:a', function(view, agreement_no, manpowerInfo_cd, cster_emply_cd){
+				this.listenTo(manpowerInfoListListView, 'childview:click:Detail', function(view, agreement_no, rntl_sect_cd, rntl_sect_name, yyyymm, staff_total){
 					var manpowerInfoDetailModalView = new App.Admin.Views.ManpowerInfoDetailModal({
 						agreement_no: agreement_no,
-						manpowerInfo_cd: manpowerInfo_cd,
-						cster_emply_cd: cster_emply_cd,
+						rntl_sect_cd: rntl_sect_cd,
+						rntl_sect_name: rntl_sect_name,
+						yyyymm: yyyymm,
+						staff_total: staff_total
 					});
 					manpowerInfoDetailModalView.fetchDetail();
 
 					this.listenTo(manpowerInfoDetailModalView, 'fetched', function(){
-						manpowerInfoView.manpowerInfo_detail_modal.show(manpowerInfoDetailModalView.render());
+						manpowerInfoView.manpower_detail_modal.show(manpowerInfoDetailModalView.render());
 						manpowerInfoDetailModalView.ui.modal.modal('show');
 					});
 				});

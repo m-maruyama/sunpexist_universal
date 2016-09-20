@@ -11,8 +11,10 @@ define([
 		Views.ManpowerInfoDetailModal = Marionette.ItemView.extend({
 			defaults: {
 				agreement_no: null,
-				wearer_cd: null,
-				cster_emply_cd: null,
+				rntl_sect_cd: null,
+				rntl_sect_name: null,
+				yyyymm: null,
+				staff_total: null
 			},
 			initialize: function(options) {
 					this.options = options || {};
@@ -26,7 +28,7 @@ define([
 				template: App.Admin.Templates.deliveryEmpty,
 			}),
 			ui: {
-				'modal': '#wearer-detail-modal'
+				'modal': '#manpower-detail-modal'
 			},
 			onRender: function() {
 			},
@@ -34,17 +36,21 @@ define([
 				$.blockUI({ message: '<p><img src="ajax-loader.gif" style="margin: 0 auto;" /> 読み込み中...</p>' });
 
 				var agreement_no = this.options.agreement_no;
-				var wearer_cd = this.options.wearer_cd;
-				var cster_emply_cd = this.options.cster_emply_cd;
+				var rntl_sect_cd = this.options.rntl_sect_cd;
+				var rntl_sect_name = this.options.rntl_sect_name;
+				var yyyymm = this.options.yyyymm;
+				var staff_total = this.options.staff_total;
 				var that = this;
 
 				var modelForUpdate = this.model;
-				modelForUpdate.url = App.api.WE0020;
+				modelForUpdate.url = App.api.MI0020;
 				var cond = {
-					"scr": '着用者詳細',
+					"scr": '人員明細詳細',
 					"agreement_no": agreement_no,
-					"wearer_cd": wearer_cd,
-					"cster_emply_cd": cster_emply_cd,
+					"rntl_sect_cd": rntl_sect_cd,
+					"rntl_sect_name": rntl_sect_name,
+					"yyyymm": yyyymm,
+					"staff_total": staff_total
 				};
 
 				modelForUpdate.fetchMx({
@@ -60,13 +66,12 @@ define([
 						var res_list = res.attributes;
 						that.templateHelpers(res_list);
 						that.triggerMethod('fetched');
-//						that.render();
 						$.unblockUI();
 					}
 				});
 			},
 			templateHelpers: function(res_list) {
-				// 着用者個人情報、貸与情報
+				// 人員明細詳細リスト
 				return res_list;
 			}
 		});

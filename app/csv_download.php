@@ -668,7 +668,7 @@ $app->post('/csv_download', function ()use($app){
 				array_push($csv_body_list, $all_map["ship_qty"]);
 				// 個体管理番号
 				if ($individual_flg) {
-					array_push($csv_body_list, $all_map["individual_num"]);
+					array_push($csv_body_list, '="'.$all_map["individual_num"].'"');
 				}
 				// 受領日
 				array_push($csv_body_list, $all_map["order_res_ymd"]);
@@ -1321,7 +1321,7 @@ $app->post('/csv_download', function ()use($app){
 				array_push($csv_body_list, $all_map["ship_qty"]);
 				// 個体管理番号
 				if ($individual_flg) {
-					array_push($csv_body_list, $all_map["individual_num"]);
+					array_push($csv_body_list, '="'.$all_map["individual_num"].'"');
 				}
 				// 受領日
 				array_push($csv_body_list, $all_map["order_res_ymd"]);
@@ -1936,7 +1936,7 @@ $app->post('/csv_download', function ()use($app){
 				array_push($csv_body_list, $all_map["ship_qty"]);
 				// 個体管理番号
 				if ($individual_flg) {
-					array_push($csv_body_list, $all_map["individual_ctrl_no"]);
+					array_push($csv_body_list, '="'.$all_map["individual_ctrl_no"].'"');
 				}
 				// 発注No
 				array_push($csv_body_list, $all_map["order_req_no"]);
@@ -2466,7 +2466,7 @@ $app->post('/csv_download', function ()use($app){
 				array_push($csv_body_list, $all_map["input_item_name"]);
 				// 個体管理番号
 				if ($individual_flg) {
-					array_push($csv_body_list, $all_map["individual_ctrl_no"]);
+					array_push($csv_body_list, '="'.$all_map["individual_ctrl_no"].'"');
 				}
 				// 出荷数
 				array_push($csv_body_list, $all_map["ship_qty"]);

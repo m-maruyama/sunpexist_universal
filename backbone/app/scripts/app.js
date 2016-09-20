@@ -136,6 +136,7 @@ define([
 			"RE0020": host + "/receive/update",
 			"MI0010": host + "/manpower_info/search",
 			"MI0020": host + "/manpower_info/detail",
+			"MI0030": host + "/manpower_info/download",
 			"WE0010": host + "/wearer/search",
 			"WE0020": host + "/wearer/detail",
 			"AC0010": host + "/account/search",

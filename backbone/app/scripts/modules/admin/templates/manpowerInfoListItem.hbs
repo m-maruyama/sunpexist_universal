@@ -1,7 +1,16 @@
 <!--tr class="blue"-->
   <td>{{list_no}}</td>
-  <td>{{rntl_sect_name}}<tb>
-  <td>{{manpower_num}}</td>
-  <td><a type="button" id="{{agreement_no}}:{{werer_cd}}:{{cster_emply_cd}}" class="btn btn-primary btn-sm wearer_detail_btn" title="詳細">詳細</a></td>
-  <td><a type="button" id="{{agreement_no}}:{{werer_cd}}:{{cster_emply_cd}}" class="btn btn-primary btn-sm wearer_detail_btn" title="ダウンロード">ダウンロード</a></td>
+  <td>{{rntl_sect_name}}</td>
+  <td>{{staff_total}}</td>
+  {{#if detail_flg}}
+  <td><a type="button" id="{{agreement_no}}:{{rntl_sect_cd}}:{{rntl_sect_name}}:{{yyyymm}}:{{staff_total}}" class="btn btn-primary btn-sm manpower_detail_btn" title="詳細">詳細</a></td>
+  <td><a type="button" id="{{agreement_no}}:{{rntl_sect_cd}}:{{rntl_sect_name}}:{{yyyymm}}:{{staff_total}}" class="btn btn-primary btn-sm manpower_detail_download_btn" title="ダウンロード">ダウンロード</a></td>
+  {{else}}
+  <td><a type="button" id="{{agreement_no}}:{{rntl_sect_cd}}:{{rntl_sect_name}}:{{yyyymm}}:{{staff_total}}" class="btn btn-primary btn-sm manpower_detail_btn" title="詳細">詳細</a></td>
+  <td><a type="button" id="{{agreement_no}}:{{rntl_sect_cd}}:{{rntl_sect_name}}:{{yyyymm}}:{{staff_total}}" class="btn btn-primary btn-sm manpower_detail_download_btn" title="ダウンロード">ダウンロード</a></td>
+<!--
+  <td>-</td>
+  <td>-</td>
+-->
+  {{/if}}
 <!--/tr-->

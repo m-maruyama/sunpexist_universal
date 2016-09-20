@@ -2,7 +2,7 @@ define([
 	'app',
 	'../Templates',
 	'blockUI',
-	'./WearerListItem'
+	'./ManpowerInfoListItem'
 ], function(App) {
 	'use strict';
 	App.module('Admin.Views', function(Views, App, Backbone, Marionette, $, _){
@@ -14,7 +14,7 @@ define([
                 tagName: "tr",
 								template: App.Admin.Templates.manpowerInfoEmpty,
       }),
-			childView: Views.WearerListItem,
+			childView: Views.ManpowerInfoListItem,
 			childViewContainer: "tbody",
 			ui: {
 			},
@@ -42,11 +42,11 @@ define([
 					this.triggerMethod('sort', e.target.id,order);
 				}
 			},
-			fetch:function(wearerListConditionModel){
+			fetch:function(manpowerInfoListConditionModel){
 				var cond = {
-					"scr": '着用者照会',
+					"scr": '人員明細照会',
 					"page":this.options.pagerModel.getPageRequest(),
-					"cond": wearerListConditionModel.getReq()
+					"cond": manpowerInfoListConditionModel.getReq()
 				};
 				$.blockUI({ message: '<p><img src="ajax-loader.gif" style="margin: 0 auto;" /> 読み込み中...</p>' });
 				this.collection.fetchMx({
@@ -56,12 +56,6 @@ define([
 					},
 					complete:function(res){
 						$.unblockUI();
-/*
-						// 個体管理番号表示/非表示制御
-						if (res.responseJSON.individual_flag.valueOf()) {
-							$('.tb_individual_num').css('display','');
-						}
-*/
 					}
 				});
 			}
