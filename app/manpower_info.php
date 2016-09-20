@@ -18,6 +18,7 @@ $app->post('/manpower_info/search', function ()use($app){
 	$cond = $params['cond'];
 	$page = $params['page'];
 	$query_list = array();
+	//ChromePhp::log($cond);
 
 	//---検索条件---//
 	//企業ID
@@ -28,13 +29,15 @@ $app->post('/manpower_info/search', function ()use($app){
 	}
 	//対象年月
 	if(!empty($cond['target_ym'])){
-		array_push($query_list,"TO_DATE(t_staff_detail_head.yyyymm,'YYYY/MM') = TO_DATE('".$cond['target_ym']."','YYYY/MM')");
+		$target_ym = explode('/', $cond['target_ym']);
+		$target_ym = $target_ym[0].$target_ym[1];
+		array_push($query_list,"TO_DATE(t_staff_detail_head.yyyymm,'YYYY/MM') = TO_DATE('".$target_ym."','YYYY/MM')");
 	}
 	//拠点
 	if(!empty($cond['section'])){
 		array_push($query_list,"t_staff_detail_head.rntl_sect_cd = '".$cond['section']."'");
 	}
-
+	//ChromePhp::log($query_list);
 	$query = implode(' AND ', $query_list);
 
 	$arg_str = "SELECT ";
