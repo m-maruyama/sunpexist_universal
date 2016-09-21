@@ -16,24 +16,12 @@ define([
             },
 			ui: {
 				"agreement_no": ".agreement_no",
-				//"cancel": "#cancel",
-      //        "input_cancel": "#input_cancel",
-        //        "input_cancel_button": "#input_cancel_button",
-        //        "input_insert": "#input_insert",
-        //        "input_insert_button": "#input_insert_button",
 			},
 			regions: {
-				//"agreement_no": ".agreement_no",
-				//"page": ".page",
-				//"page_2": ".page_2",
 				"condition": ".condition",
 				"listTable": ".listTable",
-				//"csv_download": ".csv_download",
-				//"sectionModal": ".section_modal",
-				//"detailModal": '.detail_modal',
 			},
 			binding: {
-				//"#agreement_no": "agreement_no",
                 "#input_insert": "input_insert",
 			},
 			model: new Backbone.Model(),
@@ -52,7 +40,7 @@ define([
 					e.preventDefault();
 
 
-					alert('アップデートボタンを押したよ！');
+					alert('契約noが変更された！！！');
 
 
 				},

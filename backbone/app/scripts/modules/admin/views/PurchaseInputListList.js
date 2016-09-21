@@ -24,12 +24,38 @@ define([
 			},
 			onRender: function() {
 				this.listenTo(this.collection, 'parsed', function(res){
-
 				});
+				this.ui.updBtn.addClass('hidden');
+				this.ui.bckBtn.addClass('hidden');
+
+
+
+
 			},
 			events: {
+				"click @ui.confBtn": function() {
+					//e.preventDefault();
+					$("select").attr("disabled", "disabled");
+					this.ui.updBtn.removeClass('hidden');
+					this.ui.bckBtn.removeClass('hidden');
+					this.ui.confBtn.addClass('hidden');
+				},
+				"click @ui.bckBtn": function() {
+					//e.preventDefault();
+					$("select").removeAttr('disabled');
+					this.ui.updBtn.addClass('hidden');
+					this.ui.bckBtn.addClass('hidden');
+					this.ui.confBtn.removeClass('hidden');
+				},
+
+
+
 				"click @ui.updBtn": function(e){
 					e.preventDefault();
+					if ($("#total_price").text() == 0){
+						alert('合計金額が１円以下のため、注文ができません。');
+						return;
+					}
 					var itemLength = $('.quantity:visible').length;//数量セレクトボックスの数
 					//console.log(itemLength);
 					var total_records = $("#total_records").val();
@@ -94,8 +120,6 @@ define([
 						"cond": model.getReq(),
 						"item": item,
 						"total_record": total_records
-
-
 				};
 
 
@@ -108,10 +132,11 @@ define([
 								alert('注文登録が失敗しました。');
 								return;
 							}
-							that.collection.unshift(model);
+							//that.collection.unshift(model);
 							alert('注文登録が完了しました。');
-							that.reset();
-							that.triggerMethod('reload');
+							return;
+							//that.reset();
+							//that.triggerMethod('reload');
 						}
 					});
 

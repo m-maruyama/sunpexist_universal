@@ -149,38 +149,39 @@ $app->post('/purchase_update', function () use ($app) {
     }
 
 
-    //商品
+
+    //注文商品をデータベースに登録
     for ($i = 1; $i <= $total_record; $i++) {
+        if ($item[$i]['quantity'] >= 1){//数量が１以上の場合
         $t_sale_order_history[$i] = new TSaleOrderHistory();
         $t_sale_order_history[$i]->corporate_id = $auth['corporate_id']; //コーポレートid
-        $t_sale_order_history[$i]->rntl_cont_no = $item[$i]['rntl_cont_no']; //契約no
-        $t_sale_order_history[$i]->rntl_sect_cd = $item[$i]['rntl_sect_cd']; //section
-        $t_sale_order_history[$i]->sale_order_date = date('Y/m/d H:i:s.sss', time()); //更新日時
+        $t_sale_order_history[$i]->rntl_cont_no = $item[$i]['rntl_cont_no'];
+        $t_sale_order_history[$i]->rntl_sect_cd = $item[$i]['rntl_sect_cd'];
+        $t_sale_order_history[$i]->sale_order_date = date('Y/m/d H:i:s.sss', time());
         $t_sale_order_history[$i]->item_cd = $item[$i]['item_cd'];
-        $t_sale_order_history[$i]->color_cd = $item[$i]['color_cd']; //ユーザ名
-        $t_sale_order_history[$i]->size_cd = $item[$i]['size_cd']; //ユーザ名
-        $t_sale_order_history[$i]->item_name = $item[$i]['item_name']; //ユーザ名
-        $t_sale_order_history[$i]->piece_rate = $item[$i]['piece_rate']; //ユーザ名
-        $t_sale_order_history[$i]->quantity = $item[$i]['quantity']; //ユーザ名
-        $t_sale_order_history[$i]->total_amount = $item[$i]['total_amount']; //ユーザ名
-        $t_sale_order_history[$i]->accnt_no = $auth['accnt_no']; //ユーザ名
-        $t_sale_order_history[$i]->snd_kbn = 0; //ユーザ名
-        $t_sale_order_history[$i]->rgst_date = date('Y/m/d H:i:s.sss', time()); //更新日時
-        $t_sale_order_history[$i]->rgst_user_id = $auth['user_id']; //所属
-        $t_sale_order_history[$i]->upd_user_id = $auth['user_id']; //更新ユーザー
-        $t_sale_order_history[$i]->upd_pg_id = $auth['user_id']; //更新ユーザー
-        $t_sale_order_history[$i]->upd_date = date('Y/m/d H:i:s.sss', time()); //更新日時
+        $t_sale_order_history[$i]->color_cd = $item[$i]['color_cd'];
+        $t_sale_order_history[$i]->size_cd = $item[$i]['size_cd'];
+        $t_sale_order_history[$i]->item_name = $item[$i]['item_name'];
+        $t_sale_order_history[$i]->piece_rate = $item[$i]['piece_rate'];
+        $t_sale_order_history[$i]->quantity = $item[$i]['quantity'];
+        $t_sale_order_history[$i]->total_amount = $item[$i]['total_amount'];
+        $t_sale_order_history[$i]->accnt_no = $auth['accnt_no'];
+        $t_sale_order_history[$i]->snd_kbn = 0;
+        $t_sale_order_history[$i]->rgst_date = date('Y/m/d H:i:s.sss', time());
+        $t_sale_order_history[$i]->rgst_user_id = $auth['user_id'];
+        $t_sale_order_history[$i]->upd_user_id = $auth['user_id'];
+        $t_sale_order_history[$i]->upd_pg_id = $auth['user_id'];
+        $t_sale_order_history[$i]->upd_date = date('Y/m/d H:i:s.sss', time());
 
-        if ($t_sale_order_history[$i]->save() == false) {
+            if ($t_sale_order_history[$i]->save() == false) {
 
-            $error_list['update'] = '注文入力に失敗しました。';
-            $json_list['errors'] = $error_list;
-            echo json_encode($json_list);
-            return true;
+                $error_list['update'] = '注文入力に失敗しました。';
+                $json_list['errors'] = $error_list;
+                echo json_encode($json_list);
+                return true;
+            }
         }
     }
-    ChromePhp::log($t_sale_order_history[1]);
-    ChromePhp::log($t_sale_order_history[2]);
 
     $transaction->commit();
 
