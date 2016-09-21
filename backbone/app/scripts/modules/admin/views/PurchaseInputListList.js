@@ -18,15 +18,114 @@ define([
 			childView: Views.PurchaseInputListItem,
 			childViewContainer: "tbody",
 			ui: {
+				'updBtn' : '.updBtn',
+				'confBtn' : '.confBtn',
+				'bckBtn' : '.bckBtn',
 			},
 			onRender: function() {
 				this.listenTo(this.collection, 'parsed', function(res){
-					//this.options.pagerModel.set(res.page);
+
 				});
 			},
 			events: {
+				"click @ui.updBtn": function(e){
+					e.preventDefault();
+					var itemLength = $('.quantity:visible').length;//数量セレクトボックスの数
+					//console.log(itemLength);
+					var total_records = $("#total_records").val();
+					var i;
+					var item = new Object();
+
+					for (i = 1; i <= total_records; i = i + 1){
+						item[i] = new Object();
+					item[i]['corporate_id'] = null;
+					item[i]['rntl_cont_no'] = $("#agreement_no").val();
+					item[i]['rntl_sect_cd'] = $("#section").val();
+					item[i]['sale_order_date'] = null;
+					item[i]['item_cd'] = $("#item_cd" + i).val();
+					item[i]['color_cd'] = $(".color_cd" + i).text();
+					item[i]['size_cd'] = $(".size_cd" + i).text();
+					item[i]['item_name'] = $("#item_name" + i).val();
+					item[i]['piece_rate'] = $(".td_piece_rate" + i).text();
+					item[i]['quantity'] = $(".quantity" + i).val();
+					item[i]['total_amount'] = $("#total_price").text();
+					item[i]['accnt_no'] = null;
+					item[i]['snd_kbn'] = 0;
+					item[i]['rgst_user_id'] = null;
+					item[i]['upd_user_id'] = null;
+					item[i]['upd_pg_id'] = null;
+					}
+
+
+					var item_count = Object.keys(item).length;//配列の数を数える
+
+					//console.log(item_count);
+
+					var model = this.model;
+
+					//model.set('corporate_id', corporate_id);
+					//model.set('rntl_cont_no', rntl_cont_no);
+					//model.set('rntl_sect_cd', rntl_sect_cd);
+					//model.set('sale_order_date', sale_order_date);
+					//model.set('item_cd', item_cd);
+					//model.set('color_cd', color_cd);
+					//model.set('size_cd', size_cd);
+					//model.set('item_name', item_name);
+					//model.set('piece_rate', piece_rate);
+					//model.set('quantity', quantity);
+					//model.set('total_amount', total_amount);
+					//model.set('accnt_no', accnt_no);
+					//model.set('snd_kbn', snd_kbn);
+					//model.set('rgst_user_id', rgst_user_id);
+					//model.set('upd_user_id', upd_user_id);
+					//model.set('upd_pg_id', upd_pg_id);
+
+					var that = this;
+					var errors = model.validate();
+					if (errors){
+						this.triggerMethod('showAlerts', errors);
+						return;
+					}
+					//console.log(model.getReq());
+					//console.log(item);
+
+					model.url = App.api.PU0010;
+					var cond = {
+						"cond": model.getReq(),
+						"item": item,
+						"total_record": total_records
+
+
+				};
+
+
+					model.fetchMx({
+						data:cond,
+						success:function(res){
+							var errors = res.get('errors');
+							if(errors) {
+								that.triggerMethod('showAlerts', errors);
+								alert('注文登録が失敗しました。');
+								return;
+							}
+							that.collection.unshift(model);
+							alert('注文登録が完了しました。');
+							that.reset();
+							that.triggerMethod('reload');
+						}
+					});
+
+					alert('アップデートボタンを押したよ！');
+				}//upd
 
 			},
+
+			reset: function(){
+
+			},
+
+
+
 			_sync : function(){
 
 
@@ -39,23 +138,21 @@ define([
 			fetch:function(purchaseInputListConditionModel){
 				var cond = {
 					"scr": '商品注文入力',
-					//"page":this.options.pagerModel.getPageRequest(),
 					"cond": purchaseInputListConditionModel.getReq()
 				};
 				var that = this;
-				//$.blockUI({ message: '<p><img src="ajax-loader.gif" style="margin: 0 auto;" /> 読み込み中...</p>' });
+				$.blockUI({ message: '<p><img src="ajax-loader.gif" style="margin: 0 auto;" /> 読み込み中...</p>' });
 
 				this.collection.fetchMx({
 					data: cond,
 					success: function(model,res,req){
-						//that.model.set('mode',null);
-						//$.unblockUI();
+						$.unblockUI();
 
 					},
 					complete:function(res){
-						///$.unblockUI();
-						//数量セレクトに数量追加
+						$.unblockUI();
 
+						//数量セレクトに数量追加
 						var setSelectQuantity = function()
 						{
 							var select = $('.quantity');

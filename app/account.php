@@ -9,7 +9,6 @@ use Phalcon\Paginator\Adapter\QueryBuilder as PaginatorQueryBuilder;
 $app->post('/account/search', function () use ($app) {
 
     $params = json_decode(file_get_contents('php://input'), true);
-    ChromePhp::log($params);
 
     // アカウントセッション取得
     $auth = $app->session->get('auth');
@@ -164,8 +163,12 @@ $app->post('/account/modal', function () use ($app) {
     $ac = MAccount::find(array(
         'conditions' => "user_id = '".$cond['user_id']."'",
     ));
+
     $m_account = new MAccount();
+
     $auth = $app->session->get('auth');
+
+
     $transaction = $app->transactionManager->get();
     if ($params['type'] == '1') {
         //編集の場合
@@ -286,6 +289,7 @@ $app->post('/account/modal', function () use ($app) {
     $m_account->login_disp_name = $cond['login_disp_name']; //表示ユーザー名
     $m_account->upd_user_id = $auth['user_id']; //更新ユーザー
     $m_account->upd_date = date('Y/m/d H:i:s.sss', time()); //更新日時
+    ChromePhp::log($m_account);
 
     if ($m_account->save() == false) {
         $error_list['update'] = 'アカウント情報の更新に失敗しました。';

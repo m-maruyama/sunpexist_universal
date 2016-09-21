@@ -19,6 +19,8 @@ $app->post('/purchase_input', function () use ($app) {
 
 
     $cond = $params['cond'];
+
+
     //$page = $params['page'];
     $query_list = array();//追加
 
@@ -39,11 +41,36 @@ $app->post('/purchase_input', function () use ($app) {
     $all_list = array();
     $json_list = array();
 
+
+
+
+
     $login_corporate_id = $auth['corporate_id'];
+
+
+    //sectionで一番若い契約Noを取得
+    $rntl_cont_no_one = MSection::find(array(
+        //'order' => "$sort_key $order",
+        'conditions' => "corporate_id LIKE '$login_corporate_id'",
+        "columns" => "rntl_cont_no",
+        "limit" => 1
+        //'conditions'  => "'$user_name_val%"
+    ));
+    foreach ($rntl_cont_no_one as $rntl_cont_value) {
+        $rent['value'] = $rntl_cont_value->rntl_cont_no;
+    }
+
+    $rntl_cont_no_value = $rent['value'];//データベース上で一番若い番号の契約no
+
+    if(!$cond['agreement_no'] == null){
+        $rntl_cont_no_value = $cond['agreement_no'];
+    }//$cond['agreement_no']
+
+    //ChromePhp::log($rntl_cont_no_value);
 
     $results = MSaleOrderItem::find(array(
         //'order' => "$sort_key $order",
-        'conditions' => "corporate_id LIKE '$login_corporate_id'",
+        'conditions' => "corporate_id LIKE '$login_corporate_id' AND rntl_cont_no LIKE '$rntl_cont_no_value'",
         //'conditions'  => "'$user_name_val%"
     ));
     //$results = MSaleOrderItem::find();
@@ -77,6 +104,85 @@ $app->post('/purchase_input', function () use ($app) {
     $page_list['total_records'] = $results_count;
     $json_list['page'] = $page_list;
     $json_list['list'] = $all_list;
+    ChromePhp::log($results_count);
+    echo json_encode($json_list);
+});
+
+
+
+
+
+/*
+ * 注文入力
+ */
+$app->post('/purchase_update', function () use ($app) {
+
+    $params = json_decode(file_get_contents('php://input'), true);
+
+
+
+
+
+    $cond = $params['cond'];
+    $item = $params['item'];
+    $total_record = $params['total_record'];
+
+
+    $json_list = array();
+    $error_list = array();
+    $error = false;
+
+    $auth = $app->session->get('auth');
+
+
+
+    $transaction = $app->transactionManager->get();
+
+
+
+
+    if ($error_list) {
+        $json_list['errors'] = $error_list;
+        echo json_encode($json_list);
+
+        return true;
+    }
+
+
+    //商品
+    for ($i = 1; $i <= $total_record; $i++) {
+        $t_sale_order_history[$i] = new TSaleOrderHistory();
+        $t_sale_order_history[$i]->corporate_id = $auth['corporate_id']; //コーポレートid
+        $t_sale_order_history[$i]->rntl_cont_no = $item[$i]['rntl_cont_no']; //契約no
+        $t_sale_order_history[$i]->rntl_sect_cd = $item[$i]['rntl_sect_cd']; //section
+        $t_sale_order_history[$i]->sale_order_date = date('Y/m/d H:i:s.sss', time()); //更新日時
+        $t_sale_order_history[$i]->item_cd = $item[$i]['item_cd'];
+        $t_sale_order_history[$i]->color_cd = $item[$i]['color_cd']; //ユーザ名
+        $t_sale_order_history[$i]->size_cd = $item[$i]['size_cd']; //ユーザ名
+        $t_sale_order_history[$i]->item_name = $item[$i]['item_name']; //ユーザ名
+        $t_sale_order_history[$i]->piece_rate = $item[$i]['piece_rate']; //ユーザ名
+        $t_sale_order_history[$i]->quantity = $item[$i]['quantity']; //ユーザ名
+        $t_sale_order_history[$i]->total_amount = $item[$i]['total_amount']; //ユーザ名
+        $t_sale_order_history[$i]->accnt_no = $auth['accnt_no']; //ユーザ名
+        $t_sale_order_history[$i]->snd_kbn = 0; //ユーザ名
+        $t_sale_order_history[$i]->rgst_date = date('Y/m/d H:i:s.sss', time()); //更新日時
+        $t_sale_order_history[$i]->rgst_user_id = $auth['user_id']; //所属
+        $t_sale_order_history[$i]->upd_user_id = $auth['user_id']; //更新ユーザー
+        $t_sale_order_history[$i]->upd_pg_id = $auth['user_id']; //更新ユーザー
+        $t_sale_order_history[$i]->upd_date = date('Y/m/d H:i:s.sss', time()); //更新日時
+
+        if ($t_sale_order_history[$i]->save() == false) {
+
+            $error_list['update'] = '注文入力に失敗しました。';
+            $json_list['errors'] = $error_list;
+            echo json_encode($json_list);
+            return true;
+        }
+    }
+    ChromePhp::log($t_sale_order_history[1]);
+    ChromePhp::log($t_sale_order_history[2]);
+
+    $transaction->commit();
 
     echo json_encode($json_list);
 });

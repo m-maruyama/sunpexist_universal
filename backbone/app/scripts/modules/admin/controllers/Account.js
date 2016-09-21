@@ -50,8 +50,7 @@ define([
 					model:accountListConditionModel,//追加
 					pagerModel: pagerModel
 				});
-				console.log(accountConditionView);
-				var accountModalView = new App.Admin.Views.AccountModal({
+ 				var accountModalView = new App.Admin.Views.AccountModal({
 					collection: AdminAccountModal
 				});
 

@@ -21,10 +21,6 @@ define([
 
 			onRender: function() {
 
-
-
-
-
 			},
 			onShow:   function() {
 				$("#total_price").text('0');
@@ -49,8 +45,7 @@ define([
 
 						var agreement_no = $("#agreement_no").val();
 						//$(".table tbody tr").css('display' , 'none');
-						console.log(agreement_no);
-						$(".table tbody ."+agreement_no).css('display' , 'table-row');
+						//$(".table tbody ."+agreement_no).css('display' , 'table-row');
 
 						$('#testTable tbody').each(function () {
 								var pre_element = null;
@@ -69,6 +64,7 @@ define([
 								});
 							});
 					}
+
 				}, 0);
 			},
 
@@ -86,7 +82,7 @@ define([
 						piece_rate = $(".td_piece_rate" + i).text();
 						total_array.push(quantity * piece_rate);
 					}
-					//console.log(total_array);//それぞれの金額を配列に入れる
+                    //console.log(total_array);//それぞれの金額を配列に入れる
 
 					function sumElements( $previousValue, $currentValue) {
 						return $previousValue + $currentValue;

@@ -93,7 +93,6 @@ define([
 						this.triggerMethod('showAlerts', errors);
 						return;
 					}
-
 					model.url = App.api.AC0020;
 					var cond = {
 						"scr": this.ui.display.text(),

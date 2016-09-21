@@ -180,7 +180,6 @@ $app->post('/corporate_id_all', function () use ($app) {
 // デフォルト「全て」を設定
 $list['corporate_id'] = null;
 $list['corporate_name'] = '全て';
-ChromePhp::log($list['corporate_name']);
 
 array_push($all_list, $list);
     foreach ($results as $result) {

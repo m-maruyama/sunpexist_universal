@@ -68,6 +68,7 @@ define([
 				//	this.triggerMethod('click:search',this.model.get('sort_key'),this.model.get('account'));
 				//},
 				'change @ui.agreement_no': function(){
+
 					$("#total_price").text('0');
 					this.ui.agreement_no = $('#agreement_no');
 					var agreement_no = $("select[name='agreement_no']").val();
@@ -89,8 +90,9 @@ define([
 					$(".quantity").val(0);
 					//契約noを変更したタイミングで数量に0を設定
 
-					$(".table tbody tr").css('display' , 'none');
-					$(".table tbody ."+agreement_no).css('display' , 'table-row');
+					//$(".table tbody tr").css('display' , 'none');
+					//$(".table tbody ."+agreement_no).css('display' , 'table-row');
+
 
 
 

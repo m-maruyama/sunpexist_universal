@@ -17,7 +17,16 @@
 <div class="total form-group">
     <div class="col-md-4 col-md-push-7">合計金額：￥<span id="total_price"></span>-</div>
 </div>
-<div class="col-md-2 col-md-push-9">
-    <input type="hidden" class="ui_type" id="ui_type" name="ui_type" value="history">
-    <a type="button" data-page="1" class="btn btn-primary btn-sm btn-block confirm" title="確認" id="button1">確認</a>
+<div class="form-group btn_purchase_input row">
+    <div class="col-md-2 col-md-push-9">
+        <button type="button" data-page="1" class="btn btn-primary btn-sm btn-block confBtn" title="確認" id="button_confirm">確認</button>
+    </div>
+</div>
+<div class="form-group btn_purchase_confirm row">
+    <div class="col-md-4 col-md-push-8">
+        <ul>
+            <li><button type="button" data-page="1" class="btn btn-primary btn-sm btn-block updBtn" title="確認" id="button_order">注文</button></li>
+            <li><button type="button" data-page="1" class="btn btn-default btn-sm btn-block bckBtn" title="戻る" id="button_back">戻る</button></li>
+        </ul>
+    </div>
 </div>

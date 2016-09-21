@@ -15,6 +15,8 @@ define([
     '../behaviors/Alerts',
 	"entities/models/Pager",
 	"entities/models/AdminPurchaseInput",
+	"entities/models/AdminPurchaseUpdate",
+
 	"entities/models/AdminPurchaseInputListCondition",
 	"entities/collections/AdminPurchaseInputListList",
 	'bootstrap'
@@ -39,63 +41,41 @@ define([
 					model:purchaseInputModel
 				});
 
+
+				var AdminPurchaseUpdate = new App.Entities.Models.AdminPurchaseUpdate();
 				var purchaseInputListListView = new App.Admin.Views.PurchaseInputListList({
 					collection: purchaseInputListListCollection,
-					model:purchaseInputListConditionModel,//追加
+					model:AdminPurchaseUpdate,//追加
 				});
 
 
 				var agreementNoConditionView = new App.Admin.Views.AgreementNoCondition();
-				var sectionConditionView = new App.Admin.Views.SectionCondition();
 				var sectionPurchaseConditionView = new App.Admin.Views.SectionPurchaseCondition();
 
-				var individualNumberConditionView = new App.Admin.Views.IndividualNumberCondition();
 
 				var purchaseInputListConditionModel = new App.Entities.Models.AdminPurchaseInputListCondition();
 				var purchaseInputConditionView = new App.Admin.Views.PurchaseInputCondition({
 					model:purchaseInputListConditionModel
 				});
-				//var paginationView = new App.Admin.Views.Pagination({model: pagerModel});
-
-				//拠点絞り込み--ここから
-				//var sectionListListCollection = new App.Entities.Collections.AdminSectionModalListList();
-
-				//this.listenTo(purchaseInputConditionView, 'click:section_btn', function(view, model){
-					// sectionModalView.page.reset();
-					// sectionModalView.listTable.reset();
-					//sectionModalView.ui.modal.modal('show');
-				//});
 
 				var fetchList = function(pageNumber,sortKey,order){
-					//if(pageNumber){
-					//	pagerModel.set('page_number', pageNumber);
-					//}
-					if(sortKey){
-						//pagerModel.set('sort_key', sortKey);
-						pagerModel.set('order', order);
-					}
-					//accountView.page.show(paginationView);
-					//accountView.page_2.show(paginationView2);
-				};
-
-
-
-				var fetchList_section = function(pageNumber,sortKey,order){
-					if(pageNumber){
-						pagerModel.set('page_number', pageNumber);
-					}
 					if(sortKey){
 						pagerModel.set('sort_key', sortKey);
 						pagerModel.set('order', order);
 					}
-					//sectionModalListListView.fetch(sectionModalListCondition);
-					//sectionModalView.listTable.show(sectionModalListListView);
+					purchaseInputListListView.fetch(purchaseInputListConditionModel);
+					purchaseInputView.listTable.show(purchaseInputListListView);
+
 				};
+
+
 				//契約No選択イベント--ここから
 				this.listenTo(purchaseInputView, 'change:agreement_no', function(agreement_no){
+
 					purchaseInputConditionView.fetch(agreement_no);
 					purchaseInputView.condition.show(purchaseInputConditionView);
 					purchaseInputView.ui.input_insert_button.show();
+					//fetchList();
 				});
 				//契約No選択イベント--ここまで
 
@@ -105,6 +85,8 @@ define([
 						agreement_no:agreement_no,
 					});
 					purchaseInputConditionView.section.show(sectionConditionView2);
+					fetchList();
+
 				});
 				// 契約No変更時の絞り込み処理 --ここまで
 				//console.log(sectionConditionView);
@@ -112,8 +94,8 @@ define([
 
 				purchaseInputView.condition.show(purchaseInputConditionView);
 				purchaseInputConditionView.agreement_no.show(agreementNoConditionView);
-				purchaseInputListListView.fetch(purchaseInputListConditionModel);
-				purchaseInputView.listTable.show(purchaseInputListListView);
+				//purchaseInputListListView.fetch(purchaseInputListConditionModel);//fetchで実施しているのでコメントアウト
+				//purchaseInputView.listTable.show(purchaseInputListListView);//fetchで実施しているのでコメントアウト
 				purchaseInputConditionView.section.show(sectionPurchaseConditionView);
 
 				fetchList();

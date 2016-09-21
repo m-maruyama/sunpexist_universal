@@ -683,7 +683,7 @@ td.item_name {
     display: none;
 }
 
-.table tbody tr {
+/*.table tbody tr {
 	display: none;
 }
 
@@ -693,4 +693,28 @@ td.item_name {
 	background-color: #fff;
 	display: table-cell;
 	vertical-align: middle;
+}
+*/
+.table tbody th {
+	color: #333;
+	background-color: #fff;
+	vertical-align: middle;
+}
+
+
+
+.btn_purchase_confirm li {
+	display: inline-block;
+	width: 49%;
+}
+.btn_purchase_confirm li:first-child {
+	padding-right:4%;
+}
+
+li{
+	list-style-type: none;
+}
+ol, ul {
+
+	padding: 0;
 }

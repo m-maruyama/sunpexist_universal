@@ -5,6 +5,8 @@ define([
 ], function(App) {
 	'use strict';
 	App.module('Admin.Views', function(Views, App, Backbone, Marionette, $, _){
+		var search_flg ='';
+
 		Views.PurchaseInput = Marionette.LayoutView.extend({
 			template: App.Admin.Templates.purchaseInput,
             behaviors: {
@@ -48,6 +50,11 @@ define([
 			events: {
 				'change @ui.agreement_no': function(e){
 					e.preventDefault();
+
+
+					alert('アップデートボタンを押したよ！');
+
+
 				},
 				//'click @ui.cancel': function(){
 //
