@@ -16,7 +16,6 @@ define([
 	"entities/models/Pager",
 	"entities/models/AdminPurchaseInput",
 	"entities/models/AdminPurchaseUpdate",
-
 	"entities/models/AdminPurchaseInputListCondition",
 	"entities/collections/AdminPurchaseInputListList",
 	'bootstrap'

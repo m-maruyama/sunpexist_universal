@@ -39,6 +39,7 @@ define([
 					this.ui.updBtn.removeClass('hidden');
 					this.ui.bckBtn.removeClass('hidden');
 					this.ui.confBtn.addClass('hidden');
+					$("h1").text("注文入力確認");
 				},
 				"click @ui.bckBtn": function() {
 					//e.preventDefault();
@@ -46,6 +47,7 @@ define([
 					this.ui.updBtn.addClass('hidden');
 					this.ui.bckBtn.addClass('hidden');
 					this.ui.confBtn.removeClass('hidden');
+					$("h1").text("注文入力");
 				},
 
 
@@ -127,13 +129,27 @@ define([
 						data:cond,
 						success:function(res){
 							var errors = res.get('errors');
+
 							if(errors) {
 								that.triggerMethod('showAlerts', errors);
 								alert('注文登録が失敗しました。');
 								return;
 							}
 							//that.collection.unshift(model);
+
+							var lastval = res.get('seq');
+							lastval = lastval.join(['-']);
+
 							alert('注文登録が完了しました。');
+							$(".form-horizontal").hide();
+							$(".listTable").hide();
+							$("h1").text("注文入力完了");
+							$("h1").after("<p class='text-complete'>注文を受け付けました。</p>");
+							$(".text-complete").after("<h2 class='number-history'>注文番号</h2>");
+							$(".number-history").after("<p class='order-number'></p>");
+							$(".order-number").text(lastval);
+
+
 							return;
 							//that.reset();
 							//that.triggerMethod('reload');

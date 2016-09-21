@@ -40,6 +40,7 @@ define(["app"],function(App) {
 					upd_user_id: this.get('accnt_no'),
 					upd_pg_id: this.get('accnt_no'),
 				};
+				return result;
 
 			},
 

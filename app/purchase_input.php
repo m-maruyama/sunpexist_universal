@@ -1,6 +1,7 @@
 <?php
 
 use Phalcon\Paginator\Adapter\QueryBuilder as PaginatorQueryBuilder;
+use Phalcon\Mvc\Model\Resultset\Simple as Resultset;
 
 /*
  * 商品入力
@@ -104,7 +105,7 @@ $app->post('/purchase_input', function () use ($app) {
     $page_list['total_records'] = $results_count;
     $json_list['page'] = $page_list;
     $json_list['list'] = $all_list;
-    ChromePhp::log($results_count);
+    //ChromePhp::log($results_count);
     echo json_encode($json_list);
 });
 
@@ -148,8 +149,7 @@ $app->post('/purchase_update', function () use ($app) {
         return true;
     }
 
-
-
+    $lastval = array();
     //注文商品をデータベースに登録
     for ($i = 1; $i <= $total_record; $i++) {
         if ($item[$i]['quantity'] >= 1){//数量が１以上の場合
@@ -174,16 +174,22 @@ $app->post('/purchase_update', function () use ($app) {
         $t_sale_order_history[$i]->upd_date = date('Y/m/d H:i:s.sss', time());
 
             if ($t_sale_order_history[$i]->save() == false) {
-
                 $error_list['update'] = '注文入力に失敗しました。';
                 $json_list['errors'] = $error_list;
                 echo json_encode($json_list);
+                $transaction->rollBack();
                 return true;
             }
+            $arg_str = "SELECT LASTVAL()";
+            $results[$i] = new Resultset(null, $t_sale_order_history[$i], $t_sale_order_history[$i]->getReadConnection()->query($arg_str));
+
+            //ChromePhp::log($results[$i][0]->lastval);
+            array_push($lastval,$results[$i][0]->lastval);//最後に送ったシーケンス番号を配列にする
+            //ChromePhp::log($lastval);
         }
     }
-
     $transaction->commit();
-
+    $json_list['seq'] = $lastval;
     echo json_encode($json_list);
+
 });
