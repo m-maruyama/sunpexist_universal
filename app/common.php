@@ -161,6 +161,83 @@ $app->post('/agreement_no', function () use ($app) {
     echo json_encode($json_list);
 });
 
+
+/*	/*
+* 検索項目：注文用契約No	* 検索項目：企業ID 全てあり
+*/
+$app->post('/purchase/agreement_no', function () use ($app) {
+    $params = json_decode(file_get_contents('php://input'), true);
+//ChromePhp::log('新しいagreementだよ!');
+    $query_list = array();
+    $list = array();
+    $all_list = array();
+    $json_list = array();
+// アカウントセッション取得
+    $auth = $app->session->get('auth');
+//--- 検索条件 ---//
+// 契約マスタ. 企業ID
+    array_push($query_list, "m_contract.corporate_id = '".$auth['corporate_id']."'");
+// 契約マスタ. レンタル契約フラグ
+    array_push($query_list, "m_contract.rntl_cont_flg = '1'");
+// 契約マスタ. 購買契約フラグ
+    array_push($query_list, "m_contract.purchase_cont_flg = '1'");
+// 契約リソースマスタ. 企業ID
+    array_push($query_list, "m_contract_resource.corporate_id = '".$auth['corporate_id']."'");
+// アカウントマスタ.企業ID
+    array_push($query_list, "m_account.corporate_id = '".$auth['corporate_id']."'");
+// アカウントマスタ. ユーザーID
+    array_push($query_list, "m_account.user_id = '".$auth['user_id']."'");
+//sql文字列を' AND 'で結合
+    $query = implode(' AND ', $query_list);
+// SQLクエリー実行
+    $arg_str = 'SELECT ';
+    $arg_str .= ' * ';
+    $arg_str .= ' FROM ';
+    $arg_str .= '(SELECT distinct on (m_contract.rntl_cont_no) ';
+    $arg_str .= 'm_contract.rntl_cont_no as as_rntl_cont_no,';
+    $arg_str .= 'm_contract.rntl_cont_name as as_rntl_cont_name';
+    $arg_str .= ' FROM m_contract LEFT JOIN';
+    $arg_str .= ' (m_contract_resource INNER JOIN m_account ON m_contract_resource.accnt_no = m_account.accnt_no)';
+    $arg_str .= ' ON m_contract.corporate_id = m_contract_resource.corporate_id';
+    $arg_str .= ' WHERE ';
+    $arg_str .= $query;
+    $arg_str .= ') as distinct_table';
+    $arg_str .= ' ORDER BY as_rntl_cont_no asc';
+    $m_contract = new MContract();
+    $results = new Resultset(null, $m_contract, $m_contract->getReadConnection()->query($arg_str));
+    $results_array = (array) $results;
+    $results_cnt = $results_array["\0*\0_count"];
+    /*
+    // デフォルトは空を設定
+    $list['rntl_cont_no'] = null;
+    $list['rntl_cont_name'] = null;
+    array_push($all_list,$list);
+    */
+    if ($results_cnt > 0) {
+        $paginator_model = new PaginatorModel(
+            array(
+                "data" => $results,
+                "limit" => $results_cnt,
+                "page" => 1
+            )
+        );
+        $paginator = $paginator_model->getPaginate();
+        $results = $paginator->items;
+        foreach ($results as $result) {
+            $list['rntl_cont_no'] = $result->as_rntl_cont_no;
+            $list['rntl_cont_name'] = $result->as_rntl_cont_name;
+            array_push($all_list, $list);
+        }
+    } else {
+        $list['rntl_cont_no'] = null;
+        $list['rntl_cont_name'] = '';
+        array_push($all_list, $list);
+    }
+    $json_list['agreement_no_list'] = $all_list;
+    echo json_encode($json_list);
+});
+
+
 /*
  * 検索項目：企業ID 全てあり
  */
