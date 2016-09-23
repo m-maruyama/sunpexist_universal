@@ -1,0 +1,72 @@
+
+	  <!-- start 本文エリア -->
+		<div class="row">
+			<h1>注文履歴照会</h1>
+			<!-- start フォーム -->
+			<form class="form-horizontal">
+				<!-- 契約No -->
+				<div class="form-group">
+					<div class="agreement_no"></div>
+				</div>
+                <!-- 注文日 -->
+                <div class="form-group">
+                    <label class="col-md-2 control-label" for="order_day">注文日</label>
+                    <div class="col-md-8 form-inline">
+                        <div class='input-group date datepicker'>
+                            <input type='text' class="form-control  input-sm datepicker" id='order_day_from' name="order_day_from">
+                            <div class="input-group-addon">
+                                <span class="glyphicon glyphicon-calendar"></span>
+                            </div>
+                        </div>&nbsp;―
+                        <div class='input-group date datepicker'>
+                            <input type='text' class="form-control  input-sm datepicker" id='order_day_to' name="order_day_to">
+                            <div class="input-group-addon">
+                                <span class="glyphicon glyphicon-calendar"></span>
+                            </div>
+                        </div>&nbsp;
+                    </div>&nbsp;
+                </div>
+
+
+                <!-- 拠点 -->
+				<div class="form-group">
+					<div class="section"></div>
+				</div>
+
+				<!-- 貸与パターン、商品、色、サイズ、リセットボタン -->
+				<div class="form-group row">
+					<label class="col-md-2 control-label" for="">商品</label>
+					<table>
+						<tr>
+							<!--div class="col-md-10"-->
+								<th>
+									<div class="job_type" style="font-weight:normal;"></div>
+								</th>
+								<th>
+									<div class="input_item" style="font-weight:normal;"></div>
+								</th>
+								<th>
+									<div class="item_color" style="font-weight:normal;"></div>
+								</th>
+								<th>
+									<b>　サイズ</b>
+									<input type="text" id="item_size" name="item_size" class="input-sm" maxlength="5" placeholder=""  style="font-weight:normal;">　
+								</th>
+								<th>
+									<a type="button" class="btn btn-primary btn-sm reset" id="reset_button" title="リセット">リセット</a>
+								</th>
+							<!--/div-->
+						</tr>
+					</table>
+				</div>
+
+				<div class="form-group">
+					<div class="col-md-2 col-md-push-2 " style="margin-left: 500px">
+						<input type="hidden" class="ui_type" id="ui_type" name="ui_type" value="history">
+						<a type="button" data-page="1" class="btn btn-primary btn-sm btn-block search" title="検索" id="button1">検索</a>
+					</div>
+				</div>
+			</form>
+			<!-- end フォーム -->
+
+			<hr>
