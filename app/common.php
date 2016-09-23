@@ -953,6 +953,7 @@ $app->post('/sex_kbn', function () use ($app) {
         ->execute();
     foreach ($m_gencode_results as $m_gencode_result) {
         $list['cls_cd'] = $m_gencode_result->cls_cd;
+        $list['gen_cd'] = $m_gencode_result->gen_cd;
         $list['gen_name'] = $m_gencode_result->gen_name;
         array_push($sex_kbn_list, $list);
     }
