@@ -28,6 +28,7 @@ define([
 			'AdminWearerEnd': 'modules/admin/WearerEnd',
 			'AdminWearerEndOrder': 'modules/admin/WearerEndOrder',
 			'AdminWearerChange': 'modules/admin/WearerChange',
+			'AdminWearerChangeOrder': 'modules/admin/WearerChangeOrder',
 			'AdminWearerInputComplete': 'modules/admin/WearerInputComplete',
 		};
 		App.addRegions({
@@ -113,6 +114,7 @@ define([
 			"CM0052": host + "/zaiko_item_color",
 			"CM0060": host + "/agreement_no",
 			"CM0061": host + "/agreement_no_input",
+			"CM0062": host + "/agreement_no_change",
 			"CM0063": host + "/corporate_id",
 			"CM0064": host + "/corporate_id_all",//全て選択肢あり
 			"CM0070": host + "/input_item",
@@ -156,6 +158,7 @@ define([
 			"WI0012": host + "/input_insert",
 			"WN0010": host + "/wearer_end/search",
 			"WC0010": host + "/wearer_change/search",
+			"WC0011": host + "/wearer_change/req_param",
 			"CM9010": host + "/api/CM9010"
 		};
 

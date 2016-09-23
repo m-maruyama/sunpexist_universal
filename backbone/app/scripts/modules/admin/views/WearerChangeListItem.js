@@ -7,6 +7,7 @@ define([
 	'use strict';
 	App.module('Admin.Views', function(Views, App, Backbone, Marionette, $, _){
 		Views.WearerChangeListItem = Marionette.ItemView.extend({
+			model: new Backbone.Model(),
 			template: App.Admin.Templates.wearerChangeListItem,
 			tagName: "tr",
 			ui: {
@@ -22,21 +23,41 @@ define([
 					var data = {
 						'rntl_cont_no': we_val[0],
 						'rntl_sect_cd': we_val[1],
-						'werer_cd': we_val[2]
+						'werer_cd': we_val[2],
+						'cster_emply_cd': we_val[3],
+						'sex_kbn': we_val[4],
 					};
-					//console.log(data);
-					postForm('/universal/wearer_change_order.html', data);
+
+					var modelForUpdate = this.model;
+					modelForUpdate.url = App.api.WC0011;
+					var cond = {
+						"scr": '発注入力（職種変更または異動）POST値保持',
+						"data": data,
+					};
+
+					modelForUpdate.fetchMx({
+						data:cond,
+						success:function(res){
+							var errors = res.get('errors');
+							if(errors) {
+								var errorMessages = errors.map(function(v){
+									return v.error_message;
+								});
+								that.triggerMethod('showAlerts', errorMessages);
+							}
+
+							var $form = $('<form/>', {'action': '/universal/wearer_change_order.html', 'method': 'post'});
+/*
+							for(var key in res) {
+								$form.append($('<input/>', {'type': 'hidden', 'name': key, 'value': res[key]}));
+							}
+*/
+							$form.appendTo(document.body);
+							$form.submit();
+						}
+					});
 				}
 			},
 		});
-
-		var postForm = function(url, data) {
-			var $form = $('<form/>', {'action': url, 'method': 'post'});
-			for(var key in data) {
-				$form.append($('<input/>', {'type': 'hidden', 'name': key, 'value': data[key]}));
-			}
-			$form.appendTo(document.body);
-			$form.submit();
-		};
 	});
 });

@@ -27,6 +27,7 @@ define([
 				"wearerEnd": "li.nav_wearerEnd",
 				"wearerEndOrder": "li.nav_wearerEndOrder",
 				"wearerChange": "li.nav_wearerChange",
+				"wearerChangeOrder": "li.nav_wearerChangeOrder",
 				"wearerInputComplete": "li.nav_wearerInputComplete",
 				"logout": "li.logout a"
 			},

@@ -6,9 +6,96 @@ use Phalcon\Paginator\Adapter\NativeArray as PaginatorArray;
 use Phalcon\Paginator\Adapter\QueryBuilder as PaginatorQueryBuilder;
 
 /**
- * 職種変更または異動検索
+ * 発注入力（職種変更または異動）
+ * 入力項目：契約No
  */
-$app->post('/wearer_change/search', function ()use($app){
+$app->post('/agreement_no_change', function ()use($app){
+    $params = json_decode(file_get_contents("php://input"), true);
+
+    // アカウントセッション取得
+    $auth = $app->session->get("auth");
+
+    // 前画面セッション取得
+    $wearer_chg_post = $app->session->get("wearer_chg_post");
+
+    $query_list = array();
+    $list = array();
+    $all_list = array();
+    $json_list = array();
+
+    //--- 検索条件 ---//
+    // 契約マスタ. 企業ID
+    array_push($query_list, "m_contract.corporate_id = '".$auth['corporate_id']."'");
+    // 契約マスタ. レンタル契約フラグ
+    array_push($query_list, "m_contract.rntl_cont_flg = '1'");
+    // 契約リソースマスタ. 企業ID
+    array_push($query_list, "m_contract_resource.corporate_id = '".$auth['corporate_id']."'");
+    // アカウントマスタ.企業ID
+    array_push($query_list, "m_account.corporate_id = '".$auth['corporate_id']."'");
+    // アカウントマスタ. ユーザーID
+    array_push($query_list, "m_account.user_id = '".$auth['user_id']."'");
+
+    //sql文字列を' AND 'で結合
+    $query = implode(' AND ', $query_list);
+
+    // SQLクエリー実行
+    $arg_str = 'SELECT ';
+    $arg_str .= ' * ';
+    $arg_str .= ' FROM ';
+    $arg_str .= '(SELECT distinct on (m_contract.rntl_cont_no) ';
+    $arg_str .= 'm_contract.rntl_cont_no as as_rntl_cont_no,';
+    $arg_str .= 'm_contract.rntl_cont_name as as_rntl_cont_name';
+    $arg_str .= ' FROM m_contract LEFT JOIN';
+    $arg_str .= ' (m_contract_resource INNER JOIN m_account ON m_contract_resource.accnt_no = m_account.accnt_no)';
+    $arg_str .= ' ON m_contract.corporate_id = m_contract_resource.corporate_id';
+    $arg_str .= ' WHERE ';
+    $arg_str .= $query;
+    $arg_str .= ') as distinct_table';
+    $arg_str .= ' ORDER BY as_rntl_cont_no asc';
+
+    $m_contract = new MContract();
+    $results = new Resultset(null, $m_contract, $m_contract->getReadConnection()->query($arg_str));
+    $results_array = (array) $results;
+    $results_cnt = $results_array["\0*\0_count"];
+
+    if ($results_cnt > 0) {
+      $paginator_model = new PaginatorModel(
+    		array(
+    			"data"  => $results,
+    			"limit" => $results_cnt,
+    			"page" => 1
+    		)
+    	);
+      $paginator = $paginator_model->getPaginate();
+  		$results = $paginator->items;
+
+      foreach ($results as $result) {
+        $list['rntl_cont_no'] = $result->as_rntl_cont_no;
+        $list['rntl_cont_name'] = $result->as_rntl_cont_name;
+        if ($list['rntl_cont_no'] == $wearer_chg_post['rntl_cont_no']) {
+          $list['selected'] = 'selected';
+        } else {
+          $list['selected'] = '';
+        }
+
+        array_push($all_list, $list);
+      }
+    } else {
+      $list['rntl_cont_no'] = null;
+      $list['rntl_cont_name'] = '';
+      $list['selected'] = '';
+      array_push($all_list, $list);
+    }
+
+    ChromePhp::LOG($all_list);
+    $json_list['agreement_no_list'] = $all_list;
+    echo json_encode($json_list);
+});
+
+/**
+ * 発注入力（職種変更または異動）
+ */
+$app->post('/wearer_change_order/first', function ()use($app){
 
     $params = json_decode(file_get_contents("php://input"), true);
 
@@ -18,7 +105,7 @@ $app->post('/wearer_change/search', function ()use($app){
     $cond = $params['cond'];
     $page = $params['page'];
     $query_list = array();
-    //ChromePhp::LOG($cond);
+//    ChromePhp::LOG($cond);
 
     //---既存着用者基本マスタ情報リスト取得---//
     //企業ID
@@ -246,8 +333,6 @@ $app->post('/wearer_change/search', function ()use($app){
           } else {
               $list['cster_emply_cd'] = "-";
           }
-          // 性別区分
-          $list['sex_kbn'] = $result->as_sex_kbn;
           // 着用者名
           if (!empty($result->as_werer_name)) {
               $list['werer_name'] = $result->as_werer_name;
@@ -264,7 +349,7 @@ $app->post('/wearer_change/search', function ()use($app){
               ->columns('*')
               ->execute();
           foreach ($gencode as $gencode_map) {
-              $list['sex_kbn_name'] = $gencode_map->gen_name;
+              $list['sex_kbn'] = $gencode_map->gen_name;
           }
 
           // 発注
@@ -359,37 +444,6 @@ $app->post('/wearer_change/search', function ()use($app){
     $page_list['total_records'] = $results_cnt;
     $json_list['page'] = $page_list;
     $json_list['list'] = $all_list;
-
-    echo json_encode($json_list);
-});
-
-
-
-/**
- * 「職種変更または異動」ボタンの押下時のパラメータのセッション保持
- * →発注入力（職種変更または異動）にてパラメータ利用
- */
-$app->post('/wearer_change/req_param', function ()use($app){
-    $params = json_decode(file_get_contents("php://input"), true);
-
-    // アカウントセッション取得
-    $auth = $app->session->get("auth");
-
-    // パラメータ取得
-    $cond = $params['data'];
-    //ChromePhp::LOG($cond);
-
-    // POSTパラメータのセッション格納
-    $app->session->set("wearer_chg_post", array(
-      'rntl_cont_no' => $cond["rntl_cont_no"],
-      'rntl_sect_cd' => $cond["rntl_sect_cd"],
-      'werer_cd' => $cond["werer_cd"],
-      'cster_emply_cd' => $cond["cster_emply_cd"],
-      'sex_kbn' => $cond["sex_kbn"],
-    ));
-
-    $json_list = array();
-    $json_list = $cond;
 
     echo json_encode($json_list);
 });

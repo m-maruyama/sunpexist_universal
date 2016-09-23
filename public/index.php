@@ -51,6 +51,7 @@ try {
     include __DIR__.'/../app/wearer_input.php';
     include __DIR__.'/../app/wearer_end.php';
     include __DIR__.'/../app/wearer_change.php';
+    include __DIR__.'/../app/wearer_change_order.php';
     include __DIR__.'/../app/ChromePhp.php';
 
     /*

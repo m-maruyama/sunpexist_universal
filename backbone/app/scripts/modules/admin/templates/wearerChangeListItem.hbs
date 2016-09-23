@@ -1,13 +1,13 @@
 <td>{{cster_emply_cd}}<br>
     {{werer_name}}</td>
-<td>{{sex_kbn}}</td>
+<td>{{sex_kbn_name}}</td>
 <td>{{order_kbn}}</td>
 <td>{{snd_kbn}}</td>
 <td>{{rntl_sect_name}}<br>
     {{job_type_name}}</td>
 <td>
   {{#if wearer_change_button}}
-  <button type="button" class="btn btn-primary" title="職種変更または異動" id="wearer_change" value="{{rntl_cont_no}}:{{rntl_sect_cd}}:{{werer_cd}}" {{disabled}}>
+  <button type="button" class="btn btn-primary" title="職種変更または異動" id="wearer_change" value="{{rntl_cont_no}}:{{rntl_sect_cd}}:{{werer_cd}}:{{cster_emply_cd}}:{{sex_kbn}}" {{disabled}}>
     {{wearer_change_button}}
     {{#if wearer_change_red}}
     <span style='color:red'>
