@@ -17,9 +17,28 @@ define([
 			events: {
 				'click @ui.wearer_end': function(e){
 					e.preventDefault();
-					var we_val = this.ui.wearer_end.val();
-					var data = {'id': we_val};
-					postForm('/universal/wearer_end_order.html', data);
+					var data = this.ui.wearer_end.val();
+					var modelForUpdate = this.model;
+					modelForUpdate.url = App.api.WN0020;
+					var cond = {
+						"scr": '貸与終了ボタン',
+						"cond": data,
+					};
+					modelForUpdate.fetchMx({
+						data:cond,
+						success:function(res){
+							var errors = res.get('errors');
+							if(errors) {
+								var errorMessages = errors.map(function(v){
+									return v.error_message;
+								});
+								that.triggerMethod('showAlerts', errorMessages);
+							}
+							location.href = './wearer_end_order.html';
+							return;
+						}
+					});
+					// postForm('/universal/wearer_end_order.html', data);
 					// this.triggerMethod('click:wearer_end', this.model);
 				}
 			},

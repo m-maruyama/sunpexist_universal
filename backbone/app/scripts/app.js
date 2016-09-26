@@ -162,6 +162,7 @@ define([
 			"WI0011": host + "/change_section",
 			"WI0012": host + "/input_insert",
 			"WN0010": host + "/wearer_end/search",
+			"WN0020": host + "/wearer_end/session",
 			"WC0010": host + "/wearer_change/search",
 			"WC0011": host + "/wearer_change/req_param",
 			"WC0012": host + "/agreement_no_change",
