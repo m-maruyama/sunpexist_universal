@@ -22,10 +22,14 @@ define([
 					var we_val = we_vals.split(':');
 					var data = {
 						'rntl_cont_no': we_val[0],
-						'rntl_sect_cd': we_val[1],
-						'werer_cd': we_val[2],
-						'cster_emply_cd': we_val[3],
-						'sex_kbn': we_val[4],
+						'werer_cd': we_val[1],
+						'cster_emply_cd': we_val[2],
+						'sex_kbn': we_val[3],
+						'rntl_sect_cd': we_val[4],
+						'job_type_cd': we_val[5],
+						'order_reason_kbn': we_val[6],
+						'order_tran_flg': we_val[7],
+						'wearer_tran_flg': we_val[8],
 					};
 
 					var modelForUpdate = this.model;
@@ -45,13 +49,10 @@ define([
 								});
 								that.triggerMethod('showAlerts', errorMessages);
 							}
-
 							var $form = $('<form/>', {'action': '/universal/wearer_change_order.html', 'method': 'post'});
-/*
-							for(var key in res) {
-								$form.append($('<input/>', {'type': 'hidden', 'name': key, 'value': res[key]}));
-							}
-*/
+//							for(var key in res) {
+//								$form.append($('<input/>', {'type': 'hidden', 'name': key, 'value': res[key]}));
+//							}
 							$form.appendTo(document.body);
 							$form.submit();
 						}
