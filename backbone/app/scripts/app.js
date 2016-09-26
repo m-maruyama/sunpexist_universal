@@ -31,6 +31,7 @@ define([
 			'AdminWearerChange': 'modules/admin/WearerChange',
 			'AdminWearerChangeOrder': 'modules/admin/WearerChangeOrder',
 			'AdminWearerInputComplete': 'modules/admin/WearerInputComplete',
+			'AdminWearerSearch': 'modules/admin/WearerSearch',
 		};
 		App.addRegions({
 			// "alert": "#alert",

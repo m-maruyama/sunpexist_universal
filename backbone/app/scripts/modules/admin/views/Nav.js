@@ -29,6 +29,7 @@ define([
 				"wearerChange": "li.nav_wearerChange",
 				"wearerChangeOrder": "li.nav_wearerChangeOrder",
 				"wearerInputComplete": "li.nav_wearerInputComplete",
+				"wearerSearch": "li.nav_wearerSearch",
 				"logout": "li.logout a"
 			},
 			onShow: function() {

@@ -36,7 +36,7 @@ $app->post('/agreement_no_input', function () use ($app) {
     $results = MContract::query()
         ->where($query)
         ->columns(array('MContract.*', 'MContractResource.*', 'MAccount.*'))
-        ->leftJoin('MContractResource', 'MContract.corporate_id = MContractResource.corporate_id')
+        ->leftJoin('MContractResource', 'MContract.corporate_id = MContractResource.corporate_id AND MContract.rntl_cont_no = MContractResource.rntl_cont_no')
         ->join('MAccount', 'MAccount.accnt_no = MContractResource.accnt_no')
         ->execute();
 
@@ -44,7 +44,6 @@ $app->post('/agreement_no_input', function () use ($app) {
     $list['rntl_cont_no'] = null;
     $list['rntl_cont_name'] = null;
     array_push($all_list, $list);
-
     foreach ($results as $result) {
         $list['rntl_cont_no'] = $result->mContract->rntl_cont_no;
         $list['rntl_cont_name'] = $result->mContract->rntl_cont_name;
