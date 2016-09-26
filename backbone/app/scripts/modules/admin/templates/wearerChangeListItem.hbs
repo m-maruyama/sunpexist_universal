@@ -7,14 +7,14 @@
     {{job_type_name}}</td>
 <td>
   {{#if wearer_change_button}}
-  <button type="button" class="btn btn-primary" title="職種変更または異動" id="wearer_change" value="{{rntl_cont_no}}:{{rntl_sect_cd}}:{{werer_cd}}:{{cster_emply_cd}}:{{sex_kbn}}" {{disabled}}>
-    {{wearer_change_button}}
-    {{#if wearer_change_red}}
-    <span style='color:red'>
-      {{wearer_change_red}}
-    </span>
-    {{/if}}
-  </button>
+    <button type="button" class="btn btn-primary" title="職種変更または異動" id="wearer_change" value="{{rntl_cont_no}}:{{werer_cd}}:{{cster_emply_cd}}:{{sex_kbn}}:{{rntl_sect_cd}}:{{job_type_cd}}:{{order_reason_kbn}}:{{ship_to_cd}}:{{ship_to_brnch_cd}}:{{order_tran_flg}}:{{wearer_tran_flg}}" {{disabled}}>
+      {{wearer_change_button}}
+      {{#if wearer_change_red}}
+      <span style='color:red'>
+        {{wearer_change_red}}
+      </span>
+      {{/if}}
+    </button>
   {{/if}}
   {{#if return_reciept_button}}
   <button type="button" class="btn btn-primary" title="返却伝票ダウンロード" id="download">
