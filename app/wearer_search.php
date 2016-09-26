@@ -336,6 +336,7 @@ $app->post('/wearer_search/search', function ()use($app){
  * 「職種変更または異動」ボタンの押下時のパラメータのセッション保持
  * →発注入力（職種変更または異動）にてパラメータ利用
  */
+/*
 $app->post('/wearer_change/req_param', function ()use($app){
     $params = json_decode(file_get_contents("php://input"), true);
 
@@ -364,3 +365,4 @@ $app->post('/wearer_change/req_param', function ()use($app){
 
     echo json_encode($json_list);
 });
+*/
