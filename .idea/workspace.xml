@@ -3,15 +3,7 @@
   <component name="ChangeListManager">
     <list default="true" id="093d48c9-3fdb-4a50-ba0a-ca62a2bcccb7" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/wearer_search.php" afterPath="$PROJECT_DIR$/app/wearer_search.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/backbone/app/scripts/app.js" afterPath="$PROJECT_DIR$/backbone/app/scripts/app.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/backbone/app/scripts/entities/collections/AdminWearerSearchListList.js" afterPath="$PROJECT_DIR$/backbone/app/scripts/entities/collections/AdminWearerSearchListList.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/backbone/app/scripts/modules/admin/templates/sexKbnCondition.hbs" afterPath="$PROJECT_DIR$/backbone/app/scripts/modules/admin/templates/sexKbnCondition.hbs" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/backbone/app/scripts/modules/admin/templates/wearerSearchListItem.hbs" afterPath="$PROJECT_DIR$/backbone/app/scripts/modules/admin/templates/wearerSearchListItem.hbs" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/backbone/app/scripts/modules/admin/templates/wearerSearchListList.hbs" afterPath="$PROJECT_DIR$/backbone/app/scripts/modules/admin/templates/wearerSearchListList.hbs" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/backbone/app/scripts/modules/admin/views/WearerSearchCondition.js" afterPath="$PROJECT_DIR$/backbone/app/scripts/modules/admin/views/WearerSearchCondition.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/backbone/app/scripts/modules/admin/views/WearerSearchListList.js" afterPath="$PROJECT_DIR$/backbone/app/scripts/modules/admin/views/WearerSearchListList.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/public/index.php" afterPath="$PROJECT_DIR$/public/index.php" />
     </list>
     <list id="b3330c0a-5742-4be2-af6d-d1950c5743e3" name="Rejected commit: Default" comment="SUNPEXIST_UNIVERSAL-13 拠点絞込画面" />
     <ignored path="universal.iws" />
@@ -66,8 +58,8 @@
       <file leaf-file-name="sexKbnCondition.hbs" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/backbone/app/scripts/modules/admin/templates/sexKbnCondition.hbs">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="75">
-              <caret line="5" column="0" selection-start-line="5" selection-start-column="0" selection-end-line="5" selection-end-column="0" />
+            <state relative-caret-position="30">
+              <caret line="2" column="23" selection-start-line="2" selection-start-column="23" selection-end-line="2" selection-end-column="23" />
               <folding />
             </state>
           </provider>
@@ -635,7 +627,7 @@
       <workItem from="1474016644051" duration="6886000" />
       <workItem from="1474329710451" duration="105000" />
       <workItem from="1474336654742" duration="598000" />
-      <workItem from="1474851046076" duration="16194000" />
+      <workItem from="1474851046076" duration="16348000" />
     </task>
     <task id="LOCAL-00001" summary="commit">
       <created>1471261963970</created>
@@ -854,11 +846,18 @@
       <option name="project" value="LOCAL" />
       <updated>1474881710856</updated>
     </task>
-    <option name="localTasksCounter" value="32" />
+    <task id="LOCAL-00032" summary="SUNPEXIST_UNIVERSAL-41 発注管理（貸与開始）">
+      <created>1474886997302</created>
+      <option name="number" value="00032" />
+      <option name="presentableId" value="LOCAL-00032" />
+      <option name="project" value="LOCAL" />
+      <updated>1474886997302</updated>
+    </task>
+    <option name="localTasksCounter" value="33" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="341556000" />
+    <option name="totallyTimeSpent" value="341710000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-1365" y="99" width="1278" height="833" extended-state="0" />
@@ -1320,8 +1319,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/backbone/app/scripts/modules/admin/templates/sexKbnCondition.hbs">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="75">
-          <caret line="5" column="0" selection-start-line="5" selection-start-column="0" selection-end-line="5" selection-end-column="0" />
+        <state relative-caret-position="30">
+          <caret line="2" column="23" selection-start-line="2" selection-start-column="23" selection-end-line="2" selection-end-column="23" />
           <folding />
         </state>
       </provider>
