@@ -6,19 +6,17 @@ use Phalcon\Paginator\Adapter\NativeArray as PaginatorArray;
 use Phalcon\Paginator\Adapter\QueryBuilder as PaginatorQueryBuilder;
 
 /**
- * 職種変更または異動検索
+ * 着用者検索
  */
-$app->post('/wearer_change/search', function ()use($app){
+$app->post('/wearer_search/search', function ()use($app){
 
     $params = json_decode(file_get_contents("php://input"), true);
 
     // アカウントセッション取得
     $auth = $app->session->get("auth");
-
     $cond = $params['cond'];
     $page = $params['page'];
     $query_list = array();
-    //ChromePhp::LOG($cond);
 
     //---既存着用者基本マスタ情報リスト取得---//
     //企業ID

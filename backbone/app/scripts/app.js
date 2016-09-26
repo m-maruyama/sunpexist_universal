@@ -172,6 +172,7 @@ define([
 			"WC0015": host + "/sex_kbn_change",
 			"WC0016": host + "/job_type_change",
 			"WC0017": host + "/shipment_change",
+			"WS0010": host + "/wearer_search/search",
 			"CM9010": host + "/api/CM9010"
 		};
 

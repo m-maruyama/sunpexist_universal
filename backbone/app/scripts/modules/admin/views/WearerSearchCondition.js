@@ -6,7 +6,7 @@ define([
 	'../behaviors/Alerts',
 	'typeahead',
 	'bloodhound',
-	'../controllers/WearerChange',
+	'../controllers/WearerSearch',
 	'./SectionCondition',
 	'./JobTypeCondition',
 	'./SexKbnCondition',

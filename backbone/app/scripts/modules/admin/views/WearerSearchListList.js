@@ -44,7 +44,7 @@ define([
 			},
 			fetch:function(wearerSearchListConditionModel){
 				var cond = {
-					"scr": '貸与終了検索',
+					"scr": '貸与開始検索',
 					"page":this.options.pagerModel.getPageRequest(),
 					"cond": wearerSearchListConditionModel.getReq()
 				};

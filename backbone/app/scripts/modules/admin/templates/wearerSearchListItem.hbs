@@ -5,20 +5,5 @@
 <td>{{snd_kbn}}</td>
 <td>{{rntl_sect_name}}<br>
     {{job_type_name}}</td>
-<td>
-  {{#if wearer_change_button}}
-  <button type="button" class="btn btn-primary" title="職種変更または異動" id="wearer_change" value="{{rntl_cont_no}}:{{rntl_sect_cd}}:{{werer_cd}}:{{cster_emply_cd}}:{{sex_kbn}}" {{disabled}}>
-    {{wearer_change_button}}
-    {{#if wearer_change_red}}
-    <span style='color:red'>
-      {{wearer_change_red}}
-    </span>
-    {{/if}}
-  </button>
-  {{/if}}
-  {{#if return_reciept_button}}
-  <button type="button" class="btn btn-primary" title="返却伝票ダウンロード" id="download">
-    {{return_reciept_button}}
-  </button>
-  {{/if}}
-</td>
+<td>{{#if wearer_input_button}}<button type="button"  class="btn btn-primary" title="貸与開始" id="wearer_input" value="{{werer_cd}},{{corporate_id}},{{rntl_cont_no}}" {{disabled}}>{{wearer_input_button}}{{#if wearer_input_red}}<span style='color:red'>{{wearer_input_red}}</span>{{/if}}</button>{{/if}}
+  {{#if return_reciept_button}}<button type="button" class="btn btn-primary" title="返却伝票ダウンロード" id="download">{{return_reciept_button}}</button>{{/if}}</td>
