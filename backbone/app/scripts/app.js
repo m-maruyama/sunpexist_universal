@@ -115,7 +115,6 @@ define([
 			"CM0052": host + "/zaiko_item_color",
 			"CM0060": host + "/agreement_no",
 			"CM0061": host + "/agreement_no_input",
-			"CM0062": host + "/agreement_no_change",
 			"CM0063": host + "/corporate_id",
 			"CM0064": host + "/corporate_id_all",//全て選択肢あり
 			"CM0070": host + "/input_item",
@@ -123,6 +122,7 @@ define([
 			"CM0090": host + "/section_modal",
 			"CM0100": host + "/individual_num",
 			"CM0110": host + "/sex_kbn",
+			"CM0120": host + "/reason_kbn",
 			"IM0010": host + "/import_csv",
 			"IM0020": host + "/csv",
 			"DL0010": host + "/csv_download",
@@ -164,6 +164,12 @@ define([
 			"WN0010": host + "/wearer_end/search",
 			"WC0010": host + "/wearer_change/search",
 			"WC0011": host + "/wearer_change/req_param",
+			"WC0012": host + "/agreement_no_change",
+			"WC0013": host + "/reason_kbn_change",
+			"WC0014": host + "/section_change",
+			"WC0015": host + "/sex_kbn_change",
+			"WC0016": host + "/job_type_change",
+			"WC0017": host + "/shipment_change",
 			"CM9010": host + "/api/CM9010"
 		};
 
