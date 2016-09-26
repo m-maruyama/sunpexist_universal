@@ -28,8 +28,10 @@ define([
 						'rntl_sect_cd': we_val[4],
 						'job_type_cd': we_val[5],
 						'order_reason_kbn': we_val[6],
-						'order_tran_flg': we_val[7],
-						'wearer_tran_flg': we_val[8],
+						'ship_to_cd': we_val[7],
+						'ship_to_brnch_cd': we_val[8],
+						'order_tran_flg': we_val[9],
+						'wearer_tran_flg': we_val[10],
 					};
 
 					var modelForUpdate = this.model;

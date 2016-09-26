@@ -65,6 +65,8 @@ $app->post('/wearer_change/search', function ()use($app){
     $arg_str .= "m_wearer_std.cster_emply_cd as as_cster_emply_cd,";
     $arg_str .= "m_wearer_std.werer_name as as_werer_name,";
     $arg_str .= "m_wearer_std.sex_kbn as as_sex_kbn,";
+    $arg_str .= "m_wearer_std.ship_to_cd as as_ship_to_cd,";
+    $arg_str .= "m_wearer_std.ship_to_brnch_cd as as_ship_to_brnch_cd,";
     $arg_str .= "wst.rntl_sect_name as wst_rntl_sect_name,";
     $arg_str .= "wjt.job_type_name as wjt_job_type_name,";
     $arg_str .= "t_order_tran.order_sts_kbn as as_order_sts_kbn,";
@@ -129,6 +131,8 @@ $app->post('/wearer_change/search', function ()use($app){
           $arg_str .= "m_wearer_std_tran.werer_name as as_werer_name,";
           $arg_str .= "m_wearer_std_tran.sex_kbn as as_sex_kbn,";
           $arg_str .= "m_wearer_std_tran.snd_kbn as as_snd_kbn,";
+          $arg_str .= "m_wearer_std_tran.ship_to_cd as as_ship_to_cd,";
+          $arg_str .= "m_wearer_std_tran.ship_to_brnch_cd as as_ship_to_brnch_cd,";
           $arg_str .= "wst.rntl_sect_name as wst_rntl_sect_name,";
           $arg_str .= "wjt.job_type_name as wjt_job_type_name,";
           $arg_str .= "t_order_tran.order_sts_kbn as as_order_sts_kbn,";
@@ -171,6 +175,8 @@ $app->post('/wearer_change/search', function ()use($app){
               $result->as_werer_name = $tran_result->as_werer_name;
               $result->as_sex_kbn = $tran_result->as_sex_kbn;
               $result->as_snd_kbn = $tran_result->as_snd_kbn;
+              $result->as_ship_to_cd = $tran_result->as_ship_to_cd;
+              $result->as_ship_to_brnch_cd = $tran_result->as_ship_to_brnch_cd;
               $result->wst_rntl_sect_name = $tran_result->wst_rntl_sect_name;
               $result->wjt_job_type_name = $tran_result->wjt_job_type_name;
               $result->as_order_sts_kbn = $tran_result->as_order_sts_kbn;
@@ -201,6 +207,10 @@ $app->post('/wearer_change/search', function ()use($app){
           }
           // 性別区分
           $list['sex_kbn'] = $result->as_sex_kbn;
+          // 出荷先コード
+          $list['ship_to_cd'] = $result->as_ship_to_cd;
+          // 出荷先支店コード
+          $list['ship_to_brnch_cd'] = $result->as_ship_to_brnch_cd;
           // 着用者名
           if (!empty($result->as_werer_name)) {
               $list['werer_name'] = $result->as_werer_name;
@@ -357,6 +367,8 @@ $app->post('/wearer_change/req_param', function ()use($app){
       'rntl_sect_cd' => $cond["rntl_sect_cd"],
       'job_type_cd' => $cond["job_type_cd"],
       'order_reason_kbn' => $cond["order_reason_kbn"],
+      'ship_to_cd' => $cond["ship_to_cd"],
+      'ship_to_brnch_cd' => $cond["ship_to_brnch_cd"],
       'order_tran_flg' => $cond["order_tran_flg"],
       'wearer_tran_flg' => $cond["wearer_tran_flg"],
     ));
