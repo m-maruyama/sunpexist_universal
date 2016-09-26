@@ -27,8 +27,7 @@ $app->post('/login', function ()use($app) {
     $account = MAccount::query()
         ->where("MAccount.user_id = '".$params['login_id']."' AND MAccount.corporate_id = '".$params['corporate_id'].
             "' AND MAccount.tentative_pass_word = '".$params['password']."'")
-        ->columns(array('MAccount.*','MContractResource.*'))
-        ->join('MContractResource','MContractResource.accnt_no = MAccount.accnt_no')
+        ->columns(array('MAccount.*'))
         ->execute();
 
     if($account->count() > 0){
@@ -39,13 +38,6 @@ $app->post('/login', function ()use($app) {
         echo json_encode($json_list);
         return true;
     }
-    //アカウントチェック
-    $account = MAccount::query()
-        ->where("MAccount.user_id = '".$params['login_id']."' AND MAccount.corporate_id = '".$params['corporate_id']."'")
-        ->columns(array('MAccount.*','MContractResource.*','MContract.*'))
-        ->join('MContractResource','MContractResource.accnt_no = MAccount.accnt_no')
-        ->join('MContract','MContract.corporate_id = MContractResource.corporate_id AND MContract.rntl_cont_no = MContractResource.rntl_cont_no')
-        ->execute();
     if (!$app->security->checkHash($params['password'], $account[0]->mAccount->pass_word)) {
         // PWが間違っている場合
         // アカウントマスタのログインエラー回数をチェックする。
@@ -87,6 +79,24 @@ $app->post('/login', function ()use($app) {
                 // 現在日付が、アカウント管理テーブル．パスワード最終変更時間＋８９日以下の場合
                 // ホーム画面を表示する。
                 $json_list['status'] = 0;
+
+                $contracts = MContractResource::query()
+                    ->where("MContractResource.account_no = '".$account[0]->mAccount->accnt_no."'")
+                    ->columns(array('MContractResource.*','MContract.*'))
+                    ->join('MContract','MContract.corporate_id = MContractResource.corporate_id AND MContract.rntl_cont_no = MContractResource.rntl_cont_no')
+                    ->execute();
+                $contract_array = array();
+                foreach($contracts as $contract){
+                    array_push($contract_array['rntl_cont_no'], $contract->mContractResource->rntl_cont_no);
+                    array_push($contract_array['rntl_sect_cd'], $contract->mContractResource->rntl_sect_cd);
+                    array_push($contract_array['individual_flg'], $contract->mContract->individual_flg);
+                    array_push($contract_array['receipt_flg'], $contract->mContract->receipt_flg);
+                    array_push($contract_array['rntl_cont_flg'], $contract->mContract->rntl_cont_flg);
+                    array_push($contract_array['purchase_cont_flg'], $contract->mContract->purchase_cont_flg);
+                    array_push($contract_array['sub_cont_flg1'], $contract->mContract->sub_cont_flg1);
+                    array_push($contract_array['sub_cont_flg2'], $contract->mContract->sub_cont_flg2);
+                    array_push($contract_array['sub_cont_flg3'], $contract->mContract->sub_cont_flg3);
+                }
                 //認証情報をセッションに格納
                 $app->session->set("auth", array(
                     'accnt_no' => $account[0]->mAccount->accnt_no,
@@ -128,15 +138,7 @@ $app->post('/login', function ()use($app) {
                     'position_name' => $account[0]->mAccount->position_name,
                     'login_disp_name' => $account[0]->mAccount->login_disp_name,
                     'mail_address' => $account[0]->mAccount->mail_address,
-                    'rntl_cont_no' => $account[0]->mContractResource->rntl_cont_no,
-                    'rntl_sect_cd' => $account[0]->mContractResource->rntl_sect_cd,
-                    'individual_flg' => $account[0]->mContract->individual_flg,
-                    'receipt_flg' => $account[0]->mContract->receipt_flg,
-                    'rntl_cont_flg' => $account[0]->mContract->rntl_cont_flg,
-                    'purchase_cont_flg' => $account[0]->mContract->purchase_cont_flg,
-                    'sub_cont_flg1' => $account[0]->mContract->sub_cont_flg1,
-                    'sub_cont_flg2' => $account[0]->mContract->sub_cont_flg2,
-                    'sub_cont_flg3' => $account[0]->mContract->sub_cont_flg3,
+                    'contract' => $contract_array
                 ));
                 echo json_encode($json_list);
 

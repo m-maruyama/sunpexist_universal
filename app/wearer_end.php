@@ -18,7 +18,6 @@ $app->post('/wearer_end/search', function ()use($app){
     $page = $params['page'];
     $query_list = array();
     $query_list2 = array();
-    ChromePhp::LOG($cond);
     //---検索条件---//
     //企業ID
     array_push($query_list,"m_wearer_std_tran.corporate_id = '".$auth['corporate_id']."'");
@@ -71,10 +70,20 @@ $app->post('/wearer_end/search', function ()use($app){
     $q_sort_key = "as_cster_emply_cd";
     $order = 'asc';
 
+    //※着用基本マスタと着用基本マスタトランに「同じ企業ID」「同じ着用者コード」「同じレンタル契約No.」が存在した場合、
+    //     着用基本マスタトランの情報を優先して表示させる。（どちらを優先して取得するか、のやり方
+    //	$arg_str = "CASE WHEN m_wearer_std_tran.corporate_id = m_wearer_std.corporate_id AND
+    //          m_wearer_std_tran.werer_cd = m_wearer_std.werer_cd AND
+    //          m_wearer_std_tran.rntl_cont_no = m_wearer_std.rntl_cont_no
+    //     ELSE 'その他' END ";
+
     //---SQLクエリー実行---//
     $arg_str = "(SELECT ";
     $arg_str .= "t_order_tran.cster_emply_cd as as_cster_emply_cd,";
     $arg_str .= "t_order_tran.order_sts_kbn as as_order_sts_kbn,";
+    $arg_str .= "m_wearer_std_tran.werer_cd as as_werer_cd,";
+    $arg_str .= "m_wearer_std_tran.corporate_id as as_corporate_id,";
+    $arg_str .= "m_wearer_std_tran.rntl_cont_no as as_rntl_cont_no,";
     $arg_str .= "m_wearer_std_tran.werer_name as as_werer_name,";
     $arg_str .= "m_wearer_std_tran.sex_kbn as as_sex_kbn,";
     $arg_str .= "t_order_tran.snd_kbn as as_snd_kbn,";
@@ -97,6 +106,9 @@ $app->post('/wearer_end/search', function ()use($app){
     $arg_str .= "( SELECT ";
     $arg_str .= "t_order_tran.cster_emply_cd as as_cster_emply_cd,";
     $arg_str .= "t_order_tran.order_sts_kbn as as_order_sts_kbn,";
+    $arg_str .= "m_wearer_std.werer_cd as as_werer_cd,";
+    $arg_str .= "m_wearer_std.corporate_id as as_corporate_id,";
+    $arg_str .= "m_wearer_std.rntl_cont_no as as_rntl_cont_no,";
     $arg_str .= "m_wearer_std.werer_name as as_werer_name,";
     $arg_str .= "m_wearer_std.sex_kbn as as_sex_kbn,";
     $arg_str .= "t_order_tran.snd_kbn as as_snd_kbn,";
@@ -140,6 +152,9 @@ $app->post('/wearer_end/search', function ()use($app){
 
         foreach($results as $result) {
             $list = array();
+            $list['werer_cd'] = $result->as_werer_cd;
+            $list['corporate_id'] = $result->as_corporate_id;
+            $list['rntl_cont_no'] = $result->as_rntl_cont_no;
             // 社員番号
             if (!empty($result->as_cster_emply_cd)) {
                 $list['cster_emply_cd'] = $result->as_cster_emply_cd;
@@ -243,5 +258,18 @@ $app->post('/wearer_end/search', function ()use($app){
     $page_list['total_records'] = $results_cnt;
     $json_list['page'] = $page_list;
     $json_list['list'] = $all_list;
+    echo json_encode($json_list);
+});
+/*
+ * 着用者情報セッション登録
+ */
+$app->post('/wearer_end/session', function ()use($app){
+    $json_list = array();
+    $params = json_decode(file_get_contents("php://input"), true);
+    // アカウントセッション取得
+    $auth = $app->session->get("auth");
+    
+    ChromePhp::LOG($params);
+    ChromePhp::LOG($auth);
     echo json_encode($json_list);
 });
