@@ -149,9 +149,8 @@ define([
                     contentType : false,
                     dataType: "json"
                 };
-                errors = $.ajax( App.api.WI0012, postData ).done(function (res) {
+                errors = $.ajax( url, postData ).done(function (res) {
                     errors = res['errors'];
-                    console.log(errors);
                     if(errors) {
                         return errors;
                     }else{

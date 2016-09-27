@@ -323,31 +323,31 @@ $app->post('/wearer_search/search', function ()use($app){
  * 「貸与開始」ボタンの押下時のパラメータのセッション保持
  * →発注入力（貸与開始）にてパラメータ利用
  */
-$app->post('/wearer_change/req_param', function ()use($app){
-    $params = json_decode(file_get_contents("php://input"), true);
-
-    // アカウントセッション取得
-    $auth = $app->session->get("auth");
-
-    // パラメータ取得
-    $cond = $params['data'];
-    //ChromePhp::LOG($cond);
-
-    // POSTパラメータのセッション格納
-    $app->session->set("wearer_chg_post", array(
-        'rntl_cont_no' => $cond["rntl_cont_no"],
-        'werer_cd' => $cond["werer_cd"],
-        'cster_emply_cd' => $cond["cster_emply_cd"],
-        'sex_kbn' => $cond["sex_kbn"],
-        'rntl_sect_cd' => $cond["rntl_sect_cd"],
-        'job_type_cd' => $cond["job_type_cd"],
-        'order_reason_kbn' => $cond["order_reason_kbn"],
-        'order_tran_flg' => $cond["order_tran_flg"],
-        'wearer_tran_flg' => $cond["wearer_tran_flg"],
-    ));
-
-    $json_list = array();
-    $json_list = $cond;
-
-    echo json_encode($json_list);
-});
+//$app->post('/wearer_change/req_param', function ()use($app){
+//    $params = json_decode(file_get_contents("php://input"), true);
+//
+//    // アカウントセッション取得
+//    $auth = $app->session->get("auth");
+//
+//    // パラメータ取得
+//    $cond = $params['data'];
+//    //ChromePhp::LOG($cond);
+//
+//    // POSTパラメータのセッション格納
+//    $app->session->set("wearer_chg_post", array(
+//        'rntl_cont_no' => $cond["rntl_cont_no"],
+//        'werer_cd' => $cond["werer_cd"],
+//        'cster_emply_cd' => $cond["cster_emply_cd"],
+//        'sex_kbn' => $cond["sex_kbn"],
+//        'rntl_sect_cd' => $cond["rntl_sect_cd"],
+//        'job_type_cd' => $cond["job_type_cd"],
+//        'order_reason_kbn' => $cond["order_reason_kbn"],
+//        'order_tran_flg' => $cond["order_tran_flg"],
+//        'wearer_tran_flg' => $cond["wearer_tran_flg"],
+//    ));
+//
+//    $json_list = array();
+//    $json_list = $cond;
+//
+//    echo json_encode($json_list);
+//});

@@ -313,21 +313,13 @@ $app->post('/input_insert', function () use ($app) {
         return;
     }
     //汎用コードマスタから更新不可時間を取得
-    //--- 検索条件 ---//
-    $query_list = array();
     // 汎用コードマスタ．分類コード　＝　更新不可時間
-    array_push($query_list, "cls_cd = '015'");
 
-    //sql文字列を' AND 'で結合
-    $query = implode(' AND ', $query_list);
-
-    ChromePhp::LOG(333);
     //--- クエリー実行・取得 ---//
     $m_gencode_results = MGencode::query()
-        ->where($query)
+        ->where("cls_cd = '015'")
         ->columns('*')
         ->execute();
-    ChromePhp::LOG(444);
     foreach ($m_gencode_results as $m_gencode_result) {
         if($m_gencode_result->gen_cd =='1'){
             //更新不可開始時間
@@ -338,17 +330,18 @@ $app->post('/input_insert', function () use ($app) {
 
         }
     }
-    ChromePhp::LOG(555);
     $now_datetime = date("YmdHis");
     $now_date = date("Ymd");
     $start_datetime = $now_date.$start;
     $end_datetime = date("YmdHis", strtotime($start_datetime." + ".$hour." hour"));;
     if(strtotime($start_datetime) <= strtotime($now_datetime)||strtotime($now_datetime) >= strtotime($end_datetime)){
+        ChromePhp::LOG($start);
+        ChromePhp::LOG($now_datetime);
+        ChromePhp::LOG($end_datetime);
         array_push($error_list,'現在の時間は更新出来ません。');
         $json_list['errors'] = $error_list;
         return;
     }
-    ChromePhp::LOG(666);
 
     //契約Noのマスタチェック
     $query_list = array();
