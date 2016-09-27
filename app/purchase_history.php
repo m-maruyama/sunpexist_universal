@@ -186,7 +186,6 @@ $app->post('/purchase_history/search', function () use ($app) {
             'conditions' => "line_no = '" . $line_no . "'",
         ));
 
-        ChromePhp::log($ac[0]);
         $transaction = $app->transactionManager->get();
 
         if ($ac[0]->delete() == false) {
@@ -206,26 +205,35 @@ $app->post('/purchase_history/search', function () use ($app) {
     }
 
 
-    //の場合
+
+
+
+    //検索の場合
     $cond = $params['cond'];
     $page = $params['page'];
     $query_list = array();//追加
-    //ChromePhp::log($params);
-    // ChromePhp::log($cond);
 
-    $corporate_id = $auth['corporate_id'];
-    //$item_cd = $cond['item_cd'];
-    //$item_color = $cond['item_color'];
-    //$item_size = $cond['item_size'];
-    //$order_day_from = $cond['order_day_from'];
-    //if(!isset($order_day_from)){
-    //    $order_day_from = date('Y-m-d', strtotime('20010101'));
-    //    ChromePhp::log($order_day_from);
-    //}
-    // $order_day_to = $cond['order_day_to'];
-    //$rntl_cont_no = $cond['rntl_cont_no'];
-    //$section = $cond['section'];
-    //date("Y/m/d", strtotime("-1 day"  ));
+
+    //初期表示は一番若い契約のnoを入れる
+    if(isset($cond['rntl_cont_no'])){
+    }else{
+        $login_corporate_id = $auth['corporate_id'];
+
+        //sectionで一番若い契約Noを取得
+        $rntl_cont_no_one = MContract::find(array(
+            //'order' => "$sort_key $order",
+            'conditions' => "corporate_id = '$login_corporate_id' AND purchase_cont_flg = '1'",
+            "columns" => "rntl_cont_no",
+            "limit" => 1
+            //'conditions'  => "'$user_name_val%"
+        ));
+        foreach ($rntl_cont_no_one as $rntl_cont_value) {
+            $rent['value'] = $rntl_cont_value->rntl_cont_no;
+        }
+        $cond['rntl_cont_no'] = $rent['value'];//データベース上で一番若い番号の契約no
+    }
+
+    //ChromePhp::log($cond);
 
 
     //
@@ -280,8 +288,8 @@ $app->post('/purchase_history/search', function () use ($app) {
         if ($sort_key == 'sale_order_date') {
             $q_sort_key = 'sale_order_date';
         }
-        if ($sort_key == 'rntl_sect_cd') {
-            $q_sort_key = 'rntl_sect_cd';
+        if ($sort_key == 'rntl_sect_name') {
+            $q_sort_key = 'rntl_sect_name';
         }
         if ($sort_key == 'item_name') {
             $q_sort_key = 'item_name';
@@ -300,7 +308,7 @@ $app->post('/purchase_history/search', function () use ($app) {
     } else {
         //指定がなければ社員番号
         $sort_key = 'line_no';
-        $order = 'asc';
+        $order = 'desc';
     }
 
 

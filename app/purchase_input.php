@@ -45,7 +45,6 @@ $app->post('/purchase_input', function () use ($app) {
 
     $login_corporate_id = $auth['corporate_id'];
 
-
     //sectionで一番若い契約Noを取得
     $rntl_cont_no_one = MSection::find(array(
         //'order' => "$sort_key $order",
