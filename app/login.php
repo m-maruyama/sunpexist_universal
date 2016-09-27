@@ -146,6 +146,7 @@ $app->post('/login', function ()use($app) {
                 $json_list['status'] = 3;
                 $app->session->set("corporate_id",$account[0]->mAccount->corporate_id);
                 $app->session->set("user_id",$account[0]->mAccount->user_id);
+                $app->session->set("trans_src","reset");
                 echo json_encode($json_list);
             }
         }
