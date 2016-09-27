@@ -122,7 +122,7 @@ define([
 						"cond": model.getReq(),
 						"item": item,
 						"total_record": total_records
-				};
+					};
 
 
 					model.fetchMx({

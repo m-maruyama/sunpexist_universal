@@ -43,9 +43,6 @@ $app->post('/purchase_input', function () use ($app) {
     $json_list = array();
 
 
-
-
-
     $login_corporate_id = $auth['corporate_id'];
 
 
@@ -63,7 +60,7 @@ $app->post('/purchase_input', function () use ($app) {
 
     $rntl_cont_no_value = $rent['value'];//データベース上で一番若い番号の契約no
 
-    if(!$cond['agreement_no'] == null){
+    if (!$cond['agreement_no'] == null) {
         $rntl_cont_no_value = $cond['agreement_no'];
     }//$cond['agreement_no']
 
@@ -75,7 +72,6 @@ $app->post('/purchase_input', function () use ($app) {
         //'conditions'  => "'$user_name_val%"
     ));
     //$results = MSaleOrderItem::find();
-
 
 
     //ChromePhp::log($results);
@@ -110,18 +106,12 @@ $app->post('/purchase_input', function () use ($app) {
 });
 
 
-
-
-
 /*
  * 注文入力
  */
 $app->post('/purchase_update', function () use ($app) {
 
     $params = json_decode(file_get_contents('php://input'), true);
-
-
-
 
 
     $cond = $params['cond'];
@@ -136,10 +126,7 @@ $app->post('/purchase_update', function () use ($app) {
     $auth = $app->session->get('auth');
 
 
-
     $transaction = $app->transactionManager->get();
-
-
 
 
     if ($error_list) {
@@ -152,26 +139,26 @@ $app->post('/purchase_update', function () use ($app) {
     $lastval = array();
     //注文商品をデータベースに登録
     for ($i = 1; $i <= $total_record; $i++) {
-        if ($item[$i]['quantity'] >= 1){//数量が１以上の場合
-        $t_sale_order_history[$i] = new TSaleOrderHistory();
-        $t_sale_order_history[$i]->corporate_id = $auth['corporate_id']; //コーポレートid
-        $t_sale_order_history[$i]->rntl_cont_no = $item[$i]['rntl_cont_no'];
-        $t_sale_order_history[$i]->rntl_sect_cd = $item[$i]['rntl_sect_cd'];
-        $t_sale_order_history[$i]->sale_order_date = date('Y/m/d H:i:s.sss', time());
-        $t_sale_order_history[$i]->item_cd = $item[$i]['item_cd'];
-        $t_sale_order_history[$i]->color_cd = $item[$i]['color_cd'];
-        $t_sale_order_history[$i]->size_cd = $item[$i]['size_cd'];
-        $t_sale_order_history[$i]->item_name = $item[$i]['item_name'];
-        $t_sale_order_history[$i]->piece_rate = $item[$i]['piece_rate'];
-        $t_sale_order_history[$i]->quantity = $item[$i]['quantity'];
-        $t_sale_order_history[$i]->total_amount = $item[$i]['total_amount'];
-        $t_sale_order_history[$i]->accnt_no = $auth['accnt_no'];
-        $t_sale_order_history[$i]->snd_kbn = 0;
-        $t_sale_order_history[$i]->rgst_date = date('Y/m/d H:i:s.sss', time());
-        $t_sale_order_history[$i]->rgst_user_id = $auth['user_id'];
-        $t_sale_order_history[$i]->upd_user_id = $auth['user_id'];
-        $t_sale_order_history[$i]->upd_pg_id = $auth['user_id'];
-        $t_sale_order_history[$i]->upd_date = date('Y/m/d H:i:s.sss', time());
+        if ($item[$i]['quantity'] >= 1) {//数量が１以上の場合
+            $t_sale_order_history[$i] = new TSaleOrderHistory();
+            $t_sale_order_history[$i]->corporate_id = $auth['corporate_id']; //コーポレートid
+            $t_sale_order_history[$i]->rntl_cont_no = $item[$i]['rntl_cont_no'];
+            $t_sale_order_history[$i]->rntl_sect_cd = $item[$i]['rntl_sect_cd'];
+            $t_sale_order_history[$i]->sale_order_date = date('Y/m/d H:i:s.sss', time());
+            $t_sale_order_history[$i]->item_cd = $item[$i]['item_cd'];
+            $t_sale_order_history[$i]->color_cd = $item[$i]['color_cd'];
+            $t_sale_order_history[$i]->size_cd = $item[$i]['size_cd'];
+            $t_sale_order_history[$i]->item_name = $item[$i]['item_name'];
+            $t_sale_order_history[$i]->piece_rate = $item[$i]['piece_rate'];
+            $t_sale_order_history[$i]->quantity = $item[$i]['quantity'];
+            $t_sale_order_history[$i]->total_amount = $item[$i]['total_amount'];
+            $t_sale_order_history[$i]->accnt_no = $auth['accnt_no'];
+            $t_sale_order_history[$i]->snd_kbn = 0;
+            $t_sale_order_history[$i]->rgst_date = date('Y/m/d H:i:s.sss', time());
+            $t_sale_order_history[$i]->rgst_user_id = $auth['user_id'];
+            $t_sale_order_history[$i]->upd_user_id = $auth['user_id'];
+            $t_sale_order_history[$i]->upd_pg_id = $auth['user_id'];
+            $t_sale_order_history[$i]->upd_date = date('Y/m/d H:i:s.sss', time());
 
             if ($t_sale_order_history[$i]->save() == false) {
                 $error_list['update'] = '注文入力に失敗しました。';
@@ -184,7 +171,7 @@ $app->post('/purchase_update', function () use ($app) {
             $results[$i] = new Resultset(null, $t_sale_order_history[$i], $t_sale_order_history[$i]->getReadConnection()->query($arg_str));
 
             //ChromePhp::log($results[$i][0]->lastval);
-            array_push($lastval,$results[$i][0]->lastval);//最後に送ったシーケンス番号を配列にする
+            array_push($lastval, $results[$i][0]->lastval);//最後に送ったシーケンス番号を配列にする
             //ChromePhp::log($lastval);
         }
     }

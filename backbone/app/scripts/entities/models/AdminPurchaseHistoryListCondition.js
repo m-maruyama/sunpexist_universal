@@ -12,22 +12,12 @@ define([
 				var result = {
 					corporate_id : null,
 					rntl_cont_no : null,
-					rntl_sect_cd : null,
-					line_no : null,
-					sale_order_date : null,
+					order_day_from : null,
+					order_day_to : null,
+					section : null,
 					item_cd : null,
-					color_cd : null,
-					size_cd : null,
-					item_name : null,
-					piece_rate : null,
-					quantity : null,
-					total_amount : null,
-					accnt_no : null,
-					rgst_date : null,
-					rgst_user_id : null,
-					upd_date : null,
-					upd_user_id : null,
-					upd_pg_id : null,
+					item_color : null,
+					item_size : null,
 				};
 				if(this.get('corporate_id')) {
 					result.corporate_id = this.get('corporate_id');
@@ -35,53 +25,23 @@ define([
 				if(this.get('rntl_cont_no')) {
 					result.rntl_cont_no = this.get('rntl_cont_no');
 				}
-				if(this.get('rntl_sect_cd')) {
-					result.rntl_sect_cd = this.get('rntl_sect_cd');
+				if(this.get('order_day_from')) {
+					result.order_day_from = this.get('order_day_from');
 				}
-				if(this.get('line_no')) {
-					result.line_no = this.get('line_no');
+				if(this.get('order_day_to')) {
+					result.order_day_to = this.get('order_day_to');
 				}
-				if(this.get('sale_order_date')) {
-					result.sale_order_date = this.get('sale_order_date');
+				if(this.get('section')) {
+					result.section = this.get('section');
 				}
-				if(this.get('item_cd')) {
-					result.item_cd = this.get('item_cd');
+				if(this.get('input_item')) {
+					result.item_cd = this.get('input_item');
 				}
-				if(this.get('color_cd')) {
-					result.color_cd = this.get('color_cd');
+				if(this.get('item_color')) {
+					result.item_color = this.get('item_color');
 				}
-				if(this.get('size_cd')) {
-					result.size_cd = this.get('size_cd');
-				}
-				if(this.get('item_name')) {
-					result.item_name = this.get('item_name');
-				}
-				if(this.get('piece_rate')) {
-					result.piece_rate = this.get('piece_rate');
-				}
-				if(this.get('quantity')) {
-					result.quantity = this.get('quantity');
-				}
-				if(this.get('total_amount')) {
-					result.total_amount = this.get('total_amount');
-				}
-				if(this.get('accnt_no')) {
-					result.accnt_no = this.get('accnt_no');
-				}
-				if(this.get('rgst_date')) {
-					result.rgst_date = this.get('rgst_date');
-				}
-				if(this.get('rgst_user_id')) {
-					result.rgst_user_id = this.get('rgst_user_id');
-				}
-				if(this.get('upd_date')) {
-					result.upd_date = this.get('upd_date');
-				}
-				if(this.get('upd_user_id')) {
-					result.upd_user_id = this.get('upd_user_id');
-				}
-				if(this.get('upd_pg_id')) {
-					result.upd_pg_id = this.get('upd_pg_id');
+				if(this.get('item_size')) {
+					result.item_size = this.get('item_size');
 				}
 
 				return result;

@@ -9,8 +9,8 @@ define([
 	'../controllers/PurchaseHistory',
 	'./SectionCondition',
 	//'./JobTypeCondition',
-	'./InputItemCondition',
-	'./ItemColorCondition',
+	'./PurchaseInputItemCondition',
+	'./PurchaseItemColorCondition',
 	//'./IndividualNumberCondition',
 ], function(App) {
 	'use strict';
@@ -38,7 +38,8 @@ define([
 				"reset": '.reset',
 				"search": '.search',
 				'datepicker': '.datepicker',
-				'timepicker': '.timepicker'
+				'timepicker': '.timepicker',
+				'delete' : '.delete',
 			},
 			bindings: {
 				".agreement_no": "agreement_no",
@@ -48,7 +49,8 @@ define([
 				"#reset": 'reset',
 				'#search': 'search',
 				'#datepicker': 'datepicker',
-				'#timepicker': 'timepicker'
+				'#timepicker': 'timepicker',
+				'.delete' : 'delete',
 			},
 			onRender: function() {
 				var that = this;
@@ -143,16 +145,48 @@ define([
 
 					this.triggerMethod('hideAlerts');
 					var agreement_no = $("select[name='agreement_no']").val();
-					this.model.set('agreement_no', agreement_no);
 					this.model.set('search', this.ui.search.val());
-					this.model.set('datepicker', this.ui.datepicker.val());
-					this.model.set('timepicker', this.ui.timepicker.val());
+					//this.model.set('datepicker', this.ui.datepicker.val());
+					//this.model.set('timepicker', this.ui.timepicker.val());
+                    this.model.set('rntl_cont_no', agreement_no);
+                    this.model.set('order_day_from', $("#order_day_from").val());
+                    this.model.set('order_day_to', $("#order_day_to").val());
+                    this.model.set('section', $("#section").val());
+                    this.model.set('input_item', $("#input_item").val());
+                    this.model.set('item_color', $("#item_color").val());
+                    this.model.set('item_size', $("#item_size").val());
+
+
+                    var errors = this.model.validate();
+					if(errors) {
+						this.triggerMethod('showAlerts', errors);
+						return;
+					}
+					//console.log(this.ui.datepicker.val());
+					this.triggerMethod('click:search','line_no','desc');
+				},
+				'click @ui.delete': function(e){
+					e.preventDefault();
+					console.log('aaa');
+
+					this.triggerMethod('hideAlerts');
+					var agreement_no = $("select[name='agreement_no']").val();
+					this.model.set('search', this.ui.search.val());
+					this.model.set('rntl_cont_no', agreement_no);
+					this.model.set('order_day_from', $("#order_day_from").val());
+					this.model.set('order_day_to', $("#order_day_to").val());
+					this.model.set('section', $("#section").val());
+					this.model.set('input_item', $("#input_item").val());
+					this.model.set('item_color', $("#item_color").val());
+					this.model.set('item_size', $("#item_size").val());
+
+
 					var errors = this.model.validate();
 					if(errors) {
 						this.triggerMethod('showAlerts', errors);
 						return;
 					}
-console.log(this.ui.datepicker.val());
+					//console.log(this.ui.datepicker.val());
 					this.triggerMethod('click:search','line_no','desc');
 
 
@@ -167,22 +201,22 @@ console.log(this.ui.datepicker.val());
 					// 拠点セレクト
 					this.triggerMethod('change:section_select',agreement_no);
 					// 貸与パターンセレクト
-					var jobTypeConditionView = new App.Admin.Views.JobTypeCondition({
-						agreement_no:agreement_no,
-					});
+					//var jobTypeConditionView = new App.Admin.Views.JobTypeCondition({
+					//	agreement_no:agreement_no,
+					//});
 					// 商品セレクト
-					var inputItemConditionView = new App.Admin.Views.InputItemCondition({
+					var purchaseInputItemConditionView = new App.Admin.Views.PurchaseInputItemCondition({
 						agreement_no:agreement_no,
 					});
-					inputItemConditionView.onShow();
-					this.input_item.show(inputItemConditionView);
+					purchaseInputItemConditionView.onShow();
+					this.input_item.show(purchaseInputItemConditionView);
 					// 色セレクト
-					var itemColorConditionView = new App.Admin.Views.ItemColorCondition({
+					var purchaseItemColorConditionView = new App.Admin.Views.PurchaseItemColorCondition({
 						agreement_no:agreement_no,
 						input_item:input_item,
 					});
-					itemColorConditionView.onShow();
-					this.item_color.show(itemColorConditionView);
+					purchaseItemColorConditionView.onShow();
+					this.item_color.show(purchaseItemColorConditionView);
 					// セレクトボックス連動--ここまで
 				},
 				'change @ui.section': function(){
@@ -193,15 +227,14 @@ console.log(this.ui.datepicker.val());
 
 					// 検索セレクトボックス連動--ここから
 					var agreement_no = $("select[name='agreement_no']").val();
-					var job_type = $("select[name='job_type']").val();
 					var input_item = $("select[name='input_item']").val();
 					// 色セレクト
-					var itemColorConditionView = new App.Admin.Views.ItemColorCondition({
+					var purchaseItemColorConditionView = new App.Admin.Views.PurchaseItemColorCondition({
 						agreement_no:agreement_no,
 						input_item:input_item,
 					});
-					itemColorConditionView.onShow();
-					this.item_color.show(itemColorConditionView);
+					purchaseItemColorConditionView.onShow();
+					this.item_color.show(purchaseItemColorConditionView);
 					// セレクトボックス連動--ここまで
 				},
 				'change @ui.item_color': function(){
@@ -212,25 +245,19 @@ console.log(this.ui.datepicker.val());
 					var agreement_no = $("select[name='agreement_no']").val();
 					var input_item = '';
 
-					// 貸与パターンセレクト
-					var jobTypeConditionView = new App.Admin.Views.JobTypeCondition({
-						agreement_no:agreement_no,
-					});
-					jobTypeConditionView.onShow();
-					this.job_type.show(jobTypeConditionView);
 					// 商品セレクト
-					var inputItemConditionView = new App.Admin.Views.InputItemCondition({
+					var purchaseInputItemConditionView = new App.Admin.Views.PurchaseInputItemCondition({
 						agreement_no:agreement_no,
 					});
-					inputItemConditionView.onShow();
-					this.input_item.show(inputItemConditionView);
+					purchaseInputItemConditionView.onShow();
+					this.input_item.show(purchaseInputItemConditionView);
 					// 色セレクト
-					var itemColorConditionView = new App.Admin.Views.ItemColorCondition({
+					var purchaseItemColorConditionView = new App.Admin.Views.PurchaseItemColorCondition({
 						agreement_no:agreement_no,
 						input_item:input_item,
 					});
-					itemColorConditionView.onShow();
-					this.item_color.show(itemColorConditionView);
+					purchaseItemColorConditionView.onShow();
+					this.item_color.show(purchaseItemColorConditionView);
 				}
 			},
 		});

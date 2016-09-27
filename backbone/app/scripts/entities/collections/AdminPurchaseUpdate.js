@@ -9,7 +9,7 @@ define([
 			url: App.api.PU0010,
 			parse:function(res, xhr){
 				this.trigger('parsed',res);
-				console.log(res);
+				//console.log(res);
 
 				return res.list;
 			}

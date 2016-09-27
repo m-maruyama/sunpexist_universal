@@ -5,16 +5,15 @@ define([
 ], function(App) {
 	'use strict';
 	App.module('Admin.Views', function(Views, App, Backbone, Marionette, $, _){
-		Views.InputItemCondition = Marionette.ItemView.extend({
+		Views.PurchaseInputItemCondition = Marionette.ItemView.extend({
 			defaults: {
 				agreement_no: '',
-				job_type: '',
 			},
 			initialize: function(options) {
 			    this.options = options || {};
 			    this.options = _.extend(this.defaults, this.options);
 			},
-			template: App.Admin.Templates.inputItemCondition,
+			template: App.Admin.Templates.purchaseInputItemCondition,
 			model: new Backbone.Model(),
 			ui: {
 				'input_item': '.input_item'
@@ -24,20 +23,20 @@ define([
 			},
 			onShow: function() {
 				var agreement_no = this.options.agreement_no;
-				var job_type = this.options.job_type;
 				var that = this;
 
 				var modelForUpdate = this.model;
-				modelForUpdate.url = App.api.CM0070;
+				modelForUpdate.url = App.api.PH0011;
+
 				var cond = {
 					"scr": '商品',
 					"agreement_no": agreement_no,
-					"job_type": job_type,
 				};
 
 				modelForUpdate.fetchMx({
 					data:cond,
 					success:function(res){
+
 						var errors = res.get('errors');
 						if(errors) {
 							var errorMessages = errors.map(function(v){

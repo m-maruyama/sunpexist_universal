@@ -61,8 +61,9 @@ $app->post('/history/search', function ()use($app){
 	//サイズ
 	if(!empty($cond['item_size'])){
 		array_push($query_list,"t_order.size_cd = '".$cond['item_size']."'");
-	}
-	//発注日from
+	}        ChromePhp::log($cond['order_day_from']);
+
+    //発注日from
 	if(!empty($cond['order_day_from'])){
 		array_push($query_list,"TO_DATE(t_order.order_req_ymd,'YYYY/MM/DD') >= TO_DATE('".$cond['order_day_from']."','YYYY/MM/DD')");
 	}
@@ -70,6 +71,7 @@ $app->post('/history/search', function ()use($app){
 	if(!empty($cond['order_day_to'])){
 		array_push($query_list,"TO_DATE(t_order.order_req_ymd,'YYYY/MM/DD') <= TO_DATE('".$cond['order_day_to']."','YYYY/MM/DD')");
 	}
+
 	//出荷日from
 	if(!empty($cond['send_day_from'])){
 		$cond['send_day_from'] = date('Y-m-d 00:00:00', strtotime($cond['send_day_from']));

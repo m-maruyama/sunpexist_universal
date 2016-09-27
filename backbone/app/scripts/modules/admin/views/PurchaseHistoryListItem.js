@@ -10,14 +10,60 @@ define([
 			template: App.Admin.Templates. purchaseHistoryListItem,
 			tagName: "tr",
 			ui: {
-				"detailLink": "a.detail"
+				"deleteBtn": ".delete",
 			},
 			onRender: function() {
 			},
 			events: {
-				'click @ui.detailLink': function(e){
+				"click @ui.deleteBtn": function(e) {
+
 					e.preventDefault();
-					this.triggerMethod('click:a', this.model);
+					var model = new App.Entities.Models.AdminPurchaseHistoryListCondition();
+					var that = this;
+					var errors = model.validate();
+					if (errors) {
+						this.triggerMethod('showAlerts', errors);
+						return;
+					}
+					model.url = App.api.PH0010;
+
+					//trに注文番号のクラスをつける
+					this.ui.deleteBtn.parents("tr").addClass(this.ui.deleteBtn.attr('id'));
+
+					if(window.confirm('この注文をキャンセルしますか？')){
+						var line_no = this.ui.deleteBtn.attr('id');
+						var cond = {
+							"cond": model.getReq(),
+							"del": 'del',
+							"line_no": line_no
+						};
+						//console.log(cond);
+						model.fetchMx({
+							data: cond,
+							success: function (res) {
+								var errors = res.get('errors');
+								if (errors) {
+									that.triggerMethod('showAlerts', errors);
+									return;
+								}
+								//that.collection.unshift(model);
+
+								//that.reset();
+								//trに注文番号のクラスをつける
+								//console.log(line_no);
+								$("." + line_no).remove();
+								return;
+
+							}
+
+						});
+					}
+					else{
+						//window.alert('キャンセルされました'); // 警告ダイアログを表示
+						return;
+					}
+
+
 				}
 			},
 			templateHelpers: {

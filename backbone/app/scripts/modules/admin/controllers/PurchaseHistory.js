@@ -10,8 +10,8 @@ define([
 	'../views/SectionModalListList',
 	'../views/SectionModalListItem',
 	'../views/JobTypeCondition',
-	'../views/InputItemCondition',
-	'../views/ItemColorCondition',
+	'../views/PurchaseInputItemCondition',
+	'../views/PurchaseItemColorCondition',
 	'../views/DetailModal',
 	'../views/SectionModal',
 	'../views/SectionModalListList',
@@ -45,8 +45,12 @@ define([
 				var agreementNoConditionView = new App.Admin.Views.PurchaseAgreementNoCondition();
 				var sectionConditionView = new App.Admin.Views.SectionCondition();
 				//var jobTypeConditionView = new App.Admin.Views.JobTypeCondition();
-				var inputItemConditionView = new App.Admin.Views.InputItemCondition();
-				var itemColorConditionView = new App.Admin.Views.ItemColorCondition();
+				var purchaseInputItemConditionView = new App.Admin.Views.PurchaseInputItemCondition();
+
+
+
+
+				var purchaseItemColorConditionView = new App.Admin.Views.PurchaseItemColorCondition();
 
 				var purchaseHistoryListConditionModel = new App.Entities.Models.AdminPurchaseHistoryListCondition();
 				var purchaseHistoryConditionView = new App.Admin.Views.PurchaseHistoryCondition({
@@ -72,13 +76,11 @@ define([
 					purchaseHistoryView.listTable.show(purchaseHistoryListListView);
 					purchaseHistoryView.page.show(paginationView);
 					purchaseHistoryView.page_2.show(paginationView2);
-
-
 				};
-				this.listenTo(purchaseHistoryListListView, 'childview:click:a', function(view, model){
-					purchaseHistoryModel = new App.Entities.Models.AdminPurchaseHistory({no:model.get('order_req_no')});
-					detailModalView.fetchDetail(puchaseHistoryModel);
-				});
+				//this.listenTo(purchaseHistoryListListView, 'childview:click:a', function(view, model){
+				//	purchaseHistoryModel = new App.Entities.Models.AdminPurchaseHistory({no:model.get('order_req_no')});
+				//	detailModalView.fetchDetail(puchaseHistoryModel);
+				//});
 				this.listenTo(detailModalView, 'fetched', function(){
 					purchaseHistoryView.detailModal.show(detailModalView.render());
 					detailModalView.ui.modal.modal('show');
@@ -155,9 +157,11 @@ define([
 				this.listenTo(purchaseHistoryConditionView, 'click:search', function(sortKey,order){
 					modal = false;
 					fetchList(1,sortKey,order);
-
-
 				});
+				//this.listenTo(purchaseHistoryConditionView, 'click:delete', function(sortKey,order){
+				//	modal = false;
+				//	fetchList(1,sortKey,order);
+				//});
 
 				// 契約No変更時の絞り込み処理 --ここから
 				this.listenTo(purchaseHistoryConditionView, 'change:section_select', function(agreement_no){
@@ -219,14 +223,14 @@ define([
 				purchaseHistoryView.condition.show(purchaseHistoryConditionView);
 				purchaseHistoryConditionView.agreement_no.show(agreementNoConditionView);
 				purchaseHistoryConditionView.section.show(sectionConditionView);
-				purchaseHistoryConditionView.input_item.show(inputItemConditionView);
-				purchaseHistoryConditionView.item_color.show(itemColorConditionView);
 				purchaseHistoryView.sectionModal.show(sectionModalView.render());
+				purchaseHistoryConditionView.input_item.show(purchaseInputItemConditionView);
+				purchaseHistoryConditionView.item_color.show(purchaseItemColorConditionView);
 				sectionModalView.condition.show(sectionModalConditionView);
 				sectionModalView.page.show(paginationSectionView);
 
 				purchaseHistoryListListView.fetch(purchaseHistoryListConditionModel);
-
+				fetchList();
 				//console.log(purchaseHistoryView);
 
 			}
