@@ -173,9 +173,7 @@ define([
 			"WC0016": host + "/job_type_change",
 			"WC0017": host + "/shipment_change",
 			"WC0018": host + "/wearer_info",
-			"WC0019": host + "/wearer_count",
-			"WC0020": host + "/now_wearer_info",
-			"WC0021": host + "/add_wearer_info",
+			"WC0019": host + "/wearer_change_list",
 			"WS0010": host + "/wearer_search/search",
 			"CM9010": host + "/api/CM9010"
 		};

@@ -581,14 +581,14 @@ $app->post('/wearer_info', function ()use($app){
     $all_list = array();
     $json_list = array();
 
-    array_push($query_list, "m_wearer_std_tran.corporate_id = '".$auth['corporate_id']."'");
-    array_push($query_list, "m_wearer_std_tran.rntl_cont_no = '".$wearer_chg_post['rntl_cont_no']."'");
-    array_push($query_list,"m_wearer_std_tran.werer_cd = '".$wearer_chg_post['werer_cd']."'");
-    array_push($query_list,"m_wearer_std_tran.cster_emply_cd = '".$wearer_chg_post['cster_emply_cd']."'");
-    $query = implode(' AND ', $query_list);
-
     if ($wearer_chg_post['wearer_tran_flg'] == '1') {
       //--着用者基本マスタトラン有の場合--//
+      array_push($query_list, "m_wearer_std_tran.corporate_id = '".$auth['corporate_id']."'");
+      array_push($query_list, "m_wearer_std_tran.rntl_cont_no = '".$wearer_chg_post['rntl_cont_no']."'");
+      array_push($query_list,"m_wearer_std_tran.werer_cd = '".$wearer_chg_post['werer_cd']."'");
+      array_push($query_list,"m_wearer_std_tran.cster_emply_cd = '".$wearer_chg_post['cster_emply_cd']."'");
+      $query = implode(' AND ', $query_list);
+
       $arg_str = "";
       $arg_str = "SELECT ";
       $arg_str .= "m_wearer_std_tran.cster_emply_cd as as_cster_emply_cd,";
@@ -640,6 +640,12 @@ $app->post('/wearer_info', function ()use($app){
       $json_list['wearer_info'] = $all_list;
     } elseif ($wearer_chg_post['wearer_tran_flg'] == '0') {
       //--着用者基本マスタトラン無の場合--//
+      array_push($query_list, "m_wearer_std.corporate_id = '".$auth['corporate_id']."'");
+      array_push($query_list, "m_wearer_std.rntl_cont_no = '".$wearer_chg_post['rntl_cont_no']."'");
+      array_push($query_list,"m_wearer_std.werer_cd = '".$wearer_chg_post['werer_cd']."'");
+      array_push($query_list,"m_wearer_std.cster_emply_cd = '".$wearer_chg_post['cster_emply_cd']."'");
+      $query = implode(' AND ', $query_list);
+
       $arg_str = "";
       $arg_str = "SELECT ";
       $arg_str .= "m_wearer_std.cster_emply_cd as as_cster_emply_cd,";
@@ -696,36 +702,9 @@ $app->post('/wearer_info', function ()use($app){
 
 /**
  * 発注入力（職種変更または異動）
- * 入力項目：発注及び返却枚数カウント
- */
- $app->post('/wearer_count', function ()use($app){
-   $params = json_decode(file_get_contents("php://input"), true);
-
-   // アカウントセッション取得
-   $auth = $app->session->get("auth");
-   //ChromePhp::LOG($auth);
-
-   // 前画面セッション取得
-   $wearer_chg_post = $app->session->get("wearer_chg_post");
-   //ChromePhp::LOG($wearer_chg_post);
-/*
-   // フロント側からの取得パラメータ
-   $cond = $params["data"];
-   //ChromePhp::LOG($cond);
-*/
-   $query_list = array();
-   $list = array();
-   $all_list = array();
-   $json_list = array();
-
-   echo json_encode($json_list);
-});
-
-/**
- * 発注入力（職種変更または異動）
  * 入力項目：現在貸与中のアイテム
  */
- $app->post('/now_wearer_info', function ()use($app){
+ $app->post('/wearer_change_list', function ()use($app){
    $params = json_decode(file_get_contents("php://input"), true);
 
    // アカウントセッション取得
@@ -735,42 +714,143 @@ $app->post('/wearer_info', function ()use($app){
    // 前画面セッション取得
    $wearer_chg_post = $app->session->get("wearer_chg_post");
    //ChromePhp::LOG($wearer_chg_post);
-/*
-   // フロント側からの取得パラメータ
-   $cond = $params["data"];
-   //ChromePhp::LOG($cond);
-*/
-   $query_list = array();
-   $list = array();
-   $all_list = array();
+
    $json_list = array();
 
-   echo json_encode($json_list);
-});
-
-/**
- * 発注入力（職種変更または異動）
- * 入力項目：追加されるアイテム
- */
- $app->post('/add_wearer_info', function ()use($app){
-   $params = json_decode(file_get_contents("php://input"), true);
-
-   // アカウントセッション取得
-   $auth = $app->session->get("auth");
-   //ChromePhp::LOG($auth);
-
-   // 前画面セッション取得
-   $wearer_chg_post = $app->session->get("wearer_chg_post");
-   //ChromePhp::LOG($wearer_chg_post);
-/*
-   // フロント側からの取得パラメータ
-   $cond = $params["data"];
-   //ChromePhp::LOG($cond);
-*/
+   //--一覧生成用の主要職種コードの設定--//
+   // 着用者基本マスタ参照
    $query_list = array();
-   $list = array();
-   $all_list = array();
-   $json_list = array();
+   array_push($query_list, "m_wearer_std.corporate_id = '".$auth['corporate_id']."'");
+   array_push($query_list, "m_wearer_std.rntl_cont_no = '".$wearer_chg_post['rntl_cont_no']."'");
+   array_push($query_list, "m_wearer_std.werer_cd = '".$wearer_chg_post['werer_cd']."'");
+   array_push($query_list, "m_wearer_std.werer_sts_kbn = '1'");
+   $query = implode(' AND ', $query_list);
+
+   $arg_str = "";
+   $arg_str = "SELECT ";
+   $arg_str .= "m_wearer_std.rntl_sect_cd as as_rntl_sect_cd,";
+   $arg_str .= "m_wearer_std.job_type_cd as as_job_type_cd";
+   $arg_str .= " FROM ";
+   $arg_str .= "m_wearer_std";
+   $arg_str .= " WHERE ";
+   $arg_str .= $query;
+   $arg_str .= " ORDER BY m_wearer_std.upd_date DESC";
+
+   $m_weare_std = new MWearerStd();
+   $results = new Resultset(null, $m_weare_std, $m_weare_std->getReadConnection()->query($arg_str));
+   $result_obj = (array)$results;
+   $results_cnt = $result_obj["\0*\0_count"];
+   //ChromePhp::LOG($results_cnt);
+
+   $m_wearer_cnt = $results_cnt;
+   if (!empty($results_cnt)) {
+     $paginator_model = new PaginatorModel(
+         array(
+             "data"  => $results,
+             "limit" => 1,
+             "page" => 1
+         )
+     );
+     $paginator = $paginator_model->getPaginate();
+     $results = $paginator->items;
+     //ChromePhp::LOG($results);
+     foreach ($results as $result) {
+       // 着用者基本マスタ.レンタル部門コード
+       $m_wearer_rntl_sect_cd = $result->as_rntl_sect_cd;
+       // 着用者基本マスタ.職種コード
+       $m_wearer_job_type_cd = $result->as_job_type_cd;
+     }
+   }
+
+   // 発注情報トラン参照
+   $query_list = array();
+   array_push($query_list, "t_order_tran.corporate_id = '".$auth['corporate_id']."'");
+   array_push($query_list, "t_order_tran.rntl_cont_no = '".$wearer_chg_post['rntl_cont_no']."'");
+   array_push($query_list, "t_order_tran.werer_cd = '".$wearer_chg_post['werer_cd']."'");
+   array_push($query_list, "t_order_tran.rntl_sect_cd = '".$wearer_chg_post['rntl_sect_cd']."'");
+   array_push($query_list, "t_order_tran.job_type_cd = '".$wearer_chg_post['job_type_cd']."'");
+   $query = implode(' AND ', $query_list);
+
+   $arg_str = "";
+   $arg_str = "SELECT ";
+   $arg_str .= "t_order_tran.rntl_sect_cd as as_rntl_sect_cd,";
+   $arg_str .= "t_order_tran.job_type_cd as as_job_type_cd";
+   $arg_str .= " FROM ";
+   $arg_str .= "t_order_tran";
+   $arg_str .= " WHERE ";
+   $arg_str .= $query;
+   $arg_str .= " ORDER BY t_order_tran.upd_date DESC";
+
+   $t_order_tran = new TOrderTran();
+   $results = new Resultset(null, $t_order_tran, $t_order_tran->getReadConnection()->query($arg_str));
+   $result_obj = (array)$results;
+   $results_cnt = $result_obj["\0*\0_count"];
+   //ChromePhp::LOG($results_cnt);
+
+   $t_order_tran_cnt = $results_cnt;
+   if (!empty($results_cnt)) {
+     $paginator_model = new PaginatorModel(
+         array(
+             "data"  => $results,
+             "limit" => 1,
+             "page" => 1
+         )
+     );
+     $paginator = $paginator_model->getPaginate();
+     $results = $paginator->items;
+     //ChromePhp::LOG($results);
+     foreach ($results as $result) {
+       // 発注情報トラン.レンタル部門コード
+       $t_order_tran_rntl_sect_cd = $result->as_rntl_sect_cd;
+       // 発注情報トラン.職種コード
+       $t_order_tran_job_type_cd = $result->as_job_type_cd;
+     }
+   }
+
+   // 返却予定情報トラン参照
+   $query_list = array();
+   array_push($query_list, "t_returned_plan_info_tran.corporate_id = '".$auth['corporate_id']."'");
+   array_push($query_list, "t_returned_plan_info_tran.rntl_cont_no = '".$wearer_chg_post['rntl_cont_no']."'");
+   array_push($query_list, "t_returned_plan_info_tran.werer_cd = '".$wearer_chg_post['werer_cd']."'");
+   array_push($query_list, "t_returned_plan_info_tran.rntl_sect_cd = '".$wearer_chg_post['rntl_sect_cd']."'");
+   array_push($query_list, "t_returned_plan_info_tran.job_type_cd = '".$wearer_chg_post['job_type_cd']."'");
+   $query = implode(' AND ', $query_list);
+
+   $arg_str = "";
+   $arg_str = "SELECT ";
+   $arg_str .= "t_returned_plan_info_tran.rntl_sect_cd as as_rntl_sect_cd,";
+   $arg_str .= "t_returned_plan_info_tran.job_type_cd as as_job_type_cd";
+   $arg_str .= " FROM ";
+   $arg_str .= "t_returned_plan_info_tran";
+   $arg_str .= " WHERE ";
+   $arg_str .= $query;
+   $arg_str .= " ORDER BY t_returned_plan_info_tran.order_req_no DESC";
+
+   $t_returned_plan_info_tran = new TReturnedPlanInfoTran();
+   $results = new Resultset(null, $t_returned_plan_info_tran, $t_returned_plan_info_tran->getReadConnection()->query($arg_str));
+   $result_obj = (array)$results;
+   $results_cnt = $result_obj["\0*\0_count"];
+   //ChromePhp::LOG($results_cnt);
+
+   $t_returned_plan_info_tran_cnt = $results_cnt;
+   if (!empty($results_cnt)) {
+     $paginator_model = new PaginatorModel(
+         array(
+             "data"  => $results,
+             "limit" => 1,
+             "page" => 1
+         )
+     );
+     $paginator = $paginator_model->getPaginate();
+     $results = $paginator->items;
+     //ChromePhp::LOG($results);
+     foreach ($results as $result) {
+       // 発注情報トラン.レンタル部門コード
+       $t_returned_plan_info_tran_rntl_sect_cd = $result->as_rntl_sect_cd;
+       // 発注情報トラン.職種コード
+       $t_returned_plan_info_tran_job_type_cd = $result->as_job_type_cd;
+     }
+   }
 
    echo json_encode($json_list);
 });

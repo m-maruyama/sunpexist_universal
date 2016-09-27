@@ -1,0 +1,94 @@
+<div class="row">
+  <p class="col-md-7"></p>
+  <p class="col-md-5">
+    発注枚数 <input type="text" class="input-sm" id="order_count" name="order_count" disabled="disabled" value="0" style="width:4em"> 枚　　　
+    返却枚数 <input type="text" class="input-sm" id="return_count" name="return_count" disabled="disabled" value="0" style="width:4em"> 枚
+  </p>
+</div>
+<div class="text-center tablewidth divcentering" >
+  <!-- start scrollTable -->
+  <div id="scrollTable">
+    <table>
+      <th>現在貸与中のアイテム</th>
+    </table>
+    <table class="table table-bordered order_table">
+      <thead class="grad_head">
+        <tr>
+          <th rowspan="2">No.</th>
+          <th rowspan="2">アイテム</th>
+          <th rowspan="2">選択方法</th>
+          <th rowspan="2">標準枚数</th>
+          <th>商品-色</th>
+          <th rowspan="2">サイズ</th>
+          <th rowspan="2">対象</th>
+          <th rowspan="2">個体管理番号</th>
+          <th rowspan="2">発注枚数</th>
+          <th rowspan="2">返却枚数</th>
+        </tr>
+        <tr>
+          <th>商品名</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>1</td>
+          <td>ベスト</td>
+          <td>2</td>
+          <td>10003681VEM1301-B2</td>
+          <td>男性ベスト</td>
+          <td>---L</td>
+          <td>
+            <label><input type="checkbox" id="target_flg" name="target_flg[]"></label><br>
+          </td>
+          <td>0368429<br>5928503</td>
+          <td>99</td>
+          <td>11</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <table>
+      <th>新たに追加されるアイテム</th>
+    </table>
+    <table class="table table-bordered order_table">
+      <thead class="grad_head">
+        <tr>
+          <th rowspan="2">No.</th>
+          <th rowspan="2">アイテム</th>
+          <th rowspan="2">選択方法</th>
+          <th rowspan="2">標準枚数</th>
+          <th>商品-色</th>
+          <th rowspan="2">サイズ</th>
+          <th rowspan="2">発注枚数</th>
+        </tr>
+        <tr>
+          <th>商品名</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="edit">
+          <td>5</td>
+          <td>長袖シャツ</td>
+          <td>通常</td>
+          <td>3</td>
+          <td>10003681BLU1301</td>
+          <td class="input">
+            <select class="form-control input-sm" name="">
+              <option></option>
+              <option>--SS</option>
+              <option>---S</option>
+              <option>---M</option>
+              <option>---L</option>
+              <option>--LL</option>
+              <option>--3L</option>
+              <option>--4L</option>
+              <option>--5L</option>
+            </select>
+          </td>
+          <td>99</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <!-- end scrollTable -->
+</div>

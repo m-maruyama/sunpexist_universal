@@ -3,15 +3,13 @@ define([
 	'./Abstract',
 	'../views/WearerChangeOrder',
 	'../views/WearerChangeOrderCondition',
+	'../views/WearerChangeOrderListList',
 	'../views/AgreementNoConditionChange',
 	'../views/ReasonKbnConditionChange',
 	'../views/SexKbnConditionChange',
 	'../views/SectionConditionChange',
 	'../views/JobTypeConditionChange',
 	'../views/ShipmentConditionChange',
-	'../views/WearerChangeOrderCount',
-	'../views/WearerChangeOrderNowList',
-	'../views/WearerChangeOrderAddList',
 	'../views/SectionModalCondition',
 	'../views/SectionModalListList',
 	'../views/SectionModalListItem',
@@ -55,9 +53,7 @@ define([
 				var wearerChangeOrderConditionView = new App.Admin.Views.WearerChangeOrderCondition({
 					model:wearerChangeOrderListConditionModel
 				});
-				var wearerChangeOrderCountView = new App.Admin.Views.WearerChangeOrderCount();
-				var wearerChangeOrderNowListView = new App.Admin.Views.WearerChangeOrderNowList();
-				var wearerChangeOrderAddListView = new App.Admin.Views.WearerChangeOrderAddList();
+				var wearerChangeOrderListListView = new App.Admin.Views.WearerChangeOrderListList();
 
 				var paginationView = new App.Admin.Views.Pagination({model: pagerModel});
 
@@ -119,9 +115,7 @@ define([
 
 				App.main.show(wearerChangeOrderView);
 				wearerChangeOrderView.condition.show(wearerChangeOrderConditionView);
-				wearerChangeOrderView.listCount.show(wearerChangeOrderCountView);
-				wearerChangeOrderView.listTable1.show(wearerChangeOrderNowListView);
-				wearerChangeOrderView.listTable2.show(wearerChangeOrderAddListView);
+				wearerChangeOrderView.listTable.show(wearerChangeOrderListListView);
 				wearerChangeOrderConditionView.agreement_no.show(agreementNoConditionChangeView);
 				wearerChangeOrderConditionView.reason_kbn.show(reasonKbnConditionChangeView);
 				wearerChangeOrderConditionView.sex_kbn.show(sexKbnConditionChangeView);
