@@ -52,6 +52,9 @@ define([
 				'#timepicker': 'timepicker',
 				'.delete' : 'delete',
 			},
+			onshow: function(e){
+				e.preventDefault();
+			},
 			onRender: function() {
 				var that = this;
 
@@ -138,7 +141,21 @@ define([
 					}
 					//local:[{text:'a'},{text:'b'},{text:'ab'},{text:'abc def'}]
 				});
+
+
+				var agreement_no = $("select[name='agreement_no']").val();
+				this.model.set('rntl_cont_no', agreement_no);
+				var errors = this.model.validate();
+				if(errors) {
+					this.triggerMethod('showAlerts', errors);
+					return;
+				}
+				console.log(agreement_no);
+				this.triggerMethod('click:search','line_no','desc');
+
+
 			},
+
 			events: {
 				'click @ui.search': function(e){
 					e.preventDefault();
@@ -165,32 +182,7 @@ define([
 					//console.log(this.ui.datepicker.val());
 					this.triggerMethod('click:search','line_no','desc');
 				},
-				'click @ui.delete': function(e){
-					e.preventDefault();
-					console.log('aaa');
 
-					this.triggerMethod('hideAlerts');
-					var agreement_no = $("select[name='agreement_no']").val();
-					this.model.set('search', this.ui.search.val());
-					this.model.set('rntl_cont_no', agreement_no);
-					this.model.set('order_day_from', $("#order_day_from").val());
-					this.model.set('order_day_to', $("#order_day_to").val());
-					this.model.set('section', $("#section").val());
-					this.model.set('input_item', $("#input_item").val());
-					this.model.set('item_color', $("#item_color").val());
-					this.model.set('item_size', $("#item_size").val());
-
-
-					var errors = this.model.validate();
-					if(errors) {
-						this.triggerMethod('showAlerts', errors);
-						return;
-					}
-					//console.log(this.ui.datepicker.val());
-					this.triggerMethod('click:search','line_no','desc');
-
-
-				},
 				'change @ui.agreement_no': function(){
 					this.ui.agreement_no = $('#agreement_no');
 

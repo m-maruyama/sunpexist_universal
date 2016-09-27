@@ -230,7 +230,7 @@ define([
 				sectionModalView.page.show(paginationSectionView);
 
 				purchaseHistoryListListView.fetch(purchaseHistoryListConditionModel);
-				fetchList();
+				//fetchList();
 				//console.log(purchaseHistoryView);
 
 			}
