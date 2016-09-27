@@ -6,7 +6,9 @@ define([
 	App.module('Admin.Views', function(Views, App, Backbone, Marionette, $, _){
 		Views.ShipmentConditionChange = Marionette.LayoutView.extend({
 			defaults: {
-				agreement_no: '',
+				ship_to_cd: '',
+				ship_to_brnch_cd: '',
+				chg_flg: '',
 			},
 			initialize: function(options) {
 			    this.options = options || {};
@@ -21,14 +23,18 @@ define([
 				'.shipment': 'shipment',
 			},
 			onShow: function() {
-//				var agreement_no = this.options.agreement_no;
 				var that = this;
+				var data = {
+					'ship_to_cd': this.options.ship_to_cd,
+					'ship_to_brnch_cd': this.options.ship_to_brnch_cd,
+					'chg_flg': this.options.chg_flg,
+				};
 
 				var modelForUpdate = this.model;
 				modelForUpdate.url = App.api.WC0017;
 				var cond = {
 					"scr": '出荷先',
-//					"agreement_no": agreement_no,
+					"data": data,
 				};
 				modelForUpdate.fetchMx({
 					data:cond,

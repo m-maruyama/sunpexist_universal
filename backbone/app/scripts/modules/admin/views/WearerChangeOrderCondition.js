@@ -7,9 +7,8 @@ define([
 	'../behaviors/Alerts',
 	'typeahead',
 	'bloodhound',
-	'../controllers/WearerChange',
-	'./SectionCondition',
-	'./JobTypeCondition',
+	'../controllers/WearerChangeOrder',
+	'./ShipmentConditionChange',
 ], function(App) {
 	'use strict';
 	App.module('Admin.Views', function(Views, App, Backbone, Marionette, $, _){
@@ -41,6 +40,8 @@ define([
 				'section': '#section',
 				'job_type': '#job_type',
 				'shipment': '#shipment',
+				'post_number': '#post_number',
+				'address': '#address',
 				"reset": '.reset',
 				"search": '.search',
 				'datepicker': '.datepicker',
@@ -57,19 +58,17 @@ define([
 				'#section': 'section',
 				'#job_type': 'job_type',
 				'#shipment': 'shipment',
+				'#post_number': 'post_number',
+				'#address': 'address',
 				"#reset": 'reset',
 				'#search': 'search',
 				'#datepicker': 'datepicker',
 				'#timepicker': 'timepicker',
 			},
-			onShow: function() {
-				var that = this;
-
-			},
 			onRender: function() {
 				var that = this;
 
-				// 着用者部分情報
+				// 着用者情報(着用者名、(読み仮名)、社員コード、発令日)
 				var modelForUpdate = this.model;
 				modelForUpdate.url = App.api.WC0018;
 				var cond = {
@@ -91,7 +90,6 @@ define([
 						that.ui.member_name.val(res_list['wearer_info'][0]['werer_name']);
 						that.ui.member_name_kana.val(res_list['wearer_info'][0]['werer_name_kana']);
 
-						// 発令日
 						var maxTime = new Date();
 						maxTime.setHours(15);
 						maxTime.setMinutes(59);
@@ -121,6 +119,7 @@ define([
 				return res_list;
 			},
 			events: {
+/*
 				'click @ui.search': function(e){
 					e.preventDefault();
 					this.triggerMethod('hideAlerts');
@@ -150,34 +149,50 @@ define([
 					this.triggerMethod('click:search','order_req_no','asc');
 
 				},
+*/
+				// 契約No
 				'change @ui.agreement_no': function(){
 					this.ui.agreement_no = $('#agreement_no');
 
-					// 検索セレクトボックス連動--ここから
-					var agreement_no = $("select[name='agreement_no']").val();
-					var job_type = '';
-					var input_item = '';
-
-					// 拠点セレクト
-					this.triggerMethod('change:section_select',agreement_no);
-					// 貸与パターンセレクト
-					var jobTypeConditionView = new App.Admin.Views.JobTypeCondition({
-						agreement_no:agreement_no,
-					});
-					jobTypeConditionView.onShow();
-					this.job_type.show(jobTypeConditionView);
-					// セレクトボックス連動--ここまで
 				},
-				'change @ui.job_type': function(){
-					this.ui.job_type = $('#job_type');
-
-					// 検索セレクトボックス連動--ここから
-					var agreement_no = $("select[name='agreement_no']").val();
-					var job_type = $("select[name='job_type']").val();
-					// セレクトボックス連動--ここまで
-				},
+				// 拠点
 				'change @ui.section': function(){
 					this.ui.section = $('#section');
+
+				},
+				// 貸与パターン
+				'change @ui.job_type': function(){
+					this.ui.job_type = $('#job_type');
+					var vals = $("select[name='job_type']").val();
+					var val = vals.split(':');
+					var job_type = val[0];
+					var sp_job_type_flg = val[1];
+					if (sp_job_type_flg == "1") {
+						// 特別職種フラグ有りの場合
+						var msg = "社内申請手続きを踏んでいますか？";
+						if (window.confirm(msg)) {
+							//console.log("flg有り");
+						}
+					} else {
+						// 特別職種フラグ無しの場合
+						//console.log("flgなし");
+					}
+				},
+				// 出荷先
+				'change @ui.shipment': function(){
+					this.ui.shipment = $('#shipment');
+
+					var vals = $("select[name='shipment']").val();
+					var val = vals.split(':');
+					var ship_to_cd = val[0];
+					var ship_to_brnch_cd = val[1];
+					var shipmentConditionChangeView = new App.Admin.Views.ShipmentConditionChange({
+						ship_to_cd: ship_to_cd,
+						ship_to_brnch_cd: ship_to_brnch_cd,
+						chg_flg: '1',
+					});
+					//shipmentConditionChangeView.onShow();
+					this.shipment.show(shipmentConditionChangeView);
 				},
 			},
 		});

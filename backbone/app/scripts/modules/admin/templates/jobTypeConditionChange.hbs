@@ -2,7 +2,7 @@
 	<label class="col-md-3 control-label" for="">貸与パターン</label>
 	<div class="col-md-5">
 		<select class="form-control input-sm" id="job_type" name="job_type">
-			{{#each job_type_list}}<option value="{{job_type_cd}}" {{selected}}>{{job_type_name}}</option>{{/each}}
+			{{#each job_type_list}}<option value="{{job_type_cd}}:{{sp_job_type_flg}}" {{selected}}>{{job_type_name}}</option>{{/each}}
 		</select>
 	</div>
 </div>

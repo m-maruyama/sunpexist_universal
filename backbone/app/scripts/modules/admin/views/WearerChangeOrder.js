@@ -9,15 +9,12 @@ define([
 			ui: {
 			},
 			regions: {
-				"page": ".page",
-				"page_2": ".page_2",
 				"condition": ".condition",
-				"listTable": ".listTable",
-				"csv_download": ".csv_download",
+				"listCount": ".listCount",
+				"listTable1": ".listTable1",
+				"listTable2": ".listTable2",
 				"sectionModal": ".section_modal",
 				"sectionModal_2": ".section_modal_2",
-				"wearer_detail_modal": '.wearer_detail_modal',
-				"detailModal": '.detail_modal',
 			},
 			model: new Backbone.Model(),
 			onShow: function() {

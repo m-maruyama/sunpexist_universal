@@ -405,6 +405,7 @@ $app->post('/job_type_change', function ()use($app){
       foreach ($results as $result) {
         $list['job_type_cd'] = $result->job_type_cd;
         $list['job_type_name'] = $result->job_type_name;
+        $list['sp_job_type_flg'] = $result->sp_job_type_flg;
 
         // 発注情報トランフラグ有の場合は初期選択状態版を生成
         if ($wearer_chg_post['order_tran_flg'] == '1') {
@@ -422,6 +423,7 @@ $app->post('/job_type_change', function ()use($app){
     } else {
       $list['job_type_cd'] = null;
       $list['job_type_name'] = '';
+      $list['sp_job_type_flg'] = '0';
       $list['selected'] = '';
       array_push($all_list, $list);
     }
@@ -444,6 +446,10 @@ $app->post('/shipment_change', function ()use($app){
     // 前画面セッション取得
     $wearer_chg_post = $app->session->get("wearer_chg_post");
     //ChromePhp::LOG($wearer_chg_post);
+
+    // フロント側からの取得パラメータ
+    $cond = $params["data"];
+    //ChromePhp::LOG($cond);
 
     $query_list = array();
     $list = array();
@@ -490,15 +496,24 @@ $app->post('/shipment_change', function ()use($app){
         $list['address3'] = $result->address3;
         $list['address4'] = $result->address4;
 
-        // 発注情報トランフラグ有の場合は初期選択状態版を生成
-        if ($wearer_chg_post['order_tran_flg'] == '1') {
-          if ($list['ship_to_cd'] == $wearer_chg_post['ship_to_cd'] && $list['ship_to_brnch_cd'] == $wearer_chg_post['ship_to_brnch_cd']) {
+        if (!empty($cond["chg_flg"])) {
+          // 「出荷先コード」変更時の生成
+          if ($list['ship_to_cd'] == $cond['ship_to_cd'] && $list['ship_to_brnch_cd'] == $cond['ship_to_brnch_cd']) {
             $list['selected'] = 'selected';
           } else {
             $list['selected'] = '';
           }
         } else {
-          $list['selected'] = '';
+          // 初期遷移時、発注情報トランフラグ有の場合は初期選択状態版を生成
+          if ($wearer_chg_post['order_tran_flg'] == '1') {
+            if ($list['ship_to_cd'] == $wearer_chg_post['ship_to_cd'] && $list['ship_to_brnch_cd'] == $wearer_chg_post['ship_to_brnch_cd']) {
+              $list['selected'] = 'selected';
+            } else {
+              $list['selected'] = '';
+            }
+          } else {
+            $list['selected'] = '';
+          }
         }
 
         array_push($all_list, $list);
@@ -519,7 +534,7 @@ $app->post('/shipment_change', function ()use($app){
     for ($i=0; count($all_list)>$i; $i++) {
       if (!empty($all_list[$i]['selected'])) {
         $post_address = array(
-          'zip_no' => $all_list[$i]['zip_no'],
+          'zip_no' => preg_replace('/^(\d{3})(\d{4})$/', '$1-$2', $all_list[$i]['zip_no']),
           'address1' => $all_list[$i]['address1'],
           'address2' => $all_list[$i]['address2'],
           'address3' => $all_list[$i]['address3'],
@@ -677,4 +692,85 @@ $app->post('/wearer_info', function ()use($app){
     }
 
     echo json_encode($json_list);
+});
+
+/**
+ * 発注入力（職種変更または異動）
+ * 入力項目：発注及び返却枚数カウント
+ */
+ $app->post('/wearer_count', function ()use($app){
+   $params = json_decode(file_get_contents("php://input"), true);
+
+   // アカウントセッション取得
+   $auth = $app->session->get("auth");
+   //ChromePhp::LOG($auth);
+
+   // 前画面セッション取得
+   $wearer_chg_post = $app->session->get("wearer_chg_post");
+   //ChromePhp::LOG($wearer_chg_post);
+/*
+   // フロント側からの取得パラメータ
+   $cond = $params["data"];
+   //ChromePhp::LOG($cond);
+*/
+   $query_list = array();
+   $list = array();
+   $all_list = array();
+   $json_list = array();
+
+   echo json_encode($json_list);
+});
+
+/**
+ * 発注入力（職種変更または異動）
+ * 入力項目：現在貸与中のアイテム
+ */
+ $app->post('/now_wearer_info', function ()use($app){
+   $params = json_decode(file_get_contents("php://input"), true);
+
+   // アカウントセッション取得
+   $auth = $app->session->get("auth");
+   //ChromePhp::LOG($auth);
+
+   // 前画面セッション取得
+   $wearer_chg_post = $app->session->get("wearer_chg_post");
+   //ChromePhp::LOG($wearer_chg_post);
+/*
+   // フロント側からの取得パラメータ
+   $cond = $params["data"];
+   //ChromePhp::LOG($cond);
+*/
+   $query_list = array();
+   $list = array();
+   $all_list = array();
+   $json_list = array();
+
+   echo json_encode($json_list);
+});
+
+/**
+ * 発注入力（職種変更または異動）
+ * 入力項目：追加されるアイテム
+ */
+ $app->post('/add_wearer_info', function ()use($app){
+   $params = json_decode(file_get_contents("php://input"), true);
+
+   // アカウントセッション取得
+   $auth = $app->session->get("auth");
+   //ChromePhp::LOG($auth);
+
+   // 前画面セッション取得
+   $wearer_chg_post = $app->session->get("wearer_chg_post");
+   //ChromePhp::LOG($wearer_chg_post);
+/*
+   // フロント側からの取得パラメータ
+   $cond = $params["data"];
+   //ChromePhp::LOG($cond);
+*/
+   $query_list = array();
+   $list = array();
+   $all_list = array();
+   $json_list = array();
+
+   echo json_encode($json_list);
 });
