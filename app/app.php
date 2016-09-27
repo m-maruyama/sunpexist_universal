@@ -1677,13 +1677,6 @@ $app->post('/password', function ()use($app) {
 
 	});
 /*}
- * ログアウト
- */
-$app->post('/logout', function ()use($app) {
-	$app->session->remove("auth");
-	echo true;
-});
-/*}
  * 操作ログ
  */
 $app->post('/log', function () {

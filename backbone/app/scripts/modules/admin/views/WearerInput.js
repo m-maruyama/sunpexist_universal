@@ -30,6 +30,7 @@ define([
 				"csv_download": ".csv_download",
 				"sectionModal": ".section_modal",
 				"detailModal": '.detail_modal',
+				"errors": '.errors',
 			},
 			binding: {
 				"#agreement_no": "agreement_no",

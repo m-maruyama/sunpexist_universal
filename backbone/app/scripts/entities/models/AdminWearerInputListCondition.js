@@ -104,7 +104,9 @@ define([
 					errors['job_type'] = '貸与パターンが未選択です。';
                 }
 				if(Object.keys(errors).length > 0){
-					return errors;
+					var error_array = {};
+					error_array['errors'] = errors;
+					return error_array;
 				}else{
 					return false;
 				}

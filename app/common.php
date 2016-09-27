@@ -1113,3 +1113,10 @@ $app->post('/reason_kbn', function () use ($app) {
     $json_list['agreement_no_list'] = $all_list;
     echo json_encode($json_list);
 });
+/*
+ * ログアウト
+ */
+$app->post('/logout', function ()use($app) {
+    $app->session->remove("auth");
+    echo true;
+});

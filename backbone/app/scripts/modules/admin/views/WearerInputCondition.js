@@ -149,20 +149,23 @@ define([
                     contentType : false,
                     dataType: "json"
                 };
-                errors = $.ajax( url, postData ).done(function (res) {
-                    errors = res['errors'];
+                errors = $.ajax( url, postData ).done(function (errors) {
                     if(errors) {
                         return errors;
                     }else{
-                        alert('着用者を登録しました。');
-                        location.href = './wearer_input_complete.html';
                     }
 
                 });
                 if(errors){
-                    return errors;
-                }else{
-                    return;
+                    if(errors['errors']) {
+                        var errorMessages = errors['errors'].map(function(v){
+                            return v.error_message;
+                        });
+                        return errorMessages;
+                    }else{
+                        alert('着用者を登録しました。');
+                        location.href = './wearer_input_complete.html';
+                    }
                 }
             },
 
