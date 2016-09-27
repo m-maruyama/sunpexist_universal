@@ -10,9 +10,7 @@ define([
 			},
 			regions: {
 				"condition": ".condition",
-				"listCount": ".listCount",
-				"listTable1": ".listTable1",
-				"listTable2": ".listTable2",
+				"listTable": ".listTable",
 				"sectionModal": ".section_modal",
 				"sectionModal_2": ".section_modal_2",
 			},
