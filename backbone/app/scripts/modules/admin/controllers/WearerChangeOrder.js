@@ -4,13 +4,18 @@ define([
 	'../views/WearerChangeOrder',
 	'../views/WearerChangeOrderCondition',
 	'../views/AgreementNoConditionChange',
+	'../views/ReasonKbnConditionChange',
+	'../views/SexKbnConditionChange',
+	'../views/SectionConditionChange',
+	'../views/JobTypeConditionChange',
+	'../views/ShipmentConditionChange',
 	'../views/SectionModalCondition',
 	'../views/SectionModalListList',
 	'../views/SectionModalListItem',
 	'../views/SectionModal',
 	'../views/SectionModalListList',
 	'../views/Pagination',
-    '../behaviors/Alerts',
+  '../behaviors/Alerts',
 	"entities/models/Pager",
 	"entities/models/AdminWearerChangeOrder",
 	"entities/models/AdminWearerChangeOrderListCondition",
@@ -37,6 +42,11 @@ define([
 				});
 
 				var agreementNoConditionChangeView = new App.Admin.Views.AgreementNoConditionChange();
+				var reasonKbnConditionChangeView = new App.Admin.Views.ReasonKbnConditionChange();
+				var sexKbnConditionChangeView = new App.Admin.Views.SexKbnConditionChange();
+				var sectionConditionChangeView = new App.Admin.Views.SectionConditionChange();
+				var jobTypeConditionChangeView = new App.Admin.Views.JobTypeConditionChange();
+				var shipmentConditionChangeView = new App.Admin.Views.ShipmentConditionChange();
 
 				var wearerChangeOrderListConditionModel = new App.Entities.Models.AdminWearerChangeOrderListCondition();
 				var wearerChangeOrderConditionView = new App.Admin.Views.WearerChangeOrderCondition({
@@ -103,6 +113,11 @@ define([
 				App.main.show(wearerChangeOrderView);
 				wearerChangeOrderView.condition.show(wearerChangeOrderConditionView);
 				wearerChangeOrderConditionView.agreement_no.show(agreementNoConditionChangeView);
+				wearerChangeOrderConditionView.reason_kbn.show(reasonKbnConditionChangeView);
+				wearerChangeOrderConditionView.sex_kbn.show(sexKbnConditionChangeView);
+				wearerChangeOrderConditionView.section.show(sectionConditionChangeView);
+				wearerChangeOrderConditionView.job_type.show(jobTypeConditionChangeView);
+				wearerChangeOrderConditionView.shipment.show(shipmentConditionChangeView);
 				wearerChangeOrderView.sectionModal.show(sectionModalView.render());
 				sectionModalView.page.show(paginationView);
 				sectionModalView.condition.show(sectionModalConditionView);

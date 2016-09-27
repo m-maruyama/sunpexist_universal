@@ -203,7 +203,7 @@ $app->post('/wearer_change/search', function ()use($app){
           if (isset($result->as_cster_emply_cd)) {
               $list['cster_emply_cd'] = $result->as_cster_emply_cd;
           } else {
-              $list['cster_emply_cd'] = "-";
+              $list['cster_emply_cd'] = null;
           }
           // 性別区分
           $list['sex_kbn'] = $result->as_sex_kbn;
@@ -349,6 +349,7 @@ $app->post('/wearer_change/search', function ()use($app){
  * →発注入力（職種変更または異動）にてパラメータ利用
  */
 $app->post('/wearer_change/req_param', function ()use($app){
+
     $params = json_decode(file_get_contents("php://input"), true);
 
     // アカウントセッション取得
@@ -374,7 +375,7 @@ $app->post('/wearer_change/req_param', function ()use($app){
     ));
 
     $json_list = array();
-    $json_list = $cond;
+    $json_list = $app->session->get("wearer_chg_post");
 
     echo json_encode($json_list);
 });

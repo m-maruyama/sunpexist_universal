@@ -19,102 +19,54 @@
 		<div class="col-md-10 box_purple">
 			<!--契約No-->
 			<div class="agreement_no"></div>
-			<div class="form-group">
-				<label class="col-md-3 control-label" for="">理由区分</label>
-				<div class="col-md-3">
-					<select class="form-control input-sm" name="" required>
-						<option></option>
-					</select>
-				</div>
-			</div>
+
+			<!--理由区分-->
+			<div class="reason_kbn"></div>
+
 			<div class="form-group">
 				<label class="col-md-3 control-label" for="">社員コード</label>
 				<div class="col-md-6">
 					<label class="checkbox-inline"><input type="checkbox" id="emply_cd_flg" name="emply_cd_flg[]" value="1" checked>社員コードあり</label>&nbsp;&nbsp;
-					<input type="text" class="input-sm" id="" value="100001">
+					<input type="text" class="input-sm" id="member_no" name="member_no" value="">
 				</div>
 			</div>
 			<div class="form-group">
 				<label class="col-md-3 control-label" for="">着用者名</label>
 				<div class="col-md-7">
-					<input type="text" class="form-control input-sm" id="" value="山本　三郎">
+					<input type="text" class="form-control input-sm" id="member_name" name="member_name" value="{{this}}">
 				</div>
 			</div>
 			<div class="form-group">
 				<label class="col-md-3 control-label" for="">着用者名（読み仮名）</label>
 				<div class="col-md-7">
-					<input type="text" class="form-control input-sm" id="" value="やまもと　さぶろう">
+					<input type="text" class="form-control input-sm" id="" value="">
 				</div>
 			</div>
-			<div class="form-group" style="margin-bottom: 40px">
-				<label class="col-md-3 control-label" for="">性別</label>
-				<div class="col-md-2">
-					<select class="form-control input-sm" name="">
-						<option>男性</option>
-						<option>女性</option>
-					</select>
-				</div>
-			</div>
+
+			<!--性別-->
+			<div class="sex_kbn"></div>
+
 			<div class="form-group">
 				<label class="col-md-3 control-label" for="">発令日</label>
-				<div class="col-md-3">
-					<select class="form-control input-sm" name="">
-						<option>　　　　　/　　　/   </option>
-						<option>  </option>
-						<option>  </option>
-					</select>
+				<div class="col-md-8 form-inline">
+					<div class='input-group date datepicker'>
+						<input type='text' class="form-control input-sm datepicker" id='appointment_ymd' name="appointment_ymd">
+						<div class="input-group-addon">
+							<span class="glyphicon glyphicon-calendar"></span>
+						</div>
+					</div>
 				</div>
 			</div>
-			<div class="form-group">
-				<label class="col-md-3 control-label" for="">拠点</label>
-				<div class="col-md-5 dspilb">
-					<select class="form-control input-sm" name="">
-						<option>ダイナム金町南口店</option>
-						<option>ダイナム金町北口店</option>
-						<option>ダイナム亀有店</option>
-						<option selected="selected">ダイナム砂町銀座店</option>
-						<option>ダイナム新小岩店</option>
-					</select>
-				</div>
-				<div class="col-md-2 dspilb">
-					<a href="" type="button" class="btn btn-primary btn-sm btn-block" title="絞り込み" data-toggle="modal" data-target="#modal-example">絞り込み</a>
-				</div>
-			</div>
-			<div class="form-group">
-				<label class="col-md-3 control-label" for="">貸与パターン</label>
-				<div class="col-md-5">
-					<select class="form-control input-sm" name="">
-						<option></option>
-						<option>一般スタッフ男性</option>
-						<option>一般スタッフ女性</option>
-						<option selected="selected">ストアマネージャー男性</option>
-						<option>ストアマネージャー女性</option>
-						<option>アシスタントマネージャー</option>
-						<option>セキュリティ</option>
-						<option>物流</option>
-					</select>
-				</div>
-			</div>
-			<div class="form-group">
-				<label class="col-md-3 control-label" for="">出荷先</label>
-				<div class="col-md-5">
-					<select class="form-control input-sm" name="">
-														<option selected="selected">支店店舗と同じ</option>
-					</select>
-				</div>
-			</div>
-			<div class="form-group">
-				<label class="col-md-3 control-label" for="">郵便番号</label>
-				<div class="col-md-3">
-					<input type="text" class="form-control input-sm" id="" disabled="disabled" value="136-0073">
-				</div>
-			</div>
-			<div class="form-group" style="margin-bottom: 40px">
-				<label class="col-md-3 control-label" for="">住所</label>
-				<div class="col-md-8">
-					<textarea rows="3" class="form-control input-sm" id="" disabled="disabled">東京都江東区北砂3丁目30番1号</textarea>
-				</div>
-			</div>
+
+			<!--拠点-->
+			<div class="section"></div>
+
+			<!--貸与パターン-->
+			<div class="job_type"></div>
+
+			<!--出荷先、郵便番号、住所-->
+			<div class="shipment"></div>
+
 			<div class="form-group row">
 				<label class="col-md-3 control-label" for="">コメント欄</label>
 				<div class="col-md-9">

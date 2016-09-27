@@ -5,21 +5,21 @@ define([
 ], function(App) {
 	'use strict';
 	App.module('Admin.Views', function(Views, App, Backbone, Marionette, $, _){
-		Views.AgreementNoConditionChange = Marionette.ItemView.extend({
-			template: App.Admin.Templates.agreementNoConditionChange,
+		Views.ReasonKbnConditionChange = Marionette.ItemView.extend({
+			template: App.Admin.Templates.ReasonKbnConditionChange,
 			model: new Backbone.Model(),
 			ui: {
-				'agreement_no': '.agreement_no'
+				'reason_kbn': '.reason_kbn'
 			},
 			bindings: {
-				'.agreement_no': 'agreement_no'
+				'.reason_kbn': 'reason_kbn'
 			},
 			onShow: function() {
 				var that = this;
 				var modelForUpdate = this.model;
-				modelForUpdate.url = App.api.WC0012;
+				modelForUpdate.url = App.api.WC0013;
 				var cond = {
-					"scr": '契約No'
+					"scr": '理由区分'
 				};
 					modelForUpdate.fetchMx({
 						data:cond,

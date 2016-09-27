@@ -13,8 +13,10 @@ define([
 			ui: {
 				"wearer_change": "#wearer_change"
 			},
+/*
 			onRender: function() {
 			},
+*/
 			events: {
 				'click @ui.wearer_change': function(e){
 					e.preventDefault();
@@ -38,9 +40,8 @@ define([
 					modelForUpdate.url = App.api.WC0011;
 					var cond = {
 						"scr": '発注入力（職種変更または異動）POST値保持',
-						"data": data,
+						"data": data
 					};
-
 					modelForUpdate.fetchMx({
 						data:cond,
 						success:function(res){
@@ -49,7 +50,7 @@ define([
 								var errorMessages = errors.map(function(v){
 									return v.error_message;
 								});
-								that.triggerMethod('showAlerts', errorMessages);
+								this.triggerMethod('showAlerts', errorMessages);
 							}
 							var $form = $('<form/>', {'action': '/universal/wearer_change_order.html', 'method': 'post'});
 //							for(var key in res) {

@@ -1,0 +1,11 @@
+<div class="form-group">
+	<label class="col-md-3 control-label" for="">拠点</label>
+	<div class="col-md-5 dspilb">
+		<select class="form-control input-sm" id="section" name="section">
+			{{#each section_list}}<option value="{{rntl_sect_cd}}" {{selected}}>{{rntl_sect_name}}</option>{{/each}}
+		</select>
+	</div>
+	<div class="col-md-2 dspilb">
+		<a href="" type="button" id="section_btn" class="btn btn-primary btn-sm btn-block" title="絞り込み" data-toggle="modal" data-target="#modal-example" disabled>絞り込み</a>
+	</div>
+</div>
