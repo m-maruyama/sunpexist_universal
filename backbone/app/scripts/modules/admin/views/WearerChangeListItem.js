@@ -13,10 +13,6 @@ define([
 			ui: {
 				"wearer_change": "#wearer_change"
 			},
-/*
-			onRender: function() {
-			},
-*/
 			events: {
 				'click @ui.wearer_change': function(e){
 					e.preventDefault();
@@ -34,6 +30,7 @@ define([
 						'ship_to_brnch_cd': we_val[8],
 						'order_tran_flg': we_val[9],
 						'wearer_tran_flg': we_val[10],
+						'order_req_no': we_val[11],
 					};
 
 					var modelForUpdate = this.model;

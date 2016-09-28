@@ -69,6 +69,7 @@ $app->post('/wearer_change/search', function ()use($app){
     $arg_str .= "m_wearer_std.ship_to_brnch_cd as as_ship_to_brnch_cd,";
     $arg_str .= "wst.rntl_sect_name as wst_rntl_sect_name,";
     $arg_str .= "wjt.job_type_name as wjt_job_type_name,";
+    $arg_str .= "t_order_tran.order_req_no as as_order_req_no,";
     $arg_str .= "t_order_tran.order_sts_kbn as as_order_sts_kbn,";
 //    $arg_str .= "t_order_tran.snd_kbn as as_snd_kbn,";
     $arg_str .= "t_order_tran.order_reason_kbn as as_order_reason_kbn,";
@@ -135,6 +136,7 @@ $app->post('/wearer_change/search', function ()use($app){
           $arg_str .= "m_wearer_std_tran.ship_to_brnch_cd as as_ship_to_brnch_cd,";
           $arg_str .= "wst.rntl_sect_name as wst_rntl_sect_name,";
           $arg_str .= "wjt.job_type_name as wjt_job_type_name,";
+          $arg_str .= "t_order_tran.order_req_no as as_order_req_no,";
           $arg_str .= "t_order_tran.order_sts_kbn as as_order_sts_kbn,";
 //          $arg_str .= "t_order_tran.snd_kbn as as_snd_kbn,";
           $arg_str .= "t_order_tran.order_reason_kbn as as_order_reason_kbn";
@@ -179,6 +181,7 @@ $app->post('/wearer_change/search', function ()use($app){
               $result->as_ship_to_brnch_cd = $tran_result->as_ship_to_brnch_cd;
               $result->wst_rntl_sect_name = $tran_result->wst_rntl_sect_name;
               $result->wjt_job_type_name = $tran_result->wjt_job_type_name;
+              $result->as_order_req_no = $tran_result->as_order_req_no;
               $result->as_order_sts_kbn = $tran_result->as_order_sts_kbn;
 //              $result->as_snd_kbn = $tran_result->as_snd_kbn;
               $result->as_order_reason_kbn = $tran_result->as_order_reason_kbn;
@@ -191,6 +194,8 @@ $app->post('/wearer_change/search', function ()use($app){
           $list['rntl_sect_cd'] = $result->as_rntl_sect_cd;
           // 職種コード
           $list['job_type_cd'] = $result->as_job_type_cd;
+          // 発注No
+          $list['order_req_no'] = $result->as_order_req_no;
           // 理由区分
           if (isset($result->as_order_reason_kbn)) {
             $list['order_reason_kbn'] = $result->as_order_reason_kbn;
@@ -329,6 +334,21 @@ $app->post('/wearer_change/search', function ()use($app){
             $list['return_reciept_button'] = "返却伝票ダウンロード";
           }
 
+          // 発注入力へのパラメータ設定
+          $list['param'] = '';
+          $list['param'] .= $list['rntl_cont_no'].':';
+          $list['param'] .= $list['werer_cd'].':';
+          $list['param'] .= $list['cster_emply_cd'].':';
+          $list['param'] .= $list['sex_kbn'].':';
+          $list['param'] .= $list['rntl_sect_cd'].':';
+          $list['param'] .= $list['job_type_cd'].':';
+          $list['param'] .= $list['order_reason_kbn'].':';
+          $list['param'] .= $list['ship_to_cd'].':';
+          $list['param'] .= $list['ship_to_brnch_cd'].':';
+          $list['param'] .= $list['order_tran_flg'].':';
+          $list['param'] .= $list['wearer_tran_flg'].':';
+          $list['param'] .= $list['order_req_no'];
+
           array_push($all_list,$list);
         }
     }
@@ -372,6 +392,7 @@ $app->post('/wearer_change/req_param', function ()use($app){
       'ship_to_brnch_cd' => $cond["ship_to_brnch_cd"],
       'order_tran_flg' => $cond["order_tran_flg"],
       'wearer_tran_flg' => $cond["wearer_tran_flg"],
+      'order_req_no' => $cond["order_req_no"],
     ));
 
     $json_list = array();
