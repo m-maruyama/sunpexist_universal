@@ -65,3 +65,8 @@ $di->setShared('session', function () {
 $di->setShared('TransactionManager', function () {
     return new TransactionManager();
 });
+
+//Mail service uses Gmail;
+$di->set('mail', function(){
+    return new Mail();
+});

@@ -14,6 +14,9 @@ define([
 			},
 			onRender: function() {
 			},
+			onShow: function() {
+				$(".snd_kbn0").css('display', 'block');
+			},
 			events: {
 				"click @ui.deleteBtn": function(e) {
 

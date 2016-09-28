@@ -371,6 +371,7 @@ $app->post('/purchase_history/search', function () use ($app) {
         $list['color_cd'] = $result->tSaleOrderHistory->color_cd;//カラーコード
         $list['size_cd'] = $result->tSaleOrderHistory->size_cd;//サイズコード
         $list['quantity'] = $result->tSaleOrderHistory->quantity;//数量
+        $list['snd_kbn'] = $result->tSaleOrderHistory->snd_kbn;//送信区分
         array_push($all_list, $list);//$all_listaに$listをpush
     }
     $page_list['records_per_page'] = $page['records_per_page'];

@@ -1,3 +1,4 @@
+
 define([
 	'app',
 	"entities/models/AdminPassword",
@@ -10,6 +11,9 @@ define([
 			},
 			top: function(){
 				var that = this;
+				//
+				// this.setNav('password');
+
 				var passwordView = new App.Admin.Views.Password({model: new App.Entities.Models.AdminPassword()});
 				passwordView.listenTo(passwordView, 'success', function(){
 					location.href = './login.html';

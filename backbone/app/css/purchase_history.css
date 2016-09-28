@@ -679,3 +679,6 @@ label.allCheck {
 .order_table tr.edit td {
 	background: #ee3;
 }
+.delete {
+	display: none;
+}

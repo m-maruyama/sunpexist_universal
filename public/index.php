@@ -46,6 +46,7 @@ try {
     include __DIR__.'/../app/manpower_info.php';
     include __DIR__.'/../app/wearer.php';
     include __DIR__.'/../app/login.php';
+    include __DIR__.'/../app/password.php';
     include __DIR__.'/../app/home.php';
     include __DIR__.'/../app/purchase_input.php';
     include __DIR__.'/../app/purchase_history.php';

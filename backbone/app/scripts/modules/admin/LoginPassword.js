@@ -1,13 +1,11 @@
 define([
 	"app",
-	"./controllers/Password"
+	"./controllers/LoginPassword"
 ], function(App) {
 	'use strict';
 
 	App.addRegions({
-		"nav": "#nav",
 		"main": "#main",
-		"footer": "#footer"
 	});
 
 	App.Router = Marionette.AppRouter.extend({
@@ -20,7 +18,7 @@ define([
 	App.module('Admin', function(Module, App, Backbone, Marionette, $, _){
 		Module.addInitializer(function(options){
 			var router = new App.Router({
-				controller: new App.Admin.Controllers.Password()
+				controller: new App.Admin.Controllers.LoginPassword()
 			});
 		});
 
