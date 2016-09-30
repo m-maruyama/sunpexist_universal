@@ -715,6 +715,11 @@ $app->post('/wearer_info', function ()use($app){
    $wearer_chg_post = $app->session->get("wearer_chg_post");
    //ChromePhp::LOG($wearer_chg_post);
 
+   // フロントパラメータ取得
+   $cond = $params['data'];
+   //ChromePhp::LOG("フロント側パラメータ");
+   //ChromePhp::LOG($cond);
+
    $json_list = array();
 
    //--一覧生成用の主要部門コード・職種コード取得--//
@@ -764,9 +769,9 @@ $app->post('/wearer_info', function ()use($app){
        $m_wearer_job_type_cd = $result->job_type_cd;
      }
    }
-   ChromePhp::LOG('【発注前】部門コード、職種コード');
-   ChromePhp::LOG($m_wearer_rntl_sect_cd);
-   ChromePhp::LOG($m_wearer_job_type_cd);
+   //ChromePhp::LOG('【発注前】部門コード、職種コード');
+   //ChromePhp::LOG($m_wearer_rntl_sect_cd);
+   //ChromePhp::LOG($m_wearer_job_type_cd);
 
    // 発注情報トラン参照
    $query_list = array();
@@ -874,14 +879,20 @@ $app->post('/wearer_info', function ()use($app){
    }
    // 職種コード
    $chg_wearer_job_type_cd = null;
-   if (!empty($t_order_tran_job_type_cd)) {
-     $chg_wearer_job_type_cd = $t_order_tran_job_type_cd;
-   } elseif (!empty($t_returned_plan_info_tran_job_type_cd)) {
-     $chg_wearer_job_type_cd = $t_returned_plan_info_tran_job_type_cd;
+   if (!empty($cond["job_type"])) {
+     // 着用者情報項目「貸与パターン」が変更された場合
+     $chg_wearer_job_type_cd = $cond["job_type"];
+   } else {
+     // 初期表示時
+     if (!empty($t_order_tran_job_type_cd)) {
+       $chg_wearer_job_type_cd = $t_order_tran_job_type_cd;
+     } elseif (!empty($t_returned_plan_info_tran_job_type_cd)) {
+       $chg_wearer_job_type_cd = $t_returned_plan_info_tran_job_type_cd;
+     }
    }
-   ChromePhp::LOG('【発注後】部門コード、職種コード');
-   ChromePhp::LOG($chg_wearer_rntl_sect_cd);
-   ChromePhp::LOG($chg_wearer_job_type_cd);
+   //ChromePhp::LOG('【発注後】部門コード、職種コード');
+   //ChromePhp::LOG($chg_wearer_rntl_sect_cd);
+   //ChromePhp::LOG($chg_wearer_job_type_cd);
 
    //--【変更前】商品の取得--//
    $query_list = array();
@@ -903,6 +914,7 @@ $app->post('/wearer_info', function ()use($app){
    $arg_str .= " FROM ";
    $arg_str .= "(SELECT distinct on (mi.item_cd,mi.color_cd) ";
    $arg_str .= "mw.rntl_cont_no as as_rntl_cont_no,";
+   $arg_str .= "mw.rntl_sect_cd as as_rntl_sect_cd,";
    $arg_str .= "mi.item_cd as as_item_cd,";
    $arg_str .= "mi.color_cd as_color_cd,";
    $arg_str .= "mi.size_cd as_size_cd,";
@@ -952,6 +964,8 @@ $app->post('/wearer_info', function ()use($app){
        $list["item_name"] = $result->as_item_name;
        // 職種コード
        $list["job_type_cd"] = $result->as_job_type_cd;
+       // 部門コード
+       $list["rntl_sect_cd"] = $result->as_rntl_sect_cd;
        // 職種アイテムコード
        $list["job_type_item_cd"] = $result->as_job_type_item_cd;
        // サイズコード2
@@ -964,9 +978,9 @@ $app->post('/wearer_info', function ()use($app){
        array_push($now_wearer_list, $list);
      }
    }
-   ChromePhp::LOG('【変更前】商品リスト');
-   ChromePhp::LOG(count($now_wearer_list));
-   ChromePhp::LOG($now_wearer_list);
+   //ChromePhp::LOG('【変更前】商品リスト');
+   //ChromePhp::LOG(count($now_wearer_list));
+   //ChromePhp::LOG($now_wearer_list);
 
    //--【変更後】商品の取得--//
    $query_list = array();
@@ -988,6 +1002,7 @@ $app->post('/wearer_info', function ()use($app){
    $arg_str .= " FROM ";
    $arg_str .= "(SELECT distinct on (mi.item_cd,mi.color_cd) ";
    $arg_str .= "mw.rntl_cont_no as as_rntl_cont_no,";
+   $arg_str .= "mw.rntl_sect_cd as as_rntl_sect_cd,";
    $arg_str .= "mi.item_cd as as_item_cd,";
    $arg_str .= "mi.color_cd as_color_cd,";
    $arg_str .= "mi.size_cd as_size_cd,";
@@ -1037,6 +1052,8 @@ $app->post('/wearer_info', function ()use($app){
        $list["item_name"] = $result->as_item_name;
        // 職種コード
        $list["job_type_cd"] = $result->as_job_type_cd;
+       // 部門コード
+       $list["rntl_sect_cd"] = $result->as_rntl_sect_cd;
        // 職種アイテムコード
        $list["job_type_item_cd"] = $result->as_job_type_item_cd;
        // サイズコード2
@@ -1049,9 +1066,9 @@ $app->post('/wearer_info', function ()use($app){
        array_push($chg_wearer_list, $list);
      }
    }
-   ChromePhp::LOG('【変更後】商品リスト');
-   ChromePhp::LOG(count($chg_wearer_list));
-   ChromePhp::LOG($chg_wearer_list);
+   //ChromePhp::LOG('【変更後】商品リスト');
+   //ChromePhp::LOG(count($chg_wearer_list));
+   //ChromePhp::LOG($chg_wearer_list);
 
    //--新たに追加されるアイテム一覧リストの生成--//
    $chk_list = array();
@@ -1065,7 +1082,7 @@ $app->post('/wearer_info', function ()use($app){
        if (
         $chg_wearer_list[$i]["item_cd"] == $now_wearer_list[$j]["item_cd"]
         && $chg_wearer_list[$i]["color_cd"] == $now_wearer_list[$j]["color_cd"]
-//        && $chg_wearer_list[$i]["std_input_qty"] == $now_wearer_list[$i]["std_input_qty"]
+        && $chg_wearer_list[$i]["std_input_qty"] == $now_wearer_list[$i]["std_input_qty"]
        )
        {
          $chg_wearer_list[$i]["overlap_flg"] = false;
@@ -1077,6 +1094,7 @@ $app->post('/wearer_info', function ()use($app){
        $list["size_cd"] = $chg_wearer_list[$i]["size_cd"];
        $list["item_name"] = $chg_wearer_list[$i]["item_name"];
        $list["job_type_cd"] = $chg_wearer_list[$i]["job_type_cd"];
+       $list["rntl_sect_cd"] = $chg_wearer_list[$i]["rntl_sect_cd"];
        $list["job_type_item_cd"] = $chg_wearer_list[$i]["job_type_item_cd"];
        $list["size_two_cd"] = $chg_wearer_list[$i]["size_two_cd"];
        $list["std_input_qty"] = $chg_wearer_list[$i]["std_input_qty"];
@@ -1085,17 +1103,20 @@ $app->post('/wearer_info', function ()use($app){
        array_push($chk_list, $list);
      }
    }
-   ChromePhp::LOG('発注後のみ商品リスト');
-   ChromePhp::LOG(count($chk_list));
-   ChromePhp::LOG($chk_list);
+   //ChromePhp::LOG('発注後のみ商品リスト');
+   //ChromePhp::LOG(count($chk_list));
+   //ChromePhp::LOG($chk_list);
 
    // 上記比較リストをベースに、新たに追加されるアイテム一覧リストを生成する
    if (!empty($chk_list)) {
-     $cnt = 1;
+     $arr_cnt = 0;
+     $list_cnt = 1;
      foreach ($chk_list as $chk_map) {
        $list = array();
+       // name属性用カウント値
+       $list["arr_num"] = $arr_cnt++;
        // No
-       $list["list_no"] = $cnt++;
+       $list["list_no"] = $list_cnt++;
        // アイテム
        $list["item_name"] = $chk_map["item_name"];
        // 選択方法
@@ -1128,8 +1149,10 @@ $app->post('/wearer_info', function ()use($app){
        $results_cnt = $result_obj["\0*\0_count"];
        if ($results_cnt > 1) {
          $list["choice"] = "複数選択";
+         $list["choice_type"] = "2";
        } else {
          $list["choice"] = "単一選択";
+         $list["choice_type"] = "1";
        }
        // 標準枚数
        $list["std_input_qty"] = $chk_map['std_input_qty'];
@@ -1173,11 +1196,23 @@ $app->post('/wearer_info', function ()use($app){
        }
        // 発注数(単一選択=入力不可、複数選択=入力可)
        $list["order_num"] = $chk_map['std_input_qty'];
-       if ($list["choice"] === "単一選択") {
+       if ($list["choice_type"] == "1") {
          $list["order_num_disable"] = "disabled";
        } else {
          $list["order_num_disable"] = "";
        }
+
+       //--その他の必要hiddenパラメータ--//
+       // 部門コード
+       $list["rntl_sect_cd"] = $chk_map['rntl_sect_cd'];
+       // 職種コード
+       $list["job_type_cd"] = $chk_map['job_type_cd'];
+       // 商品コード
+       $list["item_cd"] = $chk_map['item_cd'];
+       // 色コード
+       $list["color_cd"] = $chk_map['color_cd'];
+       // 職種アイテムコード
+       $list["job_type_item_cd"] = $chk_map['job_type_item_cd'];
 
        array_push($add_list, $list);
      }
@@ -1188,21 +1223,42 @@ $app->post('/wearer_info', function ()use($app){
      $json_list["add_list_disp_flg"] = false;
    }
    $json_list["add_list"] = $add_list;
-   ChromePhp::LOG('新たに追加するアイテム一覧リスト');
-   ChromePhp::LOG(count($add_list));
-   ChromePhp::LOG($json_list["add_list"]);
+   //ChromePhp::LOG('新たに追加するアイテム一覧リスト');
+   //ChromePhp::LOG(count($add_list));
+   //ChromePhp::LOG($json_list["add_list"]);
 
    //--現在貸与中アイテム一覧リストの生成--//
    $chk_list = array();
    $now_list = array();
 
    if (!empty($now_wearer_list)) {
-     $json_list["now_list_disp_flg"] = true;
-     $cnt = 1;
+     $arr_cnt = 0;
+     $list_cnt = 1;
      foreach ($now_wearer_list as $now_wearer_map) {
        $list = array();
+
+       // 発注前後商品の比較チェック
+       // ※商品の「標準投入数」が前後で=の場合は表示しない
+       $overlap = true;
+       for ($i=0; $i<count($chg_wearer_list); $i++) {
+         if (
+          $now_wearer_map['item_cd'] == $chg_wearer_list[$i]['item_cd']
+          && $now_wearer_map['color_cd'] == $chg_wearer_list[$i]['color_cd']
+          && $now_wearer_map['std_input_qty'] == $chg_wearer_list[$i]['std_input_qty']
+         )
+         {
+           $overlap = false;
+         }
+       }
+       if (!$overlap) {
+         // 上記重複の場合は以降の処理をしない
+         continue;
+       }
+
+       // name属性用カウント値
+       $list["arr_num"] = $arr_cnt++;
        // No
-       $list["list_no"] = $cnt++;
+       $list["list_no"] = $list_cnt++;
        // アイテム
        $list["item_name"] = $now_wearer_map["item_name"];
        // 選択方法
@@ -1235,8 +1291,10 @@ $app->post('/wearer_info', function ()use($app){
        $results_cnt = $result_obj["\0*\0_count"];
        if ($results_cnt > 1) {
          $list["choice"] = "複数選択";
+         $list["choice_type"] = "2";
        } else {
          $list["choice"] = "単一選択";
+         $list["choice_type"] = "1";
        }
        // 標準枚数
        $list["std_input_qty"] = $now_wearer_map['std_input_qty'];
@@ -1301,19 +1359,23 @@ $app->post('/wearer_info', function ()use($app){
          {
            $orverlap = true;
            if ($now_wearer_map['std_input_qty'] > $chg_wearer_list[$i]['std_input_qty']) {
+             // 対象チェック、個体管理番号欄表示
              $list["individual_disp"] = true;
            } else {
+             // 対象チェック、個体管理番号欄非表示
              $list["individual_disp"] = false;
            }
          }
        }
+/*
        if (!$orverlap) {
          $list["individual_disp"] = true;
        }
+*/
        // ※個体管理番号リスト、対象チェックボックス値の生成
-       $individual_list = array();
+       $list["individual_ctrl_no"] = "";
        $list["individual_chk"] = array();
-       $list["individual_ctrl_no"] = array();
+       $individual_ctrl_no = array();
        $query_list = array();
        array_push($query_list, "t_delivery_goods_state_details.corporate_id = '".$auth['corporate_id']."'");
        array_push($query_list, "t_delivery_goods_state_details.rntl_cont_no = '".$wearer_chg_post['rntl_cont_no']."'");
@@ -1336,6 +1398,8 @@ $app->post('/wearer_info', function ()use($app){
        $results = new Resultset(null, $t_delivery_goods_state_details, $t_delivery_goods_state_details->getReadConnection()->query($arg_str));
        $result_obj = (array)$results;
        $results_cnt = $result_obj["\0*\0_count"];
+       //ChromePhp::LOG($t_delivery_goods_state_details->getReadConnection()->query($arg_str));
+       //ChromePhp::LOG($results_cnt);
        if (!empty($results_cnt)) {
          $paginator_model = new PaginatorModel(
              array(
@@ -1348,7 +1412,7 @@ $app->post('/wearer_info', function ()use($app){
          $results = $paginator->items;
          //ChromePhp::LOG($results);
          foreach ($results as $result) {
-           array_push($list["individual_ctrl_no"], $result->individual_ctrl_no);
+           array_push($individual_ctrl_no, $result->individual_ctrl_no);
 
            // 返却可能フラグによるdisable制御
            $individual = array();
@@ -1357,6 +1421,7 @@ $app->post('/wearer_info', function ()use($app){
              $individual["disabled"] = "disabled";
            } else {
              $individual["disabled"] = "";
+//             $individual["disabled"] = "disabled";
            }
 
            // 表示時チェックON/OFF設定
@@ -1387,17 +1452,19 @@ $app->post('/wearer_info', function ()use($app){
              $individual["checked"] = "checked";
            } else {
              $individual["checked"] = "";
+//             $individual["checked"] = "checked";
            }
 
            // 対象チェックボックス値
            array_push($list["individual_chk"], $individual);
          }
+
+         // 個体管理番号
+         $list["individual_ctrl_no"] = implode("<br>", $individual_ctrl_no);
        }
-       // 個体管理番号
-       $list["individual_ctrl_no"] = implode("<br>", $list["individual_ctrl_no"]);
        // 発注数(単一選択=入力不可、複数選択=入力可)
-       $list["order_num"] = '';
-       if ($list["choice"] === "単一選択") {
+       $list["order_num"] = $list["std_input_qty"];
+       if ($list["choice_type"] === "1") {
          $list["order_num_disable"] = "disabled";
        } else {
          $list["order_num_disable"] = "";
@@ -1414,7 +1481,12 @@ $app->post('/wearer_info', function ()use($app){
          }
        }
        // 返却数(単一選択=入力不可、複数選択=入力可)
-       $list["return_num"] = '';
+       $list["return_num"] = $list["std_input_qty"];
+       if ($list["choice_type"] == "1") {
+         $list["return_num_disable"] = "disabled";
+       } else {
+         $list["return_num_disable"] = "";
+       }
        for ($i=0; $i<count($chg_wearer_list); $i++) {
          if (
           $now_wearer_map['item_cd'] == $chg_wearer_list[$i]['item_cd']
@@ -1427,24 +1499,42 @@ $app->post('/wearer_info', function ()use($app){
          }
        }
 
+       //--その他の必要hiddenパラメータ--//
+       // 部門コード
+       $list["rntl_sect_cd"] = $now_wearer_map['rntl_sect_cd'];
+       // 職種コード
+       $list["job_type_cd"] = $now_wearer_map['job_type_cd'];
+       // 商品コード
+       $list["item_cd"] = $now_wearer_map['item_cd'];
+       // 色コード
+       $list["color_cd"] = $now_wearer_map['color_cd'];
+       // 職種アイテムコード
+       $list["job_type_item_cd"] = $now_wearer_map['job_type_item_cd'];
+
        array_push($now_list, $list);
      }
+   }
+
+   // 現在貸与中アイテム一覧内容の表示フラグ
+   if (!empty($now_list)) {
+     $json_list["now_list_disp_flg"] = true;
    } else {
      $json_list["now_list_disp_flg"] = false;
    }
 
    $json_list["now_list"] = $now_list;
-   ChromePhp::LOG('現在貸与中アイテム一覧リスト');
-   ChromePhp::LOG(count($now_list));
-   ChromePhp::LOG($json_list["now_list"]);
+   //ChromePhp::LOG('現在貸与中アイテム一覧リスト');
+   //ChromePhp::LOG(count($now_list));
+   //ChromePhp::LOG($json_list["now_list"]);
 
    //--発注総枚数、返却総枚数--//
    $sum_num = array();
    $list = array();
 
    // 発注総枚数
-   $list["sum_order_num"] = 0;
+   $list["sum_order_num"] = '';
    if (!empty($now_list)) {
+     $list["sum_order_num"] = 0;
      foreach ($now_list as $now_map) {
        if (!empty($now_map["order_num"])) {
          $list["sum_order_num"] += $now_map["order_num"];
@@ -1452,8 +1542,9 @@ $app->post('/wearer_info', function ()use($app){
      }
    }
    // 返却総枚数
-   $list["sum_return_num"] = 0;
+   $list["sum_return_num"] = '';
    if (!empty($now_list)) {
+     $list["sum_return_num"] = 0;
      foreach ($now_list as $now_map) {
        if (!empty($now_map["return_num"])) {
          $list["sum_return_num"] += $now_map["return_num"];
@@ -1463,8 +1554,14 @@ $app->post('/wearer_info', function ()use($app){
 
    array_push($sum_num, $list);
    $json_list["sum_num"] = $sum_num;
-   ChromePhp::LOG('発注総枚数/返却総枚数');
-   ChromePhp::LOG($json_list["sum_num"]);
+   //ChromePhp::LOG('発注総枚数/返却総枚数');
+   //ChromePhp::LOG($json_list["sum_num"]);
+
+   // 貸与中アイテム一覧の「対象」、「個体管理番号」列の表示/非表示の制御フラグ
+   $json_list["individual_flg"] = $auth['individual_flg'];
+
 
    echo json_encode($json_list);
+   ChromePhp::LOG('JSON_LIST');
+   ChromePhp::LOG($json_list);
 });

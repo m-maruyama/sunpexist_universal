@@ -1,8 +1,13 @@
 <div class="form-group">
 	<label class="col-md-3 control-label" for="">貸与パターン</label>
 	<div class="col-md-5">
-		<select class="form-control input-sm" id="job_type" name="job_type">
+		<select class="form-control input-sm" id="job_type" name="job_type" onfocus="log(this.value)">
 			{{#each job_type_list}}<option value="{{job_type_cd}}:{{sp_job_type_flg}}" {{selected}}>{{job_type_name}}</option>{{/each}}
 		</select>
 	</div>
 </div>
+<script>
+function log(val){
+	window.sessionStorage.setItem("job_type_sec", val);
+}
+</script>

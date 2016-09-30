@@ -162,20 +162,31 @@ define([
 				},
 				// 貸与パターン
 				'change @ui.job_type': function(){
+					var that = this;
 					this.ui.job_type = $('#job_type');
-					var vals = $("select[name='job_type']").val();
-					var val = vals.split(':');
+					// 選択前のvalue値
+					var before_vals = window.sessionStorage.getItem("job_type_sec");
+					// 選択後のvalue値
+					var after_vals = $("select[name='job_type']").val();
+					//console.log(before_vals);
+					//console.log(after_vals);
+					var val = after_vals.split(':');
 					var job_type = val[0];
 					var sp_job_type_flg = val[1];
+
 					if (sp_job_type_flg == "1") {
 						// 特別職種フラグ有りの場合
 						var msg = "社内申請手続きを踏んでいますか？";
 						if (window.confirm(msg)) {
-							//console.log("flg有り");
+							that.triggerMethod('change:job_type', job_type);
+						} else {
+							// キャンセルの場合は選択前の状態に戻す
+							document.getElementById('job_type').value = before_vals;
 						}
 					} else {
 						// 特別職種フラグ無しの場合
-						//console.log("flgなし");
+						window.sessionStorage.setItem("job_type_sec", after_vals);
+						that.triggerMethod('change:job_type', job_type);
 					}
 				},
 				// 出荷先

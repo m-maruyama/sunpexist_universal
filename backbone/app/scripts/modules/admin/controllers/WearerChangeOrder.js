@@ -27,11 +27,11 @@ define([
 	'use strict';
 	App.module('Admin.Controllers', function(Controllers,App, Backbone, Marionette, $, _){
 		Controllers.WearerChangeOrder = App.Admin.Controllers.Abstract.extend({
-            behaviors: {
-                "Alerts": {
-                    behaviorClass: App.Admin.Behaviors.Alerts
-                }
-            },
+			behaviors: {
+					"Alerts": {
+							behaviorClass: App.Admin.Behaviors.Alerts
+					}
+			},
 			_sync : function(){
 				var that = this;
 				this.setNav('wearerChangeOrder');
@@ -111,6 +111,15 @@ define([
 
 				this.listenTo(paginationView, 'selected', function(pageNumber){
 						fetchList_section(pageNumber);
+				});
+
+				//貸与パターンセレクト変更時動作
+				this.listenTo(wearerChangeOrderConditionView, 'change:job_type', function(job_type){
+					//console.log(job_type);
+					var wearerChangeOrderListListView2 = new App.Admin.Views.WearerChangeOrderListList({
+						job_type:job_type,
+					});
+					wearerChangeOrderView.listTable.show(wearerChangeOrderListListView2);
 				});
 
 				App.main.show(wearerChangeOrderView);

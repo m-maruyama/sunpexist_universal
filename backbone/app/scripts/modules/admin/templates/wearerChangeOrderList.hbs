@@ -1,8 +1,10 @@
 <div class="row">
   <p class="col-md-7"></p>
   <p class="col-md-5">
-    発注枚数 <input type="text" class="input-sm" id="order_count" name="order_count" disabled="disabled" value="0" style="width:4em"> 枚　　　
-    返却枚数 <input type="text" class="input-sm" id="return_count" name="return_count" disabled="disabled" value="0" style="width:4em"> 枚
+    {{#each sum_num}}
+    発注枚数 <input type="text" class="input-sm" id="order_count" name="now_order_count" disabled="disabled" value="{{sum_order_num}}" style="width:4em"> 枚　　　
+    返却枚数 <input type="text" class="input-sm" id="return_count" name="now_return_count" disabled="disabled" value="{{sum_return_num}}" style="width:4em"> 枚
+    {{/each}}
   </p>
 </div>
 <div class="text-center tablewidth divcentering" >
@@ -20,8 +22,8 @@
           <th rowspan="2">標準枚数</th>
           <th>商品-色</th>
           <th rowspan="2">サイズ</th>
-          <th rowspan="2">対象</th>
-          <th rowspan="2">個体管理番号</th>
+          <th rowspan="2" class="individual_flg" style="display:none;">対象</th>
+          <th rowspan="2" class="individual_flg" style="display:none;">個体管理番号</th>
           <th rowspan="2">発注枚数</th>
           <th rowspan="2">返却枚数</th>
         </tr>
@@ -30,20 +32,60 @@
         </tr>
       </thead>
       <tbody>
+      {{#if now_list_disp_flg}}
+        {{#each now_list}}
         <tr>
-          <td>1</td>
-          <td>ベスト</td>
-          <td>2</td>
-          <td>10003681VEM1301-B2</td>
-          <td>男性ベスト</td>
-          <td>---L</td>
           <td>
-            <label><input type="checkbox" id="target_flg" name="target_flg[]"></label><br>
+            {{list_no}}
+            <input type="hidden" name="now_rntl_sect_cd{{arr_num}}" value="{{rntl_sect_cd}}">
+            <input type="hidden" name="now_job_type_cd{{arr_num}}" value="{{job_type_cd}}">
+            <input type="hidden" name="now_job_type_item_cd{{arr_num}}" value="{{job_type_item_cd}}">
+            <input type="hidden" name="now_item_cd{{arr_num}}" value="{{item_cd}}">
+            <input type="hidden" name="now_color_cd{{arr_num}}" value="{{color_cd}}">
           </td>
-          <td>0368429<br>5928503</td>
-          <td>99</td>
-          <td>11</td>
+          <td>{{item_name}}</td>
+          <td>
+            {{choice}}
+            <input type="hidden" name="now_choice_type{{arr_num}}" value="{{choice_type}}">
+          </td>
+          <td>
+            {{std_input_qty}}
+            <input type="hidden" name="now_std_input_qty{{arr_num}}" value="{{std_input_qty}}">
+          </td>
+          <td>
+            {{item_and_color}}<br>{{input_item_name}}
+          </td>
+          <td>
+            {{size_cd}}
+            <input type="hidden" name="now_size_cd{{arr_num}}" value="{{size_cd}}">
+          </td>
+          <td class="individual_flg" style="display:none;">
+            {{#if individual_disp}}
+              {{#each individual_chk}}
+              <label>
+                <input type="checkbox" id="now_target_flg" name="now_target_flg{{arr_num}}[]" value="{{individual_ctrl_no}}" {{checked}} {{disabled}}>
+              </label><br>
+              {{/each}}
+            {{/if}}
+          </td>
+          <td class="individual_flg" style="display:none;">
+            {{#if individual_disp}}
+              {{{individual_ctrl_no}}}
+            {{/if}}
+          </td>
+          <td>
+            <input type="text" style="width:4em" class="input-sm" id="now_order_num{{arr_num}}" name="now_order_num{{arr_num}}" value="{{order_num}}" {{order_num_disable}}>
+          </td>
+          <td>
+            <input type="text" style="width:4em" class="input-sm" id="now_return_num{{arr_num}}" name="now_return_num{{arr_num}}" value="{{return_num}}" {{return_num_disable}}>
+          </td>
         </tr>
+        {{/each}}
+      {{else}}
+          <tr class="edit">
+            <td colspan="10"><b>対象商品なし</b></td>
+          </tr>
+      {{/if}}
       </tbody>
     </table>
 
@@ -66,27 +108,48 @@
         </tr>
       </thead>
       <tbody>
+      {{#if add_list_disp_flg}}
+        {{#each add_list}}
         <tr class="edit">
-          <td>5</td>
-          <td>長袖シャツ</td>
-          <td>通常</td>
-          <td>3</td>
-          <td>10003681BLU1301</td>
-          <td class="input">
-            <select class="form-control input-sm" name="">
-              <option></option>
-              <option>--SS</option>
-              <option>---S</option>
-              <option>---M</option>
-              <option>---L</option>
-              <option>--LL</option>
-              <option>--3L</option>
-              <option>--4L</option>
-              <option>--5L</option>
-            </select>
+          <td>
+            {{list_no}}
+            <input type="hidden" name="now_rntl_sect_cd{{arr_num}}" value="{{rntl_sect_cd}}">
+            <input type="hidden" name="now_job_type_cd{{arr_num}}" value="{{job_type_cd}}">
+            <input type="hidden" name="now_job_type_item_cd{{arr_num}}" value="{{job_type_item_cd}}">
+            <input type="hidden" name="now_item_cd{{arr_num}}" value="{{item_cd}}">
+            <input type="hidden" name="now_color_cd{{arr_num}}" value="{{color_cd}}">
           </td>
-          <td>99</td>
+          <td>{{item_name}}</td>
+          <td>
+            {{choice}}
+            <input type="hidden" name="add_choice_type" value="{{choice_type}}">
+          </td>
+          <td>
+            {{std_input_qty}}
+            <input type="hidden" name="add_std_input_qty" value="{{std_input_qty}}">
+          </td>
+          <td>
+            {{item_and_color}}<br>{{input_item_name}}
+            <input type="hidden" name="now_item_cd" value="{{item_cd}}">
+            <input type="hidden" name="now_color_cd" value="{{color_cd}}">
+          </td>
+          <td class="input">
+            {{#each add_list}}
+            <select class="form-control input-sm" id="size_cd" name="size_cd">
+              <option value="{{this}}">{{this}}</option>
+            </select>
+            {{/each}}
+          </td>
+          <td>
+            <input type="text" style="width:4em" class="input-sm" id="add_order_num" name="add_order_num" value="{{order_num}}" {{order_num_disable}}>
+          </td>
         </tr>
+        {{/each}}
+      {{else}}
+        <tr class="edit">
+          <td colspan="7"><b>対象商品なし</b></td>
+        </tr>
+      {{/if}}
       </tbody>
     </table>
   </div>
