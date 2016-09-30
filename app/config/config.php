@@ -41,5 +41,16 @@ return new \Phalcon\Config(array(
         // 'cacheDir'       => APP_PATH . '/app/cache/',
         'logDir'       => APP_PATH . '/app/log/',
         'baseUri'        => '/universal/',
-    )
+    ),
+    'mail'  =>  array(
+        'fromName'  =>  'Tetsu Nakamura',
+        'fromEmail' =>  'tetsu_nakamura@pressman.ne.jp',
+        'smtp'  =>  array(
+            'server'    =>  'smtp.gmail.com',
+            'port'    =>  465,
+            'ssl'   =>  'ssl',
+            'username'   =>  'tetsu_nakamura@pressman.ne.jp',
+            'password'  =>  'q4jPbCK9tNun',
+        )
+    ),
 ));

@@ -23,22 +23,49 @@ $app->post('/login', function ()use($app) {
 //        echo json_encode($json_list);
 //        return true;
 //    }
-    //アカウントマスタに企業ID、ログインID、仮パスワードが一致するデータが存在する場合（パスワード未発行時）
-    $account = MAccount::query()
+
+    //仮パスワードが存在する場合はログイン処理までいかない
+    $kari_check = MAccount::query()
         ->where("MAccount.user_id = '".$params['login_id']."' AND MAccount.corporate_id = '".$params['corporate_id'].
-            "' AND MAccount.tentative_pass_word = '".$params['password']."'")
-        ->columns(array('MAccount.*','MContractResource.*'))
-        ->join('MContractResource','MContractResource.accnt_no = MAccount.accnt_no')
+            "' AND MAccount.tentative_pass_word IS NOT NULL")
+        //->columns(array('MAccount.*','MContractResource.*'))
+        //->join('MContractResource','MContractResource.accnt_no = MAccount.accnt_no')
         ->execute();
 
-    if($account->count() > 0){
-        //仮パスワードが発行されている場合、パスワード
-        $json_list['status'] = 3;
-        $app->session->set("corporate_id",$account[0]->mAccount->corporate_id);
-        $app->session->set("user_id",$account[0]->mAccount->user_id);
+    if($kari_check->count() > 0) {
+        //0文字以上だたら
+        //アカウントマスタに企業ID、ログインID、仮パスワードが一致するデータが存在する場合（パスワード未発行時）
+        $account = MAccount::query()
+            ->where("MAccount.user_id = '" . $params['login_id'] . "' AND MAccount.corporate_id = '" . $params['corporate_id'] .
+                "' AND MAccount.tentative_pass_word = '" . $params['password'] . "'")
+            ->columns(array('MAccount.*', 'MContractResource.*'))
+            ->join('MContractResource', 'MContractResource.accnt_no = MAccount.accnt_no')
+            ->execute();
+        ChromePhp::log('仮パスワードが一致するデータが存在する場合');
+        ChromePhp::log($account);
+
+        if ($account->count() > 0) {
+            ChromePhp::log('仮パスワードが発行されている場合、パスワード');
+
+            //仮パスワードが発行されている場合、パスワード
+            $json_list['status'] = 4;
+            $app->session->set("corporate_id", $account[0]->mAccount->corporate_id);
+            $app->session->set("user_id", $account[0]->mAccount->user_id);
+            echo json_encode($json_list);
+            return true;
+        }
+        //仮パスワードが存在して、仮パスワードと違うパスワードの場合
+        ChromePhp::log('仮パスワードが存在して、仮パスワードと違うパスワードの場合');
+        $json_list['status'] = 1;
         echo json_encode($json_list);
         return true;
     }
+
+
+
+    ChromePhp::log($params['login_id']);
+    ChromePhp::log($params['corporate_id']);
+
     //アカウントチェック
     $account = MAccount::query()
         ->where("MAccount.user_id = '".$params['login_id']."' AND MAccount.corporate_id = '".$params['corporate_id']."'")
@@ -46,7 +73,16 @@ $app->post('/login', function ()use($app) {
         ->join('MContractResource','MContractResource.accnt_no = MAccount.accnt_no')
         ->join('MContract','MContract.corporate_id = MContractResource.corporate_id AND MContract.rntl_cont_no = MContractResource.rntl_cont_no')
         ->execute();
-    if (!$app->security->checkHash($params['password'], $account[0]->mAccount->pass_word)) {
+    ChromePhp::log('login通ってる2');
+    ChromePhp::log($account);
+
+    ChromePhp::log(md5($params['password']));
+    ChromePhp::log($account[0]->mAccount->pass_word);
+
+    if (md5($params['password']) != $account[0]->mAccount->pass_word) {
+            ChromePhp::log('login通ってる3');
+
+        //if (!$app->security->checkHash($params['password'], $account[0]->mAccount->pass_word)) {
         // PWが間違っている場合
         // アカウントマスタのログインエラー回数をチェックする。
         // ログインエラー回数＋１＜５の場合
@@ -68,8 +104,10 @@ $app->post('/login', function ()use($app) {
         }
         return true;
     } else {
+        ChromePhp::log('login通ってる4');
         //アカウントマスタに企業IDログインID、パスワードが一致するデータが存在する場合
         if($account[0]->mAccount->login_err_count + 1 >= 5 ){
+            ChromePhp::log('login通ってる5');
             // 当該ユーザーのアカウントマスタをログインエラー回数を＋１した値で更新し、画面に下記エラーメッセージを表示して処理を終了する。
             $account[0]->mAccount->login_err_count = $account[0]->mAccount->login_err_count + 1;
             $json_list['status'] = 2;
@@ -77,6 +115,8 @@ $app->post('/login', function ()use($app) {
             // エラーメッセージ：このアカウントはロックされています。サイト管理者にお問い合わせください。。
             echo json_encode($json_list);
         } else {
+            ChromePhp::log('login通ってる6');
+
             // ログインエラー回数が１以上、４回以下の場合
             // 更新処理：アカウントマスタのログインエラー回数を０に更新し、２－２の処理へ進む。
             $account[0]->mAccount->login_err_count = 0;
@@ -143,6 +183,7 @@ $app->post('/login', function ()use($app) {
             } else {
                 // 現在日付が、アカウント管理テーブル．パスワード最終変更時間＋９０日以上の場合
                 // パスワードの有効期限が切れている為、新しいパスワードを設定するパスワード変更画面を表示する。
+
                 $json_list['status'] = 3;
                 $app->session->set("corporate_id",$account[0]->mAccount->corporate_id);
                 $app->session->set("user_id",$account[0]->mAccount->user_id);

@@ -13,7 +13,8 @@ define([
 			ui: {
 				"lockBtn": ".lock",
 				"editBtn": ".edit",
-				"deleteBtn": ".delete"
+				"deleteBtn": ".delete",
+				"passwordEditBtn": ".password_edit"
 			},
 			onRender: function() {
 			},
@@ -35,6 +36,16 @@ define([
 					e.preventDefault();
 					this.triggerMethod('click:a', this.model, '2');
 					$(".accnt_no_group").removeClass("hidden");
+				},
+				//パスワード変更がクリックされた
+				'click @ui.passwordEditBtn': function(e){
+					e.preventDefault();
+					var accnt_no = this.ui.passwordEditBtn.val();
+					window.sessionStorage.setItem('accnt_no', accnt_no);
+					location.href = "./password.html?page=account";
+
+					return;
+					//this.triggerMethod('click:a', this.model, '4');
 				},
 			},
 			templateHelpers: {

@@ -16,7 +16,11 @@ define([
 					return;
 				});
 				loginView.listenTo(loginView, 'password', function(){
-					location.href = './password.html';
+					var corporate_id = $("#corporate_id").val();
+					var user_id = $("#login_id").val();
+					window.sessionStorage.setItem('corporate_id', corporate_id);
+					window.sessionStorage.setItem('user_id', user_id);
+					location.href = './password.html?page=login';
 					return;
 				});
 				App.main.show(loginView);

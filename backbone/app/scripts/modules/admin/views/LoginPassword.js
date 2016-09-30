@@ -35,6 +35,7 @@ define([
 
 					//this.model.set('password_c', this.ui.password_c.val());
 					var errors = this.model.validate();
+
 					if (errors){
 						this.triggerMethod('showAlerts', errors);
 						return;
@@ -50,13 +51,12 @@ define([
 					this.model.fetchMx({
 						data: cond,
 						success: function(model){
-							console.log('sccussまで来たよ');
+							console.log(model);
 							if(model.get('status') === 0){
-								alert('パスワードを変更しました。新規に設定したパスワードでログインしてください。');
-								return;//飛ばすの中止
-								that.triggerMethod('success');
+								alert('対象アカウントへのパスワード変更手続きメールの送信が完了しました。');
+								//that.triggerMethod('success');
 							} else if(model.get('status') === 1){
-								that.triggerMethod('showAlerts', ['新規パスワード入力欄、新規パスワード確認入力欄の値が不一致です。']);
+								that.triggerMethod('showAlerts', ['対象アカウントへのパスワード変更手続きメールの送信が失敗しました。']);
 								that.triggerMethod('failed');
 							} else if(model.get('status') === 2){
 								that.triggerMethod('showAlerts', ['パスワード桁数は8文字以上で入力してください。']);
@@ -65,13 +65,14 @@ define([
 								that.triggerMethod('showAlerts', ['パスワードは半角英数字、半角記号(!#$%&*+@?)3種以上混合で入力してください。']);
 								that.triggerMethod('failed');
 							} else if(model.get('status') === 4){
-								that.triggerMethod('showAlerts', ['前回と同じパスワードは使用出来ません。']);
+								that.triggerMethod('showAlerts', ['該当するアカウントが見つかりませんでした']);
 								that.triggerMethod('failed');
 							} else if(model.get('status') === 5){
-								that.triggerMethod('showAlerts', ['過去に設定したことのあるパスワードは使用出来ません。']);
+								that.triggerMethod('showAlerts', ['ログインIDは半角英数字混合、8文字以上で入力してください。']);
 								that.triggerMethod('failed');
 							}
-						}
+
+				}
 					});
 				}
 			}

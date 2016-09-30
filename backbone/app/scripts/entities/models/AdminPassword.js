@@ -15,6 +15,7 @@ define([
 				password_c: null
 			},
 			getReq: function(){
+				console.log('modelsのAdminPassword.jsのgetReq');
 				return {
 					user_id: this.get('user_id'),
 					password: this.get('password'),
@@ -31,9 +32,13 @@ define([
 				"password_c": [
 					{
 						required:true,
-						msg: "確認用パスワードを入力して下さい。"
+						msg: "確認用パスワードを入力して下さい。",
+						equalTo: 'password',
+						msg: "パスワード確認がパスワードと一致していません。",
+
 					}
-				]
+				],
+
 			}
 		});
 	});

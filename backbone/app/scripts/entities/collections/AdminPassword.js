@@ -8,6 +8,7 @@ define([
 			model: App.Entities.Models.AdminPassword,
 			url: App.api.PA0010,
 			parse:function(res, xhr){
+				console.log(res);
 			}
 		});
 	});
