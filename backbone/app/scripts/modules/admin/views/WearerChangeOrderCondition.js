@@ -42,8 +42,10 @@ define([
 				'shipment': '#shipment',
 				'post_number': '#post_number',
 				'address': '#address',
-				"reset": '.reset',
-				"search": '.search',
+				"back": '.back',
+				"delete": '.delete',
+				"complete": '.complete',
+				"orderSend": '.orderSend',
 				'datepicker': '.datepicker',
 				'timepicker': '.timepicker',
 			},
@@ -60,8 +62,9 @@ define([
 				'#shipment': 'shipment',
 				'#post_number': 'post_number',
 				'#address': 'address',
-				"#reset": 'reset',
-				'#search': 'search',
+				"#delete": 'delete',
+				"#complete": 'complete',
+				"#orderSend": 'orderSend',
 				'#datepicker': 'datepicker',
 				'#timepicker': 'timepicker',
 			},
@@ -119,46 +122,36 @@ define([
 				return res_list;
 			},
 			events: {
-/*
-				'click @ui.search': function(e){
-					e.preventDefault();
-					this.triggerMethod('hideAlerts');
-					var agreement_no = $("select[name='agreement_no']").val();
-					this.model.set('agreement_no', agreement_no);
-					var reason_kbn = $("select[name='reason_kbn']").val();
-					this.model.set('reason_kbn', reason_kbn);
-					var sex_kbn = $("select[name='sex_kbn']").val();
-					this.model.set('sex_kbn', sex_kbn);
-					this.model.set('member_no', this.ui.member_no.val());
-					this.model.set('member_name', this.ui.member_name.val());
-					this.model.set('wearer_name_src1', this.ui.wearer_name_src1.prop('checked'));
-					this.model.set('wearer_name_src2', this.ui.wearer_name_src2.prop('checked'));
-					this.model.set('appointment_ymd', this.ui.appointment_ymd.val());
-					var section = $("select[name='section']").val();
-					this.model.set('section', section);
-					var job_type = $("select[name='job_type']").val();
-					this.model.set('job_type', job_type);
-					var shipment = $("select[name='shipment']").val();
-					this.model.set('shipment', shipment);
-					this.model.set('search', this.ui.search.val());
-					var errors = this.model.validate();
-					if(errors) {
-						this.triggerMethod('showAlerts', errors);
-						return;
-					}
-					this.triggerMethod('click:search','order_req_no','asc');
-
+				// 「戻る」ボタン
+				'click @ui.back': function(){
+						location.href="wearer_change.html";
 				},
-*/
-				// 契約No
-				'change @ui.agreement_no': function(){
-					this.ui.agreement_no = $('#agreement_no');
+				// 「発注取消」ボタン
+				'click @ui.delete': function(){
+					var that = this;
 
+					var modelForUpdate = this.model;
+					modelForUpdate.url = App.api.CM0130;
+					var cond = {
+						"scr": '更新可否チェック',
+					};
+					modelForUpdate.fetchMx({
+						data:cond,
+						success:function(res){
+							var type = "cm0130_res";
+							var res_val = res.attributes;
+							that.onShow(res_val, type);
+						}
+					});
 				},
-				// 拠点
-				'change @ui.section': function(){
-					this.ui.section = $('#section');
-
+				// 「入力完了」ボタン
+				'click @ui.complete': function(){
+						alert('発注入力が完了しました。');
+				},
+				// 「発注送信」ボタン
+				'click @ui.orderSend': function(){
+					alert('発注送信が完了しました。');
+					location.href="wearer_change.html";
 				},
 				// 貸与パターン
 				'change @ui.job_type': function(){
@@ -168,8 +161,6 @@ define([
 					var before_vals = window.sessionStorage.getItem("job_type_sec");
 					// 選択後のvalue値
 					var after_vals = $("select[name='job_type']").val();
-					//console.log(before_vals);
-					//console.log(after_vals);
 					var val = after_vals.split(':');
 					var job_type = val[0];
 					var sp_job_type_flg = val[1];
@@ -205,6 +196,46 @@ define([
 					//shipmentConditionChangeView.onShow();
 					this.shipment.show(shipmentConditionChangeView);
 				},
+			},
+			onShow: function(val, type) {
+				var that = this;
+
+				// 更新可否チェック結果処理
+				if (type == "cm0130_res") {
+					if (!val["chk_flg"]) {
+						// 更新可否フラグ=更新不可の場合はアラートメッセージ表示
+						alert(val["error_msg"]);
+					} else {
+						// 発注取消処理へ移行
+						var type = "WC0020_req";
+						var res_val = "";
+					}
+				}
+				// 発注取消処理
+				if (type == "WC0020_req") {
+					var msg = "削除しますが、よろしいですか？";
+					if (window.confirm(msg)) {
+						var modelForUpdate = this.model;
+						modelForUpdate.url = App.api.WC0020;
+						var cond = {
+							"scr": '発注取消',
+						};
+						modelForUpdate.fetchMx({
+							data:cond,
+							success:function(res){
+								var type = "WC0020_res";
+								var res_val = res.attributes;
+
+								if (res_val["error_code"] == "0") {
+									alert('発注取消が完了しました。');
+			//						location.href="wearer_change.html";
+								} else {
+									alert('発注取消中にエラーが発生しました。');
+								}
+							}
+						});
+					}
+				}
 			},
 		});
 	});

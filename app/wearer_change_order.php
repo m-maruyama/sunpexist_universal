@@ -1560,8 +1560,202 @@ $app->post('/wearer_info', function ()use($app){
    // 貸与中アイテム一覧の「対象」、「個体管理番号」列の表示/非表示の制御フラグ
    $json_list["individual_flg"] = $auth['individual_flg'];
 
-
    echo json_encode($json_list);
-   ChromePhp::LOG('JSON_LIST');
-   ChromePhp::LOG($json_list);
+   //ChromePhp::LOG('JSON_LIST');
+   //ChromePhp::LOG($json_list);
+});
+
+/**
+ * 発注入力（職種変更または異動）
+ * 発注取消処理
+ */
+$app->post('/wearer_change_delete', function ()use($app){
+  $params = json_decode(file_get_contents("php://input"), true);
+
+  // アカウントセッション取得
+  $auth = $app->session->get("auth");
+  //ChromePhp::LOG($auth);
+  // 前画面セッション取得
+  $wearer_chg_post = $app->session->get("wearer_chg_post");
+  //ChromePhp::LOG($wearer_chg_post);
+  // フロントパラメータ取得
+  //$cond = $params['data'];
+  //ChromePhp::LOG("フロント側パラメータ");
+  //ChromePhp::LOG($cond);
+
+  $json_list = array();
+  // DB更新エラーコード 0:正常 1:更新エラー
+  $json_list["error_code"] = "0";
+
+//  $transaction = $app->transactionManager->get();
+
+  try {
+    //--着用者商品マスタトラン削除--//
+    $query_list = array();
+    array_push($query_list, "m_wearer_item_tran.corporate_id = '".$auth['corporate_id']."'");
+    array_push($query_list, "t_order_tran.order_req_no = '".$wearer_chg_post['order_req_no']."'");
+    // 発注区分「終了」
+    array_push($query_list, "t_order_tran.order_sts_kbn = '2'");
+    $query = implode(' AND ', $query_list);
+
+    $arg_str = "";
+    $arg_str = "DELETE FROM ";
+    $arg_str .= "m_wearer_item_tran";
+    $arg_str .= " USING ";
+    $arg_str .= "t_order_tran";
+    $arg_str .= " WHERE ";
+    $arg_str .= "m_wearer_item_tran.werer_cd = t_order_tran.werer_cd";
+    $arg_str .= " AND m_wearer_item_tran.rntl_cont_no = t_order_tran.rntl_cont_no";
+    $arg_str .= " AND m_wearer_item_tran.rntl_sect_cd = t_order_tran.rntl_sect_cd";
+    $arg_str .= " AND m_wearer_item_tran.job_type_cd = t_order_tran.job_type_cd";
+    $arg_str .= " AND m_wearer_item_tran.job_type_item_cd = t_order_tran.job_type_item_cd";
+    $arg_str .= " AND m_wearer_item_tran.item_cd = t_order_tran.item_cd";
+    $arg_str .= " AND m_wearer_item_tran.color_cd = t_order_tran.color_cd";
+    $arg_str .= " AND m_wearer_item_tran.size_cd = t_order_tran.size_cd";
+    $arg_str .= " AND m_wearer_item_tran.size_two_cd = t_order_tran.size_two_cd";
+    $arg_str .= " AND ";
+    $arg_str .= $query;
+
+    $m_wearer_item_tran = new MWearerItemTran();
+    $results = new Resultset(null, $m_wearer_item_tran, $m_wearer_item_tran->getReadConnection()->query($arg_str));
+    $result_obj = (array)$results;
+    $results_cnt = $result_obj["\0*\0_count"];
+    ChromePhp::LOG("着用者商品マスタトラン削除件数");
+    ChromePhp::LOG($results_cnt);
+
+    //--着用者基本マスタトラン削除--//
+    // 発注情報トランを参照
+    $query_list = array();
+    array_push($query_list, "t_order_tran.corporate_id = '".$auth['corporate_id']."'");
+    array_push($query_list, "t_order_tran.order_req_no <> '".$wearer_chg_post['order_req_no']."'");
+    array_push($query_list, "t_order_tran.werer_cd = '".$wearer_chg_post['werer_cd']."'");
+    $query = implode(' AND ', $query_list);
+
+    $arg_str = "";
+    $arg_str = "SELECT ";
+    $arg_str .= "*";
+    $arg_str .= " FROM ";
+    $arg_str .= "t_order_tran";
+    $arg_str .= " WHERE ";
+    $arg_str .= $query;
+
+    $t_order_tran = new TOrderTran();
+    $results = new Resultset(null, $t_order_tran, $t_order_tran->getReadConnection()->query($arg_str));
+    $result_obj = (array)$results;
+    $results_cnt = $result_obj["\0*\0_count"];
+
+    // 上記発注情報トラン件数が0の場合に着用者基本マスタトランのデータを削除する
+    if (empty($results_cnt)) {
+      $query_list = array();
+      array_push($query_list, "m_wearer_std.corporate_id = '".$auth['corporate_id']."'");
+      array_push($query_list, "m_wearer_std.werer_cd = '".$wearer_chg_post['werer_cd']."'");
+      array_push($query_list, "m_wearer_std.rntl_cont_no = '".$wearer_chg_post['rntl_cont_no']."'");
+      array_push($query_list, "m_wearer_std.rntl_sect_cd = '".$wearer_chg_post['rntl_sect_cd']."'");
+      array_push($query_list, "m_wearer_std.job_type_cd = '".$wearer_chg_post['job_type_cd']."'");
+      // 発注区分「着用者編集」ではない
+      array_push($query_list, "t_order_tran.order_sts_kbn <> '6'");
+      $query = implode(' AND ', $query_list);
+
+      $arg_str = "";
+      $arg_str = "DELETE FROM ";
+      $arg_str .= "m_wearer_std";
+      $arg_str .= " WHERE ";
+      $arg_str .= $query;
+
+      $m_wearer_item_tran = new MWearerItemTran();
+      $results = new Resultset(null, $m_wearer_item_tran, $m_wearer_item_tran->getReadConnection()->query($arg_str));
+      $result_obj = (array)$results;
+      $results_cnt = $result_obj["\0*\0_count"];
+      ChromePhp::LOG("着用者基本マスタトラン削除件数");
+      ChromePhp::LOG($results_cnt);
+    }
+    //--発注情報トラン削除--//
+    $query_list = array();
+    array_push($query_list, "t_order_tran.corporate_id = '".$auth['corporate_id']."'");
+    array_push($query_list, "t_order_tran.order_req_no = '".$wearer_chg_post['order_req_no']."'");
+    // 発注区分「貸与」
+    array_push($query_list, "t_order_tran.order_sts_kbn = '1'");
+    // 理由区分「職種変更または異動」系ステータス
+    $reason_kbn = array();
+    array_push($reason_kbn, '4');
+    array_push($reason_kbn, '8');
+    array_push($reason_kbn, '9');
+    array_push($reason_kbn, '10');
+    array_push($reason_kbn, '11');
+    if(!empty($reason_kbn)) {
+      $reason_kbn_str = implode("','",$reason_kbn);
+      $reason_kbn_query = "t_order_tran.order_reason_kbn IN ('".$reason_kbn_str."')";
+      array_push($query_list, $reason_kbn_query);
+    }
+    $query = implode(' AND ', $query_list);
+
+    $arg_str = "";
+    $arg_str = "DELETE FROM ";
+    $arg_str .= "t_order_tran";
+    $arg_str .= " WHERE ";
+    $arg_str .= $query;
+
+    $t_order_tran = new TOrderTran();
+    $results = new Resultset(null, $t_order_tran, $t_order_tran->getReadConnection()->query($arg_str));
+    $result_obj = (array)$results;
+    $results_cnt = $result_obj["\0*\0_count"];
+    ChromePhp::LOG("発注情報トラン削除件数");
+    ChromePhp::LOG($results_cnt);
+
+//    $transaction->commit();
+  } catch (Exception $e) {
+//    $transaction->rollback();
+
+    $json_list["error_code"] = "1";
+    echo json_encode($json_list);
+    return;
+  }
+
+  echo json_encode($json_list);
+});
+
+/**
+ * 発注入力（職種変更または異動）
+ * 入力完了処理
+ */
+$app->post('/wearer_change_complete', function ()use($app){
+   $params = json_decode(file_get_contents("php://input"), true);
+
+   // アカウントセッション取得
+   $auth = $app->session->get("auth");
+   //ChromePhp::LOG($auth);
+
+   // 前画面セッション取得
+   $wearer_chg_post = $app->session->get("wearer_chg_post");
+   //ChromePhp::LOG($wearer_chg_post);
+
+   // フロントパラメータ取得
+   //$cond = $params['data'];
+   //ChromePhp::LOG("フロント側パラメータ");
+   //ChromePhp::LOG($cond);
+
+   $json_list = array();
+});
+
+/**
+ * 発注入力（職種変更または異動）
+ * 発注送信処理
+ */
+ $app->post('/wearer_change_send', function ()use($app){
+   $params = json_decode(file_get_contents("php://input"), true);
+
+   // アカウントセッション取得
+   $auth = $app->session->get("auth");
+   //ChromePhp::LOG($auth);
+
+   // 前画面セッション取得
+   $wearer_chg_post = $app->session->get("wearer_chg_post");
+   //ChromePhp::LOG($wearer_chg_post);
+
+   // フロントパラメータ取得
+   $cond = $params['data'];
+   //ChromePhp::LOG("フロント側パラメータ");
+   //ChromePhp::LOG($cond);
+
+   $json_list = array();
 });

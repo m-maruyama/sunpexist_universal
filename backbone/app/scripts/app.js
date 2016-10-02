@@ -118,13 +118,14 @@ define([
 			"CM0060": host + "/agreement_no",
 			"CM0061": host + "/agreement_no_input",
 			"CM0063": host + "/corporate_id",
-			"CM0064": host + "/corporate_id_all",//全て選択肢あり
+			"CM0064": host + "/corporate_id_all",
 			"CM0070": host + "/input_item",
 			"CM0080": host + "/item_color",
 			"CM0090": host + "/section_modal",
 			"CM0100": host + "/individual_num",
 			"CM0110": host + "/sex_kbn",
 			"CM0120": host + "/reason_kbn",
+			"CM0130": host + "/update_possible_chk",
 			"IM0010": host + "/import_csv",
 			"IM0020": host + "/csv",
 			"DL0010": host + "/csv_download",
@@ -176,6 +177,9 @@ define([
 			"WC0017": host + "/shipment_change",
 			"WC0018": host + "/wearer_info",
 			"WC0019": host + "/wearer_change_list",
+			"WC0020": host + "/wearer_change_delete",
+			"WC0021": host + "/wearer_change_complete",
+			"WC0022": host + "/wearer_change_send",
 			"WS0010": host + "/wearer_search/search",
 			"CM9010": host + "/api/CM9010"
 		};
