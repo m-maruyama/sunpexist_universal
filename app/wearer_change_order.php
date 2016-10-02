@@ -1587,10 +1587,12 @@ $app->post('/wearer_change_delete', function ()use($app){
   // DB更新エラーコード 0:正常 1:更新エラー
   $json_list["error_code"] = "0";
 
+  // トランザクション開始
 //  $transaction = $app->transactionManager->get();
 
   try {
     //--着用者商品マスタトラン削除--//
+    ChromePhp::LOG("着用者商品マスタトラン削除");
     $query_list = array();
     array_push($query_list, "m_wearer_item_tran.corporate_id = '".$auth['corporate_id']."'");
     array_push($query_list, "t_order_tran.order_req_no = '".$wearer_chg_post['order_req_no']."'");
@@ -1615,16 +1617,17 @@ $app->post('/wearer_change_delete', function ()use($app){
     $arg_str .= " AND m_wearer_item_tran.size_two_cd = t_order_tran.size_two_cd";
     $arg_str .= " AND ";
     $arg_str .= $query;
+    //ChromePhp::LOG($arg_str);
 
     $m_wearer_item_tran = new MWearerItemTran();
     $results = new Resultset(null, $m_wearer_item_tran, $m_wearer_item_tran->getReadConnection()->query($arg_str));
     $result_obj = (array)$results;
     $results_cnt = $result_obj["\0*\0_count"];
-    ChromePhp::LOG("着用者商品マスタトラン削除件数");
-    ChromePhp::LOG($results_cnt);
+    //ChromePhp::LOG($results_cnt);
 
     //--着用者基本マスタトラン削除--//
     // 発注情報トランを参照
+    //ChromePhp::LOG("発注情報トラン参照");
     $query_list = array();
     array_push($query_list, "t_order_tran.corporate_id = '".$auth['corporate_id']."'");
     array_push($query_list, "t_order_tran.order_req_no <> '".$wearer_chg_post['order_req_no']."'");
@@ -1638,38 +1641,43 @@ $app->post('/wearer_change_delete', function ()use($app){
     $arg_str .= "t_order_tran";
     $arg_str .= " WHERE ";
     $arg_str .= $query;
+    //ChromePhp::LOG($arg_str);
 
     $t_order_tran = new TOrderTran();
     $results = new Resultset(null, $t_order_tran, $t_order_tran->getReadConnection()->query($arg_str));
     $result_obj = (array)$results;
     $results_cnt = $result_obj["\0*\0_count"];
+    //ChromePhp::LOG($results_cnt);
 
     // 上記発注情報トラン件数が0の場合に着用者基本マスタトランのデータを削除する
     if (empty($results_cnt)) {
+      //ChromePhp::LOG("着用者基本マスタトラン削除");
       $query_list = array();
-      array_push($query_list, "m_wearer_std.corporate_id = '".$auth['corporate_id']."'");
-      array_push($query_list, "m_wearer_std.werer_cd = '".$wearer_chg_post['werer_cd']."'");
-      array_push($query_list, "m_wearer_std.rntl_cont_no = '".$wearer_chg_post['rntl_cont_no']."'");
-      array_push($query_list, "m_wearer_std.rntl_sect_cd = '".$wearer_chg_post['rntl_sect_cd']."'");
-      array_push($query_list, "m_wearer_std.job_type_cd = '".$wearer_chg_post['job_type_cd']."'");
+      array_push($query_list, "m_wearer_std_tran.corporate_id = '".$auth['corporate_id']."'");
+      array_push($query_list, "m_wearer_std_tran.werer_cd = '".$wearer_chg_post['werer_cd']."'");
+      array_push($query_list, "m_wearer_std_tran.rntl_cont_no = '".$wearer_chg_post['rntl_cont_no']."'");
+      array_push($query_list, "m_wearer_std_tran.rntl_sect_cd = '".$wearer_chg_post['rntl_sect_cd']."'");
+      array_push($query_list, "m_wearer_std_tran.job_type_cd = '".$wearer_chg_post['job_type_cd']."'");
       // 発注区分「着用者編集」ではない
-      array_push($query_list, "t_order_tran.order_sts_kbn <> '6'");
+      array_push($query_list, "m_wearer_std_tran.order_sts_kbn <> '6'");
       $query = implode(' AND ', $query_list);
 
       $arg_str = "";
       $arg_str = "DELETE FROM ";
-      $arg_str .= "m_wearer_std";
+      $arg_str .= "m_wearer_std_tran";
       $arg_str .= " WHERE ";
       $arg_str .= $query;
+      //ChromePhp::LOG($arg_str);
 
-      $m_wearer_item_tran = new MWearerItemTran();
-      $results = new Resultset(null, $m_wearer_item_tran, $m_wearer_item_tran->getReadConnection()->query($arg_str));
+      $m_wearer_std_tran = new MWearerStdTran();
+      $results = new Resultset(null, $m_wearer_std_tran, $m_wearer_std_tran->getReadConnection()->query($arg_str));
       $result_obj = (array)$results;
       $results_cnt = $result_obj["\0*\0_count"];
-      ChromePhp::LOG("着用者基本マスタトラン削除件数");
-      ChromePhp::LOG($results_cnt);
+      //ChromePhp::LOG($results_cnt);
     }
+
     //--発注情報トラン削除--//
+    //ChromePhp::LOG("発注情報トラン削除");
     $query_list = array();
     array_push($query_list, "t_order_tran.corporate_id = '".$auth['corporate_id']."'");
     array_push($query_list, "t_order_tran.order_req_no = '".$wearer_chg_post['order_req_no']."'");
@@ -1694,13 +1702,13 @@ $app->post('/wearer_change_delete', function ()use($app){
     $arg_str .= "t_order_tran";
     $arg_str .= " WHERE ";
     $arg_str .= $query;
+    //ChromePhp::LOG($arg_str);
 
     $t_order_tran = new TOrderTran();
     $results = new Resultset(null, $t_order_tran, $t_order_tran->getReadConnection()->query($arg_str));
     $result_obj = (array)$results;
     $results_cnt = $result_obj["\0*\0_count"];
-    ChromePhp::LOG("発注情報トラン削除件数");
-    ChromePhp::LOG($results_cnt);
+    //ChromePhp::LOG($results_cnt);
 
 //    $transaction->commit();
   } catch (Exception $e) {
@@ -1708,9 +1716,14 @@ $app->post('/wearer_change_delete', function ()use($app){
 
     $json_list["error_code"] = "1";
     echo json_encode($json_list);
+    //ChromePhp::LOG("発注取消処理コード");
+    //ChromePhp::LOG($json_list["error_code"]);
+
     return;
   }
 
+  //ChromePhp::LOG("発注取消処理コード");
+  //ChromePhp::LOG($json_list["error_code"]);
   echo json_encode($json_list);
 });
 
@@ -1735,6 +1748,11 @@ $app->post('/wearer_change_complete', function ()use($app){
    //ChromePhp::LOG($cond);
 
    $json_list = array();
+
+   // DB更新エラーコード 0:正常 その他:要因エラー
+   $json_list["error_code"] = "0";
+
+   echo json_encode($json_list);
 });
 
 /**
@@ -1753,9 +1771,14 @@ $app->post('/wearer_change_complete', function ()use($app){
    //ChromePhp::LOG($wearer_chg_post);
 
    // フロントパラメータ取得
-   $cond = $params['data'];
+   //$cond = $params['data'];
    //ChromePhp::LOG("フロント側パラメータ");
    //ChromePhp::LOG($cond);
 
    $json_list = array();
+
+   // DB更新エラーコード 0:正常 その他:要因エラー
+   $json_list["error_code"] = "0";
+
+   echo json_encode($json_list);
 });

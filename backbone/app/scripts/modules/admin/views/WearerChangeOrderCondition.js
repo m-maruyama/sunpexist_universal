@@ -124,7 +124,8 @@ define([
 			events: {
 				// 「戻る」ボタン
 				'click @ui.back': function(){
-						location.href="wearer_change.html";
+					// 検索一覧画面へ遷移
+					location.href="wearer_change.html";
 				},
 				// 「発注取消」ボタン
 				'click @ui.delete': function(){
@@ -138,20 +139,50 @@ define([
 					modelForUpdate.fetchMx({
 						data:cond,
 						success:function(res){
-							var type = "cm0130_res";
 							var res_val = res.attributes;
-							that.onShow(res_val, type);
+							var type = "cm0130_res";
+							var transition = "WC0020_req";
+							that.onShow(res_val, type, transition);
 						}
 					});
 				},
 				// 「入力完了」ボタン
 				'click @ui.complete': function(){
-						alert('発注入力が完了しました。');
+					var that = this;
+
+					var modelForUpdate = this.model;
+					modelForUpdate.url = App.api.CM0130;
+					var cond = {
+						"scr": '更新可否チェック',
+					};
+					modelForUpdate.fetchMx({
+						data:cond,
+						success:function(res){
+							var type = "cm0130_res";
+							var res_val = res.attributes;
+							var transition = "WC0021_req";
+							that.onShow(res_val, type, transition);
+						}
+					});
 				},
 				// 「発注送信」ボタン
 				'click @ui.orderSend': function(){
-					alert('発注送信が完了しました。');
-					location.href="wearer_change.html";
+					var that = this;
+
+					var modelForUpdate = this.model;
+					modelForUpdate.url = App.api.CM0130;
+					var cond = {
+						"scr": '更新可否チェック',
+					};
+					modelForUpdate.fetchMx({
+						data:cond,
+						success:function(res){
+							var type = "cm0130_res";
+							var res_val = res.attributes;
+							var transition = "WC0022_req";
+							that.onShow(res_val, type, transition);
+						}
+					});
 				},
 				// 貸与パターン
 				'change @ui.job_type': function(){
@@ -197,7 +228,7 @@ define([
 					this.shipment.show(shipmentConditionChangeView);
 				},
 			},
-			onShow: function(val, type) {
+			onShow: function(val, type, transition) {
 				var that = this;
 
 				// 更新可否チェック結果処理
@@ -206,9 +237,20 @@ define([
 						// 更新可否フラグ=更新不可の場合はアラートメッセージ表示
 						alert(val["error_msg"]);
 					} else {
-						// 発注取消処理へ移行
-						var type = "WC0020_req";
-						var res_val = "";
+						// エラーがない場合は各対応処理へ移行
+						if (transition == "WC0020_req") {
+							// 発注取消処理
+							var type = transition;
+							var res_val = "";
+						} else if (transition == "WC0021_req") {
+							// 入力完了処理
+							var type = transition;
+							var res_val = "";
+						} else if (transition == "WC0022_req") {
+							// 発注送信処理
+							var type = transition;
+							var res_val = "";
+						}
 					}
 				}
 				// 発注取消処理
@@ -227,14 +269,59 @@ define([
 								var res_val = res.attributes;
 
 								if (res_val["error_code"] == "0") {
+									// 発注取消完了後、検索一覧へ遷移
 									alert('発注取消が完了しました。');
-			//						location.href="wearer_change.html";
+									location.href="wearer_change.html";
 								} else {
-									alert('発注取消中にエラーが発生しました。');
+									alert('発注取消中にエラーが発生しました');
 								}
 							}
 						});
 					}
+				}
+				// 入力完了処理
+				if (type == "WC0021_req") {
+						var modelForUpdate = this.model;
+						modelForUpdate.url = App.api.WC0021;
+						var cond = {
+							"scr": '入力完了',
+						};
+						modelForUpdate.fetchMx({
+							data:cond,
+							success:function(res){
+								var type = "WC0021_res";
+								var res_val = res.attributes;
+
+								if (res_val["error_code"] == "0") {
+									var msg = "入力を完了しますが、よろしいですか？";
+									if (window.confirm(msg)) {
+										that.triggerMethod('inputComplete');
+									}
+								}
+							}
+						});
+				}
+				// 発注送信処理
+				if (type == "WC0022_req") {
+					var modelForUpdate = this.model;
+					modelForUpdate.url = App.api.WC0022;
+					var cond = {
+						"scr": '発注送信',
+					};
+					modelForUpdate.fetchMx({
+						data:cond,
+						success:function(res){
+							var type = "WC0022_res";
+							var res_val = res.attributes;
+
+							if (res_val["error_code"] == "0") {
+								var msg = "発注送信を行いますが、よろしいですか？";
+								if (window.confirm(msg)) {
+									that.triggerMethod('sendComplete');
+								}
+							}
+						}
+					});
 				}
 			},
 		});

@@ -4,6 +4,8 @@ define([
 	'../views/WearerChangeOrder',
 	'../views/WearerChangeOrderCondition',
 	'../views/WearerChangeOrderListList',
+	'../views/WearerChangeOrderComplete',
+	'../views/WearerChangeOrderSendComplete',
 	'../views/AgreementNoConditionChange',
 	'../views/ReasonKbnConditionChange',
 	'../views/SexKbnConditionChange',
@@ -100,26 +102,32 @@ define([
 					sectionModalView.ui.modal.modal('hide');
 				});
 				//拠点絞り込み--ここまで
-
-				//着用者のみ登録して終了
-				this.listenTo(wearerChangeOrderView, 'click:input_insert', function(agreement_no){
-					var errors = wearerChangeOrderConditionView.insert_wearer(agreement_no);
-					if(errors){
-						wearerChangeOrderView.triggerMethod('showAlerts', errors);
-					}
-				});
-
 				this.listenTo(paginationView, 'selected', function(pageNumber){
 						fetchList_section(pageNumber);
 				});
 
 				//貸与パターンセレクト変更時動作
 				this.listenTo(wearerChangeOrderConditionView, 'change:job_type', function(job_type){
-					//console.log(job_type);
 					var wearerChangeOrderListListView2 = new App.Admin.Views.WearerChangeOrderListList({
 						job_type:job_type,
 					});
 					wearerChangeOrderView.listTable.show(wearerChangeOrderListListView2);
+				});
+				// 入力完了
+				this.listenTo(wearerChangeOrderConditionView, 'inputComplete', function(){
+					wearerChangeOrderView.condition.reset();
+					wearerChangeOrderView.listTable.reset();
+
+					var wearerChangeOrderComplete = new App.Admin.Views.WearerChangeOrderComplete();
+					wearerChangeOrderView.complete.show(wearerChangeOrderComplete);
+				});
+				// 発注送信完了
+				this.listenTo(wearerChangeOrderConditionView, 'sendComplete', function(){
+					wearerChangeOrderView.condition.reset();
+					wearerChangeOrderView.listTable.reset();
+
+					var wearerChangeOrderSendComplete = new App.Admin.Views.WearerChangeOrderSendComplete();
+					wearerChangeOrderView.complete.show(wearerChangeOrderSendComplete);
 				});
 
 				App.main.show(wearerChangeOrderView);

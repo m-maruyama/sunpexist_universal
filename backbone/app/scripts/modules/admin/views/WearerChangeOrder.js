@@ -11,6 +11,7 @@ define([
 			regions: {
 				"condition": ".condition",
 				"listTable": ".listTable",
+				"complete": ".complete",
 				"sectionModal": ".section_modal",
 				"sectionModal_2": ".section_modal_2",
 			},
