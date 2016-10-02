@@ -65,13 +65,14 @@ $app->post('/wearer_change/search', function ()use($app){
     $arg_str .= "m_wearer_std.cster_emply_cd as as_cster_emply_cd,";
     $arg_str .= "m_wearer_std.werer_name as as_werer_name,";
     $arg_str .= "m_wearer_std.sex_kbn as as_sex_kbn,";
+    $arg_str .= "m_wearer_std.snd_kbn as as_wearer_snd_kbn,";
     $arg_str .= "m_wearer_std.ship_to_cd as as_ship_to_cd,";
     $arg_str .= "m_wearer_std.ship_to_brnch_cd as as_ship_to_brnch_cd,";
     $arg_str .= "wst.rntl_sect_name as wst_rntl_sect_name,";
     $arg_str .= "wjt.job_type_name as wjt_job_type_name,";
     $arg_str .= "t_order_tran.order_req_no as as_order_req_no,";
     $arg_str .= "t_order_tran.order_sts_kbn as as_order_sts_kbn,";
-//    $arg_str .= "t_order_tran.snd_kbn as as_snd_kbn,";
+    $arg_str .= "t_order_tran.snd_kbn as as_order_snd_kbn,";
     $arg_str .= "t_order_tran.order_reason_kbn as as_order_reason_kbn,";
     $arg_str .= "t_order_tran.upd_date as as_order_upd_date";
     $arg_str .= " FROM ";
@@ -90,6 +91,7 @@ $app->post('/wearer_change/search', function ()use($app){
     $results = new Resultset(null, $m_weare_std, $m_weare_std->getReadConnection()->query($arg_str));
     $result_obj = (array)$results;
     $results_cnt = $result_obj["\0*\0_count"];
+    //ChromePhp::LOG("着用者基本マスタ件数");
     //ChromePhp::LOG($results_cnt);
 
     $paginator_model = new PaginatorModel(
@@ -107,6 +109,7 @@ $app->post('/wearer_change/search', function ()use($app){
     if(!empty($results_cnt)){
         $paginator = $paginator_model->getPaginate();
         $results = $paginator->items;
+        //ChromePhp::LOG("着用者基本マスタリスト");
         //ChromePhp::LOG($results);
 
         foreach($results as $result) {
@@ -118,7 +121,6 @@ $app->post('/wearer_change/search', function ()use($app){
           array_push($query_list, "m_wearer_std_tran.rntl_cont_no = '".$result->as_rntl_cont_no."'");
           // 着用者コード
           array_push($query_list,"m_wearer_std_tran.werer_cd = '".$result->as_werer_cd."'");
-
           $query = implode(' AND ', $query_list);
 
           $arg_str = "";
@@ -131,14 +133,14 @@ $app->post('/wearer_change/search', function ()use($app){
           $arg_str .= "m_wearer_std_tran.cster_emply_cd as as_cster_emply_cd,";
           $arg_str .= "m_wearer_std_tran.werer_name as as_werer_name,";
           $arg_str .= "m_wearer_std_tran.sex_kbn as as_sex_kbn,";
-          $arg_str .= "m_wearer_std_tran.snd_kbn as as_snd_kbn,";
+          $arg_str .= "m_wearer_std_tran.snd_kbn as as_wearer_snd_kbn,";
           $arg_str .= "m_wearer_std_tran.ship_to_cd as as_ship_to_cd,";
           $arg_str .= "m_wearer_std_tran.ship_to_brnch_cd as as_ship_to_brnch_cd,";
           $arg_str .= "wst.rntl_sect_name as wst_rntl_sect_name,";
           $arg_str .= "wjt.job_type_name as wjt_job_type_name,";
           $arg_str .= "t_order_tran.order_req_no as as_order_req_no,";
           $arg_str .= "t_order_tran.order_sts_kbn as as_order_sts_kbn,";
-//          $arg_str .= "t_order_tran.snd_kbn as as_snd_kbn,";
+          $arg_str .= "t_order_tran.snd_kbn as as_order_snd_kbn,";
           $arg_str .= "t_order_tran.order_reason_kbn as as_order_reason_kbn";
           $arg_str .= " FROM ";
           $arg_str .= "(m_wearer_std_tran INNER JOIN m_section as wst ON m_wearer_std_tran.m_section_comb_hkey = wst.m_section_comb_hkey";
@@ -158,6 +160,9 @@ $app->post('/wearer_change/search', function ()use($app){
 
           // 着用者基本マスタトラン情報に重複データがある場合、優先させて着用者基本マスタ情報リストを上書きする
           if (!empty($tran_results_cnt)) {
+            // 着用者マスタトラン有フラグ
+            $list['wearer_tran_flg'] = '1';
+
             $paginator_model = new PaginatorModel(
                 array(
                     "data"  => $tran_results,
@@ -167,6 +172,8 @@ $app->post('/wearer_change/search', function ()use($app){
             );
             $paginator = $paginator_model->getPaginate();
             $tran_results = $paginator->items;
+            //ChromePhp::LOG("着用者基本マスタトラン重複情報");
+            //ChromePhp::LOG($tran_results);
 
             foreach($tran_results as $tran_result) {
               $result->as_rntl_cont_no = $tran_result->as_rntl_cont_no;
@@ -176,17 +183,19 @@ $app->post('/wearer_change/search', function ()use($app){
               $result->as_cster_emply_cd = $tran_result->as_cster_emply_cd;
               $result->as_werer_name = $tran_result->as_werer_name;
               $result->as_sex_kbn = $tran_result->as_sex_kbn;
-              $result->as_snd_kbn = $tran_result->as_snd_kbn;
+              $result->as_wearer_snd_kbn = $tran_result->as_wearer_snd_kbn;
               $result->as_ship_to_cd = $tran_result->as_ship_to_cd;
               $result->as_ship_to_brnch_cd = $tran_result->as_ship_to_brnch_cd;
               $result->wst_rntl_sect_name = $tran_result->wst_rntl_sect_name;
               $result->wjt_job_type_name = $tran_result->wjt_job_type_name;
               $result->as_order_req_no = $tran_result->as_order_req_no;
               $result->as_order_sts_kbn = $tran_result->as_order_sts_kbn;
-//              $result->as_snd_kbn = $tran_result->as_snd_kbn;
+              $result->as_order_snd_kbn = $tran_result->as_order_snd_kbn;
               $result->as_order_reason_kbn = $tran_result->as_order_reason_kbn;
             }
           }
+          //ChromePhp::LOG("チェック後の着用者リスト情報");
+          //ChromePhp::LOG($result);
 
           // レンタル契約No
           $list['rntl_cont_no'] = $result->as_rntl_cont_no;
@@ -248,19 +257,16 @@ $app->post('/wearer_change/search', function ()use($app){
           }
           // 状態、着用者マスタトラン有無フラグ
           $list['snd_kbn'] = "-";
-          if (isset($result->as_snd_kbn)) {
+          if (!empty($list['wearer_tran_flg'])) {
             // 状態
-            if($result->as_snd_kbn == '0'){
+            if($result->as_wearer_snd_kbn == '0'){
                 $list['snd_kbn'] = "未送信";
-            }elseif($result->as_snd_kbn == '1'){
+            }elseif($result->as_wearer_snd_kbn == '1'){
                 $list['snd_kbn'] = "送信済";
-            }elseif($result->as_snd_kbn == '9'){
+            }elseif($result->as_wearer_snd_kbn == '9'){
                 $list['snd_kbn'] = "処理中";
             }
-            // 着用者マスタトラン有
-            $list['wearer_tran_flg'] = '1';
           } else {
-            $result->as_snd_kbn = '';
             // 着用者マスタトラン無
             $list['wearer_tran_flg'] = '0';
           }
@@ -288,19 +294,22 @@ $app->post('/wearer_change/search', function ()use($app){
             //パターンA： 発注情報トラン．発注状況区分 = 貸与 かつ、発注情報トラン．理由区分 = 職種変更または異動のデータが無い場合、
             //ボタンの文言は「職種変更または異動」で表示する。
             $list['wearer_change_button'] = '職種変更または異動';
+            $list['wearer_change_red'] = "";
+            $list['disabled'] = "";
           } elseif (
             $result->as_order_sts_kbn == '1'
             && ($result->as_order_reason_kbn == '4' || $result->as_order_reason_kbn == '8' || $result->as_order_reason_kbn == '9' || $result->as_order_reason_kbn == '11')
-            && $result->as_snd_kbn == '0')
+            && $result->as_order_snd_kbn == '0')
           {
             //パターンB： 発注情報トラン．発注状況区分 = 貸与 かつ、発注情報トラン．理由区分 = 職種変更または異動のデータがある場合、かつ、
             //発注情報トラン．送信区分 = 未送信の場合、ボタンの文言は「職種変更または異動[済]」で表示する。
             $list['wearer_change_button'] = "職種変更または異動";
             $list['wearer_change_red'] = "[済]";
+            $list['disabled'] = "";
           } elseif (
             $result->as_order_sts_kbn == '2'
             && ($result->as_order_reason_kbn == '4' || $result->as_order_reason_kbn == '8' || $result->as_order_reason_kbn == '9' || $result->as_order_reason_kbn == '11')
-            && $result->as_snd_kbn == '1')
+            && $result->as_order_snd_kbn == '1')
           {
             //パターンC： 発注情報トラン．発注状況区分 = 貸与 かつ、発注情報トラン．理由区分 = 職種変更または異動のデータがある場合、かつ、
             //発注情報トラン．送信区分 = 送信済の場合、ボタンの文言は「職種変更または異動[済]」で非活性表示する。
@@ -310,28 +319,34 @@ $app->post('/wearer_change/search', function ()use($app){
           } elseif (
             $result->as_order_sts_kbn !== '1'
             || ($result->as_order_sts_kbn == '1' && ($result->as_order_reason_kbn !== '4' && $result->as_order_reason_kbn !== '8' && $result->as_order_reason_kbn !== '9' && $result->as_order_reason_kbn !== '11'))
-            && $result->as_snd_kbn == '1')
+            && $result->as_order_snd_kbn == '1')
           {
             //パターンD： 発注情報トラン．発注状況区分 = 貸与以外、もしくは、発注情報トラン．発注状況区分 = 貸与 かつ、発注情報トラン．理由区分 = 職種変更または異動以外のデータがある場合、かつ、
             //その発注の送信区分 = 送信済の場合、ボタンの文言は「職種変更または異動」で非活性表示する。
             $list['wearer_change_button'] = "職種変更または異動";
+            $list['wearer_change_red'] = "";
             $list['disabled'] = "disabled";
           } else {
             // 上記パターンに該当しない場合、デフォルトでボタンの文言は「職種変更または異動」を表示する。
             $list['wearer_change_button'] = '職種変更または異動';
+            $list['wearer_change_red'] = "";
+            $list['disabled'] = "";
           }
 
           //「返却伝票ダウンロード」ボタン生成
           if (
             ($result->as_order_sts_kbn == '1'
             && ($result->as_order_reason_kbn == '4' || $result->as_order_reason_kbn == '8' || $result->as_order_reason_kbn == '9' || $result->as_order_reason_kbn == '11')
-            && $result->as_snd_kbn == '0') ||
+            && $result->as_order_snd_kbn == '0') ||
             ($result->as_order_sts_kbn == '2'
             && ($result->as_order_reason_kbn == '4' || $result->as_order_reason_kbn == '8' || $result->as_order_reason_kbn == '9' || $result->as_order_reason_kbn == '11')
-            && $result->as_snd_kbn == '1'))
+            && $result->as_order_snd_kbn == '1')
+          )
           {
             //「職種変更または異動」ボタン生成のパターンBかCの場合に表示
-            $list['return_reciept_button'] = "返却伝票ダウンロード";
+            $list['return_reciept_button'] = true;
+          } else {
+            $list['return_reciept_button'] = false;
           }
 
           // 発注入力へのパラメータ設定
