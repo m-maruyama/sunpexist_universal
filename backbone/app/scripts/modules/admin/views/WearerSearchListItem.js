@@ -40,7 +40,7 @@ define([
 						"scr": '発注入力',
 						"data": data,
 					};
-
+console.log(cond);
 					modelForUpdate.fetchMx({
 						data:cond,
 						success:function(res){

@@ -233,24 +233,61 @@ $app->post('/wearer_search/search', function ()use($app){
                 $list['return_reciept_button'] = "返却伝票ダウンロード";
             }
 
+
+            // 発注入力へのパラメータ設定
+            $list['param'] = '';
+            if(!$list['rntl_cont_no']){
+                $list['rntl_cont_no'] = '';
+            }
+            if(!$list['werer_cd']){
+                $list['werer_cd'] = '';
+            }
+            if(!$list['cster_emply_cd']){
+                $list['cster_emply_cd'] = '';
+            }
+            if(!$list['sex_kbn']){
+                $list['sex_kbn'] = '';
+            }
+            if(!$list['rntl_sect_cd']){
+                $list['rntl_sect_cd'] = '';
+            }
+            if(!$list['job_type_cd']){
+                $list['job_type_cd'] = '';
+            }
+            if(!$list['order_reason_kbn']){
+                $list['order_reason_kbn'] = '';
+            }
+            if(!$result->as_ship_to_cd){
+                $list['ship_to_cd'] = '';
+            }else{
+                $list['ship_to_cd'] = $result->as_ship_to_cd;
+            }
+            if(!$result->as_ship_to_brnch_cd){
+                $list['ship_to_brnch_cd'] = '';
+            }else{
+                $list['ship_to_brnch_cd'] = $result->as_ship_to_brnch_cd;
+            }
+            if(!$list['order_tran_flg']){
+                $list['order_tran_flg'] = '';
+            }
+            if(!$list['wearer_tran_flg']){
+                $list['wearer_tran_flg'] = '';
+            }
+            $list['param'] .= $list['rntl_cont_no'].':';
+            $list['param'] .= $list['werer_cd'].':';
+            $list['param'] .= $list['cster_emply_cd'].':';
+            $list['param'] .= $list['sex_kbn'].':';
+            $list['param'] .= $list['rntl_sect_cd'].':';
+            $list['param'] .= $list['job_type_cd'].':';
+            $list['param'] .= $list['order_reason_kbn'].':';
+            $list['param'] .= $list['ship_to_cd'].':';
+            $list['param'] .= $list['ship_to_brnch_cd'].':';
+            $list['param'] .= $list['order_tran_flg'].':';
+            $list['param'] .= $list['wearer_tran_flg'];
+
             array_push($all_list,$list);
         }
     }
-
-    // 発注入力へのパラメータ設定
-    $list['param'] = '';
-    $list['param'] .= $list['rntl_cont_no'].':';
-    $list['param'] .= $list['werer_cd'].':';
-    $list['param'] .= $list['cster_emply_cd'].':';
-    $list['param'] .= $list['sex_kbn'].':';
-    $list['param'] .= $list['rntl_sect_cd'].':';
-    $list['param'] .= $list['job_type_cd'].':';
-    $list['param'] .= $list['order_reason_kbn'].':';
-    $list['param'] .= $result->as_ship_to_cd.':';
-    $list['param'] .= $result->as_ship_to_brnch_cd.':';
-    $list['param'] .= $list['order_tran_flg'].':';
-    $list['param'] .= $list['wearer_tran_flg'];
-
     $page_list['records_per_page'] = $page['records_per_page'];
     $page_list['page_number'] = $page['page_number'];
     $page_list['total_records'] = $results_cnt;
@@ -274,8 +311,7 @@ $app->post('/wearer_search/req_param', function ()use($app){
 
     // パラメータ取得
     $cond = $params['data'];
-    //ChromePhp::LOG($cond);
-
+ChromePhp::LOG($params);
     // POSTパラメータのセッション格納
     $app->session->set("wearer_chg_post", array(
         'rntl_cont_no' => $cond["rntl_cont_no"],

@@ -30,6 +30,7 @@ define([
 				"wearerChangeOrder": "li.nav_wearerChangeOrder",
 				"wearerInputComplete": "li.nav_wearerInputComplete",
 				"wearerSearch": "li.nav_wearerSearch",
+				"wearerOrder": "li.nav_wearerOrder",
 				"logout": "li.logout a"
 			},
 			onShow: function() {
