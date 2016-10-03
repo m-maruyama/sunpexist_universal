@@ -97,6 +97,7 @@ define([
 					wearerInputConditionView.fetch(agreement_no);
 					wearerInputView.condition.show(wearerInputConditionView);
 					wearerInputView.ui.input_insert_button.show();
+					wearerInputView.ui.input_item_button.show();
 				});
 				//契約No選択イベント--ここまで
 
@@ -104,10 +105,19 @@ define([
 				this.listenTo(wearerInputView, 'click:input_insert', function(agreement_no){
 					var errors = wearerInputConditionView.insert_wearer(agreement_no);
 					if(errors){
-						wearerInputView.triggerMethod('showAlerts', errors);
+						console.log(errors);
+						wearerInputView.triggerMethod('showAlerts', errors['errors']);
 					}
 				});
 
+				//商品明細入力へ
+				this.listenTo(wearerInputView, 'click:input_item', function(agreement_no){
+					var errors = wearerInputConditionView.insert_wearer(agreement_no);
+					if(errors){
+						console.log(errors);
+						wearerInputView.triggerMethod('showAlerts', errors['errors']);
+					}
+				});
 				this.listenTo(paginationView, 'selected', function(pageNumber){
 						fetchList_section(pageNumber);
 				});

@@ -1,11 +1,12 @@
 define([
-	'app',
-	'../Templates',
-	'backbone.stickit',
-	'bootstrap-datetimepicker',
-	'../behaviors/Alerts',
-	'typeahead',
-	'bloodhound'
+    'app',
+    '../Templates',
+    'backbone.stickit',
+    'bootstrap-datetimepicker',
+    '../views/WearerInput',
+    '../behaviors/Alerts',
+    'typeahead',
+    'bloodhound'
 ], function(App) {
     'use strict';
     App.module('Admin.Views', function (Views, App, Backbone, Marionette, $, _) {
@@ -134,39 +135,59 @@ define([
                 };
                 model.url = App.api.WI0012;
 
-
-
-                var fd = new FormData();
-                var data = $('<input type="hidden" name="data" />');
-                fd.append('data',JSON.stringify(cond));
-
-
-                var url = App.api.WI0012;
-                var postData = {
-                    type : "POST",
-                    data : fd,
-                    processData : false,
-                    contentType : false,
-                    dataType: "json"
-                };
-                errors = $.ajax( url, postData ).done(function (errors) {
-                    if(errors) {
-                        return errors;
-                    }else{
+                var a = model.fetchMx({
+                    data:cond,
+                    success:function(res){
+                        var errors = res.get('errors');
+                        if(errors) {
+                            var errorMessages = errors.map(function(v){
+                                return v;
+                            });
+                            var wearerInputView = new App.Admin.Views.WearerInput();
+                            // wearerInputView.triggerMethod('showAlerts', errors['errors']);
+                            alert('エラーを出すようにする');
+                            console.log(errorMessages);
+                            wearerInputView.triggerMethod('showAlerts', errorMessages);
+                        }else{
+                            alert('着用者を登録しました。');
+                            location.href = './wearer_input_complete.html';
+                        }
                     }
-
                 });
-                if(errors){
-                    if(errors['errors']) {
-                        var errorMessages = errors['errors'].map(function(v){
-                            return v.error_message;
-                        });
-                        return errorMessages;
-                    }else{
-                        alert('着用者を登録しました。');
-                        location.href = './wearer_input_complete.html';
-                    }
-                }
+
+return errors;
+
+
+
+
+
+                //
+                // var fd = new FormData();
+                // var data = $('<input type="hidden" name="data" />');
+                // fd.append('data',JSON.stringify(cond));
+                //
+                //
+                // var url = App.api.WI0012;
+                // var postData = {
+                //     type : "POST",
+                //     data : fd,
+                //     processData : false,
+                //     contentType : "application/json",
+                //     dataType: "json"
+                // };
+                // errors = $.ajax( url, postData ).done(function (res) {
+                //     if(res) {
+                //         return $.parseJSON(res);
+                //     }else{
+                //     }
+                //
+                // });
+                // if(errors){
+                //     return errors;
+                // } else {
+                //     alert('着用者を登録しました。');
+                //     location.href = './wearer_input_complete.html';
+                // }
             },
 
             events: {

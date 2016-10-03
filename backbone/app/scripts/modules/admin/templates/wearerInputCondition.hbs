@@ -25,8 +25,30 @@
 				<div class="col-md-2">
 					<select class="form-control input-sm" name="sex_kbn" id="sex_kbn">
 						<option selected="selected"></option>
-						{{#each sex_kbn_list}}<option value="{{cls_cd}}">{{gen_name}}</option>{{/each}}
+						{{#each sex_kbn_list}}<option value="{{gen_cd}}">{{gen_name}}</option>{{/each}}
 					</select>
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="col-md-3 control-label" for="appointment_ymd">発令日<span style="color:red">＊</span></label>
+				<div class="col-md-3">
+					<div class='input-group date datepicker'>
+						<input type="text" class="form-control  input-sm datepicker" id="appointment_ymd" name="appointment_ymd" value="">
+						<div class="input-group-addon">
+							<span class="glyphicon glyphicon-calendar"></span>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="col-md-3 control-label" for="wearer_start_ymd">着用開始日<span style="color:red">＊</span></label>
+				<div class="col-md-3">
+					<div class='input-group date datepicker'>
+						<input type="text" class="form-control  input-sm datepicker" id="wearer_start_ymd" name="wearer_start_ymd" value="">
+						<div class="input-group-addon">
+							<span class="glyphicon glyphicon-calendar"></span>
+						</div>
+					</div>
 				</div>
 			</div>
 			<div class="form-group">
@@ -67,7 +89,7 @@
 				<label class="col-md-3 control-label" for="m_shipment_to">出荷先</label>
 				<div class="col-md-5">
 					<select class="form-control input-sm" id="m_shipment_to" name="m_shipment_to">
-						<option selected="selected">支店店舗と同じ</option>
+						<option selected="selected" value="">支店店舗と同じ</option>
 						{{#each m_shipment_to_list}}<option value="{{ship_to_cd}},{{ship_to_brnch_cd}}">{{cust_to_brnch_name1}}{{cust_to_brnch_name2}}</option>{{/each}}
 					</select>
 				</div>

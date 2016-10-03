@@ -181,6 +181,7 @@ define([
 			"WC0021": host + "/wearer_change_complete",
 			"WC0022": host + "/wearer_change_send",
 			"WS0010": host + "/wearer_search/search",
+			"WS0011": host + "/wearer_search/req_param",
 			"CM9010": host + "/api/CM9010"
 		};
 

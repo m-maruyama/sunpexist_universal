@@ -19,6 +19,7 @@ define([
                 "input_cancel_button": "#input_cancel_button",
                 "input_insert": "#input_insert",
                 "input_insert_button": "#input_insert_button",
+				"input_item_button": "#input_item_button",
                 "input_next" : "#input_next"
 			},
 			regions: {
@@ -42,9 +43,10 @@ define([
                 if (document.referrer.indexOf("wearer_search") == -1) {
                     this.ui.input_cancel_button.hide();
                 }
-                // 初期表示時は「着用者のみ登録して終了」ボタンを隠す
+                // 初期表示時は「着用者のみ登録して終了」「商品明細入力へ」ボタンを隠す
                 if (!$('#agreement_no').val()) {
                     this.ui.input_insert_button.hide();
+					this.ui.input_item_button.hide();
                 }
 			},
 			events: {
@@ -79,6 +81,19 @@ define([
                 'click @ui.input_insert': function(){
                     this.triggerMethod('click:input_insert',this.ui.agreement_no.val());
                 },
+				'click @ui.input_item': function(){
+                	var WearerInputCondition = new WearerInputCondition();
+					console.log(WearerInputCondition.ui);
+					this.triggerMethod('click:input_item',
+						this.ui.agreement_no.val(),
+						WearerInputCondition.ui.m_shipment_to.val(),
+						WearerInputCondition.ui.section.val(),
+						WearerInputCondition.ui.zip_no.val(),
+						WearerInputCondition.ui.address.val(),
+						WearerInputCondition.ui.job_type.val(),
+						WearerInputCondition.ui.werer_name.val()
+					);
+				},
                 'click @ui.input_next': function(){
                     this.triggerMethod('click:input_next',this.ui.input_next.val());
                 },

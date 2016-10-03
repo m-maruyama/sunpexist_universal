@@ -83,7 +83,7 @@ $app->post('/wearer_input', function () use ($app) {
         ->columns('*')
         ->execute();
     foreach ($m_gencode_results as $m_gencode_result) {
-        $list['cls_cd'] = $m_gencode_result->cls_cd;
+        $list['gen_cd'] = $m_gencode_result->gen_cd;
         $list['gen_name'] = $m_gencode_result->gen_name;
         array_push($sex_kbn_list, $list);
     }
@@ -272,8 +272,8 @@ $app->post('/change_section', function () use ($app) {
  */
 $app->post('/input_insert', function () use ($app) {
 
-//    $params = json_decode(file_get_contents("php://input"), true);
-    $params = json_decode($_POST['data'], true);
+    $params = json_decode(file_get_contents("php://input"), true);
+//    $params = json_decode($_POST['data'], true);
     // アカウントセッション取得
     $auth = $app->session->get('auth');
     $cond = $params['cond'];
@@ -333,13 +333,11 @@ $app->post('/input_insert', function () use ($app) {
     $now_datetime = date("YmdHis");
     $now_date = date("Ymd");
     $start_datetime = $now_date.$start;
-    $end_datetime = date("YmdHis", strtotime($start_datetime." + ".$hour." hour"));;
+    $end_datetime = date("YmdHis", strtotime($start_datetime." + ".$hour." hour"));
     if(strtotime($start_datetime) <= strtotime($now_datetime)||strtotime($now_datetime) >= strtotime($end_datetime)){
-        ChromePhp::LOG($start);
-        ChromePhp::LOG($now_datetime);
-        ChromePhp::LOG($end_datetime);
         array_push($error_list,'現在の時間は更新出来ません。');
         $json_list['errors'] = $error_list;
+        echo json_encode($json_list);
         return;
     }
 
@@ -405,15 +403,17 @@ $app->post('/input_insert', function () use ($app) {
     array_push($query_list,"corporate_id = '".$auth['corporate_id']."'");
     // 職種マスタ．レンタル契約No.　＝　画面で選択されている契約No.
     array_push($query_list,"rntl_cont_no = '".$cond['agreement_no']."'");
+    $deli_job = explode(',',$cond['job_type']);
     // 職種マスタ．レンタル部門コード　＝　画面で選択されている貸与パターン
-    array_push($query_list,"job_type_cd = '".$cond['job_type']."'");
+    array_push($query_list,"job_type_cd = '".$deli_job[0]."'");
 
     //sql文字列を' AND 'で結合
     $query = implode(' AND ', $query_list);
     //--- クエリー実行・取得 ---//
-    $m_job_type_cnt = MJobType::find(array(
+    $m_job_type = MJobType::find(array(
         'conditions' => $query
-    ))->count();
+    ));
+    $m_job_type_cnt = $m_job_type->count();
     //存在しない場合NG
     if($m_job_type_cnt == 0){
           array_push($error_list,'貸与パターンの値が不正です。');
@@ -430,9 +430,9 @@ $app->post('/input_insert', function () use ($app) {
         array_push($query_list,"ship_to_brnch_cd = '".$cond['ship_to_brnch_cd']."'");
     }else{
         // 部門マスタ．標準出荷先コード
-        array_push($query_list,"ship_to_cd = '".$m_section->std_ship_to_cd."'");
+        array_push($query_list,"ship_to_cd = '".$m_section[0]->std_ship_to_cd."'");
         // 部門マスタ．標準出荷先支店コード
-        array_push($query_list,"ship_to_cd = '".$m_section->std_ship_to_brnch_cd."'");
+        array_push($query_list,"ship_to_brnch_cd = '".$m_section[0]->std_ship_to_brnch_cd."'");
     }
     //sql文字列を' AND 'で結合
     $query = implode(' AND ', $query_list);
@@ -450,11 +450,11 @@ $app->post('/input_insert', function () use ($app) {
         array_push($error_list, '社員コードの文字数が多すぎます。');
     }
 
-    if (byte_cnt($cond['werer_name']) > 10) {
+    if (byte_cnt($cond['werer_name']) > 22) {
         array_push($error_list, '着用者名の文字数が多すぎます。');
     }
 
-    if (byte_cnt($cond['werer_name_kana']) > 10) {
+    if (byte_cnt($cond['werer_name_kana']) > 22) {
         array_push($error_list, '着用者名(カナ)の文字数が多すぎます。');
     }
 
@@ -467,14 +467,44 @@ $app->post('/input_insert', function () use ($app) {
     $transaction = $app->transactionManager->get();
     //着用者基本マスタトラン
     $m_wearer_std_tran = new MWearerStdTran();
-    $m_wearer_std_tran->corporate_id = $auth['corporate_id']; //企業ID
+    $now = date('Y/m/d H:i:s.sss');$m_wearer_std_tran->corporate_id = $auth['corporate_id']; //企業ID
 
-    $results = new Resultset(null, $m_wearer_std_tran, $m_wearer_std_tran->getReadConnection()->query("select nextval('werer_cd')"));
+    $results = new Resultset(null, $m_wearer_std_tran, $m_wearer_std_tran->getReadConnection()->query("select nextval('werer_cd_seq')"));
     $m_wearer_std_tran->werer_cd = str_pad($results[0]->nextval, 10, '0', STR_PAD_LEFT); //着用者コード
+
+    //着用者基本マスタ_統合ハッシュキー(企業ID、着用者コード、レンタル契約No.、レンタル部門コード、職種コード)
+    $m_wearer_std_tran->m_wearer_std_comb_hkey = md5($auth['corporate_id'].str_pad($results[0]->nextval, 10, '0', STR_PAD_LEFT).$cond['agreement_no'].$cond['rntl_sect_cd'].$deli_job[0]);
 
     $m_wearer_std_tran->rntl_cont_no = $cond['agreement_no']; //レンタル契約No.
     $m_wearer_std_tran->rntl_sect_cd = $cond['rntl_sect_cd']; //レンタル部門コード
-    if ($m_wearer_std_tran->save() == false) {
+    $m_wearer_std_tran->job_type_cd = $deli_job[0];//職種コード
+    $m_wearer_std_tran->cster_emply_cd = $cond['cster_emply_cd'];//客先社員コード
+    $m_wearer_std_tran->werer_name = $cond['werer_name'];//着用者名（漢字）
+    $m_wearer_std_tran->werer_name_kana = $cond['werer_name_kana']; //着用者名（カナ）
+    $m_wearer_std_tran->sex_kbn = $cond['sex_kbn'];//性別区分
+    $m_wearer_std_tran->werer_sts_kbn  = '7';//着用者状況区分
+    $m_wearer_std_tran->resfl_ymd = date("Ymd", strtotime($cond['resfl_ymd']));//異動日
+    $m_wearer_std_tran->ship_to_cd = $cond['ship_to_cd']; //出荷先コード
+    $m_wearer_std_tran->ship_to_brnch_cd = $cond['ship_to_brnch_cd']; //出荷先支店コード
+    $m_wearer_std_tran->rntl_cont_no_bef = ''; //レンタル契約No.（前）
+    $m_wearer_std_tran->rntl_sect_cd_bef = '';//レンタル部門コード（前）
+    $m_wearer_std_tran->job_type_cd_bef = ''; //職種コード（前）
+    $m_wearer_std_tran->werer_sts_kbn_bef = ''; //着用者状況区分（前）
+    $m_wearer_std_tran->resfl_ymd_bef = ''; //異動日（前）
+    $m_wearer_std_tran->order_sts_kbn = '1'; //発注状況区分 汎用コード：貸与
+    $m_wearer_std_tran->upd_kbn = '1';//更新区分　汎用コード：web発注システム（新規登録）
+    $m_wearer_std_tran->web_upd_date = $now;//WEB更新日付
+    $m_wearer_std_tran->snd_kbn = '0';//送信区分
+    $m_wearer_std_tran->snd_date  = $now;//送信日時
+    $m_wearer_std_tran->del_kbn ='0';//削除区分
+    $m_wearer_std_tran->rgst_date  = $now;//登録日時
+    $m_wearer_std_tran->rgst_user_id = $auth['user_id'];//登録ユーザーID
+    $m_wearer_std_tran->upd_date  = $now;//更新日時
+    $m_wearer_std_tran->upd_user_id = $auth['user_id'];//更新ユーザーID
+    $m_wearer_std_tran->upd_pg_id = $auth['user_id'];//更新プログラムID
+    $m_wearer_std_tran->m_job_type_comb_hkey = $m_job_type[0]->m_job_type_comb_hkey;//職種マスタ_統合ハッシュキー
+    $m_wearer_std_tran->m_section_comb_hkey = $m_section[0]->m_section_comb_hkey;//部門マスタ_統合ハッシュキー
+    if ($m_wearer_std_tran->create() == false) {
         array_push($error_list, '着用者の登録に失敗しました。');
         $json_list['errors'] = $error_list;
         echo json_encode($json_list);
