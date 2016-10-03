@@ -7,8 +7,7 @@ define([
 	'../behaviors/Alerts',
 	'typeahead',
 	'bloodhound',
-	'../controllers/WearerOrder',
-	'./ShipmentCondition',
+	'./ShipmentConditionChange',
 ], function(App) {
 	'use strict';
 	App.module('Admin.Views', function(Views, App, Backbone, Marionette, $, _){
@@ -73,7 +72,7 @@ define([
 
 				// 着用者情報(着用者名、(読み仮名)、社員コード、発令日)
 				var modelForUpdate = this.model;
-				modelForUpdate.url = App.api.WC0018;
+				modelForUpdate.url = App.api.WO0010;
 				var cond = {
 					"scr": '着用者部分情報',
 				};
@@ -88,7 +87,6 @@ define([
 							that.triggerMethod('showAlerts', errorMessages);
 						}
 						var res_list = res.attributes;
-						//console.log(res_list['wearer_info']);
 						that.ui.member_no.val(res_list['wearer_info'][0]['cster_emply_cd']);
 						that.ui.member_name.val(res_list['wearer_info'][0]['werer_name']);
 						that.ui.member_name_kana.val(res_list['wearer_info'][0]['werer_name_kana']);
@@ -154,7 +152,7 @@ define([
 					location.href="wearer_.html";
 				},
 				// 貸与パターン
-				' @ui.job_type': function(){
+				'change @ui.job_type': function(){
 					var that = this;
 					this.ui.job_type = $('#job_type');
 					// 選択前のvalue値
@@ -181,14 +179,14 @@ define([
 					}
 				},
 				// 出荷先
-				' @ui.shipment': function(){
+				'change @ui.shipment': function(){
 					this.ui.shipment = $('#shipment');
 
 					var vals = $("select[name='shipment']").val();
 					var val = vals.split(':');
 					var ship_to_cd = val[0];
 					var ship_to_brnch_cd = val[1];
-					var shipmentConditionView = new App.Admin.Views.ShipmentCondition({
+					var shipmentConditionView = new App.Admin.Views.ShipmentConditionChange({
 						ship_to_cd: ship_to_cd,
 						ship_to_brnch_cd: ship_to_brnch_cd,
 						chg_flg: '1',

@@ -5,11 +5,11 @@ define([
 	'../views/WearerOrderCondition',
 	'../views/WearerOrderListList',
 	'../views/AgreementNoCondition',
-	'../views/ReasonKbnCondition',
+	'../views/ReasonKbnConditionChange',
 	'../views/SexKbnCondition',
 	'../views/SectionCondition',
 	'../views/JobTypeCondition',
-	'../views/ShipmentCondition',
+	'../views/ShipmentConditionChange',
 	'../views/SectionModalCondition',
 	'../views/SectionModalListList',
 	'../views/SectionModalListItem',
@@ -43,11 +43,11 @@ define([
 				});
 
 				var agreementNoConditionView = new App.Admin.Views.AgreementNoCondition();
-				var reasonKbnConditionView = new App.Admin.Views.ReasonKbnCondition();
+				var reasonKbnConditionChangeView = new App.Admin.Views.ReasonKbnConditionChange();
 				var sexKbnConditionView = new App.Admin.Views.SexKbnCondition();
 				var sectionConditionView = new App.Admin.Views.SectionCondition();
 				var jobTypeConditionView = new App.Admin.Views.JobTypeCondition();
-				var shipmentConditionView = new App.Admin.Views.ShipmentCondition();
+				var shipmentConditionView = new App.Admin.Views.ShipmentConditionChange();
 
 				var wearerOrderListConditionModel = new App.Entities.Models.AdminWearerOrderListCondition();
 				var wearerOrderConditionView = new App.Admin.Views.WearerOrderCondition({
@@ -126,7 +126,7 @@ define([
 				wearerOrderView.condition.show(wearerOrderConditionView);
 				wearerOrderView.listTable.show(wearerOrderListListView);
 				wearerOrderConditionView.agreement_no.show(agreementNoConditionView);
-				wearerOrderConditionView.reason_kbn.show(reasonKbnConditionView);
+				wearerOrderConditionView.reason_kbn.show(reasonKbnConditionChangeView);
 				wearerOrderConditionView.sex_kbn.show(sexKbnConditionView);
 				wearerOrderConditionView.section.show(sectionConditionView);
 				wearerOrderConditionView.job_type.show(jobTypeConditionView);

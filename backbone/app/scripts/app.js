@@ -183,6 +183,8 @@ define([
 			"WC0022": host + "/wearer_change_send",
 			"WS0010": host + "/wearer_search/search",
 			"WS0011": host + "/wearer_search/req_param",
+			"WO0010": host + "/wearer_order_info",
+
 			"CM9010": host + "/api/CM9010"
 		};
 

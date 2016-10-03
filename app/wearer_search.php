@@ -57,8 +57,8 @@ $app->post('/wearer_search/search', function ()use($app){
     $arg_str .= " * ";
     $arg_str .= " FROM ";
     $arg_str .= "(SELECT distinct on (m_wearer_std_tran.m_wearer_std_comb_hkey) ";
-    $arg_str .= "t_order_tran.cster_emply_cd as as_cster_emply_cd,";
-    $arg_str .= "t_order_tran.order_sts_kbn as as_order_sts_kbn,";
+    $arg_str .= "m_wearer_std_tran.cster_emply_cd as as_cster_emply_cd,";
+    $arg_str .= "m_wearer_std_tran.order_sts_kbn as as_order_sts_kbn,";
     $arg_str .= "m_wearer_std_tran.werer_cd as as_werer_cd,";
     $arg_str .= "m_wearer_std_tran.corporate_id as as_corporate_id,";
     $arg_str .= "m_wearer_std_tran.rntl_cont_no as as_rntl_cont_no,";
@@ -68,7 +68,7 @@ $app->post('/wearer_search/search', function ()use($app){
     $arg_str .= "m_wearer_std_tran.order_sts_kbn as as_wearer_order_sts_kbn,";
     $arg_str .= "m_wearer_std_tran.ship_to_cd as as_ship_to_cd,";
     $arg_str .= "m_wearer_std_tran.ship_to_brnch_cd as as_ship_to_brnch_cd,";
-    $arg_str .= "t_order_tran.snd_kbn as as_snd_kbn,";
+    $arg_str .= "m_wearer_std_tran.snd_kbn as as_snd_kbn,";
     $arg_str .= "t_order_tran.order_reason_kbn as as_order_reason_kbn,";
     $arg_str .= "m_section.rntl_sect_name as as_rntl_sect_name,";
     $arg_str .= "m_job_type.job_type_name as as_job_type_name,";
@@ -236,27 +236,6 @@ $app->post('/wearer_search/search', function ()use($app){
 
             // 発注入力へのパラメータ設定
             $list['param'] = '';
-            if(!$list['rntl_cont_no']){
-                $list['rntl_cont_no'] = '';
-            }
-            if(!$list['werer_cd']){
-                $list['werer_cd'] = '';
-            }
-            if(!$list['cster_emply_cd']){
-                $list['cster_emply_cd'] = '';
-            }
-            if(!$list['sex_kbn']){
-                $list['sex_kbn'] = '';
-            }
-            if(!$list['rntl_sect_cd']){
-                $list['rntl_sect_cd'] = '';
-            }
-            if(!$list['job_type_cd']){
-                $list['job_type_cd'] = '';
-            }
-            if(!$list['order_reason_kbn']){
-                $list['order_reason_kbn'] = '';
-            }
             if(!$result->as_ship_to_cd){
                 $list['ship_to_cd'] = '';
             }else{
@@ -266,12 +245,6 @@ $app->post('/wearer_search/search', function ()use($app){
                 $list['ship_to_brnch_cd'] = '';
             }else{
                 $list['ship_to_brnch_cd'] = $result->as_ship_to_brnch_cd;
-            }
-            if(!$list['order_tran_flg']){
-                $list['order_tran_flg'] = '';
-            }
-            if(!$list['wearer_tran_flg']){
-                $list['wearer_tran_flg'] = '';
             }
             $list['param'] .= $list['rntl_cont_no'].':';
             $list['param'] .= $list['werer_cd'].':';
@@ -311,7 +284,6 @@ $app->post('/wearer_search/req_param', function ()use($app){
 
     // パラメータ取得
     $cond = $params['data'];
-ChromePhp::LOG($params);
     // POSTパラメータのセッション格納
     $app->session->set("wearer_chg_post", array(
         'rntl_cont_no' => $cond["rntl_cont_no"],
@@ -320,6 +292,8 @@ ChromePhp::LOG($params);
         'sex_kbn' => $cond["sex_kbn"],
         'rntl_sect_cd' => $cond["rntl_sect_cd"],
         'job_type_cd' => $cond["job_type_cd"],
+        'ship_to_cd' => $cond["ship_to_cd"],
+        'ship_to_brnch_cd' => $cond["ship_to_brnch_cd"],
         'order_reason_kbn' => $cond["order_reason_kbn"],
         'order_tran_flg' => $cond["order_tran_flg"],
         'wearer_tran_flg' => $cond["wearer_tran_flg"],
