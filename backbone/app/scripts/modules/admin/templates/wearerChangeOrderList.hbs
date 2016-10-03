@@ -12,6 +12,7 @@
   <div id="scrollTable">
     <table>
       <th>現在貸与中のアイテム</th>
+      <input type="hidden" name="now_list_cnt" value="{{now_list_cnt}}">
     </table>
     <table class="table table-bordered order_table">
       <thead class="grad_head">
@@ -59,11 +60,13 @@
             {{size_cd}}
             <input type="hidden" name="now_size_cd{{arr_num}}" value="{{size_cd}}">
           </td>
+          <input type="hidden" name="individual_flg{{arr_num}}" value="{{individual_flg}}">
           <td class="individual_flg" style="display:none;">
+            <input type="hidden" name="individual_disp{{arr_num}}" value="{{individual_disp}}">
             {{#if individual_disp}}
               {{#each individual_chk}}
               <label>
-                <input type="checkbox" id="now_target_flg" name="now_target_flg{{arr_num}}[]" value="{{individual_ctrl_no}}" {{checked}} {{disabled}}>
+                <input type="checkbox" id="now_target_flg{{arr_num}}[]" name="now_target_flg{{arr_num}}[]" value="{{individual_ctrl_no}}" {{checked}} {{disabled}}>
               </label><br>
               {{/each}}
             {{/if}}
@@ -75,9 +78,11 @@
           </td>
           <td>
             <input type="text" style="width:4em" class="input-sm" id="now_order_num{{arr_num}}" name="now_order_num{{arr_num}}" value="{{order_num}}" {{order_num_disable}}>
+            <input type="hidden" name="now_order_num_disable{{arr_num}}" value="{{order_num_disable}}">
           </td>
           <td>
             <input type="text" style="width:4em" class="input-sm" id="now_return_num{{arr_num}}" name="now_return_num{{arr_num}}" value="{{return_num}}" {{return_num_disable}}>
+            <input type="hidden" name="now_return_num_disable{{arr_num}}" value="{{return_num_disable}}">
           </td>
         </tr>
         {{/each}}
@@ -91,6 +96,7 @@
 
     <table>
       <th>新たに追加されるアイテム</th>
+      <input type="hidden" name="add_list_cnt" value="{{add_list_cnt}}">
     </table>
     <table class="table table-bordered order_table">
       <thead class="grad_head">
@@ -113,35 +119,36 @@
         <tr class="edit">
           <td>
             {{list_no}}
-            <input type="hidden" name="now_rntl_sect_cd{{arr_num}}" value="{{rntl_sect_cd}}">
-            <input type="hidden" name="now_job_type_cd{{arr_num}}" value="{{job_type_cd}}">
-            <input type="hidden" name="now_job_type_item_cd{{arr_num}}" value="{{job_type_item_cd}}">
-            <input type="hidden" name="now_item_cd{{arr_num}}" value="{{item_cd}}">
-            <input type="hidden" name="now_color_cd{{arr_num}}" value="{{color_cd}}">
+            <input type="hidden" name="add_rntl_sect_cd{{arr_num}}" value="{{rntl_sect_cd}}">
+            <input type="hidden" name="add_job_type_cd{{arr_num}}" value="{{job_type_cd}}">
+            <input type="hidden" name="add_job_type_item_cd{{arr_num}}" value="{{job_type_item_cd}}">
+            <input type="hidden" name="add_item_cd{{arr_num}}" value="{{item_cd}}">
+            <input type="hidden" name="add_color_cd{{arr_num}}" value="{{color_cd}}">
           </td>
           <td>{{item_name}}</td>
           <td>
             {{choice}}
-            <input type="hidden" name="add_choice_type" value="{{choice_type}}">
+            <input type="hidden" name="add_choice_type{{arr_num}}" value="{{choice_type}}">
           </td>
           <td>
             {{std_input_qty}}
-            <input type="hidden" name="add_std_input_qty" value="{{std_input_qty}}">
+            <input type="hidden" name="add_std_input_qty{{arr_num}}" value="{{std_input_qty}}">
           </td>
           <td>
             {{item_and_color}}<br>{{input_item_name}}
-            <input type="hidden" name="now_item_cd" value="{{item_cd}}">
-            <input type="hidden" name="now_color_cd" value="{{color_cd}}">
+            <input type="hidden" name="add_item_cd{{arr_num}}" value="{{item_cd}}">
+            <input type="hidden" name="add_color_cd{{arr_num}}" value="{{color_cd}}">
           </td>
           <td class="input">
             {{#each add_list}}
-            <select class="form-control input-sm" id="size_cd" name="size_cd">
+            <select class="form-control input-sm" id="size_cd{{arr_num}}" name="size_cd{{arr_num}}">
               <option value="{{this}}">{{this}}</option>
             </select>
             {{/each}}
           </td>
           <td>
-            <input type="text" style="width:4em" class="input-sm" id="add_order_num" name="add_order_num" value="{{order_num}}" {{order_num_disable}}>
+            <input type="text" style="width:4em" class="input-sm" id="add_order_num{{arr_num}}" name="add_order_num{{arr_num}}" value="{{order_num}}" {{order_num_disable}}>
+            <input type="hidden" name="add_order_num_disable{{arr_num}}" value="{{order_num_disable}}">
           </td>
         </tr>
         {{/each}}

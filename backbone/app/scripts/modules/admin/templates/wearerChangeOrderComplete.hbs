@@ -5,7 +5,10 @@
 	<div class="row">
 		<div class="col-md-4" style="padding-bottom: 20px;"><b>入力された情報を登録しました。</b></div>
 	</div>
-	<br/><br/>
+  <!--エラーメッセージ-->
+	<div style="padding-top:10px; padding-bottom:20px;">
+		<div class="errors"></div>
+	<div>
 	<span>
 		<button class="btn btn-primary continueInput" title="続けて入力する">続けて入力する</button>
 		<!--<input type="button" class="btn btn-primary btn-sm btn-block delete" value="発注取消"/>-->
@@ -16,7 +19,7 @@
 	</span>
 	<br/><br/>
 	<span>
-		<button class="btn btn-primary returnSlipDownload" title="返却伝票ダウンロード">返却伝票ダウンロード</button>
+		<button class="btn btn-primary returnSlipDownload" title="返却伝票ダウンロード" style="display:none;">返却伝票ダウンロード</button>
 		<!--<a href="order_input_finish.html" type="button" class="btn btn-primary btn-sm btn-block" title="発注送信">発注送信</a>-->
 	</span>
 </div>

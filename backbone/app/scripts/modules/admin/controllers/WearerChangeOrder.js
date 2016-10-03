@@ -114,19 +114,25 @@ define([
 					wearerChangeOrderView.listTable.show(wearerChangeOrderListListView2);
 				});
 				// 入力完了
-				this.listenTo(wearerChangeOrderConditionView, 'inputComplete', function(){
+				this.listenTo(wearerChangeOrderConditionView, 'inputComplete', function(data){
 					wearerChangeOrderView.condition.reset();
 					wearerChangeOrderView.listTable.reset();
+					//console.log(data);
 
-					var wearerChangeOrderComplete = new App.Admin.Views.WearerChangeOrderComplete();
+					var wearerChangeOrderComplete = new App.Admin.Views.WearerChangeOrderComplete({
+						data: data,
+					});
 					wearerChangeOrderView.complete.show(wearerChangeOrderComplete);
 				});
 				// 発注送信完了
-				this.listenTo(wearerChangeOrderConditionView, 'sendComplete', function(){
+				this.listenTo(wearerChangeOrderConditionView, 'sendComplete', function(data){
 					wearerChangeOrderView.condition.reset();
 					wearerChangeOrderView.listTable.reset();
+					//console.log(data);
 
-					var wearerChangeOrderSendComplete = new App.Admin.Views.WearerChangeOrderSendComplete();
+					var wearerChangeOrderSendComplete = new App.Admin.Views.WearerChangeOrderSendComplete({
+						data: data,
+					});
 					wearerChangeOrderView.complete.show(wearerChangeOrderSendComplete);
 				});
 

@@ -7,6 +7,7 @@ define([
 	'../behaviors/Alerts',
 	'typeahead',
 	'bloodhound',
+	'blockUI',
 	'../controllers/WearerChangeOrder',
 	'./ShipmentConditionChange',
 ], function(App) {
@@ -37,6 +38,7 @@ define([
 				'member_name': '#member_name',
 				'member_name_kana': '#member_name_kana',
 				'appointment_ymd': '#appointment_ymd',
+				'resfl_ymd': '#resfl_ymd',
 				'section': '#section',
 				'job_type': '#job_type',
 				'shipment': '#shipment',
@@ -46,7 +48,8 @@ define([
 				"delete": '.delete',
 				"complete": '.complete',
 				"orderSend": '.orderSend',
-				'datepicker': '.datepicker',
+				'datepicker1': '.datepicker1',
+				'datepicker2': '.datepicker2',
 				'timepicker': '.timepicker',
 			},
 			bindings: {
@@ -57,6 +60,7 @@ define([
 				'#member_name': 'member_name',
 				'#member_name_kana': 'member_name_kana',
 				'#appointment_ymd': 'appointment_ymd',
+				'#resfl_ymd': 'resfl_ymd',
 				'#section': 'section',
 				'#job_type': 'job_type',
 				'#shipment': 'shipment',
@@ -65,7 +69,8 @@ define([
 				"#delete": 'delete',
 				"#complete": 'complete',
 				"#orderSend": 'orderSend',
-				'#datepicker': 'datepicker',
+				'#datepicker1': 'datepicker1',
+				'#datepicker2': 'datepicker2',
 				'#timepicker': 'timepicker',
 			},
 			onRender: function() {
@@ -100,17 +105,35 @@ define([
 						var minTime = new Date();
 						minTime.setHours(9);
 						minTime.setMinutes(0);
-						that.ui.datepicker.datetimepicker({
+						// 発令日
+						var appointment_ymd = res_list['wearer_info'][0]['appointment_ymd'];
+						that.ui.datepicker1.datetimepicker({
 							format: 'YYYY/MM/DD',
 							//useCurrent: 'day',
-							defaultDate: res_list['wearer_info'][0]['appointment_ymd'],
+							defaultDate: appointment_ymd,
 							//maxDate: yesterday,
 							locale: 'ja',
 							sideBySide:true,
 							useCurrent: false,
 							// daysOfWeekDisabled:[0,6]
 						});
-						that.ui.datepicker.on('dp.change', function(){
+						that.ui.datepicker1.on('dp.change', function(){
+							$(this).data('DateTimePicker').hide();
+							//$(this).find('input').trigger('input');
+						});
+						// 着用開始日
+						var resfl_ymd = res_list['wearer_info'][0]['resfl_ymd'];
+						that.ui.datepicker2.datetimepicker({
+							format: 'YYYY/MM/DD',
+							//useCurrent: 'day',
+							defaultDate: resfl_ymd,
+							//maxDate: yesterday,
+							locale: 'ja',
+							sideBySide:true,
+							useCurrent: false,
+							// daysOfWeekDisabled:[0,6]
+						});
+						that.ui.datepicker2.on('dp.change', function(){
 							$(this).data('DateTimePicker').hide();
 							//$(this).find('input').trigger('input');
 						});
@@ -257,6 +280,7 @@ define([
 				if (type == "WC0020_req") {
 					var msg = "削除しますが、よろしいですか？";
 					if (window.confirm(msg)) {
+						$.blockUI({ message: '<p><img src="ajax-loader.gif" style="margin: 0 auto;" /> 発注取消中...</p>' });
 						var modelForUpdate = this.model;
 						modelForUpdate.url = App.api.WC0020;
 						var cond = {
@@ -270,9 +294,11 @@ define([
 
 								if (res_val["error_code"] == "0") {
 									// 発注取消完了後、検索一覧へ遷移
+									$.unblockUI();
 									alert('発注取消が完了しました。');
 									location.href="wearer_change.html";
 								} else {
+									$.unblockUI();
 									alert('発注取消中にエラーが発生しました');
 								}
 							}
@@ -281,44 +307,253 @@ define([
 				}
 				// 入力完了処理
 				if (type == "WC0021_req") {
-						var modelForUpdate = this.model;
-						modelForUpdate.url = App.api.WC0021;
-						var cond = {
-							"scr": '入力完了',
-						};
-						modelForUpdate.fetchMx({
-							data:cond,
-							success:function(res){
-								var type = "WC0021_res";
-								var res_val = res.attributes;
+					//--画面入力項目--//
+					// 着用者情報
+					var agreement_no = $("select[name='agreement_no']").val();
+					var reason_kbn = $("select[name='reason_kbn']").val();
+					var emply_cd_flg = $("#emply_cd_flg").prop("checked");
+					var member_no = $("input[name='member_no']").val();
+					var member_name = $("input[name='member_name']").val();
+					var member_name_kana = $("input[name='member_name_kana']").val();
+					var sex_kbn = $("select[name='sex_kbn']").val();
+					var appointment_ymd = $("input[name='appointment_ymd']").val();
+					var resfl_ymd = $("input[name='resfl_ymd']").val();
+					var section = $("select[name='section']").val();
+					var job_type = $("select[name='job_type']").val();
+					var shipment = $("select[name='shipment']").val();
+					//var post_number = $("input[name='post_number']").val();
+					//var address = $("input[name='address']").val();
+					var comment = $("#comment").val();
+					var wearer_data = {
+						'agreement_no': agreement_no,
+						'reason_kbn': reason_kbn,
+						'emply_cd_flg': emply_cd_flg,
+						'member_no': member_no,
+						'member_name': member_name,
+						'member_name_kana': member_name_kana,
+						'sex_kbn': sex_kbn,
+						'appointment_ymd': appointment_ymd,
+						'resfl_ymd': resfl_ymd,
+						'section': section,
+						'job_type': job_type,
+						'shipment': shipment,
+						//'post_number': post_number,
+						//'address': address,
+						'comment': comment,
+					}
 
-								if (res_val["error_code"] == "0") {
-									var msg = "入力を完了しますが、よろしいですか？";
-									if (window.confirm(msg)) {
-										that.triggerMethod('inputComplete');
+					// 現在貸与中のアイテム
+					var now_list_cnt = $("input[name='now_list_cnt']").val();
+					var now_item = new Object();
+					for (var i=0; i<now_list_cnt; i++) {
+						now_item[i] = new Object();
+						now_item[i]["now_rntl_sect_cd"] = $("input[name='now_rntl_sect_cd"+i+"']").val();
+						now_item[i]["now_job_type_cd"] = $("input[name='now_job_type_cd"+i+"']").val();
+						now_item[i]["now_job_type_item_cd"] = $("input[name='now_job_type_item_cd"+i+"']").val();
+						now_item[i]["now_item_cd"] = $("input[name='now_item_cd"+i+"']").val();
+						now_item[i]["now_color_cd"] = $("input[name='now_color_cd"+i+"']").val();
+						now_item[i]["now_choice_type"] = $("input[name='now_choice_type"+i+"']").val();
+						now_item[i]["now_std_input_qty"] = $("input[name='now_std_input_qty"+i+"']").val();
+						now_item[i]["now_size_cd"] = $("input[name='now_size_cd"+i+"']").val();
+						// アイテム毎の「対象」、「個体管理番号」
+						now_item[i]["individual_data"] = new Object();
+						var individual_flg = $("input[name='individual_flg"+i+"']").val();
+						if (individual_flg) {
+							var individual_disp = $("input[name='individual_disp"+i+"']").val();
+							if (individual_disp) {
+								var elements = document.getElementsByName("now_target_flg"+i);
+								for (var j=0; j<elements.length; j++ ) {
+									now_item[i]["individual_data"]["individual_ctrl_no"] = elements[j].val();
+									if(elements[j].checked == false) {
+										now_item[i]["individual_data"]["now_target_flg"] = '0';
+									}
+									if(elements[j].checked == true){
+										now_item[i]["individual_data"]["now_target_flg"] = '1';
 									}
 								}
 							}
-						});
-				}
-				// 発注送信処理
-				if (type == "WC0022_req") {
+						}
+						now_item[i]["now_order_num"] = $("input[name='now_order_num"+i+"']").val();
+						now_item[i]["now_order_num_disable"] = $("input[name='now_order_num_disable"+i+"']").val();
+						now_item[i]["now_return_num"] = $("input[name='now_return_num"+i+"']").val();
+						now_item[i]["now_return_num_disable"] = $("input[name='now_return_num_disable"+i+"']").val();
+					}
+
+					// 追加されるアイテム
+					var add_list_cnt = $("input[name='add_list_cnt']").val();
+					var add_item = new Object();
+					for (var i=0; i<add_list_cnt; i++) {
+						add_item[i] = new Object();
+						add_item[i]["add_rntl_sect_cd"] = $("input[name='add_rntl_sect_cd"+i+"']").val();
+						add_item[i]["add_job_type_cd"] = $("input[name='add_job_type_cd"+i+"']").val();
+						add_item[i]["add_job_type_item_cd"] = $("input[name='add_job_type_item_cd"+i+"']").val();
+						add_item[i]["add_item_cd"] = $("input[name='add_item_cd"+i+"']").val();
+						add_item[i]["add_color_cd"] = $("input[name='add_color_cd"+i+"']").val();
+						add_item[i]["add_choice_type"] = $("input[name='add_choice_type"+i+"']").val();
+						add_item[i]["add_std_input_qty"] = $("input[name='add_std_input_qty"+i+"']").val();
+						add_item[i]["add_size_cd"] = $("select[name='add_size_cd"+i+"']").val();
+						add_item[i]["add_order_num"] = $("input[name='add_order_num"+i+"']").val();
+						add_item[i]["add_order_num_disable"] = $("input[name='add_order_num_disable"+i+"']").val();
+					}
+
+					// 入力項目チェック処理
 					var modelForUpdate = this.model;
-					modelForUpdate.url = App.api.WC0022;
+					modelForUpdate.url = App.api.WC0021;
 					var cond = {
-						"scr": '発注送信',
+						"scr": '入力完了',
+						"mode": "check",
+						"wearer_data": wearer_data,
+						"now_item": now_item,
+						"add_item": add_item,
 					};
 					modelForUpdate.fetchMx({
 						data:cond,
 						success:function(res){
-							var type = "WC0022_res";
 							var res_val = res.attributes;
+							if (res_val["error_code"] == "0") {
+								var msg = "入力を完了しますが、よろしいですか？";
+								if (window.confirm(msg)) {
+									var data = {
+										"scr": '入力完了',
+										"mode": "update",
+										"wearer_data": wearer_data,
+										"now_item": now_item,
+										"add_item": add_item,
+									};
+									//console.log(data);
 
+									// 入力完了画面処理へ移行
+									that.triggerMethod('inputComplete', data);
+								}
+							} else {
+								that.triggerMethod('showAlerts', res_val["error_msg"]);
+								return;
+							}
+						}
+					});
+				}
+				// 発注送信処理
+				if (type == "WC0022_req") {
+					//--画面入力項目--//
+					// 着用者情報
+					var agreement_no = $("select[name='agreement_no']").val();
+					var reason_kbn = $("select[name='reason_kbn']").val();
+					var emply_cd_flg = $("#emply_cd_flg").prop("checked");
+					var member_no = $("input[name='member_no']").val();
+					var member_name = $("input[name='member_name']").val();
+					var member_name_kana = $("input[name='member_name_kana']").val();
+					var sex_kbn = $("select[name='sex_kbn']").val();
+					var appointment_ymd = $("input[name='appointment_ymd']").val();
+					var resfl_ymd = $("input[name='resfl_ymd']").val();
+					var section = $("select[name='section']").val();
+					var job_type = $("select[name='job_type']").val();
+					var shipment = $("select[name='shipment']").val();
+					//var post_number = $("input[name='post_number']").val();
+					//var address = $("input[name='address']").val();
+					var comment = $("#comment").val();
+					var wearer_data = {
+						'agreement_no': agreement_no,
+						'reason_kbn': reason_kbn,
+						'emply_cd_flg': emply_cd_flg,
+						'member_no': member_no,
+						'member_name': member_name,
+						'member_name_kana': member_name_kana,
+						'sex_kbn': sex_kbn,
+						'appointment_ymd': appointment_ymd,
+						'resfl_ymd': resfl_ymd,
+						'section': section,
+						'job_type': job_type,
+						'shipment': shipment,
+						//'post_number': post_number,
+						//'address': address,
+						'comment': comment,
+					}
+
+					// 現在貸与中のアイテム
+					var now_list_cnt = $("input[name='now_list_cnt']").val();
+					var now_item = new Object();
+					for (var i=0; i<now_list_cnt; i++) {
+						now_item[i] = new Object();
+						now_item[i]["now_rntl_sect_cd"] = $("input[name='now_rntl_sect_cd"+i+"']").val();
+						now_item[i]["now_job_type_cd"] = $("input[name='now_job_type_cd"+i+"']").val();
+						now_item[i]["now_job_type_item_cd"] = $("input[name='now_job_type_item_cd"+i+"']").val();
+						now_item[i]["now_item_cd"] = $("input[name='now_item_cd"+i+"']").val();
+						now_item[i]["now_color_cd"] = $("input[name='now_color_cd"+i+"']").val();
+						now_item[i]["now_choice_type"] = $("input[name='now_choice_type"+i+"']").val();
+						now_item[i]["now_std_input_qty"] = $("input[name='now_std_input_qty"+i+"']").val();
+						now_item[i]["now_size_cd"] = $("input[name='now_size_cd"+i+"']").val();
+						// アイテム毎の「対象」、「個体管理番号」
+						now_item[i]["individual_data"] = new Object();
+						var individual_flg = $("input[name='individual_flg"+i+"']").val();
+						if (individual_flg) {
+							var individual_disp = $("input[name='individual_disp"+i+"']").val();
+							if (individual_disp) {
+								var elements = document.getElementsByName("now_target_flg"+i);
+								for (var j=0; j<elements.length; j++ ) {
+									now_item[i]["individual_data"]["individual_ctrl_no"] = elements[j].val();
+									if(elements[j].checked == false) {
+										now_item[i]["individual_data"]["now_target_flg"] = '0';
+									}
+									if(elements[j].checked == true){
+										now_item[i]["individual_data"]["now_target_flg"] = '1';
+									}
+								}
+							}
+						}
+						now_item[i]["now_order_num"] = $("input[name='now_order_num"+i+"']").val();
+						now_item[i]["now_order_num_disable"] = $("input[name='now_order_num_disable"+i+"']").val();
+						now_item[i]["now_return_num"] = $("input[name='now_return_num"+i+"']").val();
+						now_item[i]["now_return_num_disable"] = $("input[name='now_return_num_disable"+i+"']").val();
+					}
+
+					// 追加されるアイテム
+					var add_list_cnt = $("input[name='add_list_cnt']").val();
+					var add_item = new Object();
+					for (var i=0; i<add_list_cnt; i++) {
+						add_item[i] = new Object();
+						add_item[i]["add_rntl_sect_cd"] = $("input[name='add_rntl_sect_cd"+i+"']").val();
+						add_item[i]["add_job_type_cd"] = $("input[name='add_job_type_cd"+i+"']").val();
+						add_item[i]["add_job_type_item_cd"] = $("input[name='add_job_type_item_cd"+i+"']").val();
+						add_item[i]["add_item_cd"] = $("input[name='add_item_cd"+i+"']").val();
+						add_item[i]["add_color_cd"] = $("input[name='add_color_cd"+i+"']").val();
+						add_item[i]["add_choice_type"] = $("input[name='add_choice_type"+i+"']").val();
+						add_item[i]["add_std_input_qty"] = $("input[name='add_std_input_qty"+i+"']").val();
+						add_item[i]["add_size_cd"] = $("select[name='add_size_cd"+i+"']").val();
+						add_item[i]["add_order_num"] = $("input[name='add_order_num"+i+"']").val();
+						add_item[i]["add_order_num_disable"] = $("input[name='add_order_num_disable"+i+"']").val();
+					}
+
+					var modelForUpdate = this.model;
+					modelForUpdate.url = App.api.WC0022;
+					var cond = {
+						"scr": '発注送信',
+						"mode": "check",
+						"wearer_data": wearer_data,
+						"now_item": now_item,
+						"add_item": add_item,
+					};
+					modelForUpdate.fetchMx({
+						data:cond,
+						success:function(res){
+							var res_val = res.attributes;
 							if (res_val["error_code"] == "0") {
 								var msg = "発注送信を行いますが、よろしいですか？";
 								if (window.confirm(msg)) {
-									that.triggerMethod('sendComplete');
+									var data = {
+										"scr": '発注送信',
+										"mode": "update",
+										"wearer_data": wearer_data,
+										"now_item": now_item,
+										"add_item": add_item,
+									};
+									//console.log(data);
+
+									// 入力完了画面処理へ移行
+									that.triggerMethod('sendComplete', data);
 								}
+							} else {
+								that.triggerMethod('showAlerts', res_val["error_msg"]);
+								return;
 							}
 						}
 					});

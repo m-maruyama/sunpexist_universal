@@ -19,6 +19,12 @@
 			<!--<a href="order_input_finish.html" type="button" class="btn btn-primary btn-sm btn-block" title="発注送信">発注送信</a>-->
 		</div>
 	</div>
+
+	<!--エラーメッセージ-->
+	<div style="padding-top:20px;">
+		<div class="errors"></div>
+	<div>
+
 	<form class="form-horizontal">
 		<div class="col-md-10 box_purple">
 			<!--契約No-->
@@ -53,8 +59,19 @@
 			<div class="form-group">
 				<label class="col-md-3 control-label" for="">発令日</label>
 				<div class="col-md-8 form-inline">
-					<div class='input-group date datepicker'>
-						<input type='text' class="form-control input-sm datepicker" id='appointment_ymd' name="appointment_ymd">
+					<div class='input-group date datepicker1'>
+						<input type='text' class="form-control input-sm datepicker1" id='appointment_ymd' name="appointment_ymd">
+						<div class="input-group-addon">
+							<span class="glyphicon glyphicon-calendar"></span>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="col-md-3 control-label" for="">着用開始日</label>
+				<div class="col-md-8 form-inline">
+					<div class='input-group date datepicker2'>
+						<input type='text' class="form-control input-sm datepicker2" id='resfl_ymd' name="resfl_ymd">
 						<div class="input-group-addon">
 							<span class="glyphicon glyphicon-calendar"></span>
 						</div>
@@ -74,7 +91,7 @@
 			<div class="form-group row">
 				<label class="col-md-3 control-label" for="">コメント欄</label>
 				<div class="col-md-9">
-					<textarea rows="5" class="form-control input-sm" id=""></textarea>
+					<textarea rows="5" class="form-control input-sm" id="comment" name="comment"></textarea>
 				</div>
 			</div>
 		</div>
