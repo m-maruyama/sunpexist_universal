@@ -2282,7 +2282,7 @@ $app->post('/wearer_change_complete', function ()use($app){
      // Web更新日時
      array_push($up_query_list, "web_upd_date = '".date("Y/m/d H:i:s", time())."'");
      // 送信区分
-     array_push($up_query_list, "snd_kbn = '0'");
+     array_push($up_query_list, "snd_kbn = '1'");
      // 削除区分
      array_push($up_query_list, "del_kbn = '0'");
      // 更新日時

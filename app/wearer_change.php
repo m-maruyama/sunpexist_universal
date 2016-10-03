@@ -277,7 +277,7 @@ $app->post('/wearer_change/search', function ()use($app){
 
           // 発注、発注情報トラン有無フラグ
           if (isset($result->as_order_sts_kbn)) {
-              $list['order_kbn'] = "済";
+              $list['order_kbn'] = "<font color='red'>済</font>";
               // 発注情報トラン有
               $list['order_tran_flg'] = '1';
           }else{
