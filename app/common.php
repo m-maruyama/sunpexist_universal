@@ -673,19 +673,13 @@ $app->post('/zaiko_job_type', function () use ($app) {
     $results = new Resultset(null, $m_rent_pattern_for_sdmzk, $m_rent_pattern_for_sdmzk->getReadConnection()->query($arg_str));
     $results_array = (array) $results;
     $results_cnt = $results_array["\0*\0_count"];
-/*
-    // デフォルト「全て」を設定
-    if ($results_cnt > 1) {
-        $list['rent_pattern_data'] = null;
-        $list['rent_pattern_name'] = '全て';
-        array_push($all_list, $list);
-    }
-*/
+
     if ($results_cnt > 0) {
+/*
       $list['rent_pattern_data'] = null;
       $list['rent_pattern_name'] = '全て';
       array_push($all_list, $list);
-
+*/
       $paginator_model = new PaginatorModel(
     		array(
     			"data"  => $results,
