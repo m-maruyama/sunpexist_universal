@@ -5,7 +5,7 @@ use Phalcon\Paginator\Adapter\Model as PaginatorModel;
 use Phalcon\Paginator\Adapter\NativeArray as PaginatorArray;
 use Phalcon\Paginator\Adapter\QueryBuilder as PaginatorQueryBuilder;
 
-//前処理
+// 共通処理（操作ログ登録）
 $app->before(function () use ($app) {
     $params = json_decode(file_get_contents('php://input'), true);
     if (!$params && isset($_FILES['file'])) {
@@ -24,7 +24,11 @@ $app->before(function () use ($app) {
     } else {
         $log->scr_name = '{}';
     }
-    $log->log_type = 1; //ログ種別 1:操作ログ
+    if (!empty($params['log_type'])) {
+      $log->log_type = $params['log_type']; //ログ種別 フロント側で指定可能
+    } else {
+      $log->log_type = 3; //ログ種別 3:更新系操作ログ
+    }
     $log->log_level = 1; //ログレベル 1:INFO
     $auth = $app->session->get('auth');
     if (isset($auth['user_id'])) {
