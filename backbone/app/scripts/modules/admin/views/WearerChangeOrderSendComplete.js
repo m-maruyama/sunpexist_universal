@@ -72,7 +72,8 @@ define([
 			events: {
 				// 「続けて入力する」ボタン
 				'click @ui.continueInput': function(){
-						alert("どこへ遷移？");
+					// 検索画面へ遷移
+					location.href="wearer_change.html";
 				},
 				// 「ホーム画面へ戻る」ボタン
 				'click @ui.backHome': function(){

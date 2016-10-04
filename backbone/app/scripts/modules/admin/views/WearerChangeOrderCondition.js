@@ -157,7 +157,8 @@ define([
 					var modelForUpdate = this.model;
 					modelForUpdate.url = App.api.CM0130;
 					var cond = {
-						"scr": '更新可否チェック',
+						"scr": '職種変更または異動-発注送信-更新可否チェック',
+						"log_type": '1',
 					};
 					modelForUpdate.fetchMx({
 						data:cond,
@@ -176,7 +177,8 @@ define([
 					var modelForUpdate = this.model;
 					modelForUpdate.url = App.api.CM0130;
 					var cond = {
-						"scr": '更新可否チェック',
+						"scr": '職種変更または異動-入力完了-更新可否チェック',
+						"log_type": '1',
 					};
 					modelForUpdate.fetchMx({
 						data:cond,
@@ -195,7 +197,8 @@ define([
 					var modelForUpdate = this.model;
 					modelForUpdate.url = App.api.CM0130;
 					var cond = {
-						"scr": '更新可否チェック',
+						"scr": '職種変更または異動-発注送信-更新可否チェック',
+						"log_type": '1',
 					};
 					modelForUpdate.fetchMx({
 						data:cond,
@@ -355,20 +358,21 @@ define([
 						now_item[i]["now_choice_type"] = $("input[name='now_choice_type"+i+"']").val();
 						now_item[i]["now_std_input_qty"] = $("input[name='now_std_input_qty"+i+"']").val();
 						now_item[i]["now_size_cd"] = $("input[name='now_size_cd"+i+"']").val();
+						now_item[i]["individual_disp"] = $("input[name='individual_disp"+i+"']").val();
 						// アイテム毎の「対象」、「個体管理番号」
 						now_item[i]["individual_data"] = new Object();
 						var individual_flg = $("input[name='individual_flg"+i+"']").val();
 						if (individual_flg) {
-							var individual_disp = $("input[name='individual_disp"+i+"']").val();
-							if (individual_disp) {
+							if (now_item[i]["individual_disp"]) {
 								var elements = document.getElementsByName("now_target_flg"+i);
 								for (var j=0; j<elements.length; j++ ) {
-									now_item[i]["individual_data"]["individual_ctrl_no"] = elements[j].val();
+									now_item[i]["individual_data"][j] = new Object();
+									now_item[i]["individual_data"][j]["individual_ctrl_no"] = elements[j].val();
 									if(elements[j].checked == false) {
-										now_item[i]["individual_data"]["now_target_flg"] = '0';
+										now_item[i]["individual_data"][j]["now_target_flg"] = '0';
 									}
 									if(elements[j].checked == true){
-										now_item[i]["individual_data"]["now_target_flg"] = '1';
+										now_item[i]["individual_data"][j]["now_target_flg"] = '1';
 									}
 								}
 							}

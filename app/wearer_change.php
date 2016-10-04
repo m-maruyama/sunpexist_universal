@@ -328,7 +328,7 @@ $app->post('/wearer_change/search', function ()use($app){
             $list['disabled'] = "";
           } elseif (
             $result->as_order_sts_kbn == '1'
-            && ($result->as_order_reason_kbn == '4' || $result->as_order_reason_kbn == '8' || $result->as_order_reason_kbn == '9' || $result->as_order_reason_kbn == '11')
+            && ($result->as_order_reason_kbn == '9' || $result->as_order_reason_kbn == '10' || $result->as_order_reason_kbn == '11' || $result->as_order_reason_kbn == '24')
             && $result->as_order_snd_kbn == '0')
           {
             //パターンB： 発注情報トラン．発注状況区分 = 貸与 かつ、発注情報トラン．理由区分 = 職種変更または異動のデータがある場合、かつ、
@@ -338,7 +338,7 @@ $app->post('/wearer_change/search', function ()use($app){
             $list['disabled'] = "";
           } elseif (
             $result->as_order_sts_kbn == '2'
-            && ($result->as_order_reason_kbn == '4' || $result->as_order_reason_kbn == '8' || $result->as_order_reason_kbn == '9' || $result->as_order_reason_kbn == '11')
+            && ($result->as_order_reason_kbn == '9' || $result->as_order_reason_kbn == '10' || $result->as_order_reason_kbn == '11' || $result->as_order_reason_kbn == '24')
             && $result->as_order_snd_kbn == '1')
           {
             //パターンC： 発注情報トラン．発注状況区分 = 貸与 かつ、発注情報トラン．理由区分 = 職種変更または異動のデータがある場合、かつ、
@@ -348,7 +348,7 @@ $app->post('/wearer_change/search', function ()use($app){
             $list['disabled'] = "disabled";
           } elseif (
             $result->as_order_sts_kbn !== '1'
-            || ($result->as_order_sts_kbn == '1' && ($result->as_order_reason_kbn !== '4' && $result->as_order_reason_kbn !== '8' && $result->as_order_reason_kbn !== '9' && $result->as_order_reason_kbn !== '11'))
+            || ($result->as_order_sts_kbn == '1' && ($result->as_order_reason_kbn !== '9' && $result->as_order_reason_kbn !== '10' && $result->as_order_reason_kbn !== '11' && $result->as_order_reason_kbn !== '24'))
             && $result->as_order_snd_kbn == '1')
           {
             //パターンD： 発注情報トラン．発注状況区分 = 貸与以外、もしくは、発注情報トラン．発注状況区分 = 貸与 かつ、発注情報トラン．理由区分 = 職種変更または異動以外のデータがある場合、かつ、
@@ -366,10 +366,10 @@ $app->post('/wearer_change/search', function ()use($app){
           //「返却伝票ダウンロード」ボタン生成
           if (
             ($result->as_order_sts_kbn == '1'
-            && ($result->as_order_reason_kbn == '4' || $result->as_order_reason_kbn == '8' || $result->as_order_reason_kbn == '9' || $result->as_order_reason_kbn == '11')
+            && ($result->as_order_reason_kbn == '9' || $result->as_order_reason_kbn == '10' || $result->as_order_reason_kbn == '11' || $result->as_order_reason_kbn == '24')
             && $result->as_order_snd_kbn == '0') ||
             ($result->as_order_sts_kbn == '2'
-            && ($result->as_order_reason_kbn == '4' || $result->as_order_reason_kbn == '8' || $result->as_order_reason_kbn == '9' || $result->as_order_reason_kbn == '11')
+            && ($result->as_order_reason_kbn == '9' || $result->as_order_reason_kbn == '10' || $result->as_order_reason_kbn == '11' || $result->as_order_reason_kbn == '24')
             && $result->as_order_snd_kbn == '1')
           )
           {
