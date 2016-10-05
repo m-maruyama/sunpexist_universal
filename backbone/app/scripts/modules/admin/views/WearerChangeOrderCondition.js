@@ -76,7 +76,7 @@ define([
 			onRender: function() {
 				var that = this;
 
-				// 着用者情報(着用者名、(読み仮名)、社員コード、発令日)
+				// 着用者情報(着用者名、(読み仮名)、社員コード、発令日、セッションパラメータ)
 				var modelForUpdate = this.model;
 				modelForUpdate.url = App.api.WC0018;
 				var cond = {
@@ -94,9 +94,23 @@ define([
 						}
 						var res_list = res.attributes;
 						//console.log(res_list['wearer_info']);
-						that.ui.member_no.val(res_list['wearer_info'][0]['cster_emply_cd']);
-						that.ui.member_name.val(res_list['wearer_info'][0]['werer_name']);
-						that.ui.member_name_kana.val(res_list['wearer_info'][0]['werer_name_kana']);
+
+						// 発注取消ボタンvalue値設定
+						var delete_param =
+							res_list['rntl_cont_no'] + ":"
+							+ res_list['rntl_sect_cd'] + ":"
+							+ res_list['job_type_cd'] + ":"
+							+ res_list['werer_cd'] + ":"
+							+ res_list['order_req_no']
+						;
+						that.ui.delete.val(delete_param);
+
+						// 社員コード、着用者名、読みかな
+						if (res_list['wearer_info'][0]) {
+							that.ui.member_no.val(res_list['wearer_info'][0]['cster_emply_cd']);
+							that.ui.member_name.val(res_list['wearer_info'][0]['werer_name']);
+							that.ui.member_name_kana.val(res_list['wearer_info'][0]['werer_name_kana']);
+						}
 
 						var maxTime = new Date();
 						maxTime.setHours(15);
@@ -106,7 +120,10 @@ define([
 						minTime.setHours(9);
 						minTime.setMinutes(0);
 						// 発令日
-						var appointment_ymd = res_list['wearer_info'][0]['appointment_ymd'];
+						var appointment_ymd = "";
+						if (res_list['wearer_info'][0]) {
+							var appointment_ymd = res_list['wearer_info'][0]['appointment_ymd'];
+						}
 						that.ui.datepicker1.datetimepicker({
 							format: 'YYYY/MM/DD',
 							//useCurrent: 'day',
@@ -122,7 +139,10 @@ define([
 							//$(this).find('input').trigger('input');
 						});
 						// 着用開始日
-						var resfl_ymd = res_list['wearer_info'][0]['resfl_ymd'];
+						var resfl_ymd = "";
+						if (res_list['wearer_info'][0]) {
+							var resfl_ymd = res_list['wearer_info'][0]['resfl_ymd'];
+						}
 						that.ui.datepicker2.datetimepicker({
 							format: 'YYYY/MM/DD',
 							//useCurrent: 'day',
@@ -140,10 +160,6 @@ define([
 					}
 				});
 			},
-			templateHelpers: function(res_list) {
-				//console.log(res_list);
-				return res_list;
-			},
 			events: {
 				// 「戻る」ボタン
 				'click @ui.back': function(){
@@ -154,11 +170,28 @@ define([
 				'click @ui.delete': function(){
 					var that = this;
 
+					// 発注取消パラメータ取得
+					var delete_vals = $("button[name='delete_param']").val();
+					var val = delete_vals.split(':');
+					var rntl_cont_no = val[0];
+					var rntl_sect_cd = val[1];
+					var job_type_cd = val[2];
+					var werer_cd = val[3];
+					var order_req_no = val[4];
+					var data = {
+						"werer_cd": werer_cd,
+						"order_req_no": order_req_no,
+						"rntl_cont_no": rntl_cont_no,
+						"rntl_sect_cd": rntl_sect_cd,
+						"job_type_cd": job_type_cd
+					};
+
 					var modelForUpdate = this.model;
 					modelForUpdate.url = App.api.CM0130;
 					var cond = {
-						"scr": '職種変更または異動-発注送信-更新可否チェック',
-						"log_type": '1',
+						"scr": '職種変更または異動-発注取消-更新可否チェック',
+						"log_type": '3',
+						"data": data,
 					};
 					modelForUpdate.fetchMx({
 						data:cond,
@@ -166,7 +199,8 @@ define([
 							var res_val = res.attributes;
 							var type = "cm0130_res";
 							var transition = "WC0020_req";
-							that.onShow(res_val, type, transition);
+							var data = cond["data"];
+							that.onShow(res_val, type, transition, data);
 						}
 					});
 				},
@@ -186,7 +220,8 @@ define([
 							var type = "cm0130_res";
 							var res_val = res.attributes;
 							var transition = "WC0021_req";
-							that.onShow(res_val, type, transition);
+							var data = "";
+							that.onShow(res_val, type, transition, data);
 						}
 					});
 				},
@@ -206,7 +241,8 @@ define([
 							var type = "cm0130_res";
 							var res_val = res.attributes;
 							var transition = "WC0022_req";
-							that.onShow(res_val, type, transition);
+							var data = "";
+							that.onShow(res_val, type, transition, data);
 						}
 					});
 				},
@@ -270,7 +306,7 @@ define([
 					this.shipment.show(shipmentConditionChangeView);
 				},
 			},
-			onShow: function(val, type, transition) {
+			onShow: function(val, type, transition, data) {
 				var that = this;
 
 				// 更新可否チェック結果処理
@@ -304,6 +340,7 @@ define([
 						modelForUpdate.url = App.api.WC0020;
 						var cond = {
 							"scr": '発注取消',
+							"data": data,
 						};
 						modelForUpdate.fetchMx({
 							data:cond,
