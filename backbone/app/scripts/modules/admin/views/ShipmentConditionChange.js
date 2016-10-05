@@ -6,6 +6,7 @@ define([
 	App.module('Admin.Views', function(Views, App, Backbone, Marionette, $, _){
 		Views.ShipmentConditionChange = Marionette.LayoutView.extend({
 			defaults: {
+				section: '',
 				ship_to_cd: '',
 				ship_to_brnch_cd: '',
 				chg_flg: '',
@@ -25,6 +26,7 @@ define([
 			onShow: function() {
 				var that = this;
 				var data = {
+					'section': this.options.section,
 					'ship_to_cd': this.options.ship_to_cd,
 					'ship_to_brnch_cd': this.options.ship_to_brnch_cd,
 					'chg_flg': this.options.chg_flg,
@@ -33,7 +35,7 @@ define([
 				var modelForUpdate = this.model;
 				modelForUpdate.url = App.api.WC0017;
 				var cond = {
-					"scr": '出荷先',
+					"scr": '職種変更または異動:出荷先セレクトボックス',
 					"data": data,
 				};
 				modelForUpdate.fetchMx({

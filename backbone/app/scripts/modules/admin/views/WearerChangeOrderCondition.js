@@ -210,6 +210,22 @@ define([
 						}
 					});
 				},
+				// 拠点
+				'change @ui.section': function(){
+					this.ui.section = $('#section');
+					var section = $("select[name='section']").val();
+					var shipment_vals = $("select[name='shipment']").val();
+					var val = shipment_vals.split(':');
+					var ship_to_cd = val[0];
+					var ship_to_brnch_cd = val[1];
+					var shipmentConditionChangeView = new App.Admin.Views.ShipmentConditionChange({
+						section: section,
+						ship_to_cd: ship_to_cd,
+						ship_to_brnch_cd: ship_to_brnch_cd,
+						chg_flg: '1',
+					});
+					this.shipment.show(shipmentConditionChangeView);
+				},
 				// 貸与パターン
 				'change @ui.job_type': function(){
 					var that = this;
@@ -240,17 +256,17 @@ define([
 				// 出荷先
 				'change @ui.shipment': function(){
 					this.ui.shipment = $('#shipment');
-
-					var vals = $("select[name='shipment']").val();
-					var val = vals.split(':');
+					var section = $("select[name='section']").val();
+					var shipment_vals = $("select[name='shipment']").val();
+					var val = shipment_vals.split(':');
 					var ship_to_cd = val[0];
 					var ship_to_brnch_cd = val[1];
 					var shipmentConditionChangeView = new App.Admin.Views.ShipmentConditionChange({
+						section: section,
 						ship_to_cd: ship_to_cd,
 						ship_to_brnch_cd: ship_to_brnch_cd,
-						chg_flg: '1',
+						chg_flg: 'shipment',
 					});
-					//shipmentConditionChangeView.onShow();
 					this.shipment.show(shipmentConditionChangeView);
 				},
 			},

@@ -53,7 +53,7 @@ $app->post('/agreement_no_change', function ()use($app){
     $arg_str .= ' ORDER BY as_rntl_cont_no asc';
 
     $m_contract = new MContract();
-    $results = new Resultset(null, $m_contract, $m_contract->getReadConnection()->query($arg_str));
+    $results = new Resultset(NULL, $m_contract, $m_contract->getReadConnection()->query($arg_str));
     $results_array = (array) $results;
     $results_cnt = $results_array["\0*\0_count"];
 
@@ -80,7 +80,7 @@ $app->post('/agreement_no_change', function ()use($app){
         array_push($all_list, $list);
       }
     } else {
-      $list['rntl_cont_no'] = null;
+      $list['rntl_cont_no'] = NULL;
       $list['rntl_cont_name'] = '';
       $list['selected'] = '';
       array_push($all_list, $list);
@@ -120,7 +120,7 @@ $app->post('/reason_kbn_change', function ()use($app){
     $arg_str .= $query;
 
     $m_job_type = new MJobType();
-    $results = new Resultset(null, $m_job_type, $m_job_type->getReadConnection()->query($arg_str));
+    $results = new Resultset(NULL, $m_job_type, $m_job_type->getReadConnection()->query($arg_str));
     $results_array = (array) $results;
     $results_cnt = $results_array["\0*\0_count"];
 
@@ -160,7 +160,7 @@ $app->post('/reason_kbn_change', function ()use($app){
     $arg_str .= $query;
 
     $m_gencode = new MGencode();
-    $results = new Resultset(null, $m_gencode, $m_gencode->getReadConnection()->query($arg_str));
+    $results = new Resultset(NULL, $m_gencode, $m_gencode->getReadConnection()->query($arg_str));
     $results_array = (array) $results;
     $results_cnt = $results_array["\0*\0_count"];
 
@@ -193,7 +193,7 @@ $app->post('/reason_kbn_change', function ()use($app){
         array_push($all_list, $list);
       }
     } else {
-      $list['reason_kbn'] = null;
+      $list['reason_kbn'] = NULL;
       $list['reason_kbn_name'] = '';
       $list['selected'] = '';
       array_push($all_list, $list);
@@ -235,7 +235,7 @@ $app->post('/sex_kbn_change', function ()use($app){
     $arg_str .= $query;
 
     $m_gencode = new MGencode();
-    $results = new Resultset(null, $m_gencode, $m_gencode->getReadConnection()->query($arg_str));
+    $results = new Resultset(NULL, $m_gencode, $m_gencode->getReadConnection()->query($arg_str));
     $results_array = (array) $results;
     $results_cnt = $results_array["\0*\0_count"];
 
@@ -268,7 +268,7 @@ $app->post('/sex_kbn_change', function ()use($app){
         array_push($all_list, $list);
       }
     } else {
-      $list['sex_kbn'] = null;
+      $list['sex_kbn'] = NULL;
       $list['sex_kbn_name'] = '';
       $list['selected'] = '';
       array_push($all_list, $list);
@@ -310,7 +310,7 @@ $app->post('/section_change', function ()use($app){
     $arg_str .= ' ORDER BY rntl_sect_cd asc';
 
     $m_section = new MSection();
-    $results = new Resultset(null, $m_section, $m_section->getReadConnection()->query($arg_str));
+    $results = new Resultset(NULL, $m_section, $m_section->getReadConnection()->query($arg_str));
     $results_array = (array) $results;
     $results_cnt = $results_array["\0*\0_count"];
     //ChromePhp::LOG($results_cnt);
@@ -344,7 +344,7 @@ $app->post('/section_change', function ()use($app){
         array_push($all_list, $list);
       }
     } else {
-      $list['rntl_sect_cd'] = null;
+      $list['rntl_sect_cd'] = NULL;
       $list['rntl_sect_name'] = '';
       $list['selected'] = '';
       array_push($all_list, $list);
@@ -386,7 +386,7 @@ $app->post('/job_type_change', function ()use($app){
     $arg_str .= ' ORDER BY job_type_cd asc';
 
     $m_job_type = new MJobType();
-    $results = new Resultset(null, $m_job_type, $m_job_type->getReadConnection()->query($arg_str));
+    $results = new Resultset(NULL, $m_job_type, $m_job_type->getReadConnection()->query($arg_str));
     $results_array = (array) $results;
     $results_cnt = $results_array["\0*\0_count"];
     //ChromePhp::LOG($results_cnt);
@@ -421,7 +421,7 @@ $app->post('/job_type_change', function ()use($app){
         array_push($all_list, $list);
       }
     } else {
-      $list['job_type_cd'] = null;
+      $list['job_type_cd'] = NULL;
       $list['job_type_name'] = '';
       $list['sp_job_type_flg'] = '0';
       $list['selected'] = '';
@@ -451,12 +451,12 @@ $app->post('/shipment_change', function ()use($app){
     $cond = $params["data"];
     //ChromePhp::LOG($cond);
 
-    $query_list = array();
     $list = array();
     $all_list = array();
     $json_list = array();
 
     //--出荷先選択ボックス生成--//
+    $query_list = array();
     array_push($query_list, "corporate_id = '".$auth['corporate_id']."'");
     array_push($query_list, "rntl_cont_no = '".$wearer_chg_post['rntl_cont_no']."'");
     $query = implode(' AND ', $query_list);
@@ -469,11 +469,10 @@ $app->post('/shipment_change', function ()use($app){
     $arg_str .= ' ORDER BY ship_to_cd asc,ship_to_brnch_cd asc';
 
     $m_shipment_to = new MShipmentTo();
-    $results = new Resultset(null, $m_shipment_to, $m_shipment_to->getReadConnection()->query($arg_str));
+    $results = new Resultset(NULL, $m_shipment_to, $m_shipment_to->getReadConnection()->query($arg_str));
     $results_array = (array) $results;
     $results_cnt = $results_array["\0*\0_count"];
     //ChromePhp::LOG($results_cnt);
-
     if ($results_cnt > 0) {
       $paginator_model = new PaginatorModel(
     		array(
@@ -484,6 +483,14 @@ $app->post('/shipment_change', function ()use($app){
     	);
       $paginator = $paginator_model->getPaginate();
   		$results = $paginator->items;
+
+      // 拠点にあわせる選択肢
+      $list['ship_to_cd'] = "0";
+      $list['ship_to_brnch_cd'] = "0";
+      $list['cust_to_brnch_name1'] = "支店店舗と同じ";
+      $list['cust_to_brnch_name2'] = "";
+      $list['selected'] = "";
+      array_push($all_list, $list);
 
       foreach ($results as $result) {
         $list['ship_to_cd'] = $result->ship_to_cd;
@@ -496,21 +503,17 @@ $app->post('/shipment_change', function ()use($app){
         $list['address3'] = $result->address3;
         $list['address4'] = $result->address4;
 
+        //「出荷先」変更時
         if (!empty($cond["chg_flg"])) {
-          // 「出荷先コード」変更時の生成
           if ($list['ship_to_cd'] == $cond['ship_to_cd'] && $list['ship_to_brnch_cd'] == $cond['ship_to_brnch_cd']) {
             $list['selected'] = 'selected';
           } else {
             $list['selected'] = '';
           }
         } else {
-          // 初期遷移時、発注情報トランフラグ有の場合は初期選択状態版を生成
-          if ($wearer_chg_post['order_tran_flg'] == '1') {
-            if ($list['ship_to_cd'] == $wearer_chg_post['ship_to_cd'] && $list['ship_to_brnch_cd'] == $wearer_chg_post['ship_to_brnch_cd']) {
-              $list['selected'] = 'selected';
-            } else {
-              $list['selected'] = '';
-            }
+          // 初期遷移時は初期選択状態版を生成
+          if ($list['ship_to_cd'] == $wearer_chg_post['ship_to_cd'] && $list['ship_to_brnch_cd'] == $wearer_chg_post['ship_to_brnch_cd']) {
+            $list['selected'] = 'selected';
           } else {
             $list['selected'] = '';
           }
@@ -526,22 +529,77 @@ $app->post('/shipment_change', function ()use($app){
       $list['selected'] = '';
       array_push($all_list, $list);
     }
+
+    //「支店店舗とおなじ」が選択されている場合
+    if ($cond['ship_to_cd'] == "0" && $cond['ship_to_brnch_cd'] == "0") {
+      // 部門マスタから標準出荷先、支店コード取得
+      $query_list = array();
+      array_push($query_list, "corporate_id = '".$auth['corporate_id']."'");
+      array_push($query_list, "rntl_cont_no = '".$wearer_chg_post['rntl_cont_no']."'");
+      array_push($query_list, "rntl_sect_cd = '".$cond['section']."'");
+      $query = implode(' AND ', $query_list);
+
+      $arg_str = '';
+      $arg_str = 'SELECT ';
+      $arg_str .= 'std_ship_to_cd,';
+      $arg_str .= 'std_ship_to_brnch_cd';
+      $arg_str .= ' FROM ';
+      $arg_str .= 'm_section';
+      $arg_str .= ' WHERE ';
+      $arg_str .= $query;
+      $m_section = new MSection();
+      $results = new Resultset(NULL, $m_section, $m_section->getReadConnection()->query($arg_str));
+      $results_array = (array) $results;
+      $results_cnt = $results_array["\0*\0_count"];
+      //ChromePhp::LOG($results_cnt);
+      $paginator_model = new PaginatorModel(
+        array(
+          "data"  => $results,
+          "limit" => $results_cnt,
+          "page" => 1
+        )
+      );
+      $paginator = $paginator_model->getPaginate();
+      $results = $paginator->items;
+      foreach ($results as $result) {
+        $std_ship_to_cd = $result->std_ship_to_cd;
+        $std_ship_to_brnch_cd = $result->std_ship_to_brnch_cd;
+      }
+    }
+
     $json_list['shipment_list'] = $all_list;
     //ChromePhp::LOG($json_list['shipment_list']);
 
     // 表示する対象支店の郵便番号、住所を設定
     $post_address = array();
     for ($i=0; count($all_list)>$i; $i++) {
-      if (!empty($all_list[$i]['selected'])) {
-        $post_address = array(
-          'zip_no' => preg_replace('/^(\d{3})(\d{4})$/', '$1-$2', $all_list[$i]['zip_no']),
-          'address1' => $all_list[$i]['address1'],
-          'address2' => $all_list[$i]['address2'],
-          'address3' => $all_list[$i]['address3'],
-          'address4' => $all_list[$i]['address4']
-        );
-        $post_address_list = array();
-        array_push($post_address_list, $post_address);
+      if ($i !== 0) {
+        //「支店店舗とおなじ」が選択されている場合
+        if ($cond['ship_to_cd'] == "0" && $cond['ship_to_brnch_cd'] == "0") {
+          if ($all_list[$i]['ship_to_cd'] == $std_ship_to_cd && $all_list[$i]['ship_to_brnch_cd'] == $std_ship_to_brnch_cd) {
+            $post_address = array(
+              'zip_no' => preg_replace('/^(\d{3})(\d{4})$/', '$1-$2', $all_list[$i]['zip_no']),
+              'address1' => $all_list[$i]['address1'],
+              'address2' => $all_list[$i]['address2'],
+              'address3' => $all_list[$i]['address3'],
+              'address4' => $all_list[$i]['address4']
+            );
+            $post_address_list = array();
+            array_push($post_address_list, $post_address);
+          }
+        } else {
+          if (!empty($all_list[$i]['selected'])) {
+            $post_address = array(
+              'zip_no' => preg_replace('/^(\d{3})(\d{4})$/', '$1-$2', $all_list[$i]['zip_no']),
+              'address1' => $all_list[$i]['address1'],
+              'address2' => $all_list[$i]['address2'],
+              'address3' => $all_list[$i]['address3'],
+              'address4' => $all_list[$i]['address4']
+            );
+            $post_address_list = array();
+            array_push($post_address_list, $post_address);
+          }
+        }
       }
     }
     if (empty($post_address)) {
@@ -603,7 +661,7 @@ $app->post('/wearer_info', function ()use($app){
       $arg_str .= " ORDER BY m_wearer_std_tran.upd_date DESC";
 
       $m_weare_std_tran = new MWearerStdTran();
-      $results = new Resultset(null, $m_weare_std_tran, $m_weare_std_tran->getReadConnection()->query($arg_str));
+      $results = new Resultset(NULL, $m_weare_std_tran, $m_weare_std_tran->getReadConnection()->query($arg_str));
       $result_obj = (array)$results;
       $results_cnt = $result_obj["\0*\0_count"];
 
@@ -668,7 +726,7 @@ $app->post('/wearer_info', function ()use($app){
       $arg_str .= " ORDER BY m_wearer_std.upd_date DESC";
 
       $m_weare_std = new MWearerStd();
-      $results = new Resultset(null, $m_weare_std, $m_weare_std->getReadConnection()->query($arg_str));
+      $results = new Resultset(NULL, $m_weare_std, $m_weare_std->getReadConnection()->query($arg_str));
       $result_obj = (array)$results;
       $results_cnt = $result_obj["\0*\0_count"];
 
@@ -758,14 +816,14 @@ $app->post('/wearer_info', function ()use($app){
    $arg_str .= " ORDER BY upd_date DESC";
 
    $m_weare_std = new MWearerStd();
-   $results = new Resultset(null, $m_weare_std, $m_weare_std->getReadConnection()->query($arg_str));
+   $results = new Resultset(NULL, $m_weare_std, $m_weare_std->getReadConnection()->query($arg_str));
    $result_obj = (array)$results;
    $results_cnt = $result_obj["\0*\0_count"];
    //ChromePhp::LOG($results_cnt);
 
    $m_wearer_cnt = $results_cnt;
-   $m_wearer_rntl_sect_cd = null;
-   $m_wearer_job_type_cd = null;
+   $m_wearer_rntl_sect_cd = NULL;
+   $m_wearer_job_type_cd = NULL;
    if (!empty($results_cnt)) {
      $paginator_model = new PaginatorModel(
          array(
@@ -810,14 +868,14 @@ $app->post('/wearer_info', function ()use($app){
    $arg_str .= " ORDER BY upd_date DESC";
 
    $t_order_tran = new TOrderTran();
-   $results = new Resultset(null, $t_order_tran, $t_order_tran->getReadConnection()->query($arg_str));
+   $results = new Resultset(NULL, $t_order_tran, $t_order_tran->getReadConnection()->query($arg_str));
    $result_obj = (array)$results;
    $results_cnt = $result_obj["\0*\0_count"];
    //ChromePhp::LOG($results_cnt);
 
    $t_order_tran_cnt = $results_cnt;
-   $t_order_tran_rntl_sect_cd = null;
-   $t_order_tran_job_type_cd = null;
+   $t_order_tran_rntl_sect_cd = NULL;
+   $t_order_tran_job_type_cd = NULL;
    if (!empty($results_cnt)) {
      $paginator_model = new PaginatorModel(
          array(
@@ -858,14 +916,14 @@ $app->post('/wearer_info', function ()use($app){
    $arg_str .= " ORDER BY order_req_no DESC";
 
    $t_returned_plan_info_tran = new TReturnedPlanInfoTran();
-   $results = new Resultset(null, $t_returned_plan_info_tran, $t_returned_plan_info_tran->getReadConnection()->query($arg_str));
+   $results = new Resultset(NULL, $t_returned_plan_info_tran, $t_returned_plan_info_tran->getReadConnection()->query($arg_str));
    $result_obj = (array)$results;
    $results_cnt = $result_obj["\0*\0_count"];
    //ChromePhp::LOG($results_cnt);
 
    $t_returned_plan_info_tran_cnt = $results_cnt;
-   $t_returned_plan_info_tran_rntl_sect_cd = null;
-   $t_returned_plan_info_tran_job_type_cd = null;
+   $t_returned_plan_info_tran_rntl_sect_cd = NULL;
+   $t_returned_plan_info_tran_job_type_cd = NULL;
    if (!empty($results_cnt)) {
      $paginator_model = new PaginatorModel(
          array(
@@ -887,14 +945,14 @@ $app->post('/wearer_info', function ()use($app){
 
    //--【変更後】部門コード、職種コードの設定--//
    // 部門コード
-   $chg_wearer_rntl_sect_cd = null;
+   $chg_wearer_rntl_sect_cd = NULL;
    if (!empty($t_order_tran_rntl_sect_cd)) {
      $chg_wearer_rntl_sect_cd = $t_order_tran_rntl_sect_cd;
    } elseif (!empty($t_returned_plan_info_tran_rntl_sect_cd)) {
      $chg_wearer_rntl_sect_cd = $t_returned_plan_info_tran_rntl_sect_cd;
    }
    // 職種コード
-   $chg_wearer_job_type_cd = null;
+   $chg_wearer_job_type_cd = NULL;
    if (!empty($cond["job_type"])) {
      // 着用者情報項目「貸与パターン」が変更された場合
      $chg_wearer_job_type_cd = $cond["job_type"];
@@ -951,7 +1009,7 @@ $app->post('/wearer_info', function ()use($app){
    $arg_str .= " ORDER BY as_item_cd,as_color_cd ASC";
 
    $m_input_item = new MInputItem();
-   $results = new Resultset(null, $m_input_item, $m_input_item->getReadConnection()->query($arg_str));
+   $results = new Resultset(NULL, $m_input_item, $m_input_item->getReadConnection()->query($arg_str));
    $result_obj = (array)$results;
    $results_cnt = $result_obj["\0*\0_count"];
    //ChromePhp::LOG($results_cnt);
@@ -1039,7 +1097,7 @@ $app->post('/wearer_info', function ()use($app){
    $arg_str .= " ORDER BY as_item_cd,as_color_cd ASC";
 
    $m_input_item = new MInputItem();
-   $results = new Resultset(null, $m_input_item, $m_input_item->getReadConnection()->query($arg_str));
+   $results = new Resultset(NULL, $m_input_item, $m_input_item->getReadConnection()->query($arg_str));
    $result_obj = (array)$results;
    $results_cnt = $result_obj["\0*\0_count"];
    //ChromePhp::LOG($results_cnt);
@@ -1160,7 +1218,7 @@ $app->post('/wearer_info', function ()use($app){
        $arg_str .= $query;
 
        $m_input_item = new MInputItem();
-       $results = new Resultset(null, $m_input_item, $m_input_item->getReadConnection()->query($arg_str));
+       $results = new Resultset(NULL, $m_input_item, $m_input_item->getReadConnection()->query($arg_str));
        $result_obj = (array)$results;
        $results_cnt = $result_obj["\0*\0_count"];
        if ($results_cnt > 1) {
@@ -1192,7 +1250,7 @@ $app->post('/wearer_info', function ()use($app){
        $arg_str .= $query;
 
        $m_item = new MItem();
-       $results = new Resultset(null, $m_item, $m_item->getReadConnection()->query($arg_str));
+       $results = new Resultset(NULL, $m_item, $m_item->getReadConnection()->query($arg_str));
        $result_obj = (array)$results;
        $results_cnt = $result_obj["\0*\0_count"];
        if (!empty($results_cnt)) {
@@ -1304,7 +1362,7 @@ $app->post('/wearer_info', function ()use($app){
        $arg_str .= $query;
 
        $m_input_item = new MInputItem();
-       $results = new Resultset(null, $m_input_item, $m_input_item->getReadConnection()->query($arg_str));
+       $results = new Resultset(NULL, $m_input_item, $m_input_item->getReadConnection()->query($arg_str));
        $result_obj = (array)$results;
        $results_cnt = $result_obj["\0*\0_count"];
        if ($results_cnt > 1) {
@@ -1346,7 +1404,7 @@ $app->post('/wearer_info', function ()use($app){
        $arg_str .= $query;
 
        $m_wearer_std = new MWearerStd();
-       $results = new Resultset(null, $m_wearer_std, $m_wearer_std->getReadConnection()->query($arg_str));
+       $results = new Resultset(NULL, $m_wearer_std, $m_wearer_std->getReadConnection()->query($arg_str));
        $result_obj = (array)$results;
        $results_cnt = $result_obj["\0*\0_count"];
        if (!empty($results_cnt)) {
@@ -1409,7 +1467,7 @@ $app->post('/wearer_info', function ()use($app){
        $arg_str .= $query;
 
        $t_delivery_goods_state_details = new TDeliveryGoodsStateDetails();
-       $results = new Resultset(null, $t_delivery_goods_state_details, $t_delivery_goods_state_details->getReadConnection()->query($arg_str));
+       $results = new Resultset(NULL, $t_delivery_goods_state_details, $t_delivery_goods_state_details->getReadConnection()->query($arg_str));
        $result_obj = (array)$results;
        $results_cnt = $result_obj["\0*\0_count"];
        //ChromePhp::LOG($t_delivery_goods_state_details->getReadConnection()->query($arg_str));
@@ -1459,7 +1517,7 @@ $app->post('/wearer_info', function ()use($app){
            $arg_str .= $query;
 
            $t_returned_plan_info_tran = new TReturnedPlanInfoTran();
-           $results = new Resultset(null, $t_returned_plan_info_tran, $t_returned_plan_info_tran->getReadConnection()->query($arg_str));
+           $results = new Resultset(NULL, $t_returned_plan_info_tran, $t_returned_plan_info_tran->getReadConnection()->query($arg_str));
            $result_obj = (array)$results;
            $results_cnt = $result_obj["\0*\0_count"];
            if ($results_cnt > 0) {
@@ -1631,7 +1689,7 @@ $app->post('/wearer_change_delete', function ()use($app){
     $arg_str .= $query;
     //ChromePhp::LOG($arg_str);
     $m_wearer_item_tran = new MWearerItemTran();
-    $results = new Resultset(null, $m_wearer_item_tran, $m_wearer_item_tran->getReadConnection()->query($arg_str));
+    $results = new Resultset(NULL, $m_wearer_item_tran, $m_wearer_item_tran->getReadConnection()->query($arg_str));
     $result_obj = (array)$results;
     $results_cnt = $result_obj["\0*\0_count"];
     //ChromePhp::LOG($results_cnt);
@@ -1654,7 +1712,7 @@ $app->post('/wearer_change_delete', function ()use($app){
     $arg_str .= $query;
     //ChromePhp::LOG($arg_str);
     $t_order_tran = new TOrderTran();
-    $results = new Resultset(null, $t_order_tran, $t_order_tran->getReadConnection()->query($arg_str));
+    $results = new Resultset(NULL, $t_order_tran, $t_order_tran->getReadConnection()->query($arg_str));
     $result_obj = (array)$results;
     $results_cnt = $result_obj["\0*\0_count"];
     //ChromePhp::LOG($results_cnt);
@@ -1679,7 +1737,7 @@ $app->post('/wearer_change_delete', function ()use($app){
       $arg_str .= $query;
       //ChromePhp::LOG($arg_str);
       $m_wearer_std_tran = new MWearerStdTran();
-      $results = new Resultset(null, $m_wearer_std_tran, $m_wearer_std_tran->getReadConnection()->query($arg_str));
+      $results = new Resultset(NULL, $m_wearer_std_tran, $m_wearer_std_tran->getReadConnection()->query($arg_str));
       $result_obj = (array)$results;
       $results_cnt = $result_obj["\0*\0_count"];
       //ChromePhp::LOG($results_cnt);
@@ -1713,7 +1771,7 @@ $app->post('/wearer_change_delete', function ()use($app){
     //ChromePhp::LOG($arg_str);
 
     $t_order_tran = new TOrderTran();
-    $results = new Resultset(null, $t_order_tran, $t_order_tran->getReadConnection()->query($arg_str));
+    $results = new Resultset(NULL, $t_order_tran, $t_order_tran->getReadConnection()->query($arg_str));
     $result_obj = (array)$results;
     $results_cnt = $result_obj["\0*\0_count"];
     //ChromePhp::LOG($results_cnt);
@@ -1745,7 +1803,7 @@ $app->post('/wearer_change_delete', function ()use($app){
     $arg_str .= $query;
     //ChromePhp::LOG($arg_str);
     $t_returned_plan_info_tran = new TReturnedPlanInfoTran();
-    $results = new Resultset(null, $t_returned_plan_info_tran, $t_returned_plan_info_tran->getReadConnection()->query($arg_str));
+    $results = new Resultset(NULL, $t_returned_plan_info_tran, $t_returned_plan_info_tran->getReadConnection()->query($arg_str));
     $result_obj = (array)$results;
     $results_cnt = $result_obj["\0*\0_count"];
     //ChromePhp::LOG($results_cnt);
@@ -1818,7 +1876,7 @@ $app->post('/wearer_change_complete', function ()use($app){
      $arg_str .= $query;
      //ChromePhp::LOG($arg_str);
      $m_wearer_std = new MWearerStd();
-     $results = new Resultset(null, $m_wearer_std, $m_wearer_std->getReadConnection()->query($arg_str));
+     $results = new Resultset(NULL, $m_wearer_std, $m_wearer_std->getReadConnection()->query($arg_str));
      $result_obj = (array)$results;
      $results_cnt = $result_obj["\0*\0_count"];
      //ChromePhp::LOG($results_cnt);
@@ -1913,7 +1971,7 @@ $app->post('/wearer_change_complete', function ()use($app){
      $arg_str .= " ORDER BY upd_date DESC";
      //ChromePhp::LOG($arg_str);
      $t_order_tran = new TOrderTran();
-     $results = new Resultset(null, $t_order_tran, $t_order_tran->getReadConnection()->query($arg_str));
+     $results = new Resultset(NULL, $t_order_tran, $t_order_tran->getReadConnection()->query($arg_str));
      $result_obj = (array)$results;
      $results_cnt = $result_obj["\0*\0_count"];
      //ChromePhp::LOG($results_cnt);
@@ -1972,7 +2030,7 @@ $app->post('/wearer_change_complete', function ()use($app){
      $arg_str .= $query;
      //ChromePhp::LOG($arg_str);
      $m_wearer_std_tran = new MWearerStdTran();
-     $results = new Resultset(null, $m_wearer_std_tran, $m_wearer_std_tran->getReadConnection()->query($arg_str));
+     $results = new Resultset(NULL, $m_wearer_std_tran, $m_wearer_std_tran->getReadConnection()->query($arg_str));
      $result_obj = (array)$results;
      $results_cnt = $result_obj["\0*\0_count"];
      //ChromePhp::LOG($results_cnt);
@@ -1995,7 +2053,7 @@ $app->post('/wearer_change_complete', function ()use($app){
 
      // トランザクション開始
      $m_wearer_std_tran = new MWearerStdTran();
-     $results = new Resultset(null, $m_wearer_std_tran, $m_wearer_std_tran->getReadConnection()->query('begin'));
+     $results = new Resultset(NULL, $m_wearer_std_tran, $m_wearer_std_tran->getReadConnection()->query('begin'));
      try {
        // 着用者基本マスタトラン更新処理
        //※検索条件
@@ -2052,6 +2110,42 @@ $app->post('/wearer_change_complete', function ()use($app){
          $shipment = explode(':', $wearer_data_input['shipment']);
          $ship_to_cd = $shipment[0];
          $ship_to_brnch_cd = $shipment[1];
+
+         // 出荷先が「支店店舗と同じ」の場合、部門マスタから標準出荷先、支店コードを設定
+         if ($ship_to_cd == "0" && $ship_to_brnch_cd == "0") {
+           $query_list = array();
+           array_push($query_list, "corporate_id = '".$auth['corporate_id']."'");
+           array_push($query_list, "rntl_cont_no = '".$wearer_chg_post['rntl_cont_no']."'");
+           array_push($query_list, "rntl_sect_cd = '".$wearer_data_input['section']."'");
+           $query = implode(' AND ', $query_list);
+
+           $arg_str = '';
+           $arg_str = 'SELECT ';
+           $arg_str .= 'std_ship_to_cd,';
+           $arg_str .= 'std_ship_to_brnch_cd';
+           $arg_str .= ' FROM ';
+           $arg_str .= 'm_section';
+           $arg_str .= ' WHERE ';
+           $arg_str .= $query;
+           $m_section = new MSection();
+           $results = new Resultset(NULL, $m_section, $m_section->getReadConnection()->query($arg_str));
+           $results_array = (array) $results;
+           $results_cnt = $results_array["\0*\0_count"];
+           //ChromePhp::LOG($results_cnt);
+           $paginator_model = new PaginatorModel(
+             array(
+               "data"  => $results,
+               "limit" => $results_cnt,
+               "page" => 1
+             )
+           );
+           $paginator = $paginator_model->getPaginate();
+           $results = $paginator->items;
+           foreach ($results as $result) {
+             $ship_to_cd = $result->std_ship_to_cd;
+             $ship_to_brnch_cd = $result->std_ship_to_brnch_cd;
+           }
+         }
          array_push($up_query_list, "ship_to_cd = '".$ship_to_cd."'");
          array_push($up_query_list, "ship_to_brnch_cd = '".$ship_to_brnch_cd."'");
        }
@@ -2096,7 +2190,7 @@ $app->post('/wearer_change_complete', function ()use($app){
        $arg_str .= $src_query;
        //ChromePhp::LOG($arg_str);
        $m_wearer_std_tran = new MWearerStdTran();
-       $results = new Resultset(null, $m_wearer_std_tran, $m_wearer_std_tran->getReadConnection()->query($arg_str));
+       $results = new Resultset(NULL, $m_wearer_std_tran, $m_wearer_std_tran->getReadConnection()->query($arg_str));
        $result_obj = (array)$results;
        $results_cnt = $result_obj["\0*\0_count"];
        //ChromePhp::LOG($results_cnt);
@@ -2107,7 +2201,7 @@ $app->post('/wearer_change_complete', function ()use($app){
        $arg_str = "";
        $arg_str = "SELECT NEXTVAL('t_order_seq')";
        $t_order_tran = new TOrderTran();
-       $results = new Resultset(null, $t_order_tran, $t_order_tran->getReadConnection()->query($arg_str));
+       $results = new Resultset(NULL, $t_order_tran, $t_order_tran->getReadConnection()->query($arg_str));
        $result_obj = (array)$results;
        $results_cnt = $result_obj["\0*\0_count"];
        if (!empty($results_cnt)) {
@@ -2128,7 +2222,7 @@ $app->post('/wearer_change_complete', function ()use($app){
          $arg_str = "";
          $arg_str = "SELECT SETVAL('t_order_seq',".$order_no_seq.")";
          $t_order_tran = new TOrderTran();
-         $results = new Resultset(null, $t_order_tran, $t_order_tran->getReadConnection()->query($arg_str));
+         $results = new Resultset(NULL, $t_order_tran, $t_order_tran->getReadConnection()->query($arg_str));
          $result_obj = (array)$results;
          $results_cnt = $result_obj["\0*\0_count"];
          //ChromePhp::LOG($result_obj);
@@ -2213,21 +2307,59 @@ $app->post('/wearer_change_complete', function ()use($app){
            array_push($values_list, "'".$now_item_map['now_size_cd']."'");
            // サイズコード2
            array_push($calum_list, "size_two_cd");
-           array_push($values_list, "");
+           array_push($values_list, "' '");
+/*
            // 倉庫コード
            array_push($calum_list, "whse_cd");
-           array_push($values_list, "");
+           array_push($values_list, "NULL");
            // 在庫USRコード
            array_push($calum_list, "stk_usr_cd");
-           array_push($values_list, "");
+           array_push($values_list, "NULL");
            // 在庫USR支店コード
            array_push($calum_list, "stk_usr_brnch_cd");
-           array_push($values_list, "");
+           array_push($values_list, "NULL");
+*/
            // 出荷先、出荷先支店コード
            if (!empty($wearer_data_input['shipment'])) {
              $shipment = explode(':', $wearer_data_input['shipment']);
              $ship_to_cd = $shipment[0];
              $ship_to_brnch_cd = $shipment[1];
+
+             // 出荷先が「支店店舗と同じ」の場合、部門マスタから標準出荷先、支店コードを設定
+             if ($ship_to_cd == "0" && $ship_to_brnch_cd == "0") {
+               $query_list = array();
+               array_push($query_list, "corporate_id = '".$auth['corporate_id']."'");
+               array_push($query_list, "rntl_cont_no = '".$wearer_chg_post['rntl_cont_no']."'");
+               array_push($query_list, "rntl_sect_cd = '".$wearer_data_input['section']."'");
+               $query = implode(' AND ', $query_list);
+
+               $arg_str = '';
+               $arg_str = 'SELECT ';
+               $arg_str .= 'std_ship_to_cd,';
+               $arg_str .= 'std_ship_to_brnch_cd';
+               $arg_str .= ' FROM ';
+               $arg_str .= 'm_section';
+               $arg_str .= ' WHERE ';
+               $arg_str .= $query;
+               $m_section = new MSection();
+               $results = new Resultset(NULL, $m_section, $m_section->getReadConnection()->query($arg_str));
+               $results_array = (array) $results;
+               $results_cnt = $results_array["\0*\0_count"];
+               //ChromePhp::LOG($results_cnt);
+               $paginator_model = new PaginatorModel(
+                 array(
+                   "data"  => $results,
+                   "limit" => $results_cnt,
+                   "page" => 1
+                 )
+               );
+               $paginator = $paginator_model->getPaginate();
+               $results = $paginator->items;
+               foreach ($results as $result) {
+                 $ship_to_cd = $result->std_ship_to_cd;
+                 $ship_to_brnch_cd = $result->std_ship_to_brnch_cd;
+               }
+             }
              array_push($calum_list, "ship_to_cd");
              array_push($values_list, "'".$ship_to_cd."'");
              array_push($calum_list, "ship_to_brnch_cd");
@@ -2237,14 +2369,20 @@ $app->post('/wearer_change_complete', function ()use($app){
            array_push($calum_list, "order_qty");
            array_push($values_list, "'".$now_item_map['now_order_num']."'");
            // 備考欄
-           array_push($calum_list, "memo");
-           array_push($values_list, "'".$wearer_data_input['comment']."'");
+           if (!empty($wearer_data_input['comment'])) {
+             array_push($calum_list, "memo");
+             array_push($values_list, "'".$wearer_data_input['comment']."'");
+           }
            // 着用者名
-           array_push($calum_list, "werer_name");
-           array_push($values_list, "'".$wearer_data_input['member_name']."'");
+           if (!empty($wearer_data_input['member_name'])) {
+             array_push($calum_list, "werer_name");
+             array_push($values_list, "'".$wearer_data_input['member_name']."'");
+           }
            // 客先社員コード
-           array_push($calum_list, "cster_emply_cd");
-           array_push($values_list, "'".$wearer_data_input['member_no']."'");
+           if (!empty($wearer_data_input['member_no'])) {
+             array_push($calum_list, "cster_emply_cd");
+             array_push($values_list, "'".$wearer_data_input['member_no']."'");
+           }
            // 着用者状況区分(稼働)
            array_push($calum_list, "werer_sts_kbn");
            array_push($values_list, "'1'");
@@ -2352,7 +2490,7 @@ $app->post('/wearer_change_complete', function ()use($app){
            $arg_str .= "(".$values_query.")";
            //ChromePhp::LOG($arg_str);
            $t_order_tran = new TOrderTran();
-           $results = new Resultset(null, $t_order_tran, $t_order_tran->getReadConnection()->query($arg_str));
+           $results = new Resultset(NULL, $t_order_tran, $t_order_tran->getReadConnection()->query($arg_str));
            //ChromePhp::LOG($results);
          }
        }
@@ -2416,21 +2554,59 @@ $app->post('/wearer_change_complete', function ()use($app){
            array_push($values_list, "'".$add_item_map['add_size_cd']."'");
            // サイズコード2
            array_push($calum_list, "size_two_cd");
-           array_push($values_list, "");
+           array_push($values_list, "' '");
+/*
            // 倉庫コード
            array_push($calum_list, "whse_cd");
-           array_push($values_list, "");
+           array_push($values_list, "NULL");
            // 在庫USRコード
            array_push($calum_list, "stk_usr_cd");
-           array_push($values_list, "");
+           array_push($values_list, "NULL");
            // 在庫USR支店コード
            array_push($calum_list, "stk_usr_brnch_cd");
-           array_push($values_list, "");
+           array_push($values_list, "NULL");
+*/
            // 出荷先、出荷先支店コード
            if (!empty($wearer_data_input['shipment'])) {
              $shipment = explode(':', $wearer_data_input['shipment']);
              $ship_to_cd = $shipment[0];
              $ship_to_brnch_cd = $shipment[1];
+
+             // 出荷先が「支店店舗と同じ」の場合、部門マスタから標準出荷先、支店コードを設定
+             if ($ship_to_cd == "0" && $ship_to_brnch_cd == "0") {
+               $query_list = array();
+               array_push($query_list, "corporate_id = '".$auth['corporate_id']."'");
+               array_push($query_list, "rntl_cont_no = '".$wearer_chg_post['rntl_cont_no']."'");
+               array_push($query_list, "rntl_sect_cd = '".$wearer_data_input['section']."'");
+               $query = implode(' AND ', $query_list);
+
+               $arg_str = '';
+               $arg_str = 'SELECT ';
+               $arg_str .= 'std_ship_to_cd,';
+               $arg_str .= 'std_ship_to_brnch_cd';
+               $arg_str .= ' FROM ';
+               $arg_str .= 'm_section';
+               $arg_str .= ' WHERE ';
+               $arg_str .= $query;
+               $m_section = new MSection();
+               $results = new Resultset(NULL, $m_section, $m_section->getReadConnection()->query($arg_str));
+               $results_array = (array) $results;
+               $results_cnt = $results_array["\0*\0_count"];
+               //ChromePhp::LOG($results_cnt);
+               $paginator_model = new PaginatorModel(
+                 array(
+                   "data"  => $results,
+                   "limit" => $results_cnt,
+                   "page" => 1
+                 )
+               );
+               $paginator = $paginator_model->getPaginate();
+               $results = $paginator->items;
+               foreach ($results as $result) {
+                 $ship_to_cd = $result->std_ship_to_cd;
+                 $ship_to_brnch_cd = $result->std_ship_to_brnch_cd;
+               }
+             }
              array_push($calum_list, "ship_to_cd");
              array_push($values_list, "'".$ship_to_cd."'");
              array_push($calum_list, "ship_to_brnch_cd");
@@ -2440,14 +2616,20 @@ $app->post('/wearer_change_complete', function ()use($app){
            array_push($calum_list, "order_qty");
            array_push($values_list, "'".$add_item_map['add_order_num']."'");
            // 備考欄
-           array_push($calum_list, "memo");
-           array_push($values_list, "'".$wearer_data_input['comment']."'");
+           if (!empty($wearer_data_input['comment'])) {
+             array_push($calum_list, "memo");
+             array_push($values_list, "'".$wearer_data_input['comment']."'");
+           }
            // 着用者名
-           array_push($calum_list, "werer_name");
-           array_push($values_list, "'".$wearer_data_input['member_name']."'");
+           if (!empty($wearer_data_input['member_name'])) {
+             array_push($calum_list, "werer_name");
+             array_push($values_list, "'".$wearer_data_input['member_name']."'");
+           }
            // 客先社員コード
-           array_push($calum_list, "cster_emply_cd");
-           array_push($values_list, "'".$wearer_data_input['cster_emply_cd']."'");
+           if (!empty($wearer_data_input['member_no'])) {
+             array_push($calum_list, "cster_emply_cd");
+             array_push($values_list, "'".$wearer_data_input['member_no']."'");
+           }
            // 着用者状況区分(稼働)
            array_push($calum_list, "werer_sts_kbn");
            array_push($values_list, "'1'");
@@ -2555,7 +2737,7 @@ $app->post('/wearer_change_complete', function ()use($app){
            $arg_str .= "(".$values_query.")";
            //ChromePhp::LOG($arg_str);
            $t_order_tran = new TOrderTran();
-           $results = new Resultset(null, $t_order_tran, $t_order_tran->getReadConnection()->query($arg_str));
+           $results = new Resultset(NULL, $t_order_tran, $t_order_tran->getReadConnection()->query($arg_str));
            //ChromePhp::LOG($results);
         }
       }
@@ -2566,7 +2748,7 @@ $app->post('/wearer_change_complete', function ()use($app){
       $arg_str = "";
       $arg_str = "SELECT NEXTVAL('t_returned_plan_info_index_seq')";
       $t_returned_plan_info = new TReturnedPlanInfo();
-      $results = new Resultset(null, $t_returned_plan_info, $t_returned_plan_info->getReadConnection()->query($arg_str));
+      $results = new Resultset(NULL, $t_returned_plan_info, $t_returned_plan_info->getReadConnection()->query($arg_str));
       $result_obj = (array)$results;
       $results_cnt = $result_obj["\0*\0_count"];
       if (!empty($results_cnt)) {
@@ -2587,7 +2769,7 @@ $app->post('/wearer_change_complete', function ()use($app){
         $arg_str = "";
         $arg_str = "SELECT SETVAL('t_returned_plan_info_index_seq',".$order_no_seq.")";
         $t_returned_plan_info = new TReturnedPlanInfo();
-        $results = new Resultset(null, $t_returned_plan_info, $t_returned_plan_info->getReadConnection()->query($arg_str));
+        $results = new Resultset(NULL, $t_returned_plan_info, $t_returned_plan_info->getReadConnection()->query($arg_str));
         $result_obj = (array)$results;
         $results_cnt = $result_obj["\0*\0_count"];
         //ChromePhp::LOG($result_obj);
@@ -2717,7 +2899,7 @@ $app->post('/wearer_change_complete', function ()use($app){
                   $arg_str .= "(".$values_query.")";
                   //ChromePhp::LOG($arg_str);
                   $t_returned_plan_info = new TReturnedPlanInfo();
-                  $results = new Resultset(null, $t_returned_plan_info, $t_returned_plan_info->getReadConnection()->query($arg_str));
+                  $results = new Resultset(NULL, $t_returned_plan_info, $t_returned_plan_info->getReadConnection()->query($arg_str));
                   //ChromePhp::LOG($results);
                 }
               }
@@ -2752,7 +2934,7 @@ $app->post('/wearer_change_complete', function ()use($app){
               array_push($values_list, "'".$now_item_map['now_size_cd']."'");
               // 個体管理番号
               array_push($calum_list, "individual_ctrl_no");
-              array_push($values_list, "");
+              array_push($values_list, "''");
               // 着用者コード
               array_push($calum_list, "werer_cd");
               array_push($values_list, "'".$wearer_chg_post['werer_cd']."'");
@@ -2818,7 +3000,7 @@ $app->post('/wearer_change_complete', function ()use($app){
               $arg_str .= "(".$values_query.")";
               //ChromePhp::LOG($arg_str);
               $t_returned_plan_info = new TReturnedPlanInfo();
-              $results = new Resultset(null, $t_returned_plan_info, $t_returned_plan_info->getReadConnection()->query($arg_str));
+              $results = new Resultset(NULL, $t_returned_plan_info, $t_returned_plan_info->getReadConnection()->query($arg_str));
               //ChromePhp::LOG($results);
             }
           }
@@ -2827,11 +3009,13 @@ $app->post('/wearer_change_complete', function ()use($app){
 
       // トランザクションコミット
       $m_wearer_std_tran = new MWearerStdTran();
-      $results = new Resultset(null, $m_wearer_std_tran, $m_wearer_std_tran->getReadConnection()->query('commit'));
+      $results = new Resultset(NULL, $m_wearer_std_tran, $m_wearer_std_tran->getReadConnection()->query('commit'));
     } catch (Exception $e) {
+      ChromePhp::LOG($e);
+
       // トランザクションロールバック
       $m_wearer_std_tran = new MWearerStdTran();
-      $results = new Resultset(null, $m_wearer_std_tran, $m_wearer_std_tran->getReadConnection()->query('rollback'));
+      $results = new Resultset(NULL, $m_wearer_std_tran, $m_wearer_std_tran->getReadConnection()->query('rollback'));
 
       $json_list["error_code"] = "1";
       $error_msg = "発注登録処理において、データ更新エラーが発生しました。";
@@ -2900,7 +3084,7 @@ $app->post('/wearer_change_send', function ()use($app){
     $arg_str .= $query;
     //ChromePhp::LOG($arg_str);
     $m_wearer_std = new MWearerStd();
-    $results = new Resultset(null, $m_wearer_std, $m_wearer_std->getReadConnection()->query($arg_str));
+    $results = new Resultset(NULL, $m_wearer_std, $m_wearer_std->getReadConnection()->query($arg_str));
     $result_obj = (array)$results;
     $results_cnt = $result_obj["\0*\0_count"];
     //ChromePhp::LOG($results_cnt);
@@ -2997,7 +3181,7 @@ $app->post('/wearer_change_send', function ()use($app){
     $arg_str .= " ORDER BY upd_date DESC";
     //ChromePhp::LOG($arg_str);
     $t_order_tran = new TOrderTran();
-    $results = new Resultset(null, $t_order_tran, $t_order_tran->getReadConnection()->query($arg_str));
+    $results = new Resultset(NULL, $t_order_tran, $t_order_tran->getReadConnection()->query($arg_str));
     $result_obj = (array)$results;
     $results_cnt = $result_obj["\0*\0_count"];
     //ChromePhp::LOG($results_cnt);
@@ -3056,7 +3240,7 @@ $app->post('/wearer_change_send', function ()use($app){
     $arg_str .= $query;
     //ChromePhp::LOG($arg_str);
     $m_wearer_std_tran = new MWearerStdTran();
-    $results = new Resultset(null, $m_wearer_std_tran, $m_wearer_std_tran->getReadConnection()->query($arg_str));
+    $results = new Resultset(NULL, $m_wearer_std_tran, $m_wearer_std_tran->getReadConnection()->query($arg_str));
     $result_obj = (array)$results;
     $results_cnt = $result_obj["\0*\0_count"];
     //ChromePhp::LOG($results_cnt);
@@ -3079,7 +3263,7 @@ $app->post('/wearer_change_send', function ()use($app){
 
     // トランザクション開始
     $m_wearer_std_tran = new MWearerStdTran();
-    $results = new Resultset(null, $m_wearer_std_tran, $m_wearer_std_tran->getReadConnection()->query('begin'));
+    $results = new Resultset(NULL, $m_wearer_std_tran, $m_wearer_std_tran->getReadConnection()->query('begin'));
     try {
       // 着用者基本マスタトラン更新処理
       //※検索条件
@@ -3136,6 +3320,42 @@ $app->post('/wearer_change_send', function ()use($app){
         $shipment = explode(':', $wearer_data_input['shipment']);
         $ship_to_cd = $shipment[0];
         $ship_to_brnch_cd = $shipment[1];
+
+        // 出荷先が「支店店舗と同じ」の場合、部門マスタから標準出荷先、支店コードを設定
+        if ($ship_to_cd == "0" && $ship_to_brnch_cd == "0") {
+          $query_list = array();
+          array_push($query_list, "corporate_id = '".$auth['corporate_id']."'");
+          array_push($query_list, "rntl_cont_no = '".$wearer_chg_post['rntl_cont_no']."'");
+          array_push($query_list, "rntl_sect_cd = '".$wearer_data_input['section']."'");
+          $query = implode(' AND ', $query_list);
+
+          $arg_str = '';
+          $arg_str = 'SELECT ';
+          $arg_str .= 'std_ship_to_cd,';
+          $arg_str .= 'std_ship_to_brnch_cd';
+          $arg_str .= ' FROM ';
+          $arg_str .= 'm_section';
+          $arg_str .= ' WHERE ';
+          $arg_str .= $query;
+          $m_section = new MSection();
+          $results = new Resultset(NULL, $m_section, $m_section->getReadConnection()->query($arg_str));
+          $results_array = (array) $results;
+          $results_cnt = $results_array["\0*\0_count"];
+          //ChromePhp::LOG($results_cnt);
+          $paginator_model = new PaginatorModel(
+            array(
+              "data"  => $results,
+              "limit" => $results_cnt,
+              "page" => 1
+            )
+          );
+          $paginator = $paginator_model->getPaginate();
+          $results = $paginator->items;
+          foreach ($results as $result) {
+            $ship_to_cd = $result->std_ship_to_cd;
+            $ship_to_brnch_cd = $result->std_ship_to_brnch_cd;
+          }
+        }
         array_push($up_query_list, "ship_to_cd = '".$ship_to_cd."'");
         array_push($up_query_list, "ship_to_brnch_cd = '".$ship_to_brnch_cd."'");
       }
@@ -3180,7 +3400,7 @@ $app->post('/wearer_change_send', function ()use($app){
       $arg_str .= $src_query;
       //ChromePhp::LOG($arg_str);
       $m_wearer_std_tran = new MWearerStdTran();
-      $results = new Resultset(null, $m_wearer_std_tran, $m_wearer_std_tran->getReadConnection()->query($arg_str));
+      $results = new Resultset(NULL, $m_wearer_std_tran, $m_wearer_std_tran->getReadConnection()->query($arg_str));
       $result_obj = (array)$results;
       $results_cnt = $result_obj["\0*\0_count"];
       //ChromePhp::LOG($results_cnt);
@@ -3191,7 +3411,7 @@ $app->post('/wearer_change_send', function ()use($app){
       $arg_str = "";
       $arg_str = "SELECT NEXTVAL('t_order_seq')";
       $t_order_tran = new TOrderTran();
-      $results = new Resultset(null, $t_order_tran, $t_order_tran->getReadConnection()->query($arg_str));
+      $results = new Resultset(NULL, $t_order_tran, $t_order_tran->getReadConnection()->query($arg_str));
       $result_obj = (array)$results;
       $results_cnt = $result_obj["\0*\0_count"];
       if (!empty($results_cnt)) {
@@ -3212,7 +3432,7 @@ $app->post('/wearer_change_send', function ()use($app){
         $arg_str = "";
         $arg_str = "SELECT SETVAL('t_order_seq',".$order_no_seq.")";
         $t_order_tran = new TOrderTran();
-        $results = new Resultset(null, $t_order_tran, $t_order_tran->getReadConnection()->query($arg_str));
+        $results = new Resultset(NULL, $t_order_tran, $t_order_tran->getReadConnection()->query($arg_str));
         $result_obj = (array)$results;
         $results_cnt = $result_obj["\0*\0_count"];
         //ChromePhp::LOG($result_obj);
@@ -3297,21 +3517,59 @@ $app->post('/wearer_change_send', function ()use($app){
           array_push($values_list, "'".$now_item_map['now_size_cd']."'");
           // サイズコード2
           array_push($calum_list, "size_two_cd");
-          array_push($values_list, "");
+          array_push($values_list, "' '");
+/*
           // 倉庫コード
           array_push($calum_list, "whse_cd");
-          array_push($values_list, "");
+          array_push($values_list, "NULL");
           // 在庫USRコード
           array_push($calum_list, "stk_usr_cd");
-          array_push($values_list, "");
+          array_push($values_list, "NULL");
           // 在庫USR支店コード
           array_push($calum_list, "stk_usr_brnch_cd");
-          array_push($values_list, "");
+          array_push($values_list, "NULL");
+*/
           // 出荷先、出荷先支店コード
           if (!empty($wearer_data_input['shipment'])) {
             $shipment = explode(':', $wearer_data_input['shipment']);
             $ship_to_cd = $shipment[0];
             $ship_to_brnch_cd = $shipment[1];
+
+            // 出荷先が「支店店舗と同じ」の場合、部門マスタから標準出荷先、支店コードを設定
+            if ($ship_to_cd == "0" && $ship_to_brnch_cd == "0") {
+              $query_list = array();
+              array_push($query_list, "corporate_id = '".$auth['corporate_id']."'");
+              array_push($query_list, "rntl_cont_no = '".$wearer_chg_post['rntl_cont_no']."'");
+              array_push($query_list, "rntl_sect_cd = '".$wearer_data_input['section']."'");
+              $query = implode(' AND ', $query_list);
+
+              $arg_str = '';
+              $arg_str = 'SELECT ';
+              $arg_str .= 'std_ship_to_cd,';
+              $arg_str .= 'std_ship_to_brnch_cd';
+              $arg_str .= ' FROM ';
+              $arg_str .= 'm_section';
+              $arg_str .= ' WHERE ';
+              $arg_str .= $query;
+              $m_section = new MSection();
+              $results = new Resultset(NULL, $m_section, $m_section->getReadConnection()->query($arg_str));
+              $results_array = (array) $results;
+              $results_cnt = $results_array["\0*\0_count"];
+              //ChromePhp::LOG($results_cnt);
+              $paginator_model = new PaginatorModel(
+                array(
+                  "data"  => $results,
+                  "limit" => $results_cnt,
+                  "page" => 1
+                )
+              );
+              $paginator = $paginator_model->getPaginate();
+              $results = $paginator->items;
+              foreach ($results as $result) {
+                $ship_to_cd = $result->std_ship_to_cd;
+                $ship_to_brnch_cd = $result->std_ship_to_brnch_cd;
+              }
+            }
             array_push($calum_list, "ship_to_cd");
             array_push($values_list, "'".$ship_to_cd."'");
             array_push($calum_list, "ship_to_brnch_cd");
@@ -3321,14 +3579,20 @@ $app->post('/wearer_change_send', function ()use($app){
           array_push($calum_list, "order_qty");
           array_push($values_list, "'".$now_item_map['now_order_num']."'");
           // 備考欄
-          array_push($calum_list, "memo");
-          array_push($values_list, "'".$wearer_data_input['comment']."'");
+          if (!empty($wearer_data_input['comment'])) {
+            array_push($calum_list, "memo");
+            array_push($values_list, "'".$wearer_data_input['comment']."'");
+          }
           // 着用者名
-          array_push($calum_list, "werer_name");
-          array_push($values_list, "'".$wearer_data_input['member_name']."'");
+          if (!empty($wearer_data_input['member_name'])) {
+            array_push($calum_list, "werer_name");
+            array_push($values_list, "'".$wearer_data_input['member_name']."'");
+          }
           // 客先社員コード
-          array_push($calum_list, "cster_emply_cd");
-          array_push($values_list, "'".$wearer_data_input['member_no']."'");
+          if (!empty($wearer_data_input['member_no'])) {
+            array_push($calum_list, "cster_emply_cd");
+            array_push($values_list, "'".$wearer_data_input['member_no']."'");
+          }
           // 着用者状況区分(稼働)
           array_push($calum_list, "werer_sts_kbn");
           array_push($values_list, "'1'");
@@ -3436,7 +3700,7 @@ $app->post('/wearer_change_send', function ()use($app){
           $arg_str .= "(".$values_query.")";
           //ChromePhp::LOG($arg_str);
           $t_order_tran = new TOrderTran();
-          $results = new Resultset(null, $t_order_tran, $t_order_tran->getReadConnection()->query($arg_str));
+          $results = new Resultset(NULL, $t_order_tran, $t_order_tran->getReadConnection()->query($arg_str));
           //ChromePhp::LOG($results);
         }
       }
@@ -3500,21 +3764,59 @@ $app->post('/wearer_change_send', function ()use($app){
           array_push($values_list, "'".$add_item_map['add_size_cd']."'");
           // サイズコード2
           array_push($calum_list, "size_two_cd");
-          array_push($values_list, "");
+          array_push($values_list, "' '");
+/*
           // 倉庫コード
           array_push($calum_list, "whse_cd");
-          array_push($values_list, "");
+          array_push($values_list, "NULL");
           // 在庫USRコード
           array_push($calum_list, "stk_usr_cd");
-          array_push($values_list, "");
+          array_push($values_list, "NULL");
           // 在庫USR支店コード
           array_push($calum_list, "stk_usr_brnch_cd");
-          array_push($values_list, "");
+          array_push($values_list, "NULL");
+*/
           // 出荷先、出荷先支店コード
           if (!empty($wearer_data_input['shipment'])) {
             $shipment = explode(':', $wearer_data_input['shipment']);
             $ship_to_cd = $shipment[0];
             $ship_to_brnch_cd = $shipment[1];
+
+            // 出荷先が「支店店舗と同じ」の場合、部門マスタから標準出荷先、支店コードを設定
+            if ($ship_to_cd == "0" && $ship_to_brnch_cd == "0") {
+              $query_list = array();
+              array_push($query_list, "corporate_id = '".$auth['corporate_id']."'");
+              array_push($query_list, "rntl_cont_no = '".$wearer_chg_post['rntl_cont_no']."'");
+              array_push($query_list, "rntl_sect_cd = '".$wearer_data_input['section']."'");
+              $query = implode(' AND ', $query_list);
+
+              $arg_str = '';
+              $arg_str = 'SELECT ';
+              $arg_str .= 'std_ship_to_cd,';
+              $arg_str .= 'std_ship_to_brnch_cd';
+              $arg_str .= ' FROM ';
+              $arg_str .= 'm_section';
+              $arg_str .= ' WHERE ';
+              $arg_str .= $query;
+              $m_section = new MSection();
+              $results = new Resultset(NULL, $m_section, $m_section->getReadConnection()->query($arg_str));
+              $results_array = (array) $results;
+              $results_cnt = $results_array["\0*\0_count"];
+              //ChromePhp::LOG($results_cnt);
+              $paginator_model = new PaginatorModel(
+                array(
+                  "data"  => $results,
+                  "limit" => $results_cnt,
+                  "page" => 1
+                )
+              );
+              $paginator = $paginator_model->getPaginate();
+              $results = $paginator->items;
+              foreach ($results as $result) {
+                $ship_to_cd = $result->std_ship_to_cd;
+                $ship_to_brnch_cd = $result->std_ship_to_brnch_cd;
+              }
+            }
             array_push($calum_list, "ship_to_cd");
             array_push($values_list, "'".$ship_to_cd."'");
             array_push($calum_list, "ship_to_brnch_cd");
@@ -3524,14 +3826,20 @@ $app->post('/wearer_change_send', function ()use($app){
           array_push($calum_list, "order_qty");
           array_push($values_list, "'".$add_item_map['add_order_num']."'");
           // 備考欄
-          array_push($calum_list, "memo");
-          array_push($values_list, "'".$wearer_data_input['comment']."'");
+          if (!empty($wearer_data_input['comment'])) {
+            array_push($calum_list, "memo");
+            array_push($values_list, "'".$wearer_data_input['comment']."'");
+          }
           // 着用者名
-          array_push($calum_list, "werer_name");
-          array_push($values_list, "'".$wearer_data_input['member_name']."'");
+          if (!empty($wearer_data_input['member_name'])) {
+            array_push($calum_list, "werer_name");
+            array_push($values_list, "'".$wearer_data_input['member_name']."'");
+          }
           // 客先社員コード
-          array_push($calum_list, "cster_emply_cd");
-          array_push($values_list, "'".$wearer_data_input['cster_emply_cd']."'");
+          if (!empty($wearer_data_input['member_no'])) {
+            array_push($calum_list, "cster_emply_cd");
+            array_push($values_list, "'".$wearer_data_input['member_no']."'");
+          }
           // 着用者状況区分(稼働)
           array_push($calum_list, "werer_sts_kbn");
           array_push($values_list, "'1'");
@@ -3639,7 +3947,7 @@ $app->post('/wearer_change_send', function ()use($app){
           $arg_str .= "(".$values_query.")";
           //ChromePhp::LOG($arg_str);
           $t_order_tran = new TOrderTran();
-          $results = new Resultset(null, $t_order_tran, $t_order_tran->getReadConnection()->query($arg_str));
+          $results = new Resultset(NULL, $t_order_tran, $t_order_tran->getReadConnection()->query($arg_str));
           //ChromePhp::LOG($results);
        }
      }
@@ -3650,7 +3958,7 @@ $app->post('/wearer_change_send', function ()use($app){
      $arg_str = "";
      $arg_str = "SELECT NEXTVAL('t_returned_plan_info_index_seq')";
      $t_returned_plan_info = new TReturnedPlanInfo();
-     $results = new Resultset(null, $t_returned_plan_info, $t_returned_plan_info->getReadConnection()->query($arg_str));
+     $results = new Resultset(NULL, $t_returned_plan_info, $t_returned_plan_info->getReadConnection()->query($arg_str));
      $result_obj = (array)$results;
      $results_cnt = $result_obj["\0*\0_count"];
      if (!empty($results_cnt)) {
@@ -3671,7 +3979,7 @@ $app->post('/wearer_change_send', function ()use($app){
        $arg_str = "";
        $arg_str = "SELECT SETVAL('t_returned_plan_info_index_seq',".$order_no_seq.")";
        $t_returned_plan_info = new TReturnedPlanInfo();
-       $results = new Resultset(null, $t_returned_plan_info, $t_returned_plan_info->getReadConnection()->query($arg_str));
+       $results = new Resultset(NULL, $t_returned_plan_info, $t_returned_plan_info->getReadConnection()->query($arg_str));
        $result_obj = (array)$results;
        $results_cnt = $result_obj["\0*\0_count"];
        //ChromePhp::LOG($result_obj);
@@ -3801,7 +4109,7 @@ $app->post('/wearer_change_send', function ()use($app){
                  $arg_str .= "(".$values_query.")";
                  //ChromePhp::LOG($arg_str);
                  $t_returned_plan_info = new TReturnedPlanInfo();
-                 $results = new Resultset(null, $t_returned_plan_info, $t_returned_plan_info->getReadConnection()->query($arg_str));
+                 $results = new Resultset(NULL, $t_returned_plan_info, $t_returned_plan_info->getReadConnection()->query($arg_str));
                  //ChromePhp::LOG($results);
                }
              }
@@ -3836,7 +4144,7 @@ $app->post('/wearer_change_send', function ()use($app){
              array_push($values_list, "'".$now_item_map['now_size_cd']."'");
              // 個体管理番号
              array_push($calum_list, "individual_ctrl_no");
-             array_push($values_list, "");
+             array_push($values_list, "NULL");
              // 着用者コード
              array_push($calum_list, "werer_cd");
              array_push($values_list, "'".$wearer_chg_post['werer_cd']."'");
@@ -3869,7 +4177,7 @@ $app->post('/wearer_change_send', function ()use($app){
              // 返却数
              array_push($calum_list, "return_plan_qty");
              array_push($values_list, "'0'");
-             // 送信区分(未送信)
+             // 送信区分(送信済み)
              array_push($calum_list, "snd_kbn");
              array_push($values_list, "'1'");
              // 理由区分
@@ -3902,7 +4210,7 @@ $app->post('/wearer_change_send', function ()use($app){
              $arg_str .= "(".$values_query.")";
              //ChromePhp::LOG($arg_str);
              $t_returned_plan_info = new TReturnedPlanInfo();
-             $results = new Resultset(null, $t_returned_plan_info, $t_returned_plan_info->getReadConnection()->query($arg_str));
+             $results = new Resultset(NULL, $t_returned_plan_info, $t_returned_plan_info->getReadConnection()->query($arg_str));
              //ChromePhp::LOG($results);
            }
          }
@@ -3911,11 +4219,13 @@ $app->post('/wearer_change_send', function ()use($app){
 
      // トランザクションコミット
      $m_wearer_std_tran = new MWearerStdTran();
-     $results = new Resultset(null, $m_wearer_std_tran, $m_wearer_std_tran->getReadConnection()->query('commit'));
+     $results = new Resultset(NULL, $m_wearer_std_tran, $m_wearer_std_tran->getReadConnection()->query('commit'));
    } catch (Exception $e) {
+     ChromePhp::LOG($e);
+
      // トランザクションロールバック
      $m_wearer_std_tran = new MWearerStdTran();
-     $results = new Resultset(null, $m_wearer_std_tran, $m_wearer_std_tran->getReadConnection()->query('rollback'));
+     $results = new Resultset(NULL, $m_wearer_std_tran, $m_wearer_std_tran->getReadConnection()->query('rollback'));
 
      $json_list["error_code"] = "1";
      $error_msg = "発注登録処理において、データ更新エラーが発生しました。";
