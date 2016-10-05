@@ -45,7 +45,7 @@ define([
 				var modelForUpdate = this.model;
 				modelForUpdate.url = App.api.MI0020;
 				var cond = {
-					"scr": '人員明細詳細',
+					"scr": '請求書データ詳細',
 					"agreement_no": agreement_no,
 					"rntl_sect_cd": rntl_sect_cd,
 					"rntl_sect_name": rntl_sect_name,

@@ -43,7 +43,7 @@ define([
 					var msg = "データ量により、ダウンロード処理に時間がかかる可能性があります。ダウンロードを実施してよろしいですか？";
 					if (window.confirm(msg)) {
 						var cond = {
-							"scr": '人員明細詳細ダウンロード',
+							"scr": '請求書データ詳細ダウンロード',
 							"cond": cond_map
 						};
 						var form = $('<form action="' + App.api.MI0030 + '" method="post"></form>');

@@ -44,7 +44,7 @@ define([
 			},
 			fetch:function(manpowerInfoListConditionModel){
 				var cond = {
-					"scr": '人員明細照会',
+					"scr": '請求書データ照会',
 					"page":this.options.pagerModel.getPageRequest(),
 					"cond": manpowerInfoListConditionModel.getReq()
 				};

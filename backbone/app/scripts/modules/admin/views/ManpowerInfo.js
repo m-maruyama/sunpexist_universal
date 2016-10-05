@@ -25,7 +25,7 @@ define([
 				var modelForUpdate = this.model;
 				modelForUpdate.url = App.api.CM0040;
 				var cond = {
-					"scr": '人員明細照会'
+					"scr": '請求書データ照会'
 				};
 
 				modelForUpdate.fetchMx({

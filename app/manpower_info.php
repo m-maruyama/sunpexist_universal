@@ -6,7 +6,7 @@ use Phalcon\Paginator\Adapter\NativeArray as PaginatorArray;
 use Phalcon\Paginator\Adapter\QueryBuilder as PaginatorQueryBuilder;
 
 /**
- * 人員明細照会検索
+ * 請求書データ照会検索
  */
 $app->post('/manpower_info/search', function ()use($app){
 
@@ -127,7 +127,7 @@ $app->post('/manpower_info/search', function ()use($app){
 
 
 /**
- * 人員明細照会詳細モーダル
+ * 請求書データ照会詳細モーダル
  */
 $app->post('/manpower_info/detail', function ()use($app){
 
@@ -254,7 +254,7 @@ $app->post('/manpower_info/detail', function ()use($app){
 
 
 /**
- * 人員明細照会詳細ダウンロード
+ * 請求書データ照会詳細ダウンロード
  */
 $app->post('/manpower_info/download', function ()use($app){
 
@@ -271,7 +271,7 @@ $app->post('/manpower_info/download', function ()use($app){
 	// json返却値
 	$json_list = array();
 
-	//---人員明細詳細検索処理---//
+	//---請求書データ詳細検索処理---//
 	//--小見出し項目--//
 	$heading = array();
 	$heading_list = array();
@@ -373,7 +373,7 @@ $app->post('/manpower_info/download', function ()use($app){
 
 	// ヘッダー作成
 	$header_1 = array(
-		'人員明細詳細 ('.$heading['yyyymm'].' '.$heading['rntl_sect_cd'].' '.$heading['rntl_sect_name'].' '.$heading['staff_total'].'名)'
+		'請求書データ詳細 ('.$heading['yyyymm'].' '.$heading['rntl_sect_cd'].' '.$heading['rntl_sect_name'].' '.$heading['staff_total'].'名)'
 	);
 	array_push($csv_datas, $header_1);
 
