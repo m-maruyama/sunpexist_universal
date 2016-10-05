@@ -32,6 +32,7 @@ define([
 				this.setNav('wearerChange');
 				var pagerModel = new App.Entities.Models.Pager();
 				var pagerModel2 = new App.Entities.Models.Pager();
+				var pagerModel3 = new App.Entities.Models.Pager();
 				var modal = false;
 				var wearerChangeModel = null;
 				var wearerChangeView = new App.Admin.Views.WearerChange();
@@ -52,6 +53,7 @@ define([
 				});
 				var paginationView = new App.Admin.Views.Pagination({model: pagerModel});
 				var paginationView2 = new App.Admin.Views.Pagination({model: pagerModel});
+				var paginationSectionView = new App.Admin.Views.Pagination({model: pagerModel2});
 
 				var fetchList = function(pageNumber,sortKey,order){
 					if(pageNumber){
@@ -66,6 +68,7 @@ define([
 					wearerChangeView.page.show(paginationView);
 					wearerChangeView.page_2.show(paginationView2);
 				};
+
 				//拠点絞り込み--ここから
 				var sectionListListCollection = new App.Entities.Collections.AdminSectionModalListList();
 				var sectionModalListListView = new App.Admin.Views.SectionModalListList({
@@ -125,6 +128,10 @@ define([
 						fetchList(pageNumber);
 					}
 				});
+				this.listenTo(paginationSectionView, 'selected', function(pageNumber){
+						fetchList_section(pageNumber);
+				});
+
 				this.listenTo(wearerChangeListListView, 'sort', function(sortKey,order){
 					fetchList(null,sortKey,order);
 				});
@@ -132,14 +139,62 @@ define([
 					modal = false;
 					fetchList(1,sortKey,order);
 				});
-				//貸与終了ボタン
-				this.listenTo(wearerChangeListListView, 'click:wearer_end', function(sortKey,order){
-					fetchList(null,sortKey,order);
-				});
-				// this.listenTo(csvDownloadView, 'click:download_btn', function(cond_map){
-				// 	csvDownloadView.fetch(cond_map);
-				// });
 
+				// 契約No変更時の絞り込み処理 --ここから
+				this.listenTo(wearerChangeConditionView, 'change:section_select', function(agreement_no){
+					var sectionConditionView2 = new App.Admin.Views.SectionCondition({
+						agreement_no:agreement_no,
+					});
+					wearerChangeConditionView.section.show(sectionConditionView2);
+
+					var sectionModalListListView2 = new App.Admin.Views.SectionModalListList({
+						collection: sectionListListCollection,
+						pagerModel: pagerModel3
+					});
+					var sectionModalListCondition2 = new App.Entities.Models.AdminSectionModalListCondition();
+					var sectionModalConditionView2 = new App.Admin.Views.SectionModalCondition({
+						model:sectionModalListCondition2
+					});
+					var sectionModalView2 = new App.Admin.Views.SectionModal({
+						model:sectionModalListCondition2
+					});
+					this.listenTo(sectionConditionView2, 'click:section_btn', function(view, model){
+						sectionModalView2.ui.modal.modal('show');
+					});
+					var fetchList_section_2 = function(pageNumber,sortKey,order){
+						if(pageNumber){
+							pagerModel3.set('page_number', pageNumber);
+						}
+						if(sortKey){
+							pagerModel3.set('sort_key', sortKey);
+							pagerModel3.set('order', order);
+						}
+						sectionModalListListView2.fetch(sectionModalListCondition2);
+						sectionModalView2.listTable.show(sectionModalListListView2);
+						sectionModalView2.page.show(paginationSectionView2);
+					};
+					var paginationSectionView2 = new App.Admin.Views.Pagination({model: pagerModel3});
+					this.listenTo(paginationSectionView2, 'selected', function(pageNumber){
+							fetchList_section_2(pageNumber);
+					});
+					this.listenTo(sectionModalConditionView2, 'click:section_search', function(sortKey, order){
+						modal = true;
+						fetchList_section_2(1,sortKey,order);
+					});
+					this.listenTo(sectionModalView2, 'fetched', function(){
+						wearerChangeView.detailModal.show(sectionModalView2.render());
+						sectionModalView2.ui.modal.modal('show');
+					});
+					var sectionModalListItemView2 = new App.Admin.Views.SectionModalListItem();
+					this.listenTo(sectionModalListListView2, 'childview:click:section_select', function(model){
+						sectionConditionView2.ui.section[0].value = model.model.attributes.rntl_sect_cd;
+						sectionModalView2.ui.modal.modal('hide');
+					});
+
+					wearerChangeView.sectionModal_2.show(sectionModalView2.render());
+					sectionModalView2.condition.show(sectionModalConditionView2);
+				});
+				// 契約No変更時の絞り込み処理 --ここまで
 
 				App.main.show(wearerChangeView);
 				wearerChangeView.condition.show(wearerChangeConditionView);

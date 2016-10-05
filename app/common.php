@@ -97,22 +97,13 @@ $app->post('/agreement_no', function () use ($app) {
     // アカウントセッション取得
     $auth = $app->session->get('auth');
 
-    //--- 検索条件 ---//
-    // 契約マスタ. 企業ID
     array_push($query_list, "m_contract.corporate_id = '".$auth['corporate_id']."'");
-    // 契約マスタ. レンタル契約フラグ
     array_push($query_list, "m_contract.rntl_cont_flg = '1'");
-    // 契約リソースマスタ. 企業ID
     array_push($query_list, "m_contract_resource.corporate_id = '".$auth['corporate_id']."'");
-    // アカウントマスタ.企業ID
     array_push($query_list, "m_account.corporate_id = '".$auth['corporate_id']."'");
-    // アカウントマスタ. ユーザーID
     array_push($query_list, "m_account.user_id = '".$auth['user_id']."'");
-
-    //sql文字列を' AND 'で結合
     $query = implode(' AND ', $query_list);
 
-    // SQLクエリー実行
     $arg_str = 'SELECT ';
     $arg_str .= ' * ';
     $arg_str .= ' FROM ';
@@ -131,14 +122,12 @@ $app->post('/agreement_no', function () use ($app) {
     $results = new Resultset(null, $m_contract, $m_contract->getReadConnection()->query($arg_str));
     $results_array = (array) $results;
     $results_cnt = $results_array["\0*\0_count"];
-
 /*
     // デフォルトは空を設定
     $list['rntl_cont_no'] = null;
     $list['rntl_cont_name'] = null;
     array_push($all_list,$list);
 */
-
     if ($results_cnt > 0) {
       $paginator_model = new PaginatorModel(
     		array(
@@ -160,6 +149,9 @@ $app->post('/agreement_no', function () use ($app) {
         $list['rntl_cont_name'] = '';
         array_push($all_list, $list);
     }
+
+    // 初期表示時契約No保持
+    $app->session->set("first_rntl_cont_no", $all_list[0]['rntl_cont_no']);
 
     $json_list['agreement_no_list'] = $all_list;
     echo json_encode($json_list);
@@ -313,16 +305,14 @@ $app->post('/section', function () use ($app) {
     // アカウントセッション取得
     $auth = $app->session->get('auth');
 
-    //--- 検索条件 ---//
     array_push($query_list, "corporate_id = '".$auth['corporate_id']."'");
     if (!empty($params['agreement_no'])) {
         array_push($query_list, "rntl_cont_no = '".$params['agreement_no']."'");
     } else {
-        array_push($query_list, "rntl_cont_no = '".$auth['rntl_cont_no']."'");
+        array_push($query_list, "rntl_cont_no = '".$app->session->get('first_rntl_cont_no')."'");
     }
     $query = implode(' AND ', $query_list);
 
-    // SQLクエリー実行
     $arg_str = 'SELECT ';
     $arg_str .= ' distinct on (rntl_sect_cd) *';
     $arg_str .= ' FROM m_section';
@@ -386,16 +376,14 @@ $app->post('/job_type', function () use ($app) {
     // アカウントセッション取得
     $auth = $app->session->get('auth');
 
-    //--- 検索条件 ---//
     array_push($query_list, "corporate_id = '".$auth['corporate_id']."'");
     if (!empty($params['agreement_no'])) {
         array_push($query_list, "rntl_cont_no = '".$params['agreement_no']."'");
     } else {
-        array_push($query_list, "rntl_cont_no = '".$auth['rntl_cont_no']."'");
+        array_push($query_list, "rntl_cont_no = '".$app->session->get('first_rntl_cont_no')."'");
     }
     $query = implode(' AND ', $query_list);
 
-    // SQLクエリー実行
     $arg_str = 'SELECT ';
     $arg_str .= ' distinct on (job_type_cd) *';
     $arg_str .= ' FROM m_job_type';
@@ -459,19 +447,17 @@ $app->post('/input_item', function () use ($app) {
     // アカウントセッション取得
     $auth = $app->session->get('auth');
 
-    //--- 検索条件 ---//
     array_push($query_list, "corporate_id = '".$auth['corporate_id']."'");
     if (!empty($params['agreement_no'])) {
         array_push($query_list, "rntl_cont_no = '".$params['agreement_no']."'");
     } else {
-        array_push($query_list, "rntl_cont_no = '".$auth['rntl_cont_no']."'");
+        array_push($query_list, "rntl_cont_no = '".$app->session->get('first_rntl_cont_no')."'");
     }
     if (!empty($params['job_type'])) {
         array_push($query_list, "job_type_cd = '".$params['job_type']."'");
     }
     $query = implode(' AND ', $query_list);
 
-    // SQLクエリー実行
     $arg_str = 'SELECT ';
     $arg_str .= ' distinct on (item_cd, job_type_item_cd) *';
     $arg_str .= ' FROM m_input_item';
@@ -537,12 +523,11 @@ $app->post('/item_color', function () use ($app) {
     // アカウントセッション取得
     $auth = $app->session->get('auth');
 
-    //--- 検索条件 ---//
     array_push($query_list, "corporate_id = '".$auth['corporate_id']."'");
     if (!empty($params['agreement_no'])) {
         array_push($query_list, "rntl_cont_no = '".$params['agreement_no']."'");
     } else {
-        array_push($query_list, "rntl_cont_no = '".$auth['rntl_cont_no']."'");
+        array_push($query_list, "rntl_cont_no = '".$app->session->get('first_rntl_cont_no')."'");
     }
     if (!empty($params['job_type'])) {
         array_push($query_list, "job_type_cd = '".$params['job_type']."'");
@@ -552,7 +537,6 @@ $app->post('/item_color', function () use ($app) {
     }
     $query = implode(' AND ', $query_list);
 
-    // SQLクエリー実行
     $arg_str = 'SELECT ';
     $arg_str .= ' distinct on (color_cd) *';
     $arg_str .= ' FROM m_input_item';
@@ -619,14 +603,10 @@ $app->post('/individual_num', function () use ($app) {
     $json_list = $auth;
     echo json_encode($json_list);
 /*
-    //--- 検索条件 ---//
     array_push($query_list, "corporate_id = '".$auth['corporate_id']."'");
     array_push($query_list, "rntl_cont_no = '".$auth['rntl_cont_no']."'");
-
-    //sql文字列を' AND 'で結合
     $query = implode(' AND ', $query_list);
 
-    //--- クエリー実行・取得 ---//
     $results = MInputItem::query()
         ->where($query)
         ->columns('*')
@@ -656,16 +636,14 @@ $app->post('/zaiko_job_type', function () use ($app) {
     // アカウントセッション取得
     $auth = $app->session->get('auth');
 
-    //--- 検索条件 ---//
     array_push($query_list, "corporate_id = '".$auth['corporate_id']."'");
     if (!empty($params['agreement_no'])) {
         array_push($query_list, "rntl_cont_no = '".$params['agreement_no']."'");
     } else {
-        array_push($query_list, "rntl_cont_no = '".$auth['rntl_cont_no']."'");
+        array_push($query_list, "rntl_cont_no = '".$app->session->get('first_rntl_cont_no')."'");
     }
     $query = implode(' AND ', $query_list);
 
-    // SQLクエリー実行
     $arg_str = 'SELECT ';
     $arg_str .= ' distinct on (rent_pattern_data) *';
     $arg_str .= ' FROM m_rent_pattern_for_sdmzk';
@@ -723,19 +701,17 @@ $app->post('/zaiko_item', function () use ($app) {
     // アカウントセッション取得
     $auth = $app->session->get('auth');
 
-    //--- 検索条件 ---//
     array_push($query_list, "m_item.corporate_id = '".$auth['corporate_id']."'");
     if (!empty($params['agreement_no'])) {
         array_push($query_list, "t_sdmzk.rntl_cont_no = '".$params['agreement_no']."'");
     } else {
-        array_push($query_list, "t_sdmzk.rntl_cont_no = '".$auth['rntl_cont_no']."'");
+        array_push($query_list, "t_sdmzk.rntl_cont_no = '".$app->session->get('first_rntl_cont_no')."'");
     }
     if (!empty($params['job_type_zaiko'])) {
         array_push($query_list, "t_sdmzk.rent_pattern_data = '".$params['job_type_zaiko']."'");
     }
     $query = implode(' AND ', $query_list);
 
-    // SQLクエリー実行
     $arg_str = 'SELECT ';
     $arg_str .= ' distinct on (m_item.item_cd)';
     $arg_str .= ' m_item.item_cd as as_item_cd,';
@@ -802,12 +778,11 @@ $app->post('/zaiko_item_color', function () use ($app) {
     // アカウントセッション取得
     $auth = $app->session->get('auth');
 
-    //--- 検索条件 ---//
     array_push($query_list, "m_item.corporate_id = '".$auth['corporate_id']."'");
     if (!empty($params['agreement_no'])) {
         array_push($query_list, "t_sdmzk.rntl_cont_no = '".$params['agreement_no']."'");
     } else {
-        array_push($query_list, "t_sdmzk.rntl_cont_no = '".$auth['rntl_cont_no']."'");
+        array_push($query_list, "t_sdmzk.rntl_cont_no = '".$app->session->get('first_rntl_cont_no')."'");
     }
     if (!empty($params['job_type_zaiko'])) {
         array_push($query_list, "t_sdmzk.rent_pattern_data = '".$params['job_type_zaiko']."'");
@@ -817,7 +792,6 @@ $app->post('/zaiko_item_color', function () use ($app) {
     }
     $query = implode(' AND ', $query_list);
 
-    // SQLクエリー実行
     $arg_str = 'SELECT ';
     $arg_str .= ' distinct on (m_item.color_cd)';
     $arg_str .= ' m_item.color_cd as as_color_cd';
@@ -1039,7 +1013,10 @@ $app->post('/sex_kbn', function () use ($app) {
 
 /*
  * 検索項目：理由区分
+ *
+ * ※現在、未使用
  */
+/*
 $app->post('/reason_kbn', function () use ($app) {
     $params = json_decode(file_get_contents('php://input'), true);
 
@@ -1051,22 +1028,13 @@ $app->post('/reason_kbn', function () use ($app) {
     // アカウントセッション取得
     $auth = $app->session->get('auth');
 
-    //--- 検索条件 ---//
-    // 契約マスタ. 企業ID
     array_push($query_list, "m_contract.corporate_id = '".$auth['corporate_id']."'");
-    // 契約マスタ. レンタル契約フラグ
     array_push($query_list, "m_contract.rntl_cont_flg = '1'");
-    // 契約リソースマスタ. 企業ID
     array_push($query_list, "m_contract_resource.corporate_id = '".$auth['corporate_id']."'");
-    // アカウントマスタ.企業ID
     array_push($query_list, "m_account.corporate_id = '".$auth['corporate_id']."'");
-    // アカウントマスタ. ユーザーID
     array_push($query_list, "m_account.user_id = '".$auth['user_id']."'");
-
-    //sql文字列を' AND 'で結合
     $query = implode(' AND ', $query_list);
 
-    // SQLクエリー実行
     $arg_str = 'SELECT ';
     $arg_str .= ' * ';
     $arg_str .= ' FROM ';
@@ -1111,6 +1079,7 @@ $app->post('/reason_kbn', function () use ($app) {
     $json_list['agreement_no_list'] = $all_list;
     echo json_encode($json_list);
 });
+*/
 
 /*
  * ログアウト
