@@ -23,6 +23,7 @@ define([
 				"account": "li.nav_account",
 				"info": "li.nav_info",
 				"purchaseInput": "li.nav_purchaseInput",
+				"wearerEdit": "li.nav_wearerEdit",
 				"wearerInput": "li.nav_wearerInput",
 				"wearerEnd": "li.nav_wearerEnd",
 				"wearerEndOrder": "li.nav_wearerEndOrder",
@@ -36,7 +37,8 @@ define([
 			onShow: function() {
 				var that = this;
 				var cond = {
-					"scr": 'グローバルメニュー'
+					"scr": 'グローバルメニュー',
+					"log_type": '2'
 				};
 				var modelForUpdate = this.model;
 					modelForUpdate.url = App.api.GL0010;
