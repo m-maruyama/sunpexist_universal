@@ -3,19 +3,18 @@ define([
 	'handlebars',
 	'../Templates',
 	'backbone.stickit',
-	'bootstrap-datetimepicker',
 	'../behaviors/Alerts',
 	'typeahead',
 	'bloodhound',
 	'blockUI',
-	'../controllers/WearerChangeOrder',
+	'../controllers/WearerEditOrder',
 	'./ShipmentConditionChange',
 ], function(App) {
 	'use strict';
 	App.module('Admin.Views', function(Views, App, Backbone, Marionette, $, _){
-		Views.WearerChangeOrderCondition = Marionette.LayoutView.extend({
+		Views.WearerEditOrderCondition = Marionette.LayoutView.extend({
 			model: new Backbone.Model(),
-			template: App.Admin.Templates.wearerChangeOrderCondition,
+			template: App.Admin.Templates.wearerEditOrderCondition,
 			behaviors: {
 				"Alerts": {
 					behaviorClass: App.Admin.Behaviors.Alerts
@@ -23,12 +22,7 @@ define([
 			},
 			regions: {
 				'agreement_no': '.agreement_no',
-				'reason_kbn': '.reason_kbn',
 				'sex_kbn': '.sex_kbn',
-				"section": ".section",
-				"job_type": ".job_type",
-				"shipment": ".shipment",
-				"wearer_info": ".wearer_info",
 			},
 			ui: {
 				'agreement_no': '#agreement_no',
@@ -37,20 +31,16 @@ define([
 				'member_no': '#member_no',
 				'member_name': '#member_name',
 				'member_name_kana': '#member_name_kana',
-				'appointment_ymd': '#appointment_ymd',
 				'resfl_ymd': '#resfl_ymd',
 				'section': '#section',
 				'job_type': '#job_type',
 				'shipment': '#shipment',
-				'post_number': '#post_number',
+				'zip_no': '#zip_no',
 				'address': '#address',
 				"back": '.back',
 				"delete": '.delete',
 				"complete": '.complete',
 				"orderSend": '.orderSend',
-				'datepicker1': '.datepicker1',
-				'datepicker2': '.datepicker2',
-				'timepicker': '.timepicker',
 			},
 			bindings: {
 				'#agreement_no': 'agreement_no',
@@ -59,28 +49,24 @@ define([
 				'#member_no': 'member_no',
 				'#member_name': 'member_name',
 				'#member_name_kana': 'member_name_kana',
-				'#appointment_ymd': 'appointment_ymd',
 				'#resfl_ymd': 'resfl_ymd',
 				'#section': 'section',
 				'#job_type': 'job_type',
 				'#shipment': 'shipment',
-				'#post_number': 'post_number',
+				'#zip_no': 'zip_no',
 				'#address': 'address',
 				"#delete": 'delete',
 				"#complete": 'complete',
 				"#orderSend": 'orderSend',
-				'#datepicker1': 'datepicker1',
-				'#datepicker2': 'datepicker2',
-				'#timepicker': 'timepicker',
 			},
 			onRender: function() {
 				var that = this;
 
-				// 着用者情報(着用者名、(読み仮名)、社員コード、発令日、セッションパラメータ)
+				// 着用者情報
 				var modelForUpdate = this.model;
-				modelForUpdate.url = App.api.WC0018;
+				modelForUpdate.url = App.api.WU0012;
 				var cond = {
-					"scr": '職種変更または異動-着用者情報',
+					"scr": '着用者編集-着用者情報',
 				};
 				modelForUpdate.fetchMx({
 					data:cond,
@@ -93,7 +79,7 @@ define([
 							that.triggerMethod('showAlerts', errorMessages);
 						}
 						var res_list = res.attributes;
-						//console.log(res_list['wearer_info']);
+						//console.log(res_list);
 
 						// 発注取消ボタンvalue値設定
 						var delete_param =
@@ -105,58 +91,41 @@ define([
 						;
 						that.ui.delete.val(delete_param);
 
-						// 社員コード、着用者名、読みかな
+						// 社員コード、着用者名、読みかな、異動日
 						if (res_list['wearer_info'][0]) {
 							that.ui.member_no.val(res_list['wearer_info'][0]['cster_emply_cd']);
 							that.ui.member_name.val(res_list['wearer_info'][0]['werer_name']);
 							that.ui.member_name_kana.val(res_list['wearer_info'][0]['werer_name_kana']);
+							that.ui.resfl_ymd.val(res_list['wearer_info'][0]['resfl_ymd']);
 						}
-
-						var maxTime = new Date();
-						maxTime.setHours(15);
-						maxTime.setMinutes(59);
-						maxTime.setSeconds(59);
-						var minTime = new Date();
-						minTime.setHours(9);
-						minTime.setMinutes(0);
-						// 発令日
-						var appointment_ymd = "";
-						if (res_list['wearer_info'][0]) {
-							var appointment_ymd = res_list['wearer_info'][0]['appointment_ymd'];
+						// 拠点セレクト(固定)
+						if (res_list['section_list'][0]) {
+							var option1 = document.createElement('option');
+							var text1 = document.createTextNode(res_list['section_list'][0]['rntl_sect_name']);
+							option1.setAttribute('value', res_list['section_list'][0]['rntl_sect_cd']);
+							option1.appendChild(text1);
+							document.getElementById('section').appendChild(option1);
 						}
-						that.ui.datepicker1.datetimepicker({
-							format: 'YYYY/MM/DD',
-							//useCurrent: 'day',
-							defaultDate: appointment_ymd,
-							//maxDate: yesterday,
-							locale: 'ja',
-							sideBySide:true,
-							useCurrent: false,
-							// daysOfWeekDisabled:[0,6]
-						});
-						that.ui.datepicker1.on('dp.change', function(){
-							$(this).data('DateTimePicker').hide();
-							//$(this).find('input').trigger('input');
-						});
-						// 着用開始日
-						var resfl_ymd = "";
-						if (res_list['wearer_info'][0]) {
-							var resfl_ymd = res_list['wearer_info'][0]['resfl_ymd'];
+						// 貸与パターンセレクト(固定)
+						if (res_list['job_type_list'][0]) {
+							var option2 = document.createElement('option');
+							var text2 = document.createTextNode(res_list['job_type_list'][0]['job_type_name']);
+							option2.setAttribute('value', res_list['job_type_list'][0]['job_type_cd']);
+							option2.appendChild(text2);
+							document.getElementById('job_type').appendChild(option2);
 						}
-						that.ui.datepicker2.datetimepicker({
-							format: 'YYYY/MM/DD',
-							//useCurrent: 'day',
-							defaultDate: resfl_ymd,
-							//maxDate: yesterday,
-							locale: 'ja',
-							sideBySide:true,
-							useCurrent: false,
-							// daysOfWeekDisabled:[0,6]
-						});
-						that.ui.datepicker2.on('dp.change', function(){
-							$(this).data('DateTimePicker').hide();
-							//$(this).find('input').trigger('input');
-						});
+						// 出荷先セレクト(固定)、郵便番号、住所
+						if (res_list['shipment_list'][0]) {
+							var shipment = res_list['shipment_list'][0]['ship_to_cd'] + ":" + res_list['shipment_list'][0]['ship_to_brnch_cd'];
+							var shipment_name = res_list['shipment_list'][0]['cust_to_brnch_name1'] + res_list['shipment_list'][0]['cust_to_brnch_name2'];
+							var option3 = document.createElement('option');
+							var text3 = document.createTextNode(shipment_name);
+							option3.setAttribute('value', shipment);
+							option3.appendChild(text3);
+							document.getElementById('shipment').appendChild(option3);
+							that.ui.zip_no.val(res_list['shipment_list'][0]['zip_no']);
+							that.ui.address.val(res_list['shipment_list'][0]['address']);
+						}
 					}
 				});
 			},
@@ -164,7 +133,7 @@ define([
 				// 「戻る」ボタン
 				'click @ui.back': function(){
 					// 検索一覧画面へ遷移
-					location.href="wearer_change.html";
+					location.href="wearer_edit.html";
 				},
 				// 「発注取消」ボタン
 				'click @ui.delete': function(){
@@ -352,7 +321,7 @@ define([
 									// 発注取消完了後、検索一覧へ遷移
 									$.unblockUI();
 									alert('発注取消が完了しました。');
-									location.href="wearer_change.html";
+									location.href="wearer_edit.html";
 								} else {
 									$.unblockUI();
 									alert('発注取消中にエラーが発生しました');

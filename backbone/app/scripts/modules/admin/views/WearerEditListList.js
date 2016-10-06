@@ -44,7 +44,7 @@ define([
 			},
 			fetch:function(wearerEditListConditionModel){
 				var cond = {
-					"scr": '貸与終了検索',
+					"scr": '着用者編集検索',
 					"page":this.options.pagerModel.getPageRequest(),
 					"cond": wearerEditListConditionModel.getReq()
 				};

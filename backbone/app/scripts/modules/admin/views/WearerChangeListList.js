@@ -44,7 +44,7 @@ define([
 			},
 			fetch:function(wearerChangeListConditionModel){
 				var cond = {
-					"scr": '貸与終了検索',
+					"scr": '職種変更または異動検索',
 					"page":this.options.pagerModel.getPageRequest(),
 					"cond": wearerChangeListConditionModel.getReq()
 				};

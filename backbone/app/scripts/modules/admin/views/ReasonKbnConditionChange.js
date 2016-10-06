@@ -6,7 +6,7 @@ define([
 	'use strict';
 	App.module('Admin.Views', function(Views, App, Backbone, Marionette, $, _){
 		Views.ReasonKbnConditionChange = Marionette.ItemView.extend({
-			template: App.Admin.Templates.ReasonKbnConditionChange,
+			template: App.Admin.Templates.reasonKbnConditionChange,
 			model: new Backbone.Model(),
 			ui: {
 				'reason_kbn': '.reason_kbn'

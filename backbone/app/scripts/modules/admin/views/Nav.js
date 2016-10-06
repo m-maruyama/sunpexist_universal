@@ -24,6 +24,7 @@ define([
 				"info": "li.nav_info",
 				"purchaseInput": "li.nav_purchaseInput",
 				"wearerEdit": "li.nav_wearerEdit",
+				"wearerEditOrder": "li.nav_wearerEditOrder",
 				"wearerInput": "li.nav_wearerInput",
 				"wearerEnd": "li.nav_wearerEnd",
 				"wearerEndOrder": "li.nav_wearerEndOrder",

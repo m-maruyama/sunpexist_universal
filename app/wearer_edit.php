@@ -313,76 +313,44 @@ $app->post('/wearer_edit/search', function ()use($app){
               $list['job_type_name'] = "-";
           }
 
-          //---「職種変更または異動」ボタンの生成---//
+          //---「着用者編集」ボタンの生成---//
           if ($list['order_tran_flg'] == "1") {
-            if (
-              $result->as_order_sts_kbn == '1'
-              && $result->as_order_reason_kbn !== '4'
-              && $result->as_order_reason_kbn !== '8'
-              && $result->as_order_reason_kbn !== '9'
-              && $result->as_order_reason_kbn !== '11')
-            {
-              //パターンA： 発注情報トラン．発注状況区分 = 貸与 かつ、発注情報トラン．理由区分 = 職種変更または異動のデータが無い場合、
-              //ボタンの文言は「職種変更または異動」で表示する。
-              $list['wearer_change_button'] = '職種変更または異動';
-              $list['wearer_change_red'] = "";
+            if ($result->as_order_sts_kbn !== '6') {
+              //パターンA： 発注情報トラン．発注状況区分 = 着用者編集のデータが無い場合、ボタンの文言は「着用者編集」で表示する。
+              $list['wearer_edit_button'] = "着用者編集";
+              $list['wearer_edit_red'] = "";
               $list['disabled'] = "";
-            } elseif (
-              $result->as_order_sts_kbn == '1'
-              && ($result->as_order_reason_kbn == '9' || $result->as_order_reason_kbn == '10' || $result->as_order_reason_kbn == '11' || $result->as_order_reason_kbn == '24')
-              && $result->as_order_snd_kbn == '0')
-            {
-              //パターンB： 発注情報トラン．発注状況区分 = 貸与 かつ、発注情報トラン．理由区分 = 職種変更または異動のデータがある場合、かつ、
-              //発注情報トラン．送信区分 = 未送信の場合、ボタンの文言は「職種変更または異動[済]」で表示する。
-              $list['wearer_change_button'] = "職種変更または異動";
-              $list['wearer_change_red'] = "[済]";
+            } elseif ($result->as_order_sts_kbn == '6' && $result->as_order_snd_kbn == '0') {
+              //パターンB： 発注情報トラン．発注状況区分 = 着用者編集のデータがある場合、かつ、発注情報トラン．送信区分 = 未送信の場合、ボタンの文言は「着用者編集[済]」で表示する。
+              $list['wearer_edit_button'] = "着用者編集";
+              $list['wearer_edit_red'] = "[済]";
               $list['disabled'] = "";
-            } elseif (
-              $result->as_order_sts_kbn == '2'
-              && ($result->as_order_reason_kbn == '9' || $result->as_order_reason_kbn == '10' || $result->as_order_reason_kbn == '11' || $result->as_order_reason_kbn == '24')
-              && $result->as_order_snd_kbn == '1')
-            {
-              //パターンC： 発注情報トラン．発注状況区分 = 貸与 かつ、発注情報トラン．理由区分 = 職種変更または異動のデータがある場合、かつ、
-              //発注情報トラン．送信区分 = 送信済の場合、ボタンの文言は「職種変更または異動[済]」で非活性表示する。
-              $list['wearer_change_button'] = "職種変更または異動";
-              $list['wearer_change_red'] = "[済]";
-              $list['disabled'] = "disabled";
-            } elseif (
-              $result->as_order_sts_kbn !== '1'
-              || ($result->as_order_sts_kbn == '1' && ($result->as_order_reason_kbn !== '9' && $result->as_order_reason_kbn !== '10' && $result->as_order_reason_kbn !== '11' && $result->as_order_reason_kbn !== '24')
-              && $result->as_order_snd_kbn == '1'))
-            {
-              //パターンD： 発注情報トラン．発注状況区分 = 貸与以外、もしくは、発注情報トラン．発注状況区分 = 貸与 かつ、発注情報トラン．理由区分 = 職種変更または異動以外のデータがある場合、かつ、
-              //その発注の送信区分 = 送信済の場合、ボタンの文言は「職種変更または異動」で非活性表示する。
-              $list['wearer_change_button'] = "職種変更または異動";
-              $list['wearer_change_red'] = "";
+            } elseif ($result->as_order_sts_kbn == '6' && $result->as_order_snd_kbn == '1') {
+              //パターンC： 発注情報トラン．発注状況区分 = 着用者編集のデータがある場合、かつ、発注情報トラン．送信区分 = 送信済の場合、ボタンの文言は「着用者編集[済]」で非活性表示する。
+              $list['wearer_edit_button'] = "着用者編集";
+              $list['wearer_edit_red'] = "[済]";
               $list['disabled'] = "disabled";
             } else {
-              // 上記パターンに該当しない場合、デフォルトでボタンの文言は「職種変更または異動」を表示する。
-              $list['wearer_change_button'] = '職種変更または異動';
-              $list['wearer_change_red'] = "";
+              // 上記パターンに該当しない場合、デフォルトでボタンの文言は「着用者編集」を表示する。
+              $list['wearer_edit_button'] = "着用者編集";
+              $list['wearer_edit_red'] = "";
               $list['disabled'] = "";
             }
-
             //「返却伝票ダウンロード」ボタン生成
             if (
-              ($result->as_order_sts_kbn == '1'
-              && ($result->as_order_reason_kbn == '9' || $result->as_order_reason_kbn == '10' || $result->as_order_reason_kbn == '11' || $result->as_order_reason_kbn == '24')
-              && $result->as_order_snd_kbn == '0') ||
-              ($result->as_order_sts_kbn == '2'
-              && ($result->as_order_reason_kbn == '9' || $result->as_order_reason_kbn == '10' || $result->as_order_reason_kbn == '11' || $result->as_order_reason_kbn == '24')
-              && $result->as_order_snd_kbn == '1')
+              ($result->as_order_sts_kbn == '6' && $result->as_order_snd_kbn == '0') ||
+              ($result->as_order_sts_kbn == '6' && $result->as_order_snd_kbn == '1')
             )
             {
-              //「職種変更または異動」ボタン生成のパターンBかCの場合に表示
+              //「着用者編集」ボタン生成のパターンBかCの場合に表示
               $list['return_reciept_button'] = true;
             } else {
               $list['return_reciept_button'] = false;
             }
           } else {
-            // 上記パターンに該当しない場合、デフォルトでボタンの文言は「職種変更または異動」を表示する。
-            $list['wearer_change_button'] = '職種変更または異動';
-            $list['wearer_change_red'] = "";
+            // 上記パターンに該当しない場合、デフォルトでボタンの文言は「着用者編集」を表示する。
+            $list['wearer_edit_button'] = "着用者編集";
+            $list['wearer_edit_red'] = "";
             $list['disabled'] = "";
             $list['return_reciept_button'] = false;
           }
@@ -418,8 +386,8 @@ $app->post('/wearer_edit/search', function ()use($app){
 
 
 /**
- * 「職種変更または異動」ボタンの押下時のパラメータのセッション保持
- * →発注入力（職種変更または異動）にてパラメータ利用
+ * 「着用者編集」ボタンの押下時のパラメータのセッション保持
+ * →発注入力（着用者編集）にてパラメータ利用
  */
 $app->post('/wearer_edit/req_param', function ()use($app){
 
@@ -433,7 +401,7 @@ $app->post('/wearer_edit/req_param', function ()use($app){
     //ChromePhp::LOG($cond);
 
     // POSTパラメータのセッション格納
-    $app->session->set("wearer_chg_post", array(
+    $app->session->set("wearer_edit_post", array(
       'rntl_cont_no' => $cond["rntl_cont_no"],
       'werer_cd' => $cond["werer_cd"],
       'cster_emply_cd' => $cond["cster_emply_cd"],
@@ -449,7 +417,8 @@ $app->post('/wearer_edit/req_param', function ()use($app){
     ));
 
     $json_list = array();
-    $json_list = $app->session->get("wearer_chg_post");
+    $json_list = $app->session->get("wearer_edit_post");
+    //ChromePhp::LOG($json_list);
 
     echo json_encode($json_list);
 });

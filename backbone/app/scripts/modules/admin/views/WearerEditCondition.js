@@ -33,7 +33,6 @@ define([
 				'section': '#section',
 				'sex_kbn': '.sex_kbn',
 				'job_type': '#job_type',
-				"reset": '.reset',
 				"search": '.search'
 			},
 			bindings: {

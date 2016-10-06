@@ -6,14 +6,17 @@
 <td>{{rntl_sect_name}}<br>
     {{job_type_name}}</td>
 <td>
-  {{#if wearer_change_button}}
-    <button type="button" class="btn btn-primary" title="着用者編集" id="wearer_edit" value="{{param}}" {{disabled}}>
-      {{wearer_change_button}}
-      {{#if wearer_change_red}}
-      <span style='color:red'>
-        {{wearer_change_red}}
-      </span>
-      {{/if}}
-    </button>
+  {{#if wearer_edit_button}}
+  <button type="button" class="btn btn-primary" title="着用者編集" id="wearer_edit" value="{{param}}" {{disabled}}>
+    {{wearer_edit_button}}
+    {{#if wearer_edit_red}}
+    <span style='color:red'>
+    {{wearer_edit_red}}
+    </span>
+    {{/if}}
+  </button>
+  {{/if}}
+  {{#if return_reciept_button}}
+  <button type="button" class="btn btn-primary" title="返却伝票ダウンロード" id="download">返却伝票ダウンロード</button>
   {{/if}}
 </td>

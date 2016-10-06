@@ -14,7 +14,7 @@ define([
 				"wearer_edit": "#wearer_edit"
 			},
 			events: {
-				'click @ui.wearer_change': function(e){
+				'click @ui.wearer_edit': function(e){
 					e.preventDefault();
 					var we_vals = this.ui.wearer_edit.val();
 					var we_val = we_vals.split(':');
@@ -34,9 +34,9 @@ define([
 					};
 
 					var modelForUpdate = this.model;
-					modelForUpdate.url = App.api.WC0011;
+					modelForUpdate.url = App.api.WU0011;
 					var cond = {
-						"scr": '発注入力（職種変更または異動）POST値保持',
+						"scr": '発注入力（着用者編集）POST値保持',
 						"data": data
 					};
 					modelForUpdate.fetchMx({
