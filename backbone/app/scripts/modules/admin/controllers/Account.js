@@ -29,8 +29,6 @@ define([
 				var accountListListCollection = new App.Entities.Collections.AdminAccountListList();
 				var AdminAccountModal = new App.Entities.Collections.AdminAccountModal();
 
-
-
 				//追加
 				var corporateIdConditionView = new App.Admin.Views.CorporateIdCondition();
 				//追加
@@ -38,9 +36,6 @@ define([
 				//追加
 
 				//var agreementNoConditionView = new App.Admin.Views.AgreementNoCondition();
-
-
-
 
 				var accountListConditionModel = new App.Entities.Models.AdminAccountListCondition();
 				//コンディション追加

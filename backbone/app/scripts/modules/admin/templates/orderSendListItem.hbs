@@ -1,0 +1,19 @@
+<td><input type="checkbox" name="order_check" class="order_check snd_kbn{{order_snd_kbn}}" value="{{corporate_id}}:{{werer_cd}}:{{rntl_cont_no}}:{{job_type_cd}}:{{order_req_no}}"></td>
+<td>{{cster_emply_cd}}<br>
+    {{werer_name}}</td>
+<td>{{sex_kbn_name}}</td>
+<td>{{order_req_no}}<br>
+    {{order_req_ymd}}
+</td>
+<td>{{rntl_sect_name}}<br>
+    {{job_type_name}}</td>
+<td><span class="order_sts_kbn_name">{{order_sts_kbn_name}}</span><br>
+    <span class="order_reason_kbn_name{{order_sts_kbn}}">{{order_reason_kbn_name}}</span>
+</td>
+<td>{{snd_kbn}}</td>
+<td><button type="button" class="btn btn-primary orderSend_cancel snd_kbn{{order_snd_kbn}}" title="発注送信キャンセル" value="{{corporate_id}}:{{werer_cd}}:{{rntl_cont_no}}:{{job_type_cd}}:{{order_req_no}}">発注送信キャンセル
+</button></td>
+<td>
+    <button type="button" class="btn btn-primary order_cancel snd_kbn{{order_snd_kbn}}" title="発注取消" value="{{werer_cd}}:{{order_req_no}}:{{rntl_cont_no}}:{{rntl_sect_cd}}:{{job_type_cd}}">発注取消
+    </button>
+</td>

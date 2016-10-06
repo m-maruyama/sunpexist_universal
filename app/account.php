@@ -177,6 +177,7 @@ $app->post('/account/modal', function () use ($app) {
         //削除ボタンが押された場合に、削除フラグ１
         $ac[0]->del_flg = '1';
         $m_account = $ac[0];
+
         //削除の場合
         //if ($ac[0]->delete() == false) {
         //    $error_list['delete'] = 'アカウントの削除に失敗しました。';

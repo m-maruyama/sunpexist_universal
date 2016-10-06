@@ -50,6 +50,7 @@ try {
     include __DIR__.'/../app/home.php';
     include __DIR__.'/../app/purchase_input.php';
     include __DIR__.'/../app/purchase_history.php';
+    include __DIR__.'/../app/order_send.php';
     include __DIR__.'/../app/wearer_edit.php';
     include __DIR__.'/../app/wearer_edit_order.php';
     include __DIR__.'/../app/wearer_input.php';

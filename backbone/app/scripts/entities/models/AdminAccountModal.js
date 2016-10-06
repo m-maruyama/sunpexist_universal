@@ -52,12 +52,6 @@ define(["app"],function(App) {
 						msg: "ログイン表示名を入力して下さい。"
 					}
 				],
-				"user_name": [
-					{
-						required:true,
-						msg: "ユーザ名称を入力して下さい。"
-					}
-				],
 				"position_name": [
 					{
 						required:true,

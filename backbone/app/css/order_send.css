@@ -24,9 +24,6 @@ h4{
     font-size:14px;
     font-weight:bold;
 }
-.hidden{
-  display: hidden;
-}
 
 /*-----------------------------
  Bootstrap class
@@ -233,13 +230,11 @@ h4{
 
 
 /*-----------------------------
- WF蜈ｱ騾�
+ WF共通
 ------------------------------- */
 .text_center {
     text-align: center
 }
-
-
 
 
 /*.btn-primary {
@@ -257,7 +252,7 @@ h4{
 .btn-primary:active,
 .btn-primary:focus,
 .btn-primary:hover,
-.open>.dropdown-toggle.btn-primary縲{
+.open>.dropdown-toggle.btn-primary　{
 	background-image: -webkit-linear-gradient(top,#568bd6 0,#a5c1ea 100%);
 	background-image: -o-linear-gradient(top,#568bd6 0,#a5c1ea 100%);
 	background-image: -webkit-gradient(linear,left top,left bottom,from(#568bd6),to(#a5c1ea));
@@ -678,9 +673,33 @@ label.allCheck {
 .order_table tr.edit td {
     background: #ee3;
 }
-.form-horizontal {
-    margin: 20px auto 0px;
+.orderSend_cancel.snd_kbn9{
+    display:none;
 }
-.listTable {
+.orderSend_cancel.snd_kbn2{
+    display:none;
+}
+.orderSend_cancel.snd_kbn0{
+    display:none;
+}
+.order_check.snd_kbn1{
+    display: none;
+}
+.order_check.snd_kbn2{
+    display: none;
+}
+.order_check.snd_kbn9{
+    display: none;
+}
+.order_cancel.snd_kbn1{
+    display: none;
+}
+.order_cancel.snd_kbn2{
+    display: none;
+}
+.order_cancel.snd_kbn9{
+    display: none;
+}
+.order_reason_kbn_name6{
     display: none;
 }
