@@ -48,6 +48,7 @@ define([
 				'click @ui.search': function(e){
 					e.preventDefault();
 					this.triggerMethod('hideAlerts');
+					$(".listTable").css('display', 'block');
 					var corporate_id = $("select[name='corporate_id']").val();
 					var agreement_no = $("select[name='agreement_no']").val();
 

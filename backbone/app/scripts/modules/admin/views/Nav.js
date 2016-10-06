@@ -21,6 +21,7 @@ define([
 				"manpowerInfo": "li.nav_manpowerInfo",
 				"wearer": "li.nav_wearer",
 				"account": "li.nav_account",
+				"orderSend": "li.nav_orderSend",
 				"info": "li.nav_info",
 				"purchaseInput": "li.nav_purchaseInput",
 				"wearerEdit": "li.nav_wearerEdit",

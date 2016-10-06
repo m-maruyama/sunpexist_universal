@@ -1,0 +1,52 @@
+
+<!-- start 本文エリア -->
+<div class="row">
+	<h1>発注送信処理</h1>
+	<!-- start フォーム -->
+	<form class="form-horizontal">
+		<!-- 契約No -->
+		<div class="form-group">
+			<div class="agreement_no"></div>
+		</div>
+		<div class="form-group">
+			<label class="col-md-2 control-label" for="cster_emply_cd">社員番号</label>
+			<div class="col-md-3">
+				<input type="text" id="cster_emply_cd" name="cster_emply_cd" class="form-control input-sm" maxlength="" placeholder="" />
+			</div>
+			<label class="col-md-1 control-label" for="werer_name">着用者名</label>
+			<div class="col-md-3">
+				<input type="text" id="werer_name" name="werer_name" class="form-control input-sm" maxlength="" placeholder="" />
+			</div>
+		</div>
+
+		<!-- 性別 -->
+		<div class="form-group">
+			<label class="col-md-2 control-label" for="sex_kbn">性別</label>
+			<div class="col-md-2">
+				<div class="sex_kbn"></div>
+			</div>
+		</div>
+
+		<!-- 拠点 -->
+		<div class="form-group">
+			<div class="section"></div>
+		</div>
+
+		<!-- 貸与パターン -->
+		<div class="form-group">
+			<label class="col-md-2 control-label" for="job_type">貸与パターン</label>
+			<div class="col-md-3">
+				<div class="job_type"></div>
+			</div>
+		</div>
+
+		<div class="form-group" style="margin-bottom: 60px">
+			<div class="col-md-2 col-md-push-7">
+				<input type="hidden" class="ui_type" id="ui_type" name="ui_type" value="history">
+				<a type="button" data-page="1" class="btn btn-primary btn-sm btn-block search" title="検索" id="button1">検索</a>
+			</div>
+		</div>
+	</form>
+	<!-- end フォーム -->
+
+	<hr>
