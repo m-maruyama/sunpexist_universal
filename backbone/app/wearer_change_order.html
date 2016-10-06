@@ -21,6 +21,12 @@
   })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
   ga('create', 'UA-76339364-1', 'auto');
   ga('send', 'pageview');
+
+  // リファラ取得での制御
+  if (document.referrer.length == 0){
+    // 直リンクによるアクセスは検索画面へリダイレクト
+    location.href = "wearer_change.html";
+  }
 </script>
 <div id="nav"></div>
 <div id="main" style=""></div>

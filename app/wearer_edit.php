@@ -6,7 +6,8 @@ use Phalcon\Paginator\Adapter\NativeArray as PaginatorArray;
 use Phalcon\Paginator\Adapter\QueryBuilder as PaginatorQueryBuilder;
 
 /**
- * 着用者編集検索
+ * 着用者編集
+ * 検索一覧
  */
 $app->post('/wearer_edit/search', function ()use($app){
 
@@ -386,6 +387,7 @@ $app->post('/wearer_edit/search', function ()use($app){
 
 
 /**
+ * 着用者編集
  * 「着用者編集」ボタンの押下時のパラメータのセッション保持
  * →発注入力（着用者編集）にてパラメータ利用
  */
@@ -421,4 +423,85 @@ $app->post('/wearer_edit/req_param', function ()use($app){
     //ChromePhp::LOG($json_list);
 
     echo json_encode($json_list);
+});
+
+/**
+ * 着用者編集
+ * 発注パターンNGチェック
+ */
+$app->post('/wearer_change/order_check', function ()use($app){
+  $params = json_decode(file_get_contents("php://input"), true);
+
+  // アカウントセッション取得
+  $auth = $app->session->get("auth");
+
+  // パラメータ取得
+  $cond = $params['data'];
+  //ChromePhp::LOG($cond);
+
+  $json_list = array();
+
+  // エラーメッセージ、エラーコード 0:正常 その他:要因エラー
+  $json_list["err_cd"] = '0';
+  $json_list["err_msg"] = '';
+
+  //※発注情報トラン参照
+  $query_list = array();
+  array_push($query_list, "corporate_id = '".$auth['corporate_id']."'");
+  array_push($query_list, "rntl_cont_no = '".$cond['rntl_cont_no']."'");
+  array_push($query_list, "werer_cd = '".$cond['werer_cd']."'");
+  array_push($query_list, "rntl_sect_cd = '".$cond['rntl_sect_cd']."'");
+  array_push($query_list, "job_type_cd = '".$cond['job_type_cd']."'");
+  $query = implode(' AND ', $query_list);
+
+  $arg_str = "";
+  $arg_str = "SELECT ";
+  $arg_str .= "*";
+  $arg_str .= " FROM ";
+  $arg_str .= "t_order_tran";
+  $arg_str .= " WHERE ";
+  $arg_str .= $query;
+  $arg_str .= " ORDER BY upd_date DESC";
+  //ChromePhp::LOG($arg_str);
+  $t_order_tran = new TOrderTran();
+  $results = new Resultset(NULL, $t_order_tran, $t_order_tran->getReadConnection()->query($arg_str));
+  $result_obj = (array)$results;
+  $results_cnt = $result_obj["\0*\0_count"];
+  //ChromePhp::LOG($results_cnt);
+  if (!empty($results_cnt)) {
+    $paginator_model = new PaginatorModel(
+        array(
+            "data"  => $results,
+            "limit" => 1,
+            "page" => 1
+        )
+    );
+    $paginator = $paginator_model->getPaginate();
+    $results = $paginator->items;
+    //ChromePhp::LOG($results);
+    foreach ($results as $result) {
+      $order_sts_kbn = $result->order_sts_kbn;
+    }
+    //※汎用コードマスタ参照
+    $query_list = array();
+    array_push($query_list, "cls_cd = '001'");
+    array_push($query_list, "gen_cd = '".$order_sts_kbn."'");
+    $query = implode(' AND ', $query_list);
+    $gencode = MGencode::query()
+        ->where($query)
+        ->columns('*')
+        ->execute();
+    foreach ($gencode as $gencode_map) {
+      $order_sts_kbn_name = $gencode_map->gen_name;
+    }
+
+    // 職種変更または異動の場合、何かしらの発注区分の情報がある際は発注NGとする
+    $json_list["err_cd"] = "1";
+    $error_msg = $order_sts_kbn_name."の発注が入力されています。職種変更または異動を行う場合は";
+    $error_msg .= $order_sts_kbn_name."の発注をキャンセルしてください。";
+    $json_list["err_msg"] = $error_msg;
+  }
+
+  //ChromePhp::LOG($json_list);
+  echo json_encode($json_list);
 });

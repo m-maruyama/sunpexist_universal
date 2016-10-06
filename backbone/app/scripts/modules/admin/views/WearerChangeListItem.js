@@ -15,7 +15,8 @@ define([
 			},
 			events: {
 				'click @ui.wearer_change': function(e){
-					e.preventDefault();
+					var that = this;
+
 					var we_vals = this.ui.wearer_change.val();
 					var we_val = we_vals.split(':');
 					var data = {
@@ -33,6 +34,35 @@ define([
 						'order_req_no': we_val[11],
 					};
 
+					// 発注入力遷移前に発注NGパターンチェック実施
+					var modelForUpdate = this.model;
+					modelForUpdate.url = App.api.WC0023;
+					var cond = {
+						"scr": '職種変更または異動-発注NGパターンチェック',
+						"log_type": '3',
+						"data": data
+					};
+					modelForUpdate.fetchMx({
+						data:cond,
+						success:function(res){
+							var res_val = res.attributes;
+							if (res_val["err_cd"] == "0") {
+								var type = "WC0011_req";
+								var transition = "";
+								var data = cond["data"];
+								that.onShow(res_val, type, transition, data);
+							} else {
+								alert(res_val["err_msg"]);
+							}
+						}
+					});
+				}
+			},
+			onShow: function(val, type, transition, data) {
+				var that = this;
+
+				if (type == "WC0011_req") {
+					// 遷移時のPOSTパラメータ代行処理
 					var modelForUpdate = this.model;
 					modelForUpdate.url = App.api.WC0011;
 					var cond = {
@@ -42,17 +72,7 @@ define([
 					modelForUpdate.fetchMx({
 						data:cond,
 						success:function(res){
-							var errors = res.get('errors');
-							if(errors) {
-								var errorMessages = errors.map(function(v){
-									return v.error_message;
-								});
-								this.triggerMethod('showAlerts', errorMessages);
-							}
 							var $form = $('<form/>', {'action': '/universal/wearer_change_order.html', 'method': 'post'});
-//							for(var key in res) {
-//								$form.append($('<input/>', {'type': 'hidden', 'name': key, 'value': res[key]}));
-//							}
 							$form.appendTo(document.body);
 							$form.submit();
 						}
