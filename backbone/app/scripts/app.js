@@ -175,7 +175,7 @@ define([
 			"WU0013": host + "/wearer_edit_delete",
 			"WU0014": host + "/wearer_edit_complete",
 			"WU0015": host + "/wearer_edit_send",
-			"WC0016": host + "/wearer_edit/order_check",
+			"WU0016": host + "/wearer_edit/order_check",
 			"WI0010": host + "/wearer_input",
 			"WI0011": host + "/change_section",
 			"WI0012": host + "/input_insert",

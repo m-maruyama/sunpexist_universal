@@ -17,6 +17,7 @@ define([
 				'click @ui.wearer_change': function(e){
 					var that = this;
 
+					e.preventDefault();
 					var we_vals = this.ui.wearer_change.val();
 					var we_val = we_vals.split(':');
 					var data = {
@@ -52,6 +53,7 @@ define([
 								var data = cond["data"];
 								that.onShow(res_val, type, transition, data);
 							} else {
+								// エラーアラート表示
 								alert(res_val["err_msg"]);
 							}
 						}
