@@ -105,13 +105,41 @@ define([
 						;
 						that.ui.delete.val(delete_param);
 
+						// 発注情報トランがある場合は発注取消ボタンを表示
+						if (res_list['order_tran_flg'] == '1') {
+							$('.delete').css('display','');
+						}
+
+						// 入力完了、発注送信ボタン表示/非表示制御
+						var data = {
+							'rntl_sect_cd': res_list['rntl_sect_cd']
+						}
+						modelForUpdate.url = App.api.CM0140;
+						var cond = {
+							"scr": '職種変更または異動-発注入力・送信可否チェック',
+							"log_type": '3',
+							"data": data,
+						};
+						modelForUpdate.fetchMx({
+							data:cond,
+							success:function(res){
+								var CM0140_res = res.attributes;
+								//「入力完了」ボタン表示制御
+								if (CM0140_res['order_input_ok_flg'] == "1" || CM0140_res['order_send_ok_flg'] == "1") {
+									$('.complete').css('display','');
+								}
+								if (CM0140_res['order_send_ok_flg'] == "1") {
+									$('.orderSend').css('display','');
+								}
+							}
+						});
+
 						// 社員コード、着用者名、読みかな
 						if (res_list['wearer_info'][0]) {
 							that.ui.member_no.val(res_list['wearer_info'][0]['cster_emply_cd']);
 							that.ui.member_name.val(res_list['wearer_info'][0]['werer_name']);
 							that.ui.member_name_kana.val(res_list['wearer_info'][0]['werer_name_kana']);
 						}
-
 						var maxTime = new Date();
 						maxTime.setHours(15);
 						maxTime.setMinutes(59);
@@ -250,6 +278,8 @@ define([
 				'change @ui.section': function(){
 					this.ui.section = $('#section');
 					var section = $("select[name='section']").val();
+
+					// 出荷先以降の内容変更
 					var shipment_vals = $("select[name='shipment']").val();
 					var val = shipment_vals.split(':');
 					var ship_to_cd = val[0];
@@ -261,6 +291,41 @@ define([
 						chg_flg: '1',
 					});
 					this.shipment.show(shipmentConditionChangeView);
+
+					// 入力完了、発注送信ボタン表示/非表示制御
+					var data = {
+						'rntl_sect_cd': section
+					};
+					var modelForUpdate = this.model;
+					modelForUpdate.url = App.api.CM0140;
+					var cond = {
+						"scr": '職種変更または異動-発注入力・送信可否チェック',
+						"log_type": '3',
+						"data": data,
+					};
+					modelForUpdate.fetchMx({
+						data:cond,
+						success:function(res) {
+							var CM0140_res = res.attributes;
+							//「入力完了」ボタン表示制御
+							if (CM0140_res['order_input_ok_flg'] == "1" && CM0140_res['order_send_ok_flg'] == "1") {
+								$('.complete').css('display', '');
+								$('.orderSend').css('display', '');
+							}
+							if (CM0140_res['order_input_ok_flg'] == "0" && CM0140_res['order_send_ok_flg'] == "0") {
+								$('.complete').css('display', 'none');
+								$('.orderSend').css('display', 'none');
+							}
+							if (CM0140_res['order_input_ok_flg'] == "0" && CM0140_res['order_send_ok_flg'] == "1") {
+								$('.complete').css('display', 'none');
+								$('.orderSend').css('display', '');
+							}
+							if (CM0140_res['order_input_ok_flg'] == "1" && CM0140_res['order_send_ok_flg'] == "0") {
+								$('.complete').css('display', '');
+								$('.orderSend').css('display', 'none');
+							}
+						}
+					});
 				},
 				// 貸与パターン
 				'change @ui.job_type': function(){

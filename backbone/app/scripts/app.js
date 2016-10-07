@@ -130,6 +130,7 @@ define([
 			"CM0110": host + "/sex_kbn",
 			"CM0120": host + "/reason_kbn",
 			"CM0130": host + "/update_possible_chk",
+			"CM0140": host + "/btn_possible_chk",
 			"IM0010": host + "/import_csv",
 			"IM0020": host + "/csv",
 			"DL0010": host + "/csv_download",

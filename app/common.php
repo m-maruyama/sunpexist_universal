@@ -1255,3 +1255,70 @@ $app->post('/update_possible_chk', function ()use($app) {
 
   echo json_encode($json_list);
 });
+
+/*
+ * 発注入力・発注送信可否チェック
+ * @return 発注入力可否フラグ
+ *         発注送信可否フラグ
+ */
+$app->post('/btn_possible_chk', function ()use($app) {
+  $params = json_decode(file_get_contents('php://input'), true);
+
+  // アカウントセッション取得
+  $auth = $app->session->get('auth');
+  //ChromePhp::LOG($auth);
+
+  // フロントパラメータ取得
+  $cond = $params['data'];
+  //ChromePhp::LOG("フロント側パラメータ");
+  //ChromePhp::LOG($cond);
+
+  $json_list = array();
+
+  $query_list = array();
+  array_push($query_list, "m_contract_resource.corporate_id = '".$auth['corporate_id']."'");
+  array_push($query_list, "m_contract_resource.accnt_no = '".$auth['accnt_no']."'");
+  array_push($query_list, "m_contract_resource.rntl_cont_no = '".$auth['rntl_cont_no']."'");
+  array_push($query_list, "m_contract_resource.rntl_sect_cd = '".$cond['rntl_sect_cd']."'");
+  $query = implode(' AND ', $query_list);
+
+  $arg_str = '';
+  $arg_str = 'SELECT ';
+  $arg_str .= 'order_input_ok_flg,';
+  $arg_str .= 'order_send_ok_flg';
+  $arg_str .= ' FROM ';
+  $arg_str .= 'm_contract_resource';
+  $arg_str .= ' WHERE ';
+  $arg_str .= $query;
+
+  $m_contract_resource = new MContractResource();
+  $results = new Resultset(null, $m_contract_resource, $m_contract_resource->getReadConnection()->query($arg_str));
+  $results_array = (array) $results;
+  $results_cnt = $results_array["\0*\0_count"];
+  //ChromePhp::LOG($m_contract_resource->getReadConnection()->query($arg_str));
+  //ChromePhp::LOG($results_cnt);
+
+  if ($results_cnt > 0) {
+    $paginator_model = new PaginatorModel(
+      array(
+        "data"  => $results,
+        "limit" => $results_cnt,
+        "page" => 1
+      )
+    );
+    $paginator = $paginator_model->getPaginate();
+    $results = $paginator->items;
+
+    foreach ($results as $result) {
+      $json_list["order_input_ok_flg"]= $result->order_input_ok_flg;
+      $json_list["order_send_ok_flg"]= $result->order_send_ok_flg;
+    }
+  } else {
+    // データ自体存在しない場合は不可対象とする
+    $json_list["order_input_ok_flg"]= "0";
+    $json_list["order_send_ok_flg"]= "0";
+  }
+
+  //ChromePhp::LOG($json_list);
+  echo json_encode($json_list);
+});

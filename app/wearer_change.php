@@ -314,67 +314,161 @@ $app->post('/wearer_change/search', function ()use($app){
         }
 
         //---「職種変更または異動」ボタンの生成---//
+        $list['btnPattern'] = "";
         if ($list['order_tran_flg'] == "1") {
-          if (
-            $result->as_order_sts_kbn == '1'
-            && $result->as_order_reason_kbn !== '4'
-            && $result->as_order_reason_kbn !== '8'
-            && $result->as_order_reason_kbn !== '9'
-            && $result->as_order_reason_kbn !== '11')
-          {
-            //パターンA： 発注情報トラン．発注状況区分 = 貸与 かつ、発注情報トラン．理由区分 = 職種変更または異動のデータが無い場合、
-            //ボタンの文言は「職種変更または異動」で表示する。
-            $list['wearer_change_button'] = '職種変更または異動';
-            $list['wearer_change_red'] = "";
-            $list['disabled'] = "";
-          } elseif (
-            $result->as_order_sts_kbn == '1'
-            && ($result->as_order_reason_kbn == '9' || $result->as_order_reason_kbn == '10' || $result->as_order_reason_kbn == '11' || $result->as_order_reason_kbn == '24')
-            && $result->as_order_snd_kbn == '0')
-          {
+          // 発注情報トラン参照
+          $query_list = array();
+          array_push($query_list, "corporate_id = '".$auth['corporate_id']."'");
+          array_push($query_list, "rntl_cont_no = '".$list['rntl_cont_no']."'");
+          array_push($query_list, "werer_cd = '".$list['werer_cd']."'");
+          array_push($query_list, "rntl_sect_cd = '".$list['rntl_sect_cd']."'");
+          array_push($query_list, "job_type_cd = '".$list['job_type_cd']."'");
+          $query = implode(' AND ', $query_list);
+
+          $arg_str = "";
+          $arg_str .= "SELECT distinct on (order_req_no) ";
+          $arg_str .= "*";
+          $arg_str .= " FROM ";
+          $arg_str .= "t_order_tran";
+          $arg_str .= " WHERE ";
+          $arg_str .= $query;
+          //ChromePhp::LOG($arg_str);
+          $t_order_tran = new TOrderTran();
+          $t_order_tran_results = new Resultset(NULL, $t_order_tran, $t_order_tran->getReadConnection()->query($arg_str));
+          $result_obj = (array)$t_order_tran_results;
+          $t_order_tran_cnt = $result_obj["\0*\0_count"];
+          //ChromePhp::LOG($results_cnt);
+          if (!empty($t_order_tran_cnt)) {
+            $paginator_model = new PaginatorModel(
+                array(
+                    "data"  => $t_order_tran_results,
+                    "limit" => $t_order_tran_cnt,
+                    "page" => 1
+                )
+            );
+            $paginator = $paginator_model->getPaginate();
+            $t_order_tran_results = $paginator->items;
+            //ChromePhp::LOG($results);
+
+            //パターンA： 発注情報トラン．発注状況区分 = 異動 かつ、発注情報トラン．理由区分 = 職種変更または異動のデータが無い
+            $patarn_flg = false;
+            foreach ($t_order_tran_results as $t_order_tran_result) {
+              $order_req_no = $t_order_tran_result->order_req_no;
+              $order_sts_kbn = $t_order_tran_result->order_sts_kbn;
+              $order_reason_kbn = $t_order_tran_result->order_reason_kbn;
+              $snd_kbn = $t_order_tran_result->snd_kbn;
+              if (
+                $order_sts_kbn == '5'
+                && $order_reason_kbn == '9'
+                && $order_reason_kbn == '10'
+                && $order_reason_kbn == '11'
+                && $order_reason_kbn == '24')
+              {
+                $patarn_flg = true;
+                break;
+              }
+            }
+            if (!$patarn_flg) {
+              $list['order_req_no'] = $order_req_no;
+              $list['order_reason_kbn'] = $order_reason_kbn;
+              $list['wearer_change_button'] = '職種変更または異動';
+              $list['wearer_change_red'] = "";
+              $list['disabled'] = "";
+              $list['btnPattern'] = "A";
+            }
+          }
+          if ($list['btnPattern'] == "") {
+            //パターンD： 着用者マスタトランの情報有り、かつその送信区分 = 処理中、もしくは発注情報トラン．発注状況区分 = 異動以外 かつ、
+            //その発注の送信区分 = 処理中の場合、ボタンの文言は「職種変更または異動」で非活性表示する。
+            $patarn_flg = true;
+            foreach ($t_order_tran_results as $t_order_tran_result) {
+              $order_req_no = $t_order_tran_result->order_req_no;
+              $order_sts_kbn = $t_order_tran_result->order_sts_kbn;
+              $order_reason_kbn = $t_order_tran_result->order_reason_kbn;
+              $snd_kbn = $t_order_tran_result->snd_kbn;
+              if (
+                ($list['wearer_tran_flg'] == '1' && $list['snd_kbn'] == "処理中") ||
+                (($order_sts_kbn !== '5' || $order_sts_kbn == '5')
+                && ($order_reason_kbn !== '9' && $order_reason_kbn !== '10' && $order_reason_kbn !== '11' && $order_reason_kbn !== '24')
+                && $snd_kbn == '9'))
+              {
+                $patarn_flg = false;
+                break;
+              }
+            }
+            if (!$patarn_flg) {
+              $list['order_req_no'] = $order_req_no;
+              $list['order_reason_kbn'] = $order_reason_kbn;
+              $list['wearer_change_button'] = "職種変更または異動";
+              $list['wearer_change_red'] = "";
+              $list['disabled'] = "disabled";
+              $list['btnPattern'] = "D";
+            }
+          }
+          if ($list['btnPattern'] == "") {
             //パターンB： 発注情報トラン．発注状況区分 = 貸与 かつ、発注情報トラン．理由区分 = 職種変更または異動のデータがある場合、かつ、
             //発注情報トラン．送信区分 = 未送信の場合、ボタンの文言は「職種変更または異動[済]」で表示する。
-            $list['wearer_change_button'] = "職種変更または異動";
-            $list['wearer_change_red'] = "[済]";
-            $list['disabled'] = "";
-          } elseif (
-            $result->as_order_sts_kbn == '2'
-            && ($result->as_order_reason_kbn == '9' || $result->as_order_reason_kbn == '10' || $result->as_order_reason_kbn == '11' || $result->as_order_reason_kbn == '24')
-            && $result->as_order_snd_kbn == '1')
-          {
+            $patarn_flg = true;
+            foreach ($t_order_tran_results as $t_order_tran_result) {
+              $order_req_no = $t_order_tran_result->order_req_no;
+              $order_sts_kbn = $t_order_tran_result->order_sts_kbn;
+              $order_reason_kbn = $t_order_tran_result->order_reason_kbn;
+              $snd_kbn = $t_order_tran_result->snd_kbn;
+              if (
+                $order_sts_kbn == '5'
+                && ($order_reason_kbn == '9' || $order_reason_kbn == '10' || $order_reason_kbn == '11' || $order_reason_kbn == '24')
+                && $snd_kbn == '0')
+              {
+                $patarn_flg = false;
+                break;
+              }
+            }
+            if (!$patarn_flg) {
+              $list['order_req_no'] = $order_req_no;
+              $list['order_reason_kbn'] = $order_reason_kbn;
+              $list['wearer_change_button'] = "職種変更または異動";
+              $list['wearer_change_red'] = "[済]";
+              $list['disabled'] = "";
+              $list['btnPattern'] = "B";
+            }
+          }
+          if ($list['btnPattern'] == "") {
             //パターンC： 発注情報トラン．発注状況区分 = 貸与 かつ、発注情報トラン．理由区分 = 職種変更または異動のデータがある場合、かつ、
             //発注情報トラン．送信区分 = 送信済の場合、ボタンの文言は「職種変更または異動[済]」で非活性表示する。
-            $list['wearer_change_button'] = "職種変更または異動";
-            $list['wearer_change_red'] = "[済]";
-            $list['disabled'] = "disabled";
-          } elseif (
-            $result->as_order_sts_kbn !== '1'
-            || ($result->as_order_sts_kbn == '1' && ($result->as_order_reason_kbn !== '9' && $result->as_order_reason_kbn !== '10' && $result->as_order_reason_kbn !== '11' && $result->as_order_reason_kbn !== '24')
-            && $result->as_order_snd_kbn == '1'))
-          {
-            //パターンD： 発注情報トラン．発注状況区分 = 貸与以外、もしくは、発注情報トラン．発注状況区分 = 貸与 かつ、発注情報トラン．理由区分 = 職種変更または異動以外のデータがある場合、かつ、
-            //その発注の送信区分 = 送信済の場合、ボタンの文言は「職種変更または異動」で非活性表示する。
-            $list['wearer_change_button'] = "職種変更または異動";
-            $list['wearer_change_red'] = "";
-            $list['disabled'] = "disabled";
-          } else {
-            // 上記パターンに該当しない場合、デフォルトでボタンの文言は「職種変更または異動」を表示する。
+            $patarn_flg = true;
+            foreach ($t_order_tran_results as $t_order_tran_result) {
+              $order_req_no = $t_order_tran_result->order_req_no;
+              $order_sts_kbn = $t_order_tran_result->order_sts_kbn;
+              $order_reason_kbn = $t_order_tran_result->order_reason_kbn;
+              $snd_kbn = $t_order_tran_result->snd_kbn;
+              if (
+                $order_sts_kbn == '5'
+                && ($order_reason_kbn == '9' || $order_reason_kbn == '10' || $order_reason_kbn == '11' || $order_reason_kbn == '24')
+                && $snd_kbn == '1')
+              {
+                $patarn_flg = false;
+                break;
+              }
+            }
+            if (!$patarn_flg) {
+              $list['order_req_no'] = $order_req_no;
+              $list['order_reason_kbn'] = $order_reason_kbn;
+              $list['wearer_change_button'] = "職種変更または異動";
+              $list['wearer_change_red'] = "[済]";
+              $list['disabled'] = "disabled";
+              $list['btnPattern'] = "C";
+            }
+          }
+          if ($list['btnPattern'] == "") {
+            //上記パターンに引っかからない場合はデフォ表示
             $list['wearer_change_button'] = '職種変更または異動';
             $list['wearer_change_red'] = "";
             $list['disabled'] = "";
+            $list['return_reciept_button'] = false;
+            $list['btnPattern'] = "no_pattern";
           }
-
           //「返却伝票ダウンロード」ボタン生成
-          if (
-            ($result->as_order_sts_kbn == '1'
-            && ($result->as_order_reason_kbn == '9' || $result->as_order_reason_kbn == '10' || $result->as_order_reason_kbn == '11' || $result->as_order_reason_kbn == '24')
-            && $result->as_order_snd_kbn == '0') ||
-            ($result->as_order_sts_kbn == '2'
-            && ($result->as_order_reason_kbn == '9' || $result->as_order_reason_kbn == '10' || $result->as_order_reason_kbn == '11' || $result->as_order_reason_kbn == '24')
-            && $result->as_order_snd_kbn == '1')
-          )
-          {
-            //「職種変更または異動」ボタン生成のパターンBかCの場合に表示
+          if ($list['btnPattern'] == "B" || $list['btnPattern'] == "C") {
             $list['return_reciept_button'] = true;
           } else {
             $list['return_reciept_button'] = false;
@@ -385,6 +479,7 @@ $app->post('/wearer_change/search', function ()use($app){
           $list['wearer_change_red'] = "";
           $list['disabled'] = "";
           $list['return_reciept_button'] = false;
+          $list['btnPattern'] = "no_tran";
         }
 
         // 発注入力へのパラメータ設定
@@ -412,6 +507,7 @@ $app->post('/wearer_change/search', function ()use($app){
   $json_list['page'] = $page_list;
   $json_list['list'] = $all_list;
 
+  //ChromePhp::LOG($json_list);
   echo json_encode($json_list);
 });
 
