@@ -433,6 +433,8 @@ $app->post('/input_insert', function () use ($app) {
         array_push($query_list,"ship_to_cd = '".$m_section[0]->std_ship_to_cd."'");
         // 部門マスタ．標準出荷先支店コード
         array_push($query_list,"ship_to_brnch_cd = '".$m_section[0]->std_ship_to_brnch_cd."'");
+        $cond['ship_to_cd'] = $m_section[0]->std_ship_to_cd;
+        $cond['std_ship_to_brnch_cd'] = $m_section[0]->std_ship_to_brnch_cd;
     }
     //sql文字列を' AND 'で結合
     $query = implode(' AND ', $query_list);

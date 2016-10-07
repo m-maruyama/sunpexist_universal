@@ -40,22 +40,6 @@ define([
                 'datepicker': '.datepicker',
                 'timepicker': '.timepicker'
             },
-            // bindings: {
-            //     "#agreement_no": "agreement_no",
-            //     "#cster_emply_cd": "cster_emply_cd",
-            //     "section_modal": ".section_modal",
-            //     'section_btn': '#section_btn',
-            //     'zip_no': '#zip_no',
-            //     'section': '#section',
-            //     'job_type': '#job_type',
-            //     "m_shipment_to": "#m_shipment_to",
-            //     "address": "#address",
-            //     "resfl_ymd": "#resfl_ymd",
-            //     "individual_number": "#individual_number",
-            //     "search": '.search',
-            //     'datepicker': '.datepicker',
-            //     'timepicker': '.timepicker'
-            // },
             onRender: function () {
                 var maxTime = new Date();
                 maxTime.setHours(15);
@@ -198,6 +182,7 @@ return errors;
                     } else {
                         $('#zip_no').val('');
                         $('#address').text('');
+                        $('#m_shipment_to').val('');
                     }
 
                 },

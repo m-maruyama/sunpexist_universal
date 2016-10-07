@@ -4,12 +4,10 @@ define([
 	'../views/WearerOrder',
 	'../views/WearerOrderCondition',
 	'../views/WearerOrderListList',
-	'../views/AgreementNoCondition',
-	'../views/ReasonKbnConditionChange',
-	'../views/SexKbnCondition',
-	'../views/SectionCondition',
-	'../views/JobTypeCondition',
-	'../views/ShipmentConditionChange',
+	'../views/AgreementNoConditionOrder',
+	'../views/ReasonKbnConditionOrder',
+	'../views/SectionConditionOrder',
+	'../views/JobTypeConditionOrder',
 	'../views/SectionModalCondition',
 	'../views/SectionModalListList',
 	'../views/SectionModalListItem',
@@ -42,12 +40,10 @@ define([
 					model:wearerOrderModel
 				});
 
-				var agreementNoConditionView = new App.Admin.Views.AgreementNoCondition();
-				var reasonKbnConditionChangeView = new App.Admin.Views.ReasonKbnConditionChange();
-				var sexKbnConditionView = new App.Admin.Views.SexKbnCondition();
-				var sectionConditionView = new App.Admin.Views.SectionCondition();
-				var jobTypeConditionView = new App.Admin.Views.JobTypeCondition();
-				var shipmentConditionView = new App.Admin.Views.ShipmentConditionChange();
+				var agreementNoConditionView = new App.Admin.Views.AgreementNoConditionOrder();
+				var reasonKbnConditionView = new App.Admin.Views.ReasonKbnConditionOrder();
+				var sectionConditionView = new App.Admin.Views.SectionConditionOrder();
+				var jobTypeConditionView = new App.Admin.Views.JobTypeConditionOrder();
 
 				var wearerOrderListConditionModel = new App.Entities.Models.AdminWearerOrderListCondition();
 				var wearerOrderConditionView = new App.Admin.Views.WearerOrderCondition({
@@ -70,9 +66,7 @@ define([
 				var sectionModalView = new App.Admin.Views.SectionModal({
 					model:sectionModalListCondition
 				});
-				this.listenTo(wearerOrderConditionView, 'click:section_btn', function(view, model){
-					// sectionModalView.page.reset();
-					// sectionModalView.listTable.reset();
+				this.listenTo(sectionConditionView, 'click:section_btn', function(view, model){
 					sectionModalView.ui.modal.modal('show');
 				});
 				var fetchList_section = function(pageNumber,sortKey,order){
@@ -96,7 +90,7 @@ define([
 				});
 				var sectionModalListItemView = new App.Admin.Views.SectionModalListItem();
 				this.listenTo(sectionModalListListView, 'childview:click:section_select', function(model){
-					wearerOrderConditionView.ui.section[0].value = model.model.attributes.rntl_sect_cd;
+					wearerOrderConditionView.ui.section.value = model.model.attributes.rntl_sect_cd;
 					sectionModalView.ui.modal.modal('hide');
 				});
 				//拠点絞り込み--ここまで
@@ -114,7 +108,7 @@ define([
 				});
 
 				//貸与パターンセレクト変更時動作
-				this.listenTo(wearerOrderConditionView, ':job_type', function(job_type){
+				this.listenTo(wearerOrderConditionView, 'change:job_type', function(job_type){
 					//console.log(job_type);
 					var wearerOrderListListView2 = new App.Admin.Views.WearerOrderListList({
 						job_type:job_type,
@@ -126,11 +120,9 @@ define([
 				wearerOrderView.condition.show(wearerOrderConditionView);
 				wearerOrderView.listTable.show(wearerOrderListListView);
 				wearerOrderConditionView.agreement_no.show(agreementNoConditionView);
-				wearerOrderConditionView.reason_kbn.show(reasonKbnConditionChangeView);
-				wearerOrderConditionView.sex_kbn.show(sexKbnConditionView);
+				wearerOrderConditionView.reason_kbn.show(reasonKbnConditionView);
 				wearerOrderConditionView.section.show(sectionConditionView);
 				wearerOrderConditionView.job_type.show(jobTypeConditionView);
-				wearerOrderConditionView.shipment.show(shipmentConditionView);
 				wearerOrderView.sectionModal.show(sectionModalView.render());
 				sectionModalView.page.show(paginationView);
 				sectionModalView.condition.show(sectionModalConditionView);

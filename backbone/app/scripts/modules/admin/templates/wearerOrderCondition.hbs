@@ -2,12 +2,22 @@
 	<h1>発注入力</h1>
 	<!-- start フォーム -->
 	<div class="row">
+		<div class="col-md-3">
+			<b>発注する商品を入力してください。</b>
+		</div>
 		<div class="col-md-1">
 			<button class="btn btn-primary back" title="戻る">戻る</button>
 			<!--<a href="wearer_change.html" type="button" class="btn btn-primary btn-sm btn-block" title="戻る">戻る</a>-->
 		</div>
 		<div class="col-md-1">
-			<button class="btn btn-primary delete" title="発注取消">発注取消</button>
+			<button class="btn btn-primary cancel" id="cancel" title="キャンセル">キャンセル</button>
+		</div>
+		<div class="col-md-1">
+			<button class="btn btn-primary delete" title="発注取消" hidden>発注取消</button>
+
+			<!--//-->
+			<!--//A-８．	「発注取消」ボタン-->
+			<!--//	「⑥検索画面」から遷移した場合、かつ、発注情報トランにデータがある場合のみ表示。-->
 			<!--<input type="button" class="btn btn-primary btn-sm btn-block delete" value="発注取消"/>-->
 		</div>
 		<div class="col-md-1">
@@ -19,64 +29,130 @@
 			<!--<a href="order_input_finish.html" type="button" class="btn btn-primary btn-sm btn-block" title="発注送信">発注送信</a>-->
 		</div>
 	</div>
+	<!--<form class="form-horizontal">-->
+		<!--<div class="col-md-10 box_purple">-->
+			<!--&lt;!&ndash;契約No&ndash;&gt;-->
+			<!--<div class="agreement_no"></div>-->
+
+			<!--&lt;!&ndash;理由区分&ndash;&gt;-->
+			<!--<div class="reason_kbn"></div>-->
+
+			<!--<div class="form-group">-->
+				<!--<label class="col-md-3 control-label" for="order_kbn">発注区分</label>-->
+				<!--<div class="col-md-5">-->
+					<!--<select disabled class="form-control input-sm" id="order_kbn" name="order_kbn">-->
+						<!--<option value="1">貸与</option>-->
+					<!--</select>-->
+				<!--</div>-->
+			<!--</div>-->
+
+			<!--&lt;!&ndash;出荷先、郵便番号、住所&ndash;&gt;-->
+			<!--<div class="shipment"></div>-->
+
+			<!--&lt;!&ndash;拠点&ndash;&gt;-->
+			<!--<div class="section"></div>-->
+
+			<!--&lt;!&ndash;貸与パターン&ndash;&gt;-->
+			<!--<div class="job_type"></div>-->
+
+			<!--<div class="form-group">-->
+				<!--<label class="col-md-3 control-label" for="">着用者名</label>-->
+				<!--<div class="col-md-7">-->
+					<!--<input disabled type="text" class="form-control input-sm" id="member_name" name="member_name" value="">-->
+				<!--</div>-->
+			<!--</div>-->
+			<!--<div class="form-group">-->
+				<!--<label class="col-md-3 control-label" for="">着用者名（読み仮名）</label>-->
+				<!--<div class="col-md-7">-->
+					<!--<input disabled type="text" class="form-control input-sm"  id="member_name_kana" name="member_name_kana" value="">-->
+				<!--</div>-->
+			<!--</div>-->
+
+
+			<!--<div class="form-group">-->
+				<!--<label class="col-md-3 control-label" for="">発注枚数</label>-->
+				<!--<div class="col-md-1">-->
+					<!--<input type="text" class="input-sm" id="order_count" name="now_order_count" disabled="disabled" value="{{sum_order_num}}" style="width:4em">-->
+				<!--</div>-->
+				<!--<label class="control-label" for=""> 枚</label>-->
+			<!--</div>-->
+			<!--<div class="form-group row">-->
+				<!--<label class="col-md-3 control-label" for="">コメント欄</label>-->
+				<!--<div class="col-md-9">-->
+					<!--<textarea rows="5" class="form-control input-sm" id=""></textarea>-->
+				<!--</div>-->
+			<!--</div>-->
+		<!--</div>-->
+	<!--</form>-->
+	<!-- end フォーム -->
 	<form class="form-horizontal">
 		<div class="col-md-10 box_purple">
-			<!--契約No-->
-			<div class="agreement_no"></div>
+			<div class="form-group row">
+				<div class="agreement_no"></div>
+			</div>
+			<div class="form-group row">
+				<div class="reason_kbn"></div>
 
-			<!--理由区分-->
-			<div class="reason_kbn"></div>
-
+				<label class="col-md-2 control-label" for="order_kbn">発注区分</label>
+				<div class="col-md-3">
+					<select class="form-control input-sm" name="order_kbn" id="order_kbn" disabled="disabled">
+						<option>貸与</option>
+					</select>
+				</div>
+			</div>
+			<div class="form-group row">
+				<label class="col-md-2 control-label" for="shipment_to"></label>
+				<div class="col-md-4">&nbsp;</div>
+				<label class="col-md-2 control-label" for="shipment_to">出荷先</label>
+				<div class="col-md-3">
+					<select class="form-control input-sm" name="shipment_to" id="shipment_to" disabled>
+					</select>
+				</div>
+			</div>
+			<div class="form-group row">
+				<div class="section"></div>
+				<label class="col-md-2 control-label" for="zip_no">郵便番号</label>
+				<div class="col-md-2">
+					<input type="text" class="form-control input-sm" id="zip_no" name="zip_no" value="" disabled="disabled">
+				</div>
+			</div>
 			<div class="form-group">
-				<label class="col-md-3 control-label" for="">社員コード</label>
 				<div class="col-md-6">
-					<label class="checkbox-inline"><input type="checkbox" id="emply_cd_flg" name="emply_cd_flg[]" value="1" checked>社員コードあり</label>&nbsp;&nbsp;
-					<input type="text" class="input-sm" id="member_no" name="member_no" value="">
+					<div class="job_type"></div>
+					<div class="form-group">
+						<label class="col-md-4 control-label" for="member_name">着用者名</label>
+						<div class="col-md-8">
+							<input type="text" class="form-control input-sm" id="member_name" value="" disabled>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-md-4 control-label" for="member_name_kana">着用者名(カナ)</label>
+						<div class="col-md-8">
+							<input type="text" class="form-control input-sm" id="member_name_kana" value="" disabled>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-md-4 control-label" for="order_count">発注枚数</label>
+						<div class="col-md-3">
+							<input type="text" class="form-control input-sm" id="order_count" disabled="disabled" value="">
+						</div>
+						<label class="col-md-1 control-label" for="order_count">枚</label>
+					</div>
 				</div>
-			</div>
-			<div class="form-group">
-				<label class="col-md-3 control-label" for="">着用者名</label>
-				<div class="col-md-7">
-					<input type="text" class="form-control input-sm" id="member_name" name="member_name" value="{{this}}">
-				</div>
-			</div>
-			<div class="form-group">
-				<label class="col-md-3 control-label" for="">着用者名（読み仮名）</label>
-				<div class="col-md-7">
-					<input type="text" class="form-control input-sm" id="" value="">
-				</div>
-			</div>
-
-			<!--性別-->
-			<div class="sex_kbn"></div>
-
-			<div class="form-group">
-				<label class="col-md-3 control-label" for="">発令日</label>
-				<div class="col-md-8 form-inline">
-					<div class='input-group date datepicker'>
-						<input type='text' class="form-control input-sm datepicker" id='appointment_ymd' name="appointment_ymd">
-						<div class="input-group-addon">
-							<span class="glyphicon glyphicon-calendar"></span>
+				<div class="col-md-6">
+					<div class="form-group">
+						<label class="col-md-4 control-label" for="address">住所</label>
+						<div class="col-md-8">
+							<textarea rows="6" class="form-control input-sm" id="address" disabled="disabled"></textarea>
 						</div>
 					</div>
 				</div>
 			</div>
-
-			<!--拠点-->
-			<div class="section"></div>
-
-			<!--貸与パターン-->
-			<div class="job_type"></div>
-
-			<!--出荷先、郵便番号、住所-->
-			<div class="shipment"></div>
-
 			<div class="form-group row">
-				<label class="col-md-3 control-label" for="">コメント欄</label>
-				<div class="col-md-9">
-					<textarea rows="5" class="form-control input-sm" id=""></textarea>
+				<label class="col-md-2 control-label" for="comment">コメント欄</label>
+				<div class="col-md-10">
+					<textarea rows="5" class="form-control input-sm" id="comment"></textarea>
 				</div>
 			</div>
 		</div>
 	</form>
-	<!-- end フォーム -->

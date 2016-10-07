@@ -199,6 +199,9 @@ define([
 			"WS0010": host + "/wearer_search/search",
 			"WS0011": host + "/wearer_search/req_param",
 			"WO0010": host + "/wearer_order_info",
+			"WO0011": host + '/reason_kbn_order',
+			"WO0012": host + '/section_order',
+			"WO0013": host + '/wearer_order_list',
 
 			"CM9010": host + "/api/CM9010"
 		};

@@ -252,9 +252,9 @@ $app->post('/wearer_search/search', function ()use($app){
             $list['param'] .= $list['sex_kbn'].':';
             $list['param'] .= $list['rntl_sect_cd'].':';
             $list['param'] .= $list['job_type_cd'].':';
-            $list['param'] .= $list['order_reason_kbn'].':';
             $list['param'] .= $list['ship_to_cd'].':';
             $list['param'] .= $list['ship_to_brnch_cd'].':';
+            $list['param'] .= $list['order_reason_kbn'].':';
             $list['param'] .= $list['order_tran_flg'].':';
             $list['param'] .= $list['wearer_tran_flg'];
 

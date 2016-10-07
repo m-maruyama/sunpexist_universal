@@ -27,6 +27,7 @@ define([
 				"job_type": ".job_type",
 				"shipment": ".shipment",
 				"wearer_info": ".wearer_info",
+				"section_modal": ".section_modal",
 			},
 			ui: {
 				'agreement_no': '#agreement_no',
@@ -36,36 +37,23 @@ define([
 				'member_name': '#member_name',
 				'member_name_kana': '#member_name_kana',
 				'appointment_ymd': '#appointment_ymd',
+				'shipment_to': '#shipment_to',
 				'section': '#section',
 				'job_type': '#job_type',
-				'shipment': '#shipment',
 				'post_number': '#post_number',
+				'zip_no': '#zip_no',
 				'address': '#address',
 				"back": '.back',
 				"delete": '.delete',
 				"complete": '.complete',
 				"orderSend": '.orderSend',
+				"order_count": '#order_count',
 				'datepicker': '.datepicker',
 				'timepicker': '.timepicker',
 			},
-			bindings: {
-				'#agreement_no': 'agreement_no',
-				'#reason_kbn': 'reason_kbn',
-				'#sex_kbn': 'sex_kbn',
-				'#member_no': 'member_no',
-				'#member_name': 'member_name',
-				'#member_name_kana': 'member_name_kana',
-				'#appointment_ymd': 'appointment_ymd',
-				'#section': 'section',
-				'#job_type': 'job_type',
-				'#shipment': 'shipment',
-				'#post_number': 'post_number',
-				'#address': 'address',
-				"#delete": 'delete',
-				"#complete": 'complete',
-				"#orderSend": 'orderSend',
-				'#datepicker': 'datepicker',
-				'#timepicker': 'timepicker',
+			binding: {
+				'.delete': 'delete',
+
 			},
 			onRender: function() {
 				var that = this;
@@ -90,39 +78,24 @@ define([
 						that.ui.member_no.val(res_list['wearer_info'][0]['cster_emply_cd']);
 						that.ui.member_name.val(res_list['wearer_info'][0]['werer_name']);
 						that.ui.member_name_kana.val(res_list['wearer_info'][0]['werer_name_kana']);
+						that.ui.shipment_to.append($("<option>")
+							.val(res_list['ship_to_cd']).text(res_list['cust_to_brnch_name']));
 
-						var maxTime = new Date();
-						maxTime.setHours(15);
-						maxTime.setMinutes(59);
-						maxTime.setSeconds(59);
-						var minTime = new Date();
-						minTime.setHours(9);
-						minTime.setMinutes(0);
-						that.ui.datepicker.datetimepicker({
-							format: 'YYYY/MM/DD',
-							//useCurrent: 'day',
-							defaultDate: res_list['wearer_info'][0]['appointment_ymd'],
-							//maxDate: yesterday,
-							locale: 'ja',
-							sideBySide:true,
-							useCurrent: false,
-							// daysOfWeekDisabled:[0,6]
-						});
-						that.ui.datepicker.on('dp.', function(){
-							$(this).data('DateTimePicker').hide();
-							//$(this).find('input').trigger('input');
-						});
+						that.ui.zip_no.val(res_list['zip_no']);
+						that.ui.address.val(res_list['address1']+res_list['address2']+res_list['address3']+res_list['address4']);
+						that.ui.member_name_kana.val(res_list['wearer_info'][0]['werer_name_kana']);
+						that.ui.order_count.val(res_list['order_count']);
+
 					}
 				});
 			},
 			templateHelpers: function(res_list) {
-				//console.log(res_list);
 				return res_list;
 			},
 			events: {
 				// 「戻る」ボタン
 				'click @ui.back': function(){
-						location.href="wearer_.html";
+						location.href="wearer_???.html";
 				},
 				// 「発注取消」ボタン
 				'click @ui.delete': function(){
@@ -142,6 +115,37 @@ define([
 						}
 					});
 				},
+				'change @ui.section': function(){
+					this.ui.section = $('#section');
+
+					var modelForUpdate = this.model;
+					modelForUpdate.url = App.api.WC0020;
+					var cond = {
+						"scr": '拠点変更',
+					};
+					modelForUpdate.fetchMx({
+						data:cond,
+						success:function(res){
+							var type = "";
+							var res_val = res.attributes;
+
+							if (res_val["error_code"] == "0") {
+								alert('発注取消が完了しました。');
+								//						location.href="wearer_.html";
+							} else {
+								alert('発注取消中にエラーが発生しました。');
+							}
+						}
+					});
+
+
+
+
+				},
+				'click @ui.section_btn': function (e) {
+					e.preventDefault();
+					this.triggerMethod('click:section_btn', this.model);
+				},
 				// 「入力完了」ボタン
 				'click @ui.complete': function(){
 						alert('発注入力が完了しました。');
@@ -149,50 +153,15 @@ define([
 				// 「発注送信」ボタン
 				'click @ui.orderSend': function(){
 					alert('発注送信が完了しました。');
-					location.href="wearer_.html";
+					location.href="wearer_order_complete.html";
 				},
-				// 貸与パターン
-				'change @ui.job_type': function(){
-					var that = this;
-					this.ui.job_type = $('#job_type');
-					// 選択前のvalue値
-					var before_vals = window.sessionStorage.getItem("job_type_sec");
-					// 選択後のvalue値
-					var after_vals = $("select[name='job_type']").val();
-					var val = after_vals.split(':');
-					var job_type = val[0];
-					var sp_job_type_flg = val[1];
-
-					if (sp_job_type_flg == "1") {
-						// 特別職種フラグ有りの場合
-						var msg = "社内申請手続きを踏んでいますか？";
-						if (window.confirm(msg)) {
-							that.triggerMethod(':job_type', job_type);
-						} else {
-							// キャンセルの場合は選択前の状態に戻す
-							document.getElementById('job_type').value = before_vals;
-						}
-					} else {
-						// 特別職種フラグ無しの場合
-						window.sessionStorage.setItem("job_type_sec", after_vals);
-						that.triggerMethod(':job_type', job_type);
+				'change @ui.job_type': function () {
+					//貸与パターン」のセレクトボックス変更時に、職種マスタ．特別職種フラグ＝ありの貸与パターンだった場合、アラートメッセージを表示する。
+					var sp_flg = this.ui.job_type.val().split(',');
+					if (sp_flg[1] === '1') {
+						alert('社内申請手続きを踏んでますか？');
+						return;
 					}
-				},
-				// 出荷先
-				'change @ui.shipment': function(){
-					this.ui.shipment = $('#shipment');
-
-					var vals = $("select[name='shipment']").val();
-					var val = vals.split(':');
-					var ship_to_cd = val[0];
-					var ship_to_brnch_cd = val[1];
-					var shipmentConditionView = new App.Admin.Views.ShipmentConditionChange({
-						ship_to_cd: ship_to_cd,
-						ship_to_brnch_cd: ship_to_brnch_cd,
-						chg_flg: '1',
-					});
-					//shipmentConditionView.onShow();
-					this.shipment.show(shipmentConditionView);
 				},
 			},
 			onShow: function(val, type) {

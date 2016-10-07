@@ -27,9 +27,9 @@ define([
 						'sex_kbn': we_val[3],
 						'rntl_sect_cd': we_val[4],
 						'job_type_cd': we_val[5],
-						'order_reason_kbn': we_val[6],
-						'ship_to_cd': we_val[7],
-						'ship_to_brnch_cd': we_val[8],
+						'ship_to_cd': we_val[6],
+						'ship_to_brnch_cd': we_val[7],
+						'order_reason_kbn': we_val[8],
 						'order_tran_flg': we_val[9],
 						'wearer_tran_flg': we_val[10],
 					};
@@ -37,7 +37,7 @@ define([
 					var modelForUpdate = this.model;
 					modelForUpdate.url = App.api.WS0011;
 					var cond = {
-						"scr": '発注入力',
+						"scr": '着用開始検索',
 						"data": data,
 					};
 					modelForUpdate.fetchMx({
