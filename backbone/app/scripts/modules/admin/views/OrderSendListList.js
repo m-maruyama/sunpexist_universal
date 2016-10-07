@@ -131,6 +131,7 @@ define([
                 this.collection.fetchMx({
                     data: cond,
                     success: function (model) {
+                        console.log('success');
                         $.unblockUI();
                     },
                     complete: function (res) {

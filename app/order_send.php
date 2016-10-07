@@ -18,7 +18,7 @@ $app->post('/order_send', function () use ($app) {
     $auth = $app->session->get("auth");
 
     $cond = $params['cond'];
-    $page = $params['page'];
+    //$page = $params['page'];
     $query_list = array();
 
     //---注文情報マスタ---//
@@ -101,15 +101,22 @@ $app->post('/order_send', function () use ($app) {
     $tran_results_cnt = $tran_result_obj["\0*\0_count"];
 
 
-    $paginator_model = new PaginatorModel(
-        array(
-            "data"  => $results,
-            "limit" => $tran_results_cnt,
-            "page" => 1
-        )
-    );
-    $paginator = $paginator_model->getPaginate();
-    $results = $paginator->items;
+
+    if(!empty($tran_results_cnt)) {
+
+        $paginator_model = new PaginatorModel(
+            array(
+                "data" => $results,
+                "limit" => $tran_results_cnt,
+                "page" => 1
+            )
+        );
+
+        $paginator = $paginator_model->getPaginate();
+        $results = $paginator->items;
+    }
+
+
 
 
 
@@ -157,24 +164,39 @@ $app->post('/order_send', function () use ($app) {
     $arg_str .= ") as distinct_table";
     $arg_str .= " ORDER BY as_order_req_no ASC,as_order_upd_date DESC";
 
+
+
+
     $m_wearer_std_tran = new MWearerStdTran();
+
+
     $results2 = new Resultset(null, $m_wearer_std_tran, $m_wearer_std_tran->getReadConnection()->query($arg_str));
 
     $tran_result_obj = (array)$results2;
     $tran_results_cnt = $tran_result_obj["\0*\0_count"];
 
-    $paginator_model = new PaginatorModel(
-        array(
-            "data"  => $results2,
-            "limit" => $tran_results_cnt,
-            "page" => 1
-        )
-    );
-    $paginator = $paginator_model->getPaginate();
-    $results2 = $paginator->items;
+    if(!empty($tran_results_cnt)) {
 
-    $results = array_merge($results,$results2);
+        $paginator_model = new PaginatorModel(
+            array(
+                "data" => $results2,
+                "limit" => $tran_results_cnt,
+                "page" => 1
+            )
+        );
 
+        $paginator = $paginator_model->getPaginate();
+
+        if (!empty($paginator->items)) {
+            ChromePhp::LOG("karajyanai2");
+            $results2 = $paginator->items;
+        } else {
+            ChromePhp::LOG("kara2");
+            $results2 = array();
+        }
+
+        $results = array_merge($results, $results2);
+    }
 
     $list = array();
     $all_list = array();
@@ -312,7 +334,7 @@ $app->post('/order_send', function () use ($app) {
             array_push($all_list, $list);
         }
     }
-    ChromePhp::LOG($all_list);
+    ChromePhp::LOG("bbb");
 
     $page_list['total_records'] = $results_cnt;
     $json_list['list'] = $all_list;
@@ -381,7 +403,6 @@ $app->post('/order_change', function () use ($app) {
         }
 
         foreach ($t_order_tran_results as $t_order_tran_value) {
-            //ChromePhp::LOG($t_order_tran_value);
             $t_order_tran_value->snd_kbn = 1;//送信済
             $t_order_tran_value->upd_date = date('Y/m/d H:i:s.sss', time()); //更新日時
             $t_order_tran = $t_order_tran_value;
