@@ -569,6 +569,69 @@ $app->post('/wearer_change/order_check', function ()use($app){
   $json_list["err_cd"] = '0';
   $json_list["err_msg"] = '';
 
+  //※着用者基本マスタトラン参照
+  $query_list = array();
+  array_push($query_list, "corporate_id = '".$auth['corporate_id']."'");
+  array_push($query_list, "rntl_cont_no = '".$cond['rntl_cont_no']."'");
+  array_push($query_list, "werer_cd = '".$cond['werer_cd']."'");
+//  array_push($query_list, "rntl_sect_cd = '".$cond['rntl_sect_cd']."'");
+//  array_push($query_list, "job_type_cd = '".$cond['job_type_cd']."'");
+  $query = implode(' AND ', $query_list);
+
+  $arg_str = "";
+  $arg_str = "SELECT ";
+  $arg_str .= "*";
+  $arg_str .= " FROM ";
+  $arg_str .= "m_wearer_std_tran";
+  $arg_str .= " WHERE ";
+  $arg_str .= $query;
+  $arg_str .= " ORDER BY upd_date DESC";
+  //ChromePhp::LOG($arg_str);
+  $m_wearer_std_tran = new MWearerStdTran();
+  $results = new Resultset(NULL, $m_wearer_std_tran, $m_wearer_std_tran->getReadConnection()->query($arg_str));
+  $result_obj = (array)$results;
+  $results_cnt = $result_obj["\0*\0_count"];
+  //ChromePhp::LOG($results_cnt);
+  if (!empty($results_cnt)) {
+    $paginator_model = new PaginatorModel(
+        array(
+            "data"  => $results,
+            "limit" => 1,
+            "page" => 1
+        )
+    );
+    $paginator = $paginator_model->getPaginate();
+    $results = $paginator->items;
+    //ChromePhp::LOG($results);
+    foreach ($results as $result) {
+      $order_sts_kbn = $result->order_sts_kbn;
+    }
+    //※汎用コードマスタ参照
+    $query_list = array();
+    array_push($query_list, "cls_cd = '001'");
+    array_push($query_list, "gen_cd = '".$order_sts_kbn."'");
+    $query = implode(' AND ', $query_list);
+    $gencode = MGencode::query()
+        ->where($query)
+        ->columns('*')
+        ->execute();
+    foreach ($gencode as $gencode_map) {
+      $order_sts_kbn_name = $gencode_map->gen_name;
+    }
+
+    // 着用者基本マスタトラン.発注状況区分 = 「着用者編集」の情報がある際は発注NG
+    if ($order_sts_kbn == "6") {
+      $json_list["err_cd"] = "1";
+      $error_msg = $order_sts_kbn_name."の発注が入力されています。職種変更または異動を行う場合は";
+      $error_msg .= $order_sts_kbn_name."の発注をキャンセルしてください。";
+      $json_list["err_msg"] = $error_msg;
+    }
+
+    //ChromePhp::LOG($json_list);
+    echo json_encode($json_list);
+    return;
+  }
+
   //※発注情報トラン参照
   $query_list = array();
   array_push($query_list, "corporate_id = '".$auth['corporate_id']."'");
@@ -619,11 +682,17 @@ $app->post('/wearer_change/order_check', function ()use($app){
       $order_sts_kbn_name = $gencode_map->gen_name;
     }
 
-    // 職種変更または異動の場合、何かしらの発注区分の情報がある際は発注NGとする
-    $json_list["err_cd"] = "1";
-    $error_msg = $order_sts_kbn_name."の発注が入力されています。職種変更または異動を行う場合は";
-    $error_msg .= $order_sts_kbn_name."の発注をキャンセルしてください。";
-    $json_list["err_msg"] = $error_msg;
+    // 発注情報トラン.発注状況区分 = 「異動」以外の情報がある際は発注NG
+    if ($order_sts_kbn !== "5") {
+      $json_list["err_cd"] = "1";
+      $error_msg = $order_sts_kbn_name."の発注が入力されています。職種変更または異動を行う場合は";
+      $error_msg .= $order_sts_kbn_name."の発注をキャンセルしてください。";
+      $json_list["err_msg"] = $error_msg;
+    }
+
+    //ChromePhp::LOG($json_list);
+    echo json_encode($json_list);
+    return;
   }
 
   //ChromePhp::LOG($json_list);

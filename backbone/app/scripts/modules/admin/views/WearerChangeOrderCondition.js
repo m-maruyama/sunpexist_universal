@@ -9,6 +9,7 @@ define([
 	'bloodhound',
 	'blockUI',
 	'../controllers/WearerChangeOrder',
+	'./ReasonKbnConditionChange',
 	'./ShipmentConditionChange',
 ], function(App) {
 	'use strict';
@@ -107,29 +108,32 @@ define([
 
 						// 発注情報トランがある場合は発注取消ボタンを表示
 						if (res_list['order_tran_flg'] == '1') {
-							$('.delete').css('display','');
+							$('.delete').css('display', '');
 						}
 
 						// 入力完了、発注送信ボタン表示/非表示制御
 						var data = {
 							'rntl_sect_cd': res_list['rntl_sect_cd']
 						}
-						modelForUpdate.url = App.api.CM0140;
+						var modelForUpdate2 = that.model;
+						modelForUpdate2.url = App.api.CM0140;
 						var cond = {
 							"scr": '職種変更または異動-発注入力・送信可否チェック',
 							"log_type": '3',
 							"data": data,
 						};
-						modelForUpdate.fetchMx({
+						modelForUpdate2.fetchMx({
 							data:cond,
 							success:function(res){
 								var CM0140_res = res.attributes;
+								//console.log(CM0140_res);
+
 								//「入力完了」ボタン表示制御
 								if (CM0140_res['order_input_ok_flg'] == "1" || CM0140_res['order_send_ok_flg'] == "1") {
-									$('.complete').css('display','');
+									$('.complete').css('display', '');
 								}
 								if (CM0140_res['order_send_ok_flg'] == "1") {
-									$('.orderSend').css('display','');
+									$('.orderSend').css('display', '');
 								}
 							}
 						});
@@ -340,17 +344,31 @@ define([
 					var sp_job_type_flg = val[1];
 
 					if (sp_job_type_flg == "1") {
-						// 特別職種フラグ有りの場合
+						//--特別職種フラグ有りの場合--//
 						var msg = "社内申請手続きを踏んでいますか？";
 						if (window.confirm(msg)) {
+							// 理由区分表示切り替え
+							var reasonKbnConditionChangeView = new App.Admin.Views.ReasonKbnConditionChange({
+								job_type: job_type
+							});
+							this.reason_kbn.show(reasonKbnConditionChangeView);
+
+							// 現在貸与中のアイテム、新たに追加されるアイテム表示切り替え
 							that.triggerMethod('change:job_type', job_type);
 						} else {
 							// キャンセルの場合は選択前の状態に戻す
 							document.getElementById('job_type').value = before_vals;
 						}
 					} else {
-						// 特別職種フラグ無しの場合
+						//--特別職種フラグ無しの場合--//
 						window.sessionStorage.setItem("job_type_sec", after_vals);
+
+						// 理由区分表示切り替え
+						var reasonKbnConditionChangeView = new App.Admin.Views.ReasonKbnConditionChange({
+							job_type: job_type
+						});
+						this.reason_kbn.show(reasonKbnConditionChangeView);
+						// 現在貸与中のアイテム、新たに追加されるアイテム表示切り替え
 						that.triggerMethod('change:job_type', job_type);
 					}
 				},

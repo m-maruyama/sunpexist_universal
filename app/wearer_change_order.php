@@ -104,11 +104,20 @@ $app->post('/reason_kbn_change', function ()use($app){
     $wearer_chg_post = $app->session->get("wearer_chg_post");
     //ChromePhp::LOG($wearer_chg_post);
 
+    // フロント側からの取得パラメータ
+    $cond = $params["data"];
+    //ChromePhp::LOG($cond);
+
     //--発注管理単位取得--//
     $query_list = array();
     array_push($query_list, "corporate_id = '".$auth['corporate_id']."'");
     array_push($query_list, "rntl_cont_no = '".$wearer_chg_post['rntl_cont_no']."'");
-    array_push($query_list, "job_type_cd = '".$wearer_chg_post['job_type_cd']."'");
+    if (!empty($cond["job_type_cd"])) {
+      array_push($query_list, "job_type_cd = '".$cond['job_type_cd']."'");
+    } else {
+      array_push($query_list, "job_type_cd = '".$wearer_chg_post['job_type_cd']."'");
+    }
+
     $query = implode(' AND ', $query_list);
 
     $arg_str = '';
@@ -329,7 +338,16 @@ $app->post('/section_change', function ()use($app){
       foreach ($results as $result) {
         $list['rntl_sect_cd'] = $result->rntl_sect_cd;
         $list['rntl_sect_name'] = $result->rntl_sect_name;
+        // 初期選択状態版を生成
+        if ($list['rntl_sect_cd'] == $wearer_chg_post['rntl_sect_cd']) {
+          $list['selected'] = 'selected';
+        } else {
+          $list['selected'] = '';
+        }
 
+        array_push($all_list, $list);
+      }
+/*
         // 発注情報トランフラグ有の場合は初期選択状態版を生成
         if ($wearer_chg_post['order_tran_flg'] == '1') {
           if ($list['rntl_sect_cd'] == $wearer_chg_post['rntl_sect_cd']) {
@@ -343,6 +361,7 @@ $app->post('/section_change', function ()use($app){
 
         array_push($all_list, $list);
       }
+*/
     } else {
       $list['rntl_sect_cd'] = NULL;
       $list['rntl_sect_name'] = '';
@@ -407,6 +426,13 @@ $app->post('/job_type_change', function ()use($app){
         $list['job_type_name'] = $result->job_type_name;
         $list['sp_job_type_flg'] = $result->sp_job_type_flg;
 
+        // 初期選択状態版を生成
+        if ($list['job_type_cd'] == $wearer_chg_post['job_type_cd']) {
+          $list['selected'] = 'selected';
+        } else {
+          $list['selected'] = '';
+        }
+/*
         // 発注情報トランフラグ有の場合は初期選択状態版を生成
         if ($wearer_chg_post['order_tran_flg'] == '1') {
           if ($list['job_type_cd'] == $wearer_chg_post['job_type_cd']) {
@@ -417,7 +443,7 @@ $app->post('/job_type_change', function ()use($app){
         } else {
           $list['selected'] = '';
         }
-
+*/
         array_push($all_list, $list);
       }
     } else {
