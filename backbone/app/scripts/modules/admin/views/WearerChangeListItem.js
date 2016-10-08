@@ -33,6 +33,7 @@ define([
 						'order_tran_flg': we_val[9],
 						'wearer_tran_flg': we_val[10],
 						'order_req_no': we_val[11],
+						'return_req_no': we_val[12],
 					};
 
 					// 発注入力遷移前に発注NGパターンチェック実施

@@ -107,9 +107,9 @@ define([
 				});
 
 				//貸与パターンセレクト変更時動作
-				this.listenTo(wearerChangeOrderConditionView, 'change:job_type', function(job_type){
+				this.listenTo(wearerChangeOrderConditionView, 'change:job_type', function(data){
 					var wearerChangeOrderListListView2 = new App.Admin.Views.WearerChangeOrderListList({
-						job_type:job_type,
+						data: data,
 					});
 					wearerChangeOrderView.listTable.show(wearerChangeOrderListListView2);
 				});

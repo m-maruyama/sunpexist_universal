@@ -94,7 +94,7 @@ define([
 							that.triggerMethod('showAlerts', errorMessages);
 						}
 						var res_list = res.attributes;
-						//console.log(res_list['wearer_info']);
+						//console.log(res_list);
 
 						// 発注取消ボタンvalue値設定
 						var delete_param =
@@ -335,6 +335,7 @@ define([
 				'change @ui.job_type': function(){
 					var that = this;
 					this.ui.job_type = $('#job_type');
+					var section = $("select[name='section']").val();
 					// 選択前のvalue値
 					var before_vals = window.sessionStorage.getItem("job_type_sec");
 					// 選択後のvalue値
@@ -342,6 +343,10 @@ define([
 					var val = after_vals.split(':');
 					var job_type = val[0];
 					var sp_job_type_flg = val[1];
+					var data = {
+						'section': section,
+						'job_type': job_type
+					}
 
 					if (sp_job_type_flg == "1") {
 						//--特別職種フラグ有りの場合--//
@@ -354,7 +359,7 @@ define([
 							this.reason_kbn.show(reasonKbnConditionChangeView);
 
 							// 現在貸与中のアイテム、新たに追加されるアイテム表示切り替え
-							that.triggerMethod('change:job_type', job_type);
+							that.triggerMethod('change:job_type', data);
 						} else {
 							// キャンセルの場合は選択前の状態に戻す
 							document.getElementById('job_type').value = before_vals;
@@ -368,8 +373,9 @@ define([
 							job_type: job_type
 						});
 						this.reason_kbn.show(reasonKbnConditionChangeView);
+
 						// 現在貸与中のアイテム、新たに追加されるアイテム表示切り替え
-						that.triggerMethod('change:job_type', job_type);
+						that.triggerMethod('change:job_type', data);
 					}
 				},
 				// 出荷先

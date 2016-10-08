@@ -74,7 +74,8 @@ $app->post('/wearer_change/search', function ()use($app){
   $arg_str .= "t_order_tran.order_sts_kbn as as_order_sts_kbn,";
   $arg_str .= "t_order_tran.snd_kbn as as_order_snd_kbn,";
   $arg_str .= "t_order_tran.order_reason_kbn as as_order_reason_kbn,";
-  $arg_str .= "t_order_tran.upd_date as as_order_upd_date";
+  $arg_str .= "t_order_tran.upd_date as as_order_upd_date,";
+  $arg_str .= "t_returned_plan_info_tran.order_req_no as as_return_req_no";
   $arg_str .= " FROM ";
   $arg_str .= "(m_wearer_std INNER JOIN m_section as wst";
   $arg_str .= " ON (m_wearer_std.corporate_id = wst.corporate_id";
@@ -97,6 +98,19 @@ $app->post('/wearer_change/search', function ()use($app){
   $arg_str .= " AND m_wearer_std.rntl_cont_no = t_order_tran.rntl_cont_no";
   $arg_str .= " AND m_wearer_std.rntl_sect_cd = t_order_tran.rntl_sect_cd";
   $arg_str .= " AND m_wearer_std.job_type_cd = t_order_tran.job_type_cd)";
+  $arg_str .= " LEFT JOIN ";
+  $arg_str .= "(t_returned_plan_info_tran INNER JOIN m_section as rs";
+  $arg_str .= " ON (t_returned_plan_info_tran.corporate_id = rs.corporate_id";
+  $arg_str .= " AND t_returned_plan_info_tran.rntl_cont_no = rs.rntl_cont_no";
+  $arg_str .= " AND t_returned_plan_info_tran.rntl_sect_cd = rs.rntl_sect_cd)";
+  $arg_str .= " INNER JOIN m_job_type as rjt";
+  $arg_str .= " ON (t_returned_plan_info_tran.corporate_id = rjt.corporate_id";
+  $arg_str .= " AND t_returned_plan_info_tran.rntl_cont_no = rjt.rntl_cont_no";
+  $arg_str .= " AND t_returned_plan_info_tran.job_type_cd = rjt.job_type_cd))";
+  $arg_str .= " ON (m_wearer_std.corporate_id = t_returned_plan_info_tran.corporate_id";
+  $arg_str .= " AND m_wearer_std.rntl_cont_no = t_returned_plan_info_tran.rntl_cont_no";
+  $arg_str .= " AND m_wearer_std.rntl_sect_cd = t_returned_plan_info_tran.rntl_sect_cd";
+  $arg_str .= " AND m_wearer_std.job_type_cd = t_returned_plan_info_tran.job_type_cd)";
   $arg_str .= " WHERE ";
   $arg_str .= $query;
   $arg_str .= ") as distinct_table";
@@ -156,7 +170,8 @@ $app->post('/wearer_change/search', function ()use($app){
         $arg_str .= "t_order_tran.order_req_no as as_order_req_no,";
         $arg_str .= "t_order_tran.order_sts_kbn as as_order_sts_kbn,";
         $arg_str .= "t_order_tran.snd_kbn as as_order_snd_kbn,";
-        $arg_str .= "t_order_tran.order_reason_kbn as as_order_reason_kbn";
+        $arg_str .= "t_order_tran.order_reason_kbn as as_order_reason_kbn,";
+        $arg_str .= "t_returned_plan_info_tran.order_req_no as as_return_req_no";
         $arg_str .= " FROM ";
         $arg_str .= "(m_wearer_std_tran INNER JOIN m_section as wst";
         $arg_str .= " ON (m_wearer_std_tran.corporate_id = wst.corporate_id";
@@ -179,6 +194,19 @@ $app->post('/wearer_change/search', function ()use($app){
         $arg_str .= " AND m_wearer_std_tran.rntl_cont_no = t_order_tran.rntl_cont_no";
         $arg_str .= " AND m_wearer_std_tran.rntl_sect_cd = t_order_tran.rntl_sect_cd";
         $arg_str .= " AND m_wearer_std_tran.job_type_cd = t_order_tran.job_type_cd)";
+        $arg_str .= " LEFT JOIN ";
+        $arg_str .= "(t_returned_plan_info_tran INNER JOIN m_section as rs";
+        $arg_str .= " ON (t_returned_plan_info_tran.corporate_id = rs.corporate_id";
+        $arg_str .= " AND t_returned_plan_info_tran.rntl_cont_no = rs.rntl_cont_no";
+        $arg_str .= " AND t_returned_plan_info_tran.rntl_sect_cd = rs.rntl_sect_cd)";
+        $arg_str .= " INNER JOIN m_job_type as rjt";
+        $arg_str .= " ON (t_returned_plan_info_tran.corporate_id = rjt.corporate_id";
+        $arg_str .= " AND t_returned_plan_info_tran.rntl_cont_no = rjt.rntl_cont_no";
+        $arg_str .= " AND t_returned_plan_info_tran.job_type_cd = rjt.job_type_cd))";
+        $arg_str .= " ON (m_wearer_std_tran.corporate_id = t_returned_plan_info_tran.corporate_id";
+        $arg_str .= " AND m_wearer_std_tran.rntl_cont_no = t_returned_plan_info_tran.rntl_cont_no";
+        $arg_str .= " AND m_wearer_std_tran.rntl_sect_cd = t_returned_plan_info_tran.rntl_sect_cd";
+        $arg_str .= " AND m_wearer_std_tran.job_type_cd = t_returned_plan_info_tran.job_type_cd)";
         $arg_str .= " WHERE ";
         $arg_str .= $query;
         $arg_str .= " ORDER BY m_wearer_std_tran.upd_date DESC";
@@ -222,6 +250,7 @@ $app->post('/wearer_change/search', function ()use($app){
             $result->as_order_sts_kbn = $tran_result->as_order_sts_kbn;
             $result->as_order_snd_kbn = $tran_result->as_order_snd_kbn;
             $result->as_order_reason_kbn = $tran_result->as_order_reason_kbn;
+            $result->as_return_req_no = $tran_result->as_return_req_no;
           }
         }
         //ChromePhp::LOG("チェック後の着用者リスト情報");
@@ -233,8 +262,10 @@ $app->post('/wearer_change/search', function ()use($app){
         $list['rntl_sect_cd'] = $result->as_rntl_sect_cd;
         // 職種コード
         $list['job_type_cd'] = $result->as_job_type_cd;
-        // 発注No
+        // 発注No(発注情報トラン)
         $list['order_req_no'] = $result->as_order_req_no;
+        // 発注No(返却予定情報トラン)
+        $list['return_req_no'] = $result->as_return_req_no;
         // 理由区分
         if (isset($result->as_order_reason_kbn)) {
           $list['order_reason_kbn'] = $result->as_order_reason_kbn;
@@ -359,10 +390,8 @@ $app->post('/wearer_change/search', function ()use($app){
               $snd_kbn = $t_order_tran_result->snd_kbn;
               if (
                 $order_sts_kbn == '5'
-                && $order_reason_kbn == '9'
-                && $order_reason_kbn == '10'
-                && $order_reason_kbn == '11'
-                && $order_reason_kbn == '24')
+                && ($order_reason_kbn == '9' || $order_reason_kbn == '10' || $order_reason_kbn == '11' || $order_reason_kbn == '24')
+              )
               {
                 $patarn_flg = true;
                 break;
@@ -495,7 +524,8 @@ $app->post('/wearer_change/search', function ()use($app){
         $list['param'] .= $list['ship_to_brnch_cd'].':';
         $list['param'] .= $list['order_tran_flg'].':';
         $list['param'] .= $list['wearer_tran_flg'].':';
-        $list['param'] .= $list['order_req_no'];
+        $list['param'] .= $list['order_req_no'].':';
+        $list['param'] .= $list['return_req_no'];
 
         array_push($all_list,$list);
       }
@@ -517,36 +547,36 @@ $app->post('/wearer_change/search', function ()use($app){
  * →発注入力（職種変更または異動）にてパラメータ利用
  */
 $app->post('/wearer_change/req_param', function ()use($app){
+  $params = json_decode(file_get_contents("php://input"), true);
 
-    $params = json_decode(file_get_contents("php://input"), true);
+  // アカウントセッション取得
+  $auth = $app->session->get("auth");
 
-    // アカウントセッション取得
-    $auth = $app->session->get("auth");
+  // パラメータ取得
+  $cond = $params['data'];
+  //ChromePhp::LOG($cond);
 
-    // パラメータ取得
-    $cond = $params['data'];
-    //ChromePhp::LOG($cond);
+  // POSTパラメータのセッション格納
+  $app->session->set("wearer_chg_post", array(
+    'rntl_cont_no' => $cond["rntl_cont_no"],
+    'werer_cd' => $cond["werer_cd"],
+    'cster_emply_cd' => $cond["cster_emply_cd"],
+    'sex_kbn' => $cond["sex_kbn"],
+    'rntl_sect_cd' => $cond["rntl_sect_cd"],
+    'job_type_cd' => $cond["job_type_cd"],
+    'order_reason_kbn' => $cond["order_reason_kbn"],
+    'ship_to_cd' => $cond["ship_to_cd"],
+    'ship_to_brnch_cd' => $cond["ship_to_brnch_cd"],
+    'order_tran_flg' => $cond["order_tran_flg"],
+    'wearer_tran_flg' => $cond["wearer_tran_flg"],
+    'order_req_no' => $cond["order_req_no"],
+    'return_req_no' => $cond["return_req_no"],
+  ));
 
-    // POSTパラメータのセッション格納
-    $app->session->set("wearer_chg_post", array(
-      'rntl_cont_no' => $cond["rntl_cont_no"],
-      'werer_cd' => $cond["werer_cd"],
-      'cster_emply_cd' => $cond["cster_emply_cd"],
-      'sex_kbn' => $cond["sex_kbn"],
-      'rntl_sect_cd' => $cond["rntl_sect_cd"],
-      'job_type_cd' => $cond["job_type_cd"],
-      'order_reason_kbn' => $cond["order_reason_kbn"],
-      'ship_to_cd' => $cond["ship_to_cd"],
-      'ship_to_brnch_cd' => $cond["ship_to_brnch_cd"],
-      'order_tran_flg' => $cond["order_tran_flg"],
-      'wearer_tran_flg' => $cond["wearer_tran_flg"],
-      'order_req_no' => $cond["order_req_no"],
-    ));
+  $json_list = array();
+  $json_list = $app->session->get("wearer_chg_post");
 
-    $json_list = array();
-    $json_list = $app->session->get("wearer_chg_post");
-
-    echo json_encode($json_list);
+  echo json_encode($json_list);
 });
 
 /**
@@ -625,11 +655,11 @@ $app->post('/wearer_change/order_check', function ()use($app){
       $error_msg = $order_sts_kbn_name."の発注が入力されています。職種変更または異動を行う場合は";
       $error_msg .= $order_sts_kbn_name."の発注をキャンセルしてください。";
       $json_list["err_msg"] = $error_msg;
-    }
 
-    //ChromePhp::LOG($json_list);
-    echo json_encode($json_list);
-    return;
+      //ChromePhp::LOG($json_list);
+      echo json_encode($json_list);
+      return;
+    }
   }
 
   //※発注情報トラン参照
@@ -688,11 +718,11 @@ $app->post('/wearer_change/order_check', function ()use($app){
       $error_msg = $order_sts_kbn_name."の発注が入力されています。職種変更または異動を行う場合は";
       $error_msg .= $order_sts_kbn_name."の発注をキャンセルしてください。";
       $json_list["err_msg"] = $error_msg;
-    }
 
-    //ChromePhp::LOG($json_list);
-    echo json_encode($json_list);
-    return;
+      //ChromePhp::LOG($json_list);
+      echo json_encode($json_list);
+      return;
+    }
   }
 
   //ChromePhp::LOG($json_list);

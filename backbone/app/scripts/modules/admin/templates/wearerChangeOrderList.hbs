@@ -140,11 +140,11 @@
             <input type="hidden" name="add_color_cd{{arr_num}}" value="{{color_cd}}">
           </td>
           <td class="input">
-            {{#each add_list}}
-            <select class="form-control input-sm" id="size_cd{{arr_num}}" name="size_cd{{arr_num}}">
+            <select class="form-control input-sm" id="add_size_cd{{arr_num}}" name="add_size_cd{{arr_num}}">
+              {{#each size_cd}}
               <option value="{{this}}">{{this}}</option>
+              {{/each}}
             </select>
-            {{/each}}
           </td>
           <td>
             <input type="text" style="width:4em" class="input-sm" id="add_order_num{{arr_num}}" name="add_order_num{{arr_num}}" value="{{order_num}}" {{order_num_disable}}>

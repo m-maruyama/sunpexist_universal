@@ -14,7 +14,7 @@ define([
 	App.module('Admin.Views', function(Views, App, Backbone, Marionette, $, _){
 		Views.WearerChangeOrderListList = Marionette.LayoutView.extend({
 			defaults: {
-				job_type: '',
+				data: '',
 			},
 			initialize: function(options) {
 			    this.options = options || {};
@@ -40,9 +40,7 @@ define([
 			onShow: function() {
 				$.blockUI({ message: '<p><img src="ajax-loader.gif" style="margin: 0 auto;" /> 読み込み中...</p>' });
 				var that = this;
-				var data = {
-					'job_type': this.options.job_type,
-				}
+				var data = this.options.data;
 
 				// 現在貸与中のアイテム・新たに追加されるアイテム一覧、
 				var modelForUpdate = this.model;
