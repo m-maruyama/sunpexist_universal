@@ -252,6 +252,9 @@ $app->post('/wearer_change/search', function ()use($app){
             $result->as_order_reason_kbn = $tran_result->as_order_reason_kbn;
             $result->as_return_req_no = $tran_result->as_return_req_no;
           }
+        } else {
+          // 着用者マスタトラン無
+          $list['wearer_tran_flg'] = '0';
         }
         //ChromePhp::LOG("チェック後の着用者リスト情報");
         //ChromePhp::LOG($result);
@@ -327,9 +330,6 @@ $app->post('/wearer_change/search', function ()use($app){
           }elseif($result->as_wearer_snd_kbn == '9'){
               $list['snd_kbn'] = "処理中";
           }
-        } else {
-          // 着用者マスタトラン無
-          $list['wearer_tran_flg'] = '0';
         }
         // 拠点
         if (!empty($result->wst_rntl_sect_name)) {

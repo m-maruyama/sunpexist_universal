@@ -35,6 +35,7 @@ define([
 				'agreement_no': '#agreement_no',
 				'reason_kbn': '#reason_kbn',
 				'sex_kbn': '#sex_kbn',
+				'emply_cd_flg': '#emply_cd_flg',
 				'member_no': '#member_no',
 				'member_name': '#member_name',
 				'member_name_kana': '#member_name_kana',
@@ -57,6 +58,7 @@ define([
 				'#agreement_no': 'agreement_no',
 				'#reason_kbn': 'reason_kbn',
 				'#sex_kbn': 'sex_kbn',
+				'#emply_cd_flg': 'emply_cd_flg',
 				'#member_no': 'member_no',
 				'#member_name': 'member_name',
 				'#member_name_kana': 'member_name_kana',
@@ -94,7 +96,7 @@ define([
 							that.triggerMethod('showAlerts', errorMessages);
 						}
 						var res_list = res.attributes;
-						//console.log(res_list);
+						console.log(res_list);
 
 						// 発注取消ボタンvalue値設定
 						var delete_param =
@@ -102,7 +104,8 @@ define([
 							+ res_list['rntl_sect_cd'] + ":"
 							+ res_list['job_type_cd'] + ":"
 							+ res_list['werer_cd'] + ":"
-							+ res_list['order_req_no']
+							+ res_list['order_req_no'] + ":"
+							+ res_list['return_req_no']
 						;
 						that.ui.delete.val(delete_param);
 
@@ -210,9 +213,11 @@ define([
 					var job_type_cd = val[2];
 					var werer_cd = val[3];
 					var order_req_no = val[4];
+					var return_req_no = val[5];
 					var data = {
 						"werer_cd": werer_cd,
 						"order_req_no": order_req_no,
+						"return_req_no": return_req_no,
 						"rntl_cont_no": rntl_cont_no,
 						"rntl_sect_cd": rntl_sect_cd,
 						"job_type_cd": job_type_cd

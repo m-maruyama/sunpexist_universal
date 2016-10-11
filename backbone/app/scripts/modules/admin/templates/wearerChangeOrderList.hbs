@@ -13,6 +13,7 @@
     <table>
       <th>現在貸与中のアイテム</th>
       <input type="hidden" name="now_list_cnt" value="{{now_list_cnt}}">
+      <input type="hidden" name="individual_flg" value="{{individual_flg}}">
     </table>
     <table class="table table-bordered order_table">
       <thead class="grad_head">
@@ -60,7 +61,6 @@
             {{size_cd}}
             <input type="hidden" name="now_size_cd{{arr_num}}" value="{{size_cd}}">
           </td>
-          <input type="hidden" name="individual_flg{{arr_num}}" value="{{individual_flg}}">
           <input type="hidden" name="individual_disp{{arr_num}}" value="{{individual_disp}}">
           <td class="individual_flg" style="display:none;">
             {{#if individual_disp}}
