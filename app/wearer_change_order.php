@@ -1660,14 +1660,13 @@ $app->post('/wearer_change_info', function ()use($app){
        }
        // 個体管理番号
        // ※発注前商品.標準投入数、発注後商品.標準投入数比較で対象行個体管理番号、対象の表示ON/OFF
-       $orverlap = false;
+       $list["individual_disp"] = false;
        for ($i=0; $i<count($chg_wearer_list); $i++) {
          if (
           $now_wearer_map['item_cd'] == $chg_wearer_list[$i]['item_cd']
           && $now_wearer_map['color_cd'] == $chg_wearer_list[$i]['color_cd']
          )
          {
-           $orverlap = true;
            if ($now_wearer_map['std_input_qty'] > $chg_wearer_list[$i]['std_input_qty']) {
              // 対象チェック、個体管理番号欄表示
              $list["individual_disp"] = true;
@@ -1716,8 +1715,11 @@ $app->post('/wearer_change_info', function ()use($app){
          );
          $paginator = $paginator_model->getPaginate();
          $results = $paginator->items;
+         $last_val = count($results);
+         $cnt = 1;
          //ChromePhp::LOG($results);
          foreach ($results as $result) {
+           $cnt = $cnt++;
            array_push($individual_ctrl_no, $result->individual_ctrl_no);
 
            // 返却可能フラグによるdisable制御
@@ -1758,13 +1760,25 @@ $app->post('/wearer_change_info', function ()use($app){
              $individual["checked"] = "checked";
            } else {
              $individual["checked"] = "";
-//             $individual["checked"] = "checked";
            }
-
+           // 対象チェックname属性No
+           $individual["name_no"] = $list["arr_num"];
+           // 対象チェックボックス改行設定
+           if ($last_val == $cnt) {
+             $individual["br"] = "";
+           } else {
+             $individual["br"] = "<br/>";
+           }
            // 対象チェックボックス値
            array_push($list["individual_chk"], $individual);
          }
 
+         // 表示個体管理番号数
+         if ($list["individual_disp"]) {
+           $list["individual_cnt"] = count($individual_ctrl_no);
+         } else {
+           $list["individual_cnt"] = 1;
+         }
          // 個体管理番号
          $list["individual_ctrl_no"] = implode("<br>", $individual_ctrl_no);
        }
@@ -2212,11 +2226,11 @@ $app->post('/wearer_change_complete', function ()use($app){
              $target_cnt = $target_cnt + 1;
            }
          }
-         if ($now_item_input_map["now_return_num"] !== $target_cnt) {
+         if ($now_item_input_map["now_return_num"] != $target_cnt) {
            if (empty($now_return_num_err1)) {
              $now_return_num_err1 = "err";
              $json_list["error_code"] = "1";
-             $error_msg = "現在貸与中のアイテムで、返却枚数が足りない商品があります。";
+             $error_msg = "現在貸与中のアイテムで、返却枚数が対象と一致していない商品があります。";
              array_push($json_list["error_msg"], $error_msg);
            }
          }
@@ -3763,7 +3777,7 @@ $app->post('/wearer_change_send', function ()use($app){
             $target_cnt = $target_cnt + 1;
           }
         }
-        if ($now_item_input_map["now_return_num"] !== $target_cnt) {
+        if ($now_item_input_map["now_return_num"] != $target_cnt) {
           if (empty($now_return_num_err)) {
             $now_return_num_err = "err";
             $json_list["error_code"] = "1";
