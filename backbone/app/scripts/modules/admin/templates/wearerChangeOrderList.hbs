@@ -15,84 +15,88 @@
       <input type="hidden" name="now_list_cnt" value="{{now_list_cnt}}">
       <input type="hidden" name="individual_flg" value="{{individual_flg}}">
     </table>
-    <table class="table table-bordered order_table">
-      <thead class="grad_head">
-        <tr>
-          <th rowspan="2">No.</th>
-          <th rowspan="2">アイテム</th>
-          <th rowspan="2">選択方法</th>
-          <th rowspan="2">標準枚数</th>
-          <th>商品-色</th>
-          <th rowspan="2">サイズ</th>
-          <th rowspan="2" class="individual_flg" style="display:none;">対象</th>
-          <th rowspan="2" class="individual_flg" style="display:none;">個体管理番号</th>
-          <th rowspan="2">発注枚数</th>
-          <th rowspan="2">返却枚数</th>
-        </tr>
-        <tr>
-          <th>商品名</th>
-        </tr>
-      </thead>
-      <tbody>
-      {{#if now_list_disp_flg}}
-        {{#each now_list}}
-        <tr>
-          <td>
-            {{list_no}}
-            <input type="hidden" name="now_rntl_sect_cd{{arr_num}}" value="{{rntl_sect_cd}}">
-            <input type="hidden" name="now_job_type_cd{{arr_num}}" value="{{job_type_cd}}">
-            <input type="hidden" name="now_job_type_item_cd{{arr_num}}" value="{{job_type_item_cd}}">
-            <input type="hidden" name="now_item_cd{{arr_num}}" value="{{item_cd}}">
-            <input type="hidden" name="now_color_cd{{arr_num}}" value="{{color_cd}}">
-          </td>
-          <td>{{item_name}}</td>
-          <td>
-            {{choice}}
-            <input type="hidden" name="now_choice_type{{arr_num}}" value="{{choice_type}}">
-          </td>
-          <td>
-            {{std_input_qty}}
-            <input type="hidden" name="now_std_input_qty{{arr_num}}" value="{{std_input_qty}}">
-          </td>
-          <td>
-            {{item_and_color}}<br>{{input_item_name}}
-          </td>
-          <td>
-            {{size_cd}}
-            <input type="hidden" name="now_size_cd{{arr_num}}" value="{{size_cd}}">
-          </td>
-          <input type="hidden" name="individual_disp{{arr_num}}" value="{{individual_disp}}">
-          <td class="individual_flg" style="display:none;">
-            {{#if individual_disp}}
-              {{#each individual_chk}}
-              <label>
-                <input type="checkbox" id="now_target_flg{{arr_num}}[]" name="now_target_flg{{arr_num}}[]" value="{{individual_ctrl_no}}" {{checked}} {{disabled}}>
-              </label><br>
-              {{/each}}
-            {{/if}}
-          </td>
-          <td class="individual_flg" style="display:none;">
-            {{#if individual_disp}}
-              {{{individual_ctrl_no}}}
-            {{/if}}
-          </td>
-          <td>
-            <input type="text" style="width:4em" class="input-sm" id="now_order_num{{arr_num}}" name="now_order_num{{arr_num}}" value="{{order_num}}" {{order_num_disable}}>
-            <input type="hidden" name="now_order_num_disable{{arr_num}}" value="{{order_num_disable}}">
-          </td>
-          <td>
-            <input type="text" style="width:4em" class="input-sm" id="now_return_num{{arr_num}}" name="now_return_num{{arr_num}}" value="{{return_num}}" {{return_num_disable}}>
-            <input type="hidden" name="now_return_num_disable{{arr_num}}" value="{{return_num_disable}}">
-          </td>
-        </tr>
-        {{/each}}
-      {{else}}
-          <tr class="edit">
-            <td colspan="10"><b>対象商品なし</b></td>
+    <form name="individual">
+      <table class="table table-bordered order_table">
+        <thead class="grad_head">
+          <tr>
+            <th rowspan="2">No.</th>
+            <th rowspan="2">アイテム</th>
+            <th rowspan="2">選択方法</th>
+            <th rowspan="2">標準枚数</th>
+            <th>商品-色</th>
+            <th rowspan="2">サイズ</th>
+            <th rowspan="2" class="individual_flg" style="display:none;">対象</th>
+            <th rowspan="2" class="individual_flg" style="display:none;">個体管理番号</th>
+            <th rowspan="2">発注枚数</th>
+            <th rowspan="2">返却枚数</th>
           </tr>
-      {{/if}}
-      </tbody>
-    </table>
+          <tr>
+            <th>商品名</th>
+          </tr>
+        </thead>
+        {{#if now_list_disp_flg}}
+          {{#each now_list}}
+          <tr>
+            <td>
+              {{list_no}}
+              <input type="hidden" name="now_rntl_sect_cd{{arr_num}}" value="{{rntl_sect_cd}}">
+              <input type="hidden" name="now_job_type_cd{{arr_num}}" value="{{job_type_cd}}">
+              <input type="hidden" name="now_job_type_item_cd{{arr_num}}" value="{{job_type_item_cd}}">
+              <input type="hidden" name="now_item_cd{{arr_num}}" value="{{item_cd}}">
+              <input type="hidden" name="now_color_cd{{arr_num}}" value="{{color_cd}}">
+            </td>
+            <td>{{item_name}}</td>
+            <td>
+              {{choice}}
+              <input type="hidden" name="now_choice_type{{arr_num}}" value="{{choice_type}}">
+            </td>
+            <td>
+              {{std_input_qty}}
+              <input type="hidden" name="now_std_input_qty{{arr_num}}" value="{{std_input_qty}}">
+            </td>
+            <td>
+              {{item_and_color}}<br>{{input_item_name}}
+            </td>
+            <td>
+              {{size_cd}}
+              <input type="hidden" name="now_size_cd{{arr_num}}" value="{{size_cd}}">
+            </td>
+            <input type="hidden" name="individual_disp{{arr_num}}" value="{{individual_disp}}">
+            <input type="hidden" name="individual_cnt{{arr_num}}" value="{{individual_cnt}}">
+            <td class="individual_flg" style="display:none;">
+              {{#if individual_disp}}
+                {{#each individual_chk}}
+                  <label>
+                    <input type="checkbox" id="now_target_flg{{name_no}}" name="now_target_flg{{name_no}}" value="{{individual_ctrl_no}}" {{checked}} {{disabled}}>
+                  </label>
+                  {{{br}}}
+                {{/each}}
+              {{else}}
+              <input type="hidden" id="now_target_flg{{arr_num}}" name="now_target_flg{{arr_num}}" value="empty">
+              {{/if}}
+            </td>
+            <td class="individual_flg" style="display:none;">
+              {{#if individual_disp}}
+                {{{individual_ctrl_no}}}
+              {{/if}}
+            </td>
+            <td>
+              <input type="text" style="width:4em" class="input-sm" id="now_order_num{{arr_num}}" name="now_order_num{{arr_num}}" value="{{order_num}}" {{order_num_disable}}>
+              <input type="hidden" name="now_order_num_disable{{arr_num}}" value="{{order_num_disable}}">
+            </td>
+            <td>
+              <input type="text" style="width:4em" class="input-sm" id="now_return_num{{arr_num}}" name="now_return_num{{arr_num}}" value="{{return_num}}" {{return_num_disable}}>
+              <input type="hidden" name="now_return_num_disable{{arr_num}}" value="{{return_num_disable}}">
+            </td>
+          </tr>
+          {{/each}}
+        {{else}}
+            <tr class="edit">
+              <td colspan="10"><b>対象商品なし</b></td>
+            </tr>
+        {{/if}}
+      </table>
+    </form>
 
     <table>
       <th>新たに追加されるアイテム</th>
