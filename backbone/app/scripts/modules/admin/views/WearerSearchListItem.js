@@ -32,8 +32,9 @@ define([
 						'order_reason_kbn': we_val[8],
 						'order_tran_flg': we_val[9],
 						'wearer_tran_flg': we_val[10],
+						'appointment_ymd': we_val[11],
+						'resfl_ymd': we_val[12],
 					};
-
 					var modelForUpdate = this.model;
 					modelForUpdate.url = App.api.WS0011;
 					var cond = {
@@ -50,10 +51,9 @@ define([
 								});
 								that.triggerMethod('showAlerts', errorMessages);
 							}
-							var $form = $('<form/>', {'action': '/universal/wearer_order.html', 'method': 'post'});
-//							for(var key in res) {
-//								$form.append($('<input/>', {'type': 'hidden', 'name': key, 'value': res[key]}));
-//							}
+							var $form = $('<form/>', {'action': '/universal/wearer_input.html', 'method': 'post'});
+
+							window.sessionStorage.setItem('referrer', 'wearer_search');
 							$form.appendTo(document.body);
 							$form.submit();
 						}

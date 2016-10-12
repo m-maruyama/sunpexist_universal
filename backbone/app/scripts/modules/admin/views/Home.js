@@ -9,7 +9,8 @@ define([
 			template: App.Admin.Templates.home,
 			model: new Backbone.Model(),
 			ui: {
-				"text_1": ".text_1"
+				"text_1": ".text_1",
+					"wearer_input": "#wearer_input"
 			},
 			bindings: {
 				'.text_1': 'text_1'
@@ -37,8 +38,14 @@ define([
 			},
 
 			events: {
-			}
+				'click @ui.wearer_input': function(e){
+							var $form = $('<form/>', {'action': '/universal/wearer_input.html', 'method': 'post'});
 
+							window.sessionStorage.setItem('referrer', 'home');
+							$form.appendTo(document.body);
+							$form.submit();
+						}
+				}
 		});
 	});
 });

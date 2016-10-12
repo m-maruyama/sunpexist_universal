@@ -196,6 +196,12 @@ class MWearerStdTran extends \Phalcon\Mvc\Model
     protected $m_section_comb_hkey;
 
     /**
+     *
+     * @var string
+     */
+    protected $appointment_ymd;
+
+    /**
      * Method to set the value of field m_wearer_std_comb_hkey
      *
      * @param string $m_wearer_std_comb_hkey
@@ -612,6 +618,19 @@ class MWearerStdTran extends \Phalcon\Mvc\Model
     }
 
     /**
+     * Method to set the value of field m_section_comb_hkey
+     *
+     * @param string $m_section_comb_hkey
+     * @return $this
+     */
+    public function setAppointmentYmd($appointment_ymd)
+    {
+        $this->appointment_ymd = $appointment_ymd;
+
+        return $this;
+    }
+
+    /**
      * Returns the value of field m_wearer_std_comb_hkey
      *
      * @return string
@@ -930,6 +949,17 @@ class MWearerStdTran extends \Phalcon\Mvc\Model
     {
         return $this->m_section_comb_hkey;
     }
+
+    /**
+     * Returns the value of field m_section_comb_hkey
+     *
+     * @return string
+     */
+    public function getAppointmentYmd()
+    {
+        return $this->appointment_ymd;
+    }
+
 
     /**
      * Initialize method for model.

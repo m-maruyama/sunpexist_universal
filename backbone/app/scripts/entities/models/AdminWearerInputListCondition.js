@@ -17,6 +17,7 @@ define([
 					werer_name_kana : null,
 					sex_kbn : null,
 					resfl_ymd : null,
+					appointment_ymd : null,
 					rntl_sect_cd : null,
 					job_type : null,
 					ship_to_cd : null,
@@ -41,6 +42,9 @@ define([
 				}
 				if(this.get('resfl_ymd')) {
 					result.resfl_ymd = this.get('resfl_ymd');
+				}
+				if(this.get('appointment_ymd')) {
+					result.appointment_ymd = this.get('appointment_ymd');
 				}
 				if(this.get('rntl_sect_cd')) {
 					result.rntl_sect_cd = this.get('rntl_sect_cd');

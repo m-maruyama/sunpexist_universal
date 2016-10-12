@@ -69,6 +69,8 @@ $app->post('/wearer_search/search', function ()use($app){
     $arg_str .= "m_wearer_std_tran.ship_to_cd as as_ship_to_cd,";
     $arg_str .= "m_wearer_std_tran.ship_to_brnch_cd as as_ship_to_brnch_cd,";
     $arg_str .= "m_wearer_std_tran.snd_kbn as as_snd_kbn,";
+    $arg_str .= "m_wearer_std_tran.appointment_ymd as as_appointment_ymd,";
+    $arg_str .= "m_wearer_std_tran.resfl_ymd as as_resfl_ymd,";
     $arg_str .= "t_order_tran.order_reason_kbn as as_order_reason_kbn,";
     $arg_str .= "m_section.rntl_sect_name as as_rntl_sect_name,";
     $arg_str .= "m_job_type.job_type_name as as_job_type_name,";
@@ -113,6 +115,10 @@ $app->post('/wearer_search/search', function ()use($app){
             $list['rntl_sect_cd'] = $result->as_rntl_sect_cd;
             // 職種コード
             $list['job_type_cd'] = $result->as_job_type_cd;
+            // 発令日
+            $list['appointment_ymd'] = $result->as_appointment_ymd;
+            // 着用開始日
+            $list['resfl_ymd'] = $result->as_resfl_ymd;
             // 理由区分
             if (isset($result->as_order_reason_kbn)) {
                 $list['order_reason_kbn'] = $result->as_order_reason_kbn;
@@ -184,15 +190,14 @@ $app->post('/wearer_search/search', function ()use($app){
                 $list['rntl_sect_name'] = "-";
             }
             // 貸与パターン
-            if (!empty($result->wjt_job_type_name)) {
+            if (!empty($result->as_job_type_name)) {
                 $list['job_type_name'] = $result->as_job_type_name;
             } else {
                 $list['job_type_name'] = "-";
             }
 
             //---「貸与開始」ボタンの生成---//
-            if (
-                $result->as_wearer_order_sts_kbn == '1')
+            if ($result->as_wearer_order_sts_kbn == '1')
             {
                 //パターンA： 発注情報トラン．着用者基本マスタトラン．発注区分 = 貸与
                 //ボタンの文言は「貸与開始」で表示する。
@@ -256,8 +261,9 @@ $app->post('/wearer_search/search', function ()use($app){
             $list['param'] .= $list['ship_to_brnch_cd'].':';
             $list['param'] .= $list['order_reason_kbn'].':';
             $list['param'] .= $list['order_tran_flg'].':';
-            $list['param'] .= $list['wearer_tran_flg'];
-
+            $list['param'] .= $list['wearer_tran_flg'].':';
+            $list['param'] .= $list['appointment_ymd'].':';
+            $list['param'] .= $list['resfl_ymd'];
             array_push($all_list,$list);
         }
     }
@@ -297,6 +303,8 @@ $app->post('/wearer_search/req_param', function ()use($app){
         'order_reason_kbn' => $cond["order_reason_kbn"],
         'order_tran_flg' => $cond["order_tran_flg"],
         'wearer_tran_flg' => $cond["wearer_tran_flg"],
+        'appointment_ymd' => $cond["appointment_ymd"],
+        'resfl_ymd' => $cond["resfl_ymd"],
     ));
 
     $json_list = array();

@@ -109,6 +109,12 @@ define([
 						wearerInputView.triggerMethod('showAlerts', errors['errors']);
 					}
 				});
+				//エラーメッセージ
+				this.listenTo(wearerInputConditionView, 'error_msg', function(errors){
+					if(errors){
+						wearerInputView.triggerMethod('showAlerts', errors);
+					}
+				});
 
 				//商品明細入力へ
 				this.listenTo(wearerInputView, 'click:input_item', function(agreement_no){
@@ -121,8 +127,14 @@ define([
 				this.listenTo(paginationView, 'selected', function(pageNumber){
 						fetchList_section(pageNumber);
 				});
+				//着用者検索画面からきた場合
+				this.listenTo(agreementNoConditionView, 'input_form', function(agreement_no){
+					wearerInputConditionView.fetch(agreement_no);
+					wearerInputView.condition.show(wearerInputConditionView);
+					wearerInputView.ui.input_insert_button.show();
+					wearerInputView.ui.input_item_button.show();
+				});
 				App.main.show(wearerInputView);
-				// wearerInputView.condition.show(wearerInputConditionView);
 				wearerInputView.agreement_no.show(agreementNoConditionView);
 				wearerInputView.sectionModal.show(sectionModalView.render());
 				sectionModalView.page.show(paginationView);

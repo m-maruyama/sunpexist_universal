@@ -2,8 +2,8 @@
 	<h1>発注入力</h1>
 	<!-- start フォーム -->
 	<div class="row">
-		<div class="col-md-3">
-			<b>発注する商品を入力してください。</b>
+		<div class="col-md-4">
+			発注する商品を入力してください。
 		</div>
 		<div class="col-md-1">
 			<button class="btn btn-primary back" title="戻る">戻る</button>
@@ -13,20 +13,13 @@
 			<button class="btn btn-primary cancel" id="cancel" title="キャンセル">キャンセル</button>
 		</div>
 		<div class="col-md-1">
-			<button class="btn btn-primary delete" title="発注取消" hidden>発注取消</button>
-
-			<!--//-->
-			<!--//A-８．	「発注取消」ボタン-->
-			<!--//	「⑥検索画面」から遷移した場合、かつ、発注情報トランにデータがある場合のみ表示。-->
-			<!--<input type="button" class="btn btn-primary btn-sm btn-block delete" value="発注取消"/>-->
+			<button class="btn btn-primary delete" style="display:none;" title="発注取消">発注取消</button>
+		</div>
+		<div class="col-md-2">
+			<button class="btn btn-primary inputButton" style="display:none;" title="保存（後で送信）">保存（後で送信）</button>
 		</div>
 		<div class="col-md-1">
-			<button class="btn btn-primary complete" title="入力完了">入力完了</button>
-			<!--<a href="order_input_save.html" type="button" class="btn btn-primary btn-sm btn-block" title="入力完了">入力完了</a>-->
-		</div>
-		<div class="col-md-1">
-			<button class="btn btn-primary orderSend" title="発注送信">発注送信</button>
-			<!--<a href="order_input_finish.html" type="button" class="btn btn-primary btn-sm btn-block" title="発注送信">発注送信</a>-->
+			<button class="btn btn-primary orderSend" style="display:none;" title="発注送信">発注送信</button>
 		</div>
 	</div>
 	<!--<form class="form-horizontal">-->
@@ -86,7 +79,7 @@
 	<!--</form>-->
 	<!-- end フォーム -->
 	<form class="form-horizontal">
-		<div class="col-md-10 box_purple">
+		<div class="col-md-11 box_purple">
 			<div class="form-group row">
 				<div class="agreement_no"></div>
 			</div>

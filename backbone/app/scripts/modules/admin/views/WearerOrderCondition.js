@@ -39,7 +39,7 @@ define([
 				'appointment_ymd': '#appointment_ymd',
 				'shipment_to': '#shipment_to',
 				'section': '#section',
-				'job_type': '#job_type',
+				"job_type": "#job_type",
 				'post_number': '#post_number',
 				'zip_no': '#zip_no',
 				'address': '#address',
@@ -48,12 +48,9 @@ define([
 				"complete": '.complete',
 				"orderSend": '.orderSend',
 				"order_count": '#order_count',
+				"inputButton": '.inputButton',
 				'datepicker': '.datepicker',
 				'timepicker': '.timepicker',
-			},
-			binding: {
-				'.delete': 'delete',
-
 			},
 			onRender: function() {
 				var that = this;
@@ -93,9 +90,24 @@ define([
 				return res_list;
 			},
 			events: {
+				// 「キャンセル」ボタン
+				'click @ui.cancel': function(){
+					// 検索画面以外から遷移してきた場合はホーム画面に戻る
+					if(window.sessionStorage.getItem('referrer')=='wearer_search'){
+						location.href = './wearer_search.html';
+					}else{
+						location.href = './home.html';
+
+					}
+				},
 				// 「戻る」ボタン
 				'click @ui.back': function(){
-						location.href="wearer_???.html";
+					if(window.sessionStorage.getItem('referrer')=='wearer_search'){
+						location.href = './wearer_search.html';
+					}else{
+						location.href = './wearer_input.html';
+
+					}
 				},
 				// 「発注取消」ボタン
 				'click @ui.delete': function(){
@@ -117,23 +129,39 @@ define([
 				},
 				'change @ui.section': function(){
 					this.ui.section = $('#section');
-
+					var section = $("select[name='section']").val();
+					// 入力完了、発注送信ボタン表示/非表示制御
+					var data = {
+						'rntl_sect_cd': section
+					};
 					var modelForUpdate = this.model;
-					modelForUpdate.url = App.api.WC0020;
+					modelForUpdate.url = App.api.CM0140;
 					var cond = {
-						"scr": '拠点変更',
+						"scr": '貸与開始-発注入力・送信可否チェック',
+						"log_type": '3',
+						"data": data,
 					};
 					modelForUpdate.fetchMx({
 						data:cond,
-						success:function(res){
-							var type = "";
-							var res_val = res.attributes;
-
-							if (res_val["error_code"] == "0") {
-								alert('発注取消が完了しました。');
-								//						location.href="wearer_.html";
-							} else {
-								alert('発注取消中にエラーが発生しました。');
+						success:function(res) {
+							var CM0140_res = res.attributes;
+							console.log(CM0140_res);
+							//「入力完了」ボタン表示制御
+							if (CM0140_res['order_input_ok_flg'] == "1" && CM0140_res['order_send_ok_flg'] == "1") {
+								$('.inputButton').css('display', '');
+								$('.orderSend').css('display', '');
+							}
+							if (CM0140_res['order_input_ok_flg'] == "0" && CM0140_res['order_send_ok_flg'] == "0") {
+								$('.inputButton').css('display', 'none');
+								$('.orderSend').css('display', 'none');
+							}
+							if (CM0140_res['order_input_ok_flg'] == "0" && CM0140_res['order_send_ok_flg'] == "1") {
+								$('.inputButton').css('display', 'none');
+								$('.orderSend').css('display', '');
+							}
+							if (CM0140_res['order_input_ok_flg'] == "1" && CM0140_res['order_send_ok_flg'] == "0") {
+								$('.inputButton').css('display', '');
+								$('.orderSend').css('display', 'none');
 							}
 						}
 					});
@@ -148,20 +176,22 @@ define([
 				},
 				// 「入力完了」ボタン
 				'click @ui.complete': function(){
-						alert('発注入力が完了しました。');
+					alert('発注入力が完了しました。');
 				},
 				// 「発注送信」ボタン
 				'click @ui.orderSend': function(){
 					alert('発注送信が完了しました。');
 					location.href="wearer_order_complete.html";
 				},
-				'change @ui.job_type': function () {
+				'change @ui.job_type': function (e) {
 					//貸与パターン」のセレクトボックス変更時に、職種マスタ．特別職種フラグ＝ありの貸与パターンだった場合、アラートメッセージを表示する。
-					var sp_flg = this.ui.job_type.val().split(',');
-					if (sp_flg[1] === '1') {
+					var job_types = $('#job_type').val().split(':');
+					if (job_types[1] === '1') {
 						alert('社内申請手続きを踏んでますか？');
 						return;
 					}
+					e.preventDefault();
+					this.triggerMethod('change:job_type');
 				},
 			},
 			onShow: function(val, type) {
@@ -195,7 +225,6 @@ define([
 
 								if (res_val["error_code"] == "0") {
 									alert('発注取消が完了しました。');
-			//						location.href="wearer_.html";
 								} else {
 									alert('発注取消中にエラーが発生しました。');
 								}

@@ -30,6 +30,7 @@ define([
                 "werer_name_kana": "#werer_name_kana",
                 "section_modal": ".section_modal",
                 "sex_kbn": "#sex_kbn",
+                "appointment_ymd": "#appointment_ymd",
                 "resfl_ymd": "#resfl_ymd",
                 'section_btn': '#section_btn',
                 'section': '#section',
@@ -41,6 +42,7 @@ define([
                 'timepicker': '.timepicker'
             },
             onRender: function () {
+                var that = this;
                 var maxTime = new Date();
                 maxTime.setHours(15);
                 maxTime.setMinutes(59);
@@ -65,9 +67,17 @@ define([
             },
 
             fetch: function (agreement_no) {
+                if(window.sessionStorage.getItem('referrer')=='wearer_search'){
+                    var referrer = 1;
+                }else{
+                    var referrer = -1;
+
+                }
                 var cond = {
                     "scr": '着用者入力',
-                    "cond": {"agreement_no": agreement_no}
+                    "cond": {"agreement_no": agreement_no,
+                        "referrer" : referrer
+                    }
                 };
                 var that = this;
                 var modelForUpdate = this.model;
@@ -83,8 +93,20 @@ define([
                             });
                             that.triggerMethod('showAlerts', errorMessages);
                         }
+                        var res_list = res.attributes;
                         $('#agreement_no').prop("disabled", true);
                         that.render();
+                        if(res_list['rntl_cont_no']&&(referrer > -1)){
+                            that.ui.cster_emply_cd.val(res_list['wearer_info'][0]['cster_emply_cd']);
+                            that.ui.werer_name.val(res_list['wearer_info'][0]['werer_name']);
+                            that.ui.werer_name_kana.val(res_list['wearer_info'][0]['werer_name_kana']);
+                            that.ui.appointment_ymd.val(res_list['appointment_ymd']);
+                            that.ui.resfl_ymd.val(res_list['resfl_ymd']);
+                            that.ui.zip_no.val(res_list['zip_no']);
+                            that.ui.address.val(res_list['address1']+res_list['address2']+res_list['address3']+res_list['address4']);
+                            $('#input_item').val(res_list['param']);
+                            return;
+                        }
                     },
                     complete: function (res) {
                     }
@@ -99,6 +121,7 @@ define([
                 model.set('werer_name', this.ui.werer_name.val());
                 model.set('werer_name_kana', this.ui.werer_name_kana.val());
                 model.set('sex_kbn', this.ui.sex_kbn.val());
+                model.set('appointment_ymd', this.ui.appointment_ymd.val());
                 model.set('resfl_ymd', this.ui.resfl_ymd.val());
                 model.set('rntl_sect_cd', this.ui.section.val());
                 model.set('job_type', this.ui.job_type.val());
@@ -122,16 +145,10 @@ define([
                 var a = model.fetchMx({
                     data:cond,
                     success:function(res){
-                        var errors = res.get('errors');
-                        if(errors) {
-                            var errorMessages = errors.map(function(v){
-                                return v;
-                            });
+                        var res_val = res.attributes;
+                        if(res_val["error_msg"]) {
                             var wearerInputView = new App.Admin.Views.WearerInput();
-                            // wearerInputView.triggerMethod('showAlerts', errors['errors']);
-                            alert('エラーを出すようにする');
-                            console.log(errorMessages);
-                            wearerInputView.triggerMethod('showAlerts', errorMessages);
+                            that.triggerMethod('error_msg', res_val["error_msg"]);
                         }else{
                             alert('着用者を登録しました。');
                             location.href = './wearer_input_complete.html';
@@ -221,7 +238,7 @@ return errors;
             data: cond,
             success: function (res) {
                 $('#zip_no').val(res.attributes.change_m_shipment_to_list[0].zip_no);
-                $('#address').text(res.attributes.change_m_shipment_to_list[0].address);
+                $('#address').val(res.attributes.change_m_shipment_to_list[0].address);
             },
             complete: function (res) {
             }

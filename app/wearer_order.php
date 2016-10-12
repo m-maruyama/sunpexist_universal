@@ -422,6 +422,11 @@ $app->post('/wearer_order_list', function ()use($app){
     // フロントパラメータ取得
     $cond = $params['data'];
 
+    //貸与パターン変更時
+    if(isset($cond['job_type'])){
+        $wearer_chg_post['job_type_cd'] = $cond['job_type'];
+    }
+
     //発注情報トランを参照し、「発注商品一覧」を生成する。
     $json_list = array();
     $all_list = array();

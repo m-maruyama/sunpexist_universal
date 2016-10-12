@@ -2,6 +2,9 @@
 //use Phalcon\Mvc\Model\Resultset;
 use Phalcon\Mvc\Model\Resultset\Simple as Resultset;
 use Phalcon\Mvc\Model\Query;
+use Phalcon\Paginator\Adapter\Model as PaginatorModel;
+use Phalcon\Paginator\Adapter\NativeArray as PaginatorArray;
+use Phalcon\Paginator\Adapter\QueryBuilder as PaginatorQueryBuilder;
 
 /*
  * 検索項目：契約No(入力系)
@@ -13,7 +16,7 @@ $app->post('/agreement_no_input', function () use ($app) {
     $list = array();
     $all_list = array();
     $json_list = array();
-
+    $referrer = $params['referrer'];
     // アカウントセッション取得
     $auth = $app->session->get('auth');
 
@@ -44,12 +47,41 @@ $app->post('/agreement_no_input', function () use ($app) {
     $list['rntl_cont_no'] = null;
     $list['rntl_cont_name'] = null;
     array_push($all_list, $list);
-    foreach ($results as $result) {
-        $list['rntl_cont_no'] = $result->mContract->rntl_cont_no;
-        $list['rntl_cont_name'] = $result->mContract->rntl_cont_name;
-        array_push($all_list, $list);
-    }
+    // 前画面が着用者検索画面でない場合、セッションを削除
+    if($referrer>-1){
+        // 前画面セッション取得
+        $wearer_chg_post = $app->session->get("wearer_chg_post");
+        foreach ($results as $result) {
+            $list['rntl_cont_no'] = $result->mContract->rntl_cont_no;
+            $list['rntl_cont_name'] = $result->mContract->rntl_cont_name;
+            if (($list['rntl_cont_no'] == $wearer_chg_post['rntl_cont_no'])&&($referrer>-1)) {
+                $list['selected'] = 'selected';
+            } else {
+                $list['selected'] = '';
+            }
 
+            array_push($all_list, $list);
+        }
+        if(isset($wearer_chg_post)){
+            $json_list['rntl_cont_no'] = $wearer_chg_post['rntl_cont_no'];
+            $json_list['werer_cd'] = $wearer_chg_post['werer_cd'];
+            $json_list['cster_emply_cd'] = $wearer_chg_post['cster_emply_cd'];
+            $json_list['sex_kbn'] = $wearer_chg_post['sex_kbn'];
+            $json_list['rntl_sect_cd'] = $wearer_chg_post['rntl_sect_cd'];
+            $json_list['job_type_cd'] = $wearer_chg_post['job_type_cd'];
+            $json_list['ship_to_cd'] = $wearer_chg_post['ship_to_cd'];
+            $json_list['ship_to_brnch_cd'] = $wearer_chg_post['ship_to_brnch_cd'];
+            $json_list['appointment_ymd'] = date('Y/m/d', strtotime($wearer_chg_post['appointment_ymd']));
+            $json_list['resfl_ymd'] = date('Y/m/d', strtotime($wearer_chg_post['resfl_ymd']));
+        }
+    }else{
+        foreach ($results as $result) {
+            $list['rntl_cont_no'] = $result->mContract->rntl_cont_no;
+            $list['rntl_cont_name'] = $result->mContract->rntl_cont_name;
+            array_push($all_list, $list);
+        }
+        $app->session->remove("wearer_chg_post");
+    }
     $json_list['agreement_no_list'] = $all_list;
     echo json_encode($json_list);
 });
@@ -64,6 +96,9 @@ $app->post('/wearer_input', function () use ($app) {
     $auth = $app->session->get('auth');
     $cond = $params['cond'];
 
+    //前画面からデータを引き継いでいる場合
+    $wearer_chg_post = $app->session->get("wearer_chg_post");
+    $referrer = $cond['referrer'];
     $query_list = array();
     $list = array();
     $json_list = array();
@@ -85,6 +120,11 @@ $app->post('/wearer_input', function () use ($app) {
     foreach ($m_gencode_results as $m_gencode_result) {
         $list['gen_cd'] = $m_gencode_result->gen_cd;
         $list['gen_name'] = $m_gencode_result->gen_name;
+        if (($list['gen_cd'] == $wearer_chg_post['sex_kbn'])&&($referrer>-1)) {
+            $list['sex_kbn_selected'] = 'selected';
+        } else {
+            $list['sex_kbn_selected'] = '';
+        }
         array_push($sex_kbn_list, $list);
     }
     //--性別ここまで
@@ -142,6 +182,11 @@ $app->post('/wearer_input', function () use ($app) {
     foreach ($m_section_results as $m_section_result) {
         $list['rntl_sect_cd'] = $m_section_result->rntl_sect_cd;
         $list['rntl_sect_name'] = $m_section_result->rntl_sect_name;
+        if (($list['rntl_sect_cd'] == $wearer_chg_post['rntl_sect_cd'])&&($referrer>-1)) {
+            $list['rntl_sect_cd_selected'] = 'selected';
+        } else {
+            $list['rntl_sect_cd_selected'] = '';
+        }
         array_push($m_section_list, $list);
     }
     //--拠点ここまで
@@ -169,6 +214,11 @@ $app->post('/wearer_input', function () use ($app) {
         $list['job_type_cd'] = $m_job_type_result->job_type_cd;
         $list['job_type_name'] = $m_job_type_result->job_type_name;
         $list['sp_job_type_flg'] = $m_job_type_result->sp_job_type_flg;
+        if (($list['job_type_cd'] == $wearer_chg_post['job_type_cd'])&&($referrer>-1)) {
+            $list['job_type_cd_selected'] = 'selected';
+        } else {
+            $list['job_type_cd_selected'] = '';
+        }
         array_push($job_type_list, $list);
     }
     //貸与パターン--ここまで
@@ -202,6 +252,11 @@ $app->post('/wearer_input', function () use ($app) {
         $list['address2'] = $m_shipment_to_result->address2;
         $list['address3'] = $m_shipment_to_result->address3;
         $list['address4'] = $m_shipment_to_result->address4;
+        if (($list['ship_to_cd'] == $wearer_chg_post['ship_to_cd'])&&($list['ship_to_brnch_cd'] == $wearer_chg_post['ship_to_brnch_cd'])&&($referrer>-1)) {
+            $list['ship_to_cd_selected'] = 'selected';
+        } else {
+            $list['ship_to_cd_selected'] = '';
+        }
         array_push($m_shipment_to_list, $list);
     }
     //出荷先--ここまで
@@ -209,6 +264,204 @@ $app->post('/wearer_input', function () use ($app) {
     $json_list['job_type_list'] = $job_type_list;
     $json_list['sex_kbn_list'] = $sex_kbn_list;
     $json_list['m_section_list'] = $m_section_list;
+
+
+    if(isset($wearer_chg_post['rntl_cont_no'])){
+        $json_list['rntl_cont_no'] = $wearer_chg_post['rntl_cont_no'];
+        $json_list['werer_cd'] = $wearer_chg_post['werer_cd'];
+        $json_list['cster_emply_cd'] = $wearer_chg_post['cster_emply_cd'];
+        $json_list['sex_kbn'] = $wearer_chg_post['sex_kbn'];
+        $json_list['rntl_sect_cd'] = $wearer_chg_post['rntl_sect_cd'];
+        $json_list['job_type_cd'] = $wearer_chg_post['job_type_cd'];
+        $json_list['appointment_ymd'] = date('Y/m/d', strtotime($wearer_chg_post['appointment_ymd']));
+        $json_list['resfl_ymd'] = date('Y/m/d', strtotime($wearer_chg_post['resfl_ymd']));
+
+        $query_list = array();
+        array_push($query_list, "corporate_id = '".$auth['corporate_id']."'");
+        array_push($query_list, "rntl_cont_no = '".$wearer_chg_post['rntl_cont_no']."'");
+        array_push($query_list, "ship_to_cd = '".$wearer_chg_post['ship_to_cd']."'");
+        array_push($query_list, "ship_to_brnch_cd = '".$wearer_chg_post['ship_to_brnch_cd']."'");
+        $query = implode(' AND ', $query_list);
+
+        //--- クエリー実行・取得 ---//
+        $m_shipment_to_results = MShipmentTo::query()
+            ->where($query)
+            ->columns('*')
+            ->execute();
+        foreach ($m_shipment_to_results as $m_shipment_to_result) {
+            $json_list['ship_to_cd'] = $m_shipment_to_result->ship_to_cd.','.$m_shipment_to_result->ship_to_brnch_cd;
+            $json_list['cust_to_brnch_name'] = $m_shipment_to_result->cust_to_brnch_name1.$m_shipment_to_result->cust_to_brnch_name2;
+            $json_list['zip_no'] = $m_shipment_to_result->zip_no;
+            if($m_shipment_to_result->address1){
+                $json_list['address1'] = $m_shipment_to_result->address1;
+            }else{
+                $json_list['address1'] = '';
+            };
+            if($m_shipment_to_result->address2){
+                $json_list['address2'] = $m_shipment_to_result->address2;
+            }else{
+                $json_list['address2'] = '';
+            };
+            if($m_shipment_to_result->address3){
+                $json_list['address3'] = $m_shipment_to_result->address3;
+            }else{
+                $json_list['address3'] = '';
+            };
+            if($m_shipment_to_result->address4){
+                $json_list['address4'] = $m_shipment_to_result->address4;
+            }else{
+                $json_list['address4'] = '';
+            };
+        }
+    }
+
+    $query_list = array();
+    $list = array();
+    $all_list = array();
+    $param_list = '';
+    if ($wearer_chg_post['wearer_tran_flg'] == '1') {
+        //--着用者基本マスタトラン有の場合--//
+        array_push($query_list, "m_wearer_std_tran.corporate_id = '".$auth['corporate_id']."'");
+        array_push($query_list, "m_wearer_std_tran.rntl_cont_no = '".$wearer_chg_post['rntl_cont_no']."'");
+        array_push($query_list,"m_wearer_std_tran.werer_cd = '".$wearer_chg_post['werer_cd']."'");
+        array_push($query_list,"m_wearer_std_tran.cster_emply_cd = '".$wearer_chg_post['cster_emply_cd']."'");
+        $query = implode(' AND ', $query_list);
+
+        $arg_str = "";
+        $arg_str = "SELECT ";
+        $arg_str .= "m_wearer_std_tran.cster_emply_cd as as_cster_emply_cd,";
+        $arg_str .= "m_wearer_std_tran.werer_name as as_werer_name,";
+        $arg_str .= "m_wearer_std_tran.werer_name_kana as as_werer_name_kana,";
+        $arg_str .= "m_wearer_std_tran.appointment_ymd as as_appointment_ymd,";
+        $arg_str .= "m_wearer_std_tran.resfl_ymd as as_resfl_ymd";
+        $arg_str .= " FROM ";
+        $arg_str .= "m_wearer_std_tran";
+        $arg_str .= " WHERE ";
+        $arg_str .= $query;
+        $arg_str .= " ORDER BY m_wearer_std_tran.upd_date DESC";
+
+        $m_weare_std_tran = new MWearerStdTran();
+        $results = new Resultset(null, $m_weare_std_tran, $m_weare_std_tran->getReadConnection()->query($arg_str));
+        $result_obj = (array)$results;
+        $results_cnt = $result_obj["\0*\0_count"];
+
+        if (!empty($results_cnt)) {
+            $paginator_model = new PaginatorModel(
+                array(
+                    "data"  => $results,
+                    "limit" => 1,
+                    "page" => 1
+                )
+            );
+            $paginator = $paginator_model->getPaginate();
+            $results = $paginator->items;
+            //ChromePhp::LOG($results);
+
+            foreach ($results as $result) {
+                // 社員コード
+                $list['cster_emply_cd'] = $result->as_cster_emply_cd;
+                // 着用者名
+                $list['werer_name'] = $result->as_werer_name;
+                // 着用者名（読み仮名）
+                $list['werer_name_kana'] = $result->as_werer_name_kana;
+                // 発令日
+                $list['appointment_ymd'] = $result->as_appointment_ymd;
+                if (!empty($list['appointment_ymd'])) {
+                    $list['appointment_ymd'] = date('Y/m/d', strtotime($list['appointment_ymd']));
+                } else {
+                    $list['appointment_ymd'] = '';
+                }
+                // 着用開始日
+                $list['resfl_ymd'] = $result->as_resfl_ymd;
+                if (!empty($list['resfl_ymd'])) {
+                    $list['resfl_ymd'] = date('Y/m/d', strtotime($list['resfl_ymd']));
+                } else {
+                    $list['resfl_ymd'] = '';
+                }
+            }
+            array_push($all_list, $list);
+        }
+
+        $json_list['wearer_info'] = $all_list;
+    } elseif ($wearer_chg_post['wearer_tran_flg'] == '0') {
+        //--着用者基本マスタトラン無の場合--//
+        array_push($query_list, "m_wearer_std.corporate_id = '".$auth['corporate_id']."'");
+        array_push($query_list, "m_wearer_std.rntl_cont_no = '".$wearer_chg_post['rntl_cont_no']."'");
+        array_push($query_list,"m_wearer_std.werer_cd = '".$wearer_chg_post['werer_cd']."'");
+        array_push($query_list,"m_wearer_std.cster_emply_cd = '".$wearer_chg_post['cster_emply_cd']."'");
+        $query = implode(' AND ', $query_list);
+
+        $arg_str = "";
+        $arg_str = "SELECT ";
+        $arg_str .= "m_wearer_std.cster_emply_cd as as_cster_emply_cd,";
+        $arg_str .= "m_wearer_std.werer_name as as_werer_name,";
+        $arg_str .= "m_wearer_std.werer_name_kana as as_werer_name_kana,";
+        $arg_str .= "m_wearer_std.appointment_ymd as as_appointment_ymd";
+        $arg_str .= " FROM ";
+        $arg_str .= "m_wearer_std";
+        $arg_str .= " WHERE ";
+        $arg_str .= $query;
+        $arg_str .= " ORDER BY m_wearer_std.upd_date DESC";
+
+        $m_weare_std = new MWearerStd();
+        $results = new Resultset(null, $m_weare_std, $m_weare_std->getReadConnection()->query($arg_str));
+        $result_obj = (array)$results;
+        $results_cnt = $result_obj["\0*\0_count"];
+
+        if (!empty($results_cnt)) {
+            $paginator_model = new PaginatorModel(
+                array(
+                    "data"  => $results,
+                    "limit" => 1,
+                    "page" => 1
+                )
+            );
+            $paginator = $paginator_model->getPaginate();
+            $results = $paginator->items;
+
+            foreach ($results as $result) {
+                // 社員コード
+                $list['cster_emply_cd'] = $result->as_cster_emply_cd;
+                // 着用者名
+                $list['werer_name'] = $result->as_werer_name;
+                // 着用者名（読み仮名）
+                $list['werer_name_kana'] = $result->as_werer_name_kana;
+                // 発令日
+                $list['appointment_ymd'] = $result->as_appointment_ymd;
+                if (!empty($list['appointment_ymd'])) {
+                    $list['appointment_ymd'] = date('Y/m/d', strtotime($list['appointment_ymd']));
+                } else {
+                    $list['appointment_ymd'] = '';
+                }
+                // 着用開始日
+                $list['resfl_ymd'] = $result->as_resfl_ymd;
+                if (!empty($list['resfl_ymd'])) {
+                    $list['resfl_ymd'] = date('Y/m/d', strtotime($list['resfl_ymd']));
+                } else {
+                    $list['resfl_ymd'] = '';
+                }
+            }
+
+            array_push($all_list, $list);
+        }
+
+        array_push($all_list,$list);
+        $json_list['wearer_info'] = $all_list;
+    }
+    $param_list .= $wearer_chg_post['rntl_cont_no'].':';
+    $param_list .= $wearer_chg_post['werer_cd'].':';
+    $param_list .= $wearer_chg_post['cster_emply_cd'].':';
+    $param_list .= $wearer_chg_post['sex_kbn'].':';
+    $param_list .= $wearer_chg_post['rntl_sect_cd'].':';
+    $param_list .= $wearer_chg_post['job_type_cd'].':';
+    $param_list .= $wearer_chg_post['ship_to_cd'].':';
+    $param_list .= $wearer_chg_post['ship_to_brnch_cd'].':';
+    $param_list .= $wearer_chg_post['order_reason_kbn'].':';
+    $param_list .= $wearer_chg_post['order_tran_flg'].':';
+    $param_list .= $wearer_chg_post['wearer_tran_flg'].':';
+    $param_list .= $wearer_chg_post['appointment_ymd'].':';
+    $param_list .= $wearer_chg_post['resfl_ymd'];
+    $json_list['param'] = $param_list;
     echo json_encode($json_list);
 });
 
@@ -485,7 +738,8 @@ $app->post('/input_insert', function () use ($app) {
     $m_wearer_std_tran->werer_name_kana = $cond['werer_name_kana']; //着用者名（カナ）
     $m_wearer_std_tran->sex_kbn = $cond['sex_kbn'];//性別区分
     $m_wearer_std_tran->werer_sts_kbn  = '7';//着用者状況区分
-    $m_wearer_std_tran->resfl_ymd = date("Ymd", strtotime($cond['resfl_ymd']));//異動日
+    $m_wearer_std_tran->resfl_ymd = date("Ymd", strtotime($cond['appointment_ymd']));//発令日
+    $m_wearer_std_tran->resfl_ymd = date("Ymd", strtotime($cond['resfl_ymd']));//着用開始日
     $m_wearer_std_tran->ship_to_cd = $cond['ship_to_cd']; //出荷先コード
     $m_wearer_std_tran->ship_to_brnch_cd = $cond['ship_to_brnch_cd']; //出荷先支店コード
     $m_wearer_std_tran->rntl_cont_no_bef = ''; //レンタル契約No.（前）

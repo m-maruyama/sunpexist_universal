@@ -24,8 +24,8 @@
 				<label class="col-md-3 control-label" for="sex_kbn">性別<span style="color:red">＊</span></label>
 				<div class="col-md-2">
 					<select class="form-control input-sm" name="sex_kbn" id="sex_kbn">
-						<option selected="selected"></option>
-						{{#each sex_kbn_list}}<option value="{{gen_cd}}">{{gen_name}}</option>{{/each}}
+						<option></option>
+						{{#each sex_kbn_list}}<option value="{{gen_cd}}" {{sex_kbn_selected}}>{{gen_name}}</option>{{/each}}
 					</select>
 				</div>
 			</div>
@@ -58,7 +58,7 @@
 				<div class="col-md-5 dspilb">
 					<select class="form-control input-sm" id="section" name="section">
 						<option selected="selected"></option>
-						{{#each m_section_list}}<option value="{{rntl_sect_cd}}">{{rntl_sect_name}}</option>{{/each}}
+						{{#each m_section_list}}<option value="{{rntl_sect_cd}}" {{rntl_sect_cd_selected}}>{{rntl_sect_name}}</option>{{/each}}
 					</select>
 				</div>
 				<div class="col-md-2 dspilb">
@@ -70,7 +70,7 @@
 				<div class="col-md-5">
 					<select class="form-control input-sm" id="job_type" name="job_type">
 						<option selected="selected"></option>
-						{{#each job_type_list}}<option value="{{job_type_cd}},{{sp_job_type_flg}}">{{job_type_name}}</option>{{/each}}
+						{{#each job_type_list}}<option value="{{job_type_cd}},{{sp_job_type_flg}}" {{job_type_cd_selected}}>{{job_type_name}}</option>{{/each}}
 					</select>
 				</div>
 			</div>
@@ -79,7 +79,7 @@
 				<div class="col-md-5">
 					<select class="form-control input-sm" id="m_shipment_to" name="m_shipment_to">
 						<option selected="selected" value="">支店店舗と同じ</option>
-						{{#each m_shipment_to_list}}<option value="{{ship_to_cd}},{{ship_to_brnch_cd}}">{{cust_to_brnch_name1}}{{cust_to_brnch_name2}}</option>{{/each}}
+						{{#each m_shipment_to_list}}<option value="{{ship_to_cd}},{{ship_to_brnch_cd}}" {{ship_to_cd_selected}}>{{cust_to_brnch_name1}}{{cust_to_brnch_name2}}</option>{{/each}}
 					</select>
 				</div>
 			</div>

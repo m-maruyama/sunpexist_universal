@@ -18,8 +18,15 @@ define([
                 var that = this;
                 var modelForUpdate = this.model;
                 modelForUpdate.url = App.api.CM0061;
+                if(window.sessionStorage.getItem('referrer')=='wearer_search'){
+                    var referrer = 1;
+                }else{
+                    var referrer = -1;
+
+                }
                 var cond = {
-                    "scr": '契約No'
+                    "scr": '契約No',
+                    "referrer" : referrer
                 };
                 modelForUpdate.fetchMx({
                     data:cond,
@@ -32,6 +39,11 @@ define([
                             that.triggerMethod('showAlerts', errorMessages);
                         }
                         that.render();
+                        var res_list = res.attributes;
+                        if(res_list['rntl_cont_no']&&(referrer > -1)){
+                            $('#agreement_no').prop("disabled", true);
+                            that.triggerMethod('input_form', res_list['rntl_cont_no']);
+                        }
                     }
                 });
             },

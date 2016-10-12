@@ -22,7 +22,6 @@ define([
 			model: new Backbone.Model(),
 			onShow: function() {
 
-				console.log(222);
 				var that = this;
 				var modelForUpdate = this.model;
 				modelForUpdate.url = App.api.CM0040;
