@@ -311,6 +311,11 @@ define([
 									// 発注取消完了後、検索一覧へ遷移
 									$.unblockUI();
 									alert('発注取消が完了しました。');
+
+									// 検索画面の条件項目を取得
+									var cond = window.sessionStorage.getItem("wearer_edit_cond");
+									window.sessionStorage.setItem("back_wearer_edit_cond", cond);
+									// 検索一覧画面へ遷移
 									location.href="wearer_edit.html";
 								} else {
 									$.unblockUI();
