@@ -26,7 +26,7 @@ h4{
 }
 
 table{
-    font-size:12px;
+    font-size:13px;
 }
 
 td{
@@ -108,6 +108,9 @@ td{
 	vertical-align:middle;
 }*/
 
+.col-sm-9 {
+  width: 100%;
+}
 
 #scrollTable{
     max-height:100%;
