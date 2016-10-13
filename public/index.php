@@ -60,6 +60,7 @@ try {
     include __DIR__.'/../app/wearer_other.php';
     include __DIR__.'/../app/wearer_search.php';
     include __DIR__.'/../app/wearer_order.php';
+    include __DIR__.'/../app/importCsv.php';
     include __DIR__.'/../app/ChromePhp.php';
 
     /*

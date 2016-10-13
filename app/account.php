@@ -169,7 +169,6 @@ $app->post('/account/modal', function () use ($app) {
     $auth = $app->session->get('auth');
 
 
-    $transaction = $app->transactionManager->get();
     if ($params['type'] == '1') {
         //編集の場合
         $m_account = $ac[0];

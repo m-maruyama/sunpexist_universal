@@ -188,10 +188,8 @@ $app->post('/order_send', function () use ($app) {
         $paginator = $paginator_model->getPaginate();
 
         if (!empty($paginator->items)) {
-            ChromePhp::LOG("karajyanai2");
             $results2 = $paginator->items;
         } else {
-            ChromePhp::LOG("kara2");
             $results2 = array();
         }
 

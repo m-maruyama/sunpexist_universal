@@ -140,6 +140,8 @@ $app->post('/purchase_update', function () use ($app) {
     for ($i = 1; $i <= $total_record; $i++) {
         if ($item[$i]['quantity'] >= 1) {//数量が１以上の場合
             $t_sale_order_history[$i] = new TSaleOrderHistory();
+            $t_sale_order_history[$i]->setTransaction($transaction);
+
             $t_sale_order_history[$i]->corporate_id = $auth['corporate_id']; //コーポレートid
             $t_sale_order_history[$i]->rntl_cont_no = $item[$i]['rntl_cont_no'];
             $t_sale_order_history[$i]->rntl_sect_cd = $item[$i]['rntl_sect_cd'];
