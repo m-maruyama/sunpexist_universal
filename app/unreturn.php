@@ -6,7 +6,7 @@ use Phalcon\Paginator\Adapter\NativeArray as PaginatorArray;
 use Phalcon\Paginator\Adapter\QueryBuilder as PaginatorQueryBuilder;
 
 /**
- * 発注状況照会検索
+ * 返却状況照会検索
  */
 $app->post('/unreturn/search', function ()use($app){
 
@@ -151,7 +151,7 @@ $app->post('/unreturn/search', function ()use($app){
 		array_push($reason_kbn,'23');
 	}
 	if($cond['reason_kbn7']){
-		array_push($reason_kbn,'9');
+		array_push($reason_kbn,'09');
 	}
 	if($cond['reason_kbn8']){
 		array_push($reason_kbn,'10');
@@ -160,16 +160,16 @@ $app->post('/unreturn/search', function ()use($app){
 		array_push($reason_kbn,'11');
 	}
 	if($cond['reason_kbn10']){
-		array_push($reason_kbn,'5');
+		array_push($reason_kbn,'05');
 	}
 	if($cond['reason_kbn11']){
-		array_push($reason_kbn,'6');
+		array_push($reason_kbn,'06');
 	}
 	if($cond['reason_kbn12']){
-		array_push($reason_kbn,'7');
+		array_push($reason_kbn,'07');
 	}
 	if($cond['reason_kbn13']){
-		array_push($reason_kbn,'8');
+		array_push($reason_kbn,'08');
 	}
 	if($cond['reason_kbn14']){
 		array_push($reason_kbn,'24');
