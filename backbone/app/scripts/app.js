@@ -34,6 +34,7 @@ define([
 			'AdminWearerEndOrder': 'modules/admin/WearerEndOrder',
 			'AdminWearerChange': 'modules/admin/WearerChange',
 			'AdminWearerChangeOrder': 'modules/admin/WearerChangeOrder',
+			'AdminWearerOther': 'modules/admin/WearerOther',
 			'AdminWearerInputComplete': 'modules/admin/WearerInputComplete',
 			'AdminWearerSearch': 'modules/admin/WearerSearch',
 			'AdminWearerOrder': 'modules/admin/WearerOrder',
