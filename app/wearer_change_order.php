@@ -2461,6 +2461,12 @@ $app->post('/wearer_change_complete', function ()use($app){
            .$job_type_cd
          );
          array_push($up_query_list, "m_wearer_std_comb_hkey = '".$m_wearer_std_comb_hkey."'");
+         // 企業ID
+         array_push($up_query_list, "corporate_id = '".$auth['corporate_id']."'");
+         // 着用者コード
+         array_push($up_query_list, "werer_cd = '".$wearer_chg_post['werer_cd']."'");
+         // 契約No
+         array_push($up_query_list, "rntl_cont_no = '".$wearer_data_input['agreement_no']."'");
          // 部門コード
          array_push($up_query_list, "rntl_sect_cd = '".$wearer_data_input['section']."'");
          // 客先社員コード
@@ -2543,7 +2549,7 @@ $app->post('/wearer_change_complete', function ()use($app){
          if ($order_sts_kbn !== "6") {
            array_push($up_query_list, "order_sts_kbn = '5'");
          }
-         // 更新区分
+         // 更新区分(WEB発注システム(異動）)
          array_push($up_query_list, "upd_kbn = '5'");
          // Web更新日時
          array_push($up_query_list, "web_upd_date = '".date("Y/m/d H:i:s", time())."'");
@@ -2706,7 +2712,7 @@ $app->post('/wearer_change_complete', function ()use($app){
          // 発注状況区分(異動)
          array_push($calum_list, "order_sts_kbn");
          array_push($values_list, "'5'");
-         // 更新区分(未送信)
+         // 更新区分(WEB発注システム(異動))
          array_push($calum_list, "upd_kbn");
          array_push($values_list, "'5'");
          // Web更新日時
@@ -4004,6 +4010,12 @@ $app->post('/wearer_change_send', function ()use($app){
           .$job_type_cd
         );
         array_push($up_query_list, "m_wearer_std_comb_hkey = '".$m_wearer_std_comb_hkey."'");
+        // 企業ID
+        array_push($up_query_list, "corporate_id = '".$auth['corporate_id']."'");
+        // 着用者コード
+        array_push($up_query_list, "werer_cd = '".$wearer_chg_post['werer_cd']."'");
+        // 契約No
+        array_push($up_query_list, "rntl_cont_no = '".$wearer_data_input['agreement_no']."'");
         // 部門コード
         array_push($up_query_list, "rntl_sect_cd = '".$wearer_data_input['section']."'");
         // 客先社員コード
@@ -4086,7 +4098,7 @@ $app->post('/wearer_change_send', function ()use($app){
         if ($order_sts_kbn !== "6") {
           array_push($up_query_list, "order_sts_kbn = '5'");
         }
-        // 更新区分
+        // 更新区分(WEB発注システム(異動))
         array_push($up_query_list, "upd_kbn = '5'");
         // Web更新日時
         array_push($up_query_list, "web_upd_date = '".date("Y/m/d H:i:s", time())."'");
@@ -4248,7 +4260,7 @@ $app->post('/wearer_change_send', function ()use($app){
         // 発注状況区分(異動)
         array_push($calum_list, "order_sts_kbn");
         array_push($values_list, "'5'");
-        // 更新区分(未送信)
+        // 更新区分(WEB発注システム(異動))
         array_push($calum_list, "upd_kbn");
         array_push($values_list, "'5'");
         // Web更新日時

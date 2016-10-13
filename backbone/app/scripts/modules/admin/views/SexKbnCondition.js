@@ -6,6 +6,9 @@ define([
 	'use strict';
 	App.module('Admin.Views', function(Views, App, Backbone, Marionette, $, _){
 		Views.SexKbnCondition = Marionette.ItemView.extend({
+			defaults: {
+				data: "",
+			},
 			initialize: function(options) {
 			    this.options = options || {};
 			    this.options = _.extend(this.defaults, this.options);
@@ -20,11 +23,13 @@ define([
 			},
 			onShow: function() {
 				var that = this;
+				var data = this.options.data;
 
 				var modelForUpdate = this.model;
 				modelForUpdate.url = App.api.CM0110;
 				var cond = {
-					"scr": '性別'
+					"scr": '性別',
+					"data": data
 				};
 				modelForUpdate.fetchMx({
 					data:cond,

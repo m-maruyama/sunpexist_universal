@@ -75,6 +75,20 @@ define([
 					modelForUpdate.fetchMx({
 						data:cond,
 						success:function(res){
+							// 検索項目値、ページ数のセッション保持
+							var cond = new Array(
+								$("select[name='agreement_no']").val(),
+								$("input[name='cster_emply_cd']").val(),
+								$("input[name='werer_name']").val(),
+								$("select[name='sex_kbn']").val(),
+								$("select[name='section']").val(),
+								$("select[name='job_type']").val(),
+								document.getElementsByClassName("active")[0].getElementsByTagName("a")[0].text
+							);
+							var arr_str = cond.toString();
+							window.sessionStorage.setItem("wearer_change_cond", arr_str);
+
+							// 発注入力画面へ遷移
 							var $form = $('<form/>', {'action': '/universal/wearer_change_order.html', 'method': 'post'});
 							$form.appendTo(document.body);
 							$form.submit();

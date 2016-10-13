@@ -44,9 +44,18 @@ define(["app"],function(App) {
 				if(e < 1) {
 					s = 0;
 				} else {
+					var n = 0;
 					var i = s;
+					var v = new Object();
 					for (i;i<=e;i++) {
-						pages.push(i);
+						pages[n] = new Object();
+						pages[n]["num"] = i;
+						if (i == pageNumber) {
+							pages[n]["act"] = true;
+						} else {
+							pages[n]["act"] = false;
+						}
+						n++;
 					}
 				}
 				var start_num = (pageNumber - 1)*delta;

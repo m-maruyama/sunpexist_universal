@@ -1,7 +1,7 @@
 <label class="col-md-2 control-label" for="">拠点</label>
 <div class="col-md-8">
 	<select class="input-sm" id="section" name="section">
-		{{#each section_list}}<option value="{{rntl_sect_cd}}">{{rntl_sect_name}}</option>{{/each}}
+		{{#each section_list}}<option value="{{rntl_sect_cd}}" {{selected}}>{{rntl_sect_name}}</option>{{/each}}
 	</select>
 	<a href="" type="button" id="section_btn" class="btn btn-primary btn-sm" title="絞り込み" data-toggle="modal" data-target="#modal-example">絞り込み</a>
 </div>

@@ -489,6 +489,23 @@ $app->post('/wearer_change/search', function ()use($app){
             }
           }
           if ($list['btnPattern'] == "") {
+            //パターンD： 着用者基本マスタトラン．送信区分 = 処理中のデータがある場合、ボタンの文言は「職種変更または異動」で非活性表示する。
+            $patarn_flg = true;
+            if (!empty($result->as_wearer_snd_kbn)) {
+              $snd_kbn = $t_order_tran_result->snd_kbn;
+              if ($snd_kbn == '9') {
+                $patarn_flg = false;
+                break;
+              }
+            }
+            if (!$patarn_flg) {
+              $list['wearer_change_button'] = "職種変更または異動";
+              $list['wearer_change_red'] = "";
+              $list['disabled'] = "disabled";
+              $list['btnPattern'] = "D";
+            }
+          }
+          if ($list['btnPattern'] == "") {
             //上記パターンに引っかからない場合はデフォ表示
             $list['wearer_change_button'] = '職種変更または異動';
             $list['wearer_change_red'] = "";

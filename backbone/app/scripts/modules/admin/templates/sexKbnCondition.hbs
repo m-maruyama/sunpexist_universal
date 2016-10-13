@@ -1,5 +1,5 @@
 
 	<select class="form-control input-sm" name="sex_kbn" id="sex_kbn">
-		<option value="" selected="selected">全て</option>
-		{{#each sex_kbn_list}}<option value="{{gen_cd}}">{{gen_name}}</option>{{/each}}
+		<option value="">全て</option>
+		{{#each sex_kbn_list}}<option value="{{gen_cd}}" {{selected}}>{{gen_name}}</option>{{/each}}
 	</select>

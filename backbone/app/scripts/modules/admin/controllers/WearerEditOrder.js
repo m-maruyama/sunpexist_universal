@@ -5,8 +5,6 @@ define([
 	'../views/WearerEditOrderCondition',
 	'../views/WearerEditOrderComplete',
 	'../views/WearerEditOrderSendComplete',
-	'../views/AgreementNoConditionChange',
-	'../views/SexKbnConditionChange',
 	'../views/Pagination',
   '../behaviors/Alerts',
 	"entities/models/Pager",
@@ -32,7 +30,6 @@ define([
 					model:wearerEditOrderModel
 				});
 
-				var agreementNoConditionChangeView = new App.Admin.Views.AgreementNoConditionChange();
 				var sexKbnConditionChangeView = new App.Admin.Views.SexKbnConditionChange();
 
 				var wearerEditOrderListConditionModel = new App.Entities.Models.AdminWearerEditOrderListCondition();
@@ -49,28 +46,24 @@ define([
 				// 入力完了
 				this.listenTo(wearerEditOrderConditionView, 'inputComplete', function(data){
 					wearerEditOrderView.condition.reset();
-					wearerEditOrderView.listTable.reset();
 
 					var wearerEditOrderComplete = new App.Admin.Views.WearerEditOrderComplete({
-						data: data,
+						data: data
 					});
 					wearerEditOrderView.complete.show(wearerEditOrderComplete);
 				});
 				// 発注送信完了
 				this.listenTo(wearerEditOrderConditionView, 'sendComplete', function(data){
 					wearerEditOrderView.condition.reset();
-					wearerEditOrderView.listTable.reset();
 
 					var wearerEditOrderSendComplete = new App.Admin.Views.WearerEditOrderSendComplete({
-						data: data,
+						data: data
 					});
 					wearerEditOrderView.complete.show(wearerEditOrderSendComplete);
 				});
 
 				App.main.show(wearerEditOrderView);
 				wearerEditOrderView.condition.show(wearerEditOrderConditionView);
-				wearerEditOrderConditionView.agreement_no.show(agreementNoConditionChangeView);
-				wearerEditOrderConditionView.sex_kbn.show(sexKbnConditionChangeView);
 			}
 		});
 	});

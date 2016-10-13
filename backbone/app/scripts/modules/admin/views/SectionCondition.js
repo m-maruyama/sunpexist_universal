@@ -7,6 +7,7 @@ define([
 		Views.SectionCondition = Marionette.LayoutView.extend({
 			defaults: {
 				agreement_no: '',
+				section: '',
 			},
 			initialize: function(options) {
 			    this.options = options || {};
@@ -23,14 +24,16 @@ define([
 				'.section_btn': 'section_btn'
 			},
 			onShow: function() {
-				var agreement_no = this.options.agreement_no;
 				var that = this;
+				var agreement_no = this.options.agreement_no;
+				var section = this.options.section;
 
 				var modelForUpdate = this.model;
 				modelForUpdate.url = App.api.CM0020;
 				var cond = {
 					"scr": '拠点',
 					"agreement_no": agreement_no,
+					"section": section
 				};
 				modelForUpdate.fetchMx({
 					data:cond,

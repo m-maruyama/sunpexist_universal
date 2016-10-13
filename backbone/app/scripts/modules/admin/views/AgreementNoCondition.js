@@ -6,6 +6,13 @@ define([
 	'use strict';
 	App.module('Admin.Views', function(Views, App, Backbone, Marionette, $, _){
 		Views.AgreementNoCondition = Marionette.ItemView.extend({
+			defaults: {
+				data: "",
+			},
+			initialize: function(options) {
+				this.options = options || {};
+				this.options = _.extend(this.defaults, this.options);
+			},
 			template: App.Admin.Templates.agreementNoCondition,
 			model: new Backbone.Model(),
 			ui: {
@@ -16,10 +23,13 @@ define([
 			},
 			onShow: function() {
 				var that = this;
+				var data = this.options.data;
+
 				var modelForUpdate = this.model;
 				modelForUpdate.url = App.api.CM0060;
 				var cond = {
-					"scr": '契約No'
+					"scr": '契約No',
+					"data": data
 				};
 					modelForUpdate.fetchMx({
 						data:cond,

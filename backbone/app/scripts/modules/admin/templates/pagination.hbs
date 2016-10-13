@@ -12,7 +12,7 @@
 				<li><a href="#" data-page="{{prev_page}}">&lt;</a></li>
 			{{/if}}
 			{{#each pages}}
-				<li{{#equals this ../page_number}} class="active"{{/equals}}><a href="#" data-page="{{this}}">{{this}}</a></li>
+				<li{{#if act}} class="active"{{/if}}><a href="#" data-page="{{num}}">{{num}}</a></li>
 			{{/each}}
 			{{#if next}}
 				<li><a href="#" data-page="{{next_page}}">&gt;</a></li>

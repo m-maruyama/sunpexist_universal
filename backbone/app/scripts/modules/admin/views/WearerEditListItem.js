@@ -27,12 +27,9 @@ define([
 						'sex_kbn': we_val[3],
 						'rntl_sect_cd': we_val[4],
 						'job_type_cd': we_val[5],
-						'order_reason_kbn': we_val[6],
-						'ship_to_cd': we_val[7],
-						'ship_to_brnch_cd': we_val[8],
-						'order_tran_flg': we_val[9],
-						'wearer_tran_flg': we_val[10],
-						'order_req_no': we_val[11],
+						'ship_to_cd': we_val[6],
+						'ship_to_brnch_cd': we_val[7],
+						'wearer_tran_flg': we_val[8],
 					};
 
 					// 発注入力遷移前に発注NGパターンチェック実施
@@ -74,13 +71,20 @@ define([
 					modelForUpdate.fetchMx({
 						data:cond,
 						success:function(res){
-							var errors = res.get('errors');
-							if(errors) {
-								var errorMessages = errors.map(function(v){
-									return v.error_message;
-								});
-								this.triggerMethod('showAlerts', errorMessages);
-							}
+							// 検索項目値、ページ数のセッション保持
+							var cond = new Array(
+								$("select[name='agreement_no']").val(),
+								$("input[name='cster_emply_cd']").val(),
+								$("input[name='werer_name']").val(),
+								$("select[name='sex_kbn']").val(),
+								$("select[name='section']").val(),
+								$("select[name='job_type']").val(),
+								document.getElementsByClassName("active")[0].getElementsByTagName("a")[0].text
+							);
+							var arr_str = cond.toString();
+							window.sessionStorage.setItem("wearer_edit_cond", arr_str);
+
+							// 発注入力画面へ遷移
 							var $form = $('<form/>', {'action': '/universal/wearer_edit_order.html', 'method': 'post'});
 							$form.appendTo(document.body);
 							$form.submit();

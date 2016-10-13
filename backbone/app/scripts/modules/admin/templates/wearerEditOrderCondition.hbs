@@ -6,26 +6,30 @@
 			<button class="btn btn-primary back" title="戻る">戻る</button>
 		</div>
 		<div class="col-md-1">
-			<button class="btn btn-primary delete" name="delete_param" value="{{delete_param}}" title="発注取消">発注取消</button>
+			<button class="btn btn-primary delete" style="display:none;" name="delete_param" value="{{delete_param}}" title="発注取消">発注取消</button>
 		</div>
 		<div class="col-md-1">
-			<button class="btn btn-primary complete" title="入力完了">入力完了</button>
+			<button class="btn btn-primary complete" style="display:none;" title="入力完了">入力完了</button>
 		</div>
 		<div class="col-md-1">
-			<button class="btn btn-primary orderSend" title="発注送信">発注送信</button>
+			<button class="btn btn-primary orderSend" style="display:none;" title="発注送信">発注送信</button>
 		</div>
 	</div>
-
 	<!--エラーメッセージ-->
-	<div style="padding-top:20px;">
+	<!--div style="padding-top:20px;">
 		<div class="errors"></div>
-	<div>
-
+	<div-->
 	<form class="form-horizontal">
 		<div class="col-md-10 box_purple">
-			<!--契約No-->
-			<div class="agreement_no"></div>
-
+			<!--エラーメッセージ-->
+			<div class="errors"></div>
+			<div class="form-group">
+				<label class="col-md-3 control-label" for="">契約No</label>
+				<div class="col-md-5">
+					<select class="form-control input-sm" id="agreement_no" name="agreement_no" disabled="disabled">
+					</select>
+				</div>
+			</div>
 			<div class="form-group">
 				<label class="col-md-3 control-label" for="">理由区分</label>
 				<div class="col-md-3">
@@ -53,10 +57,13 @@
 					<input type="text" class="form-control input-sm"  id="member_name_kana" name="member_name_kana" value="">
 				</div>
 			</div>
-
-			<!--性別-->
-			<div class="sex_kbn"></div>
-
+			<div class="form-group" style="margin-bottom: 40px">
+				<label class="col-md-3 control-label" for="">性別</label>
+				<div class="col-md-2">
+					<select class="form-control input-sm" name="sex_kbn" id="sex_kbn">
+					</select>
+				</div>
+			</div>
 			<div class="form-group">
 				<label class="col-md-3 control-label" for="">異動日</label>
 				<div class="col-md-3">

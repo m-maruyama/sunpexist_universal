@@ -40,18 +40,14 @@ define([
 				var scr = data["scr"];
 				var mode = data["mode"];
 				var wearer_data = data["wearer_data"];
-				var now_item = data["now_item"];
-				var add_item = data["add_item"];
 
 				// 入力内容登録処理
 				var modelForUpdate = this.model;
-				modelForUpdate.url = App.api.WC0022;
+				modelForUpdate.url = App.api.WU0015;
 				var cond = {
 					"scr": scr,
 					"mode": mode,
-					"wearer_data": wearer_data,
-					"now_item": now_item,
-					"add_item": add_item,
+					"wearer_data": wearer_data
 				};
 				//console.log(cond);
 
@@ -72,6 +68,9 @@ define([
 			events: {
 				// 「続けて入力する」ボタン
 				'click @ui.continueInput': function(){
+					// 検索画面の条件項目を取得
+					var cond = window.sessionStorage.getItem("wearer_edit_cond");
+					window.sessionStorage.setItem("back_wearer_edit_cond", cond);
 					// 検索画面へ遷移
 					location.href="wearer_Edit.html";
 				},

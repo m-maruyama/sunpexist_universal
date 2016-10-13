@@ -5,6 +5,8 @@ use Phalcon\Paginator\Adapter\Model as PaginatorModel;
 use Phalcon\Paginator\Adapter\NativeArray as PaginatorArray;
 use Phalcon\Paginator\Adapter\QueryBuilder as PaginatorQueryBuilder;
 
+
+
 /**
  * 着用者編集
  * 検索一覧
@@ -65,42 +67,30 @@ $app->post('/wearer_edit/search', function ()use($app){
   $arg_str .= "m_wearer_std.cster_emply_cd as as_cster_emply_cd,";
   $arg_str .= "m_wearer_std.werer_name as as_werer_name,";
   $arg_str .= "m_wearer_std.sex_kbn as as_sex_kbn,";
-  $arg_str .= "m_wearer_std.snd_kbn as as_wearer_snd_kbn,";
+//  $arg_str .= "m_wearer_std.snd_kbn as as_snd_kbn,";
+//  $arg_str .= "m_wearer_std.werer_sts_kbn as as_werer_sts_kbn,";
+//  $arg_str .= "m_wearer_std.order_sts_kbn as as_order_sts_kbn,";
   $arg_str .= "m_wearer_std.ship_to_cd as as_ship_to_cd,";
   $arg_str .= "m_wearer_std.ship_to_brnch_cd as as_ship_to_brnch_cd,";
-  $arg_str .= "wst.rntl_sect_name as wst_rntl_sect_name,";
-  $arg_str .= "wjt.job_type_name as wjt_job_type_name,";
-  $arg_str .= "t_order_tran.order_req_no as as_order_req_no,";
-  $arg_str .= "t_order_tran.order_sts_kbn as as_order_sts_kbn,";
-  $arg_str .= "t_order_tran.snd_kbn as as_order_snd_kbn,";
-  $arg_str .= "t_order_tran.order_reason_kbn as as_order_reason_kbn,";
-  $arg_str .= "t_order_tran.upd_date as as_order_upd_date";
+  $arg_str .= "m_wearer_std.upd_date as as_upd_date,";
+  $arg_str .= "m_section.rntl_sect_name as as_rntl_sect_name,";
+  $arg_str .= "m_job_type.job_type_name as as_job_type_name";
   $arg_str .= " FROM ";
-  $arg_str .= "(m_wearer_std INNER JOIN m_section as wst";
-  $arg_str .= " ON (m_wearer_std.corporate_id = wst.corporate_id";
-  $arg_str .= " AND m_wearer_std.rntl_cont_no = wst.rntl_cont_no";
-  $arg_str .= " AND m_wearer_std.rntl_sect_cd = wst.rntl_sect_cd)";
-  $arg_str .= " INNER JOIN m_job_type as wjt";
-  $arg_str .= " ON (m_wearer_std.corporate_id = wjt.corporate_id";
-  $arg_str .= " AND m_wearer_std.rntl_cont_no = wjt.rntl_cont_no";
-  $arg_str .= " AND m_wearer_std.job_type_cd = wjt.job_type_cd))";
-  $arg_str .= " LEFT JOIN ";
-  $arg_str .= "(t_order_tran INNER JOIN m_section as os";
-  $arg_str .= " ON (t_order_tran.corporate_id = os.corporate_id";
-  $arg_str .= " AND t_order_tran.rntl_cont_no = os.rntl_cont_no";
-  $arg_str .= " AND t_order_tran.rntl_sect_cd = os.rntl_sect_cd)";
-  $arg_str .= " INNER JOIN m_job_type as ojt";
-  $arg_str .= " ON (t_order_tran.corporate_id = ojt.corporate_id";
-  $arg_str .= " AND t_order_tran.rntl_cont_no = ojt.rntl_cont_no";
-  $arg_str .= " AND t_order_tran.job_type_cd = ojt.job_type_cd))";
-  $arg_str .= " ON (m_wearer_std.corporate_id = t_order_tran.corporate_id";
-  $arg_str .= " AND m_wearer_std.rntl_cont_no = t_order_tran.rntl_cont_no";
-  $arg_str .= " AND m_wearer_std.rntl_sect_cd = t_order_tran.rntl_sect_cd";
-  $arg_str .= " AND m_wearer_std.job_type_cd = t_order_tran.job_type_cd)";
+  $arg_str .= "m_wearer_std";
+  $arg_str .= " INNER JOIN ";
+  $arg_str .= "m_section";
+  $arg_str .= " ON (m_wearer_std.corporate_id = m_section.corporate_id";
+  $arg_str .= " AND m_wearer_std.rntl_cont_no = m_section.rntl_cont_no";
+  $arg_str .= " AND m_wearer_std.rntl_sect_cd = m_section.rntl_sect_cd)";
+  $arg_str .= " INNER JOIN ";
+  $arg_str .= "m_job_type";
+  $arg_str .= " ON (m_wearer_std.corporate_id = m_job_type.corporate_id";
+  $arg_str .= " AND m_wearer_std.rntl_cont_no = m_job_type.rntl_cont_no";
+  $arg_str .= " AND m_wearer_std.job_type_cd = m_job_type.job_type_cd)";
   $arg_str .= " WHERE ";
   $arg_str .= $query;
   $arg_str .= ") as distinct_table";
-  $arg_str .= " ORDER BY as_cster_emply_cd ASC,as_order_upd_date DESC";
+  $arg_str .= " ORDER BY as_cster_emply_cd ASC,as_upd_date DESC";
 
   $m_weare_std = new MWearerStd();
   $results = new Resultset(null, $m_weare_std, $m_weare_std->getReadConnection()->query($arg_str));
@@ -120,7 +110,6 @@ $app->post('/wearer_edit/search', function ()use($app){
   $list = array();
   $all_list = array();
   $json_list = array();
-
   if(!empty($results_cnt)){
       $paginator = $paginator_model->getPaginate();
       $results = $paginator->items;
@@ -148,37 +137,26 @@ $app->post('/wearer_edit/search', function ()use($app){
         $arg_str .= "m_wearer_std_tran.cster_emply_cd as as_cster_emply_cd,";
         $arg_str .= "m_wearer_std_tran.werer_name as as_werer_name,";
         $arg_str .= "m_wearer_std_tran.sex_kbn as as_sex_kbn,";
-        $arg_str .= "m_wearer_std_tran.snd_kbn as as_wearer_snd_kbn,";
+        $arg_str .= "m_wearer_std_tran.snd_kbn as as_snd_kbn,";
+        $arg_str .= "m_wearer_std_tran.werer_sts_kbn as as_werer_sts_kbn,";
+        $arg_str .= "m_wearer_std_tran.order_sts_kbn as as_order_sts_kbn,";
         $arg_str .= "m_wearer_std_tran.ship_to_cd as as_ship_to_cd,";
         $arg_str .= "m_wearer_std_tran.ship_to_brnch_cd as as_ship_to_brnch_cd,";
-        $arg_str .= "wst.rntl_sect_name as wst_rntl_sect_name,";
-        $arg_str .= "wjt.job_type_name as wjt_job_type_name,";
-        $arg_str .= "t_order_tran.order_req_no as as_order_req_no,";
-        $arg_str .= "t_order_tran.order_sts_kbn as as_order_sts_kbn,";
-        $arg_str .= "t_order_tran.snd_kbn as as_order_snd_kbn,";
-        $arg_str .= "t_order_tran.order_reason_kbn as as_order_reason_kbn";
+        $arg_str .= "m_wearer_std_tran.upd_date as as_upd_date,";
+        $arg_str .= "m_section.rntl_sect_name as as_rntl_sect_name,";
+        $arg_str .= "m_job_type.job_type_name as as_job_type_name";
         $arg_str .= " FROM ";
-        $arg_str .= "(m_wearer_std_tran INNER JOIN m_section as wst";
-        $arg_str .= " ON (m_wearer_std_tran.corporate_id = wst.corporate_id";
-        $arg_str .= " AND m_wearer_std_tran.rntl_cont_no = wst.rntl_cont_no";
-        $arg_str .= " AND m_wearer_std_tran.rntl_sect_cd = wst.rntl_sect_cd)";
-        $arg_str .= " INNER JOIN m_job_type as wjt";
-        $arg_str .= " ON (m_wearer_std_tran.corporate_id = wjt.corporate_id";
-        $arg_str .= " AND m_wearer_std_tran.rntl_cont_no = wjt.rntl_cont_no";
-        $arg_str .= " AND m_wearer_std_tran.job_type_cd = wjt.job_type_cd))";
-        $arg_str .= " LEFT JOIN ";
-        $arg_str .= "(t_order_tran INNER JOIN m_section as os";
-        $arg_str .= " ON (t_order_tran.corporate_id = os.corporate_id";
-        $arg_str .= " AND t_order_tran.rntl_cont_no = os.rntl_cont_no";
-        $arg_str .= " AND t_order_tran.rntl_sect_cd = os.rntl_sect_cd)";
-        $arg_str .= " INNER JOIN m_job_type as ojt";
-        $arg_str .= " ON (t_order_tran.corporate_id = ojt.corporate_id";
-        $arg_str .= " AND t_order_tran.rntl_cont_no = ojt.rntl_cont_no";
-        $arg_str .= " AND t_order_tran.job_type_cd = ojt.job_type_cd))";
-        $arg_str .= " ON (m_wearer_std_tran.corporate_id = t_order_tran.corporate_id";
-        $arg_str .= " AND m_wearer_std_tran.rntl_cont_no = t_order_tran.rntl_cont_no";
-        $arg_str .= " AND m_wearer_std_tran.rntl_sect_cd = t_order_tran.rntl_sect_cd";
-        $arg_str .= " AND m_wearer_std_tran.job_type_cd = t_order_tran.job_type_cd)";
+        $arg_str .= "m_wearer_std_tran";
+        $arg_str .= " INNER JOIN ";
+        $arg_str .= "m_section";
+        $arg_str .= " ON (m_wearer_std_tran.corporate_id = m_section.corporate_id";
+        $arg_str .= " AND m_wearer_std_tran.rntl_cont_no = m_section.rntl_cont_no";
+        $arg_str .= " AND m_wearer_std_tran.rntl_sect_cd = m_section.rntl_sect_cd)";
+        $arg_str .= " INNER JOIN ";
+        $arg_str .= "m_job_type";
+        $arg_str .= " ON (m_wearer_std_tran.corporate_id = m_job_type.corporate_id";
+        $arg_str .= " AND m_wearer_std_tran.rntl_cont_no = m_job_type.rntl_cont_no";
+        $arg_str .= " AND m_wearer_std_tran.job_type_cd = m_job_type.job_type_cd)";
         $arg_str .= " WHERE ";
         $arg_str .= $query;
         $arg_str .= " ORDER BY m_wearer_std_tran.upd_date DESC";
@@ -187,12 +165,10 @@ $app->post('/wearer_edit/search', function ()use($app){
         $tran_results = new Resultset(null, $m_weare_std_tran, $m_weare_std_tran->getReadConnection()->query($arg_str));
         $tran_result_obj = (array)$tran_results;
         $tran_results_cnt = $tran_result_obj["\0*\0_count"];
-
         // 着用者基本マスタトラン情報に重複データがある場合、優先させて着用者基本マスタ情報リストを上書きする
         if (!empty($tran_results_cnt)) {
           // 着用者マスタトラン有フラグ
           $list['wearer_tran_flg'] = '1';
-
           $paginator_model = new PaginatorModel(
               array(
                   "data"  => $tran_results,
@@ -213,34 +189,26 @@ $app->post('/wearer_edit/search', function ()use($app){
             $result->as_cster_emply_cd = $tran_result->as_cster_emply_cd;
             $result->as_werer_name = $tran_result->as_werer_name;
             $result->as_sex_kbn = $tran_result->as_sex_kbn;
-            $result->as_wearer_snd_kbn = $tran_result->as_wearer_snd_kbn;
+            $result->as_snd_kbn = $tran_result->as_snd_kbn;
+            $result->as_werer_sts_kbn = $tran_result->as_werer_sts_kbn;
+            $result->as_order_sts_kbn = $tran_result->as_order_sts_kbn;
             $result->as_ship_to_cd = $tran_result->as_ship_to_cd;
             $result->as_ship_to_brnch_cd = $tran_result->as_ship_to_brnch_cd;
-            $result->wst_rntl_sect_name = $tran_result->wst_rntl_sect_name;
-            $result->wjt_job_type_name = $tran_result->wjt_job_type_name;
-            $result->as_order_req_no = $tran_result->as_order_req_no;
-            $result->as_order_sts_kbn = $tran_result->as_order_sts_kbn;
-            $result->as_order_snd_kbn = $tran_result->as_order_snd_kbn;
-            $result->as_order_reason_kbn = $tran_result->as_order_reason_kbn;
+            $result->as_rntl_sect_name = $tran_result->as_rntl_sect_name;
+            $result->as_job_type_name = $tran_result->as_job_type_name;
           }
+        } else {
+          // 着用者マスタトラン無フラグ
+          $list['wearer_tran_flg'] = '0';
         }
         //ChromePhp::LOG("チェック後の着用者リスト情報");
         //ChromePhp::LOG($result);
-
         // レンタル契約No
         $list['rntl_cont_no'] = $result->as_rntl_cont_no;
         // レンタル部門コード
         $list['rntl_sect_cd'] = $result->as_rntl_sect_cd;
         // 職種コード
         $list['job_type_cd'] = $result->as_job_type_cd;
-        // 発注No
-        $list['order_req_no'] = $result->as_order_req_no;
-        // 理由区分
-        if (isset($result->as_order_reason_kbn)) {
-          $list['order_reason_kbn'] = $result->as_order_reason_kbn;
-        } else {
-          $list['order_reason_kbn'] = null;
-        }
         // 着用者コード
         $list['werer_cd'] = $result->as_werer_cd;
         // 社員番号
@@ -261,7 +229,6 @@ $app->post('/wearer_edit/search', function ()use($app){
         } else {
             $list['werer_name'] = "-";
         }
-
         //---性別名称---//
         $query_list = array();
         array_push($query_list, "cls_cd = '004'");
@@ -274,77 +241,66 @@ $app->post('/wearer_edit/search', function ()use($app){
         foreach ($gencode as $gencode_map) {
             $list['sex_kbn_name'] = $gencode_map->gen_name;
         }
-
-        // 発注、発注情報トラン有無フラグ
-        if (isset($result->as_order_sts_kbn)) {
-            $list['order_kbn'] = "<font color='red'>済</font>";
-            // 発注情報トラン有
-            $list['order_tran_flg'] = '1';
-        }else{
-            $list['order_kbn'] = "未";
-            // 発注情報トラン無
-            $list['order_tran_flg'] = '0';
+        // 発注、着用者基本マスタトラン有無フラグ
+        if ($list['wearer_tran_flg'] == "1") {
+          $list['order_kbn'] = "<font color='red'>済</font>";
+        } else {
+          $list['order_kbn'] = "未";
         }
-        // 状態、着用者マスタトラン有無フラグ
+        // 状態
         $list['snd_kbn'] = "-";
-        if (!empty($list['wearer_tran_flg'])) {
-          // 状態
-          if($result->as_wearer_snd_kbn == '0'){
+        if ($list['wearer_tran_flg'] == "1") {
+          if($result->as_snd_kbn == '0'){
               $list['snd_kbn'] = "未送信";
-          }elseif($result->as_wearer_snd_kbn == '1'){
+          }elseif($result->as_snd_kbn == '1'){
               $list['snd_kbn'] = "送信済";
-          }elseif($result->as_wearer_snd_kbn == '9'){
+          }elseif($result->as_snd_kbn == '9'){
               $list['snd_kbn'] = "処理中";
           }
-        } else {
-          // 着用者マスタトラン無
-          $list['wearer_tran_flg'] = '0';
         }
         // 拠点
-        if (!empty($result->wst_rntl_sect_name)) {
-            $list['rntl_sect_name'] = $result->wst_rntl_sect_name;
+        if (!empty($result->as_rntl_sect_name)) {
+            $list['rntl_sect_name'] = $result->as_rntl_sect_name;
         } else {
             $list['rntl_sect_name'] = "-";
         }
         // 貸与パターン
-        if (!empty($result->wjt_job_type_name)) {
-            $list['job_type_name'] = $result->wjt_job_type_name;
+        if (!empty($result->as_job_type_name)) {
+            $list['job_type_name'] = $result->as_job_type_name;
         } else {
             $list['job_type_name'] = "-";
         }
-
-        //---「着用者編集」ボタンの生成---//
-        if ($list['order_tran_flg'] == "1") {
+        //---「着用者編集」、「返却伝票ダウンロード」ボタンの生成---//
+        if ($list['wearer_tran_flg'] == "1") {
           if ($result->as_order_sts_kbn !== '6') {
-            //パターンA： 発注情報トラン．発注状況区分 = 着用者編集のデータが無い場合、ボタンの文言は「着用者編集」で表示する。
+            //パターンA： 着用者基本マスタトラン．発注状況区分 = 着用者編集のデータが無い場合、ボタンの文言は「着用者編集」で表示する。
             $list['wearer_edit_button'] = "着用者編集";
             $list['wearer_edit_red'] = "";
             $list['disabled'] = "";
-          } elseif ($result->as_order_sts_kbn == '6' && $result->as_order_snd_kbn == '0') {
-            //パターンB： 発注情報トラン．発注状況区分 = 着用者編集のデータがある場合、かつ、発注情報トラン．送信区分 = 未送信の場合、ボタンの文言は「着用者編集[済]」で表示する。
+            $list['return_reciept_button'] = false;
+          } elseif ($result->as_order_sts_kbn == '6' && $result->as_snd_kbn == '0') {
+            //パターンB： 着用者基本マスタトラン．発注状況区分 = 着用者編集のデータがある場合、かつ、着用者基本マスタトラン．送信区分 = 未送信の場合、ボタンの文言は「着用者編集[済]」で表示する。
             $list['wearer_edit_button'] = "着用者編集";
             $list['wearer_edit_red'] = "[済]";
             $list['disabled'] = "";
-          } elseif ($result->as_order_sts_kbn == '6' && $result->as_order_snd_kbn == '1') {
-            //パターンC： 発注情報トラン．発注状況区分 = 着用者編集のデータがある場合、かつ、発注情報トラン．送信区分 = 送信済の場合、ボタンの文言は「着用者編集[済]」で非活性表示する。
+            $list['return_reciept_button'] = true;
+          } elseif ($result->as_order_sts_kbn == '6' && $result->as_snd_kbn == '1') {
+            //パターンC： 着用者基本マスタトラン．発注状況区分 = 着用者編集のデータがある場合、かつ、着用者基本マスタトラン．送信区分 = 送信済の場合、ボタンの文言は「着用者編集[済]」で非活性表示する。
             $list['wearer_edit_button'] = "着用者編集";
             $list['wearer_edit_red'] = "[済]";
             $list['disabled'] = "disabled";
+            $list['return_reciept_button'] = true;
+          } elseif ($result->as_snd_kbn == '9') {
+            //パターンD： 着用者基本マスタトラン．送信区分 = 処理中のデータがある場合、ボタンの文言は「着用者編集」で非活性表示する。
+            $list['wearer_edit_button'] = "着用者編集";
+            $list['wearer_edit_red'] = "";
+            $list['disabled'] = "disabled";
+            $list['return_reciept_button'] = false;
           } else {
             // 上記パターンに該当しない場合、デフォルトでボタンの文言は「着用者編集」を表示する。
             $list['wearer_edit_button'] = "着用者編集";
             $list['wearer_edit_red'] = "";
             $list['disabled'] = "";
-          }
-          //「返却伝票ダウンロード」ボタン生成
-          if (
-            ($result->as_order_sts_kbn == '6' && $result->as_order_snd_kbn == '0') ||
-            ($result->as_order_sts_kbn == '6' && $result->as_order_snd_kbn == '1')
-          )
-          {
-            //「着用者編集」ボタン生成のパターンBかCの場合に表示
-            $list['return_reciept_button'] = true;
-          } else {
             $list['return_reciept_button'] = false;
           }
         } else {
@@ -363,12 +319,9 @@ $app->post('/wearer_edit/search', function ()use($app){
         $list['param'] .= $list['sex_kbn'].':';
         $list['param'] .= $list['rntl_sect_cd'].':';
         $list['param'] .= $list['job_type_cd'].':';
-        $list['param'] .= $list['order_reason_kbn'].':';
         $list['param'] .= $list['ship_to_cd'].':';
         $list['param'] .= $list['ship_to_brnch_cd'].':';
-        $list['param'] .= $list['order_tran_flg'].':';
         $list['param'] .= $list['wearer_tran_flg'].':';
-        $list['param'] .= $list['order_req_no'];
 
         array_push($all_list,$list);
       }
@@ -406,18 +359,14 @@ $app->post('/wearer_edit/req_param', function ()use($app){
     'sex_kbn' => $cond["sex_kbn"],
     'rntl_sect_cd' => $cond["rntl_sect_cd"],
     'job_type_cd' => $cond["job_type_cd"],
-    'order_reason_kbn' => $cond["order_reason_kbn"],
     'ship_to_cd' => $cond["ship_to_cd"],
     'ship_to_brnch_cd' => $cond["ship_to_brnch_cd"],
-    'order_tran_flg' => $cond["order_tran_flg"],
     'wearer_tran_flg' => $cond["wearer_tran_flg"],
-    'order_req_no' => $cond["order_req_no"],
   ));
 
   $json_list = array();
   $json_list = $app->session->get("wearer_edit_post");
   //ChromePhp::LOG($json_list);
-
   echo json_encode($json_list);
 });
 
@@ -441,7 +390,9 @@ $app->post('/wearer_edit/order_check', function ()use($app){
   $json_list["err_cd"] = '0';
   $json_list["err_msg"] = '';
 
-  //※発注情報トラン参照
+  //※着用者基本マスタトラン参照
+  $all_list = array();
+  $list = array();
   $query_list = array();
   array_push($query_list, "corporate_id = '".$auth['corporate_id']."'");
   array_push($query_list, "rntl_cont_no = '".$cond['rntl_cont_no']."'");
@@ -454,13 +405,13 @@ $app->post('/wearer_edit/order_check', function ()use($app){
   $arg_str = "SELECT ";
   $arg_str .= "*";
   $arg_str .= " FROM ";
-  $arg_str .= "t_order_tran";
+  $arg_str .= "m_wearer_std_tran";
   $arg_str .= " WHERE ";
   $arg_str .= $query;
   $arg_str .= " ORDER BY upd_date DESC";
   //ChromePhp::LOG($arg_str);
-  $t_order_tran = new TOrderTran();
-  $results = new Resultset(NULL, $t_order_tran, $t_order_tran->getReadConnection()->query($arg_str));
+  $m_wearer_std_tran = new MWearerStdTran();
+  $results = new Resultset(NULL, $m_wearer_std_tran, $m_wearer_std_tran->getReadConnection()->query($arg_str));
   $result_obj = (array)$results;
   $results_cnt = $result_obj["\0*\0_count"];
   //ChromePhp::LOG($results_cnt);
@@ -468,7 +419,7 @@ $app->post('/wearer_edit/order_check', function ()use($app){
     $paginator_model = new PaginatorModel(
         array(
             "data"  => $results,
-            "limit" => 1,
+            "limit" => $results_cnt,
             "page" => 1
         )
     );
@@ -476,30 +427,37 @@ $app->post('/wearer_edit/order_check', function ()use($app){
     $results = $paginator->items;
     //ChromePhp::LOG($results);
     foreach ($results as $result) {
-      $order_sts_kbn = $result->order_sts_kbn;
-    }
-    //※汎用コードマスタ参照
-    $query_list = array();
-    array_push($query_list, "cls_cd = '001'");
-    array_push($query_list, "gen_cd = '".$order_sts_kbn."'");
-    $query = implode(' AND ', $query_list);
-    $gencode = MGencode::query()
-        ->where($query)
-        ->columns('*')
-        ->execute();
-    foreach ($gencode as $gencode_map) {
-      $order_sts_kbn_name = $gencode_map->gen_name;
+      // 発注状況区分コード
+      $list["order_sts_kbn"] = $result->order_sts_kbn;
+
+      //※汎用コードマスタ参照
+      $query_list = array();
+      array_push($query_list, "cls_cd = '001'");
+      array_push($query_list, "gen_cd = '".$result->order_sts_kbn."'");
+      $query = implode(' AND ', $query_list);
+      $gencode = MGencode::query()
+          ->where($query)
+          ->columns('*')
+          ->execute();
+      foreach ($gencode as $gencode_map) {
+        $list["order_sts_kbn_name"] = $gencode_map->gen_name;
+      }
+
+      array_push($all_list, $list);
     }
 
-    if ($order_sts_kbn_name == "2" || $order_sts_kbn_name == "5") {
-      // 貸与終了、または職種変更または異動の発注が存在する場合
-      $error_msg = $order_sts_kbn_name."の発注が入力されています。着用者編集を行う場合は";
-      $error_msg .= $order_sts_kbn_name."の発注をキャンセルしてください。";
-      $json_list["err_cd"] = "1";
-      $json_list["err_msg"] = $error_msg;
+    if (!empty($all_list)) {
+      foreach ($all_list as $all_map) {
+        if ($all_map["order_sts_kbn"] == "2" || $all_map["order_sts_kbn"] == "5") {
+          // 貸与終了、または職種変更または異動の発注が存在する場合
+          $error_msg = $all_map["order_sts_kbn_name"]."の発注が入力されています。着用者編集を行う場合は";
+          $error_msg .= $all_map["order_sts_kbn_name"]."の発注をキャンセルしてください。";
+          $json_list["err_cd"] = "1";
+          $json_list["err_msg"] = $error_msg;
+        }
+      }
     }
   }
-
   //ChromePhp::LOG($json_list);
   echo json_encode($json_list);
 });

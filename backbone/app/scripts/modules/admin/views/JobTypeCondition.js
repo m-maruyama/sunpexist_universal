@@ -8,6 +8,7 @@ define([
 		Views.JobTypeCondition = Marionette.ItemView.extend({
 			defaults: {
 				agreement_no: '',
+				job_type: '',
 			},
 			initialize: function(options) {
 			    this.options = options || {};
@@ -22,14 +23,16 @@ define([
 				'.job_type': 'job_type',
 			},
 			onShow: function() {
-				var agreement_no = this.options.agreement_no;
 				var that = this;
+				var agreement_no = this.options.agreement_no;
+				var job_type = this.options.job_type;
 
 				var modelForUpdate = this.model;
 				modelForUpdate.url = App.api.CM0010;
 				var cond = {
 					"scr": '貸与パターン',
 					"agreement_no": agreement_no,
+					"job_type": job_type
 				};
 
 				modelForUpdate.fetchMx({
