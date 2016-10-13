@@ -167,9 +167,9 @@ $app->post('/agreement_no', function () use ($app) {
 });
 
 
-/*	/*
-* 検索項目：注文用契約No	* 検索項目：企業ID 全てあり
-*/
+/*
+ * 検索項目：注文用契約No	* 検索項目：企業ID 全てあり
+ */
 $app->post('/purchase/agreement_no', function () use ($app) {
     $params = json_decode(file_get_contents('php://input'), true);
 //ChromePhp::log('新しいagreementだよ!');
@@ -352,11 +352,16 @@ $app->post('/section', function () use ($app) {
     foreach ($results as $result) {
       $list['rntl_sect_cd'] = $result->rntl_sect_cd;
       $list['rntl_sect_name'] = $result->rntl_sect_name;
-      if ($list['rntl_sect_cd'] == $params['section']) {
-        $list['selected'] = "selected";
+      if (!empty($params['section'])) {
+        if ($list['rntl_sect_cd'] == $params['section']) {
+          $list['selected'] = "selected";
+        } else {
+          $list['selected'] = "";
+        }
       } else {
         $list['selected'] = "";
       }
+
       array_push($all_list, $list);
     }
   } else {
@@ -422,8 +427,12 @@ $app->post('/job_type', function () use ($app) {
     foreach ($results as $result) {
       $list['job_type_cd'] = $result->job_type_cd;
       $list['job_type_name'] = $result->job_type_name;
-      if ($list['job_type_cd'] == $params['job_type']) {
-        $list['selected'] = "selected";
+      if (!empty($params['job_type'])) {
+        if ($list['job_type_cd'] == $params['job_type']) {
+          $list['selected'] = "selected";
+        } else {
+          $list['selected'] = "";
+        }
       } else {
         $list['selected'] = "";
       }
