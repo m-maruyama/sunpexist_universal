@@ -134,19 +134,16 @@ define([
 								document.getElementsByClassName("active")[0].getElementsByTagName("a")[0].text
 							);
 							var arr_str = cond.toString();
+							window.sessionStorage.setItem("wearer_other_cond", arr_str);
 							if (transition == "add") {
 								// 検索項目値、ページ数のセッション保持
-								window.sessionStorage.setItem("wearer_add_cond", arr_str);
 								alert("non-NGerror!! 追加貸与入力画面実装中・・・");
-/*
 								// 追加貸与の発注入力画面へ遷移
 								var $form = $('<form/>', {'action': '/universal/wearer_add_order.html', 'method': 'post'});
 								$form.appendTo(document.body);
 								$form.submit();
-*/
 							} else if (transition == "return") {
 								// 検索項目値、ページ数のセッション保持
-								window.sessionStorage.setItem("wearer_return_cond", arr_str);
 								alert("non-NGerror!! 不要品返却入力画面実装中・・・");
 /*
 								// 追加貸与の発注入力画面へ遷移

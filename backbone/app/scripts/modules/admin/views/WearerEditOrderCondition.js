@@ -141,7 +141,8 @@ define([
 						// 契約No(固定)
 						if (res_list['agreement_no_list'][0]) {
 							var option1 = document.createElement('option');
-							var text1 = document.createTextNode(res_list['agreement_no_list'][0]['rntl_cont_name']);
+							var str = res_list['agreement_no_list'][0]['rntl_cont_no'] + " " + res_list['agreement_no_list'][0]['rntl_cont_name'];
+							var text1 = document.createTextNode(str);
 							option1.setAttribute('value', res_list['agreement_no_list'][0]['rntl_cont_no']);
 							option1.appendChild(text1);
 							document.getElementById('agreement_no').appendChild(option1);
