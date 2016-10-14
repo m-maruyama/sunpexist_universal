@@ -405,13 +405,13 @@ $app->post('/wearer_edit/order_check', function ()use($app){
   $arg_str = "SELECT ";
   $arg_str .= "*";
   $arg_str .= " FROM ";
-  $arg_str .= "m_wearer_std_tran";
+  $arg_str .= "t_order_tran";
   $arg_str .= " WHERE ";
   $arg_str .= $query;
   $arg_str .= " ORDER BY upd_date DESC";
   //ChromePhp::LOG($arg_str);
-  $m_wearer_std_tran = new MWearerStdTran();
-  $results = new Resultset(NULL, $m_wearer_std_tran, $m_wearer_std_tran->getReadConnection()->query($arg_str));
+  $t_order_tran = new TOrderTran();
+  $results = new Resultset(NULL, $t_order_tran, $t_order_tran->getReadConnection()->query($arg_str));
   $result_obj = (array)$results;
   $results_cnt = $result_obj["\0*\0_count"];
   //ChromePhp::LOG($results_cnt);
@@ -427,37 +427,40 @@ $app->post('/wearer_edit/order_check', function ()use($app){
     $results = $paginator->items;
     //ChromePhp::LOG($results);
     foreach ($results as $result) {
-      // 発注状況区分コード
       $list["order_sts_kbn"] = $result->order_sts_kbn;
-
-      //※汎用コードマスタ参照
-      $query_list = array();
-      array_push($query_list, "cls_cd = '001'");
-      array_push($query_list, "gen_cd = '".$result->order_sts_kbn."'");
-      $query = implode(' AND ', $query_list);
-      $gencode = MGencode::query()
-          ->where($query)
-          ->columns('*')
-          ->execute();
-      foreach ($gencode as $gencode_map) {
-        $list["order_sts_kbn_name"] = $gencode_map->gen_name;
-      }
-
+      $list["order_reason_kbn"] = $result->order_reason_kbn;
       array_push($all_list, $list);
     }
 
+    // 着用者基本マスタトラン.発注状況区分 = 「終了」または「異動」情報がある際は発注NG
     if (!empty($all_list)) {
       foreach ($all_list as $all_map) {
-        if ($all_map["order_sts_kbn"] == "2" || $all_map["order_sts_kbn"] == "5") {
-          // 貸与終了、または職種変更または異動の発注が存在する場合
-          $error_msg = $all_map["order_sts_kbn_name"]."の発注が入力されています。着用者編集を行う場合は";
-          $error_msg .= $all_map["order_sts_kbn_name"]."の発注をキャンセルしてください。";
-          $json_list["err_cd"] = "1";
+        if (
+          $all_map["order_sts_kbn"] == "2" &&
+          ($all_map["order_reason_kbn"] == "05" || $all_map["order_reason_kbn"] == "06" || $all_map["order_reason_kbn"] == "08" || $all_map["order_reason_kbn"] == "20")
+        )
+        {
+          $json_list["err_cd"] = '1';
+          $error_msg = "貸与終了の発注が入力されています。".PHP_EOL."着用者編集を行う場合は貸与終了の発注をキャンセルしてください。";
           $json_list["err_msg"] = $error_msg;
+          echo json_encode($json_list);
+          return;
+        }
+        if (
+          $all_map["order_sts_kbn"] == "5" &&
+          ($all_map["order_reason_kbn"] == "09" || $all_map["order_reason_kbn"] == "10" || $all_map["order_reason_kbn"] == "11" || $all_map["order_reason_kbn"] == "24")
+        )
+        {
+          $json_list["err_cd"] = '1';
+          $error_msg = "職種変更または異動の発注が入力されています。".PHP_EOL."着用者編集を行う場合は職種変更または異動の発注をキャンセルしてください。";
+          $json_list["err_msg"] = $error_msg;
+          echo json_encode($json_list);
+          return;
         }
       }
     }
   }
+
   //ChromePhp::LOG($json_list);
   echo json_encode($json_list);
 });

@@ -25,7 +25,7 @@ define([
 				"agreement_no": ".agreement_no",
 				"section": ".section",
 				"job_type": ".job_type",
-				'sex_kbn': '.sex_kbn',
+				'sex_kbn': '.sex_kbn'
 			},
 			ui: {
 				'agreement_no': '#agreement_no',
@@ -44,7 +44,7 @@ define([
 				'#section': 'section',
 				'#sex_kbn': 'sex_kbn',
 				'#job_type': 'job_type',
-				'#search': 'search',
+				'#search': 'search'
 			},
 			onShow: function() {
 				var that = this;
@@ -111,7 +111,7 @@ define([
 						this.triggerMethod('showAlerts', errors);
 						return;
 					}
-					this.triggerMethod('click:search','order_req_no','asc');
+					this.triggerMethod('click:search','order_req_no', 'asc', 1);
 
 				},
 				'change @ui.agreement_no': function(){

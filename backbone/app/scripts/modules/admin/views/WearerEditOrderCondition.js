@@ -319,7 +319,7 @@ define([
 									location.href="wearer_edit.html";
 								} else {
 									$.unblockUI();
-									alert('発注取消中にエラーが発生しました');
+									alert('発注取消中にエラーが発生しました。このまま検索画面へ移行します。');
 								}
 							}
 						});
