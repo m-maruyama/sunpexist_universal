@@ -53,7 +53,6 @@ $app->post('/login', function ()use($app) {
         ->execute();
 
     if (md5($params['password']) != $account[0]->mAccount->pass_word) {
-            ChromePhp::log('login通ってる3');
 
         //if (!$app->security->checkHash($params['password'], $account[0]->mAccount->pass_word)) {
         // PWが間違っている場合

@@ -259,256 +259,272 @@ $app->post('/import_csv', function()use($app){
  */
 function data_save($line_list,&$cnt,$no_line,$auth,&$order_no_list){
 	//未送信のデータのみ入れ替え処理を行う
-	$t_i_log = new TImportLog();
+	//ChromePhp::log('未送信のデータのみ入れ替え処理を行う');
+
+	$t_i_job = new TImportJob();
+	//ChromePhp::log($t_i_job);
+
 	$result = MWearerStd::find(array('conditions' => 'cster_emply_cd = '."'".$line_list[1]."'"));
+
+	$i = 1;
+	$i = $i++;
+
 	if(count($result) <= 0){
+
 		if(in_array($line_list[0],$order_no_list)){
-			$t_i_log->werer_cd = array_search($line_list[0],$order_no_list);
+			$t_i_job->werer_cd = array_search($line_list[0],$order_no_list);
+
 		}else{
 			$day = sprintf("%02d", date("j"));
 			$num = sprintf("%04d", $cnt);
-			$t_i_log->werer_cd = $day.$num;
+			$t_i_job->werer_cd = $day.$num;
 			$cnt++;
 		}
+
 	}else{
 		//社員番号を着用者コードに
-		$t_i_log->werer_cd = $result[0]->werer_cd; //着用者コード
+		$t_i_job->werer_cd = $result[0]->werer_cd; //着用者コード
 	}
+
 	//よろず発注Noと着用者コードを詰めていく
 	if(!in_array($line_list[0],$order_no_list)){
-		$order_no_list[$t_i_log->werer_cd] = $line_list[0];
+		$order_no_list[$t_i_job->werer_cd] = $line_list[0];
 	}
-	$t_i_log->order_req_no = $line_list[0]; //よろず発注No
-	$t_i_log->order_req_line_no = $no_line; // よろず発注行No
-	$t_i_log->cster_emply_cd = $line_list[1]; //社員番号
-	$t_i_log->rntl_sect_cd = $line_list[2]; //支店コード
-	$t_i_log->rent_pattern_code = $line_list[3]; //貸与パターン
-	$t_i_log->wear_start = $line_list[4]; //着用開始日
-	$t_i_log->wear_end = $line_list[5]; //着用終了日
-	$t_i_log->order_kbn = $line_list[6]; //よろず発注区分
-	$t_i_log->item_cd = $line_list[7]; //商品コード
-	$t_i_log->size_cd = $line_list[8]; //サイズコード
-	$t_i_log->color_cd = $line_list[9]; //色コード
-	if($line_list[10]){
-		$t_i_log->quantity = $line_list[10]; //数量
-	}
-	$t_i_log->message = $line_list[11]; //伝言欄
-	$t_i_log->send_flg = 0; //送信フラグ
-	$t_i_log->user_id = $auth['user_id']; //インポートユーザーID
-	$t_i_log->import_time = date( "Y/m/d H:i:s.sss", time() ); //インポート日時
-	$t_i_log->upd_user_id = $auth['user_id']; //更新ユーザー
-	$t_i_log->upd_date = date( "Y/m/d H:i:s.sss", time() ); //更新日時
-	$t_i_log->rgst_user_id = $auth['user_id']; //登録ユーザーID
-	$t_i_log->rgst_date = date( "Y/m/d H:i:s.sss", time() ); //登録日時
+	$t_i_job->job_no = '1'; //よろず発注No
+	$t_i_job->line_no = $line_list[15]; // よろず発注行No
+	//ChromePhp::log('t_i_jobのline_no');
+	//ChromePhp::log($t_i_job->line_no);
 
-	if ($t_i_log->create() == false) {
+
+	$t_i_job->order_req_no = $line_list[0]; //よろず発注No
+	$t_i_job->order_req_line_no = $no_line; // よろず発注行No
+	$t_i_job->cster_emply_cd = $line_list[1]; //社員番号
+	$t_i_job->rntl_sect_cd = $line_list[2]; //支店コード
+	$t_i_job->rent_pattern_code = $line_list[3]; //貸与パターン
+	$t_i_job->wear_start = $line_list[4]; //着用開始日
+	$t_i_job->wear_end = $line_list[5]; //着用終了日
+	$t_i_job->order_kbn = $line_list[6]; //よろず発注区分
+	$t_i_job->item_cd = $line_list[7]; //商品コード
+	$t_i_job->size_cd = $line_list[8]; //サイズコード
+	$t_i_job->color_cd = $line_list[9]; //色コード
+	if($line_list[10]){
+		$t_i_job->quantity = $line_list[10]; //数量
+	}
+	$t_i_job->message = $line_list[11]; //伝言欄
+	$t_i_job->user_id = $auth['user_id']; //インポートユーザーID
+	$t_i_job->import_time = date( "Y/m/d H:i:s.sss", time() ); //インポート日時
+	$t_i_job->upd_user_id = $auth['user_id']; //更新ユーザー
+	$t_i_job->upd_date = date( "Y/m/d H:i:s.sss", time() ); //更新日時
+	$t_i_job->rgst_user_id = $auth['user_id']; //登録ユーザーID
+	$t_i_job->rgst_date = date( "Y/m/d H:i:s.sss", time() ); //登録日時
+
+	ChromePhp::log($t_i_job);
+
+	if ($t_i_job->create() == false) {
 		$json_list['errors'] = array('csvファイルの登録に失敗しました。');
 		echo json_encode($json_list);
 		return true;
 	}
 }
-/**
- *  ・フォーマットエラーメッセージ生成
- *
- *  関数の詳細:
- *  行数と項目名を渡して、
- *  フォーマットエラー時のメッセージを生成する。
- *
- * @param integer $line_cnt 行数
- * @param string $item_name 項目名
- * @return string エラーメッセージ
- */
-function error_msg_format($line_cnt,$item_name){
-	return $line_cnt.'行目の'.$item_name.'のフォーマットが不正です';
-}
-/**
- *  ・マスタエラーメッセージ生成
- *
- *  関数の詳細:
- *  行数と項目名を渡して、
- *  フォーマットエラー時のメッセージを生成する。
- *
- * @param integer $line_cnt 行数
- * @param string $item_name 項目名
- * @return string エラーメッセージ
- */
-function error_msg_master($line_cnt,$item_name){
-	return $line_cnt.'行目の'.$item_name.'が不正です';
-}
-/**
- * ・フォーマットチェッカー
- *
- * インポートされたCSVのデータが正しいフォーマットで作成されているかのチェックを行う
- *
- * @param array $error_list エラーメッセージを格納した配列
- * @param array $line_list １行データ
- * @param integer $line_cnt 行数
- * @return array エラーメッセージを格納した配列
- */
-function chk_format($error_list,$line_list,$line_cnt){
-	if($line_list[0]){
-		//よろず発注No
-		if(!chk_pattern($line_list[0],1)){
-			array_push($error_list ,error_msg_format($line_cnt,'よろず発注No'));
-		}
-	}
-	if($line_list[1]){
-		//社員番号
-		if(!chk_pattern($line_list[1],1)){
-			array_push($error_list ,error_msg_format($line_cnt,'社員番号'));
-		}
-	}
-	if($line_list[2]){
-		//支店コード
-		if(!chk_pattern($line_list[2],1)){
-			array_push($error_list ,error_msg_format($line_cnt,'支店コード'));
-		}
-	}
-	if($line_list[3]){
-		//貸与パターン
-		if(!chk_pattern($line_list[3],2)){
-			array_push($error_list ,error_msg_format($line_cnt,'貸与パターン'));
-		}
-	}
-	if($line_list[4]){
-		//着用開始日
-		if(!chk_pattern($line_list[4],3)){
-			array_push($error_list ,error_msg_format($line_cnt,'着用開始日'));
-		}
-	}
-	if($line_list[5]){
-		//着用終了日
-		if(!chk_pattern($line_list[5],3)){
-			array_push($error_list ,error_msg_format($line_cnt,'着用終了日'));
-		}
-	}
-	if($line_list[6]){
-		//よろず発注区分
-		if(!chk_pattern($line_list[6],4)){
-			array_push($error_list ,error_msg_format($line_cnt,'よろず発注区分'));
-		}
-	}
-	if($line_list[7]){
-		//商品コード
-		if(!chk_pattern($line_list[7],5)){
-			array_push($error_list ,error_msg_format($line_cnt,'商品コード'));
-		}
-	}
-	if($line_list[8]){
-		//サイズコード
-		if(!chk_pattern($line_list[8],6)){
-			array_push($error_list ,error_msg_format($line_cnt,'サイズコード'));
-		}
-	}
-	if($line_list[9]){
-		//色コード
-		if(!chk_pattern($line_list[9],7)){
-			array_push($error_list ,error_msg_format($line_cnt,'色コード'));
-		}
-	}
-	if($line_list[10]){
-		//数量
-		if(!chk_pattern($line_list[10],8)){
-			array_push($error_list ,error_msg_format($line_cnt,'数量'));
-		}
-	}
-	if($line_list[11]){
-		//伝言欄
-		if(!chk_pattern($line_list[11],9)){
-			array_push($error_list ,error_msg_format($line_cnt,'伝言欄'));
-		}
-	}
-	return $error_list;
-}
-/**
- * ・パターンチェッカー
- *
- * ステータスパターンに応じてフォーマットのチェックを行う
- *
- * @param string $val チェックする値
- * @param integer $pattaern チェックパターン
- * @return boolean チェック結果
- */
-function chk_pattern($val,$pattaern){
-	switch ($pattaern) {
-		case 1:
-			//パターン1(半角英数10桁)
-			// if(!mb_strlen($val) >= 1 || !mb_strlen($val) <= 10 || !preg_match("/^[a-zA-Z0-9]+$/", $val)){
-			if(!preg_match("/^[a-zA-Z0-9]{1,10}$/", $val)){
-				return false;
-			} else {
-				return true;
-			}
-			break;
-		case 2:
-			//パターン2(半角数字3桁)
-			if(!preg_match("/^[0-9]{1,3}$/", $val)){
-				return false;
-			} else {
-				return true;
-			}
-			break;
-		case 3:
-			//パターン3(半角数字8桁 年月日:yyyymmddの厳密チェックはしない)
-			if(!preg_match("/^[0-9]{1,8}$/", $val)){
-				return false;
-			} else {
-				return true;
-			}
-			break;
-		case 4:
-			//パターン4(半角数字2桁)
-			if(!preg_match("/^[1-5]{1,2}$/", $val)){
-				return false;
-			} else {
-				return true;
-			}
-			break;
-		case 5:
-			//パターン5(半角英数15桁)
-			if(!preg_match("/^[a-zA-Z0-9]{1,15}$/", $val)){
-				return false;
-			} else {
-				return true;
-			}
-			break;
-		case 6:
-			//パターン6(半角英数4桁)
-			if(!preg_match("/^[-a-zA-Z0-9]{1,4}$/", $val)){
-				return false;
-			} else {
-				return true;
-			}
-			break;
-		case 7:
-			//パターン7(半角英数2桁)
-			if(!preg_match("/^[a-zA-Z0-9]{1,2}$/", $val)){
-				return false;
-			} else {
-				return true;
-			}
-			break;
-		case 8:
-			//パターン8(半角数字9桁)
-			if(!preg_match("/^[0-9]{1,9}$/", $val)){
-				return false;
-			} else {
-				return true;
-			}
-			break;
-		case 9:
-			//パターン9(200文字)
-			if(mb_strlen($val) > 100){
-				return false;
-			} else {
-				return true;
-			}
-			break;
-		default:
 
-			break;
+/**
+ * 納品実績照会検索
+ */
+$app->post('/delivery/search', function ()use($app){
+
+	$params = json_decode(file_get_contents("php://input"), true);
+
+	$cond = $params['cond'];
+	$page = $params['page'];
+
+	$query_list = array();
+	//出荷日from
+	if(isset($cond['send_day_from'])){
+		array_push($query_list,"TO_DATE(TDeliveryGoodsState.ship_ymd,'YYYYMMDD') >= TO_DATE('".$cond['send_day_from']."','YYYY/MM/DD')");
 	}
-}
+	//出荷日to
+	if(isset($cond['send_day_to'])){
+		array_push($query_list,"TO_DATE(TDeliveryGoodsState.ship_ymd,'YYYYMMDD') <= TO_DATE('".$cond['send_day_to']."','YYYY/MM/DD')");
+	}
+	//よろず発注区分
+	$order_kbn = array();
+	if($cond['order_kbn0']){
+		array_push($order_kbn,'1');
+	}
+	if($cond['order_kbn1']){
+		array_push($order_kbn,'3');
+	}
+	if($cond['order_kbn2']){
+		array_push($order_kbn,'4');
+	}
+	if($cond['order_kbn3']){
+		array_push($order_kbn,'5');
+	}
+	$order_kbn_str = implode("','",$order_kbn);
+
+	//発注情報テーブルを検索(副問い合わせ風)
+	$order_status = '';
+	$order_sts_kbn = '';
+	$order_list = array();
+	//よろず発注No
+	if(isset($cond['no'])){
+		array_push($query_list,"TOrder.order_req_no LIKE '%".$cond['no']."%'");
+	}
+	//社員番号
+	if(isset($cond['member_no'])){
+		array_push($query_list,"TOrder.cster_emply_cd LIKE '%".$cond['member_no']."%'");
+	}
+	//拠点
+	if(isset($cond['office'])){
+		array_push($query_list,"MSection.rntl_sect_name LIKE '%".$cond['office']."%'");
+	}
+
+	//貸与パターン
+	if(isset($cond['job_type'])){
+		array_push($query_list,"MJobType.job_type_cd = '".$cond['job_type']."'");
+	}
+	//発注日from
+	if(isset($cond['order_day_from'])){
+		array_push($query_list,"TO_DATE(TOrder.order_req_ymd,'YYYYMMDD') >= TO_DATE('".$cond['order_day_from']."','YYYY/MM/DD')");
+	}
+	//発注日to
+	if(isset($cond['order_day_to'])){
+		array_push($query_list,"TO_DATE(TOrder.order_req_ymd,'YYYYMMDD') <= TO_DATE('".$cond['order_day_to']."','YYYY/MM/DD')");
+	}
+	if($order_kbn_str){
+		$order_sts_kbn = "TOrder.order_sts_kbn in ('".$order_kbn_str."')";
+		array_push($query_list,$order_sts_kbn);
+	}
+	//ステータス
+	$status = array();
+	$status_list = array();
+	if($cond['status0']){
+		array_push($status_list,"TOrder.order_status = '1'");
+	}
+	if($cond['status1']){
+		array_push($status_list,"TOrder.order_status = '2'");
+	}
+	//受領ステータス
+	$r_status = '';
+	if($cond['status2']){
+		//未受領のみ
+		array_push($status_list,"(TDeliveryGoodsState.receipt_status = '1' or TDeliveryGoodsState.receipt_status IS NULL)");
+	}
+	if($cond['status3']){
+		array_push($status_list,"TDeliveryGoodsState.receipt_status = '2'");
+	}
+	if($status_list){
+		$status_query = implode(' OR ', $status_list);
+		array_push($query_list,'('.$status_query.')');
+	}
+	//sql文字列を' AND 'で結合
+	$query = implode(' AND ', $query_list);
+	$sort_key ='';
+	$order ='';
+	//ソートキー
+	if(isset($page['sort_key'])){
+		$sort_key = $page['sort_key'];
+		if($sort_key=='order_req_no'){
+			$sort_key = 'TOrder.'.$sort_key.' '.$page['order'].', TOrder.order_req_line_no';
+		}
+		if($sort_key=='order_req_line_no'||$sort_key=='order_req_ymd'||$sort_key=='order_status'
+			||$sort_key=='order_sts_kbn'||$sort_key=='cster_emply_cd'){
+			$sort_key = 'TOrder.'.$sort_key;
+		}
+		if($sort_key=='item_cd'||$sort_key=='color_cd'||$sort_key=='size_cd'){
+			$sort_key = 'TOrderState.'.$sort_key;
+		}
+		if($sort_key=='ship_ymd'||$sort_key=='ship_qty'||$sort_key=='rec_order_no'||$sort_key=='ship_no'){
+			$sort_key = 'TDeliveryGoodsState.'.$sort_key;
+		}
+		if($sort_key=='rntl_sect_name'){
+			$sort_key = 'MSection.'.$sort_key;
+		}
+		if($sort_key=='job_type_cd'){
+			$sort_key = 'MJobType.'.$sort_key;
+		}
+		$order = $page['order'];
+	} else {
+		$sort_key = 'TOrder.order_req_no asc, TOrder.order_req_line_no';
+		$order = 'asc';
+	}
+	$builder = $app->modelsManager->createBuilder()
+		->where($query)
+		->from('TDeliveryGoodsState')
+		->columns(array('TDeliveryGoodsState.*','TOrderState.*','TOrder.*','MItem.*','MSection.*','MJobType.*'))
+		->join('TOrderState','TOrderState.t_order_state_comb_hkey = TDeliveryGoodsState.t_order_state_comb_hkey')
+		->join('TOrder','TOrder.t_order_comb_hkey = TOrderState.t_order_comb_hkey')
+		->join('MItem','MItem.m_item_comb_hkey = TOrderState.m_item_comb_hkey')
+		->join('MSection','MSection.m_section_comb_hkey = TOrderState.m_section_comb_hkey')
+		->join('MJobType','MJobType.m_job_type_comb_hkey = TOrderState.m_job_type_comb_hkey')
+		->orderBy($sort_key.' '.$order);
+	$paginator_model = new PaginatorQueryBuilder(
+		array(
+			"builder"  => $builder,
+			"limit" => $page['records_per_page'],
+			"page" => $page['page_number']
+		)
+	);
+	$paginator = $paginator_model->getPaginate();
+	$results = $paginator->items;
+	$list = array();
+	$all_list = array();
+	$json_list = array();
+	$start = ($page['page_number'] - 1) * $page['records_per_page'];
+	$end = $page['page_number'] * $page['records_per_page'];
+
+	foreach($results as $result){
+		if(!isset($result)){
+			break;
+		}
+		$list['order_req_no'] = $result->tOrder->order_req_no;
+		$list['order_req_line_no'] = $result->tOrder->order_req_line_no;
+		$list['cster_emply_cd'] = $result->tOrder->cster_emply_cd;
+		$list['rntl_sect_name'] = $result->mSection->rntl_sect_name;
+		$list['job_type_name'] = $result->mJobType->job_type_name;
+		if($result->tOrder->order_req_ymd){
+			$list['order_req_ymd'] =  date('Y/m/d',strtotime($result->tOrder->order_req_ymd));
+		}else{
+			$list['order_req_ymd'] = '-';
+		}
+		$list['order_status'] = $result->tOrder->order_status;
+		//受領ステータス
+		// if(!in_array($result->receipt_status, $receipt_status)){
+		// array_push($receipt_status,$result->receipt_status);
+		// }
+		$list['receipt_status'] = $result->tDeliveryGoodsState->receipt_status;
+		$list['order_sts_kbn'] = $result->tOrder->order_sts_kbn;
+		//納品状況情報．出荷日
+		if($result->tDeliveryGoodsState->ship_ymd){
+			$list['ship_ymd'] =  date('Y/m/d',strtotime($result->tDeliveryGoodsState->ship_ymd));
+		}else{
+			$list['ship_ymd'] = '-';
+		}
+		$list['rec_order_no'] = $result->tDeliveryGoodsState->rec_order_no;//納品状況情報．受注No.
+		$list['ship_no'] = $result->tDeliveryGoodsState->ship_no;//納品状況情報．配送伝票No.
+		$list['item_name'] = $result->mItem->item_name;//商品マスタ．商品名（漢字）
+		$list['item_cd'] = $result->tOrderState->item_cd;//発注状況情報．商品コード
+		$list['color_cd'] = $result->tOrderState->color_cd;//発注状況情報．色コード
+		$list['size_cd'] = $result->tOrderState->size_cd;//発注状況情報．サイズコード
+		$list['ship_qty'] = $result->tDeliveryGoodsState->ship_qty;//出荷数
+		//受領数
+		if($result->tDeliveryGoodsState->receipt_status == 2){
+			$list['receipt_num'] = $result->tDeliveryGoodsState->ship_qty;
+		} else {
+			$list['receipt_num'] = 0;
+		}
+		array_push($all_list,$list);
+	}
+
+	$page_list['records_per_page'] = $page['records_per_page'];
+	$page_list['page_number'] = $page['page_number'];
+	$page_list['total_records'] = $paginator->total_items;
+	$json_list['page'] = $page_list;
+	$json_list['list'] = $all_list;
+
+	echo json_encode($json_list);
+
+});
 
 /**
  * 納品実績照会検索

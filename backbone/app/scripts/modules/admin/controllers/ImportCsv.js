@@ -3,8 +3,10 @@ define([
 	'./Abstract',
 	'../views/ImportCsv',
 	'../views/ImportCsvCondition',
+	'../views/AgreementNoCondition',
 	"entities/models/AdminImportCsvListCondition",
 	"entities/collections/AdminImportCsv",
+
 	'bootstrap'
 ], function(App) {
 	'use strict';
@@ -17,17 +19,22 @@ define([
 				var importCsvModel = null;
 				var importCsvCollection = new App.Entities.Collections.AdminImportCsv();
 				var importCsvView = new App.Admin.Views.ImportCsv();
-				var csvListConditionModel = new App.Entities.Models.AdminImportCsvListCondition();
+				var importCsvListConditionModel = new App.Entities.Models.AdminImportCsvListCondition();
 				var importCsvConditionView = new App.Admin.Views.ImportCsvCondition({
 					collection: importCsvCollection,
-					model:csvListConditionModel
+					model:importCsvListConditionModel
 				});
+				var agreementNoConditionView = new App.Admin.Views.AgreementNoCondition();
+
 				var fetchList = function(){
-					importCsvConditionView.fetch(csvListConditionModel);
+					importCsvConditionView.fetch(importCsvListConditionModel);
 				};
 
 				App.main.show(importCsvView);
 				importCsvView.condition.show(importCsvConditionView);
+				importCsvConditionView.agreement_no.show(agreementNoConditionView);
+
+
 			}
 		});
 	});

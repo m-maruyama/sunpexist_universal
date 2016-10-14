@@ -1,7 +1,19 @@
 <?php
 
-class TImportLog extends \Phalcon\Mvc\Model
+class TImportJob extends \Phalcon\Mvc\Model
 {
+
+    /**
+     *
+     * @var integer
+     */
+    protected $job_no;
+
+    /**
+     *
+     * @var integer
+     */
+    protected $line_no;
 
     /**
      *
@@ -85,13 +97,13 @@ class TImportLog extends \Phalcon\Mvc\Model
      *
      * @var string
      */
-    protected $size_cd;
+    protected $color_cd;
 
     /**
      *
      * @var string
      */
-    protected $color_cd;
+    protected $size_cd;
 
     /**
      *
@@ -110,12 +122,6 @@ class TImportLog extends \Phalcon\Mvc\Model
      * @var string
      */
     protected $message;
-
-    /**
-     *
-     * @var integer
-     */
-    protected $send_flg;
 
     /**
      *
@@ -158,6 +164,34 @@ class TImportLog extends \Phalcon\Mvc\Model
      * @var string
      */
     protected $upd_user_id;
+
+
+
+    /**
+     * Method to set the value of field job_no
+     *
+     * @param string $job_no
+     * @return $this
+     */
+    public function setJobNo($job_no)
+    {
+        $this->job_no = $job_no;
+
+        return $this;
+    }
+
+    /**
+     * Method to set the value of field line_no
+     *
+     * @param string $line_no
+     * @return $this
+     */
+    public function setLineNo($line_no)
+    {
+        $this->line_no = $line_no;
+
+        return $this;
+    }
 
     /**
      * Method to set the value of field order_req_no
@@ -394,19 +428,6 @@ class TImportLog extends \Phalcon\Mvc\Model
     }
 
     /**
-     * Method to set the value of field send_flg
-     *
-     * @param integer $send_flg
-     * @return $this
-     */
-    public function setSendFlg($send_flg)
-    {
-        $this->send_flg = $send_flg;
-
-        return $this;
-    }
-
-    /**
      * Method to set the value of field emply_order_req_no
      *
      * @param string $emply_order_req_no
@@ -496,6 +517,28 @@ class TImportLog extends \Phalcon\Mvc\Model
 
         return $this;
     }
+
+
+    /**
+     * Returns the value of field setJobNo
+     *
+     * @return string
+     */
+    public function getJobNo()
+    {
+        return $this->job_no;
+    }
+
+    /**
+     * Returns the value of field setLineNo
+     *
+     * @return string
+     */
+    public function getLineNo()
+    {
+        return $this->line_no;
+    }
+
 
     /**
      * Returns the value of field order_req_no
@@ -628,16 +671,6 @@ class TImportLog extends \Phalcon\Mvc\Model
     }
 
     /**
-     * Returns the value of field size_cd
-     *
-     * @return string
-     */
-    public function getSizeCd()
-    {
-        return $this->size_cd;
-    }
-
-    /**
      * Returns the value of field color_cd
      *
      * @return string
@@ -645,6 +678,16 @@ class TImportLog extends \Phalcon\Mvc\Model
     public function getColorCd()
     {
         return $this->color_cd;
+    }
+
+    /**
+     * Returns the value of field size_cd
+     *
+     * @return string
+     */
+    public function getSizeCd()
+    {
+        return $this->size_cd;
     }
 
     /**
@@ -677,15 +720,6 @@ class TImportLog extends \Phalcon\Mvc\Model
         return $this->message;
     }
 
-    /**
-     * Returns the value of field send_flg
-     *
-     * @return integer
-     */
-    public function getSendFlg()
-    {
-        return $this->send_flg;
-    }
 
     /**
      * Returns the value of field emply_order_req_no
@@ -794,7 +828,7 @@ class TImportLog extends \Phalcon\Mvc\Model
      */
     public function getSource()
     {
-        return 't_import_log';
+        return 't_import_job';
     }
 
 }

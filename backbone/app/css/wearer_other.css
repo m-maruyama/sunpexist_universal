@@ -114,7 +114,7 @@ td{
 
 #scrollTable{
     max-height:100%;
-    overflow-y:hidden;
+    overflow-y:auto;
     width:100%;
     white-space: nowrap;
 

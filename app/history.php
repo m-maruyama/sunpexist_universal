@@ -135,16 +135,16 @@ $app->post('/history/search', function ()use($app){
 	// 理由区分
 	$reason_kbn = array();
 	if($cond['reason_kbn0']){
-		array_push($reason_kbn,'1');
+		array_push($reason_kbn,'01');
 	}
 	if($cond['reason_kbn1']){
-		array_push($reason_kbn,'2');
+		array_push($reason_kbn,'02');
 	}
 	if($cond['reason_kbn2']){
-		array_push($reason_kbn,'3');
+		array_push($reason_kbn,'03');
 	}
 	if($cond['reason_kbn3']){
-		array_push($reason_kbn,'4');
+		array_push($reason_kbn,'04');
 	}
 	if($cond['reason_kbn4']){
 		array_push($reason_kbn,'19');
@@ -171,7 +171,7 @@ $app->post('/history/search', function ()use($app){
 		array_push($reason_kbn,'23');
 	}
 	if($cond['reason_kbn12']){
-		array_push($reason_kbn,'9');
+		array_push($reason_kbn,'09');
 	}
 	if($cond['reason_kbn13']){
 		array_push($reason_kbn,'10');
@@ -180,16 +180,16 @@ $app->post('/history/search', function ()use($app){
 		array_push($reason_kbn,'11');
 	}
 	if($cond['reason_kbn15']){
-		array_push($reason_kbn,'5');
+		array_push($reason_kbn,'05');
 	}
 	if($cond['reason_kbn16']){
-		array_push($reason_kbn,'6');
+		array_push($reason_kbn,'06');
 	}
 	if($cond['reason_kbn17']){
-		array_push($reason_kbn,'7');
+		array_push($reason_kbn,'07');
 	}
 	if($cond['reason_kbn18']){
-		array_push($reason_kbn,'8');
+		array_push($reason_kbn,'08');
 	}
 	if($cond['reason_kbn19']){
 		array_push($reason_kbn,'24');
