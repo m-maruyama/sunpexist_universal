@@ -44,6 +44,7 @@ define([
 				'zip_no': '#zip_no',
 				'address': '#address',
 				"back": '.back',
+				"cancel": '.cancel',
 				"delete": '.delete',
 				"complete": '.complete',
 				"orderSend": '.orderSend',
@@ -82,7 +83,7 @@ define([
 						that.ui.address.val(res_list['address1']+res_list['address2']+res_list['address3']+res_list['address4']);
 						that.ui.member_name_kana.val(res_list['wearer_info'][0]['werer_name_kana']);
 						that.ui.order_count.val(res_list['order_count']);
-
+						that.ui.back.val(res_list['param']);
 					}
 				});
 			},
@@ -93,7 +94,7 @@ define([
 				// 「キャンセル」ボタン
 				'click @ui.cancel': function(){
 					// 検索画面以外から遷移してきた場合はホーム画面に戻る
-					if(window.sessionStorage.getItem('referrer')=='wearer_search'){
+					if(window.sessionStorage.getItem('referrer')=='wearer_search'||window.sessionStorage.getItem('referrer')=='wearer_order'){
 						location.href = './wearer_search.html';
 					}else{
 						location.href = './home.html';
@@ -101,13 +102,54 @@ define([
 					}
 				},
 				// 「戻る」ボタン
-				'click @ui.back': function(){
-					if(window.sessionStorage.getItem('referrer')=='wearer_search'){
-						location.href = './wearer_search.html';
-					}else{
-						location.href = './wearer_input.html';
-
-					}
+				'click @ui.back': function(e) {
+					e.preventDefault();
+					var we_vals = this.ui.back.val();
+					var we_val = we_vals.split(':');
+					var data = {
+						'rntl_cont_no': we_val[0],
+						'werer_cd': we_val[1],
+						'cster_emply_cd': we_val[2],
+						'sex_kbn': we_val[3],
+						'rntl_sect_cd': we_val[4],
+						'job_type': we_val[5],
+						'ship_to_cd': we_val[6],
+						'ship_to_brnch_cd': we_val[7],
+						'order_reason_kbn': we_val[8],
+						'order_tran_flg': we_val[9],
+						'wearer_tran_flg': we_val[10],
+						'appointment_ymd': we_val[11],
+						'resfl_ymd': we_val[12],
+						'werer_name': this.ui.member_name.val(),
+						'werer_name_kana': this.ui.member_name_kana.val(),
+					};
+					var modelForUpdate = this.model;
+					modelForUpdate.url = App.api.WS0011;
+					var cond = {
+						"scr": '着用開始商品詳細',
+						"data": data,
+					};
+					modelForUpdate.fetchMx({
+						data: cond,
+						success: function (res) {
+							var errors = res.get('errors');
+							if (errors) {
+								var errorMessages = errors.map(function (v) {
+									return v.error_message;
+								});
+								that.triggerMethod('showAlerts', errorMessages);
+							}
+							var res_list = res.attributes;
+							var $form = $('<form/>', {'action': '/universal/wearer_input.html', 'method': 'post'});
+							if(res_list['m_wearer_std_comb_hkey']){
+								window.sessionStorage.setItem('referrer', 'wearer_order_search');
+							}else{
+								window.sessionStorage.setItem('referrer', 'wearer_order');
+							}
+							$form.appendTo(document.body);
+							$form.submit();
+						}
+					});
 				},
 				// 「発注取消」ボタン
 				'click @ui.delete': function(){

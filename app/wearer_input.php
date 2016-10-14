@@ -178,7 +178,6 @@ $app->post('/wearer_input', function () use ($app) {
         ->where($query)
         ->columns('*')
         ->execute();
-
     foreach ($m_section_results as $m_section_result) {
         $list['rntl_sect_cd'] = $m_section_result->rntl_sect_cd;
         $list['rntl_sect_name'] = $m_section_result->rntl_sect_name;
@@ -319,12 +318,10 @@ $app->post('/wearer_input', function () use ($app) {
     $list = array();
     $all_list = array();
     $param_list = '';
+
     if ($wearer_chg_post['wearer_tran_flg'] == '1') {
         //--着用者基本マスタトラン有の場合--//
-        array_push($query_list, "m_wearer_std_tran.corporate_id = '".$auth['corporate_id']."'");
-        array_push($query_list, "m_wearer_std_tran.rntl_cont_no = '".$wearer_chg_post['rntl_cont_no']."'");
-        array_push($query_list,"m_wearer_std_tran.werer_cd = '".$wearer_chg_post['werer_cd']."'");
-        array_push($query_list,"m_wearer_std_tran.cster_emply_cd = '".$wearer_chg_post['cster_emply_cd']."'");
+        array_push($query_list,"m_wearer_std_tran.m_wearer_std_comb_hkey = '".$wearer_chg_post['m_wearer_std_comb_hkey']."'");
         $query = implode(' AND ', $query_list);
 
         $arg_str = "";
@@ -355,8 +352,6 @@ $app->post('/wearer_input', function () use ($app) {
             );
             $paginator = $paginator_model->getPaginate();
             $results = $paginator->items;
-            //ChromePhp::LOG($results);
-
             foreach ($results as $result) {
                 // 社員コード
                 $list['cster_emply_cd'] = $result->as_cster_emply_cd;
@@ -418,7 +413,6 @@ $app->post('/wearer_input', function () use ($app) {
             );
             $paginator = $paginator_model->getPaginate();
             $results = $paginator->items;
-
             foreach ($results as $result) {
                 // 社員コード
                 $list['cster_emply_cd'] = $result->as_cster_emply_cd;
@@ -445,7 +439,28 @@ $app->post('/wearer_input', function () use ($app) {
             array_push($all_list, $list);
         }
 
-        array_push($all_list,$list);
+        $json_list['wearer_info'] = $all_list;
+    }
+    if(empty($json_list['wearer_info'])){
+        if(!$wearer_chg_post['cster_emply_cd']){
+            $cster_emply_cd = '';
+        }else{
+            $cster_emply_cd = $wearer_chg_post['cster_emply_cd'];
+        }
+        // 社員コード
+        $list['cster_emply_cd'] = $cster_emply_cd;
+        // 着用者名
+        $list['werer_name'] = $wearer_chg_post['werer_name'];
+        // 着用者名（読み仮名）
+        $list['werer_name_kana'] = $wearer_chg_post['werer_name_kana'];
+        // 発令日
+        $list['appointment_ymd'] = $wearer_chg_post['appointment_ymd'];
+        if (!empty($list['appointment_ymd'])) {
+            $list['appointment_ymd'] = date('Y/m/d', strtotime($list['appointment_ymd']));
+        } else {
+            $list['appointment_ymd'] = '';
+        }
+        array_push($all_list, $list);
         $json_list['wearer_info'] = $all_list;
     }
     $param_list .= $wearer_chg_post['rntl_cont_no'].':';
@@ -587,12 +602,12 @@ $app->post('/input_insert', function () use ($app) {
     $now_date = date("Ymd");
     $start_datetime = $now_date.$start;
     $end_datetime = date("YmdHis", strtotime($start_datetime." + ".$hour." hour"));
-    if(strtotime($start_datetime) <= strtotime($now_datetime)||strtotime($now_datetime) >= strtotime($end_datetime)){
-        array_push($error_list,'現在の時間は更新出来ません。');
-        $json_list['errors'] = $error_list;
-        echo json_encode($json_list);
-        return;
-    }
+//    if(strtotime($start_datetime) <= strtotime($now_datetime)||strtotime($now_datetime) >= strtotime($end_datetime)){
+//        array_push($error_list,'現在の時間は更新出来ません。');
+//        $json_list['errors'] = $error_list;
+//        echo json_encode($json_list);
+//        return;
+//    }
 
     //契約Noのマスタチェック
     $query_list = array();
@@ -720,25 +735,39 @@ $app->post('/input_insert', function () use ($app) {
         return true;
     }
     $transaction = $app->transactionManager->get();
+
     //着用者基本マスタトラン
     $m_wearer_std_tran = new MWearerStdTran();
-    $now = date('Y/m/d H:i:s.sss');$m_wearer_std_tran->corporate_id = $auth['corporate_id']; //企業ID
-
-    $results = new Resultset(null, $m_wearer_std_tran, $m_wearer_std_tran->getReadConnection()->query("select nextval('werer_cd_seq')"));
-    $m_wearer_std_tran->werer_cd = str_pad($results[0]->nextval, 10, '0', STR_PAD_LEFT); //着用者コード
+    $m_wearer_std_tran->setTransaction($transaction);
+    $now = date('Y/m/d H:i:s.sss');
 
     //着用者基本マスタ_統合ハッシュキー(企業ID、着用者コード、レンタル契約No.、レンタル部門コード、職種コード)
-    $m_wearer_std_tran->m_wearer_std_comb_hkey = md5($auth['corporate_id'].str_pad($results[0]->nextval, 10, '0', STR_PAD_LEFT).$cond['agreement_no'].$cond['rntl_sect_cd'].$deli_job[0]);
-
-    $m_wearer_std_tran->rntl_cont_no = $cond['agreement_no']; //レンタル契約No.
-    $m_wearer_std_tran->rntl_sect_cd = $cond['rntl_sect_cd']; //レンタル部門コード
-    $m_wearer_std_tran->job_type_cd = $deli_job[0];//職種コード
+    $wearer_chg_post = $app->session->get("wearer_chg_post");
+    if(isset($wearer_chg_post['m_wearer_std_comb_hkey'])&&$wearer_chg_post['m_wearer_std_comb_hkey']){
+        //前画面からデータを引き継いでいる場合
+        $m_wearer_std_tran->werer_cd = $wearer_chg_post['werer_cd'];
+        $m_wearer_std_tran->m_wearer_std_comb_hkey = $wearer_chg_post['m_wearer_std_comb_hkey'];
+        $m_wearer_std_tran->corporate_id = $auth['corporate_id']; //企業ID
+        $m_wearer_std_tran->rntl_cont_no = $cond['agreement_no']; //レンタル契約No.
+        $m_wearer_std_tran->rntl_sect_cd = $cond['rntl_sect_cd']; //レンタル部門コード
+        $m_wearer_std_tran->job_type_cd = $deli_job[0];//職種コード
+        $create_flg = false;
+    }else{
+        $results = new Resultset(null, $m_wearer_std_tran, $m_wearer_std_tran->getReadConnection()->query("select nextval('werer_cd_seq')"));
+        $m_wearer_std_tran->werer_cd = str_pad($results[0]->nextval, 10, '0', STR_PAD_LEFT); //着用者コード
+        $m_wearer_std_tran->corporate_id = $auth['corporate_id']; //企業ID
+        $m_wearer_std_tran->m_wearer_std_comb_hkey = md5($auth['corporate_id'].str_pad($results[0]->nextval, 10, '0', STR_PAD_LEFT).$cond['agreement_no'].$cond['rntl_sect_cd'].$deli_job[0]);
+        $m_wearer_std_tran->rntl_cont_no = $cond['agreement_no']; //レンタル契約No.
+        $m_wearer_std_tran->rntl_sect_cd = $cond['rntl_sect_cd']; //レンタル部門コード
+        $m_wearer_std_tran->job_type_cd = $deli_job[0];//職種コード
+        $create_flg = true;
+    }
     $m_wearer_std_tran->cster_emply_cd = $cond['cster_emply_cd'];//客先社員コード
     $m_wearer_std_tran->werer_name = $cond['werer_name'];//着用者名（漢字）
     $m_wearer_std_tran->werer_name_kana = $cond['werer_name_kana']; //着用者名（カナ）
     $m_wearer_std_tran->sex_kbn = $cond['sex_kbn'];//性別区分
     $m_wearer_std_tran->werer_sts_kbn  = '7';//着用者状況区分
-    $m_wearer_std_tran->resfl_ymd = date("Ymd", strtotime($cond['appointment_ymd']));//発令日
+    $m_wearer_std_tran->appointment_ymd = date("Ymd", strtotime($cond['appointment_ymd']));//発令日
     $m_wearer_std_tran->resfl_ymd = date("Ymd", strtotime($cond['resfl_ymd']));//着用開始日
     $m_wearer_std_tran->ship_to_cd = $cond['ship_to_cd']; //出荷先コード
     $m_wearer_std_tran->ship_to_brnch_cd = $cond['ship_to_brnch_cd']; //出荷先支店コード
@@ -760,18 +789,126 @@ $app->post('/input_insert', function () use ($app) {
     $m_wearer_std_tran->upd_pg_id = $auth['user_id'];//更新プログラムID
     $m_wearer_std_tran->m_job_type_comb_hkey = $m_job_type[0]->m_job_type_comb_hkey;//職種マスタ_統合ハッシュキー
     $m_wearer_std_tran->m_section_comb_hkey = $m_section[0]->m_section_comb_hkey;//部門マスタ_統合ハッシュキー
-    if ($m_wearer_std_tran->create() == false) {
-        array_push($error_list, '着用者の登録に失敗しました。');
-        $json_list['errors'] = $error_list;
+    if($create_flg){
+        //新規作成
+        if ($m_wearer_std_tran->create() == false) {
+            array_push($error_list, '着用者の登録に失敗しました。');
+            $json_list['errors'] = $error_list;
+            echo json_encode($json_list);
+
+            return true;
+        } else {
+            $transaction->commit();
+        }
+
+    }else{
+        //更新
+        if ($m_wearer_std_tran->update() == false) {
+            array_push($error_list, '着用者の更新に失敗しました。');
+            $json_list['errors'] = $error_list;
+            echo json_encode($json_list);
+
+            return true;
+        } else {
+            $transaction->commit();
+        }
+
+    }
+    $app->session->remove("wearer_chg_post");
+    echo json_encode($json_list);
+    return;
+});
+
+/*
+ *  着用者取消チェック
+ */
+$app->post('/input_delete_check', function () use ($app) {
+
+    $params = json_decode(file_get_contents("php://input"), true);
+    $wearer_chg_post = $app->session->get("wearer_chg_post");
+    $json_list = array();
+    $error_list = array();
+    //--着用者基本マスタトラン削除--//
+    // 発注情報トランを参照
+    $query_list = array();
+    array_push($query_list, "t_order_tran.m_wearer_std_comb_hkey = '".$wearer_chg_post['m_wearer_std_comb_hkey']."'");
+    $query = implode(' AND ', $query_list);
+
+    $arg_str = "";
+    $arg_str = "SELECT ";
+    $arg_str .= "*";
+    $arg_str .= " FROM ";
+    $arg_str .= "t_order_tran";
+    $arg_str .= " WHERE ";
+    $arg_str .= $query;
+
+    $t_order_tran = new TOrderTran();
+    $results = new Resultset(null, $t_order_tran, $t_order_tran->getReadConnection()->query($arg_str));
+    $result_obj = (array)$results;
+    $results_cnt = $result_obj["\0*\0_count"];
+    if ($results_cnt == 0) {
+        $json_list['ok'] = 'ok';
         echo json_encode($json_list);
 
         return true;
     } else {
-        $transaction->commit();
+        array_push($error_list, '先に商品明細を削除してください。');
+        $json_list['error_msg'] = $error_list;
+        echo json_encode($json_list);
+
+        return true;
     }
-    echo json_encode($json_list);
+
 });
 
+/*
+ *  着用者取消
+ */
+$app->post('/input_delete', function () use ($app) {
+
+    $params = json_decode(file_get_contents("php://input"), true);
+    try{
+        $query_list = array();
+        $wearer_chg_post = $app->session->get("wearer_chg_post");
+        array_push($query_list, "m_wearer_std_tran.m_wearer_std_comb_hkey = '".$wearer_chg_post['m_wearer_std_comb_hkey']."'");
+        // 発注区分「着用者編集」ではない
+        array_push($query_list, "m_wearer_std_tran.order_sts_kbn <> '6'");
+        $query = implode(' AND ', $query_list);
+
+        $arg_str = "";
+        $arg_str = "DELETE FROM ";
+        $arg_str .= "m_wearer_std_tran";
+        $arg_str .= " WHERE ";
+        $arg_str .= $query;
+
+        $transaction = $app->transactionManager->get();
+        //着用者基本マスタトラン
+        $m_wearer_std_tran = new MWearerStdTran();
+        $m_wearer_std_tran->setTransaction($transaction);
+        $results = new Resultset(null, $m_wearer_std_tran, $m_wearer_std_tran->getReadConnection()->query($arg_str));
+        $result_obj = (array)$results;
+        $results_cnt = $result_obj["\0*\0_count"];
+        if ($results_cnt == 0) {
+            array_push($error_list, '着用者の取消に失敗しました。');
+            $json_list['error_msg'] = $error_list;
+            echo json_encode($json_list);
+            $transaction->rollback();
+            return;
+        }else{
+            $json_list['ok'] = 'ok';
+            echo json_encode($json_list);
+            $app->session->get("wearer_chg_post");
+            $transaction->commit();
+            return;
+        }
+    } catch (Exception $e) {
+        array_push($error_list, '着用者の取消に失敗しました。');
+        $json_list['error_msg'] = $error_list;
+        echo json_encode($json_list);
+        $transaction->rollback();
+    }
+    return;
+});
 function byte_cnt($data)
 {
     //変換前文字コード

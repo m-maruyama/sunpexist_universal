@@ -12,8 +12,10 @@ define([
 			getReq: function() {
 				var result = {
 					agreement_no : null,
+					rntl_cont_no : null,
 					cster_emply_cd : null,
 					werer_name : null,
+					werer_cd : null,
 					werer_name_kana : null,
 					sex_kbn : null,
 					resfl_ymd : null,
@@ -25,11 +27,17 @@ define([
 					zip_no : null,
 					address : null,
 				};
+				if(this.get('rntl_cont_no')) {
+					result.rntl_cont_no = this.get('rntl_cont_no');
+				}
 				if(this.get('agreement_no')) {
 					result.agreement_no = this.get('agreement_no');
 				}
 				if(this.get('cster_emply_cd')) {
 					result.cster_emply_cd = this.get('cster_emply_cd');
+				}
+				if(this.get('werer_cd')) {
+					result.werer_cd = this.get('werer_cd');
 				}
 				if(this.get('werer_name')) {
 					result.werer_name = this.get('werer_name');
@@ -98,9 +106,12 @@ define([
                 if (!this.get('sex_kbn')) {
 					errors['sex_kbn'] = '性別が未選択です。';
                 }
-                if (!this.get('resfl_ymd')) {
-					errors['resfl_ymd'] = '異動日が未入力です。';
+                if (!this.get('appointment_ymd')) {
+					errors['appointment_ymd'] = '発令日が未入力です。';
                 }
+				if (!this.get('resfl_ymd')) {
+					errors['resfl_ymd'] = '着用開始日が未入力です。';
+				}
                 if (!this.get('rntl_sect_cd')) {
 					errors['rntl_sect_cd'] = '拠点が未選択です。';
                 }
@@ -109,7 +120,7 @@ define([
                 }
 				if(Object.keys(errors).length > 0){
 					var error_array = {};
-					error_array['errors'] = errors;
+					error_array = errors;
 					return error_array;
 				}else{
 					return false;
