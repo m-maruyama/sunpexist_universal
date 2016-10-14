@@ -52,7 +52,6 @@ $app->post('/reason_kbn_order', function ()use($app){
     foreach ($results as $result) {
       $order_control_unit = $result->order_control_unit;
     }
-    //ChromePhp::LOG($order_control_unit);
 
     //--理由区分リスト取得--//
     $query_list = array();
@@ -129,12 +128,8 @@ $app->post('/section_order', function ()use($app){
 
     // アカウントセッション取得
     $auth = $app->session->get("auth");
-    //ChromePhp::LOG($auth);
-
     // 前画面セッション取得
     $wearer_chg_post = $app->session->get("wearer_chg_post");
-    //ChromePhp::LOG($wearer_chg_post);
-
     $query_list = array();
     $list = array();
     $all_list = array();
@@ -204,7 +199,6 @@ $app->post('/wearer_order_info', function ()use($app){
 
     // アカウントセッション取得
     $auth = $app->session->get("auth");
-    //ChromePhp::LOG($auth);
 
     // 前画面セッション取得
     $wearer_chg_post = $app->session->get("wearer_chg_post");
@@ -321,7 +315,6 @@ $app->post('/wearer_order_info', function ()use($app){
             );
             $paginator = $paginator_model->getPaginate();
             $results = $paginator->items;
-            //ChromePhp::LOG($results);
 
             foreach ($results as $result) {
                 // 社員コード
@@ -378,7 +371,6 @@ $app->post('/wearer_order_info', function ()use($app){
             );
             $paginator = $paginator_model->getPaginate();
             $results = $paginator->items;
-            //ChromePhp::LOG($results);
 
             foreach ($results as $result) {
                 // 社員コード
@@ -401,6 +393,43 @@ $app->post('/wearer_order_info', function ()use($app){
 
         $json_list['wearer_info'] = $all_list;
     }
+    if(empty( $json_list['wearer_info'])){
+        if(!$wearer_chg_post['cster_emply_cd']){
+            $cster_emply_cd = '';
+        }else{
+            $cster_emply_cd = $wearer_chg_post['cster_emply_cd'];
+        }
+        // 社員コード
+        $list['cster_emply_cd'] = $cster_emply_cd;
+        // 着用者名
+        $list['werer_name'] = $wearer_chg_post['werer_name'];
+        // 着用者名（読み仮名）
+        $list['werer_name_kana'] = $wearer_chg_post['werer_name_kana'];
+        // 発令日
+        $list['appointment_ymd'] = $wearer_chg_post['appointment_ymd'];
+        if (!empty($list['appointment_ymd'])) {
+            $list['appointment_ymd'] = date('Y/m/d', strtotime($list['appointment_ymd']));
+        } else {
+            $list['appointment_ymd'] = '';
+        }
+        array_push($all_list, $list);
+        $json_list['wearer_info'] = $all_list;
+    }
+    $param_list = '';
+    $param_list .= $wearer_chg_post['rntl_cont_no'].':';
+    $param_list .= $wearer_chg_post['werer_cd'].':';
+    $param_list .= $wearer_chg_post['cster_emply_cd'].':';
+    $param_list .= $wearer_chg_post['sex_kbn'].':';
+    $param_list .= $wearer_chg_post['rntl_sect_cd'].':';
+    $param_list .= $wearer_chg_post['job_type_cd'].':';
+    $param_list .= $wearer_chg_post['ship_to_cd'].':';
+    $param_list .= $wearer_chg_post['ship_to_brnch_cd'].':';
+    $param_list .= $wearer_chg_post['order_reason_kbn'].':';
+    $param_list .= $wearer_chg_post['order_tran_flg'].':';
+    $param_list .= $wearer_chg_post['wearer_tran_flg'].':';
+    $param_list .= $wearer_chg_post['appointment_ymd'].':';
+    $param_list .= $wearer_chg_post['resfl_ymd'];
+    $json_list['param'] = $param_list;
     $json_list['selected_job'] = $wearer_chg_post['job_type_cd'];
     echo json_encode($json_list);
 });
@@ -417,7 +446,6 @@ $app->post('/wearer_order_list', function ()use($app){
 
     // 前画面セッション取得
     $wearer_chg_post = $app->session->get("wearer_chg_post");
-    //ChromePhp::LOG($wearer_chg_post);
 
     // フロントパラメータ取得
     $cond = $params['data'];

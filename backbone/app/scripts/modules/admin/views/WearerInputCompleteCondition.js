@@ -17,9 +17,11 @@ define([
 
             events: {
                 'click @ui.next_button': function (e) {
+                    window.sessionStorage.setItem('referrer', 'wearer_complete');
                     location.href = './wearer_input.html';
                 },
                 'click @ui.home_button': function (e) {
+                    window.sessionStorage.setItem('referrer', 'wearer_complete');
                     location.href = './home.html';
                 },
             },

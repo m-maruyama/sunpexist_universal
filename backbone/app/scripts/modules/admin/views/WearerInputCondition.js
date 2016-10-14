@@ -26,6 +26,7 @@ define([
                 "agreement_no": ".agreement_no",
                 "cster_emply_cd": "#cster_emply_cd",
                 "cster_emply_cd_chk": "#cster_emply_cd_chk",
+                "werer_cd": "#werer_cd",
                 "werer_name": "#werer_name",
                 "werer_name_kana": "#werer_name_kana",
                 "section_modal": ".section_modal",
@@ -67,7 +68,9 @@ define([
             },
 
             fetch: function (agreement_no) {
-                if(window.sessionStorage.getItem('referrer')=='wearer_search'){
+                if(window.sessionStorage.getItem('referrer')=='wearer_search'||
+                    window.sessionStorage.getItem('referrer')=='wearer_order'||
+                    window.sessionStorage.getItem('referrer')=='wearer_order_search'){
                     var referrer = 1;
                 }else{
                     var referrer = -1;
@@ -142,53 +145,99 @@ define([
                 };
                 model.url = App.api.WI0012;
 
-                var a = model.fetchMx({
+                model.fetchMx({
                     data:cond,
                     success:function(res){
                         var res_val = res.attributes;
-                        if(res_val["error_msg"]) {
+                        if(res_val["errors"]) {
                             var wearerInputView = new App.Admin.Views.WearerInput();
-                            that.triggerMethod('error_msg', res_val["error_msg"]);
+                            that.triggerMethod('error_msg', res_val["errors"]);
                         }else{
                             alert('着用者を登録しました。');
                             location.href = './wearer_input_complete.html';
                         }
                     }
                 });
+                return errors;
+            },
+            input_item: function (rntl_cont_no) {
+                var that = this;
+                var model = this.model;
+                model.set('rntl_cont_no', rntl_cont_no);
+                model.set('cster_emply_cd_chk', this.ui.cster_emply_cd_chk.prop('checked'));
+                model.set('cster_emply_cd', this.ui.cster_emply_cd.val());
+                model.set('werer_name', this.ui.werer_name.val());
+                model.set('werer_name_kana', this.ui.werer_name_kana.val());
+                model.set('sex_kbn', this.ui.sex_kbn.val());
+                model.set('appointment_ymd', this.ui.appointment_ymd.val());
+                model.set('resfl_ymd', this.ui.resfl_ymd.val());
+                model.set('rntl_sect_cd', this.ui.section.val());
+                var job_type = this.ui.job_type.val().split(',');
+                model.set('job_type', job_type[0]);
+                if(this.ui.m_shipment_to.val()){
+                    var m_shipment_to_array = this.ui.m_shipment_to.val().split(',');
+                    model.set('ship_to_cd', m_shipment_to_array[0]);
+                    model.set('ship_to_brnch_cd', m_shipment_to_array[1]);
+                }
+                model.set('zip_no', this.ui.zip_no.val());
+                model.set('address', this.ui.address.val());
+                var errors = model.validator(model);
+                if(errors) {
+                    return errors;
+                }
+                var cond = {
+                    "scr": '商品詳細入力へ',
+                    "data": model.getReq()
+                };
+                model.url = App.api.WS0011;
 
-return errors;
+                model.fetchMx({
+                    data:cond,
+                    success:function(res){
+                        var res_val = res.attributes;
+                        window.sessionStorage.setItem('referrer', 'wearer_input');
+                        location.href = './wearer_order.html';
+                    }
+                });
+                return errors;
+            },
+            input_delete: function () {
+                var that = this;
+                var model = this.model;
+                var cond = {
+                    "scr": '着用者取消チェック',
+                };
+                model.url = App.api.WI0013;
 
+                model.fetchMx({
+                    data:cond,
+                    success:function(res){
+                        var res_val = res.attributes;
+                        if(res_val["error_msg"]) {
+                            that.triggerMethod('error_msg', res_val["error_msg"]);
+                        }else{
+                            if(confirm("着用者入力を削除しますが、よろしいですか？")){
+                                var cond = {
+                                    "scr": '着用者取消',
+                                };
+                                model.url = App.api.WI0014;
 
-
-
-
-                //
-                // var fd = new FormData();
-                // var data = $('<input type="hidden" name="data" />');
-                // fd.append('data',JSON.stringify(cond));
-                //
-                //
-                // var url = App.api.WI0012;
-                // var postData = {
-                //     type : "POST",
-                //     data : fd,
-                //     processData : false,
-                //     contentType : "application/json",
-                //     dataType: "json"
-                // };
-                // errors = $.ajax( url, postData ).done(function (res) {
-                //     if(res) {
-                //         return $.parseJSON(res);
-                //     }else{
-                //     }
-                //
-                // });
-                // if(errors){
-                //     return errors;
-                // } else {
-                //     alert('着用者を登録しました。');
-                //     location.href = './wearer_input_complete.html';
-                // }
+                                model.fetchMx({
+                                    data:cond,
+                                    success:function(res){
+                                        var res_val = res.attributes;
+                                        if(res_val["error_msg"]) {
+                                            that.triggerMethod('error_msg', res_val["error_msg"]);
+                                        }else{
+                                                window.sessionStorage.setItem('referrer', 'wearer_input');
+                                                location.href = './wearer_input.html';
+                                        }
+                                    }
+                                });
+                            };
+                        }
+                    }
+                });
             },
 
             events: {

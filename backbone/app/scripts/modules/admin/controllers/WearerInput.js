@@ -105,7 +105,6 @@ define([
 				this.listenTo(wearerInputView, 'click:input_insert', function(agreement_no){
 					var errors = wearerInputConditionView.insert_wearer(agreement_no);
 					if(errors){
-						console.log(errors);
 						wearerInputView.triggerMethod('showAlerts', errors['errors']);
 					}
 				});
@@ -117,11 +116,17 @@ define([
 				});
 
 				//商品明細入力へ
-				this.listenTo(wearerInputView, 'click:input_item', function(agreement_no){
-					var errors = wearerInputConditionView.insert_wearer(agreement_no);
+				this.listenTo(wearerInputView, 'click:input_item', function(data){
+					var errors = wearerInputConditionView.input_item(data);
 					if(errors){
-						console.log(errors);
-						wearerInputView.triggerMethod('showAlerts', errors['errors']);
+						wearerInputView.triggerMethod('showAlerts', errors);
+					}
+				});
+				//着用者取消
+				this.listenTo(wearerInputView, 'click:input_delete', function(){
+					var errors = wearerInputConditionView.input_delete();
+					if(errors){
+						wearerInputView.triggerMethod('showAlerts', errors);
 					}
 				});
 				this.listenTo(paginationView, 'selected', function(pageNumber){

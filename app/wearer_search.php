@@ -57,6 +57,7 @@ $app->post('/wearer_search/search', function ()use($app){
     $arg_str .= " * ";
     $arg_str .= " FROM ";
     $arg_str .= "(SELECT distinct on (m_wearer_std_tran.m_wearer_std_comb_hkey) ";
+    $arg_str .= "m_wearer_std_tran.m_wearer_std_comb_hkey as as_m_wearer_std_comb_hkey,";
     $arg_str .= "m_wearer_std_tran.cster_emply_cd as as_cster_emply_cd,";
     $arg_str .= "m_wearer_std_tran.order_sts_kbn as as_order_sts_kbn,";
     $arg_str .= "m_wearer_std_tran.werer_cd as as_werer_cd,";
@@ -123,7 +124,7 @@ $app->post('/wearer_search/search', function ()use($app){
             if (isset($result->as_order_reason_kbn)) {
                 $list['order_reason_kbn'] = $result->as_order_reason_kbn;
             } else {
-                $list['order_reason_kbn'] = null;
+                $list['order_reason_kbn'] = '7';
             }
             // 着用者コード
             $list['werer_cd'] = $result->as_werer_cd;
@@ -224,20 +225,20 @@ $app->post('/wearer_search/search', function ()use($app){
                 $list['wearer_input_red'] = "[済]";
                 $list['disabled'] = "disabled";
             }
-
-            //「返却伝票ダウンロード」ボタン生成
-            if (
-                ($result->as_order_sts_kbn == '1'
-                    && ($result->as_order_reason_kbn == '4' || $result->as_order_reason_kbn == '8' || $result->as_order_reason_kbn == '9' || $result->as_order_reason_kbn == '11')
-                    && $result->as_snd_kbn == '0') ||
-                ($result->as_order_sts_kbn == '2'
-                    && ($result->as_order_reason_kbn == '4' || $result->as_order_reason_kbn == '8' || $result->as_order_reason_kbn == '9' || $result->as_order_reason_kbn == '11')
-                    && $result->as_snd_kbn == '1'))
-            {
-                //「貸与開始」ボタン生成のパターンBかCの場合に表示
-                $list['return_reciept_button'] = "返却伝票ダウンロード";
-            }
-
+//
+//            //「返却伝票ダウンロード」ボタン生成
+//            if (
+//                ($result->as_order_sts_kbn == '1'
+//                    && ($result->as_order_reason_kbn == '4' || $result->as_order_reason_kbn == '8' || $result->as_order_reason_kbn == '9' || $result->as_order_reason_kbn == '11')
+//                    && $result->as_snd_kbn == '0') ||
+//                ($result->as_order_sts_kbn == '2'
+//                    && ($result->as_order_reason_kbn == '4' || $result->as_order_reason_kbn == '8' || $result->as_order_reason_kbn == '9' || $result->as_order_reason_kbn == '11')
+//                    && $result->as_snd_kbn == '1'))
+//            {
+//                //「貸与開始」ボタン生成のパターンBかCの場合に表示
+//                $list['return_reciept_button'] = "返却伝票ダウンロード";
+//            }
+//
 
             // 発注入力へのパラメータ設定
             $list['param'] = '';
@@ -251,11 +252,12 @@ $app->post('/wearer_search/search', function ()use($app){
             }else{
                 $list['ship_to_brnch_cd'] = $result->as_ship_to_brnch_cd;
             }
+            $list['m_wearer_std_comb_hkey'] = $result->as_m_wearer_std_comb_hkey;
             $list['param'] .= $list['rntl_cont_no'].':';
             $list['param'] .= $list['werer_cd'].':';
-            $list['param'] .= $list['cster_emply_cd'].':';
+            $list['param'] .= $result->as_cster_emply_cd.':';
             $list['param'] .= $list['sex_kbn'].':';
-            $list['param'] .= $list['rntl_sect_cd'].':';
+            $list['param'] .= $result->as_rntl_sect_cd.':';
             $list['param'] .= $list['job_type_cd'].':';
             $list['param'] .= $list['ship_to_cd'].':';
             $list['param'] .= $list['ship_to_brnch_cd'].':';
@@ -263,7 +265,8 @@ $app->post('/wearer_search/search', function ()use($app){
             $list['param'] .= $list['order_tran_flg'].':';
             $list['param'] .= $list['wearer_tran_flg'].':';
             $list['param'] .= $list['appointment_ymd'].':';
-            $list['param'] .= $list['resfl_ymd'];
+            $list['param'] .= $list['resfl_ymd'].':';
+            $list['param'] .= $list['m_wearer_std_comb_hkey'];
             array_push($all_list,$list);
         }
     }
@@ -285,30 +288,80 @@ $app->post('/wearer_search/search', function ()use($app){
 $app->post('/wearer_search/req_param', function ()use($app){
     $params = json_decode(file_get_contents("php://input"), true);
 
-    // アカウントセッション取得
-    $auth = $app->session->get("auth");
-
     // パラメータ取得
     $cond = $params['data'];
+    if(isset($cond["order_reason_kbn"])){
+        $order_reason_kbn = $cond["order_reason_kbn"];
+    }else{
+        $order_reason_kbn = '7';
+    }
+    if(isset($cond["order_tran_flg"])){
+        $order_tran_flg = $cond["order_tran_flg"];
+    }else{
+        $order_tran_flg = '0';
+    }
+    if(isset($cond["wearer_tran_flg"])){
+        $wearer_tran_flg = $cond["wearer_tran_flg"];
+    }else{
+        $wearer_tran_flg = '0';
+    }
+
+    if(!$cond['ship_to_cd']){
+        // アカウントセッション取得
+        $auth = $app->session->get("auth");
+        //拠点のマスタチェック
+        $query_list = array();
+        // 部門マスタ．企業ID　＝　ログインしているアカウントの企業ID　AND
+        array_push($query_list,"corporate_id = '".$auth['corporate_id']."'");
+        // 部門マスタ．レンタル契約No.　＝　画面で選択されている契約No.
+        array_push($query_list,"rntl_cont_no = '".$cond['rntl_cont_no']."'");
+        // 部門マスタ．レンタル部門コード　＝　画面で選択されている拠点
+        array_push($query_list,"rntl_sect_cd = '".$cond['rntl_sect_cd']."'");
+
+        //sql文字列を' AND 'で結合
+        $query = implode(' AND ', $query_list);
+        //--- クエリー実行・取得 ---//
+        $m_section = MSection::find(array(
+            'conditions' => $query
+        ));
+        $cond['ship_to_cd'] = $m_section[0]->std_ship_to_cd;
+        $cond['ship_to_brnch_cd'] = $m_section[0]->std_ship_to_brnch_cd;
+    }
+    if(!isset($cond["werer_name"])){
+        $cond["werer_name"] = '';
+    }
+    if(!isset($cond["werer_name_kana"])){
+        $cond["werer_name_kana"] = '';
+    }
+    $wearer_chg_post = $app->session->get("wearer_chg_post");
+    if(!isset($cond["m_wearer_std_comb_hkey"])&&!isset($wearer_chg_post['m_wearer_std_comb_hkey'])){
+        $cond["m_wearer_std_comb_hkey"] = '';
+    }elseif($wearer_chg_post['m_wearer_std_comb_hkey']){
+        $cond["m_wearer_std_comb_hkey"] = $wearer_chg_post['m_wearer_std_comb_hkey'];
+    }else{
+        $cond["m_wearer_std_comb_hkey"] = $cond["m_wearer_std_comb_hkey"];
+    }
+
     // POSTパラメータのセッション格納
     $app->session->set("wearer_chg_post", array(
         'rntl_cont_no' => $cond["rntl_cont_no"],
         'werer_cd' => $cond["werer_cd"],
+        'werer_name' => $cond["werer_name"],
+        'werer_name_kana' => $cond["werer_name_kana"],
         'cster_emply_cd' => $cond["cster_emply_cd"],
         'sex_kbn' => $cond["sex_kbn"],
         'rntl_sect_cd' => $cond["rntl_sect_cd"],
-        'job_type_cd' => $cond["job_type_cd"],
+        'job_type_cd' => $cond["job_type"],
         'ship_to_cd' => $cond["ship_to_cd"],
         'ship_to_brnch_cd' => $cond["ship_to_brnch_cd"],
-        'order_reason_kbn' => $cond["order_reason_kbn"],
-        'order_tran_flg' => $cond["order_tran_flg"],
-        'wearer_tran_flg' => $cond["wearer_tran_flg"],
+        'order_reason_kbn' => $order_reason_kbn,
+        'order_tran_flg' => $order_tran_flg,
+        'wearer_tran_flg' => $wearer_tran_flg,
         'appointment_ymd' => $cond["appointment_ymd"],
         'resfl_ymd' => $cond["resfl_ymd"],
+        'm_wearer_std_comb_hkey' => $cond["m_wearer_std_comb_hkey"],
     ));
-
     $json_list = array();
     $json_list = $cond;
-
     echo json_encode($json_list);
 });

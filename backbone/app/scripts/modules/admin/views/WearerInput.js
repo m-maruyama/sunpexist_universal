@@ -15,8 +15,8 @@ define([
 			ui: {
 				"agreement_no": ".agreement_no",
 				"cancel": "#cancel",
-                "input_cancel": "#input_cancel",
-                "input_cancel_button": "#input_cancel_button",
+                "input_delete": "#input_delete",
+                "input_delete_button": "#input_delete_button",
                 "input_insert": "#input_insert",
                 "input_insert_button": "#input_insert_button",
 				"input_item_button": "#input_item_button",
@@ -41,8 +41,9 @@ define([
 			onRender: function() {
 				var that = this;
 				// 検索画面以外から遷移してきた場合は「着用者入力取消」ボタンを隠す
-				if(window.sessionStorage.getItem('referrer')!='wearer_search'){
-                    this.ui.input_cancel_button.hide();
+				if(window.sessionStorage.getItem('referrer')!='wearer_search'&&
+					window.sessionStorage.getItem('referrer')!='wearer_order_search'){
+                    this.ui.input_delete_button.hide();
                 }
                 // 初期表示時は「着用者のみ登録して終了」「商品明細入力へ」ボタンを隠す
                 if (!$('#agreement_no').val()) {
@@ -82,49 +83,14 @@ define([
 					this.ui.agreement_no = $('#agreement_no');
                     this.triggerMethod('click:input_insert',this.ui.agreement_no.val());
                 },
-				'click @ui.input_item': function(e){
+				'click @ui.input_item': function(e) {
 					e.preventDefault();
-					var we_vals = this.ui.input_item.val();
-					var we_val = we_vals.split(':');
-					var data = {
-						'rntl_cont_no': we_val[0],
-						'werer_cd': we_val[1],
-						'cster_emply_cd': we_val[2],
-						'sex_kbn': we_val[3],
-						'rntl_sect_cd': we_val[4],
-						'job_type_cd': we_val[5],
-						'ship_to_cd': we_val[6],
-						'ship_to_brnch_cd': we_val[7],
-						'order_reason_kbn': we_val[8],
-						'order_tran_flg': we_val[9],
-						'wearer_tran_flg': we_val[10],
-						'appointment_ymd': we_val[11],
-						'resfl_ymd': we_val[12],
-					};
-
-					var modelForUpdate = this.model;
-					modelForUpdate.url = App.api.WS0011;
-					var cond = {
-						"scr": '着用開始検索',
-						"data": data,
-					};
-					modelForUpdate.fetchMx({
-						data:cond,
-						success:function(res){
-							var errors = res.get('errors');
-							if(errors) {
-								var errorMessages = errors.map(function(v){
-									return v.error_message;
-								});
-								that.triggerMethod('showAlerts', errorMessages);
-							}
-							var $form = $('<form/>', {'action': '/universal/wearer_order.html', 'method': 'post'});
-
-							window.sessionStorage.setItem('referrer', 'wearer_input');
-							$form.appendTo(document.body);
-							$form.submit();
-						}
-					});
+					this.ui.agreement_no = $('#agreement_no');
+					this.triggerMethod('click:input_item', this.ui.agreement_no.val());
+				},
+				'click @ui.input_delete': function(e) {
+					e.preventDefault();
+					this.triggerMethod('click:input_delete');
 				}
 			},
 

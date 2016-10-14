@@ -68,7 +68,7 @@ define([
 						this.triggerMethod('showAlerts', errors);
 						return;
 					}
-					this.triggerMethod('click:search','order_req_no','asc');
+					this.triggerMethod('click:search','order_req_no','asc',1);
 
 				},
 				'change @ui.agreement_no': function(){

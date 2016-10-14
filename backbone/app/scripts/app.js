@@ -180,6 +180,8 @@ define([
 			"WI0010": host + "/wearer_input",
 			"WI0011": host + "/change_section",
 			"WI0012": host + "/input_insert",
+			"WI0013": host + "/input_delete_check",
+			"WI0014": host + "/input_delete",
 			"WN0010": host + "/wearer_end/search",
 			"WN0020": host + "/wearer_end/session",
 			"WC0010": host + "/wearer_change/search",
