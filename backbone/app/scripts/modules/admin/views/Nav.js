@@ -36,6 +36,7 @@ define([
 				"wearerInputComplete": "li.nav_wearerInputComplete",
 				"wearerSearch": "li.nav_wearerSearch",
 				"wearerOrder": "li.nav_wearerOrder",
+				"wearerOrderComplete": "li.nav_wearerOrderComplete",
 				"logout": "li.logout a"
 			},
 			onShow: function() {
