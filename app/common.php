@@ -143,7 +143,7 @@ $app->post('/agreement_no', function () use ($app) {
     foreach ($results as $result) {
       $list['rntl_cont_no'] = $result->as_rntl_cont_no;
       $list['rntl_cont_name'] = $result->as_rntl_cont_name;
-      if (!empty($cond)) {
+      if (!empty($cond["agreement_no"])) {
         if ($list['rntl_cont_no'] == $cond["agreement_no"]) {
           $list['selected'] = 'selected';
         } else {
@@ -993,7 +993,7 @@ $app->post('/sex_kbn', function () use ($app) {
     $list['cls_cd'] = $m_gencode_result->cls_cd;
     $list['gen_cd'] = $m_gencode_result->gen_cd;
     $list['gen_name'] = $m_gencode_result->gen_name;
-    if (!empty($cond)) {
+    if (!empty($cond["sex_kbn"])) {
       if ($list['gen_cd'] == $cond['sex_kbn']) {
         $list['selected'] = "selected";
       } else {

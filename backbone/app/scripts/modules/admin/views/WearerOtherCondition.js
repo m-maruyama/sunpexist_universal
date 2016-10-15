@@ -50,10 +50,10 @@ define([
 				var that = this;
 
 				// 前検索結果状態を表示
-				if (window.sessionStorage.getItem("back_wearer_change_cond")) {
+				if (window.sessionStorage.getItem("back_wearer_other_cond")) {
 					this.triggerMethod('hideAlerts');
-					var cond = window.sessionStorage.getItem("back_wearer_change_cond");
-					window.sessionStorage.removeItem("back_wearer_change_cond");
+					var cond = window.sessionStorage.getItem("back_wearer_other_cond");
+					window.sessionStorage.removeItem("back_wearer_other_cond");
 					var arr_str = new Array();
 					arr_str = cond.split(",");
 					var cond_arr = {
