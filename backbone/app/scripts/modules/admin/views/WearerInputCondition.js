@@ -194,7 +194,6 @@ define([
                 model.fetchMx({
                     data:cond,
                     success:function(res){
-                        var res_val = res.attributes;
                         window.sessionStorage.setItem('referrer', 'wearer_input');
                         location.href = './wearer_order.html';
                     }
@@ -229,8 +228,8 @@ define([
                                         if(res_val["error_msg"]) {
                                             that.triggerMethod('error_msg', res_val["error_msg"]);
                                         }else{
-                                                window.sessionStorage.setItem('referrer', 'wearer_input');
-                                                location.href = './wearer_input.html';
+                                            window.sessionStorage.setItem('referrer', 'wearer_input');
+                                            location.href = './wearer_input.html';
                                         }
                                     }
                                 });

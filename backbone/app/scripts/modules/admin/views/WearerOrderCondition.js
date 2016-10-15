@@ -84,6 +84,47 @@ define([
 						that.ui.member_name_kana.val(res_list['wearer_info'][0]['werer_name_kana']);
 						that.ui.order_count.val(res_list['order_count']);
 						that.ui.back.val(res_list['param']);
+						var flg = false;
+						if(res_list['order_tran_flg']=='1'){
+							flg = true;
+						}
+						// 入力完了、発注送信ボタン表示/非表示制御
+						var data = {
+							'rntl_sect_cd': res_list['rntl_sect_cd']
+						};
+						modelForUpdate.url = App.api.CM0140;
+						var cond = {
+							"scr": '貸与開始-発注入力・送信可否チェック',
+							"log_type": '3',
+							"data": data,
+						};
+						modelForUpdate.fetchMx({
+							data:cond,
+							success:function(res) {
+								var CM0140_res = res.attributes;
+								//「入力完了」ボタン表示制御
+								if (CM0140_res['order_input_ok_flg'] == "1" && CM0140_res['order_send_ok_flg'] == "1") {
+									$('.inputButton').css('display', '');
+									$('.orderSend').css('display', '');
+								}
+								if (CM0140_res['order_input_ok_flg'] == "0" && CM0140_res['order_send_ok_flg'] == "0") {
+									$('.inputButton').css('display', 'none');
+									$('.orderSend').css('display', 'none');
+								}
+								if (CM0140_res['order_input_ok_flg'] == "0" && CM0140_res['order_send_ok_flg'] == "1") {
+									$('.inputButton').css('display', 'none');
+									$('.orderSend').css('display', '');
+								}
+								if (CM0140_res['order_input_ok_flg'] == "1" && CM0140_res['order_send_ok_flg'] == "0") {
+									$('.inputButton').css('display', '');
+									$('.orderSend').css('display', 'none');
+								}
+								if(flg){
+									that.ui.delete.css('display', '');
+								}
+							}
+						});
+
 					}
 				});
 			},
@@ -187,7 +228,6 @@ define([
 						data:cond,
 						success:function(res) {
 							var CM0140_res = res.attributes;
-							console.log(CM0140_res);
 							//「入力完了」ボタン表示制御
 							if (CM0140_res['order_input_ok_flg'] == "1" && CM0140_res['order_send_ok_flg'] == "1") {
 								$('.inputButton').css('display', '');
@@ -216,9 +256,14 @@ define([
 					e.preventDefault();
 					this.triggerMethod('click:section_btn', this.model);
 				},
-				// 「入力完了」ボタン
-				'click @ui.complete': function(){
-					alert('発注入力が完了しました。');
+				// // 「入力完了」ボタン
+				// 'click @ui.complete': function(){
+				// 	alert('発注入力が完了しました。');
+				// },
+				// 「発注送信」ボタン
+				'click @ui.inputButton': function(){
+					alert('保存だよ。');
+					location.href="wearer_order_complete.html";
 				},
 				// 「発注送信」ボタン
 				'click @ui.orderSend': function(){
@@ -238,18 +283,18 @@ define([
 			},
 			onShow: function(val, type) {
 				var that = this;
-
-				// 更新可否チェック結果処理
-				if (type == "cm0130_res") {
-					if (!val["chk_flg"]) {
-						// 更新可否フラグ=更新不可の場合はアラートメッセージ表示
-						alert(val["error_msg"]);
-					} else {
-						// 発注取消処理へ移行
-						var type = "WC0020_req";
-						var res_val = "";
-					}
-				}
+                //
+				// // 更新可否チェック結果処理
+				// if (type == "cm0130_res") {
+				// 	if (!val["chk_flg"]) {
+				// 		// 更新可否フラグ=更新不可の場合はアラートメッセージ表示
+				// 		alert(val["error_msg"]);
+				// 	} else {
+				// 		// 発注取消処理へ移行
+				// 		var type = "WC0020_req";
+				// 		var res_val = "";
+				// 	}
+				// }
 				// 発注取消処理
 				if (type == "WC0020_req") {
 					var msg = "削除しますが、よろしいですか？";
