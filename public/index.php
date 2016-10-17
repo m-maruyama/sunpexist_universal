@@ -59,6 +59,7 @@ try {
     include __DIR__.'/../app/wearer_change_order.php';
     include __DIR__.'/../app/wearer_other.php';
     include __DIR__.'/../app/wearer_add_order.php';
+    include __DIR__.'/../app/wearer_return_order.php';
     include __DIR__.'/../app/wearer_search.php';
     include __DIR__.'/../app/wearer_order.php';
     include __DIR__.'/../app/importCsv.php';

@@ -8,11 +8,11 @@ use Phalcon\Paginator\Adapter\QueryBuilder as PaginatorQueryBuilder;
 
 
 /**
- * 発注入力（追加貸与）
+ * 発注入力（不要品返却）
  * 入力項目：初期値情報、前画面セッション取得
  *
  */
-$app->post('/wearer_add_info', function ()use($app){
+$app->post('/wearer_return_info', function ()use($app){
   $params = json_decode(file_get_contents("php://input"), true);
 
   // アカウントセッション取得
@@ -59,7 +59,7 @@ $app->post('/wearer_add_info', function ()use($app){
   $results_cnt = $result_obj["\0*\0_count"];
   //ChromePhp::LOG($results_cnt);
   if (!empty($results_cnt)) {
-    // 着用者基本マスタトラン（追加貸与）有り
+    // 着用者基本マスタトラン（不要品返却）有り
     $json_list['tran_flg'] = "1";
 
     $paginator_model = new PaginatorModel(
@@ -388,10 +388,10 @@ $app->post('/wearer_add_info', function ()use($app){
 });
 
 /**
- * 発注入力（追加貸与）
+ * 発注入力（不要品返却）
  * 入力項目：発注商品一覧
  */
- $app->post('/wearer_add_list', function ()use($app){
+ $app->post('/wearer_return_list', function ()use($app){
    $params = json_decode(file_get_contents("php://input"), true);
 
    // アカウントセッション取得
@@ -409,7 +409,7 @@ $app->post('/wearer_add_info', function ()use($app){
 
    $json_list = array();
 
-   // 発注情報トラン(追加貸与発注履歴)確認
+   // 発注情報トラン(不要品返却発注履歴)確認
    $all_list = array();
    $list = array();
    $query_list = array();
@@ -671,7 +671,7 @@ $app->post('/wearer_add_info', function ()use($app){
      $arg_str .= $query;
      $arg_str .= ") as distinct_table";
      $arg_str .= " ORDER BY as_item_cd ASC, as_color_cd ASC";
-     //ChromePhp::LOG($arg_str);
+     ChromePhp::LOG($arg_str);
      $m_job_type = new MJobType();
      $results = new Resultset(null, $m_job_type, $m_job_type->getReadConnection()->query($arg_str));
      $result_obj = (array)$results;
@@ -831,10 +831,10 @@ $app->post('/wearer_add_info', function ()use($app){
 });
 
 /**
- * 発注入力（追加貸与）
+ * 発注入力（不要品返却）
  * 発注取消処理
  */
-$app->post('/wearer_add_delete', function ()use($app){
+$app->post('/wearer_return_delete', function ()use($app){
   $params = json_decode(file_get_contents("php://input"), true);
 
   // アカウントセッション取得
@@ -945,7 +945,7 @@ $app->post('/wearer_add_delete', function ()use($app){
     array_push($query_list, "t_order_tran.order_req_no = '".$cond['order_req_no']."'");
     // 発注区分「貸与」
     array_push($query_list, "t_order_tran.order_sts_kbn = '1'");
-    // 理由区分「追加貸与」系ステータス
+    // 理由区分「不要品返却」系ステータス
     array_push($query_list, "t_order_tran.order_reason_kbn = '03'");
     $query = implode(' AND ', $query_list);
 
@@ -984,10 +984,10 @@ $app->post('/wearer_add_delete', function ()use($app){
 });
 
 /**
- * 発注入力（追加貸与）
+ * 発注入力（不要品返却）
  * 入力完了処理
  */
-$app->post('/wearer_add_complete', function ()use($app){
+$app->post('/wearer_return_complete', function ()use($app){
    $params = json_decode(file_get_contents("php://input"), true);
 
    // アカウントセッション取得
@@ -1543,7 +1543,7 @@ ChromePhp::LOG($item_input);
        $cnt = 1;
        // 発注商品一覧内容登録
        if (!empty($item_list)) {
-         // 現在の追加貸与発注の情報をクリーン
+         // 現在の不要品返却発注の情報をクリーン
          if ($wearer_other_post['order_tran_flg'] == '1') {
            //ChromePhp::LOG("発注情報トランクリーン");
            $query_list = array();
@@ -1552,7 +1552,7 @@ ChromePhp::LOG($item_input);
            array_push($query_list, "werer_cd = '".$wearer_other_post['werer_cd']."'");
            // 発注状況区分「貸与」
            array_push($query_list, "order_sts_kbn = '1'");
-           // 理由区分「追加貸与」
+           // 理由区分「不要品返却」
            array_push($query_list, "order_reason_kbn = '03'");
            // 着用者状況区分「その他（着用開始）」
            array_push($query_list, "werer_sts_kbn = '7'");
@@ -1876,10 +1876,10 @@ ChromePhp::LOG($item_input);
 });
 
 /**
- * 発注入力（追加貸与）
+ * 発注入力（不要品返却）
  * 発注送信処理
  */
-$app->post('/wearer_add_send', function ()use($app){
+$app->post('/wearer_return_send', function ()use($app){
   $params = json_decode(file_get_contents("php://input"), true);
 
   // アカウントセッション取得
@@ -2435,7 +2435,7 @@ ChromePhp::LOG($item_input);
       $cnt = 1;
       // 発注商品一覧内容登録
       if (!empty($item_list)) {
-        // 現在の追加貸与発注の情報をクリーン
+        // 現在の不要品返却発注の情報をクリーン
         if ($wearer_other_post['order_tran_flg'] == '1') {
           //ChromePhp::LOG("発注情報トランクリーン");
           $query_list = array();
@@ -2444,7 +2444,7 @@ ChromePhp::LOG($item_input);
           array_push($query_list, "werer_cd = '".$wearer_other_post['werer_cd']."'");
           // 発注状況区分「貸与」
           array_push($query_list, "order_sts_kbn = '1'");
-          // 理由区分「追加貸与」
+          // 理由区分「不要品返却」
           array_push($query_list, "order_reason_kbn = '03'");
           // 着用者状況区分「その他（着用開始）」
           array_push($query_list, "werer_sts_kbn = '7'");

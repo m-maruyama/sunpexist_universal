@@ -446,7 +446,7 @@ $app->post('/wearer_other/search', function ()use($app){
               $order_sts_kbn = $t_order_tran_result->order_sts_kbn;
               $order_reason_kbn = $t_order_tran_result->order_reason_kbn;
               $snd_kbn = $t_order_tran_result->snd_kbn;
-              if ($snd_kbn == '1' || $snd_kbn == '9') {
+              if ($snd_kbn == '9') {
                 $patarn_flg = false;
                 break;
               }
@@ -526,7 +526,7 @@ $app->post('/wearer_other/search', function ()use($app){
               $order_sts_kbn = $t_order_tran_result->order_sts_kbn;
               $order_reason_kbn = $t_order_tran_result->order_reason_kbn;
               $snd_kbn = $t_order_tran_result->snd_kbn;
-              if ($snd_kbn == '1' || $snd_kbn == '9') {
+              if ($snd_kbn == '9') {
                 $patarn_flg = false;
                 break;
               }

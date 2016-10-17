@@ -142,13 +142,10 @@ define([
 								$form.appendTo(document.body);
 								$form.submit();
 							} else if (transition == "return") {
-								alert("non-NGerror!! 不要品返却入力画面実装中・・・");
-/*
 								// 追加貸与の発注入力画面へ遷移
 								var $form = $('<form/>', {'action': '/universal/wearer_return_order.html', 'method': 'post'});
 								$form.appendTo(document.body);
 								$form.submit();
-*/
 							}
 						}
 					});

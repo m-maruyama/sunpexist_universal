@@ -33,6 +33,7 @@ define([
 				"wearerChangeOrder": "li.nav_wearerChangeOrder",
 				"wearerOther": "li.nav_wearerOther",
 				"wearerAddOrder": "li.nav_wearerAddOrder",
+				"wearerReturnOrder": "li.nav_wearerReturnOrder",
 				"wearerInputComplete": "li.nav_wearerInputComplete",
 				"wearerSearch": "li.nav_wearerSearch",
 				"wearerOrder": "li.nav_wearerOrder",
