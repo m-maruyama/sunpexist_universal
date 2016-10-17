@@ -32,8 +32,6 @@ define([
 				'member_no': '#member_no',
 				'member_name': '#member_name',
 				'member_name_kana': '#member_name_kana',
-				'appointment_ymd': '#appointment_ymd',
-				'resfl_ymd': '#resfl_ymd',
 				'section': '#section',
 				'job_type': '#job_type',
 				'shipment': '#shipment',
@@ -55,8 +53,6 @@ define([
 				'#member_no': 'member_no',
 				'#member_name': 'member_name',
 				'#member_name_kana': 'member_name_kana',
-				'#appointment_ymd': 'appointment_ymd',
-				'#resfl_ymd': 'resfl_ymd',
 				'#section': 'section',
 				'#job_type': 'job_type',
 				'#shipment': 'shipment',
@@ -131,12 +127,11 @@ define([
 								}
 							}
 						});
-						// 社員コード、着用者名、読みかな、異動日
+						// 社員コード、着用者名、読みかな
 						if (res_list['wearer_info'][0]) {
 							that.ui.member_no.val(res_list['wearer_info'][0]['cster_emply_cd']);
 							that.ui.member_name.val(res_list['wearer_info'][0]['werer_name']);
 							that.ui.member_name_kana.val(res_list['wearer_info'][0]['werer_name_kana']);
-							that.ui.resfl_ymd.val(res_list['wearer_info'][0]['resfl_ymd']);
 						}
 						// 性別
 						if (res_list['sex_kbn_list']) {
@@ -345,7 +340,6 @@ define([
 					var member_name = $("input[name='member_name']").val();
 					var member_name_kana = $("input[name='member_name_kana']").val();
 					var sex_kbn = $("select[name='sex_kbn']").val();
-					var resfl_ymd = $("input[name='resfl_ymd']").val();
 					var section = $("select[name='section']").val();
 					var job_type = $("select[name='job_type']").val();
 					var shipment = $("input[name='shipment']").val();
@@ -426,7 +420,6 @@ define([
 					var member_name = $("input[name='member_name']").val();
 					var member_name_kana = $("input[name='member_name_kana']").val();
 					var sex_kbn = $("select[name='sex_kbn']").val();
-					var resfl_ymd = $("input[name='resfl_ymd']").val();
 					var section = $("select[name='section']").val();
 					var job_type = $("select[name='job_type']").val();
 					var shipment = $("input[name='shipment']").val();

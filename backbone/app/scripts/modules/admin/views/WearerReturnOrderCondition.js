@@ -32,8 +32,6 @@ define([
 				'member_no': '#member_no',
 				'member_name': '#member_name',
 				'member_name_kana': '#member_name_kana',
-				'appointment_ymd': '#appointment_ymd',
-				'resfl_ymd': '#resfl_ymd',
 				'section': '#section',
 				'job_type': '#job_type',
 				'shipment': '#shipment',
@@ -55,8 +53,6 @@ define([
 				'#member_no': 'member_no',
 				'#member_name': 'member_name',
 				'#member_name_kana': 'member_name_kana',
-				'#appointment_ymd': 'appointment_ymd',
-				'#resfl_ymd': 'resfl_ymd',
 				'#section': 'section',
 				'#job_type': 'job_type',
 				'#shipment': 'shipment',
@@ -74,9 +70,9 @@ define([
 
 				// 着用者情報
 				var modelForUpdate = this.model;
-				modelForUpdate.url = App.api.WR0014;
+				modelForUpdate.url = App.api.WR0019;
 				var cond = {
-					"scr": '追加貸与-着用者情報',
+					"scr": '不要品返却-着用者情報',
 				};
 				modelForUpdate.fetchMx({
 					data:cond,
@@ -97,12 +93,13 @@ define([
 							+ res_list['rntl_sect_cd'] + ":"
 							+ res_list['job_type_cd'] + ":"
 							+ res_list['werer_cd'] + ":"
-							+ res_list['order_req_no']
+							+ res_list['order_req_no'] + ":"
+							+ res_list['return_req_no']
 						;
 						that.ui.delete.val(delete_param);
 
-						// 着用者基本マスタトラン(追加貸与)がある場合は発注取消ボタンを表示
-						if (res_list['order_tran_flg'] == '1') {
+						// トラン情報に不要品返却がある場合は発注取消ボタンを表示
+						if (res_list['order_tran_flg'] == '1' && res_list['return_tran_flg'] == '1') {
 							$('.delete').css('display', '');
 						}
 
@@ -113,7 +110,7 @@ define([
 						var modelForUpdate2 = that.model;
 						modelForUpdate2.url = App.api.CM0140;
 						var cond = {
-							"scr": '追加貸与-発注入力・送信可否チェック',
+							"scr": '不要品返却-発注入力・送信可否チェック',
 							"log_type": '3',
 							"data": data,
 						};
@@ -131,12 +128,11 @@ define([
 								}
 							}
 						});
-						// 社員コード、着用者名、読みかな、異動日
+						// 社員コード、着用者名、読みかな
 						if (res_list['wearer_info'][0]) {
 							that.ui.member_no.val(res_list['wearer_info'][0]['cster_emply_cd']);
 							that.ui.member_name.val(res_list['wearer_info'][0]['werer_name']);
 							that.ui.member_name_kana.val(res_list['wearer_info'][0]['werer_name_kana']);
-							that.ui.resfl_ymd.val(res_list['wearer_info'][0]['resfl_ymd']);
 						}
 						// 性別
 						if (res_list['sex_kbn_list']) {
@@ -216,7 +212,7 @@ define([
 					var modelForUpdate = this.model;
 					modelForUpdate.url = App.api.CM0130;
 					var cond = {
-						"scr": '追加貸与-発注取消-更新可否チェック',
+						"scr": '不要品返却-発注取消-更新可否チェック',
 						"log_type": '3',
 						"data": data,
 					};
@@ -238,7 +234,7 @@ define([
 					var modelForUpdate = this.model;
 					modelForUpdate.url = App.api.CM0130;
 					var cond = {
-						"scr": '追加貸与-入力完了-更新可否チェック',
+						"scr": '不要品返却-入力完了-更新可否チェック',
 						"log_type": '1',
 					};
 					modelForUpdate.fetchMx({
@@ -259,7 +255,7 @@ define([
 					var modelForUpdate = this.model;
 					modelForUpdate.url = App.api.CM0130;
 					var cond = {
-						"scr": '追加貸与-発注送信-更新可否チェック',
+						"scr": '不要品返却-発注送信-更新可否チェック',
 						"log_type": '1',
 					};
 					modelForUpdate.fetchMx({
@@ -307,7 +303,7 @@ define([
 						var modelForUpdate = this.model;
 						modelForUpdate.url = App.api.WR0016;
 						var cond = {
-							"scr": '追加貸与-発注取消',
+							"scr": '不要品返却-発注取消',
 							"data": data,
 						};
 						modelForUpdate.fetchMx({
@@ -345,7 +341,6 @@ define([
 					var member_name = $("input[name='member_name']").val();
 					var member_name_kana = $("input[name='member_name_kana']").val();
 					var sex_kbn = $("select[name='sex_kbn']").val();
-					var resfl_ymd = $("input[name='resfl_ymd']").val();
 					var section = $("select[name='section']").val();
 					var job_type = $("select[name='job_type']").val();
 					var shipment = $("input[name='shipment']").val();
@@ -386,7 +381,7 @@ define([
 					var modelForUpdate = this.model;
 					modelForUpdate.url = App.api.WR0017;
 					var cond = {
-						"scr": '追加貸与-入力完了-check',
+						"scr": '不要品返却-入力完了-check',
 						"mode": "check",
 						"wearer_data": wearer_data,
 						"item": item
@@ -399,7 +394,7 @@ define([
 								var msg = "入力を完了しますが、よろしいですか？";
 								if (window.confirm(msg)) {
 									var data = {
-										"scr": '追加貸与-入力完了-update',
+										"scr": '不要品返却-入力完了-update',
 										"mode": "update",
 										"wearer_data": wearer_data,
 										"item": item
@@ -426,7 +421,6 @@ define([
 					var member_name = $("input[name='member_name']").val();
 					var member_name_kana = $("input[name='member_name_kana']").val();
 					var sex_kbn = $("select[name='sex_kbn']").val();
-					var resfl_ymd = $("input[name='resfl_ymd']").val();
 					var section = $("select[name='section']").val();
 					var job_type = $("select[name='job_type']").val();
 					var shipment = $("input[name='shipment']").val();
@@ -466,7 +460,7 @@ define([
 					var modelForUpdate = this.model;
 					modelForUpdate.url = App.api.WR0018;
 					var cond = {
-						"scr": '追加貸与-発注送信',
+						"scr": '不要品返却-発注送信',
 						"mode": "check",
 						"wearer_data": wearer_data,
 						"item": item
@@ -479,7 +473,7 @@ define([
 								var msg = "発注送信を行いますが、よろしいですか？";
 								if (window.confirm(msg)) {
 									var data = {
-										"scr": '追加貸与-発注送信-update',
+										"scr": '不要品返却-発注送信-update',
 										"mode": "update",
 										"wearer_data": wearer_data,
 										"item": item

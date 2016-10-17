@@ -79,13 +79,6 @@ $app->post('/wearer_add_info', function ()use($app){
       $list['werer_name'] = $result->as_werer_name;
       // 着用者名（読み仮名）
       $list['werer_name_kana'] = $result->as_werer_name_kana;
-      // 異動日
-      $list['resfl_ymd'] = $result->as_resfl_ymd;
-      if (!empty($list['resfl_ymd'])) {
-        $list['resfl_ymd'] = date('Y/m/d', strtotime($list['resfl_ymd']));
-      } else {
-        $list['resfl_ymd'] = '';
-      }
     }
 
     array_push($all_list, $list);
@@ -141,20 +134,6 @@ $app->post('/wearer_add_info', function ()use($app){
         $list['werer_name'] = $result->as_werer_name;
         // 着用者名（読み仮名）
         $list['werer_name_kana'] = $result->as_werer_name_kana;
-        // 異動日
-        $list['resfl_ymd'] = $result->as_resfl_ymd;
-        if (!empty($list['resfl_ymd'])) {
-          $list['resfl_ymd'] = date('Y/m/d', strtotime($list['resfl_ymd']));
-        } else {
-          $list['resfl_ymd'] = '';
-        }
-        // 発令日
-        $list['appointment_ymd'] = $result->as_appointment_ymd;
-        if (!empty($list['appointment_ymd'])) {
-          $list['appointment_ymd'] = date('Y/m/d', strtotime($list['appointment_ymd']));
-        } else {
-          $list['appointment_ymd'] = '';
-        }
       }
 
       array_push($all_list, $list);
@@ -368,6 +347,57 @@ $app->post('/wearer_add_info', function ()use($app){
   $json_list['shipment_list'] = $all_list;
   //ChromePhp::LOG($json_list['shipment_list']);
 
+  //--発注情報トラン内、「追加貸与」情報の有無確認--//
+  //※発注情報トラン参照
+  $query_list = array();
+  array_push($query_list, "t_order_tran.corporate_id = '".$auth['corporate_id']."'");
+  array_push($query_list, "t_order_tran.rntl_cont_no = '".$wearer_other_post['rntl_cont_no']."'");
+  array_push($query_list, "t_order_tran.werer_cd = '".$wearer_other_post['werer_cd']."'");
+  array_push($query_list, "t_order_tran.rntl_sect_cd = '".$wearer_other_post['rntl_sect_cd']."'");
+  array_push($query_list, "t_order_tran.job_type_cd = '".$wearer_other_post['job_type_cd']."'");
+  // 発注状況区分(貸与)
+  array_push($query_list,"t_order_tran.order_sts_kbn = '1'");
+  // 理由区分(不要品返却)
+  array_push($query_list,"t_order_tran.order_reason_kbn = '03'");
+  $query = implode(' AND ', $query_list);
+
+  $arg_str = "";
+  $arg_str = "SELECT ";
+  $arg_str .= "order_req_no";
+  $arg_str .= " FROM ";
+  $arg_str .= "t_order_tran";
+  $arg_str .= " WHERE ";
+  $arg_str .= $query;
+  $arg_str .= " ORDER BY t_order_tran.upd_date DESC";
+  //ChromePhp::LOG($arg_str);
+  $t_order_tran = new TOrderTran();
+  $results = new Resultset(NULL, $t_order_tran, $t_order_tran->getReadConnection()->query($arg_str));
+  $result_obj = (array)$results;
+  $results_cnt = $result_obj["\0*\0_count"];
+  if (!empty($results_cnt)) {
+    $paginator_model = new PaginatorModel(
+      array(
+        "data"  => $results,
+        "limit" => 1,
+        "page" => 1
+      )
+    );
+    $paginator = $paginator_model->getPaginate();
+    $results = $paginator->items;
+
+    foreach ($results as $result) {
+      // 発注情報トラン.発注No
+      $json_list['order_req_no'] = $result->order_req_no;
+      // 発注情報トランフラグ
+      $json_list['order_tran_flg'] = "1";
+    }
+  } else {
+    // 発注情報トラン.発注No
+    $json_list['order_req_no'] = "";
+    // 発注情報トランフラグ
+    $json_list['order_tran_flg'] = "0";
+  }
+
   //--前画面セッション情報--//
   // レンタル契約No
   $json_list['rntl_cont_no'] = $wearer_other_post["rntl_cont_no"];
@@ -379,10 +409,6 @@ $app->post('/wearer_add_info', function ()use($app){
   $json_list['werer_cd'] = $wearer_other_post["werer_cd"];
   // 着用者基本マスタトランフラグ
   $json_list['wearer_tran_flg'] = $wearer_other_post["wearer_tran_flg"];
-  // 発注情報トランフラグ
-  $json_list['order_tran_flg'] = $wearer_other_post["order_tran_flg"];
-  // 発注No
-  $json_list['order_req_no'] = $wearer_other_post["order_req_no"];
 
   echo json_encode($json_list);
 });
@@ -1271,13 +1297,6 @@ ChromePhp::LOG($item_input);
          array_push($up_query_list, "sex_kbn = '".$wearer_data_input['sex_kbn']."'");
          // 着用者状況区分(その他（着用開始）)
          array_push($up_query_list, "werer_sts_kbn = '7'");
-         // 異動日
-         if (!empty($wearer_data_input['resfl_ymd'])) {
-           $resfl_ymd = date('Ymd', strtotime($wearer_data_input['resfl_ymd']));
-           array_push($up_query_list, "resfl_ymd = '".$resfl_ymd."'");
-         } else {
-           array_push($up_query_list, "resfl_ymd = NULL");
-         }
          // 出荷先、出荷先支店コード
          if (!empty($wearer_data_input['shipment'])) {
            $shipment = explode(':', $wearer_data_input['shipment']);
@@ -1422,15 +1441,6 @@ ChromePhp::LOG($item_input);
          // 着用者状況区分(その他（着用開始）)
          array_push($calum_list, "werer_sts_kbn");
          array_push($values_list, "'7'");
-         // 異動日
-         if (!empty($wearer_data_input['resfl_ymd'])) {
-           $resfl_ymd = date('Ymd', strtotime($wearer_data_input['resfl_ymd']));
-           array_push($calum_list, "resfl_ymd");
-           array_push($values_list, "'".$resfl_ymd."'");
-         } else {
-           array_push($calum_list, "resfl_ymd");
-           array_push($values_list, "NULL");
-         }
          // 出荷先、出荷先支店コード
          if (!empty($wearer_data_input['shipment'])) {
            $shipment = explode(':', $wearer_data_input['shipment']);
@@ -1753,15 +1763,6 @@ ChromePhp::LOG($item_input);
            // 着用者状況区分(その他（着用開始）)
            array_push($calum_list, "werer_sts_kbn");
            array_push($values_list, "'7'");
-           // 異動日
-           if (!empty($wearer_data_input['resfl_ymd'])) {
-             $resfl_ymd = date('Ymd', strtotime($wearer_data_input['resfl_ymd']));
-             array_push($calum_list, "resfl_ymd");
-             array_push($values_list, "'".$resfl_ymd."'");
-           } else {
-             array_push($calum_list, "resfl_ymd");
-             array_push($values_list, "NULL");
-           }
            // 送信区分(未送信)
            array_push($calum_list, "snd_kbn");
            array_push($values_list, "'0'");
@@ -2163,13 +2164,6 @@ ChromePhp::LOG($item_input);
         array_push($up_query_list, "sex_kbn = '".$wearer_data_input['sex_kbn']."'");
         // 着用者状況区分(その他（着用開始）)
         array_push($up_query_list, "werer_sts_kbn = '7'");
-        // 異動日
-        if (!empty($wearer_data_input['resfl_ymd'])) {
-          $resfl_ymd = date('Ymd', strtotime($wearer_data_input['resfl_ymd']));
-          array_push($up_query_list, "resfl_ymd = '".$resfl_ymd."'");
-        } else {
-          array_push($up_query_list, "resfl_ymd = NULL");
-        }
         // 出荷先、出荷先支店コード
         if (!empty($wearer_data_input['shipment'])) {
           $shipment = explode(':', $wearer_data_input['shipment']);
@@ -2314,15 +2308,6 @@ ChromePhp::LOG($item_input);
         // 着用者状況区分(その他（着用開始）)
         array_push($calum_list, "werer_sts_kbn");
         array_push($values_list, "'7'");
-        // 異動日
-        if (!empty($wearer_data_input['resfl_ymd'])) {
-          $resfl_ymd = date('Ymd', strtotime($wearer_data_input['resfl_ymd']));
-          array_push($calum_list, "resfl_ymd");
-          array_push($values_list, "'".$resfl_ymd."'");
-        } else {
-          array_push($calum_list, "resfl_ymd");
-          array_push($values_list, "NULL");
-        }
         // 出荷先、出荷先支店コード
         if (!empty($wearer_data_input['shipment'])) {
           $shipment = explode(':', $wearer_data_input['shipment']);
@@ -2645,15 +2630,6 @@ ChromePhp::LOG($item_input);
           // 着用者状況区分(その他（着用開始）)
           array_push($calum_list, "werer_sts_kbn");
           array_push($values_list, "'7'");
-          // 異動日
-          if (!empty($wearer_data_input['resfl_ymd'])) {
-            $resfl_ymd = date('Ymd', strtotime($wearer_data_input['resfl_ymd']));
-            array_push($calum_list, "resfl_ymd");
-            array_push($values_list, "'".$resfl_ymd."'");
-          } else {
-            array_push($calum_list, "resfl_ymd");
-            array_push($values_list, "NULL");
-          }
           // 送信区分(送信済み)
           array_push($calum_list, "snd_kbn");
           array_push($values_list, "'1'");

@@ -40,9 +40,9 @@ define([
 
 				// 発注商品一覧、
 				var modelForUpdate = this.model;
-				modelForUpdate.url = App.api.WR0015;
+				modelForUpdate.url = App.api.WR0020;
 				var cond = {
-					"scr": '追加貸与-発注商品一覧',
+					"scr": '不要品返却-発注商品一覧',
 					"data": data,
 				};
 				modelForUpdate.fetchMx({
