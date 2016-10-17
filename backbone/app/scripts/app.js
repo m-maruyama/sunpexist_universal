@@ -11,6 +11,7 @@ define([
 			'AdminHome': 'modules/admin/Home',
 			'AdminLogin': 'modules/admin/Login',
 			'AdminImportCsv': 'modules/admin/ImportCsv',
+			'AdminInquiry': 'modules/admin/Inquiry',
 			'AdminHistory': 'modules/admin/History',
 			'AdminDelivery': 'modules/admin/Delivery',
 			'AdminUnreturn': 'modules/admin/Unreturn',

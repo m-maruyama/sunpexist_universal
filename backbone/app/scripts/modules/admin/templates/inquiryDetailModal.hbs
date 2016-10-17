@@ -1,0 +1,42 @@
+<div class="modal" id="manpower-detail-modal" tabindex="-1">
+	<div class="modal-dialog modal-lg">
+				<div class="modal-body">
+			<div class="row">
+				<!-- start フォーム -->
+				<form class="form-horizontal">
+					<div class="col-md-12 box_purple">
+						<button type="button" class="close" data-dismiss="modal">
+							<span aria-hidden="true">&times;</span>
+						</button>
+						{{#each heading}}
+						<h1>お問い合わせ詳細（{{yyyymm}} {{rntl_sect_cd}} {{rntl_sect_name}} {{staff_total}}名）</h1>
+						{{/each}}
+						<!-- start scrollTable -->
+						<div id="scrollTable2" style="border-bottom: none">
+							<table class="table table-modal table-bordered">
+								<thead class="grad_head">
+									<tr>
+										{{#each label_list}}
+										<th>{{data}}</th>
+										{{/each}}
+									</tr>
+								</thead>
+								<tbody>
+									{{#each detail_list}}
+									<tr>
+										{{#each this}}
+										<td>{{data}}</td>
+										{{/each}}
+									</tr>
+									{{/each}}
+								</tbody>
+							</table>
+						</div>
+						<!-- end scrollTable -->
+					</div>
+				</form>
+				<!-- end フォーム -->
+			</div>
+		</div>
+	</div>
+</div>
