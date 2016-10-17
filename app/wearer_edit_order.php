@@ -628,10 +628,6 @@ $app->post('/wearer_edit_complete', function ()use($app){
    if ($mode == "check") {
      //ChromePhp::LOG("着用者入力");
      //ChromePhp::LOG($wearer_data_input);
-     //ChromePhp::LOG("現在貸与中アイテム");
-     //ChromePhp::LOG($now_item_input);
-     //ChromePhp::LOG("追加されるアイテム");
-     //ChromePhp::LOG($add_item_input);
 
      //--入力内容確認--//
      // 社員コード
@@ -1090,10 +1086,6 @@ $app->post('/wearer_edit_send', function ()use($app){
 /*
     ChromePhp::LOG("着用者入力");
     ChromePhp::LOG($wearer_data_input);
-    ChromePhp::LOG("現在貸与中アイテム");
-    ChromePhp::LOG($now_item_input);
-    ChromePhp::LOG("追加されるアイテム");
-    ChromePhp::LOG($add_item_input);
 */
     //--入力内容確認--//
     // 社員コード
@@ -1122,10 +1114,6 @@ $app->post('/wearer_edit_send', function ()use($app){
   } else if ($mode == "update") {
     //ChromePhp::LOG("着用者入力");
     //ChromePhp::LOG($wearer_data_input);
-    //ChromePhp::LOG("現在貸与中アイテム");
-    //ChromePhp::LOG($now_item_input);
-    //ChromePhp::LOG("追加されるアイテム");
-    //ChromePhp::LOG($add_item_input);
 
     //--発注NGパターンチェック--//
     //※発注情報トラン参照

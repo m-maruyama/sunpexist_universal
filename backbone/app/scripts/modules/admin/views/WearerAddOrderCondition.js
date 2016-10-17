@@ -89,7 +89,7 @@ define([
 							that.triggerMethod('showAlerts', errorMessages);
 						}
 						var res_list = res.attributes;
-						//console.log(res_list);
+						console.log(res_list);
 
 						// 発注取消ボタンvalue値設定
 						var delete_param =
@@ -175,7 +175,7 @@ define([
 							option3.appendChild(text3);
 							document.getElementById('job_type').appendChild(option3);
 						}
-						// 出荷先
+						// 出荷先(hidden)
 						if (res_list['shipment_list'][0]) {
 							var shipment = res_list['shipment_list'][0]['ship_to_cd'] + ":" + res_list['shipment_list'][0]['ship_to_brnch_cd'];
 							that.ui.shipment.val(shipment);
@@ -239,7 +239,7 @@ define([
 					var modelForUpdate = this.model;
 					modelForUpdate.url = App.api.CM0130;
 					var cond = {
-						"scr": '職種変更または異動-入力完了-更新可否チェック',
+						"scr": '追加貸与-入力完了-更新可否チェック',
 						"log_type": '1',
 					};
 					modelForUpdate.fetchMx({
@@ -247,7 +247,7 @@ define([
 						success:function(res){
 							var type = "cm0130_res";
 							var res_val = res.attributes;
-							var transition = "WC0021_req";
+							var transition = "WR0017_req";
 							var data = "";
 							that.onShow(res_val, type, transition, data);
 						}
@@ -273,123 +273,7 @@ define([
 							that.onShow(res_val, type, transition, data);
 						}
 					});
-				},
-				// 拠点
-				'change @ui.section': function(){
-					this.ui.section = $('#section');
-					var section = $("select[name='section']").val();
-
-					// 出荷先以降の内容変更
-					var shipment_vals = $("select[name='shipment']").val();
-					var val = shipment_vals.split(':');
-					var ship_to_cd = val[0];
-					var ship_to_brnch_cd = val[1];
-					var shipmentConditionChangeView = new App.Admin.Views.ShipmentConditionChange({
-						section: section,
-						ship_to_cd: ship_to_cd,
-						ship_to_brnch_cd: ship_to_brnch_cd,
-						chg_flg: '1',
-					});
-					this.shipment.show(shipmentConditionChangeView);
-
-					// 入力完了、発注送信ボタン表示/非表示制御
-					var data = {
-						'rntl_sect_cd': section
-					};
-					var modelForUpdate = this.model;
-					modelForUpdate.url = App.api.CM0140;
-					var cond = {
-						"scr": '職種変更または異動-発注入力・送信可否チェック',
-						"log_type": '3',
-						"data": data,
-					};
-					modelForUpdate.fetchMx({
-						data:cond,
-						success:function(res) {
-							var CM0140_res = res.attributes;
-							//「入力完了」ボタン表示制御
-							if (CM0140_res['order_input_ok_flg'] == "1" && CM0140_res['order_send_ok_flg'] == "1") {
-								$('.complete').css('display', '');
-								$('.orderSend').css('display', '');
-							}
-							if (CM0140_res['order_input_ok_flg'] == "0" && CM0140_res['order_send_ok_flg'] == "0") {
-								$('.complete').css('display', 'none');
-								$('.orderSend').css('display', 'none');
-							}
-							if (CM0140_res['order_input_ok_flg'] == "0" && CM0140_res['order_send_ok_flg'] == "1") {
-								$('.complete').css('display', 'none');
-								$('.orderSend').css('display', '');
-							}
-							if (CM0140_res['order_input_ok_flg'] == "1" && CM0140_res['order_send_ok_flg'] == "0") {
-								$('.complete').css('display', '');
-								$('.orderSend').css('display', 'none');
-							}
-						}
-					});
-				},
-				// 貸与パターン
-				'change @ui.job_type': function(){
-					var that = this;
-					this.ui.job_type = $('#job_type');
-					var section = $("select[name='section']").val();
-					// 選択前のvalue値
-					var before_vals = window.sessionStorage.getItem("job_type_sec");
-					// 選択後のvalue値
-					var after_vals = $("select[name='job_type']").val();
-					var val = after_vals.split(':');
-					var job_type = val[0];
-					var sp_job_type_flg = val[1];
-					var data = {
-						'section': section,
-						'job_type': job_type
-					}
-
-					if (sp_job_type_flg == "1") {
-						//--特別職種フラグ有りの場合--//
-						var msg = "社内申請手続きを踏んでいますか？";
-						if (window.confirm(msg)) {
-							// 理由区分表示切り替え
-							var reasonKbnConditionChangeView = new App.Admin.Views.ReasonKbnConditionChange({
-								job_type: job_type
-							});
-							this.reason_kbn.show(reasonKbnConditionChangeView);
-
-							// 現在貸与中のアイテム、新たに追加されるアイテム表示切り替え
-							that.triggerMethod('change:job_type', data);
-						} else {
-							// キャンセルの場合は選択前の状態に戻す
-							document.getElementById('job_type').value = before_vals;
-						}
-					} else {
-						//--特別職種フラグ無しの場合--//
-						window.sessionStorage.setItem("job_type_sec", after_vals);
-
-						// 理由区分表示切り替え
-						var reasonKbnConditionChangeView = new App.Admin.Views.ReasonKbnConditionChange({
-							job_type: job_type
-						});
-						this.reason_kbn.show(reasonKbnConditionChangeView);
-
-						// 現在貸与中のアイテム、新たに追加されるアイテム表示切り替え
-						that.triggerMethod('change:job_type', data);
-					}
-				},
-				// 出荷先
-				'change @ui.shipment': function(){
-					this.ui.shipment = $('#shipment');
-					var section = $("select[name='section']").val();
-					var shipment_vals = $("select[name='shipment']").val();
-					var val = shipment_vals.split(':');
-					var ship_to_cd = val[0];
-					var ship_to_brnch_cd = val[1];
-					var shipmentConditionChangeView = new App.Admin.Views.ShipmentConditionChange({
-						section: section,
-						ship_to_cd: ship_to_cd,
-						ship_to_brnch_cd: ship_to_brnch_cd,
-						chg_flg: 'shipment',
-					});
-					this.shipment.show(shipmentConditionChangeView);
-				},
+				}
 			},
 			onShow: function(val, type, transition, data) {
 				var that = this;
@@ -405,11 +289,11 @@ define([
 							// 発注取消処理
 							var type = transition;
 							var res_val = "";
-						} else if (transition == "WC0021_req") {
+						} else if (transition == "WR0017_req") {
 							// 入力完了処理
 							var type = transition;
 							var res_val = "";
-						} else if (transition == "WC0022_req") {
+						} else if (transition == "WR0018_req") {
 							// 発注送信処理
 							var type = transition;
 							var res_val = "";
@@ -452,7 +336,7 @@ define([
 					}
 				}
 				// 入力完了処理
-				if (type == "WC0021_req") {
+				if (type == "WR0017_req") {
 					//--画面入力項目--//
 					// 着用者情報
 					var agreement_no = $("select[name='agreement_no']").val();
@@ -462,13 +346,10 @@ define([
 					var member_name = $("input[name='member_name']").val();
 					var member_name_kana = $("input[name='member_name_kana']").val();
 					var sex_kbn = $("select[name='sex_kbn']").val();
-					var appointment_ymd = $("input[name='appointment_ymd']").val();
 					var resfl_ymd = $("input[name='resfl_ymd']").val();
 					var section = $("select[name='section']").val();
 					var job_type = $("select[name='job_type']").val();
 					var shipment = $("select[name='shipment']").val();
-					//var post_number = $("input[name='post_number']").val();
-					//var address = $("input[name='address']").val();
 					var comment = $("#comment").val();
 					var wearer_data = {
 						'agreement_no': agreement_no,
@@ -478,84 +359,38 @@ define([
 						'member_name': member_name,
 						'member_name_kana': member_name_kana,
 						'sex_kbn': sex_kbn,
-						'appointment_ymd': appointment_ymd,
 						'resfl_ymd': resfl_ymd,
 						'section': section,
 						'job_type': job_type,
 						'shipment': shipment,
-						//'post_number': post_number,
-						//'address': address,
-						'comment': comment,
+						'comment': comment
 					}
 
-					// 現在貸与中のアイテム
-					var now_target_flg = 'now_target_flg[]';
-					var now_list_cnt = $("input[name='now_list_cnt']").val();
-					var now_item = new Object();
-					for (var i=0; i<now_list_cnt; i++) {
-						now_item[i] = new Object();
-						now_item[i]["now_rntl_sect_cd"] = $("input[name='now_rntl_sect_cd"+i+"']").val();
-						now_item[i]["now_job_type_cd"] = $("input[name='now_job_type_cd"+i+"']").val();
-						now_item[i]["now_job_type_item_cd"] = $("input[name='now_job_type_item_cd"+i+"']").val();
-						now_item[i]["now_item_cd"] = $("input[name='now_item_cd"+i+"']").val();
-						now_item[i]["now_color_cd"] = $("input[name='now_color_cd"+i+"']").val();
-						now_item[i]["now_choice_type"] = $("input[name='now_choice_type"+i+"']").val();
-						now_item[i]["now_std_input_qty"] = $("input[name='now_std_input_qty"+i+"']").val();
-						now_item[i]["now_size_cd"] = $("input[name='now_size_cd"+i+"']").val();
-						now_item[i]["individual_disp"] = $("input[name='individual_disp"+i+"']").val();
-						now_item[i]["individual_cnt"] = $("input[name='individual_cnt"+i+"']").val();
-						now_item[i]["individual_flg"] = $('input[name="individual_flg"]').val();
-						// 商品毎の「対象」チェック状態、「個体管理番号」を取得
-						now_item[i]["individual_data"] = new Object();
-						if (now_item[i]["individual_flg"] == "1") {
-							var Name = 'now_target_flg'+i;
-							for (var j=0; j<now_item[i]["individual_cnt"]; j++) {
-								var chk_val = document.getElementsByName(Name)[j].value;
-								if (chk_val != "empty") {
-									now_item[i]["individual_data"][j] = new Object();
-									now_item[i]["individual_data"][j]["individual_ctrl_no"] = chk_val;
-									var checked = document.getElementsByName(Name)[j].checked;
-									if(checked == false) {
-										now_item[i]["individual_data"][j]["now_target_flg"] = '0';
-									}
-									if(checked == true){
-										now_item[i]["individual_data"][j]["now_target_flg"] = '1';
-									}
-								}
-							}
-						}
-						now_item[i]["now_order_num"] = $("input[name='now_order_num"+i+"']").val();
-						now_item[i]["now_order_num_disable"] = $("input[name='now_order_num_disable"+i+"']").val();
-						now_item[i]["now_return_num"] = $("input[name='now_return_num"+i+"']").val();
-						now_item[i]["now_return_num_disable"] = $("input[name='now_return_num_disable"+i+"']").val();
-					}
-
-					// 追加されるアイテム
-					var add_list_cnt = $("input[name='add_list_cnt']").val();
-					var add_item = new Object();
-					for (var i=0; i<add_list_cnt; i++) {
-						add_item[i] = new Object();
-						add_item[i]["add_rntl_sect_cd"] = $("input[name='add_rntl_sect_cd"+i+"']").val();
-						add_item[i]["add_job_type_cd"] = $("input[name='add_job_type_cd"+i+"']").val();
-						add_item[i]["add_job_type_item_cd"] = $("input[name='add_job_type_item_cd"+i+"']").val();
-						add_item[i]["add_item_cd"] = $("input[name='add_item_cd"+i+"']").val();
-						add_item[i]["add_color_cd"] = $("input[name='add_color_cd"+i+"']").val();
-						add_item[i]["add_choice_type"] = $("input[name='add_choice_type"+i+"']").val();
-						add_item[i]["add_std_input_qty"] = $("input[name='add_std_input_qty"+i+"']").val();
-						add_item[i]["add_size_cd"] = $("select[name='add_size_cd"+i+"']").val();
-						add_item[i]["add_order_num"] = $("input[name='add_order_num"+i+"']").val();
-						add_item[i]["add_order_num_disable"] = $("input[name='add_order_num_disable"+i+"']").val();
+					// 発注商品一覧
+					var list_cnt = $("input[name='list_cnt']").val();
+					var item = new Object();
+					for (var i=0; i<list_cnt; i++) {
+						item[i] = new Object();
+						item[i]["rntl_sect_cd"] = $("input[name='rntl_sect_cd"+i+"']").val();
+						item[i]["job_type_cd"] = $("input[name='job_type_cd"+i+"']").val();
+						item[i]["job_type_item_cd"] = $("input[name='job_type_item_cd"+i+"']").val();
+						item[i]["item_cd"] = $("input[name='item_cd"+i+"']").val();
+						item[i]["color_cd"] = $("input[name='color_cd"+i+"']").val();
+						item[i]["choice_type"] = $("input[name='choice_type"+i+"']").val();
+						item[i]["std_input_qty"] = $("input[name='std_input_qty"+i+"']").val();
+						item[i]["size_cd"] = $("select[name='size_cd"+i+"']").val();
+						item[i]["order_num"] = $("input[name='order_num"+i+"']").val();
+						item[i]["order_num_disable"] = $("input[name='order_num_disable"+i+"']").val();
 					}
 
 					// 入力項目チェック処理
 					var modelForUpdate = this.model;
-					modelForUpdate.url = App.api.WC0021;
+					modelForUpdate.url = App.api.WR0017;
 					var cond = {
-						"scr": '入力完了',
+						"scr": '追加貸与-入力完了-check',
 						"mode": "check",
 						"wearer_data": wearer_data,
-						"now_item": now_item,
-						"add_item": add_item,
+						"item": item
 					};
 					modelForUpdate.fetchMx({
 						data:cond,
@@ -568,10 +403,9 @@ define([
 										"scr": '入力完了',
 										"mode": "update",
 										"wearer_data": wearer_data,
-										"now_item": now_item,
-										"add_item": add_item,
+										"item": item
 									};
-									//console.log(data);
+
 									// 入力完了画面処理へ移行
 									that.triggerMethod('inputComplete', data);
 								}
@@ -593,13 +427,10 @@ define([
 					var member_name = $("input[name='member_name']").val();
 					var member_name_kana = $("input[name='member_name_kana']").val();
 					var sex_kbn = $("select[name='sex_kbn']").val();
-					var appointment_ymd = $("input[name='appointment_ymd']").val();
 					var resfl_ymd = $("input[name='resfl_ymd']").val();
 					var section = $("select[name='section']").val();
 					var job_type = $("select[name='job_type']").val();
 					var shipment = $("select[name='shipment']").val();
-					//var post_number = $("input[name='post_number']").val();
-					//var address = $("input[name='address']").val();
 					var comment = $("#comment").val();
 					var wearer_data = {
 						'agreement_no': agreement_no,
@@ -609,72 +440,28 @@ define([
 						'member_name': member_name,
 						'member_name_kana': member_name_kana,
 						'sex_kbn': sex_kbn,
-						'appointment_ymd': appointment_ymd,
 						'resfl_ymd': resfl_ymd,
 						'section': section,
 						'job_type': job_type,
 						'shipment': shipment,
-						//'post_number': post_number,
-						//'address': address,
-						'comment': comment,
+						'comment': comment
 					}
 
-					// 現在貸与中のアイテム
-					var now_list_cnt = $("input[name='now_list_cnt']").val();
-					var now_item = new Object();
-					for (var i=0; i<now_list_cnt; i++) {
-						now_item[i] = new Object();
-						now_item[i]["now_rntl_sect_cd"] = $("input[name='now_rntl_sect_cd"+i+"']").val();
-						now_item[i]["now_job_type_cd"] = $("input[name='now_job_type_cd"+i+"']").val();
-						now_item[i]["now_job_type_item_cd"] = $("input[name='now_job_type_item_cd"+i+"']").val();
-						now_item[i]["now_item_cd"] = $("input[name='now_item_cd"+i+"']").val();
-						now_item[i]["now_color_cd"] = $("input[name='now_color_cd"+i+"']").val();
-						now_item[i]["now_choice_type"] = $("input[name='now_choice_type"+i+"']").val();
-						now_item[i]["now_std_input_qty"] = $("input[name='now_std_input_qty"+i+"']").val();
-						now_item[i]["now_size_cd"] = $("input[name='now_size_cd"+i+"']").val();
-						now_item[i]["individual_disp"] = $("input[name='individual_disp"+i+"']").val();
-						now_item[i]["individual_cnt"] = $("input[name='individual_cnt"+i+"']").val();
-						now_item[i]["individual_flg"] = $('input[name="individual_flg"]').val();
-						// 商品毎の「対象」チェック状態、「個体管理番号」を取得
-						now_item[i]["individual_data"] = new Object();
-						if (now_item[i]["individual_flg"] == "1") {
-							var Name = 'now_target_flg'+i;
-							for (var j=0; j<now_item[i]["individual_cnt"]; j++) {
-								var chk_val = document.getElementsByName(Name)[j].value;
-								if (chk_val != "empty") {
-									now_item[i]["individual_data"][j] = new Object();
-									now_item[i]["individual_data"][j]["individual_ctrl_no"] = chk_val;
-									var checked = document.getElementsByName(Name)[j].checked;
-									if(checked == false) {
-										now_item[i]["individual_data"][j]["now_target_flg"] = '0';
-									}
-									if(checked == true){
-										now_item[i]["individual_data"][j]["now_target_flg"] = '1';
-									}
-								}
-							}
-						}
-						now_item[i]["now_order_num"] = $("input[name='now_order_num"+i+"']").val();
-						now_item[i]["now_order_num_disable"] = $("input[name='now_order_num_disable"+i+"']").val();
-						now_item[i]["now_return_num"] = $("input[name='now_return_num"+i+"']").val();
-						now_item[i]["now_return_num_disable"] = $("input[name='now_return_num_disable"+i+"']").val();
-					}
-
-					// 追加されるアイテム
-					var add_list_cnt = $("input[name='add_list_cnt']").val();
-					var add_item = new Object();
-					for (var i=0; i<add_list_cnt; i++) {
-						add_item[i] = new Object();
-						add_item[i]["add_rntl_sect_cd"] = $("input[name='add_rntl_sect_cd"+i+"']").val();
-						add_item[i]["add_job_type_cd"] = $("input[name='add_job_type_cd"+i+"']").val();
-						add_item[i]["add_job_type_item_cd"] = $("input[name='add_job_type_item_cd"+i+"']").val();
-						add_item[i]["add_item_cd"] = $("input[name='add_item_cd"+i+"']").val();
-						add_item[i]["add_color_cd"] = $("input[name='add_color_cd"+i+"']").val();
-						add_item[i]["add_choice_type"] = $("input[name='add_choice_type"+i+"']").val();
-						add_item[i]["add_std_input_qty"] = $("input[name='add_std_input_qty"+i+"']").val();
-						add_item[i]["add_size_cd"] = $("select[name='add_size_cd"+i+"']").val();
-						add_item[i]["add_order_num"] = $("input[name='add_order_num"+i+"']").val();
-						add_item[i]["add_order_num_disable"] = $("input[name='add_order_num_disable"+i+"']").val();
+					// 発注商品一覧
+					var list_cnt = $("input[name='list_cnt']").val();
+					var item_list = new Object();
+					for (var i=0; i<list_cnt; i++) {
+						item[i] = new Object();
+						item[i]["rntl_sect_cd"] = $("input[name='rntl_sect_cd"+i+"']").val();
+						item[i]["job_type_cd"] = $("input[name='job_type_cd"+i+"']").val();
+						item[i]["job_type_item_cd"] = $("input[name='job_type_item_cd"+i+"']").val();
+						item[i]["item_cd"] = $("input[name='item_cd"+i+"']").val();
+						item[i]["color_cd"] = $("input[name='color_cd"+i+"']").val();
+						item[i]["choice_type"] = $("input[name='choice_type"+i+"']").val();
+						item[i]["std_input_qty"] = $("input[name='std_input_qty"+i+"']").val();
+						item[i]["size_cd"] = $("select[name='size_cd"+i+"']").val();
+						item[i]["order_num"] = $("input[name='order_num"+i+"']").val();
+						item[i]["order_num_disable"] = $("input[name='order_num_disable"+i+"']").val();
 					}
 
 					var modelForUpdate = this.model;
@@ -683,7 +470,7 @@ define([
 						"scr": '発注送信',
 						"mode": "check",
 						"wearer_data": wearer_data,
-						"now_item": now_item,
+						"item": item,
 						"add_item": add_item,
 					};
 					modelForUpdate.fetchMx({
@@ -697,7 +484,7 @@ define([
 										"scr": '発注送信',
 										"mode": "update",
 										"wearer_data": wearer_data,
-										"now_item": now_item,
+										"item": item,
 										"add_item": add_item,
 									};
 									//console.log(data);

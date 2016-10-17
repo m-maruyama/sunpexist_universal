@@ -54,10 +54,7 @@ define([
 					data:cond,
 					success:function(res){
 						var res_val = res.attributes;
-						if (res_val["error_code"] == "0") {
-							//「返却伝票ダウンロード」ボタン表示
-							$('.returnSlipDownload').css('display', '');
-						} else {
+						if (res_val["error_code"] == "1") {
 							// 登録処理にエラーがある場合
 							that.triggerMethod('showAlerts', res_val["error_msg"]);
 						}
@@ -77,11 +74,7 @@ define([
 				'click @ui.backHome': function(){
 					// ホーム画面へ遷移
 					location.href="home.html";
-				},
-				// 「返却伝票ダウンロード」ボタン
-				'click @ui.returnSlipDownload': function(){
-					alert("てっちゃんへ、機能の実装よろしくお願いします。");
-				},
+				}
 			}
 		});
 	});

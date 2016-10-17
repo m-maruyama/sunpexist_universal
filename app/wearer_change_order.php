@@ -2945,7 +2945,7 @@ $app->post('/wearer_change_complete', function ()use($app){
            array_push($values_list, "'".$auth['accnt_no']."'");
            // 発注ステータス(未出荷)
            array_push($calum_list, "order_status");
-           array_push($values_list, "'0'");
+           array_push($values_list, "'1'");
            // 理由区分
            array_push($calum_list, "order_reason_kbn");
            array_push($values_list, "'".$wearer_data_input['reason_kbn']."'");
@@ -3264,7 +3264,7 @@ $app->post('/wearer_change_complete', function ()use($app){
            array_push($values_list, "'".$auth['accnt_no']."'");
            // 発注ステータス(未出荷)
            array_push($calum_list, "order_status");
-           array_push($values_list, "'0'");
+           array_push($values_list, "'1'");
            // 理由区分
            array_push($calum_list, "order_reason_kbn");
            array_push($values_list, "'".$wearer_data_input['reason_kbn']."'");
@@ -4481,7 +4481,7 @@ $app->post('/wearer_change_send', function ()use($app){
           array_push($values_list, "'".$auth['accnt_no']."'");
           // 発注ステータス(未出荷)
           array_push($calum_list, "order_status");
-          array_push($values_list, "'0'");
+          array_push($values_list, "'1'");
           // 理由区分
           array_push($calum_list, "order_reason_kbn");
           array_push($values_list, "'".$wearer_data_input['reason_kbn']."'");
@@ -4795,7 +4795,7 @@ $app->post('/wearer_change_send', function ()use($app){
           array_push($values_list, "'".$auth['accnt_no']."'");
           // 発注ステータス(未出荷)
           array_push($calum_list, "order_status");
-          array_push($values_list, "'0'");
+          array_push($values_list, "'1'");
           // 理由区分
           array_push($calum_list, "order_reason_kbn");
           array_push($values_list, "'".$wearer_data_input['reason_kbn']."'");

@@ -29,24 +29,20 @@ define([
 			},
 			ui: {
 				'order_count': '#order_count',
-				'return_count': '#return_count',
-				'target_flg': '#target_flg',
 			},
 			bindings: {
 				'#order_count': 'order_count',
-				'#return_count': 'return_count',
-				'#target_flg': 'target_flg',
 			},
 			onShow: function() {
 				$.blockUI({ message: '<p><img src="ajax-loader.gif" style="margin: 0 auto;" /> 読み込み中...</p>' });
 				var that = this;
 				var data = this.options.data;
 
-				// 現在貸与中のアイテム・新たに追加されるアイテム一覧、
+				// 発注商品一覧、
 				var modelForUpdate = this.model;
-				modelForUpdate.url = App.api.WC0019;
+				modelForUpdate.url = App.api.WR0015;
 				var cond = {
-					"scr": '現在貸与中のアイテム',
+					"scr": '追加貸与-発注商品一覧',
 					"data": data,
 				};
 				modelForUpdate.fetchMx({
@@ -62,9 +58,6 @@ define([
 						var res_list = res.attributes;
 						//console.log(res_list);
 						that.render(res_list);
-						if (res_list["individual_flg"] == '1') {
-							$('.individual_flg').css('display','');
-						}
 						$.unblockUI();
 					}
 				});
