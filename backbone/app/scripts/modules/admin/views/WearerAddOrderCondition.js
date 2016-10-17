@@ -89,19 +89,20 @@ define([
 							that.triggerMethod('showAlerts', errorMessages);
 						}
 						var res_list = res.attributes;
-						console.log(res_list);
+						//console.log(res_list);
 
 						// 発注取消ボタンvalue値設定
 						var delete_param =
 							res_list['rntl_cont_no'] + ":"
 							+ res_list['rntl_sect_cd'] + ":"
 							+ res_list['job_type_cd'] + ":"
-							+ res_list['werer_cd']
+							+ res_list['werer_cd'] + ":"
+							+ res_list['order_req_no']
 						;
 						that.ui.delete.val(delete_param);
 
 						// 着用者基本マスタトラン(追加貸与)がある場合は発注取消ボタンを表示
-						if (res_list['tran_flg'] == '1') {
+						if (res_list['order_tran_flg'] == '1') {
 							$('.delete').css('display', '');
 						}
 
@@ -204,11 +205,9 @@ define([
 					var job_type_cd = val[2];
 					var werer_cd = val[3];
 					var order_req_no = val[4];
-					var return_req_no = val[5];
 					var data = {
 						"werer_cd": werer_cd,
 						"order_req_no": order_req_no,
-						"return_req_no": return_req_no,
 						"rntl_cont_no": rntl_cont_no,
 						"rntl_sect_cd": rntl_sect_cd,
 						"job_type_cd": job_type_cd
@@ -217,7 +216,7 @@ define([
 					var modelForUpdate = this.model;
 					modelForUpdate.url = App.api.CM0130;
 					var cond = {
-						"scr": '職種変更または異動-発注取消-更新可否チェック',
+						"scr": '追加貸与-発注取消-更新可否チェック',
 						"log_type": '3',
 						"data": data,
 					};
@@ -260,7 +259,7 @@ define([
 					var modelForUpdate = this.model;
 					modelForUpdate.url = App.api.CM0130;
 					var cond = {
-						"scr": '職種変更または異動-発注送信-更新可否チェック',
+						"scr": '追加貸与-発注送信-更新可否チェック',
 						"log_type": '1',
 					};
 					modelForUpdate.fetchMx({
@@ -268,7 +267,7 @@ define([
 						success:function(res){
 							var type = "cm0130_res";
 							var res_val = res.attributes;
-							var transition = "WC0022_req";
+							var transition = "WR0018_req";
 							var data = "";
 							that.onShow(res_val, type, transition, data);
 						}
@@ -308,7 +307,7 @@ define([
 						var modelForUpdate = this.model;
 						modelForUpdate.url = App.api.WR0016;
 						var cond = {
-							"scr": '発注取消',
+							"scr": '追加貸与-発注取消',
 							"data": data,
 						};
 						modelForUpdate.fetchMx({
@@ -349,7 +348,7 @@ define([
 					var resfl_ymd = $("input[name='resfl_ymd']").val();
 					var section = $("select[name='section']").val();
 					var job_type = $("select[name='job_type']").val();
-					var shipment = $("select[name='shipment']").val();
+					var shipment = $("input[name='shipment']").val();
 					var comment = $("#comment").val();
 					var wearer_data = {
 						'agreement_no': agreement_no,
@@ -400,7 +399,7 @@ define([
 								var msg = "入力を完了しますが、よろしいですか？";
 								if (window.confirm(msg)) {
 									var data = {
-										"scr": '入力完了',
+										"scr": '追加貸与-入力完了-update',
 										"mode": "update",
 										"wearer_data": wearer_data,
 										"item": item
@@ -417,7 +416,7 @@ define([
 					});
 				}
 				// 発注送信処理
-				if (type == "WC0022_req") {
+				if (type == "WR0018_req") {
 					//--画面入力項目--//
 					// 着用者情報
 					var agreement_no = $("select[name='agreement_no']").val();
@@ -430,7 +429,7 @@ define([
 					var resfl_ymd = $("input[name='resfl_ymd']").val();
 					var section = $("select[name='section']").val();
 					var job_type = $("select[name='job_type']").val();
-					var shipment = $("select[name='shipment']").val();
+					var shipment = $("input[name='shipment']").val();
 					var comment = $("#comment").val();
 					var wearer_data = {
 						'agreement_no': agreement_no,
@@ -449,7 +448,7 @@ define([
 
 					// 発注商品一覧
 					var list_cnt = $("input[name='list_cnt']").val();
-					var item_list = new Object();
+					var item = new Object();
 					for (var i=0; i<list_cnt; i++) {
 						item[i] = new Object();
 						item[i]["rntl_sect_cd"] = $("input[name='rntl_sect_cd"+i+"']").val();
@@ -465,13 +464,12 @@ define([
 					}
 
 					var modelForUpdate = this.model;
-					modelForUpdate.url = App.api.WC0022;
+					modelForUpdate.url = App.api.WR0018;
 					var cond = {
-						"scr": '発注送信',
+						"scr": '追加貸与-発注送信',
 						"mode": "check",
 						"wearer_data": wearer_data,
-						"item": item,
-						"add_item": add_item,
+						"item": item
 					};
 					modelForUpdate.fetchMx({
 						data:cond,
@@ -481,11 +479,10 @@ define([
 								var msg = "発注送信を行いますが、よろしいですか？";
 								if (window.confirm(msg)) {
 									var data = {
-										"scr": '発注送信',
+										"scr": '追加貸与-発注送信-update',
 										"mode": "update",
 										"wearer_data": wearer_data,
-										"item": item,
-										"add_item": add_item,
+										"item": item
 									};
 									//console.log(data);
 

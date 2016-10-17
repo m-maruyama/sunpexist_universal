@@ -819,20 +819,7 @@ $app->post('/wearer_add/order_check', function ()use($app){
       $order_sts_kbn = $result->order_sts_kbn;
       $order_reason_kbn = $result->order_reason_kbn;
     }
-/*
-    //※汎用コードマスタ参照
-    $query_list = array();
-    array_push($query_list, "cls_cd = '001'");
-    array_push($query_list, "gen_cd = '".$order_sts_kbn."'");
-    $query = implode(' AND ', $query_list);
-    $gencode = MGencode::query()
-        ->where($query)
-        ->columns('*')
-        ->execute();
-    foreach ($gencode as $gencode_map) {
-      $order_sts_kbn_name = $gencode_map->gen_name;
-    }
-*/
+
     // 発注情報トラン.発注状況区分 = 「終了」または「異動」情報がある際は発注NG
     if ($order_sts_kbn == "2" && ($order_reason_kbn == "05" || $order_reason_kbn == "06" || $order_reason_kbn == "08" || $order_reason_kbn == "20")) {
       $json_list["err_cd"] = "1";
@@ -968,20 +955,7 @@ $app->post('/wearer_return/order_check', function ()use($app){
       $order_sts_kbn = $result->order_sts_kbn;
       $order_reason_kbn = $result->order_reason_kbn;
     }
-/*
-    //※汎用コードマスタ参照
-    $query_list = array();
-    array_push($query_list, "cls_cd = '001'");
-    array_push($query_list, "gen_cd = '".$order_sts_kbn."'");
-    $query = implode(' AND ', $query_list);
-    $gencode = MGencode::query()
-        ->where($query)
-        ->columns('*')
-        ->execute();
-    foreach ($gencode as $gencode_map) {
-      $order_sts_kbn_name = $gencode_map->gen_name;
-    }
-*/
+
     // 発注情報トラン.発注状況区分 = 「終了」または「異動」情報がある際は発注NG
     if ($order_sts_kbn == "2" && ($order_reason_kbn == "05" || $order_reason_kbn == "06" || $order_reason_kbn == "08" || $order_reason_kbn == "20")) {
       $json_list["err_cd"] = "1";
