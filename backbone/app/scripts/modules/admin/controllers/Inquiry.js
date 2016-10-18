@@ -38,7 +38,6 @@ define([
 				var inquiryView = new App.Admin.Views.Inquiry();
 				var inquiryListListCollection = new App.Entities.Collections.AdminInquiryListList();
 
-				var agreementNoConditionView = new App.Admin.Views.AgreementNoCondition();
 				var sectionConditionView = new App.Admin.Views.SectionCondition();
 
 				var inquiryListConditionModel = new App.Entities.Models.AdminInquiryListCondition();
@@ -47,7 +46,7 @@ define([
 				});
 				var inquiryListListView = new App.Admin.Views.InquiryListList({
 					collection: inquiryListListCollection,
-					model:inquiryListConditionModel,//追加
+					model:inquiryListConditionModel,
 					pagerModel: pagerModel
 				});
 
@@ -73,7 +72,7 @@ define([
 				var paginationView2 = new App.Admin.Views.Pagination({model: pagerModel});
 				var paginationSectionView = new App.Admin.Views.Pagination({model: pagerModel2});
 
-				var fetchList = function(pageNumber,sortKey,order){
+				var fetchList = function(pageNumber, sortKey, order){
 					if(pageNumber){
 						pagerModel.set('page_number', pageNumber);
 					}
@@ -81,6 +80,7 @@ define([
 						pagerModel.set('sort_key', sortKey);
 						pagerModel.set('order', order);
 					}
+
 					inquiryListListView.fetch(inquiryListConditionModel);
 					inquiryView.listTable.show(inquiryListListView);
 					inquiryView.page.show(paginationView);
@@ -154,9 +154,9 @@ define([
 				this.listenTo(inquiryListListView, 'sort', function(sortKey,order){
 					fetchList(null,sortKey,order);
 				});
-				this.listenTo(inquiryConditionView, 'click:search', function(sortKey,order){
+				this.listenTo(inquiryConditionView, 'click:search', function(sortKey, order, page){
 					modal = false;
-					fetchList(1,sortKey,order);
+					fetchList(page, sortKey, order);
 				});
 
 				// 契約No変更時の絞り込み処理 --ここから
@@ -217,7 +217,6 @@ define([
 
 				App.main.show(inquiryView);
 				inquiryView.condition.show(inquiryConditionView);
-				inquiryConditionView.agreement_no.show(agreementNoConditionView);
 				inquiryConditionView.section.show(sectionConditionView);
 				inquiryView.sectionModal.show(sectionModalView.render());
 				sectionModalView.page.show(paginationSectionView);
