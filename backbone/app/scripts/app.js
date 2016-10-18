@@ -223,6 +223,8 @@ define([
 			"WO0011": host + '/reason_kbn_order',
 			"WO0012": host + '/section_order',
 			"WO0013": host + '/wearer_order_list',
+			"WO0014": host + '/wearer_order_insert',
+			"WO0015": host + '/wearer_order_delete',
 
 			"CM9010": host + "/api/CM9010"
 		};

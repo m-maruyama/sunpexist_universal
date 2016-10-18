@@ -113,6 +113,14 @@ define([
 					wearerOrderView.listTable.show(wearerOrderListListView2);
 				});
 
+				//エラーメッセージ
+				this.listenTo(wearerOrderConditionView, 'error_msg', function(errors){
+					console.log(errors);
+					if(errors){
+						wearerOrderConditionView.triggerMethod('showAlerts', errors);
+					}
+				});
+
 				App.main.show(wearerOrderView);
 				wearerOrderView.condition.show(wearerOrderConditionView);
 				wearerOrderView.listTable.show(wearerOrderListListView);

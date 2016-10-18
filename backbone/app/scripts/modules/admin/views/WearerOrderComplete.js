@@ -11,7 +11,11 @@ define([
 			regions: {
 				"condition": ".condition",
 			},
-			onRender: function() {
+			onShow: function() {
+				if(window.sessionStorage.getItem('referrer')=='wearer_order_send'){
+					$('#title').text('発注送信完了');
+					$('#text').text('発注を受け付けました。商品は一週間程度でお届けになります。');
+				};
 			},
 			events: {
 

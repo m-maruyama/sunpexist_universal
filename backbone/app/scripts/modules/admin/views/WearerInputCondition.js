@@ -141,6 +141,7 @@ define([
                 }
                 var cond = {
                     "scr": '着用者登録',
+                    "mode": 'insert',
                     "cond": model.getReq()
                 };
                 model.url = App.api.WI0012;
@@ -161,9 +162,10 @@ define([
                 return errors;
             },
             input_item: function (rntl_cont_no) {
+
                 var that = this;
                 var model = this.model;
-                model.set('rntl_cont_no', rntl_cont_no);
+                model.set('agreement_no', rntl_cont_no);
                 model.set('cster_emply_cd_chk', this.ui.cster_emply_cd_chk.prop('checked'));
                 model.set('cster_emply_cd', this.ui.cster_emply_cd.val());
                 model.set('werer_name', this.ui.werer_name.val());
@@ -186,19 +188,42 @@ define([
                     return errors;
                 }
                 var cond = {
-                    "scr": '商品詳細入力へ',
-                    "data": model.getReq()
+                    "scr": '着用者登録',
+                    "mode": 'check',
+                    "cond": model.getReq()
                 };
-                model.url = App.api.WS0011;
+                model.url = App.api.WI0012;
 
                 model.fetchMx({
                     data:cond,
                     success:function(res){
-                        window.sessionStorage.setItem('referrer', 'wearer_input');
-                        location.href = './wearer_order.html';
+                        var res_val = res.attributes;
+                        if(res_val["errors"]) {
+                            that.triggerMethod('error_msg', res_val["errors"]);
+                        }else{
+                            model.set('rntl_cont_no', rntl_cont_no);
+                            var cond = {
+                                "scr": '商品詳細入力へ',
+                                "data": model.getReq()
+                            };
+                            model.url = App.api.WS0011;
+
+                            model.fetchMx({
+                                data:cond,
+                                success:function(res){
+                                    window.sessionStorage.setItem('referrer', 'wearer_input');
+                                    location.href = './wearer_order.html';
+                                }
+                            });
+                            return errors;
+                        }
                     }
                 });
-                return errors;
+
+
+
+
+
             },
             input_delete: function () {
                 var that = this;

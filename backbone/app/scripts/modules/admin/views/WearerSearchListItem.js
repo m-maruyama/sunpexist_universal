@@ -35,6 +35,7 @@ define([
 						'appointment_ymd': we_val[11],
 						'resfl_ymd': we_val[12],
 						'm_wearer_std_comb_hkey': we_val[13],
+						'order_req_no': we_val[14],
 					};
 					var modelForUpdate = this.model;
 					modelForUpdate.url = App.api.WS0011;

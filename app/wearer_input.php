@@ -602,13 +602,12 @@ $app->post('/input_insert', function () use ($app) {
     $now_date = date("Ymd");
     $start_datetime = $now_date.$start;
     $end_datetime = date("YmdHis", strtotime($start_datetime." + ".$hour." hour"));
-//    if(strtotime($start_datetime) <= strtotime($now_datetime)||strtotime($now_datetime) >= strtotime($end_datetime)){
-//        array_push($error_list,'現在の時間は更新出来ません。');
-//        $json_list['errors'] = $error_list;
-//        echo json_encode($json_list);
-//        return;
-//    }
-
+    if(strtotime($start_datetime) <= strtotime($now_datetime)||strtotime($now_datetime) >= strtotime($end_datetime)){
+        array_push($error_list,'現在の時間は更新出来ません。');
+        $json_list['errors'] = $error_list;
+        echo json_encode($json_list);
+        return;
+    }
     //契約Noのマスタチェック
     $query_list = array();
     // 契約マスタ．企業ID　＝　ログインしているアカウントの企業ID　AND
@@ -734,6 +733,11 @@ $app->post('/input_insert', function () use ($app) {
         echo json_encode($json_list);
         return true;
     }
+    if($params['mode']=='check'){
+        $json_list['ok'] = 'ok';
+        echo json_encode($json_list);
+        return;
+    }
     $transaction = $app->transactionManager->get();
 
     //着用者基本マスタトラン
@@ -783,10 +787,10 @@ $app->post('/input_insert', function () use ($app) {
     $m_wearer_std_tran->snd_date  = $now;//送信日時
     $m_wearer_std_tran->del_kbn ='0';//削除区分
     $m_wearer_std_tran->rgst_date  = $now;//登録日時
-    $m_wearer_std_tran->rgst_user_id = $auth['user_id'];//登録ユーザーID
+    $m_wearer_std_tran->rgst_user_id = $auth['accnt_no'];//登録ユーザーID
     $m_wearer_std_tran->upd_date  = $now;//更新日時
-    $m_wearer_std_tran->upd_user_id = $auth['user_id'];//更新ユーザーID
-    $m_wearer_std_tran->upd_pg_id = $auth['user_id'];//更新プログラムID
+    $m_wearer_std_tran->upd_user_id = $auth['accnt_no'];//更新ユーザーID
+    $m_wearer_std_tran->upd_pg_id = $auth['accnt_no'];//更新プログラムID
     $m_wearer_std_tran->m_job_type_comb_hkey = $m_job_type[0]->m_job_type_comb_hkey;//職種マスタ_統合ハッシュキー
     $m_wearer_std_tran->m_section_comb_hkey = $m_section[0]->m_section_comb_hkey;//部門マスタ_統合ハッシュキー
     if($create_flg){

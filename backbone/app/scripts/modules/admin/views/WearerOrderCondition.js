@@ -41,6 +41,7 @@ define([
 				'section': '#section',
 				"job_type": "#job_type",
 				'post_number': '#post_number',
+				'comment': '#comment',
 				'zip_no': '#zip_no',
 				'address': '#address',
 				"back": '.back',
@@ -85,8 +86,9 @@ define([
 						that.ui.order_count.val(res_list['order_count']);
 						that.ui.back.val(res_list['param']);
 						var flg = false;
-						if(res_list['order_tran_flg']=='1'){
+						if(res_list['order_req_no']){
 							flg = true;
+							that.ui.delete.val(res_list['order_req_no']);
 						}
 						// 入力完了、発注送信ボタン表示/非表示制御
 						var data = {
@@ -134,12 +136,14 @@ define([
 			events: {
 				// 「キャンセル」ボタン
 				'click @ui.cancel': function(){
-					// 検索画面以外から遷移してきた場合はホーム画面に戻る
-					if(window.sessionStorage.getItem('referrer')=='wearer_search'||window.sessionStorage.getItem('referrer')=='wearer_order'){
-						location.href = './wearer_search.html';
-					}else{
-						location.href = './home.html';
+					if(confirm('入力された情報が削除されますが、よろしいでしょうか？')){
+						// 検索画面以外から遷移してきた場合はホーム画面に戻る
+						if(window.sessionStorage.getItem('referrer')=='wearer_search'||window.sessionStorage.getItem('referrer')=='wearer_order'){
+							location.href = './wearer_search.html';
+						}else{
+							location.href = './home.html';
 
+						}
 					}
 				},
 				// 「戻る」ボタン
@@ -195,20 +199,27 @@ define([
 				// 「発注取消」ボタン
 				'click @ui.delete': function(){
 					var that = this;
+					var model = this.model;
+					if(confirm("発注を削除しますが、よろしいですか？")){
+						var cond = {
+							"scr": '発注取消',
+						};
+						model.url = App.api.WO0015;
 
-					var modelForUpdate = this.model;
-					modelForUpdate.url = App.api.CM0130;
-					var cond = {
-						"scr": '更新可否チェック',
+						model.fetchMx({
+							data:cond,
+							success:function(res){
+								var res_val = res.attributes;
+								if(res_val["error_msg"]) {
+									that.triggerMethod('error_msg', res_val["error_msg"]);
+								}else{
+									window.sessionStorage.setItem('referrer', 'wearer_input');
+									location.href = './wearer_input.html';
+								}
+							}
+						});
 					};
-					modelForUpdate.fetchMx({
-						data:cond,
-						success:function(res){
-							var type = "cm0130_res";
-							var res_val = res.attributes;
-							that.onShow(res_val, type);
-						}
-					});
+
 				},
 				'change @ui.section': function(){
 					this.ui.section = $('#section');
@@ -256,19 +267,121 @@ define([
 					e.preventDefault();
 					this.triggerMethod('click:section_btn', this.model);
 				},
-				// // 「入力完了」ボタン
-				// 'click @ui.complete': function(){
-				// 	alert('発注入力が完了しました。');
-				// },
-				// 「発注送信」ボタン
-				'click @ui.inputButton': function(){
-					alert('保存だよ。');
-					location.href="wearer_order_complete.html";
+				// // 「保存」ボタン
+				'click @ui.inputButton': function(e){
+					e.preventDefault();
+					var that = this;
+
+					var modelForUpdate = this.model;
+					modelForUpdate.url = App.api.WO0014;
+					if(this.ui.shipment_to.val()){
+						var m_shipment_to_array = this.ui.shipment_to.val().split(',');
+					}
+					this.ui.section = $('#section');
+					var section = $("select[name='section']").val();
+					var job_types = $('#job_type').val().split(':');
+					this.ui.comment = $('#comment');
+
+					var data = {
+						'reason_kbn': $("select[name='reason_kbn']").val(),
+						'rntl_sect_cd': section,
+						'job_type': job_types[0],
+						'order_count': that.ui.order_count.val(),
+						'comment': this.ui.comment.val()
+					};
+					// 追加されるアイテム
+					var add_list_cnt = $("input[name='add_list_cnt']").val();
+					var add_item = new Object();
+					for (var i=0; i<add_list_cnt; i++) {
+						add_item[i] = new Object();
+						add_item[i]["add_rntl_sect_cd"] = $("input[name='add_rntl_sect_cd"+i+"']").val();
+						add_item[i]["add_job_type_cd"] = $("input[name='add_job_type_cd"+i+"']").val();
+						add_item[i]["add_job_type_item_cd"] = $("input[name='add_job_type_item_cd"+i+"']").val();
+						add_item[i]["add_item_cd"] = $("input[name='add_item_cd"+i+"']").val();
+						add_item[i]["add_color_cd"] = $("input[name='add_color_cd"+i+"']").val();
+						add_item[i]["add_choice_type"] = $("input[name='add_choice_type"+i+"']").val();
+						add_item[i]["add_std_input_qty"] = $("input[name='add_std_input_qty"+i+"']").val();
+						add_item[i]["add_size_cd"] = $("select[name='add_size_cd"+i+"']").val();
+						add_item[i]["add_order_num"] = $("input[name='add_order_num"+i+"']").val();
+						add_item[i]["add_order_num_disable"] = $("input[name='add_order_num_disable"+i+"']").val();
+					}
+					var cond = {
+						"scr": '着用者発注保存',
+						"cond": data,
+						"snd_kbn": '0',
+						"add_item": add_item
+					};
+					modelForUpdate.fetchMx({
+						data: cond,
+						success: function (res) {
+							var res_val = res.attributes;
+							if(res_val["error_code"]=='1') {
+								that.triggerMethod('error_msg', res_val["error_msg"]);
+							}else{
+								window.sessionStorage.setItem('referrer', 'wearer_order_input');
+								location.href="wearer_order_complete.html";
+							}
+						}
+					});
 				},
 				// 「発注送信」ボタン
-				'click @ui.orderSend': function(){
-					alert('発注送信が完了しました。');
-					location.href="wearer_order_complete.html";
+				'click @ui.orderSend': function(e){
+					e.preventDefault();
+					if(confirm('発注内容を送信します。よろしいですか？')){
+
+						var that = this;
+
+						var modelForUpdate = this.model;
+						modelForUpdate.url = App.api.WO0014;
+						if(this.ui.shipment_to.val()){
+							var m_shipment_to_array = this.ui.shipment_to.val().split(',');
+						}
+						this.ui.section = $('#section');
+						var section = $("select[name='section']").val();
+						var job_types = $('#job_type').val().split(':');
+						this.ui.comment = $('#comment');
+						var data = {
+							'reason_kbn': $("select[name='reason_kbn']").val(),
+							'rntl_sect_cd': section,
+							'job_type': job_types[0],
+							'order_count': that.ui.order_count.val(),
+							'comment': this.ui.comment.val()
+						};
+						// 追加されるアイテム
+						var add_list_cnt = $("input[name='add_list_cnt']").val();
+						var add_item = new Object();
+						for (var i=0; i<add_list_cnt; i++) {
+							add_item[i] = new Object();
+							add_item[i]["add_rntl_sect_cd"] = $("input[name='add_rntl_sect_cd"+i+"']").val();
+							add_item[i]["add_job_type_cd"] = $("input[name='add_job_type_cd"+i+"']").val();
+							add_item[i]["add_job_type_item_cd"] = $("input[name='add_job_type_item_cd"+i+"']").val();
+							add_item[i]["add_item_cd"] = $("input[name='add_item_cd"+i+"']").val();
+							add_item[i]["add_color_cd"] = $("input[name='add_color_cd"+i+"']").val();
+							add_item[i]["add_choice_type"] = $("input[name='add_choice_type"+i+"']").val();
+							add_item[i]["add_std_input_qty"] = $("input[name='add_std_input_qty"+i+"']").val();
+							add_item[i]["add_size_cd"] = $("select[name='add_size_cd"+i+"']").val();
+							add_item[i]["add_order_num"] = $("input[name='add_order_num"+i+"']").val();
+							add_item[i]["add_order_num_disable"] = $("input[name='add_order_num_disable"+i+"']").val();
+						}
+						var cond = {
+							"scr": '着用者発注送信',
+							"cond": data,
+							"snd_kbn": '1',
+							"add_item": add_item
+						};
+						modelForUpdate.fetchMx({
+							data: cond,
+							success: function (res) {
+								var res_val = res.attributes;
+								if(res_val["error_msg"]) {
+									that.triggerMethod('error_msg', res_val["error_msg"]);
+								}else{
+									window.sessionStorage.setItem('referrer', 'wearer_order_send');
+									location.href="wearer_order_complete.html";
+								}
+							}
+						});
+					};
 				},
 				'change @ui.job_type': function (e) {
 					//貸与パターン」のセレクトボックス変更時に、職種マスタ．特別職種フラグ＝ありの貸与パターンだった場合、アラートメッセージを表示する。
@@ -296,29 +409,29 @@ define([
 				// 	}
 				// }
 				// 発注取消処理
-				if (type == "WC0020_req") {
-					var msg = "削除しますが、よろしいですか？";
-					if (window.confirm(msg)) {
-						var modelForUpdate = this.model;
-						modelForUpdate.url = App.api.WC0020;
-						var cond = {
-							"scr": '発注取消',
-						};
-						modelForUpdate.fetchMx({
-							data:cond,
-							success:function(res){
-								var type = "WC0020_res";
-								var res_val = res.attributes;
-
-								if (res_val["error_code"] == "0") {
-									alert('発注取消が完了しました。');
-								} else {
-									alert('発注取消中にエラーが発生しました。');
-								}
-							}
-						});
-					}
-				}
+				// if (type == "WC0020_req") {
+				// 	var msg = "削除しますが、よろしいですか？";
+				// 	if (window.confirm(msg)) {
+				// 		var modelForUpdate = this.model;
+				// 		modelForUpdate.url = App.api.WC0020;
+				// 		var cond = {
+				// 			"scr": '発注取消',
+				// 		};
+				// 		modelForUpdate.fetchMx({
+				// 			data:cond,
+				// 			success:function(res){
+				// 				var type = "WC0020_res";
+				// 				var res_val = res.attributes;
+                //
+				// 				if (res_val["error_code"] == "0") {
+				// 					alert('発注取消が完了しました。');
+				// 				} else {
+				// 					alert('発注取消中にエラーが発生しました。');
+				// 				}
+				// 			}
+				// 		});
+				// 	}
+				// }
 			},
 		});
 	});

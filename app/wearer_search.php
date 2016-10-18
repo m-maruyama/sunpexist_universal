@@ -73,6 +73,7 @@ $app->post('/wearer_search/search', function ()use($app){
     $arg_str .= "m_wearer_std_tran.appointment_ymd as as_appointment_ymd,";
     $arg_str .= "m_wearer_std_tran.resfl_ymd as as_resfl_ymd,";
     $arg_str .= "t_order_tran.order_reason_kbn as as_order_reason_kbn,";
+    $arg_str .= "t_order_tran.order_req_no as as_order_req_no,";
     $arg_str .= "m_section.rntl_sect_name as as_rntl_sect_name,";
     $arg_str .= "m_job_type.job_type_name as as_job_type_name,";
     $arg_str .= "m_job_type.job_type_cd as as_job_type_cd";
@@ -158,10 +159,12 @@ $app->post('/wearer_search/search', function ()use($app){
 
             // 発注、発注情報トラン有無フラグ
             if (isset($result->as_order_sts_kbn)) {
+                $list['order_req_no'] = $result->as_order_req_no;
                 $list['order_kbn'] = "済";
                 // 発注情報トラン有
                 $list['order_tran_flg'] = '1';
             }else{
+                $list['order_req_no'] = null;
                 $list['order_kbn'] = "未";
                 // 発注情報トラン無
                 $list['order_tran_flg'] = '0';
@@ -266,7 +269,8 @@ $app->post('/wearer_search/search', function ()use($app){
             $list['param'] .= $list['wearer_tran_flg'].':';
             $list['param'] .= $list['appointment_ymd'].':';
             $list['param'] .= $list['resfl_ymd'].':';
-            $list['param'] .= $list['m_wearer_std_comb_hkey'];
+            $list['param'] .= $list['m_wearer_std_comb_hkey'].':';
+            $list['param'] .= $list['order_req_no'];
             array_push($all_list,$list);
         }
     }
@@ -290,17 +294,27 @@ $app->post('/wearer_search/req_param', function ()use($app){
 
     // パラメータ取得
     $cond = $params['data'];
-    if(isset($cond["order_reason_kbn"])){
+    $wearer_chg_post = $app->session->get("wearer_chg_post");
+
+    if(isset($wearer_chg_post['order_reason_kbn'])){
+        $order_reason_kbn = $wearer_chg_post["order_reason_kbn"];
+
+    }elseif(isset($cond["order_reason_kbn"])){
         $order_reason_kbn = $cond["order_reason_kbn"];
     }else{
         $order_reason_kbn = '7';
     }
     if(isset($cond["order_tran_flg"])){
         $order_tran_flg = $cond["order_tran_flg"];
+    }elseif(isset($wearer_chg_post['order_tran_flg'])){
+        $order_tran_flg = $wearer_chg_post["order_tran_flg"];
     }else{
         $order_tran_flg = '0';
     }
-    if(isset($cond["wearer_tran_flg"])){
+    if(isset($wearer_chg_post['wearer_tran_flg'])){
+        $wearer_tran_flg = $wearer_chg_post["wearer_tran_flg"];
+
+    }elseif(isset($cond["wearer_tran_flg"])){
         $wearer_tran_flg = $cond["wearer_tran_flg"];
     }else{
         $wearer_tran_flg = '0';
@@ -333,7 +347,6 @@ $app->post('/wearer_search/req_param', function ()use($app){
     if(!isset($cond["werer_name_kana"])){
         $cond["werer_name_kana"] = '';
     }
-    $wearer_chg_post = $app->session->get("wearer_chg_post");
     if(!isset($cond["m_wearer_std_comb_hkey"])&&!isset($wearer_chg_post['m_wearer_std_comb_hkey'])){
         $cond["m_wearer_std_comb_hkey"] = '';
     }elseif($wearer_chg_post['m_wearer_std_comb_hkey']){
@@ -342,6 +355,9 @@ $app->post('/wearer_search/req_param', function ()use($app){
         $cond["m_wearer_std_comb_hkey"] = $cond["m_wearer_std_comb_hkey"];
     }
 
+    if(!isset($cond["order_req_no"])){
+        $cond["order_req_no"] = $wearer_chg_post['order_req_no'];
+    }
     // POSTパラメータのセッション格納
     $app->session->set("wearer_chg_post", array(
         'rntl_cont_no' => $cond["rntl_cont_no"],
@@ -360,6 +376,7 @@ $app->post('/wearer_search/req_param', function ()use($app){
         'appointment_ymd' => $cond["appointment_ymd"],
         'resfl_ymd' => $cond["resfl_ymd"],
         'm_wearer_std_comb_hkey' => $cond["m_wearer_std_comb_hkey"],
+        'order_req_no' => $cond["order_req_no"],
     ));
     $json_list = array();
     $json_list = $cond;
