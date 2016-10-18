@@ -1,16 +1,10 @@
 <!--tr class="blue"-->
-  <td>{{list_no}}</td>
+  <td>{{interrogator_date}}</td>
+  <td>{{interrogator_answer_date}}</td>
+  <td>{{corporate_id}} {{corporate_name}}</td>
   <td>{{rntl_sect_name}}</td>
-  <td>{{staff_total}}</td>
-  {{#if detail_flg}}
-  <td><a type="button" id="{{agreement_no}}:{{rntl_sect_cd}}:{{rntl_sect_name}}:{{yyyymm}}:{{staff_total}}" class="btn btn-primary btn-sm manpower_detail_btn" title="詳細">詳細</a></td>
-  <td><a type="button" id="{{agreement_no}}:{{rntl_sect_cd}}:{{rntl_sect_name}}:{{yyyymm}}:{{staff_total}}" class="btn btn-primary btn-sm manpower_detail_download_btn" title="ダウンロード">ダウンロード</a></td>
-  {{else}}
-  <td><a type="button" id="{{agreement_no}}:{{rntl_sect_cd}}:{{rntl_sect_name}}:{{yyyymm}}:{{staff_total}}" class="btn btn-primary btn-sm manpower_detail_btn" title="詳細">詳細</a></td>
-  <td><a type="button" id="{{agreement_no}}:{{rntl_sect_cd}}:{{rntl_sect_name}}:{{yyyymm}}:{{staff_total}}" class="btn btn-primary btn-sm manpower_detail_download_btn" title="ダウンロード">ダウンロード</a></td>
-<!--
-  <td>-</td>
-  <td>-</td>
--->
-  {{/if}}
-<!--/tr-->
+  <td>{{interrogator_name}}</td>
+  <td>{{genre_name}}</td>
+  <td>{{interrogator_info}}</td>
+  <td>{{rntl_cont_no}}</td>
+  <td><a type="button" id="{{agreement_no}}:{{rntl_sect_cd}}:{{rntl_sect_name}}:{{yyyymm}}:{{staff_total}}" class="btn btn-primary btn-sm contact_detail_btn" title="詳細">詳細</a></td>

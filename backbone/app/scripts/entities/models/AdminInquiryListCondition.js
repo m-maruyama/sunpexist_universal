@@ -10,22 +10,48 @@ define([
 			},
 			getReq: function() {
 				var result = {
+					corporate : null,
 					agreement_no : null,
-					target_ym : null,
+					answer_kbn0 : this.get('answer_kbn0'),
+					answer_kbn1 : this.get('answer_kbn1'),
+					contact_day_from : null,
+					contact_day_to : null,
+					answer_day_from : null,
+					answer_day_to : null,
 					section : null,
-					td_no : null,
+					interrogator_name : null,
+					genre : null,
+					interrogator_info : null
 				};
+				if(this.get('corporate')) {
+					result.corporate = this.get('corporate');
+				}
 				if(this.get('agreement_no')) {
 					result.agreement_no = this.get('agreement_no');
 				}
-				if(this.get('target_ym')) {
-					result.target_ym = this.get('target_ym');
+				if(this.get('contact_day_from')) {
+					result.contact_day_from = this.get('contact_day_from');
+				}
+				if(this.get('contact_day_to')) {
+					result.contact_day_to = this.get('contact_day_to');
+				}
+				if(this.get('answer_day_from')) {
+					result.answer_day_from = this.get('answer_day_from');
+				}
+				if(this.get('answer_day_to')) {
+					result.answer_day_to = this.get('answer_day_to');
 				}
 				if(this.get('section')) {
 					result.section = this.get('section');
 				}
-				if(this.get('td_no')) {
-					result.td_no = this.get('td_no');
+				if(this.get('interrogator_name')) {
+					result.interrogator_name = this.get('interrogator_name');
+				}
+				if(this.get('genre')) {
+					result.genre = this.get('genre');
+				}
+				if(this.get('interrogator_info')) {
+					result.interrogator_info = this.get('interrogator_info');
 				}
 //console.log(result);
 				return result;
