@@ -1274,7 +1274,7 @@ $app->post('/btn_possible_chk', function ()use($app) {
   $query_list = array();
   array_push($query_list, "m_contract_resource.corporate_id = '".$auth['corporate_id']."'");
   array_push($query_list, "m_contract_resource.accnt_no = '".$auth['accnt_no']."'");
-  array_push($query_list, "m_contract_resource.rntl_cont_no = '".$auth['rntl_cont_no']."'");
+  array_push($query_list, "m_contract_resource.rntl_cont_no = '".$cond['rntl_cont_no']."'");
   array_push($query_list, "m_contract_resource.rntl_sect_cd = '".$cond['rntl_sect_cd']."'");
   $query = implode(' AND ', $query_list);
 

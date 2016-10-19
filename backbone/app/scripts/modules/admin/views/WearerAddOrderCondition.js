@@ -102,6 +102,7 @@ define([
 
 						// 入力完了、発注送信ボタン表示/非表示制御
 						var data = {
+							'rntl_cont_no': res_list['rntl_cont_no'],
 							'rntl_sect_cd': res_list['rntl_sect_cd']
 						}
 						var modelForUpdate2 = that.model;

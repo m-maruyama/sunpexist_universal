@@ -44,12 +44,12 @@ define([
 
 				// 入力内容登録処理
 				var modelForUpdate = this.model;
-				modelForUpdate.url = App.api.WR0018;
+				modelForUpdate.url = App.api.WR0023;
 				var cond = {
 					"scr": scr,
 					"mode": mode,
 					"wearer_data": wearer_data,
-					"item": item,
+					"item": item
 				};
 				//console.log(cond);
 
@@ -60,6 +60,9 @@ define([
 						if (res_val["error_code"] == "1") {
 							// 登録処理にエラーがある場合
 							that.triggerMethod('showAlerts', res_val["error_msg"]);
+						} else {
+							// 正常完了の場合、「返却伝票印刷」ボタンを表示
+							$('.returnSlipDownload').css('display', '');
 						}
 					}
 				});

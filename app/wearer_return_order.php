@@ -759,7 +759,7 @@ $app->post('/wearer_return_info', function ()use($app){
              array_push($list["individual_ctrl_no"], $t_delivery_goods_state_details_result->individual_ctrl_no);
              $element["name_no"] = $list["arr_num"];
              $element["individual_ctrl_no"] = $t_delivery_goods_state_details_result->individual_ctrl_no;
-             if ($results_cnt - 1 == $i) {
+             if ($results_cnt - 1 !== $i) {
                $element["br"] = "<br/>";
              } else {
                $element["br"] = "";
@@ -933,7 +933,7 @@ $app->post('/wearer_return_info', function ()use($app){
              array_push($list["individual_ctrl_no"], $t_delivery_goods_state_details_result->individual_ctrl_no);
              $element["name_no"] = $list["arr_num"];
              $element["individual_ctrl_no"] = $t_delivery_goods_state_details_result->individual_ctrl_no;
-             if ($results_cnt - 1 == $i) {
+             if ($results_cnt - 1 !== $i) {
                $element["br"] = "<br/>";
              } else {
                $element["br"] = "";
@@ -1084,8 +1084,8 @@ $app->post('/wearer_return_delete', function ()use($app){
     $query_list = array();
     array_push($query_list, "t_order_tran.corporate_id = '".$auth['corporate_id']."'");
     array_push($query_list, "t_order_tran.order_req_no = '".$cond['order_req_no']."'");
-    // 発注区分「貸与」
-    array_push($query_list, "t_order_tran.order_sts_kbn = '1'");
+    // 発注区分「終了」
+    array_push($query_list, "t_order_tran.order_sts_kbn = '2'");
     // 理由区分「不要品返却」系ステータス
     array_push($query_list, "t_order_tran.order_reason_kbn = '07'");
     $query = implode(' AND ', $query_list);
@@ -1108,8 +1108,8 @@ $app->post('/wearer_return_delete', function ()use($app){
     $query_list = array();
     array_push($query_list, "t_returned_plan_info_tran.corporate_id = '".$auth['corporate_id']."'");
     array_push($query_list, "t_returned_plan_info_tran.order_req_no = '".$cond['return_req_no']."'");
-    // 発注区分「貸与」
-    array_push($query_list, "t_returned_plan_info_tran.order_sts_kbn = '1'");
+    // 発注区分「終了」
+    array_push($query_list, "t_returned_plan_info_tran.order_sts_kbn = '2'");
     // 理由区分「不要品返却」系ステータス
     array_push($query_list, "t_returned_plan_info_tran.order_reason_kbn = '07'");
     $query = implode(' AND ', $query_list);
@@ -1183,6 +1183,14 @@ ChromePhp::LOG("発注商品一覧");
 ChromePhp::LOG($item_input);
 */
      //--入力内容確認--//
+     // 共通
+     if (empty($item_list)) {
+       $json_list["error_code"] = "1";
+       $error_msg = "対象商品がない為、不良品返却登録を行うことができません。";
+       array_push($json_list["error_msg"], $error_msg);
+       echo json_encode($json_list);
+       return;
+     }
      // 社員コード
      if ($wearer_data_input['emply_cd_flg']) {
        if (mb_strlen($wearer_data_input['member_no']) == 0) {
@@ -1842,6 +1850,19 @@ ChromePhp::LOG($item_input);
             ($item_map["individual_flg"] == false && !empty($item_map["return_num"]))
            )
            {
+             // 個体管理番号単位の場合、商品毎の対象チェックが１つ以上あるもののみ登録する。それ以外は登録対象外
+             if (!empty($item_map["individual_data"])) {
+               $target_cnt = 0;
+               foreach ($item_map["individual_data"] as $individual_data) {
+                 if ($individual_data["target_flg"] == "1") {
+                   $target_cnt = $target_cnt + 1;
+                 }
+               }
+               if ($target_cnt == 0) {
+                 continue;
+               }
+             }
+
              $calum_list = array();
              $values_list = array();
              // 発注依頼行No.生成
@@ -2184,7 +2205,7 @@ ChromePhp::LOG($item_input);
               array_push($values_list, "'".$individual_data['individual_ctrl_no']."'");
               // 着用者コード
               array_push($calum_list, "werer_cd");
-              array_push($values_list, "'".$wearer_return_post['werer_cd']."'");
+              array_push($values_list, "'".$wearer_other_post['werer_cd']."'");
               // 客先社員コード
               if (isset($wearer_data_input['member_no'])) {
                 array_push($calum_list, "cster_emply_cd");
@@ -2284,7 +2305,7 @@ ChromePhp::LOG($item_input);
             array_push($values_list, "'".$item_map['size_cd']."'");
             // 着用者コード
             array_push($calum_list, "werer_cd");
-            array_push($values_list, "'".$wearer_return_post['werer_cd']."'");
+            array_push($values_list, "'".$wearer_other_post['werer_cd']."'");
             // 客先社員コード
             if (isset($wearer_data_input['member_no'])) {
               array_push($calum_list, "cster_emply_cd");
@@ -2412,6 +2433,14 @@ ChromePhp::LOG("発注商品一覧");
 ChromePhp::LOG($item_input);
 */
     //--入力内容確認--//
+    // 共通
+    if (empty($item_list)) {
+      $json_list["error_code"] = "1";
+      $error_msg = "対象商品がない為、不良品返却登録を行うことができません。";
+      array_push($json_list["error_msg"], $error_msg);
+      echo json_encode($json_list);
+      return;
+    }
     // 社員コード
     if ($wearer_data_input['emply_cd_flg']) {
       if (mb_strlen($wearer_data_input['member_no']) == 0) {
@@ -2443,16 +2472,85 @@ ChromePhp::LOG($item_input);
     }
     // 発注商品一覧
     foreach ($item_list as $item_map) {
-      // 発注枚数フォーマットチェック
-      if (empty($item_map["order_num_disable"])) {
-        if (!ctype_digit(strval($item_map["order_num"]))) {
-          if (empty($order_num_format_err)) {
-            $order_num_format_err = "err";
+      // 返却枚数フォーマットチェック
+      if (!empty($item_map["return_num"])) {
+        if (!ctype_digit(strval($item_map["return_num"]))) {
+          if (empty($return_num_format_err)) {
+            $return_num_format_err = "err";
             $json_list["error_code"] = "1";
-            $error_msg = "発注商品一覧の発注枚数には半角数字を入力してください。";
+            $error_msg = "発注商品一覧の返却枚数には半角数字を入力してください。";
             array_push($json_list["error_msg"], $error_msg);
           }
         }
+      }
+      if (!$item_map["individual_flg"]) {
+        // ※個体管理番号表示フラグがOFFの場合
+        // 商品毎返却可能チェック
+        if (!empty($item_map["return_num"])) {
+          if ($item_map["return_num"] > $item_map["possible_num"]) {
+            if (empty($return_num_possible_err)) {
+              $return_num_possible_err = "err";
+              $json_list["error_code"] = "1";
+              $error_msg = "発注商品一覧にて返却枚数が現在の所持枚数を超過している商品があります。";
+              array_push($json_list["error_msg"], $error_msg);
+            }
+          }
+        }
+      } else {
+        // ※個体管理番号表示フラグがONの場合
+        // 商品毎返却可能チェック
+        if (!empty($item_map["individual_data"])) {
+          $target_cnt = 0;
+          foreach ($item_map["individual_data"] as $individual_data) {
+            if ($individual_data["target_flg"] == "1") {
+              $target_cnt++;
+            }
+          }
+          if ($item_map["possible_num"] < $target_cnt) {
+            if (empty($return_num_possible_err)) {
+              $return_num_possible_err = "err";
+              $json_list["error_code"] = "1";
+              $error_msg = "発注商品一覧にて返却枚数が現在の所持枚数を超過している商品があります。";
+              array_push($json_list["error_msg"], $error_msg);
+            }
+          }
+        }
+      }
+    }
+    if (empty($json_list["error_code"]) && empty($json_list["error_msg"])) {
+      $sum_possible_num = 0;
+      $sum_return_num = 0;
+      foreach ($item_list as $item_map) {
+        $sum_possible_num += $item_map["possible_num"];
+        if ($item_map["individual_flg"] == false) {
+          // ※個体管理番号表示フラグがOFFの場合
+          // 返却可能総枚数チェック
+          if (!empty($item_map["return_num"])) {
+            $sum_return_num += $item_map["return_num"];
+          }
+        } else {
+          // ※個体管理番号表示フラグがONの場合
+          // 返却可能総枚数チェック
+          $target_cnt = 0;
+          if (!empty($item_map["individual_data"])) {
+            foreach ($item_map["individual_data"] as $individual_data) {
+              if ($individual_data["target_flg"] == "1") {
+                $target_cnt += 1;
+              }
+            }
+            $sum_return_num += $target_cnt;
+          }
+        }
+      }
+      if ($sum_return_num == 0) {
+        $json_list["error_code"] = "1";
+        $error_msg = "１つ以上の商品の返却枚数を指定してから登録を行ってください。";
+        array_push($json_list["error_msg"], $error_msg);
+      }
+      if ($sum_possible_num <= $sum_return_num) {
+        $json_list["error_code"] = "1";
+        $error_msg = "現在所持している商品を全て返却することはできません。";
+        array_push($json_list["error_msg"], $error_msg);
       }
     }
 
@@ -2517,8 +2615,6 @@ ChromePhp::LOG($item_input);
     array_push($query_list, "corporate_id = '".$auth['corporate_id']."'");
     array_push($query_list, "rntl_cont_no = '".$wearer_other_post['rntl_cont_no']."'");
     array_push($query_list, "werer_cd = '".$wearer_other_post['werer_cd']."'");
-    array_push($query_list, "rntl_sect_cd = '".$wearer_other_post['rntl_sect_cd']."'");
-    array_push($query_list, "job_type_cd = '".$wearer_other_post['job_type_cd']."'");
     $query = implode(' AND ', $query_list);
 
     $arg_str = "";
@@ -2539,7 +2635,7 @@ ChromePhp::LOG($item_input);
       $paginator_model = new PaginatorModel(
           array(
               "data"  => $results,
-              "limit" => 1,
+              "limit" => $results_cnt,
               "page" => 1
           )
       );
@@ -2549,22 +2645,22 @@ ChromePhp::LOG($item_input);
       foreach ($results as $result) {
         $order_sts_kbn = $result->order_sts_kbn;
         $order_reason_kbn = $result->order_reason_kbn;
-      }
 
-      // 発注情報トラン.発注状況区分 = 「終了」または「異動」情報がある際は発注NG
-      if ($order_sts_kbn == "2" && ($order_reason_kbn == "05" || $order_reason_kbn == "06" || $order_reason_kbn == "08" || $order_reason_kbn == "20")) {
-        $json_list["erorr_code"] = "1";
-        $error_msg = "貸与終了の発注が登録されていた為、操作を完了できませんでした。貸与終了の発注を削除してから再度登録して下さい。";
-        $json_list["erorr_msg"] = $error_msg;
-        echo json_encode($json_list);
-        return;
-      }
-      if ($order_sts_kbn == "5" && ($order_reason_kbn == "09" || $order_reason_kbn == "10" || $order_reason_kbn == "11" || $order_reason_kbn == "24")) {
-        $json_list["erorr_code"] = "1";
-        $error_msg = "職種変更または異動の発注が登録されていた為、操作を完了できませんでした。職種変更または異動の発注を削除してから再度登録して下さい。";
-        $json_list["erorr_msg"] = $error_msg;
-        echo json_encode($json_list);
-        return;
+        // 発注情報トラン.発注状況区分 = 「終了」または「異動」情報がある際は発注NG
+        if ($order_sts_kbn == "2" && ($order_reason_kbn == "05" || $order_reason_kbn == "06" || $order_reason_kbn == "08" || $order_reason_kbn == "20")) {
+          $json_list["erorr_code"] = "1";
+          $error_msg = "貸与終了の発注が登録されていた為、操作を完了できませんでした。貸与終了の発注を削除してから再度登録して下さい。";
+          $json_list["erorr_msg"] = $error_msg;
+          echo json_encode($json_list);
+          return;
+        }
+        if ($order_sts_kbn == "5" && ($order_reason_kbn == "09" || $order_reason_kbn == "10" || $order_reason_kbn == "11" || $order_reason_kbn == "24")) {
+          $json_list["erorr_code"] = "1";
+          $error_msg = "職種変更または異動の発注が登録されていた為、操作を完了できませんでした。職種変更または異動の発注を削除してから再度登録して下さい。";
+          $json_list["erorr_msg"] = $error_msg;
+          echo json_encode($json_list);
+          return;
+        }
       }
     }
     //--発注NGパターンチェック-- ここまで//
@@ -2619,10 +2715,10 @@ ChromePhp::LOG($item_input);
         array_push($src_query_list, "werer_cd = '".$wearer_other_post['werer_cd']."'");
         array_push($src_query_list, "rntl_sect_cd = '".$wearer_other_post['rntl_sect_cd']."'");
         array_push($src_query_list, "job_type_cd = '".$wearer_other_post['job_type_cd']."'");
-        // 発注状況区分(貸与)
+        // 発注状況区分(終了)
         array_push($query_list,"order_sts_kbn = '1'");
-        // 着用者状況区分(その他（着用開始）)
-        array_push($query_list,"werer_sts_kbn = '7'");
+        // 着用者状況区分(その他（着用終了）)
+        array_push($query_list,"werer_sts_kbn = '3'");
         $src_query = implode(' AND ', $src_query_list);
 
         $up_query_list = array();
@@ -2663,8 +2759,8 @@ ChromePhp::LOG($item_input);
         }
         // 性別区分
         array_push($up_query_list, "sex_kbn = '".$wearer_data_input['sex_kbn']."'");
-        // 着用者状況区分(その他（着用開始）)
-        array_push($up_query_list, "werer_sts_kbn = '7'");
+        // 着用者状況区分(その他（着用終了）)
+        array_push($up_query_list, "werer_sts_kbn = '3'");
         // 出荷先、出荷先支店コード
         if (!empty($wearer_data_input['shipment'])) {
           $shipment = explode(':', $wearer_data_input['shipment']);
@@ -2709,12 +2805,12 @@ ChromePhp::LOG($item_input);
           array_push($up_query_list, "ship_to_cd = '".$ship_to_cd."'");
           array_push($up_query_list, "ship_to_brnch_cd = '".$ship_to_brnch_cd."'");
         }
-        // 発注状況区分(貸与)
+        // 発注状況区分(終了)
         if ($order_sts_kbn !== "6") {
-          array_push($up_query_list, "order_sts_kbn = '1'");
+          array_push($up_query_list, "order_sts_kbn = '2'");
         }
-        // 更新区分(WEB発注システム(新規登録）)
-        array_push($up_query_list, "upd_kbn = '1'");
+        // 更新区分(WEB発注システム(終了）)
+        array_push($up_query_list, "upd_kbn = '2'");
         // Web更新日時
         array_push($up_query_list, "web_upd_date = '".date("Y/m/d H:i:s", time())."'");
         // 送信区分(送信済み)
@@ -2806,9 +2902,9 @@ ChromePhp::LOG($item_input);
         // 性別区分
         array_push($calum_list, "sex_kbn");
         array_push($values_list, "'".$wearer_data_input['sex_kbn']."'");
-        // 着用者状況区分(その他（着用開始）)
+        // 着用者状況区分(その他（着用終了）)
         array_push($calum_list, "werer_sts_kbn");
-        array_push($values_list, "'7'");
+        array_push($values_list, "'3'");
         // 出荷先、出荷先支店コード
         if (!empty($wearer_data_input['shipment'])) {
           $shipment = explode(':', $wearer_data_input['shipment']);
@@ -2855,9 +2951,9 @@ ChromePhp::LOG($item_input);
           array_push($calum_list, "ship_to_brnch_cd");
           array_push($values_list, "'".$ship_to_brnch_cd."'");
         }
-        // 発注状況区分(貸与)
+        // 発注状況区分(終了)
         array_push($calum_list, "order_sts_kbn");
-        array_push($values_list, "'1'");
+        array_push($values_list, "'2'");
         // 更新区分(WEB発注システム(新規登録))
         array_push($calum_list, "upd_kbn");
         array_push($values_list, "'1'");
@@ -2928,12 +3024,12 @@ ChromePhp::LOG($item_input);
           array_push($query_list, "corporate_id = '".$auth['corporate_id']."'");
           array_push($query_list, "rntl_cont_no = '".$wearer_other_post['rntl_cont_no']."'");
           array_push($query_list, "werer_cd = '".$wearer_other_post['werer_cd']."'");
-          // 発注状況区分「貸与」
-          array_push($query_list, "order_sts_kbn = '1'");
+          // 発注状況区分「終了」
+          array_push($query_list, "order_sts_kbn = '2'");
           // 理由区分「不要品返却」
-          array_push($query_list, "order_reason_kbn = '03'");
-          // 着用者状況区分「その他（着用開始）」
-          array_push($query_list, "werer_sts_kbn = '7'");
+          array_push($query_list, "order_reason_kbn = '07'");
+          // 着用者状況区分「その他（着用終了）」
+          array_push($query_list, "werer_sts_kbn = '3'");
           $query = implode(' AND ', $query_list);
 
           $arg_str = "";
@@ -2999,227 +3095,535 @@ ChromePhp::LOG($item_input);
 
         //ChromePhp::LOG("発注情報トラン登録");
         foreach ($item_list as $item_map) {
-          $calum_list = array();
-          $values_list = array();
-          // 発注依頼行No.生成
-          $order_req_line_no = $cnt++;
-          // 発注情報_統合ハッシュキー(企業ID、発注依頼No、発注依頼行No)
-          $t_order_comb_hkey = md5(
-            $auth['corporate_id']
-            .$shin_order_req_no
-            .$order_req_line_no
-          );
-          array_push($calum_list, "t_order_comb_hkey");
-          array_push($values_list, "'".$t_order_comb_hkey."'");
-          // 企業ID
-          array_push($calum_list, "corporate_id");
-          array_push($values_list, "'".$auth['corporate_id']."'");
-          // 発注依頼No.
-          array_push($calum_list, "order_req_no");
-          array_push($values_list, "'".$shin_order_req_no."'");
-          // 発注依頼行No.
-          array_push($calum_list, "order_req_line_no");
-          array_push($values_list, "'".$order_req_line_no."'");
-          // 発注依頼日
-          array_push($calum_list, "order_req_ymd");
-          array_push($values_list, "'".date('Ymd', time())."'");
-          // 発注状況区分(貸与)
-          array_push($calum_list, "order_sts_kbn");
-          array_push($values_list, "'1'");
-          // レンタル契約No
-          array_push($calum_list, "rntl_cont_no");
-          array_push($values_list, "'".$wearer_data_input['agreement_no']."'");
-          // レンタル部門コード
-          array_push($calum_list, "rntl_sect_cd");
-          array_push($values_list, "'".$wearer_data_input['section']."'");
-          // 貸与パターン
-          $job_type_cd = explode(':', $wearer_data_input['job_type']);
-          $job_type_cd = $job_type_cd[0];
-          array_push($calum_list, "job_type_cd");
-          array_push($values_list, "'".$job_type_cd."'");
-          // 職種アイテムコード
-          array_push($calum_list, "job_type_item_cd");
-          array_push($values_list, "'".$item_map['job_type_item_cd']."'");
-          // 着用者コード
-          array_push($calum_list, "werer_cd");
-          array_push($values_list, "'".$wearer_other_post['werer_cd']."'");
-          // 商品コード
-          array_push($calum_list, "item_cd");
-          array_push($values_list, "'".$item_map['item_cd']."'");
-          // 色コード
-          array_push($calum_list, "color_cd");
-          array_push($values_list, "'".$item_map['color_cd']."'");
-          // サイズコード
-          array_push($calum_list, "size_cd");
-          array_push($values_list, "'".$item_map['size_cd']."'");
-          // サイズコード2
-          array_push($calum_list, "size_two_cd");
-          array_push($values_list, "' '");
-          // 倉庫コード
-          //rray_push($calum_list, "whse_cd");
-          //array_push($values_list, "NULL");
-          // 在庫USRコード
-          //array_push($calum_list, "stk_usr_cd");
-          //array_push($values_list, "NULL");
-          // 在庫USR支店コード
-          //array_push($calum_list, "stk_usr_brnch_cd");
-          //array_push($values_list, "NULL");
-          // 出荷先、出荷先支店コード
-          if (!empty($wearer_data_input['shipment'])) {
-            $shipment = explode(':', $wearer_data_input['shipment']);
-            $ship_to_cd = $shipment[0];
-            $ship_to_brnch_cd = $shipment[1];
-
-            // 出荷先が「支店店舗と同じ」の場合、部門マスタから標準出荷先、支店コードを設定
-            if ($ship_to_cd == "0" && $ship_to_brnch_cd == "0") {
-              $query_list = array();
-              array_push($query_list, "corporate_id = '".$auth['corporate_id']."'");
-              array_push($query_list, "rntl_cont_no = '".$wearer_other_post['rntl_cont_no']."'");
-              array_push($query_list, "rntl_sect_cd = '".$wearer_data_input['section']."'");
-              $query = implode(' AND ', $query_list);
-
-              $arg_str = '';
-              $arg_str = 'SELECT ';
-              $arg_str .= 'std_ship_to_cd,';
-              $arg_str .= 'std_ship_to_brnch_cd';
-              $arg_str .= ' FROM ';
-              $arg_str .= 'm_section';
-              $arg_str .= ' WHERE ';
-              $arg_str .= $query;
-              $m_section = new MSection();
-              $results = new Resultset(NULL, $m_section, $m_section->getReadConnection()->query($arg_str));
-              $results_array = (array) $results;
-              $results_cnt = $results_array["\0*\0_count"];
-              //ChromePhp::LOG($results_cnt);
-              $paginator_model = new PaginatorModel(
-                array(
-                  "data"  => $results,
-                  "limit" => $results_cnt,
-                  "page" => 1
-                )
-              );
-              $paginator = $paginator_model->getPaginate();
-              $results = $paginator->items;
-              foreach ($results as $result) {
-                $ship_to_cd = $result->std_ship_to_cd;
-                $ship_to_brnch_cd = $result->std_ship_to_brnch_cd;
+          if (
+           ($item_map["individual_flg"] == true && !empty($item_map["individual_data"])) ||
+           ($item_map["individual_flg"] == false && !empty($item_map["return_num"]))
+          )
+          {
+            // 個体管理番号単位の場合、商品毎の対象チェックが１つ以上あるもののみ登録する。それ以外は登録対象外
+            if (!empty($item_map["individual_data"])) {
+              $target_cnt = 0;
+              foreach ($item_map["individual_data"] as $individual_data) {
+                if ($individual_data["target_flg"] == "1") {
+                  $target_cnt = $target_cnt + 1;
+                }
+              }
+              if ($target_cnt == 0) {
+                continue;
               }
             }
-            array_push($calum_list, "ship_to_cd");
-            array_push($values_list, "'".$ship_to_cd."'");
-            array_push($calum_list, "ship_to_brnch_cd");
-            array_push($values_list, "'".$ship_to_brnch_cd."'");
-          }
-          // 発注枚数
-          array_push($calum_list, "order_qty");
-          array_push($values_list, "'".$item_map['order_num']."'");
-          // 備考欄
-          if (!empty($wearer_data_input['comment'])) {
-            array_push($calum_list, "memo");
-            array_push($values_list, "'".$wearer_data_input['comment']."'");
-          }
-          // 着用者名
-          if (!empty($wearer_data_input['member_name'])) {
-            array_push($calum_list, "werer_name");
-            array_push($values_list, "'".$wearer_data_input['member_name']."'");
-          }
-          // 客先社員コード
-          if (!empty($wearer_data_input['member_no'])) {
-            array_push($calum_list, "cster_emply_cd");
-            array_push($values_list, "'".$wearer_data_input['member_no']."'");
-          }
-          // 着用者状況区分(その他（着用開始）)
-          array_push($calum_list, "werer_sts_kbn");
-          array_push($values_list, "'7'");
-          // 送信区分(送信済み)
-          array_push($calum_list, "snd_kbn");
-          array_push($values_list, "'1'");
-          // 削除区分
-          array_push($calum_list, "del_kbn");
-          array_push($values_list, "'0'");
-          // 登録日時
-          array_push($calum_list, "rgst_date");
-          array_push($values_list, "'".date("Y/m/d H:i:s", time())."'");
-          // 登録ユーザーID
-          array_push($calum_list, "rgst_user_id");
-          array_push($values_list, "'".$auth['accnt_no']."'");
-          // 更新日時
-          array_push($calum_list, "upd_date");
-          array_push($values_list, "'".date("Y/m/d H:i:s", time())."'");
-          // 更新ユーザーID
-          array_push($calum_list, "upd_user_id");
-          array_push($values_list, "'".$auth['accnt_no']."'");
-          // 更新PGID
-          array_push($calum_list, "upd_pg_id");
-          array_push($values_list, "'".$auth['accnt_no']."'");
-          // 発注ステータス(未出荷)
-          array_push($calum_list, "order_status");
-          array_push($values_list, "'1'");
-          // 理由区分
-          array_push($calum_list, "order_reason_kbn");
-          array_push($values_list, "'".$wearer_data_input['reason_kbn']."'");
-          // 商品マスタ_統合ハッシュキー(企業ID、商品コード、色コード、サイズコード)
-          $m_item_comb_hkey = md5(
-            $auth['corporate_id']
-            .$item_map['item_cd']
-            .$item_map['color_cd']
-            .$item_map['size_cd']
-          );
-          array_push($calum_list, "m_item_comb_hkey");
-          array_push($values_list, "'".$m_item_comb_hkey."'");
-          // 職種マスタ_統合ハッシュキー(企業ID、レンタル契約No.、職種コード)
-          $m_job_type_comb_hkey = md5(
-            $auth['corporate_id']
-            .$wearer_data_input['agreement_no']
-            .$job_type_cd
-          );
-          array_push($calum_list, "m_job_type_comb_hkey");
-          array_push($values_list, "'".$m_job_type_comb_hkey."'");
-          // 部門マスタ_統合ハッシュキー(企業ID、レンタル契約No.、レンタル部門コード)
-          $m_section_comb_hkey = md5(
-            $auth['corporate_id']
-            .$wearer_data_input['agreement_no']
-            .$wearer_data_input['section']
-          );
-          array_push($calum_list, "m_section_comb_hkey");
-          array_push($values_list, "'".$m_section_comb_hkey."'");
-          // 着用者基本マスタ_統合ハッシュキー(企業ID、着用者コード、レンタル契約No.、レンタル部門コード、職種コード)
-          $m_wearer_std_comb_hkey = md5(
-            $auth['corporate_id']
-            .$wearer_other_post["werer_cd"]
-            .$wearer_data_input['agreement_no']
-            .$wearer_data_input['section']
-            .$job_type_cd
-          );
-          array_push($calum_list, "m_wearer_std_comb_hkey");
-          array_push($values_list, "'".$m_wearer_std_comb_hkey."'");
-          // 着用者商品マスタ_統合ハッシュキー(企業ID、着用者コード、レンタル契約No.、レンタル部門コード、職種コード、職種アイテムコード、商品コード、色コード、サイズコード)
-          $m_wearer_item_comb_hkey = md5(
-            $auth['corporate_id']
-            .$wearer_other_post["werer_cd"]
-            .$wearer_data_input['agreement_no']
-            .$wearer_data_input['section']
-            .$job_type_cd
-            .$item_map['job_type_item_cd']
-            .$item_map['item_cd']
-            .$item_map['color_cd']
-            .$item_map['size_cd']
-          );
-          array_push($calum_list, "m_wearer_item_comb_hkey");
-          array_push($values_list, "'".$m_wearer_item_comb_hkey."'");
-          $calum_query = implode(',', $calum_list);
-          $values_query = implode(',', $values_list);
 
-          $arg_str = "";
-          $arg_str = "INSERT INTO t_order_tran";
-          $arg_str .= "(".$calum_query.")";
-          $arg_str .= " VALUES ";
-          $arg_str .= "(".$values_query.")";
-          //ChromePhp::LOG($arg_str);
-          $t_order_tran = new TOrderTran();
-          $results = new Resultset(NULL, $t_order_tran, $t_order_tran->getReadConnection()->query($arg_str));
-          $results_cnt = $result_obj["\0*\0_count"];
-          //ChromePhp::LOG($results_cnt);
+            $calum_list = array();
+            $values_list = array();
+            // 発注依頼行No.生成
+            $order_req_line_no = $cnt++;
+            // 発注情報_統合ハッシュキー(企業ID、発注依頼No、発注依頼行No)
+            $t_order_comb_hkey = md5(
+              $auth['corporate_id']
+              .$shin_order_req_no
+              .$order_req_line_no
+            );
+            array_push($calum_list, "t_order_comb_hkey");
+            array_push($values_list, "'".$t_order_comb_hkey."'");
+            // 企業ID
+            array_push($calum_list, "corporate_id");
+            array_push($values_list, "'".$auth['corporate_id']."'");
+            // 発注依頼No.
+            array_push($calum_list, "order_req_no");
+            array_push($values_list, "'".$shin_order_req_no."'");
+            // 発注依頼行No.
+            array_push($calum_list, "order_req_line_no");
+            array_push($values_list, "'".$order_req_line_no."'");
+            // 発注依頼日
+            array_push($calum_list, "order_req_ymd");
+            array_push($values_list, "'".date('Ymd', time())."'");
+            // 発注状況区分(終了)
+            array_push($calum_list, "order_sts_kbn");
+            array_push($values_list, "'2'");
+            // レンタル契約No
+            array_push($calum_list, "rntl_cont_no");
+            array_push($values_list, "'".$wearer_data_input['agreement_no']."'");
+            // レンタル部門コード
+            array_push($calum_list, "rntl_sect_cd");
+            array_push($values_list, "'".$wearer_data_input['section']."'");
+            // 貸与パターン
+            $job_type_cd = explode(':', $wearer_data_input['job_type']);
+            $job_type_cd = $job_type_cd[0];
+            array_push($calum_list, "job_type_cd");
+            array_push($values_list, "'".$job_type_cd."'");
+            // 職種アイテムコード
+            array_push($calum_list, "job_type_item_cd");
+            array_push($values_list, "'".$item_map['job_type_item_cd']."'");
+            // 着用者コード
+            array_push($calum_list, "werer_cd");
+            array_push($values_list, "'".$wearer_other_post['werer_cd']."'");
+            // 商品コード
+            array_push($calum_list, "item_cd");
+            array_push($values_list, "'".$item_map['item_cd']."'");
+            // 色コード
+            array_push($calum_list, "color_cd");
+            array_push($values_list, "'".$item_map['color_cd']."'");
+            // サイズコード
+            array_push($calum_list, "size_cd");
+            array_push($values_list, "'".$item_map['size_cd']."'");
+            // サイズコード2
+            array_push($calum_list, "size_two_cd");
+            array_push($values_list, "' '");
+            // 倉庫コード
+            //rray_push($calum_list, "whse_cd");
+            //array_push($values_list, "NULL");
+            // 在庫USRコード
+            //array_push($calum_list, "stk_usr_cd");
+            //array_push($values_list, "NULL");
+            // 在庫USR支店コード
+            //array_push($calum_list, "stk_usr_brnch_cd");
+            //array_push($values_list, "NULL");
+            // 出荷先、出荷先支店コード
+            if (!empty($wearer_data_input['shipment'])) {
+              $shipment = explode(':', $wearer_data_input['shipment']);
+              $ship_to_cd = $shipment[0];
+              $ship_to_brnch_cd = $shipment[1];
+
+              // 出荷先が「支店店舗と同じ」の場合、部門マスタから標準出荷先、支店コードを設定
+              if ($ship_to_cd == "0" && $ship_to_brnch_cd == "0") {
+                $query_list = array();
+                array_push($query_list, "corporate_id = '".$auth['corporate_id']."'");
+                array_push($query_list, "rntl_cont_no = '".$wearer_other_post['rntl_cont_no']."'");
+                array_push($query_list, "rntl_sect_cd = '".$wearer_data_input['section']."'");
+                $query = implode(' AND ', $query_list);
+
+                $arg_str = '';
+                $arg_str = 'SELECT ';
+                $arg_str .= 'std_ship_to_cd,';
+                $arg_str .= 'std_ship_to_brnch_cd';
+                $arg_str .= ' FROM ';
+                $arg_str .= 'm_section';
+                $arg_str .= ' WHERE ';
+                $arg_str .= $query;
+                $m_section = new MSection();
+                $results = new Resultset(NULL, $m_section, $m_section->getReadConnection()->query($arg_str));
+                $results_array = (array) $results;
+                $results_cnt = $results_array["\0*\0_count"];
+                //ChromePhp::LOG($results_cnt);
+                $paginator_model = new PaginatorModel(
+                  array(
+                    "data"  => $results,
+                    "limit" => $results_cnt,
+                    "page" => 1
+                  )
+                );
+                $paginator = $paginator_model->getPaginate();
+                $results = $paginator->items;
+                foreach ($results as $result) {
+                  $ship_to_cd = $result->std_ship_to_cd;
+                  $ship_to_brnch_cd = $result->std_ship_to_brnch_cd;
+                }
+              }
+              array_push($calum_list, "ship_to_cd");
+              array_push($values_list, "'".$ship_to_cd."'");
+              array_push($calum_list, "ship_to_brnch_cd");
+              array_push($values_list, "'".$ship_to_brnch_cd."'");
+            }
+            // 発注枚数
+            array_push($calum_list, "order_qty");
+            array_push($values_list, "'0'");
+            // 備考欄
+            if (!empty($wearer_data_input['comment'])) {
+              array_push($calum_list, "memo");
+              array_push($values_list, "'".$wearer_data_input['comment']."'");
+            }
+            // 着用者名
+            if (!empty($wearer_data_input['member_name'])) {
+              array_push($calum_list, "werer_name");
+              array_push($values_list, "'".$wearer_data_input['member_name']."'");
+            }
+            // 客先社員コード
+            if (!empty($wearer_data_input['member_no'])) {
+              array_push($calum_list, "cster_emply_cd");
+              array_push($values_list, "'".$wearer_data_input['member_no']."'");
+            }
+            // 着用者状況区分(その他（着用終了）)
+            array_push($calum_list, "werer_sts_kbn");
+            array_push($values_list, "'3'");
+            // 送信区分(送信済み)
+            array_push($calum_list, "snd_kbn");
+            array_push($values_list, "'1'");
+            // 削除区分
+            array_push($calum_list, "del_kbn");
+            array_push($values_list, "'0'");
+            // 登録日時
+            array_push($calum_list, "rgst_date");
+            array_push($values_list, "'".date("Y/m/d H:i:s", time())."'");
+            // 登録ユーザーID
+            array_push($calum_list, "rgst_user_id");
+            array_push($values_list, "'".$auth['accnt_no']."'");
+            // 更新日時
+            array_push($calum_list, "upd_date");
+            array_push($values_list, "'".date("Y/m/d H:i:s", time())."'");
+            // 更新ユーザーID
+            array_push($calum_list, "upd_user_id");
+            array_push($values_list, "'".$auth['accnt_no']."'");
+            // 更新PGID
+            array_push($calum_list, "upd_pg_id");
+            array_push($values_list, "'".$auth['accnt_no']."'");
+            // 発注ステータス(未出荷)
+            array_push($calum_list, "order_status");
+            array_push($values_list, "'1'");
+            // 理由区分
+            array_push($calum_list, "order_reason_kbn");
+            array_push($values_list, "'".$wearer_data_input['reason_kbn']."'");
+            // 商品マスタ_統合ハッシュキー(企業ID、商品コード、色コード、サイズコード)
+            $m_item_comb_hkey = md5(
+              $auth['corporate_id']
+              .$item_map['item_cd']
+              .$item_map['color_cd']
+              .$item_map['size_cd']
+            );
+            array_push($calum_list, "m_item_comb_hkey");
+            array_push($values_list, "'".$m_item_comb_hkey."'");
+            // 職種マスタ_統合ハッシュキー(企業ID、レンタル契約No.、職種コード)
+            $m_job_type_comb_hkey = md5(
+              $auth['corporate_id']
+              .$wearer_data_input['agreement_no']
+              .$job_type_cd
+            );
+            array_push($calum_list, "m_job_type_comb_hkey");
+            array_push($values_list, "'".$m_job_type_comb_hkey."'");
+            // 部門マスタ_統合ハッシュキー(企業ID、レンタル契約No.、レンタル部門コード)
+            $m_section_comb_hkey = md5(
+              $auth['corporate_id']
+              .$wearer_data_input['agreement_no']
+              .$wearer_data_input['section']
+            );
+            array_push($calum_list, "m_section_comb_hkey");
+            array_push($values_list, "'".$m_section_comb_hkey."'");
+            // 着用者基本マスタ_統合ハッシュキー(企業ID、着用者コード、レンタル契約No.、レンタル部門コード、職種コード)
+            $m_wearer_std_comb_hkey = md5(
+              $auth['corporate_id']
+              .$wearer_other_post["werer_cd"]
+              .$wearer_data_input['agreement_no']
+              .$wearer_data_input['section']
+              .$job_type_cd
+            );
+            array_push($calum_list, "m_wearer_std_comb_hkey");
+            array_push($values_list, "'".$m_wearer_std_comb_hkey."'");
+            // 着用者商品マスタ_統合ハッシュキー(企業ID、着用者コード、レンタル契約No.、レンタル部門コード、職種コード、職種アイテムコード、商品コード、色コード、サイズコード)
+            $m_wearer_item_comb_hkey = md5(
+              $auth['corporate_id']
+              .$wearer_other_post["werer_cd"]
+              .$wearer_data_input['agreement_no']
+              .$wearer_data_input['section']
+              .$job_type_cd
+              .$item_map['job_type_item_cd']
+              .$item_map['item_cd']
+              .$item_map['color_cd']
+              .$item_map['size_cd']
+            );
+            array_push($calum_list, "m_wearer_item_comb_hkey");
+            array_push($values_list, "'".$m_wearer_item_comb_hkey."'");
+            $calum_query = implode(',', $calum_list);
+            $values_query = implode(',', $values_list);
+
+            $arg_str = "";
+            $arg_str = "INSERT INTO t_order_tran";
+            $arg_str .= "(".$calum_query.")";
+            $arg_str .= " VALUES ";
+            $arg_str .= "(".$values_query.")";
+            //ChromePhp::LOG($arg_str);
+            $t_order_tran = new TOrderTran();
+            $results = new Resultset(NULL, $t_order_tran, $t_order_tran->getReadConnection()->query($arg_str));
+            $results_cnt = $result_obj["\0*\0_count"];
+            //ChromePhp::LOG($results_cnt);
+         }
+       }
+     }
+     //--返却予定情報トラン登録--//
+     $cnt = 1;
+     // 発注商品一覧内容登録
+     if (!empty($item_list)) {
+       // 現在の不要品返却発注の情報をクリーン
+       //ChromePhp::LOG("発注情報トランクリーン");
+       $query_list = array();
+       array_push($query_list, "corporate_id = '".$auth['corporate_id']."'");
+       array_push($query_list, "rntl_cont_no = '".$wearer_other_post['rntl_cont_no']."'");
+       array_push($query_list, "werer_cd = '".$wearer_other_post['werer_cd']."'");
+       // 発注状況区分「終了」
+       array_push($query_list, "order_sts_kbn = '2'");
+       // 理由区分「不要品返却」
+       array_push($query_list, "order_reason_kbn = '07'");
+       $query = implode(' AND ', $query_list);
+
+       $arg_str = "";
+       $arg_str = "DELETE FROM ";
+       $arg_str .= "t_returned_plan_info_tran";
+       $arg_str .= " WHERE ";
+       $arg_str .= $query;
+       //ChromePhp::LOG($arg_str);
+       $t_returned_plan_info_tran = new TReturnedPlanInfoTran();
+       $results = new Resultset(NULL, $t_returned_plan_info_tran, $t_returned_plan_info_tran->getReadConnection()->query($arg_str));
+       $results_cnt = $result_obj["\0*\0_count"];
+       //ChromePhp::LOG($results_cnt);
+
+       // 発注依頼No.生成
+       //※シーケンス取得
+       $arg_str = "";
+       $arg_str = "SELECT NEXTVAL('t_returned_plan_info_index_seq')";
+       $t_returned_plan_info = new TReturnedPlanInfo();
+       $results = new Resultset(NULL, $t_returned_plan_info, $t_returned_plan_info->getReadConnection()->query($arg_str));
+       $result_obj = (array)$results;
+       $results_cnt = $result_obj["\0*\0_count"];
+       if (!empty($results_cnt)) {
+         $paginator_model = new PaginatorModel(
+             array(
+                 "data"  => $results,
+                 "limit" => 1,
+                 "page" => 1
+             )
+         );
+         $paginator = $paginator_model->getPaginate();
+         $results = $paginator->items;
+         //ChromePhp::LOG($results);
+         foreach ($results as $result) {
+           $order_no_seq = $result->nextval;
+         }
+         //※次シーケンスをセット
+         $arg_str = "";
+         $arg_str = "SELECT SETVAL('t_returned_plan_info_index_seq',".$order_no_seq.")";
+         $t_returned_plan_info = new TReturnedPlanInfo();
+         $results = new Resultset(NULL, $t_returned_plan_info, $t_returned_plan_info->getReadConnection()->query($arg_str));
+         $result_obj = (array)$results;
+         $results_cnt = $result_obj["\0*\0_count"];
+         //ChromePhp::LOG($result_obj);
+         if (!empty($results_cnt)) {
+           $paginator_model = new PaginatorModel(
+               array(
+                   "data"  => $results,
+                   "limit" => 1,
+                   "page" => 1
+               )
+           );
+           $paginator = $paginator_model->getPaginate();
+           $results = $paginator->items;
+           //ChromePhp::LOG($results);
+           foreach ($results as $result) {
+             $order_no_seq = $result->setval;
+           }
+         }
+       }
+       $shin_order_req_no = "WB".str_pad($order_no_seq, 8, '0', STR_PAD_LEFT);
+       //ChromePhp::LOG("発注依頼No採番");
+       //ChromePhp::LOG($shin_order_req_no);
+
+       //ChromePhp::LOG("返却予定情報トラン登録");
+       foreach ($item_list as $item_map) {
+         if ($item_map["individual_flg"] == true && !empty($item_map["individual_data"])) {
+           // ※個体管理番号単位での登録の場合
+           foreach ($item_map["individual_data"] as $individual_data) {
+             // 対象にチェックされている商品のみが登録対象、それ以外は以降処理しない
+             if ($individual_data["target_flg"] == "0") {
+               continue;
+             }
+             $calum_list = array();
+             $values_list = array();
+
+             // 発注依頼行No.生成
+             $order_req_line_no = $cnt++;
+
+             // 企業ID
+             array_push($calum_list, "corporate_id");
+             array_push($values_list, "'".$auth['corporate_id']."'");
+             // 発注依頼No.
+             array_push($calum_list, "order_req_no");
+             array_push($values_list, "'".$shin_order_req_no."'");
+             // 発注依頼行No.
+             array_push($calum_list, "order_req_line_no");
+             array_push($values_list, "'".$order_req_line_no."'");
+             // レンタル契約No
+             array_push($calum_list, "rntl_cont_no");
+             array_push($values_list, "'".$wearer_data_input['agreement_no']."'");
+             // 商品コード
+             array_push($calum_list, "item_cd");
+             array_push($values_list, "'".$item_map['item_cd']."'");
+             // 色コード
+             array_push($calum_list, "color_cd");
+             array_push($values_list, "'".$item_map['color_cd']."'");
+             // サイズコード
+             array_push($calum_list, "size_cd");
+             array_push($values_list, "'".$item_map['size_cd']."'");
+             // 個体管理番号
+             array_push($calum_list, "individual_ctrl_no");
+             array_push($values_list, "'".$individual_data['individual_ctrl_no']."'");
+             // 着用者コード
+             array_push($calum_list, "werer_cd");
+             array_push($values_list, "'".$wearer_other_post['werer_cd']."'");
+             // 客先社員コード
+             if (isset($wearer_data_input['member_no'])) {
+               array_push($calum_list, "cster_emply_cd");
+               array_push($values_list, "'".$wearer_data_input['member_no']."'");
+             }
+             // レンタル部門コード
+             array_push($calum_list, "rntl_sect_cd");
+             array_push($values_list, "'".$wearer_data_input['section']."'");
+             // 貸与パターン
+             $job_type_cd = explode(':', $wearer_data_input['job_type']);
+             $job_type_cd = $job_type_cd[0];
+             array_push($calum_list, "job_type_cd");
+             array_push($values_list, "'".$job_type_cd."'");
+             // 発注依頼日
+             array_push($calum_list, "order_date");
+             array_push($values_list, "'".date('Y/m/d H:i:s', time())."'");
+             // 返却日
+             array_push($calum_list, "return_date");
+             array_push($values_list, "'".date('Y/m/d H:i:s', time())."'");
+             // 返却ステータス(未返却)
+             array_push($calum_list, "return_status");
+             array_push($values_list, "'1'");
+             // 発注状況区分(終了)
+             array_push($calum_list, "order_sts_kbn");
+             array_push($values_list, "'2'");
+             // 返却予定数
+             array_push($calum_list, "return_plan_qty");
+             array_push($values_list, "'".$individual_data['return_num']."'");
+             // 返却数
+             array_push($calum_list, "return_qty");
+             array_push($values_list, "'0'");
+             // 送信区分(送信済み)
+             array_push($calum_list, "snd_kbn");
+             array_push($values_list, "'1'");
+             // 理由区分
+             array_push($calum_list, "order_reason_kbn");
+             array_push($values_list, "'".$wearer_data_input['reason_kbn']."'");
+             // 部門マスタ_統合ハッシュキー(企業ID、レンタル契約No.、レンタル部門コード)
+             $m_section_comb_hkey = md5(
+               $auth['corporate_id']
+               .$wearer_data_input['agreement_no']
+               .$wearer_data_input['section']
+             );
+             array_push($calum_list, "m_section_comb_hkey");
+             array_push($values_list, "'".$m_section_comb_hkey."'");
+             // 商品マスタ_統合ハッシュキー(企業ID、商品コード、色コード、サイズコード)
+             $m_item_comb_hkey = md5(
+               $auth['corporate_id']
+               .$item_map['item_cd']
+               .$item_map['color_cd']
+               .$item_map['size_cd']
+             );
+             array_push($calum_list, "m_item_comb_hkey");
+             array_push($values_list, "'".$m_item_comb_hkey."'");
+             $calum_query = implode(',', $calum_list);
+             $values_query = implode(',', $values_list);
+
+             $arg_str = "";
+             $arg_str = "INSERT INTO t_returned_plan_info_tran";
+             $arg_str .= "(".$calum_query.")";
+             $arg_str .= " VALUES ";
+             $arg_str .= "(".$values_query.")";
+             //ChromePhp::LOG($arg_str);
+             $t_returned_plan_info_tran = new TReturnedPlanInfoTran();
+             $results = new Resultset(NULL, $t_returned_plan_info_tran, $t_returned_plan_info_tran->getReadConnection()->query($arg_str));
+             $results_cnt = $result_obj["\0*\0_count"];
+             //ChromePhp::LOG($results_cnt);
+           }
+         } else if ($item_map["individual_flg"] == false && !empty($item_map["return_num"])) {
+           // ※商品単位での登録の場合
+           $calum_list = array();
+           $values_list = array();
+
+           // 発注依頼行No.生成
+           $order_req_line_no = $cnt++;
+
+           // 企業ID
+           array_push($calum_list, "corporate_id");
+           array_push($values_list, "'".$auth['corporate_id']."'");
+           // 発注依頼No.
+           array_push($calum_list, "order_req_no");
+           array_push($values_list, "'".$shin_order_req_no."'");
+           // 発注依頼行No.
+           array_push($calum_list, "order_req_line_no");
+           array_push($values_list, "'".$order_req_line_no."'");
+           // レンタル契約No
+           array_push($calum_list, "rntl_cont_no");
+           array_push($values_list, "'".$wearer_data_input['agreement_no']."'");
+           // 商品コード
+           array_push($calum_list, "item_cd");
+           array_push($values_list, "'".$item_map['item_cd']."'");
+           // 色コード
+           array_push($calum_list, "color_cd");
+           array_push($values_list, "'".$item_map['color_cd']."'");
+           // サイズコード
+           array_push($calum_list, "size_cd");
+           array_push($values_list, "'".$item_map['size_cd']."'");
+           // 着用者コード
+           array_push($calum_list, "werer_cd");
+           array_push($values_list, "'".$wearer_other_post['werer_cd']."'");
+           // 客先社員コード
+           if (isset($wearer_data_input['member_no'])) {
+             array_push($calum_list, "cster_emply_cd");
+             array_push($values_list, "'".$wearer_data_input['member_no']."'");
+           }
+           // レンタル部門コード
+           array_push($calum_list, "rntl_sect_cd");
+           array_push($values_list, "'".$wearer_data_input['section']."'");
+           // 貸与パターン
+           $job_type_cd = explode(':', $wearer_data_input['job_type']);
+           $job_type_cd = $job_type_cd[0];
+           array_push($calum_list, "job_type_cd");
+           array_push($values_list, "'".$job_type_cd."'");
+           // 発注依頼日
+           array_push($calum_list, "order_date");
+           array_push($values_list, "'".date('Y/m/d H:i:s', time())."'");
+           // 返却日
+           array_push($calum_list, "return_date");
+           array_push($values_list, "'".date('Y/m/d H:i:s', time())."'");
+           // 返却ステータス(未返却)
+           array_push($calum_list, "return_status");
+           array_push($values_list, "'1'");
+           // 発注状況区分(終了)
+           array_push($calum_list, "order_sts_kbn");
+           array_push($values_list, "'2'");
+           // 返却予定数
+           array_push($calum_list, "return_plan_qty");
+           array_push($values_list, "'".$item_map['return_num']."'");
+           // 返却数
+           array_push($calum_list, "return_qty");
+           array_push($values_list, "'0'");
+           // 送信区分(送信済み)
+           array_push($calum_list, "snd_kbn");
+           array_push($values_list, "'1'");
+           // 理由区分
+           array_push($calum_list, "order_reason_kbn");
+           array_push($values_list, "'".$wearer_data_input['reason_kbn']."'");
+           // 部門マスタ_統合ハッシュキー(企業ID、レンタル契約No.、レンタル部門コード)
+           $m_section_comb_hkey = md5(
+             $auth['corporate_id']
+             .$wearer_data_input['agreement_no']
+             .$wearer_data_input['section']
+           );
+           array_push($calum_list, "m_section_comb_hkey");
+           array_push($values_list, "'".$m_section_comb_hkey."'");
+           // 商品マスタ_統合ハッシュキー(企業ID、商品コード、色コード、サイズコード)
+           $m_item_comb_hkey = md5(
+             $auth['corporate_id']
+             .$item_map['item_cd']
+             .$item_map['color_cd']
+             .$item_map['size_cd']
+           );
+           array_push($calum_list, "m_item_comb_hkey");
+           array_push($values_list, "'".$m_item_comb_hkey."'");
+           $calum_query = implode(',', $calum_list);
+           $values_query = implode(',', $values_list);
+
+           $arg_str = "";
+           $arg_str = "INSERT INTO t_returned_plan_info_tran";
+           $arg_str .= "(".$calum_query.")";
+           $arg_str .= " VALUES ";
+           $arg_str .= "(".$values_query.")";
+           //ChromePhp::LOG($arg_str);
+           $t_returned_plan_info_tran = new TReturnedPlanInfoTran();
+           $results = new Resultset(NULL, $t_returned_plan_info_tran, $t_returned_plan_info_tran->getReadConnection()->query($arg_str));
+           $results_cnt = $result_obj["\0*\0_count"];
+           //ChromePhp::LOG($results_cnt);
+         }
        }
      }
 

@@ -60,9 +60,10 @@ define([
 						if (res_val["error_code"] == "1") {
 							// 登録処理にエラーがある場合
 							that.triggerMethod('showAlerts', res_val["error_msg"]);
+						} else {
+							// 正常完了の場合、「返却伝票印刷」ボタンを表示
+							$('.returnSlipDownload').css('display', '');
 						}
-						// 正常完了の場合、「返却伝票印刷」ボタンを表示
-						$('.returnSlipDownload').css('display', '');
 					}
 				});
 			},
@@ -79,7 +80,11 @@ define([
 				'click @ui.backHome': function(){
 					// ホーム画面へ遷移
 					location.href="home.html";
-				}
+				},
+				// 「返却伝票ダウンロード」ボタン
+				'click @ui.returnSlipDownload': function(){
+					alert("てっちゃんへ、機能の実装よろしくお願いします。");
+				},
 			}
 		});
 	});

@@ -37,9 +37,9 @@ $app->post('/wearer_add_info', function ()use($app){
   array_push($query_list, "t_order_tran.werer_cd = '".$wearer_other_post['werer_cd']."'");
   array_push($query_list, "t_order_tran.rntl_sect_cd = '".$wearer_other_post['rntl_sect_cd']."'");
   array_push($query_list, "t_order_tran.job_type_cd = '".$wearer_other_post['job_type_cd']."'");
-  // 発注状況区分(終了)
+  // 発注状況区分(貸与)
   array_push($query_list,"t_order_tran.order_sts_kbn = '1'");
-  // 理由区分(不要品返却)
+  // 理由区分(追加貸与)
   array_push($query_list,"t_order_tran.order_reason_kbn = '03'");
   $query = implode(' AND ', $query_list);
 
@@ -535,7 +535,7 @@ $app->post('/wearer_add_info', function ()use($app){
        $arg_str = "SELECT ";
        $arg_str .= " * ";
        $arg_str .= " FROM ";
-       $arg_str .= "(SELECT distinct on (m_item.item_cd, m_item.color_cd) ";
+       $arg_str .= "(SELECT distinct on (m_item.item_cd, m_item.color_cd, m_input_item.job_type_item_cd) ";
        $arg_str .= "m_item.item_cd as as_item_cd,";
        $arg_str .= "m_item.color_cd as as_color_cd,";
        $arg_str .= "m_item.size_cd as as_size_cd,";
@@ -590,7 +590,6 @@ $app->post('/wearer_add_info', function ()use($app){
            array_push($query_list, "m_input_item.corporate_id = '".$auth['corporate_id']."'");
            array_push($query_list, "m_input_item.job_type_cd = '".$wearer_other_post["job_type_cd"]."'");
            array_push($query_list, "m_input_item.item_cd = '".$list["item_cd"]."'");
-           array_push($query_list, "m_input_item.color_cd = '".$list["color_cd"]."'");
            $query = implode(' AND ', $query_list);
 
            $arg_str = "";
@@ -710,7 +709,7 @@ $app->post('/wearer_add_info', function ()use($app){
      $arg_str = "SELECT ";
      $arg_str .= " * ";
      $arg_str .= " FROM ";
-     $arg_str .= "(SELECT distinct on (m_item.item_cd, m_item.color_cd) ";
+     $arg_str .= "(SELECT distinct on (m_item.item_cd, m_item.color_cd, m_input_item.job_type_item_cd) ";
      $arg_str .= "m_item.item_cd as as_item_cd,";
      $arg_str .= "m_item.color_cd as as_color_cd,";
      $arg_str .= "m_item.size_cd as as_size_cd,";
@@ -770,7 +769,6 @@ $app->post('/wearer_add_info', function ()use($app){
          array_push($query_list, "m_input_item.corporate_id = '".$auth['corporate_id']."'");
          array_push($query_list, "m_input_item.job_type_cd = '".$wearer_other_post["job_type_cd"]."'");
          array_push($query_list, "m_input_item.item_cd = '".$list["item_cd"]."'");
-         array_push($query_list, "m_input_item.color_cd = '".$list["color_cd"]."'");
          $query = implode(' AND ', $query_list);
 
          $arg_str = "";
@@ -1076,14 +1074,16 @@ ChromePhp::LOG($item_input);
      }
      // 発注商品一覧
      foreach ($item_list as $item_map) {
-       // 発注枚数フォーマットチェック
+       // 発注枚数フォーマットチェック(複数選択商品)
        if (empty($item_map["order_num_disable"])) {
-         if (!ctype_digit(strval($item_map["order_num"]))) {
-           if (empty($order_num_format_err)) {
-             $order_num_format_err = "err";
-             $json_list["error_code"] = "1";
-             $error_msg = "発注商品一覧の発注枚数には半角数字を入力してください。";
-             array_push($json_list["error_msg"], $error_msg);
+         if (!empty($item_map["order_num"])) {
+           if (!ctype_digit(strval($item_map["order_num"]))) {
+             if (empty($order_num_format_err)) {
+               $order_num_format_err = "err";
+               $json_list["error_code"] = "1";
+               $error_msg = "発注商品一覧の発注枚数には半角数字を入力してください。";
+               array_push($json_list["error_msg"], $error_msg);
+             }
            }
          }
        }

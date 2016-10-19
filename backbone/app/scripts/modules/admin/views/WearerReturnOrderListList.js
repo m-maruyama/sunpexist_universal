@@ -58,7 +58,7 @@ define([
 						var res_list = res.attributes;
 						//console.log(res_list);
 						that.render(res_list);
-						if (res_list["individual_flg"]) {
+						if (res_list["individual_flg"] == true) {
 							$('.individual_flg').css('display', '');
 						}
 						$.unblockUI();

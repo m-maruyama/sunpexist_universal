@@ -103,6 +103,7 @@ define([
 
 						// 入力完了、発注送信ボタン表示/非表示制御
 						var data = {
+							'rntl_cont_no': res_list['rntl_cont_no'],
 							'rntl_sect_cd': res_list['rntl_sect_cd']
 						}
 						var modelForUpdate2 = that.model;
@@ -302,7 +303,7 @@ define([
 					if (window.confirm(msg)) {
 						$.blockUI({ message: '<p><img src="ajax-loader.gif" style="margin: 0 auto;" /> 発注取消中...</p>' });
 						var modelForUpdate = this.model;
-						modelForUpdate.url = App.api.WR0016;
+						modelForUpdate.url = App.api.WR0021;
 						var cond = {
 							"scr": '不要品返却-発注取消',
 							"data": data,
@@ -472,11 +473,34 @@ define([
 						item[i]["job_type_item_cd"] = $("input[name='job_type_item_cd"+i+"']").val();
 						item[i]["item_cd"] = $("input[name='item_cd"+i+"']").val();
 						item[i]["color_cd"] = $("input[name='color_cd"+i+"']").val();
-						item[i]["choice_type"] = $("input[name='choice_type"+i+"']").val();
-						item[i]["std_input_qty"] = $("input[name='std_input_qty"+i+"']").val();
-						item[i]["size_cd"] = $("select[name='size_cd"+i+"']").val();
+						item[i]["size_cd"] = $("input[name='size_cd"+i+"']").val();
 						item[i]["possible_num"] = $("input[name='possible_num"+i+"']").val();
-						item[i]["return_num"] = $("input[name='return_num"+i+"']").val();
+						item[i]["individual_flg"] = $("input[name='individual_flg"+i+"']").val();
+						item[i]["individual_data"] = new Object();
+						if (item[i]["individual_flg"]) {
+							//個体管理番号表示フラグがONの場合、対象、個体管理番号単位
+							item[i]["individual_cnt"] = $("input[name='individual_cnt"+i+"']").val();
+							var Name = 'target_flg'+i;
+							var chk_num = 0;
+							for (var j=0; j<item[i]["individual_cnt"]; j++) {
+								var chk_val = document.getElementsByName(Name)[j].value;
+								item[i]["individual_data"][j] = new Object();
+								var checked = document.getElementsByName(Name)[j].checked;
+								if(checked == true){
+									item[i]["individual_data"][j]["target_flg"] = '1';
+									item[i]["individual_data"][j]["individual_ctrl_no"] = chk_val;
+									chk_num = chk_num + 1;
+								} else {
+									item[i]["individual_data"][j]["target_flg"] = '0';
+									item[i]["individual_data"][j]["individual_ctrl_no"] = chk_val;
+								}
+								// 対象=trueの数（商品単位返却数）
+								item[i]["individual_data"][j]["return_num"] = chk_num;
+							}
+						} else {
+							//個体管理番号表示フラグがOFFの場合、商品単位の返却数
+							item[i]["return_num"] = $("input[name='return_num"+i+"']").val();
+						}
 					}
 
 					var modelForUpdate = this.model;
