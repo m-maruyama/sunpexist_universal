@@ -28,10 +28,10 @@ define([
 				}
 			},
 			ui: {
-				'order_count': '#order_count',
+				'return_count': '#return_count',
 			},
 			bindings: {
-				'#order_count': 'order_count',
+				'#return_count': 'return_count',
 			},
 			onShow: function() {
 				$.blockUI({ message: '<p><img src="ajax-loader.gif" style="margin: 0 auto;" /> 読み込み中...</p>' });
@@ -58,6 +58,9 @@ define([
 						var res_list = res.attributes;
 						//console.log(res_list);
 						that.render(res_list);
+						if (res_list["individual_flg"]) {
+							$('.individual_flg').css('display', '');
+						}
 						$.unblockUI();
 					}
 				});

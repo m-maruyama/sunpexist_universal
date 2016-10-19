@@ -35,8 +35,7 @@ define([
 				'section': '#section',
 				'job_type': '#job_type',
 				'shipment': '#shipment',
-				'post_number': '#post_number',
-				'address': '#address',
+				'comment': '#comment',
 				"back": '.back',
 				"delete": '.delete',
 				"complete": '.complete',
@@ -56,8 +55,7 @@ define([
 				'#section': 'section',
 				'#job_type': 'job_type',
 				'#shipment': 'shipment',
-				'#post_number': 'post_number',
-				'#address': 'address',
+				'#comment': 'comment',
 				"#delete": 'delete',
 				"#complete": 'complete',
 				"#orderSend": 'orderSend',
@@ -132,6 +130,7 @@ define([
 							that.ui.member_no.val(res_list['wearer_info'][0]['cster_emply_cd']);
 							that.ui.member_name.val(res_list['wearer_info'][0]['werer_name']);
 							that.ui.member_name_kana.val(res_list['wearer_info'][0]['werer_name_kana']);
+							that.ui.comment.val(res_list['wearer_info'][0]['comment']);
 						}
 						// 性別
 						if (res_list['sex_kbn_list']) {
@@ -352,7 +351,6 @@ define([
 						'member_name': member_name,
 						'member_name_kana': member_name_kana,
 						'sex_kbn': sex_kbn,
-						'resfl_ymd': resfl_ymd,
 						'section': section,
 						'job_type': job_type,
 						'shipment': shipment,
@@ -432,7 +430,6 @@ define([
 						'member_name': member_name,
 						'member_name_kana': member_name_kana,
 						'sex_kbn': sex_kbn,
-						'resfl_ymd': resfl_ymd,
 						'section': section,
 						'job_type': job_type,
 						'shipment': shipment,

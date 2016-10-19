@@ -44,7 +44,7 @@ define([
 
 				// 入力内容登録処理
 				var modelForUpdate = this.model;
-				modelForUpdate.url = App.api.WR0017;
+				modelForUpdate.url = App.api.WR0022;
 				var cond = {
 					"scr": scr,
 					"mode": mode,
@@ -61,6 +61,8 @@ define([
 							// 登録処理にエラーがある場合
 							that.triggerMethod('showAlerts', res_val["error_msg"]);
 						}
+						// 正常完了の場合、「返却伝票印刷」ボタンを表示
+						$('.returnSlipDownload').css('display', '');
 					}
 				});
 			},

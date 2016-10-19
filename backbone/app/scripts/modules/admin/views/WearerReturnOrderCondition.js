@@ -35,8 +35,7 @@ define([
 				'section': '#section',
 				'job_type': '#job_type',
 				'shipment': '#shipment',
-				'post_number': '#post_number',
-				'address': '#address',
+				'comment': '#comment',
 				"back": '.back',
 				"delete": '.delete',
 				"complete": '.complete',
@@ -56,8 +55,7 @@ define([
 				'#section': 'section',
 				'#job_type': 'job_type',
 				'#shipment': 'shipment',
-				'#post_number': 'post_number',
-				'#address': 'address',
+				'#comment': 'comment',
 				"#delete": 'delete',
 				"#complete": 'complete',
 				"#orderSend": 'orderSend',
@@ -128,11 +126,12 @@ define([
 								}
 							}
 						});
-						// 社員コード、着用者名、読みかな
+						// 社員コード、着用者名、読みかな、コメント欄
 						if (res_list['wearer_info'][0]) {
 							that.ui.member_no.val(res_list['wearer_info'][0]['cster_emply_cd']);
 							that.ui.member_name.val(res_list['wearer_info'][0]['werer_name']);
 							that.ui.member_name_kana.val(res_list['wearer_info'][0]['werer_name_kana']);
+							that.ui.comment.val(res_list['wearer_info'][0]['comment']);
 						}
 						// 性別
 						if (res_list['sex_kbn_list']) {
@@ -201,9 +200,11 @@ define([
 					var job_type_cd = val[2];
 					var werer_cd = val[3];
 					var order_req_no = val[4];
+					var return_req_no = val[5];
 					var data = {
 						"werer_cd": werer_cd,
 						"order_req_no": order_req_no,
+						"return_req_no": return_req_no,
 						"rntl_cont_no": rntl_cont_no,
 						"rntl_sect_cd": rntl_sect_cd,
 						"job_type_cd": job_type_cd
@@ -221,7 +222,7 @@ define([
 						success:function(res){
 							var res_val = res.attributes;
 							var type = "cm0130_res";
-							var transition = "WR0016_req";
+							var transition = "WR0021_req";
 							var data = cond["data"];
 							that.onShow(res_val, type, transition, data);
 						}
@@ -242,7 +243,7 @@ define([
 						success:function(res){
 							var type = "cm0130_res";
 							var res_val = res.attributes;
-							var transition = "WR0017_req";
+							var transition = "WR0022_req";
 							var data = "";
 							that.onShow(res_val, type, transition, data);
 						}
@@ -263,7 +264,7 @@ define([
 						success:function(res){
 							var type = "cm0130_res";
 							var res_val = res.attributes;
-							var transition = "WR0018_req";
+							var transition = "WR0023_req";
 							var data = "";
 							that.onShow(res_val, type, transition, data);
 						}
@@ -280,15 +281,15 @@ define([
 						alert(val["error_msg"]);
 					} else {
 						// エラーがない場合は各対応処理へ移行
-						if (transition == "WR0016_req") {
+						if (transition == "WR0021_req") {
 							// 発注取消処理
 							var type = transition;
 							var res_val = "";
-						} else if (transition == "WR0017_req") {
+						} else if (transition == "WR0022_req") {
 							// 入力完了処理
 							var type = transition;
 							var res_val = "";
-						} else if (transition == "WR0018_req") {
+						} else if (transition == "WR0023_req") {
 							// 発注送信処理
 							var type = transition;
 							var res_val = "";
@@ -296,7 +297,7 @@ define([
 					}
 				}
 				// 発注取消処理
-				if (type == "WR0016_req") {
+				if (type == "WR0021_req") {
 					var msg = "削除しますが、よろしいですか？";
 					if (window.confirm(msg)) {
 						$.blockUI({ message: '<p><img src="ajax-loader.gif" style="margin: 0 auto;" /> 発注取消中...</p>' });
@@ -309,7 +310,7 @@ define([
 						modelForUpdate.fetchMx({
 							data:cond,
 							success:function(res){
-								var type = "WR0016_res";
+								var type = "WR0021_res";
 								var res_val = res.attributes;
 
 								if (res_val["error_code"] == "0") {
@@ -331,7 +332,7 @@ define([
 					}
 				}
 				// 入力完了処理
-				if (type == "WR0017_req") {
+				if (type == "WR0022_req") {
 					//--画面入力項目--//
 					// 着用者情報
 					var agreement_no = $("select[name='agreement_no']").val();
@@ -353,7 +354,6 @@ define([
 						'member_name': member_name,
 						'member_name_kana': member_name_kana,
 						'sex_kbn': sex_kbn,
-						'resfl_ymd': resfl_ymd,
 						'section': section,
 						'job_type': job_type,
 						'shipment': shipment,
@@ -370,16 +370,39 @@ define([
 						item[i]["job_type_item_cd"] = $("input[name='job_type_item_cd"+i+"']").val();
 						item[i]["item_cd"] = $("input[name='item_cd"+i+"']").val();
 						item[i]["color_cd"] = $("input[name='color_cd"+i+"']").val();
-						item[i]["choice_type"] = $("input[name='choice_type"+i+"']").val();
-						item[i]["std_input_qty"] = $("input[name='std_input_qty"+i+"']").val();
-						item[i]["size_cd"] = $("select[name='size_cd"+i+"']").val();
-						item[i]["order_num"] = $("input[name='order_num"+i+"']").val();
-						item[i]["order_num_disable"] = $("input[name='order_num_disable"+i+"']").val();
+						item[i]["size_cd"] = $("input[name='size_cd"+i+"']").val();
+						item[i]["possible_num"] = $("input[name='possible_num"+i+"']").val();
+						item[i]["individual_flg"] = $("input[name='individual_flg"+i+"']").val();
+						item[i]["individual_data"] = new Object();
+						if (item[i]["individual_flg"]) {
+							//個体管理番号表示フラグがONの場合、対象、個体管理番号単位
+							item[i]["individual_cnt"] = $("input[name='individual_cnt"+i+"']").val();
+							var Name = 'target_flg'+i;
+							var chk_num = 0;
+							for (var j=0; j<item[i]["individual_cnt"]; j++) {
+								var chk_val = document.getElementsByName(Name)[j].value;
+								item[i]["individual_data"][j] = new Object();
+								var checked = document.getElementsByName(Name)[j].checked;
+								if(checked == true){
+									item[i]["individual_data"][j]["target_flg"] = '1';
+									item[i]["individual_data"][j]["individual_ctrl_no"] = chk_val;
+									chk_num = chk_num + 1;
+								} else {
+									item[i]["individual_data"][j]["target_flg"] = '0';
+									item[i]["individual_data"][j]["individual_ctrl_no"] = chk_val;
+								}
+								// 対象=trueの数（商品単位返却数）
+								item[i]["individual_data"][j]["return_num"] = chk_num;
+							}
+						} else {
+							//個体管理番号表示フラグがOFFの場合、商品単位の返却数
+							item[i]["return_num"] = $("input[name='return_num"+i+"']").val();
+						}
 					}
 
 					// 入力項目チェック処理
 					var modelForUpdate = this.model;
-					modelForUpdate.url = App.api.WR0017;
+					modelForUpdate.url = App.api.WR0022;
 					var cond = {
 						"scr": '不要品返却-入力完了-check',
 						"mode": "check",
@@ -411,7 +434,7 @@ define([
 					});
 				}
 				// 発注送信処理
-				if (type == "WR0018_req") {
+				if (type == "WR0023_req") {
 					//--画面入力項目--//
 					// 着用者情報
 					var agreement_no = $("select[name='agreement_no']").val();
@@ -433,7 +456,6 @@ define([
 						'member_name': member_name,
 						'member_name_kana': member_name_kana,
 						'sex_kbn': sex_kbn,
-						'resfl_ymd': resfl_ymd,
 						'section': section,
 						'job_type': job_type,
 						'shipment': shipment,
@@ -453,12 +475,12 @@ define([
 						item[i]["choice_type"] = $("input[name='choice_type"+i+"']").val();
 						item[i]["std_input_qty"] = $("input[name='std_input_qty"+i+"']").val();
 						item[i]["size_cd"] = $("select[name='size_cd"+i+"']").val();
-						item[i]["order_num"] = $("input[name='order_num"+i+"']").val();
-						item[i]["order_num_disable"] = $("input[name='order_num_disable"+i+"']").val();
+						item[i]["possible_num"] = $("input[name='possible_num"+i+"']").val();
+						item[i]["return_num"] = $("input[name='return_num"+i+"']").val();
 					}
 
 					var modelForUpdate = this.model;
-					modelForUpdate.url = App.api.WR0018;
+					modelForUpdate.url = App.api.WR0023;
 					var cond = {
 						"scr": '不要品返却-発注送信',
 						"mode": "check",

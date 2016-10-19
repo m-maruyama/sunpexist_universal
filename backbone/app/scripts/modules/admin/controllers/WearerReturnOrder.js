@@ -47,7 +47,6 @@ define([
 				this.listenTo(wearerReturnOrderConditionView, 'inputComplete', function(data){
 					wearerReturnOrderView.condition.reset();
 					wearerReturnOrderView.listTable.reset();
-					//console.log(data);
 
 					var wearerReturnOrderComplete = new App.Admin.Views.WearerReturnOrderComplete({
 						data: data,
@@ -58,7 +57,6 @@ define([
 				this.listenTo(wearerReturnOrderConditionView, 'sendComplete', function(data){
 					wearerReturnOrderView.condition.reset();
 					wearerReturnOrderView.listTable.reset();
-					//console.log(data);
 
 					var wearerReturnOrderSendComplete = new App.Admin.Views.WearerReturnOrderSendComplete({
 						data: data,

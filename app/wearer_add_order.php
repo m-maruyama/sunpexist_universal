@@ -27,9 +27,43 @@ $app->post('/wearer_add_info', function ()use($app){
 
   //--着用者入力項目情報--//
   $all_list = array();
-  $json_list['wearer_info'] = "";
-  // 着用者基本マスタトラン参照
   $list = array();
+  $json_list['wearer_info'] = "";
+
+  // 発注情報トラン参照
+  $query_list = array();
+  array_push($query_list, "t_order_tran.corporate_id = '".$auth['corporate_id']."'");
+  array_push($query_list, "t_order_tran.rntl_cont_no = '".$wearer_other_post['rntl_cont_no']."'");
+  array_push($query_list, "t_order_tran.werer_cd = '".$wearer_other_post['werer_cd']."'");
+  array_push($query_list, "t_order_tran.rntl_sect_cd = '".$wearer_other_post['rntl_sect_cd']."'");
+  array_push($query_list, "t_order_tran.job_type_cd = '".$wearer_other_post['job_type_cd']."'");
+  // 発注状況区分(終了)
+  array_push($query_list,"t_order_tran.order_sts_kbn = '1'");
+  // 理由区分(不要品返却)
+  array_push($query_list,"t_order_tran.order_reason_kbn = '03'");
+  $query = implode(' AND ', $query_list);
+
+  $arg_str = "";
+  $arg_str = "SELECT distinct on (order_req_no) ";
+  $arg_str .= "*";
+  $arg_str .= " FROM ";
+  $arg_str .= "t_order_tran";
+  $arg_str .= " WHERE ";
+  $arg_str .= $query;
+  //ChromePhp::LOG($arg_str);
+  $t_order_tran = new TOrderTran();
+  $results = new Resultset(NULL, $t_order_tran, $t_order_tran->getReadConnection()->query($arg_str));
+  $result_obj = (array)$results;
+  $results_cnt = $result_obj["\0*\0_count"];
+  // コメント欄
+  $list["comment"] = "";
+  if (!empty($results_cnt)) {
+    foreach ($results as $result) {
+      $list["comment"] = $result->memo;
+    }
+  }
+
+  // 着用者基本マスタトラン参照
   $query_list = array();
   array_push($query_list, "m_wearer_std_tran.corporate_id = '".$auth['corporate_id']."'");
   array_push($query_list, "m_wearer_std_tran.rntl_cont_no = '".$wearer_other_post['rntl_cont_no']."'");
@@ -882,39 +916,6 @@ $app->post('/wearer_add_delete', function ()use($app){
   $m_wearer_std_tran = new MWearerStdTran();
   $results = new Resultset(NULL, $m_wearer_std_tran, $m_wearer_std_tran->getReadConnection()->query('begin'));
   try {
-    //--着用者商品マスタトラン削除--//
-    //ChromePhp::LOG("着用者商品マスタトラン削除");
-    $query_list = array();
-    array_push($query_list, "m_wearer_item_tran.corporate_id = '".$auth['corporate_id']."'");
-    array_push($query_list, "t_order_tran.order_req_no = '".$cond['order_req_no']."'");
-    // 発注区分「異動」
-    array_push($query_list, "t_order_tran.order_sts_kbn = '5'");
-    $query = implode(' AND ', $query_list);
-
-    $arg_str = "";
-    $arg_str = "DELETE FROM ";
-    $arg_str .= "m_wearer_item_tran";
-    $arg_str .= " USING ";
-    $arg_str .= "t_order_tran";
-    $arg_str .= " WHERE ";
-    $arg_str .= "m_wearer_item_tran.werer_cd = t_order_tran.werer_cd";
-    $arg_str .= " AND m_wearer_item_tran.rntl_cont_no = t_order_tran.rntl_cont_no";
-    $arg_str .= " AND m_wearer_item_tran.rntl_sect_cd = t_order_tran.rntl_sect_cd";
-    $arg_str .= " AND m_wearer_item_tran.job_type_cd = t_order_tran.job_type_cd";
-    $arg_str .= " AND m_wearer_item_tran.job_type_item_cd = t_order_tran.job_type_item_cd";
-    $arg_str .= " AND m_wearer_item_tran.item_cd = t_order_tran.item_cd";
-    $arg_str .= " AND m_wearer_item_tran.color_cd = t_order_tran.color_cd";
-    $arg_str .= " AND m_wearer_item_tran.size_cd = t_order_tran.size_cd";
-    $arg_str .= " AND m_wearer_item_tran.size_two_cd = t_order_tran.size_two_cd";
-    $arg_str .= " AND ";
-    $arg_str .= $query;
-    //ChromePhp::LOG($arg_str);
-    $m_wearer_item_tran = new MWearerItemTran();
-    $results = new Resultset(NULL, $m_wearer_item_tran, $m_wearer_item_tran->getReadConnection()->query($arg_str));
-    $result_obj = (array)$results;
-    $results_cnt = $result_obj["\0*\0_count"];
-    //ChromePhp::LOG($results_cnt);
-
     //--着用者基本マスタトラン削除--//
     // 発注情報トランを参照
     //ChromePhp::LOG("発注情報トラン参照");
