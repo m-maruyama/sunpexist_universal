@@ -27,7 +27,12 @@ define([
 				var that = this;
 
 				var modelForUpdate = this.model;
-				modelForUpdate.url = App.api.WO0012;
+				var path = location.pathname;
+				if(path=='/universal/wearer_end_order.html'){
+					modelForUpdate.url = App.api.WN0012;
+				}else if(path=='/universal/wearer_order.html'){
+					modelForUpdate.url = App.api.WO0012;
+				}
 				var cond = {
 					"scr": '拠点',
 					"agreement_no": agreement_no,

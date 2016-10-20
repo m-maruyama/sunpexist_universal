@@ -17,7 +17,12 @@ define([
 			onShow: function() {
 				var that = this;
 				var modelForUpdate = this.model;
-				modelForUpdate.url = App.api.WO0011;
+				var path = location.pathname;
+				if(path=='/universal/wearer_end_order.html'){
+					modelForUpdate.url = App.api.WN0011;
+				}else if(path=='/universal/wearer_order.html'){
+					modelForUpdate.url = App.api.WO0011;
+				}
 				var cond = {
 					"scr": '理由区分'
 				};

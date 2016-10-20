@@ -3,7 +3,11 @@ define([
 	'./Abstract',
 	'../views/WearerEndOrder',
 	'../views/WearerEndOrderCondition',
-	'../views/AgreementNoConditionInput',
+	'../views/WearerEndOrderList',
+	'../views/AgreementNoConditionOrder',
+	'../views/ReasonKbnConditionOrder',
+	'../views/SectionConditionOrder',
+	'../views/JobTypeConditionOrder',
 	'../views/SectionModalCondition',
 	'../views/SectionModalListList',
 	'../views/SectionModalListItem',
@@ -35,8 +39,13 @@ define([
 				var wearerEndOrderView = new App.Admin.Views.WearerEndOrder({
 					model:wearerEndOrderModel
 				});
+				var wearerEndListListView = new App.Admin.Views.WearerEndOrderList();
 
-				var agreementNoConditionView = new App.Admin.Views.AgreementNoConditionInput();
+				var agreementNoConditionView = new App.Admin.Views.AgreementNoConditionOrder();
+				var reasonKbnConditionView = new App.Admin.Views.ReasonKbnConditionOrder();
+				var sectionConditionView = new App.Admin.Views.SectionConditionOrder();
+				var jobTypeConditionView = new App.Admin.Views.JobTypeConditionOrder();
+
 				var wearerEndOrderListConditionModel = new App.Entities.Models.AdminWearerEndOrderListCondition();
 				var wearerEndOrderConditionView = new App.Admin.Views.WearerEndOrderCondition({
 					model:wearerEndOrderListConditionModel
@@ -98,9 +107,13 @@ define([
 				this.listenTo(paginationView, 'selected', function(pageNumber){
 						fetchList_section(pageNumber);
 				});
-				console.log(333);
 				App.main.show(wearerEndOrderView);
 				wearerEndOrderView.condition.show(wearerEndOrderConditionView);
+				wearerEndOrderView.listTable.show(wearerEndListListView);
+				wearerEndOrderConditionView.agreement_no.show(agreementNoConditionView);
+				wearerEndOrderConditionView.reason_kbn.show(reasonKbnConditionView);
+				wearerEndOrderConditionView.section.show(sectionConditionView);
+				wearerEndOrderConditionView.job_type.show(jobTypeConditionView);
 				wearerEndOrderView.sectionModal.show(sectionModalView.render());
 				sectionModalView.page.show(paginationView);
 				sectionModalView.condition.show(sectionModalConditionView);

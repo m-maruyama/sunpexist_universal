@@ -4,13 +4,11 @@ use Phalcon\Mvc\Model\Resultset\Simple as Resultset;
 use Phalcon\Paginator\Adapter\Model as PaginatorModel;
 use Phalcon\Paginator\Adapter\NativeArray as PaginatorArray;
 use Phalcon\Paginator\Adapter\QueryBuilder as PaginatorQueryBuilder;
-
-
 /**
  * 発注入力
  * 入力項目：理由区分
  */
-$app->post('/reason_kbn_order', function ()use($app){
+$app->post('/wearer_end/reason_kbn', function ()use($app){
     $params = json_decode(file_get_contents("php://input"), true);
 
     // アカウントセッション取得
@@ -41,16 +39,16 @@ $app->post('/reason_kbn_order', function ()use($app){
     $results_cnt = $results_array["\0*\0_count"];
 
     $paginator_model = new PaginatorModel(
-      array(
-        "data"  => $results,
-        "limit" => $results_cnt,
-        "page" => 1
-      )
+        array(
+            "data"  => $results,
+            "limit" => $results_cnt,
+            "page" => 1
+        )
     );
     $paginator = $paginator_model->getPaginate();
     $results = $paginator->items;
     foreach ($results as $result) {
-      $order_control_unit = $result->order_control_unit;
+        $order_control_unit = $result->order_control_unit;
     }
 
     //--理由区分リスト取得--//
@@ -61,7 +59,7 @@ $app->post('/reason_kbn_order', function ()use($app){
 
     array_push($query_list, "cls_cd = '002'");
     array_push($query_list, "relation_cls_cd = '001'");
-    array_push($query_list, "relation_gen_cd = '1'");
+    array_push($query_list, "relation_gen_cd = '2'");
     array_push($query_list, "relation_cls_cd_2 = '003'");
     array_push($query_list, "relation_gen_cd_2 = '".$order_control_unit."'");
     $query = implode(' AND ', $query_list);
@@ -81,38 +79,38 @@ $app->post('/reason_kbn_order', function ()use($app){
     $results_cnt = $results_array["\0*\0_count"];
 
     if ($results_cnt > 0) {
-      $paginator_model = new PaginatorModel(
-    		array(
-    			"data"  => $results,
-    			"limit" => $results_cnt,
-    			"page" => 1
-    		)
-    	);
-      $paginator = $paginator_model->getPaginate();
-  		$results = $paginator->items;
+        $paginator_model = new PaginatorModel(
+            array(
+                "data"  => $results,
+                "limit" => $results_cnt,
+                "page" => 1
+            )
+        );
+        $paginator = $paginator_model->getPaginate();
+        $results = $paginator->items;
 
-      foreach ($results as $result) {
-        $list['reason_kbn'] = $result->gen_cd;
-        $list['reason_kbn_name'] = $result->gen_name;
+        foreach ($results as $result) {
+            $list['reason_kbn'] = $result->gen_cd;
+            $list['reason_kbn_name'] = $result->gen_name;
 
-        // 発注情報トランフラグ有の場合は初期選択状態版を生成
-        if ($wearer_chg_post['order_req_no']) {
-          if ($list['reason_kbn'] == $wearer_chg_post['order_reason_kbn']) {
-            $list['selected'] = 'selected';
-          } else {
-            $list['selected'] = '';
-          }
-        } else {
-          $list['selected'] = '';
+            // 発注情報トランフラグ有の場合は初期選択状態版を生成
+            if ($wearer_chg_post['order_req_no']) {
+                if ($list['reason_kbn'] == $wearer_chg_post['order_reason_kbn']) {
+                    $list['selected'] = 'selected';
+                } else {
+                    $list['selected'] = '';
+                }
+            } else {
+                $list['selected'] = '';
+            }
+
+            array_push($all_list, $list);
         }
-
-        array_push($all_list, $list);
-      }
     } else {
-      $list['reason_kbn'] = null;
-      $list['reason_kbn_name'] = '';
-      $list['selected'] = '';
-      array_push($all_list, $list);
+        $list['reason_kbn'] = null;
+        $list['reason_kbn_name'] = '';
+        $list['selected'] = '';
+        array_push($all_list, $list);
     }
 
     $json_list['reason_kbn_list'] = $all_list;
@@ -123,7 +121,7 @@ $app->post('/reason_kbn_order', function ()use($app){
  * 発注入力 着用者情報
  * 入力項目：拠点
  */
-$app->post('/section_order', function ()use($app){
+$app->post('/section_wearer_end', function ()use($app){
     $params = json_decode(file_get_contents("php://input"), true);
 
     // アカウントセッション取得
@@ -153,38 +151,40 @@ $app->post('/section_order', function ()use($app){
     //ChromePhp::LOG($results_cnt);
 
     if ($results_cnt > 0) {
-      $paginator_model = new PaginatorModel(
-    		array(
-    			"data"  => $results,
-    			"limit" => $results_cnt,
-    			"page" => 1
-    		)
-    	);
-      $paginator = $paginator_model->getPaginate();
-  		$results = $paginator->items;
+        $paginator_model = new PaginatorModel(
+            array(
+                "data"  => $results,
+                "limit" => $results_cnt,
+                "page" => 1
+            )
+        );
+        $paginator = $paginator_model->getPaginate();
+        $results = $paginator->items;
 
-      foreach ($results as $result) {
-        $list['rntl_sect_cd'] = $result->rntl_sect_cd;
-        $list['rntl_sect_name'] = $result->rntl_sect_name;
+        foreach ($results as $result) {
+            $list['rntl_sect_cd'] = $result->rntl_sect_cd;
+            $list['rntl_sect_name'] = $result->rntl_sect_name;
 
-        // 発注情報トランフラグ有の場合は初期選択状態版を生成
-        if ($wearer_chg_post['order_req_no']) {
-          if ($list['rntl_sect_cd'] == $wearer_chg_post['rntl_sect_cd']) {
-            $list['selected'] = 'selected';
-          } else {
-            $list['selected'] = '';
-          }
-        } else {
-          $list['selected'] = '';
+            // 発注情報トランフラグ有の場合は初期選択状態版を生成
+            if ($wearer_chg_post['order_req_no']) {
+                if ($list['rntl_sect_cd'] == $wearer_chg_post['rntl_sect_cd']) {
+
+                    $list['selected'] = 'selected';
+                    $json_list['disabled'] = 'disabled';
+                } else {
+                    $list['selected'] = '';
+                }
+            } else {
+                $list['selected'] = '';
+            }
+
+            array_push($all_list, $list);
         }
-
-        array_push($all_list, $list);
-      }
     } else {
-      $list['rntl_sect_cd'] = null;
-      $list['rntl_sect_name'] = '';
-      $list['selected'] = '';
-      array_push($all_list, $list);
+        $list['rntl_sect_cd'] = null;
+        $list['rntl_sect_name'] = '';
+        $list['selected'] = '';
+        array_push($all_list, $list);
     }
 
     $json_list['m_section_list'] = $all_list;
@@ -978,15 +978,6 @@ $app->post('/wearer_order_insert', function () use ($app) {
                 // サイズコード2
                 array_push($calum_list, "size_two_cd");
                 array_push($values_list, "' '");
-                // 倉庫コード
-                //rray_push($calum_list, "whse_cd");
-                //array_push($values_list, "NULL");
-                // 在庫USRコード
-                //array_push($calum_list, "stk_usr_cd");
-                //array_push($values_list, "NULL");
-                // 在庫USR支店コード
-                //array_push($calum_list, "stk_usr_brnch_cd");
-                //array_push($values_list, "NULL");
                 // 出荷先、出荷先支店コード
                 array_push($calum_list, "ship_to_cd");
                 array_push($values_list, "'".$wearer_chg_post['ship_to_cd']."'");

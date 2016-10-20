@@ -115,7 +115,6 @@ define([
 
 				//エラーメッセージ
 				this.listenTo(wearerOrderConditionView, 'error_msg', function(errors){
-					console.log(errors);
 					if(errors){
 						wearerOrderConditionView.triggerMethod('showAlerts', errors);
 					}

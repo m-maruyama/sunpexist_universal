@@ -1,84 +1,59 @@
+<div class="row">
+	<h1>発注入力（貸与終了）</h1>
+	<!-- start フォーム -->
+	<div class="row">
+		<div class="col-md-1">
+			<button class="btn btn-primary back" title="戻る">戻る</button>
+		</div>
+		<div class="col-md-1">
+			<button class="btn btn-primary delete" style="display:none;" name="delete_param" value="{{delete_param}}" title="発注取消">発注取消</button>
+		</div>
+		<div class="col-md-1">
+			<button class="btn btn-primary complete" style="display:none;" title="入力完了">入力完了</button>
+		</div>
+		<div class="col-md-1">
+			<button class="btn btn-primary orderSend" style="display:none;" title="発注送信">発注送信</button>
+		</div>
+	</div>
 
-	  <!-- start 本文エリア -->
-		<div class="row">
-			<h1>発注入力（貸与終了）</h1>
-			<!-- start フォーム -->
-			<form class="form-horizontal">
-				<div class="col-md-10 box_purple">
-				<!-- 契約No -->
-				<div class="form-group">
-					<div class="agreement_no"></div>
-				</div>
+	<!--エラーメッセージ-->
+	<div style="padding-top:20px;">
+		<div class="errors"></div>
+	<div>
 
-				<div class="form-group">
-					<label class="col-md-2 control-label" for="">社員番号</label>
-					<div class="col-md-3">
-						<input type="text"  id="member_no" name="member_no" class="form-control input-sm" id="" maxlength="" placeholder="" />
+	<form class="form-horizontal">
+		<div class="col-md-13 box_purple">
+			<div class="form-group row">
+				<div class="agreement_no"></div>
+			</div>
+			<div class="form-group row">
+				<div class="reason_kbn"></div>
+			</div>
+			<div class="form-group">
+				<label class="col-md-2 control-label" for="resfl_ymd">異動日<span style="color:red">＊</span></label>
+				<div class="col-md-3">
+					<div class='input-group date datepicker'>
+						<input type="text" class="form-control  input-sm datepicker" id="resfl_ymd" name="resfl_ymd" value="">
+						<div class="input-group-addon">
+							<span class="glyphicon glyphicon-calendar"></span>
+						</div>
 					</div>
 				</div>
-				<div class="form-group row">
-					<label class="col-md-2 control-label" for="">着用者名</label>
-					<div class="col-md-3">
-						<input type="text" id="member_name" name="member_name" class="form-control input-sm" id="" maxlength="" placeholder="" />
-					</div>
-					<div class="col-md-7">
-						（検索方法 ： <input type="radio" id="wearer_name_src1" name="wearer_name_src" value="1" checked> 前方一致　<input type="radio" id="wearer_name_src2" name="wearer_name_src" value="2"> 含む）
-					</div>
+			</div>
+			<div class="form-group row">
+				<div class="section"></div>
+			</div>
+			<div class="form-group">
+				<div class="col-md-6">
+					<div class="job_type"></div>
 				</div>
-
-				<!-- 拠点 -->
-				<div class="form-group">
-					<div class="section"></div>
+			</div>
+			<div class="form-group row">
+				<label class="col-md-2 control-label" for="comment">コメント欄</label>
+				<div class="col-md-6">
+					<textarea rows="5" class="form-control input-sm" id="comment"></textarea>
 				</div>
-
-				<!-- 貸与パターン、商品、色、サイズ、リセットボタン -->
-				<div class="form-group row">
-					<label class="col-md-2 control-label" for="">貸与パターン</label>
-					<table>
-						<tr>
-							<!--div class="col-md-10"-->
-								<th>
-									<div class="job_type" style="font-weight:normal;"></div>
-								</th>
-								<th>
-									<div class="input_item" style="font-weight:normal;"></div>
-								</th>
-								<th>
-									<div class="item_color" style="font-weight:normal;"></div>
-								</th>
-								<th>
-									<b>　サイズ</b>
-									<input type="text" id="item_size" name="item_size" class="input-sm" maxlength="5" placeholder=""  style="font-weight:normal;">　
-								</th>
-								<th>
-									<a type="button" class="btn btn-primary btn-sm reset" id="reset_button" title="リセット">リセット</a>
-								</th>
-							<!--/div-->
-						</tr>
-					</table>
-				</div>
-
-				<div class="form-group">
-					<div class="col-md-2 control-label"><b>着用者状況区分</b></div>
-					<div class="col-md-10 form-inline">
-						<label class="checkbox-inline"><input type="checkbox" id="wearer_kbn0" name="wearer_kbn[]" value="1" checked>稼働</label>
-						<label class="checkbox-inline"><input type="checkbox" id="wearer_kbn1" name="wearer_kbn[]" value="2" checked>休職</label>
-						<label class="checkbox-inline"><input type="checkbox" id="wearer_kbn2" name="wearer_kbn[]" value="4" checked>退社</label>
-						<!--label class="checkbox-inline"><input type="checkbox" id="wearer_kbn0" name="wearer_kbn[]" value="1">入社</label-->
-						<!--label class="checkbox-inline"><input type="checkbox" id="wearer_kbn0" name="wearer_kbn[]" value="1">復職</label-->
-						<label class="checkbox-inline"><input type="checkbox" id="wearer_kbn3" name="wearer_kbn[]" value="8" checked>異動</label>
-						<!--label class="checkbox-inline"><input type="checkbox" id="wearer_kbn0" name="wearer_kbn[]" value="1">その他（着用開始）</label-->
-						<label class="checkbox-inline"><input type="checkbox" id="wearer_kbn4" name="wearer_kbn[]" value="3" checked>その他（着用終了）</label>
-					</div>
-				</div>
-				<div class="form-group">
-					<div class="col-md-2 col-md-push-2 " style="margin-left: 500px">
-						<input type="hidden" class="ui_type" id="ui_type" name="ui_type" value="wearer">
-						<a type="button" data-page="1" class="btn btn-primary btn-sm btn-block search" title="検索" id="button1">検索</a>
-					</div>
-				</div>
-				</div>
-			</form>
-			<!-- end フォーム -->
-
-			<hr>
+			</div>
+		</div>
+	</form>
+	<!-- end フォーム -->

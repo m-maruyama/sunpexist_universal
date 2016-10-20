@@ -373,7 +373,7 @@ define([
 							data: cond,
 							success: function (res) {
 								var res_val = res.attributes;
-								if(res_val["error_msg"]) {
+								if(res_val["error_code"]=='1') {
 									that.triggerMethod('error_msg', res_val["error_msg"]);
 								}else{
 									window.sessionStorage.setItem('referrer', 'wearer_order_send');
@@ -395,43 +395,6 @@ define([
 				},
 			},
 			onShow: function(val, type) {
-				var that = this;
-                //
-				// // 更新可否チェック結果処理
-				// if (type == "cm0130_res") {
-				// 	if (!val["chk_flg"]) {
-				// 		// 更新可否フラグ=更新不可の場合はアラートメッセージ表示
-				// 		alert(val["error_msg"]);
-				// 	} else {
-				// 		// 発注取消処理へ移行
-				// 		var type = "WC0020_req";
-				// 		var res_val = "";
-				// 	}
-				// }
-				// 発注取消処理
-				// if (type == "WC0020_req") {
-				// 	var msg = "削除しますが、よろしいですか？";
-				// 	if (window.confirm(msg)) {
-				// 		var modelForUpdate = this.model;
-				// 		modelForUpdate.url = App.api.WC0020;
-				// 		var cond = {
-				// 			"scr": '発注取消',
-				// 		};
-				// 		modelForUpdate.fetchMx({
-				// 			data:cond,
-				// 			success:function(res){
-				// 				var type = "WC0020_res";
-				// 				var res_val = res.attributes;
-                //
-				// 				if (res_val["error_code"] == "0") {
-				// 					alert('発注取消が完了しました。');
-				// 				} else {
-				// 					alert('発注取消中にエラーが発生しました。');
-				// 				}
-				// 			}
-				// 		});
-				// 	}
-				// }
 			},
 		});
 	});
