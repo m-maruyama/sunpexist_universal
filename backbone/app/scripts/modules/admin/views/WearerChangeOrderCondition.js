@@ -46,6 +46,7 @@ define([
 				'shipment': '#shipment',
 				'post_number': '#post_number',
 				'address': '#address',
+				'comment': '#comment',
 				"back": '.back',
 				"delete": '.delete',
 				"complete": '.complete',
@@ -69,6 +70,7 @@ define([
 				'#shipment': 'shipment',
 				'#post_number': 'post_number',
 				'#address': 'address',
+				'#comment': 'comment',
 				"#delete": 'delete',
 				"#complete": 'complete',
 				"#orderSend": 'orderSend',
@@ -142,11 +144,12 @@ define([
 							}
 						});
 
-						// 社員コード、着用者名、読みかな
+						// 社員コード、着用者名、読みかな、コメント欄
 						if (res_list['wearer_info'][0]) {
 							that.ui.member_no.val(res_list['wearer_info'][0]['cster_emply_cd']);
 							that.ui.member_name.val(res_list['wearer_info'][0]['werer_name']);
 							that.ui.member_name_kana.val(res_list['wearer_info'][0]['werer_name_kana']);
+							that.ui.comment.val(res_list['wearer_info'][0]['comment']);
 						}
 						var maxTime = new Date();
 						maxTime.setHours(15);
@@ -191,7 +194,6 @@ define([
 						});
 						that.ui.datepicker2.on('dp.change', function(){
 							$(this).data('DateTimePicker').hide();
-							//$(this).find('input').trigger('input');
 						});
 					}
 				});
@@ -290,6 +292,7 @@ define([
 				// 拠点
 				'change @ui.section': function(){
 					this.ui.section = $('#section');
+					var agreement_no = $("select[name='agreement_no']").val();
 					var section = $("select[name='section']").val();
 
 					// 出荷先以降の内容変更
@@ -307,6 +310,7 @@ define([
 
 					// 入力完了、発注送信ボタン表示/非表示制御
 					var data = {
+						'rntl_cont_no': agreement_no,
 						'rntl_sect_cd': section
 					};
 					var modelForUpdate = this.model;
@@ -480,8 +484,6 @@ define([
 					var section = $("select[name='section']").val();
 					var job_type = $("select[name='job_type']").val();
 					var shipment = $("select[name='shipment']").val();
-					//var post_number = $("input[name='post_number']").val();
-					//var address = $("input[name='address']").val();
 					var comment = $("#comment").val();
 					var wearer_data = {
 						'agreement_no': agreement_no,
@@ -496,8 +498,6 @@ define([
 						'section': section,
 						'job_type': job_type,
 						'shipment': shipment,
-						//'post_number': post_number,
-						//'address': address,
 						'comment': comment,
 					}
 
@@ -515,30 +515,37 @@ define([
 						now_item[i]["now_choice_type"] = $("input[name='now_choice_type"+i+"']").val();
 						now_item[i]["now_std_input_qty"] = $("input[name='now_std_input_qty"+i+"']").val();
 						now_item[i]["now_size_cd"] = $("input[name='now_size_cd"+i+"']").val();
-						now_item[i]["individual_disp"] = $("input[name='individual_disp"+i+"']").val();
 						now_item[i]["individual_cnt"] = $("input[name='individual_cnt"+i+"']").val();
-						now_item[i]["individual_flg"] = $('input[name="individual_flg"]').val();
+						now_item[i]["possible_num"] = $("input[name='possible_num"+i+"']").val();
+						now_item[i]["individual_flg"] = $("input[name='individual_flg']").val();
 						// 商品毎の「対象」チェック状態、「個体管理番号」を取得
 						now_item[i]["individual_data"] = new Object();
-						if (now_item[i]["individual_flg"] == "1") {
+						if (now_item[i]["individual_flg"]) {
+							//個体管理番号表示フラグがONの場合、対象、個体管理番号単位
+							now_item[i]["individual_cnt"] = $("input[name='individual_cnt"+i+"']").val();
 							var Name = 'now_target_flg'+i;
+							var chk_num = 0;
 							for (var j=0; j<now_item[i]["individual_cnt"]; j++) {
 								var chk_val = document.getElementsByName(Name)[j].value;
-								if (chk_val != "empty") {
-									now_item[i]["individual_data"][j] = new Object();
+								now_item[i]["individual_data"][j] = new Object();
+								var checked = document.getElementsByName(Name)[j].checked;
+								if(checked == true){
+									now_item[i]["individual_data"][j]["now_target_flg"] = '1';
 									now_item[i]["individual_data"][j]["individual_ctrl_no"] = chk_val;
-									var checked = document.getElementsByName(Name)[j].checked;
-									if(checked == false) {
-										now_item[i]["individual_data"][j]["now_target_flg"] = '0';
-									}
-									if(checked == true){
-										now_item[i]["individual_data"][j]["now_target_flg"] = '1';
-									}
+									chk_num = chk_num + 1;
+								} else {
+									now_item[i]["individual_data"][j]["now_target_flg"] = '0';
+									now_item[i]["individual_data"][j]["individual_ctrl_no"] = chk_val;
 								}
+								// 対象=trueの数（商品単位返却数）
+								now_item[i]["individual_data"][j]["return_num"] = chk_num;
 							}
+						} else {
+							//個体管理番号表示フラグがOFFの場合、商品単位の返却数
+							now_item[i]["return_num"] = $("input[name='return_num"+i+"']").val();
 						}
-						now_item[i]["now_order_num"] = $("input[name='now_order_num"+i+"']").val();
-						now_item[i]["now_order_num_disable"] = $("input[name='now_order_num_disable"+i+"']").val();
+//						now_item[i]["now_order_num"] = $("input[name='now_order_num"+i+"']").val();
+//						now_item[i]["now_order_num_disable"] = $("input[name='now_order_num_disable"+i+"']").val();
 						now_item[i]["now_return_num"] = $("input[name='now_return_num"+i+"']").val();
 						now_item[i]["now_return_num_disable"] = $("input[name='now_return_num_disable"+i+"']").val();
 					}
@@ -633,6 +640,7 @@ define([
 					}
 
 					// 現在貸与中のアイテム
+					var now_target_flg = 'now_target_flg[]';
 					var now_list_cnt = $("input[name='now_list_cnt']").val();
 					var now_item = new Object();
 					for (var i=0; i<now_list_cnt; i++) {
@@ -645,30 +653,37 @@ define([
 						now_item[i]["now_choice_type"] = $("input[name='now_choice_type"+i+"']").val();
 						now_item[i]["now_std_input_qty"] = $("input[name='now_std_input_qty"+i+"']").val();
 						now_item[i]["now_size_cd"] = $("input[name='now_size_cd"+i+"']").val();
-						now_item[i]["individual_disp"] = $("input[name='individual_disp"+i+"']").val();
 						now_item[i]["individual_cnt"] = $("input[name='individual_cnt"+i+"']").val();
-						now_item[i]["individual_flg"] = $('input[name="individual_flg"]').val();
+						now_item[i]["possible_num"] = $("input[name='possible_num"+i+"']").val();
+						now_item[i]["individual_flg"] = $("input[name='individual_flg']").val();
 						// 商品毎の「対象」チェック状態、「個体管理番号」を取得
 						now_item[i]["individual_data"] = new Object();
-						if (now_item[i]["individual_flg"] == "1") {
+						if (now_item[i]["individual_flg"]) {
+							//個体管理番号表示フラグがONの場合、対象、個体管理番号単位
+							now_item[i]["individual_cnt"] = $("input[name='individual_cnt"+i+"']").val();
 							var Name = 'now_target_flg'+i;
+							var chk_num = 0;
 							for (var j=0; j<now_item[i]["individual_cnt"]; j++) {
 								var chk_val = document.getElementsByName(Name)[j].value;
-								if (chk_val != "empty") {
-									now_item[i]["individual_data"][j] = new Object();
+								now_item[i]["individual_data"][j] = new Object();
+								var checked = document.getElementsByName(Name)[j].checked;
+								if(checked == true){
+									now_item[i]["individual_data"][j]["now_target_flg"] = '1';
 									now_item[i]["individual_data"][j]["individual_ctrl_no"] = chk_val;
-									var checked = document.getElementsByName(Name)[j].checked;
-									if(checked == false) {
-										now_item[i]["individual_data"][j]["now_target_flg"] = '0';
-									}
-									if(checked == true){
-										now_item[i]["individual_data"][j]["now_target_flg"] = '1';
-									}
+									chk_num = chk_num + 1;
+								} else {
+									now_item[i]["individual_data"][j]["now_target_flg"] = '0';
+									now_item[i]["individual_data"][j]["individual_ctrl_no"] = chk_val;
 								}
+								// 対象=trueの数（商品単位返却数）
+								now_item[i]["individual_data"][j]["return_num"] = chk_num;
 							}
+						} else {
+							//個体管理番号表示フラグがOFFの場合、商品単位の返却数
+							now_item[i]["return_num"] = $("input[name='return_num"+i+"']").val();
 						}
-						now_item[i]["now_order_num"] = $("input[name='now_order_num"+i+"']").val();
-						now_item[i]["now_order_num_disable"] = $("input[name='now_order_num_disable"+i+"']").val();
+//						now_item[i]["now_order_num"] = $("input[name='now_order_num"+i+"']").val();
+//						now_item[i]["now_order_num_disable"] = $("input[name='now_order_num_disable"+i+"']").val();
 						now_item[i]["now_return_num"] = $("input[name='now_return_num"+i+"']").val();
 						now_item[i]["now_return_num_disable"] = $("input[name='now_return_num_disable"+i+"']").val();
 					}

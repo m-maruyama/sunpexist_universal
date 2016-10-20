@@ -541,7 +541,7 @@ $app->post('/wearer_add_info', function ()use($app){
        $arg_str .= "m_item.size_cd as as_size_cd,";
        $arg_str .= "m_item.item_name as as_item_name,";
        $arg_str .= "m_input_item.job_type_item_cd as as_job_type_item_cd,";
-       $arg_str .= "m_input_item.job_type_item_name as as_job_type_item_name,";
+       $arg_str .= "m_input_item.input_item_name as as_input_item_name,";
        $arg_str .= "m_input_item.std_input_qty as as_std_input_qty";
        $arg_str .= " FROM ";
        $arg_str .= "m_job_type INNER JOIN m_input_item";
@@ -621,7 +621,7 @@ $app->post('/wearer_add_info', function ()use($app){
            // 商品-色
            $list["item_and_color"] = $list["item_cd"]."-".$list["color_cd"];
            // 商品名
-           $list["input_item_name"] = $item_result->as_job_type_item_name;
+           $list["input_item_name"] = $item_result->as_input_item_name;
            // サイズ
            $list["size_cd"] = array();
            $element = array();
@@ -715,7 +715,7 @@ $app->post('/wearer_add_info', function ()use($app){
      $arg_str .= "m_item.size_cd as as_size_cd,";
      $arg_str .= "m_item.item_name as as_item_name,";
      $arg_str .= "m_input_item.job_type_item_cd as as_job_type_item_cd,";
-     $arg_str .= "m_input_item.job_type_item_name as as_job_type_item_name,";
+     $arg_str .= "m_input_item.input_item_name as as_input_item_name,";
      $arg_str .= "m_input_item.std_input_qty as as_std_input_qty";
      $arg_str .= " FROM ";
      $arg_str .= "m_job_type INNER JOIN m_input_item";
@@ -800,7 +800,7 @@ $app->post('/wearer_add_info', function ()use($app){
          // 商品-色
          $list["item_and_color"] = $list["item_cd"]."-".$list["color_cd"];
          // 商品名
-         $list["input_item_name"] = $result->as_job_type_item_name;
+         $list["input_item_name"] = $result->as_input_item_name;
          // サイズ
          $list["size_cd"] = array();
          $element = array();
