@@ -684,3 +684,6 @@ label.allCheck {
 .listTable {
     display: none;
 }
+.page {
+    text-align: center;
+}

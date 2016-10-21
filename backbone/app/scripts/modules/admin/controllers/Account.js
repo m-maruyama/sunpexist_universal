@@ -80,7 +80,7 @@ define([
 						fetchList(pageNumber);
 				});
 				this.listenTo(accountListListView, 'sort', function(sortKey,order){
-					fetchList(null,sortKey,order);
+					fetchList(1,sortKey,order);
 				});
 				//検索ボタンを押したらfetchwを追加
 				this.listenTo(accountConditionView, 'click:search', function(sortKey,order){

@@ -7,7 +7,7 @@
 
             <div class="errors"></div>
 			<!-- start フォーム -->
-			<form id='csv' class="form-horizontal">
+			<form id='csv' method="post" action="/import_csv" name="csv_form" enctype="multipart/form-data" class="form-horizontal">
                 <!-- 契約No -->
                 <div class="form-group">
                     <div class="agreement_no"></div>
@@ -15,8 +15,8 @@
 				<div class="form-group">
 					<label class="col-md-2 control-label" for="no">取込ファイル</label>
 					<div class="col-md-6">
-					<input id="fake_input_file" onclick="$('#file_input').click();" readonly="readonly" type="text" value="" class="form-control input-sm" maxlength="12" style='background-color: #fff'>
-					<input id="file_input" onchange="$('#fake_input_file').val(files[0].name)" style="display: none;" class="form-control input-sm" type="file">
+					<input id="fake_input_file" onclick="$('#file_input').click();" readonly="readonly" type="text" value="" class="form-control input-sm" maxlength="12"  style='background-color: #fff'>
+					<input id="file_input" onchange="$('#fake_input_file').val(files[0].name)" style="display: none;" class="form-control input-sm" type="file" name="file">
 					</div>
 					<div class="col-md-2">
 					<input onclick="$('#file_input').click();" class="btn btn-default btn-sm btn-block open"　type="button" value="参 照" id="open">
@@ -27,13 +27,17 @@
 						</div>
 				<div class="form-group">
 					<div class="col-md-2 col-md-push-8">
-						<input type="button" class="btn btn-primary btn-sm btn-block import_csv" value="取 込" id="import_csv">
+						<input type="button" class="btn btn-primary btn-sm btn-block import_csv" value="取 込" id="import_csv" onclick="window.sessionStorage.setItem('status', 'import_start');">
 					</div>
 				</div>
 			</form>
-			<!-- end フォーム -->
+            <iframe id="my_iframe" name="form_response"></iframe>
+
+            <!-- end フォーム -->
 			<br>
 			<br>
 			<br>
-			
-			<hr>
+            <hr>
+
+            <script type="text/javascript">
+            </script>
