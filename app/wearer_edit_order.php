@@ -871,13 +871,13 @@ $app->post('/wearer_edit_complete', function ()use($app){
          // 更新区分(WEB発注システム(着用者変更）)
          array_push($up_query_list, "upd_kbn = '6'");
          // Web更新日時
-         array_push($up_query_list, "web_upd_date = '".date("Y/m/d H:i:s", time())."'");
+         array_push($up_query_list, "web_upd_date = '".date("Y-m-d H:i:s", time())."'");
          // 送信区分(未送信)
          array_push($up_query_list, "snd_kbn = '0'");
          // 削除区分
          array_push($up_query_list, "del_kbn = '0'");
          // 更新日時
-         array_push($up_query_list, "upd_date = '".date("Y/m/d H:i:s", time())."'");
+         array_push($up_query_list, "upd_date = '".date("Y-m-d H:i:s", time())."'");
          // 更新ユーザーID
          array_push($up_query_list, "upd_user_id = '".$auth['accnt_no']."'");
          // 更新PGID
@@ -1029,7 +1029,7 @@ $app->post('/wearer_edit_complete', function ()use($app){
          array_push($values_list, "'6'");
          // Web更新日時
          array_push($calum_list, "web_upd_date");
-         array_push($values_list, "'".date("Y/m/d H:i:s", time())."'");
+         array_push($values_list, "'".date("Y-m-d H:i:s", time())."'");
          // 送信区分(未送信)
          array_push($calum_list, "snd_kbn");
          array_push($values_list, "'0'");
@@ -1038,13 +1038,13 @@ $app->post('/wearer_edit_complete', function ()use($app){
          array_push($values_list, "'0'");
          // 登録日時
          array_push($calum_list, "rgst_date");
-         array_push($values_list, "'".date("Y/m/d H:i:s", time())."'");
+         array_push($values_list, "'".date("Y-m-d H:i:s", time())."'");
          // 登録ユーザーID
          array_push($calum_list, "rgst_user_id");
          array_push($values_list, "'".$auth['accnt_no']."'");
          // 更新日時
          array_push($calum_list, "upd_date");
-         array_push($values_list, "'".date("Y/m/d H:i:s", time())."'");
+         array_push($values_list, "'".date("Y-m-d H:i:s", time())."'");
          // 更新ユーザーID
          array_push($calum_list, "upd_user_id");
          array_push($values_list, "'".$auth['accnt_no']."'");
@@ -1379,13 +1379,13 @@ $app->post('/wearer_edit_send', function ()use($app){
         // 更新区分(WEB発注システム(着用者変更）)
         array_push($up_query_list, "upd_kbn = '6'");
         // Web更新日時
-        array_push($up_query_list, "web_upd_date = '".date("Y/m/d H:i:s", time())."'");
+        array_push($up_query_list, "web_upd_date = '".date("Y-m-d H:i:s", time())."'");
         // 送信区分(送信済み)
         array_push($up_query_list, "snd_kbn = '1'");
         // 削除区分
         array_push($up_query_list, "del_kbn = '0'");
         // 更新日時
-        array_push($up_query_list, "upd_date = '".date("Y/m/d H:i:s", time())."'");
+        array_push($up_query_list, "upd_date = '".date("Y-m-d H:i:s", time())."'");
         // 更新ユーザーID
         array_push($up_query_list, "upd_user_id = '".$auth['accnt_no']."'");
         // 更新PGID
@@ -1537,7 +1537,7 @@ $app->post('/wearer_edit_send', function ()use($app){
         array_push($values_list, "'6'");
         // Web更新日時
         array_push($calum_list, "web_upd_date");
-        array_push($values_list, "'".date("Y/m/d H:i:s", time())."'");
+        array_push($values_list, "'".date("Y-m-d H:i:s", time())."'");
         // 送信区分(送信済み)
         array_push($calum_list, "snd_kbn");
         array_push($values_list, "'1'");
@@ -1546,13 +1546,13 @@ $app->post('/wearer_edit_send', function ()use($app){
         array_push($values_list, "'0'");
         // 登録日時
         array_push($calum_list, "rgst_date");
-        array_push($values_list, "'".date("Y/m/d H:i:s", time())."'");
+        array_push($values_list, "'".date("Y-m-d H:i:s", time())."'");
         // 登録ユーザーID
         array_push($calum_list, "rgst_user_id");
         array_push($values_list, "'".$auth['accnt_no']."'");
         // 更新日時
         array_push($calum_list, "upd_date");
-        array_push($values_list, "'".date("Y/m/d H:i:s", time())."'");
+        array_push($values_list, "'".date("Y-m-d H:i:s", time())."'");
         // 更新ユーザーID
         array_push($calum_list, "upd_user_id");
         array_push($values_list, "'".$auth['accnt_no']."'");

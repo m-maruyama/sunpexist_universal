@@ -64,11 +64,21 @@ $app->post('/inquiry/corporate', function () use ($app) {
 	    foreach ($results as $result) {
 				$list['corporate_id'] = $result->corporate_id;
 				$list['corporate_name'] = $result->corporate_name;
+        if (!empty($cond["corporate"])) {
+          if ($list['corporate_id'] == $cond["corporate"]) {
+            $list['selected'] = "selected";
+          } else {
+            $list['selected'] = "";
+          }
+        } else {
+          $list['selected'] = "";
+        }
 	      array_push($all_list, $list);
 	    }
 	  } else {
 			$list['corporate_id'] = "";
 			$list['corporate_name'] = "";
+      $list['selected'] = "";
 			array_push($all_list, $list);
 	  }
 	} else {
@@ -147,11 +157,21 @@ $app->post('/inquiry/agreement_no', function () use ($app) {
     foreach ($results as $result) {
       $list['rntl_cont_no'] = $result->as_rntl_cont_no;
       $list['rntl_cont_name'] = $result->as_rntl_cont_name;
+      if (!empty($cond["agreement_no"])) {
+        if ($list['rntl_cont_no'] == $cond["agreement_no"]) {
+          $list['selected'] = "selected";
+        } else {
+          $list['selected'] = '';
+        }
+      } else {
+        $list['selected'] = '';
+      }
       array_push($all_list, $list);
     }
   } else {
     $list['rntl_cont_no'] = null;
     $list['rntl_cont_name'] = '';
+    $list['selected'] = '';
     array_push($all_list, $list);
   }
 
@@ -168,6 +188,12 @@ $app->post('/inquiry/genre', function () use ($app) {
 
   // アカウントセッション取得
   $auth = $app->session->get('auth');
+
+  // フロントパラメータ取得
+  if (!empty($params['data'])) {
+    $cond = $params['data'];
+  }
+  //ChromePhp::LOG($cond);
 
   $query_list = array();
   $list = array();
@@ -189,6 +215,15 @@ $app->post('/inquiry/genre', function () use ($app) {
   foreach ($m_gencode_results as $m_gencode_result) {
     $list['gen_cd'] = $m_gencode_result->gen_cd;
     $list['gen_name'] = $m_gencode_result->gen_name;
+    if (!empty($cond["genre"])) {
+      if ($list['gen_cd'] == $cond["genre"]) {
+        $list['selected'] = "selected";
+      } else {
+        $list['selected'] = '';
+      }
+    } else {
+      $list['selected'] = '';
+    }
     array_push($all_list, $list);
   }
 
@@ -238,11 +273,13 @@ $app->post('/inquiry/search', function ()use($app){
 	}
 	//お問い合わせ日付from
 	if(!empty($cond['contact_day_from'])){
-		array_push($query_list,"TO_DATE(t_inquiry.interrogator_date,'YYYY/MM/DD') >= TO_DATE('".$cond['contact_day_from']."','YYYY/MM/DD')");
+    $cond['contact_day_from'] = date('Y-m-d 00:00:00', strtotime($cond['contact_day_from']));
+    array_push($query_list,"t_inquiry.interrogator_date >= '".$cond['contact_day_from']."'");
 	}
 	//お問い合わせ日付to
 	if(!empty($cond['contact_day_to'])){
-		array_push($query_list,"TO_DATE(t_inquiry.interrogator_date,'YYYY/MM/DD') <= TO_DATE('".$cond['contact_day_to']."','YYYY/MM/DD')");
+    $cond['contact_day_to'] = date('Y-m-d 00:00:00', strtotime($cond['contact_day_to']));
+    array_push($query_list,"t_inquiry.interrogator_date >= '".$cond['contact_day_to']."'");
 	}
 	//回答日付from
 	if(!empty($cond['answer_day_from'])){
@@ -260,7 +297,7 @@ $app->post('/inquiry/search', function ()use($app){
 	}
 	//お名前
 	if(!empty($cond['interrogator_name'])){
-		array_push($query_list,"m_wearer_std.interrogator_name LIKE '%".$cond['interrogator_name']."%'");
+		array_push($query_list,"t_inquiry.interrogator_name LIKE '%".$cond['interrogator_name']."%'");
 	}
 	//ジャンル
 	if(!empty($cond['genre'])){
@@ -268,7 +305,7 @@ $app->post('/inquiry/search', function ()use($app){
 	}
 	//お名前
 	if(!empty($cond['interrogator_info'])){
-		array_push($query_list,"m_wearer_std.interrogator_info LIKE '%".$cond['interrogator_info']."%'");
+		array_push($query_list,"t_inquiry.interrogator_info LIKE '%".$cond['interrogator_info']."%'");
 	}
 	$query = implode(' AND ', $query_list);
 
@@ -377,6 +414,376 @@ $app->post('/inquiry/search', function ()use($app){
 	$json_list['list'] = $all_list;
 
 	echo json_encode($json_list);
+});
+
+/*
+ * お問い合わせ入力
+ * 入力項目
+ */
+$app->post('/inquiry/input', function () use ($app) {
+  $params = json_decode(file_get_contents('php://input'), true);
+
+  // アカウントセッション取得
+  $auth = $app->session->get('auth');
+
+  // フロントパラメータ取得
+  if (!empty($params['data'])) {
+    $cond = $params['data'];
+  }
+  //ChromePhp::LOG($cond);
+
+  $json_list = array();
+
+  //--企業名--//
+  $query_list = array();
+  $list = array();
+  $all_list = array();
+  array_push($query_list, "corporate_id = '".$auth["corporate_id"]."'");
+  $query = implode(' AND ', $query_list);
+
+  $arg_str = 'SELECT ';
+  $arg_str .= ' * ';
+  $arg_str .= ' FROM ';
+  $arg_str .= 'm_corporate';
+  $arg_str .= ' WHERE ';
+  $arg_str .= $query;
+  $arg_str .= ' ORDER BY corporate_id ASC';
+  $m_corporate = new MCorporate();
+  $results = new Resultset(null, $m_corporate, $m_corporate->getReadConnection()->query($arg_str));
+  $results_array = (array) $results;
+  $results_cnt = $results_array["\0*\0_count"];
+
+  if ($results_cnt > 0) {
+    $paginator_model = new PaginatorModel(
+      array(
+        "data"  => $results,
+        "limit" => $results_cnt,
+        "page" => 1
+      )
+    );
+    $paginator = $paginator_model->getPaginate();
+    $results = $paginator->items;
+    foreach ($results as $result) {
+      $list['corporate_id'] = $result->corporate_id;
+      $list['corporate_name'] = $result->corporate_name;
+      array_push($all_list, $list);
+    }
+  } else {
+    $list['corporate_id'] = "";
+    $list['corporate_name'] = "";
+    array_push($all_list, $list);
+  }
+  $json_list['corporate_list'] = $all_list;
+
+  //--契約No--/
+  $query_list = array();
+  $list = array();
+  $all_list = array();
+  array_push($query_list, "m_contract.corporate_id = '".$auth['corporate_id']."'");
+  array_push($query_list, "m_contract.rntl_cont_flg = '1'");
+  array_push($query_list, "m_contract_resource.corporate_id = '".$auth['corporate_id']."'");
+  array_push($query_list, "m_account.corporate_id = '".$auth['corporate_id']."'");
+  array_push($query_list, "m_account.user_id = '".$auth['user_id']."'");
+  $query = implode(' AND ', $query_list);
+
+  $arg_str = 'SELECT ';
+  $arg_str .= ' * ';
+  $arg_str .= ' FROM ';
+  $arg_str .= '(SELECT distinct on (m_contract.rntl_cont_no) ';
+  $arg_str .= 'm_contract.rntl_cont_no as as_rntl_cont_no,';
+  $arg_str .= 'm_contract.rntl_cont_name as as_rntl_cont_name';
+  $arg_str .= ' FROM m_contract INNER JOIN';
+  $arg_str .= ' (m_contract_resource INNER JOIN m_account ON m_contract_resource.accnt_no = m_account.accnt_no)';
+  $arg_str .= ' ON m_contract.corporate_id = m_contract_resource.corporate_id';
+  $arg_str .= ' WHERE ';
+  $arg_str .= $query;
+  $arg_str .= ') as distinct_table';
+  $arg_str .= ' ORDER BY as_rntl_cont_no asc';
+  $m_contract = new MContract();
+  $results = new Resultset(null, $m_contract, $m_contract->getReadConnection()->query($arg_str));
+  $results_array = (array) $results;
+  $results_cnt = $results_array["\0*\0_count"];
+
+  if ($results_cnt > 0) {
+    $paginator_model = new PaginatorModel(
+      array(
+        "data"  => $results,
+        "limit" => $results_cnt,
+        "page" => 1
+      )
+    );
+    $paginator = $paginator_model->getPaginate();
+    $results = $paginator->items;
+
+    foreach ($results as $result) {
+      $list['rntl_cont_no'] = $result->as_rntl_cont_no;
+      $list['rntl_cont_name'] = $result->as_rntl_cont_name;
+      if (!empty($cond["agreement_no"])) {
+        if ($list['rntl_cont_no'] == $cond["agreement_no"]) {
+          $list['selected'] = "selected";
+        } else {
+          $list['selected'] = '';
+        }
+      } else {
+        $list['selected'] = '';
+      }
+      array_push($all_list, $list);
+    }
+  } else {
+    $list['rntl_cont_no'] = null;
+    $list['rntl_cont_name'] = '';
+    $list['selected'] = '';
+    array_push($all_list, $list);
+  }
+  $json_list['agreement_no_list'] = $all_list;
+
+  //--ジャンル--//
+  $query_list = array();
+  $list = array();
+  $all_list = array();
+  array_push($query_list, "cls_cd = '024'");
+  $query = implode(' AND ', $query_list);
+
+  $m_gencode_results = MGencode::query()
+      ->where($query)
+      ->columns('*')
+      ->execute();
+
+  foreach ($m_gencode_results as $m_gencode_result) {
+    $list['gen_cd'] = $m_gencode_result->gen_cd;
+    $list['gen_name'] = $m_gencode_result->gen_name;
+    if (!empty($cond["genre"])) {
+      if ($list['gen_cd'] == $cond["genre"]) {
+        $list['selected'] = "selected";
+      } else {
+        $list['selected'] = '';
+      }
+    } else {
+      $list['selected'] = '';
+    }
+    array_push($all_list, $list);
+  }
+  $json_list['genre_list'] = $all_list;
+
+  echo json_encode($json_list);
+});
+
+/*
+ * お問い合わせ入力
+ * 入力値チェック、登録処理
+ */
+$app->post('/inquiry/complete', function () use ($app) {
+  $params = json_decode(file_get_contents('php://input'), true);
+
+  // アカウントセッション取得
+  $auth = $app->session->get('auth');
+
+  // フロントパラメータ取得
+  $cond = $params['data'];
+  //ChromePhp::LOG($cond);
+
+  $json_list = array();
+
+  $json_list["err_code"] = "0";
+  $json_list["err_msg"] = array();
+
+  //--入力値チェック--//
+  // 企業名
+  $query_list = array();
+  array_push($query_list, "corporate_id = '".$cond["corporate"]."'");
+  $query = implode(' AND ', $query_list);
+
+  $arg_str = 'SELECT ';
+  $arg_str .= ' * ';
+  $arg_str .= ' FROM ';
+  $arg_str .= 'm_corporate';
+  $arg_str .= ' WHERE ';
+  $arg_str .= $query;
+  $m_corporate = new MCorporate();
+  $results = new Resultset(null, $m_corporate, $m_corporate->getReadConnection()->query($arg_str));
+  $results_array = (array) $results;
+  $results_cnt = $results_array["\0*\0_count"];
+  if ($results_cnt == 0) {
+    $json_list["err_code"] = "1";
+    $err_msg = "企業名の値が不正です。";
+    array_push($json_list["err_msg"], $err_msg);
+  }
+  // 契約No
+  if (empty($cond["agreement_no"])) {
+    $json_list["err_code"] = "1";
+    $err_msg = "契約Noが未選択です。";
+    array_push($json_list["err_msg"], $err_msg);
+  }
+  if (!empty($cond["agreement_no"])) {
+    $query_list = array();
+    array_push($query_list, "rntl_cont_no = '".$cond["agreement_no"]."'");
+    $query = implode(' AND ', $query_list);
+
+    $arg_str = 'SELECT ';
+    $arg_str .= ' * ';
+    $arg_str .= ' FROM ';
+    $arg_str .= 'm_contract';
+    $arg_str .= ' WHERE ';
+    $arg_str .= $query;
+    $m_contract = new MContract();
+    $results = new Resultset(null, $m_contract, $m_contract->getReadConnection()->query($arg_str));
+    $results_array = (array) $results;
+    $results_cnt = $results_array["\0*\0_count"];
+    if ($results_cnt == 0) {
+      $json_list["err_code"] = "1";
+      $err_msg = "契約Noの値が不正です。";
+      array_push($json_list["err_msg"], $err_msg);
+    }
+  }
+  // 拠点
+  if (empty($cond["section"])) {
+    $json_list["err_code"] = "1";
+    $err_msg = "拠点が未選択です。";
+    array_push($json_list["err_msg"], $err_msg);
+  }
+  if (!empty($cond["section"])) {
+    $query_list = array();
+    array_push($query_list, "rntl_sect_cd = '".$cond["section"]."'");
+    $query = implode(' AND ', $query_list);
+
+    $arg_str = 'SELECT ';
+    $arg_str .= ' * ';
+    $arg_str .= ' FROM ';
+    $arg_str .= 'm_section';
+    $arg_str .= ' WHERE ';
+    $arg_str .= $query;
+    $m_section = new MSection();
+    $results = new Resultset(null, $m_section, $m_section->getReadConnection()->query($arg_str));
+    $results_array = (array) $results;
+    $results_cnt = $results_array["\0*\0_count"];
+    if ($results_cnt == 0) {
+      $json_list["err_code"] = "1";
+      $err_msg = "拠点の値が不正です。";
+      array_push($json_list["err_msg"], $err_msg);
+    }
+  }
+  // お名前
+  if (mb_strlen($cond["interrogator_name"]) == 0) {
+    $json_list["err_code"] = "1";
+    $err_msg = "お名前が未入力です。";
+    array_push($json_list["err_msg"], $err_msg);
+  }
+  // ジャンル
+  if (empty($cond["genre"])) {
+    $json_list["err_code"] = "1";
+    $err_msg = "ジャンルが未選択です。";
+    array_push($json_list["err_msg"], $err_msg);
+  }
+  if (!empty($cond["genre"])) {
+    $query_list = array();
+    array_push($query_list, "cls_cd = '024'");
+    array_push($query_list, "gen_cd = '".$cond["genre"]."'");
+    $query = implode(' AND ', $query_list);
+
+    $arg_str = 'SELECT ';
+    $arg_str .= ' * ';
+    $arg_str .= ' FROM ';
+    $arg_str .= 'm_gencode';
+    $arg_str .= ' WHERE ';
+    $arg_str .= $query;
+    $m_gencode = new MGencode();
+    $results = new Resultset(null, $m_gencode, $m_gencode->getReadConnection()->query($arg_str));
+    $results_array = (array) $results;
+    $results_cnt = $results_array["\0*\0_count"];
+    if ($results_cnt == 0) {
+      $json_list["err_code"] = "1";
+      $err_msg = "ジャンルの値が不正です。";
+      array_push($json_list["err_msg"], $err_msg);
+    }
+  }
+  // お問い合わせ内容
+  if (mb_strlen($cond["interrogator_info"]) == 0) {
+    $json_list["err_code"] = "1";
+    $err_msg = "お問い合わせ内容が未入力です。";
+    array_push($json_list["err_msg"], $err_msg);
+  }
+  // 入力値に不正があった場合は、以降処理せずエラーレスポンス
+  if ($json_list["err_code"] !== "0") {
+    echo json_encode($json_list);
+    return;
+  }
+
+  //--お問い合わせ内容登録--//
+  // トランザクション開始
+  $t_inquiry = new TInquiry();
+  $results = new Resultset(NULL, $t_inquiry, $t_inquiry->getReadConnection()->query('begin'));
+  try {
+    $calum_list = array();
+    $values_list = array();
+
+    // 企業ID
+    array_push($calum_list, "corporate_id");
+    array_push($values_list, "'".$cond["corporate"]."'");
+    // 契約No
+    array_push($calum_list, "rntl_cont_no");
+    array_push($values_list, "'".$cond['agreement_no']."'");
+    // レンタル部門コード
+    array_push($calum_list, "rntl_sect_cd");
+    array_push($values_list, "'".$cond['section']."'");
+    // お名前
+    array_push($calum_list, "interrogator_name");
+    array_push($values_list, "'".$cond['interrogator_name']."'");
+    // ジャンル
+    array_push($calum_list, "category_name");
+    array_push($values_list, "'".$cond['genre']."'");
+    // お問い合わせ日時
+    array_push($calum_list, "interrogator_date");
+    array_push($values_list, "'".date("Y-m-d H:i:s", time())."'");
+    // お問い合わせ内容
+    array_push($calum_list, "interrogator_info");
+    array_push($values_list, "'".$cond['interrogator_info']."'");
+    // 回答ステータス
+    array_push($calum_list, "interrogator_status");
+    array_push($values_list, "'1'");
+    // 登録日時
+    array_push($calum_list, "rgst_date");
+    array_push($values_list, "'".date("Y-m-d H:i:s", time())."'");
+    // 登録ユーザーID
+    array_push($calum_list, "rgst_user_id");
+    array_push($values_list, "'".$auth['accnt_no']."'");
+    // 更新日時
+    array_push($calum_list, "upd_date");
+    array_push($values_list, "'".date("Y-m-d H:i:s", time())."'");
+    // 更新ユーザーID
+    array_push($calum_list, "upd_user_id");
+    array_push($values_list, "'".$auth['accnt_no']."'");
+    $calum_query = implode(',', $calum_list);
+    $values_query = implode(',', $values_list);
+
+    $arg_str = "";
+    $arg_str = "INSERT INTO t_inquiry";
+    $arg_str .= "(".$calum_query.")";
+    $arg_str .= " VALUES ";
+    $arg_str .= "(".$values_query.")";
+    //ChromePhp::LOG($arg_str);
+    $t_inquiry = new TInquiry();
+    $results = new Resultset(NULL, $t_inquiry, $t_inquiry->getReadConnection()->query($arg_str));
+    $result_obj = (array)$results;
+    $results_cnt = $result_obj["\0*\0_count"];
+
+    // トランザクションコミット
+    $t_inquiry = new TInquiry();
+    $results = new Resultset(NULL, $t_inquiry, $t_inquiry->getReadConnection()->query('commit'));
+  }  catch (Exception $e) {
+    // トランザクションロールバック
+    $t_inquiry = new TInquiry();
+    $results = new Resultset(NULL, $t_inquiry, $t_inquiry->getReadConnection()->query('rollback'));
+    ChromePhp::LOG($e);
+
+    $json_list["err_code"] = "1";
+    $err_msg = "登録処理において、データ更新エラーが発生しました。";
+    array_push($json_list["err_msg"], $err_msg);
+
+    echo json_encode($json_list);
+    return;
+  }
+
+  echo json_encode($json_list);
 });
 
 /**

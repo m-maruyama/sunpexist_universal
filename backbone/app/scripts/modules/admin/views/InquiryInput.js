@@ -4,8 +4,8 @@ define([
 ], function(App) {
 	'use strict';
 	App.module('Admin.Views', function(Views, App, Backbone, Marionette, $, _){
-		Views.Inquiry = Marionette.LayoutView.extend({
-			template: App.Admin.Templates.inquiry,
+		Views.InquiryInput = Marionette.LayoutView.extend({
+			template: App.Admin.Templates.inquiryInput,
 			ui: {
 			},
 			regions: {
@@ -14,9 +14,7 @@ define([
 				"condition": ".condition",
 				"listTable": ".listTable",
 				"sectionModal": ".section_modal",
-				"sectionModal_2": ".section_modal_2",
-				"inquiry_input_modal": '.inquiry_input_modal',
-				"inquiry_detail_modal": '.inquiry_detail_modal'
+				"sectionModal_2": ".section_modal_2"
 			},
 			model: new Backbone.Model(),
 			onShow: function() {

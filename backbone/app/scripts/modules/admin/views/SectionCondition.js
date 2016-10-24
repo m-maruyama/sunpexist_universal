@@ -8,6 +8,7 @@ define([
 			defaults: {
 				agreement_no: '',
 				section: '',
+				not_all_flg: ''
 			},
 			initialize: function(options) {
 			    this.options = options || {};
@@ -27,13 +28,15 @@ define([
 				var that = this;
 				var agreement_no = this.options.agreement_no;
 				var section = this.options.section;
+				var not_all_flg = this.options.not_all_flg;
 
 				var modelForUpdate = this.model;
 				modelForUpdate.url = App.api.CM0020;
 				var cond = {
 					"scr": '拠点',
 					"agreement_no": agreement_no,
-					"section": section
+					"section": section,
+					"not_all_flg": not_all_flg
 				};
 				modelForUpdate.fetchMx({
 					data:cond,
