@@ -335,9 +335,11 @@ $app->post('/section', function () use ($app) {
   $results_cnt = $results_array["\0*\0_count"];
 
   if ($results_cnt > 0) {
-    $list['rntl_sect_cd'] = null;
-    $list['rntl_sect_name'] = '全て';
-    array_push($all_list, $list);
+    if (empty($params['not_all_flg'])) {
+      $list['rntl_sect_cd'] = null;
+      $list['rntl_sect_name'] = '全て';
+      array_push($all_list, $list);
+    }
 
     $paginator_model = new PaginatorModel(
       array(

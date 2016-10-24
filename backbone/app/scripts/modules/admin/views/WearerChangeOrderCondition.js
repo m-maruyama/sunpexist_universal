@@ -163,10 +163,11 @@ define([
 						if (res_list['wearer_info'][0]) {
 							var appointment_ymd = res_list['wearer_info'][0]['appointment_ymd'];
 						}
+						that.ui.appointment_ymd.val(appointment_ymd);
 						that.ui.datepicker1.datetimepicker({
 							format: 'YYYY/MM/DD',
 							//useCurrent: 'day',
-							defaultDate: appointment_ymd,
+							//defaultDate: appointment_ymd,
 							//maxDate: yesterday,
 							locale: 'ja',
 							sideBySide:true,
@@ -182,10 +183,11 @@ define([
 						if (res_list['wearer_info'][0]) {
 							var resfl_ymd = res_list['wearer_info'][0]['resfl_ymd'];
 						}
+						that.ui.resfl_ymd.val(resfl_ymd);
 						that.ui.datepicker2.datetimepicker({
 							format: 'YYYY/MM/DD',
 							//useCurrent: 'day',
-							defaultDate: resfl_ymd,
+							//defaultDate: resfl_ymd,
 							//maxDate: yesterday,
 							locale: 'ja',
 							sideBySide:true,

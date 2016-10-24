@@ -1,0 +1,64 @@
+<div class="row">
+	<h1>お問い合わせ入力</h1>
+	<div class="input_ex">
+		<br>
+		以下のフォームにご記入の上、『確認』ボタンをクリックしてください。
+		<br>
+	</div>
+	<div class="confirm_ex" style="display:none;">
+		<br>
+		以下の内容でよろしいでしょうか?
+		<br>
+	</div>
+	<form class="form-horizontal">
+		<div class="errors"></div>
+		<div class="form-group corporate">
+			<label class="col-md-2 control-label" for="no">企業名</label>
+			<div class="col-md-4">
+				<input type="text" class="form-control input-sm" id="corporate" value="" disabled="disabled">
+				<input type="hidden" class="form-control input-sm" id="corporate_id" neme="corporate_id" value="">
+			</div>
+		</div>
+		<div class="form-group">
+			<label class="col-md-2 control-label" for="no">契約No</label>
+			<div class="col-md-4">
+				<select class="form-control input-sm" id="agreement_no" name="agreement_no">
+				</select>
+			</div>
+		</div>
+		<!-- 拠点 -->
+		<div class="form-group">
+			<div class="section"></div>
+		</div>
+		<div class="form-group">
+			<label class="col-md-2 control-label" for="">お名前</label>
+			<div class="col-md-3">
+				<input type="text" class="form-control input-sm" id="interrogator_name" name="interrogator_name">
+			</div>
+		</div>
+		<div class="form-group">
+			<label class="col-md-2 control-label" for="no">ジャンル</label>
+			<div class="col-md-4">
+				<select class="form-control input-sm" id="genre" name="genre">
+				</select>
+			</div>
+		</div>
+		<div class="form-group">
+			<label class="col-md-2 control-label" for="">お問い合わせ内容</label>
+			<div class="col-md-6">
+				<textarea rows="10" class="form-control input-sm" id="interrogator_info"  name="interrogator_info"></textarea>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-md-2 col-md-push-4">
+				<a type="button" class="btn btn-primary btn-sm btn-block confirm" title="確認">確認</a>
+				<a type="button" class="btn btn-primary btn-sm btn-block complete" title="OK" style="display:none;">OK</a>
+			</div>
+			<div class="col-md-2 col-md-push-4">
+				<a type="button" id="" class="btn btn-primary btn-sm btn-block back" title="戻る">戻る</a>
+				<a type="button" id="" class="btn btn-primary btn-sm btn-block input_back" title="戻る" style="display:none;">戻る</a>
+			</div>
+		</div>
+	</form>
+
+	<hr>
