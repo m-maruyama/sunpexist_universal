@@ -436,6 +436,8 @@ $app->post('/inquiry/input', function () use ($app) {
   //ChromePhp::LOG($cond);
 
   $json_list = array();
+  //--アカウント権限（ユーザー区分）--//
+  $json_list['user_type'] = $auth["user_type"];
 
   //--企業名--//
   $query_list = array();

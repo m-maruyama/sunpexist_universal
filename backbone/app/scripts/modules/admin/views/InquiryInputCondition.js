@@ -61,7 +61,12 @@ define([
 					data:cond,
 					success:function(res){
 						var res_list = res.attributes;
-
+/*
+						// ユーザー区分!=一般ユーザーの場合、検索画面へリダイレクト
+						if (res_list["user_type"] != "1") {
+							location.href="inquiry.html";
+						}
+*/
 						// 企業名
 						if (res_list["corporate_list"][0]) {
 							var corporate_name = res_list["corporate_list"][0]["corporate_id"] + " " +res_list["corporate_list"][0]["corporate_name"];
