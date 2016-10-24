@@ -66,6 +66,20 @@ define([
 					inquiryView.page.show(paginationView);
 					inquiryView.page_2.show(paginationView2);
 				};
+				var fetchList_2 = function(pageNumber, sortKey, order){
+					if(pageNumber){
+						pagerModel.set('page_number', pageNumber);
+					}
+					if(sortKey){
+						pagerModel.set('sort_key', sortKey);
+						pagerModel.set('order', order);
+					}
+
+					inquiryListListView.fetch(inquiryListConditionModel);
+					inquiryView.listTable.show(inquiryListListView);
+					inquiryView.page.show(paginationView);
+					inquiryView.page_2.show(paginationView2);
+				};
 
 				this.listenTo(inquiryConditionView, 'first:section', function() {
 					var sectionConditionView = new App.Admin.Views.SectionCondition();
@@ -203,6 +217,10 @@ define([
 
 					inquiryView.sectionModal_2.show(sectionModalView2.render());
 					sectionModalView2.condition.show(sectionModalConditionView2);
+				});
+				// 検索結果一覧
+				this.listenTo(inquiryConditionView, 'back:research', function(sortKey,order,page){
+					fetchList_2(page,sortKey,order);
 				});
 				// 前検索結果表示処理　---ここまで
 

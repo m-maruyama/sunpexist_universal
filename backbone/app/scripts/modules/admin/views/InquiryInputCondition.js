@@ -6,6 +6,7 @@ define([
 	'../behaviors/Alerts',
 	'typeahead',
 	'bloodhound',
+	'blockUI',
 	'../controllers/InquiryInput',
 	'./SectionCondition',
 ], function(App) {
@@ -50,7 +51,6 @@ define([
 			onRender: function() {
 				var that = this;
 
-				// 検索項目：企業名
 				var modelForUpdate = that.model;
 				modelForUpdate.url = App.api.CU0030;
 				var cond = {
@@ -111,6 +111,7 @@ define([
 					$('.back').css('display', 'none');
 					$('.complete').css('display', '');
 					$('.input_back').css('display', '');
+					$("#section_btn").css('display', 'none');
 
 					// 入力項目をdisabled設定
 					$("#agreement_no").prop("disabled", true);
@@ -130,6 +131,7 @@ define([
 					$('.back').css('display', '');
 					$('.complete').css('display', 'none');
 					$('.input_back').css('display', 'none');
+					$("#section_btn").css('display', '');
 
 					// 入力項目をdisabled解除
 					$("#agreement_no").prop("disabled", false);
@@ -146,12 +148,12 @@ define([
 
 					// 入力値
 					var data = {
-						corporate: this.ui.corporate_id.val(),
-						agreement_no: this.ui.agreement_no.val(),
-						section: $("select[name='section']").val(),
-						interrogator_name: this.ui.interrogator_name.val(),
-						genre: this.ui.genre.val(),
-						interrogator_info: this.ui.interrogator_info.val()
+						"corporate": this.ui.corporate_id.val(),
+						"agreement_no": this.ui.agreement_no.val(),
+						"section": $("select[name='section']").val(),
+						"interrogator_name": this.ui.interrogator_name.val(),
+						"genre": this.ui.genre.val(),
+						"interrogator_info": this.ui.interrogator_info.val()
 					};
 					//console.log(data);
 
@@ -176,6 +178,7 @@ define([
 								$('.back').css('display', '');
 								$('.complete').css('display', 'none');
 								$('.input_back').css('display', 'none');
+								$("#section_btn").css('display', '');
 
 								$("#agreement_no").prop("disabled", false);
 								$("#section").prop("disabled", false);
@@ -188,7 +191,11 @@ define([
 							} else {
 								// 正常完了の場合は検索画面へ遷移
 								$.unblockUI();
-								alert("登録が完了しました。このまま検索画面へ移行します。");
+								alert("お問い合わせ内容の登録が完了しました。このまま検索画面へ移行します。");
+
+								// 検索画面の条件項目を取得
+								var cond = window.sessionStorage.getItem("inquiry_cond");
+								window.sessionStorage.setItem("back_inquiry_cond", cond);
 								location.href="inquiry.html";
 							}
 						}

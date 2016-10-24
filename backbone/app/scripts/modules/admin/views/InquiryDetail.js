@@ -4,8 +4,8 @@ define([
 ], function(App) {
 	'use strict';
 	App.module('Admin.Views', function(Views, App, Backbone, Marionette, $, _){
-		Views.InquiryInput = Marionette.LayoutView.extend({
-			template: App.Admin.Templates.inquiryInput,
+		Views.InquiryDetail = Marionette.LayoutView.extend({
+			template: App.Admin.Templates.inquiryDetail,
 			ui: {
 			},
 			regions: {
@@ -19,7 +19,7 @@ define([
 				var modelForUpdate = this.model;
 				modelForUpdate.url = App.api.CM0040;
 				var cond = {
-					"scr": 'お問い合わせ入力'
+					"scr": 'お問い合わせ'
 				};
 
 				modelForUpdate.fetchMx({
@@ -34,10 +34,7 @@ define([
 						}
 					}
 				});
-			},
-			events: {
 			}
-
 		});
 	});
 });

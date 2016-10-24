@@ -279,7 +279,7 @@ $app->post('/inquiry/search', function ()use($app){
 	//お問い合わせ日付to
 	if(!empty($cond['contact_day_to'])){
     $cond['contact_day_to'] = date('Y-m-d 00:00:00', strtotime($cond['contact_day_to']));
-    array_push($query_list,"t_inquiry.interrogator_date >= '".$cond['contact_day_to']."'");
+    array_push($query_list,"t_inquiry.interrogator_date <= '".$cond['contact_day_to']."'");
 	}
 	//回答日付from
 	if(!empty($cond['answer_day_from'])){
@@ -310,6 +310,7 @@ $app->post('/inquiry/search', function ()use($app){
 	$query = implode(' AND ', $query_list);
 
 	$arg_str = "SELECT ";
+  $arg_str .= "t_inquiry.index as as_index,";
 	$arg_str .= "t_inquiry.category_name as as_category_name,";
   $arg_str .= "t_inquiry.interrogator_name as as_interrogator_name,";
 	$arg_str .= "t_inquiry.interrogator_date as as_interrogator_date,";
@@ -354,6 +355,8 @@ $app->post('/inquiry/search', function ()use($app){
 		$results = $paginator->items;
 
 		foreach($results as $result) {
+      // お問い合わせID（シーケンスID）
+      $list['index'] = $result->as_index;
 			// お問い合わせ日時
 			$list['interrogator_date'] = date("Y/m/d H:i:s", strtotime($result->as_interrogator_date));
 			// 回答日時
@@ -776,7 +779,7 @@ $app->post('/inquiry/complete', function () use ($app) {
     ChromePhp::LOG($e);
 
     $json_list["err_code"] = "1";
-    $err_msg = "登録処理において、データ更新エラーが発生しました。";
+    $err_msg = "登録処理において、予期せぬエラーが発生しました。";
     array_push($json_list["err_msg"], $err_msg);
 
     echo json_encode($json_list);
@@ -786,127 +789,175 @@ $app->post('/inquiry/complete', function () use ($app) {
   echo json_encode($json_list);
 });
 
-/**
- * 請求書データ照会詳細モーダル
+/*
+ * お問い合わせ詳細
+ * 詳細項目
  */
-$app->post('/manpower_info/detail', function ()use($app){
+$app->post('/inquiry/detail', function () use ($app) {
+  $params = json_decode(file_get_contents('php://input'), true);
 
-	$params = json_decode(file_get_contents("php://input"), true);
+  // アカウントセッション取得
+  $auth = $app->session->get('auth');
 
-	// アカウントセッション取得
-	$auth = $app->session->get("auth");
+  // フロントパラメータ取得
+  $cond = $params['data'];
+  //ChromePhp::LOG($cond);
 
-	// フロントパラメータ取得
-	$cond = $params;
-	//ChromePhp::log($cond);
+  $json_list = array();
 
-	// json返却値
-	$json_list = array();
+  //--アカウントタイプ（ユーザー区分）--//
+  $json_list["user_type"] = $auth["user_type"];
 
-	//---小見出し項目---//
-	$heading = array();
-	$heading_list = array();
-	// 対象年月
-	if (!empty($cond['yyyymm'])) {
-		$heading['yyyymm'] = $cond['yyyymm'];
-		$heading['yyyymm'] = date('Y年m月', strtotime($heading['yyyymm']));
-	} else {
-		$heading['yyyymm'] = '';
-	}
-	// 拠点コード
-	$heading['rntl_sect_cd'] = $cond['rntl_sect_cd'];
-	// 拠点名
-	$heading['rntl_sect_name'] = $cond['rntl_sect_name'];
-	// 人数
-	$heading['staff_total'] = $cond['staff_total'];
-	array_push($heading_list, $heading);
-	$json_list['heading'] = $heading_list;
+  //--お問い合わせ詳細内容--//
+  $query_list = array();
+  $list = array();
+  $all_list = array();
+  array_push($query_list, "index = '".$cond["index"]."'");
+  $query = implode(' AND ', $query_list);
 
-	//---詳細検索条件---//
-	$query_list = array();
-	//企業ID
-	array_push($query_list,"t_staff_detail_body.corporate_id = '".$auth['corporate_id']."'");
-	//契約No
-	if(!empty($cond['agreement_no'])){
-		array_push($query_list,"t_staff_detail_body.rntl_cont_no = '".$cond['agreement_no']."'");
-	}
-	//拠点
-	if(!empty($cond['rntl_sect_cd'])){
-		array_push($query_list,"t_staff_detail_body.rntl_sect_cd = '".$cond['rntl_sect_cd']."'");
-	}
-	//対象年月
-	if(!empty($cond['yyyymm'])){
-		array_push($query_list,"TO_DATE(t_staff_detail_body.yyyymm,'YYYY/MM') = TO_DATE('".$cond['yyyymm']."','YYYY/MM')");
-	}
+  $arg_str = 'SELECT ';
+  $arg_str .= 't_inquiry.index as as_index,';
+  $arg_str .= 't_inquiry.corporate_id as as_corporate_id,';
+  $arg_str .= 't_inquiry.rntl_sect_cd as as_rntl_sect_cd,';
+  $arg_str .= 't_inquiry.rntl_cont_no as as_rntl_cont_no,';
+  $arg_str .= 't_inquiry.interrogator_name as as_interrogator_name,';
+  $arg_str .= 't_inquiry.category_name as as_category_name,';
+  $arg_str .= 't_inquiry.interrogator_info as as_interrogator_info,';
+  $arg_str .= 't_inquiry.interrogator_answer as as_interrogator_answer,';
+  $arg_str .= 'm_corporate.corporate_name as as_corporate_name,';
+  $arg_str .= 'm_contract.rntl_cont_name as as_rntl_cont_name,';
+  $arg_str .= 'm_section.rntl_sect_name as as_rntl_sect_name';
+  $arg_str .= ' FROM ';
+  $arg_str .= 't_inquiry';
+  $arg_str .= ' INNER JOIN m_corporate';
+  $arg_str .= ' ON t_inquiry.corporate_id = m_corporate.corporate_id';
+  $arg_str .= ' INNER JOIN m_contract';
+  $arg_str .= ' ON t_inquiry.rntl_cont_no = m_contract.rntl_cont_no';
+  $arg_str .= ' INNER JOIN m_section';
+  $arg_str .= ' ON t_inquiry.rntl_sect_cd = m_section.rntl_sect_cd';
+  $arg_str .= ' WHERE ';
+  $arg_str .= $query;
+  $t_inquiry = new TInquiry();
+  $results = new Resultset(null, $t_inquiry, $t_inquiry->getReadConnection()->query($arg_str));
+  $results_array = (array) $results;
+  $results_cnt = $results_array["\0*\0_count"];
+  $json_list["detail_cnt"] = $results_cnt;
+  if ($results_cnt > 0) {
+    $paginator_model = new PaginatorModel(
+      array(
+        "data"  => $results,
+        "limit" => 1,
+        "page" => 1
+      )
+    );
+    $paginator = $paginator_model->getPaginate();
+    $results = $paginator->items;
 
-	$query = implode(' AND ', $query_list);
+    foreach ($results as $result) {
+      // お問い合わせID（シーケンスID）
+      $list['index'] = $result->as_index;
+      // 企業名
+      $list['corporate'] = $result->as_corporate_id." ".$result->as_corporate_name;
+      // 契約No
+      $list['agreement'] = $result->as_rntl_cont_no." ".$result->as_rntl_cont_name;
+      // 拠点
+      $list['section'] = $result->as_rntl_sect_name;
+      // お名前
+      $list['interrogator_name'] = $result->as_interrogator_name;
+      // ジャンル
+      $query_list = array();
+      array_push($query_list, "cls_cd = '024'");
+      array_push($query_list, "gen_cd = '".$result->as_category_name."'");
+      $query = implode(' AND ', $query_list);
+      $m_gencode_results = MGencode::query()
+          ->where($query)
+          ->columns('*')
+          ->execute();
+      foreach ($m_gencode_results as $m_gencode_result) {
+        $list['category_cd'] = $m_gencode_result->gen_cd;
+        $list['category_name'] = $m_gencode_result->gen_name;
+      }
+      // お問い合わせ内容
+      $list['interrogator_info'] = $result->as_interrogator_info;
+      // お問い合わせ回答
+      $list['interrogator_answer'] = $result->as_interrogator_answer;
+    }
+    array_push($all_list, $list);
+  }
+  $json_list["detail_list"] = $all_list;
 
-	$arg_str = "SELECT ";
-	$arg_str .= "t_staff_detail_body.rntl_sect_cd as as_rntl_sect_cd,";
-	$arg_str .= "t_staff_detail_body.yyyymm as as_yyyymm,";
-	$arg_str .= "t_staff_detail_body.line_no as as_line_no,";
-	$arg_str .= "t_staff_detail_body.staff_detail_data as as_staff_detail_data";
-	$arg_str .= " FROM t_staff_detail_body";
-	$arg_str .= " WHERE ";
-	$arg_str .= $query;
-	$arg_str .= " ORDER BY t_staff_detail_body.line_no ASC";
+  echo json_encode($json_list);
+});
 
-	$t_staff_detail_body = new TStaffDetailBody();
-	$results = new Resultset(null, $t_staff_detail_body, $t_staff_detail_body->getReadConnection()->query($arg_str));
-	$result_obj = (array)$results;
-	$results_cnt = $result_obj["\0*\0_count"];
-	//ChromePhp::log($m_wearer_std->getReadConnection()->query($arg_str));
+/*
+ * お問い合わせ詳細
+ * 回答内容更新
+ */
+$app->post('/inquiry/update', function () use ($app) {
+  $params = json_decode(file_get_contents('php://input'), true);
 
-	$label = array();
-	$label_list = array();
-	$detail_list = array();
+  // アカウントセッション取得
+  $auth = $app->session->get('auth');
 
-	if(!empty($results_cnt)){
-		$paginator_model = new PaginatorModel(
-			array(
-				"data"  => $results,
-				"limit" => $results_cnt,
-				"page" => 1
-			)
-		);
-		$paginator = $paginator_model->getPaginate();
-		$results = $paginator->items;
+  // フロントパラメータ取得
+  $cond = $params['data'];
+  //ChromePhp::LOG($cond);
 
-		foreach($results as $result) {
-			// 詳細項目ラベル設定
-			if ($result->as_line_no === 0) {
-				if (!empty($result->as_staff_detail_data)) {
-					$headers = explode(',', $result->as_staff_detail_data);
-					foreach($headers as $header) {
-						$label["data"] = $header;
-						array_push($label_list, $label);
-					}
-				}
+  $json_list = array();
 
-				continue;
-			}
+  $json_list["err_code"] = "0";
+  $json_list["err_msg"] = array();
 
-			// 詳細データリスト設定
-			if (!empty($result->as_staff_detail_data)) {
-				$detail = array();
-				$manpower_details = explode(',', $result->as_staff_detail_data);
-				foreach($manpower_details as $manpower_detail) {
-					$list["data"] = $manpower_detail;
-					array_push($detail, $list);
-				}
+  //--お問い合わせ内容登録--//
+  // トランザクション開始
+  $t_inquiry = new TInquiry();
+  $results = new Resultset(NULL, $t_inquiry, $t_inquiry->getReadConnection()->query('begin'));
+  try {
+    $src_query_list = array();
+    array_push($src_query_list, "index = '".$cond['index']."'");
+    $src_query = implode(' AND ', $src_query_list);
 
-				array_push($detail_list, $detail);
-			}
-		}
+    $up_query_list = array();
+    // お問い合わせ回答日時
+    array_push($up_query_list, "interrogator_answer_date = '".date("Y-m-d H:i:s", time())."'");
+    // お問い合わせ回答
+    array_push($up_query_list, "interrogator_answer = '".$cond['interrogator_answer']."'");
+    // 回答ステータス
+    array_push($up_query_list, "interrogator_status = '2'");
+    // 更新日時
+    array_push($up_query_list, "upd_date = '".date("Y-m-d H:i:s", time())."'");
+    // 更新ユーザーID
+    array_push($up_query_list, "upd_user_id = '".$auth['accnt_no']."'");
+    $up_query = implode(',', $up_query_list);
 
-		$json_list['label_list'] = $label_list;
-		$json_list['detail_list'] = $detail_list;
-		//ChromePhp::log($json_list['heading']);
-	} else {
-		$json_list['label_list'] = null;
-		$json_list['detail_list'] = null;
-		//ChromePhp::log($json_list['heading']);
-	}
+    $arg_str = "";
+    $arg_str = "UPDATE t_inquiry SET ";
+    $arg_str .= $up_query;
+    $arg_str .= " WHERE ";
+    $arg_str .= $src_query;
+    //ChromePhp::LOG($arg_str);
+    $t_inquiry = new TInquiry();
+    $results = new Resultset(NULL, $t_inquiry, $t_inquiry->getReadConnection()->query($arg_str));
+    $result_obj = (array)$results;
+    $results_cnt = $result_obj["\0*\0_count"];
+    //ChromePhp::LOG($results_cnt);
 
-	echo json_encode($json_list);
+    // トランザクションコミット
+    $t_inquiry = new TInquiry();
+    $results = new Resultset(NULL, $t_inquiry, $t_inquiry->getReadConnection()->query('commit'));
+  }  catch (Exception $e) {
+    // トランザクションロールバック
+    $t_inquiry = new TInquiry();
+    $results = new Resultset(NULL, $t_inquiry, $t_inquiry->getReadConnection()->query('rollback'));
+    ChromePhp::LOG($e);
+
+    $json_list["err_code"] = "1";
+    $err_msg = "更新処理において、予期せぬエラーが発生しました。";
+    array_push($json_list["err_msg"], $err_msg);
+
+    echo json_encode($json_list);
+    return;
+  }
+
+  echo json_encode($json_list);
 });

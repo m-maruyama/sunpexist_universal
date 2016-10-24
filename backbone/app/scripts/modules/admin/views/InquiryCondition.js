@@ -88,14 +88,31 @@ define([
 					that.triggerMethod('research:section', data);
 
 					//--検索結果一覧--//
+					that.model.set('corporate', data["corporate"]);
 					that.model.set('agreement_no', data["agreement_no"]);
-					that.model.set('cster_emply_cd', data["cster_emply_cd"]);
-					that.model.set('werer_name', data["werer_name"]);
-					that.model.set('sex_kbn', data["sex_kbn"]);
+					if (data["answer_kbn0"] == "true") {
+						that.model.set('answer_kbn0', true);
+					} else {
+						that.model.set('answer_kbn0', false);
+					}
+					if (data["answer_kbn1"] == "true") {
+						that.model.set('answer_kbn1', true);
+					} else {
+						that.model.set('answer_kbn1', false);
+					}
+					that.model.set('contact_day_from', data["contact_day_from"]);
+					that.model.set('contact_day_to', data["contact_day_to"]);
+					that.model.set('answer_day_from', data["answer_day_from"]);
+					that.model.set('answer_day_to', data["answer_day_to"]);
 					that.model.set('section', data["section"]);
-					that.model.set('job_type', data["job_type"]);
-					var page = arr_str[6];
-					that.triggerMethod('back:research', 'order_req_no', 'asc', page);
+					that.model.set('interrogator_name', data["interrogator_name"]);
+					that.model.set('genre', data["genre"]);
+					that.model.set('interrogator_info', data["interrogator_info"]);
+					var page = data["page"];
+
+					if (page != "") {
+						that.triggerMethod('back:research', 'order_req_no', 'asc', page);
+					}
 				} else {
 					// 未検索時の遷移時の場合はデフォルト値を設定
 					var data = ""
