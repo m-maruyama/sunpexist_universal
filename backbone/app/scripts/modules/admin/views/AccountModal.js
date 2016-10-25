@@ -79,7 +79,7 @@ define([
 					model.set('mail_address', this.ui.mail_address.val());
 					model.set('password', this.ui.password.val());
 					model.set('password_confirm', this.ui.password_confirm.val());
-					$("#corporate_id_modal").attr('disabled',false);
+					$("#corporate_id_modal").attr('disabled',true);
 
 					//if(this.ui.password.val() == this.ui.password_confirm.val()){
 					//	console.log('same');

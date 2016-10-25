@@ -153,9 +153,7 @@ $app->post('/account/search', function () use ($app) {
 $app->post('/account/modal', function () use ($app) {
 
     $params = json_decode(file_get_contents('php://input'), true);
-
     $cond = $params['cond'];
-    ChromePhp::log($cond);
 
     $json_list = array();
     $error_list = array();
@@ -164,7 +162,10 @@ $app->post('/account/modal', function () use ($app) {
         'conditions' => "user_id = '".$cond['user_id']."'",
     ));
 
+    $transaction = $app->transactionManager->get();
+
     $m_account = new MAccount();
+    $m_account->setTransaction($transaction);
 
     $auth = $app->session->get('auth');
 

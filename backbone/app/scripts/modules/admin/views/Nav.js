@@ -12,6 +12,8 @@ define([
 				"login": "li.nav_login",
 				"importCsv": "li.nav_importCsv",
 				"inquiry": "li.nav_inquiry",
+				"inquiryInput": "li.nav_inquiryInput",
+				"inquiryDetail": "li.nav_inquiryDetail",
 				"history": "li.nav_history",
 				"delivery": "li.nav_delivery",
 				"unreturn": "li.nav_unreturn",
