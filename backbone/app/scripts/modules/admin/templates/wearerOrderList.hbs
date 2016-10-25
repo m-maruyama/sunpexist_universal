@@ -25,7 +25,6 @@
           <!--<th rowspan="2" class="individual_flg" style="display:none;">対象</th>-->
           <!--<th rowspan="2" class="individual_flg" style="display:none;">個体管理番号</th>-->
           <th rowspan="2">発注枚数</th>
-          <th rowspan="2">返却枚数</th>
         </tr>
         <tr>
           <th>商品名</th>
@@ -58,27 +57,11 @@
           </td>
           <td class="input">
             <select class="form-control input-sm" id="add_size_cd{{arr_num}}" name="add_size_cd{{arr_num}}">
-              {{#each size_cd_list}}<option value="{{size_cd}}">{{size_cd}}</option>{{/each}}
+              {{#each size_cd_list}}<option value="{{size_cd}}" {{selected}}>{{size_cd}}</option>{{/each}}
             </select>
-          <td class="individual_flg" style="display:none;">
-            {{#if individual_disp}}
-              {{#each individual_chk}}
-              <label>
-                <input type="checkbox" id="add_target_flg" name="add_target_flg[]" value="{{individual_ctrl_no}}" {{checked}} {{disabled}}>
-              </label><br>
-              {{/each}}
-            {{/if}}
-          </td>
-          <td class="individual_flg" style="display:none;">
-            {{#if individual_disp}}
-              {{{individual_ctrl_no}}}
-            {{/if}}
-          </td>
           <td>
             <input type="text" style="width:4em" class="input-sm" id="add_order_num{{arr_num}}" name="add_order_num{{arr_num}}" value="{{order_num}}" {{order_num_disable}}>
             <input type="hidden" name="add_order_num_disable{{arr_num}}" value="{{order_num_disable}}">
-          </td>
-          <td>
           </td>
         </tr>
         {{/each}}

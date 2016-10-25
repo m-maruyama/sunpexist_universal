@@ -2,33 +2,31 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="093d48c9-3fdb-4a50-ba0a-ca62a2bcccb7" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/app/wearer_end_order.php" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backbone/app/scripts/modules/admin/templates/wearerEndOrderComplete.hbs" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backbone/app/scripts/modules/admin/templates/wearerEndOrderList.hbs" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backbone/app/scripts/modules/admin/templates/wearerEndOrderSendComplete.hbs" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/backbone/app/scripts/modules/admin/templates/wearerEndOrderListItem.hbs" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/backbone/app/scripts/modules/admin/templates/wearerEndOrderListList.hbs" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/backbone/app/scripts/modules/admin/views/WearerEndOrderListItem.js" afterPath="" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/backbone/app/scripts/modules/admin/views/WearerEndOrderListList.js" afterPath="$PROJECT_DIR$/backbone/app/scripts/modules/admin/views/WearerEndOrderList.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/wearer_end.php" afterPath="$PROJECT_DIR$/app/wearer_end.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/wearer_end_order.php" afterPath="$PROJECT_DIR$/app/wearer_end_order.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/wearer_input.php" afterPath="$PROJECT_DIR$/app/wearer_input.php" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/wearer_order.php" afterPath="$PROJECT_DIR$/app/wearer_order.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/wearer_search.php" afterPath="$PROJECT_DIR$/app/wearer_search.php" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/backbone/app/scripts/app.js" afterPath="$PROJECT_DIR$/backbone/app/scripts/app.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/backbone/app/scripts/modules/admin/controllers/WearerEnd.js" afterPath="$PROJECT_DIR$/backbone/app/scripts/modules/admin/controllers/WearerEnd.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/backbone/app/scripts/modules/admin/controllers/WearerEndOrder.js" afterPath="$PROJECT_DIR$/backbone/app/scripts/modules/admin/controllers/WearerEndOrder.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/backbone/app/scripts/modules/admin/controllers/WearerOrder.js" afterPath="$PROJECT_DIR$/backbone/app/scripts/modules/admin/controllers/WearerOrder.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/backbone/app/scripts/modules/admin/templates/jobTypeConditionOrder.hbs" afterPath="$PROJECT_DIR$/backbone/app/scripts/modules/admin/templates/jobTypeConditionOrder.hbs" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/backbone/app/scripts/modules/admin/templates/ReasonKbnConditionOrder.hbs" afterPath="$PROJECT_DIR$/backbone/app/scripts/modules/admin/templates/ReasonKbnConditionOrder.hbs" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/backbone/app/scripts/modules/admin/templates/home.hbs" afterPath="$PROJECT_DIR$/backbone/app/scripts/modules/admin/templates/home.hbs" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/backbone/app/scripts/modules/admin/templates/sectionConditionOrder.hbs" afterPath="$PROJECT_DIR$/backbone/app/scripts/modules/admin/templates/sectionConditionOrder.hbs" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/backbone/app/scripts/modules/admin/templates/wearerEndListItem.hbs" afterPath="$PROJECT_DIR$/backbone/app/scripts/modules/admin/templates/wearerEndListItem.hbs" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/backbone/app/scripts/modules/admin/templates/wearerEndListList.hbs" afterPath="$PROJECT_DIR$/backbone/app/scripts/modules/admin/templates/wearerEndListList.hbs" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/backbone/app/scripts/modules/admin/templates/wearerEndOrder.hbs" afterPath="$PROJECT_DIR$/backbone/app/scripts/modules/admin/templates/wearerEndOrder.hbs" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/backbone/app/scripts/modules/admin/templates/wearerEnd.hbs" afterPath="$PROJECT_DIR$/backbone/app/scripts/modules/admin/templates/wearerEnd.hbs" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/backbone/app/scripts/modules/admin/templates/wearerEndOrderCondition.hbs" afterPath="$PROJECT_DIR$/backbone/app/scripts/modules/admin/templates/wearerEndOrderCondition.hbs" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/backbone/app/scripts/modules/admin/views/JobTypeConditionOrder.js" afterPath="$PROJECT_DIR$/backbone/app/scripts/modules/admin/views/JobTypeConditionOrder.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/backbone/app/scripts/modules/admin/views/ReasonKbnConditionOrder.js" afterPath="$PROJECT_DIR$/backbone/app/scripts/modules/admin/views/ReasonKbnConditionOrder.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/backbone/app/scripts/modules/admin/views/SectionConditionOrder.js" afterPath="$PROJECT_DIR$/backbone/app/scripts/modules/admin/views/SectionConditionOrder.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/backbone/app/scripts/modules/admin/templates/wearerEndOrderList.hbs" afterPath="$PROJECT_DIR$/backbone/app/scripts/modules/admin/templates/wearerEndOrderList.hbs" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/backbone/app/scripts/modules/admin/templates/wearerOrderCondition.hbs" afterPath="$PROJECT_DIR$/backbone/app/scripts/modules/admin/templates/wearerOrderCondition.hbs" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/backbone/app/scripts/modules/admin/templates/wearerOrderList.hbs" afterPath="$PROJECT_DIR$/backbone/app/scripts/modules/admin/templates/wearerOrderList.hbs" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/backbone/app/scripts/modules/admin/views/Home.js" afterPath="$PROJECT_DIR$/backbone/app/scripts/modules/admin/views/Home.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/backbone/app/scripts/modules/admin/views/WearerEnd.js" afterPath="$PROJECT_DIR$/backbone/app/scripts/modules/admin/views/WearerEnd.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/backbone/app/scripts/modules/admin/views/WearerEndCondition.js" afterPath="$PROJECT_DIR$/backbone/app/scripts/modules/admin/views/WearerEndCondition.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/backbone/app/scripts/modules/admin/views/WearerEndListItem.js" afterPath="$PROJECT_DIR$/backbone/app/scripts/modules/admin/views/WearerEndListItem.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/backbone/app/scripts/modules/admin/views/WearerEndOrder.js" afterPath="$PROJECT_DIR$/backbone/app/scripts/modules/admin/views/WearerEndOrder.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/backbone/app/scripts/modules/admin/views/WearerEndOrderCondition.js" afterPath="$PROJECT_DIR$/backbone/app/scripts/modules/admin/views/WearerEndOrderCondition.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/backbone/app/scripts/modules/admin/views/WearerEndOrderList.js" afterPath="$PROJECT_DIR$/backbone/app/scripts/modules/admin/views/WearerEndOrderList.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/backbone/app/scripts/modules/admin/views/WearerOrderCondition.js" afterPath="$PROJECT_DIR$/backbone/app/scripts/modules/admin/views/WearerOrderCondition.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/public/index.php" afterPath="$PROJECT_DIR$/public/index.php" />
     </list>
     <list id="b3330c0a-5742-4be2-af6d-d1950c5743e3" name="Rejected commit: Default" comment="SUNPEXIST_UNIVERSAL-13 拠点絞込画面" />
     <ignored path="universal.iws" />
@@ -50,33 +48,53 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="wearer_end_order.php" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/app/wearer_end_order.php">
+      <file leaf-file-name="WearerEndCondition.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/backbone/app/scripts/modules/admin/views/WearerEndCondition.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="111">
-              <caret line="170" column="0" selection-start-line="170" selection-start-column="0" selection-end-line="170" selection-end-column="0" />
-              <folding>
-                <marker date="1476953688000" expanded="true" signature="45815:45839" ph="INSERT INTO t_order_tran... " />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="app.js" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/backbone/app/scripts/app.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="190">
-              <caret line="196" column="38" selection-start-line="196" selection-start-column="38" selection-end-line="196" selection-end-column="38" />
+            <state relative-caret-position="1035">
+              <caret line="69" column="65" selection-start-line="69" selection-start-column="64" selection-end-line="69" selection-end-column="65" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="WearerEndListItem.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/backbone/app/scripts/modules/admin/views/WearerEndListItem.js">
+      <file leaf-file-name="WearerEndOrderCondition.js" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/backbone/app/scripts/modules/admin/views/WearerEndOrderCondition.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="60">
-              <caret line="19" column="48" selection-start-line="19" selection-start-column="48" selection-end-line="19" selection-end-column="48" />
+            <state relative-caret-position="15">
+              <caret line="97" column="0" selection-start-line="97" selection-start-column="0" selection-end-line="97" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="WearerOrderCondition.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/backbone/app/scripts/modules/admin/views/WearerOrderCondition.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="1380">
+              <caret line="92" column="62" selection-start-line="92" selection-start-column="62" selection-end-line="92" selection-end-column="62" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="wearer_end_order.php" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app/wearer_end_order.php">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="4260">
+              <caret line="288" column="29" selection-start-line="288" selection-start-column="29" selection-end-line="288" selection-end-column="29" />
+              <folding>
+                <marker date="1477208293000" expanded="true" signature="43981:44005" ph="INSERT INTO t_order_tran... " />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="wearerOrderCondition.hbs" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/backbone/app/scripts/modules/admin/templates/wearerOrderCondition.hbs">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="375">
+              <caret line="25" column="8" selection-start-line="25" selection-start-column="8" selection-end-line="25" selection-end-column="8" />
               <folding />
             </state>
           </provider>
@@ -85,68 +103,48 @@
       <file leaf-file-name="wearerEndOrderCondition.hbs" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/backbone/app/scripts/modules/admin/templates/wearerEndOrderCondition.hbs">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="381">
-              <caret line="47" column="40" selection-start-line="47" selection-start-column="32" selection-end-line="47" selection-end-column="40" />
+            <state relative-caret-position="165">
+              <caret line="11" column="71" selection-start-line="11" selection-start-column="60" selection-end-line="11" selection-end-column="71" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="JobTypeConditionOrder.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/backbone/app/scripts/modules/admin/views/JobTypeConditionOrder.js">
+      <file leaf-file-name="WearerEndOrder.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/backbone/app/scripts/modules/admin/controllers/WearerEndOrder.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="375">
-              <caret line="33" column="55" selection-start-line="33" selection-start-column="49" selection-end-line="33" selection-end-column="55" />
+            <state relative-caret-position="180">
+              <caret line="12" column="28" selection-start-line="12" selection-start-column="28" selection-end-line="12" selection-end-column="28" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="jobTypeCondition.hbs" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/backbone/app/scripts/modules/admin/templates/jobTypeCondition.hbs">
+      <file leaf-file-name="WearerEnd.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/backbone/app/scripts/modules/admin/controllers/WearerEnd.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="0">
-              <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+            <state relative-caret-position="3795">
+              <caret line="253" column="16" selection-start-line="253" selection-start-column="16" selection-end-line="253" selection-end-column="16" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="jobTypeConditionChange.hbs" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/backbone/app/scripts/modules/admin/templates/jobTypeConditionChange.hbs">
+      <file leaf-file-name="wearerEnd.hbs" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/backbone/app/scripts/modules/admin/templates/wearerEnd.hbs">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="0">
-              <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+            <state relative-caret-position="135">
+              <caret line="9" column="27" selection-start-line="9" selection-start-column="12" selection-end-line="9" selection-end-column="27" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="jobTypeConditionOrder.hbs" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/backbone/app/scripts/modules/admin/templates/jobTypeConditionOrder.hbs">
+      <file leaf-file-name="WearerChange.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/backbone/app/scripts/modules/admin/controllers/WearerChange.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="45">
-              <caret line="3" column="112" selection-start-line="3" selection-start-column="112" selection-end-line="3" selection-end-column="112" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="WearerSearchListItem.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/backbone/app/scripts/modules/admin/views/WearerSearchListItem.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="540">
-              <caret line="36" column="61" selection-start-line="36" selection-start-column="61" selection-end-line="36" selection-end-column="61" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="SectionConditionOrder.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/backbone/app/scripts/modules/admin/views/SectionConditionOrder.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="240">
-              <caret line="28" column="48" selection-start-line="28" selection-start-column="48" selection-end-line="34" selection-end-column="17" />
+            <state relative-caret-position="585">
+              <caret line="39" column="110" selection-start-line="39" selection-start-column="110" selection-end-line="40" selection-end-column="105" />
               <folding />
             </state>
           </provider>
@@ -160,17 +158,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/backbone/app/scripts/modules/admin/templates/home.hbs" />
-        <option value="$PROJECT_DIR$/backbone/app/scripts/modules/admin/views/Home.js" />
-        <option value="$PROJECT_DIR$/backbone/app/scripts/modules/admin/views/WearerEndOrder.js" />
-        <option value="$PROJECT_DIR$/backbone/app/scripts/modules/admin/templates/wearerInputCondition.hbs" />
-        <option value="$PROJECT_DIR$/backbone/app/scripts/modules/admin/views/WearerInputCompleteCondition.js" />
-        <option value="$PROJECT_DIR$/app/common.php" />
-        <option value="$PROJECT_DIR$/backbone/app/scripts/modules/admin/views/WearerSearchCondition.js" />
-        <option value="$PROJECT_DIR$/backbone/app/scripts/modules/admin/views/AgreementNoConditionInput.js" />
-        <option value="$PROJECT_DIR$/backbone/app/scripts/modules/admin/templates/wearerInput.hbs" />
-        <option value="$PROJECT_DIR$/backbone/app/scripts/modules/admin/views/WearerInput.js" />
-        <option value="$PROJECT_DIR$/backbone/app/scripts/modules/admin/controllers/WearerInput.js" />
         <option value="$PROJECT_DIR$/backbone/app/scripts/entities/models/AdminWearerInputListCondition.js" />
         <option value="$PROJECT_DIR$/backbone/app/scripts/modules/admin/views/WearerOrder.js" />
         <option value="$PROJECT_DIR$/backbone/app/wearer_order_complete.html" />
@@ -178,39 +165,50 @@
         <option value="$PROJECT_DIR$/backbone/app/scripts/modules/admin/controllers/WearerOrderComplete.js" />
         <option value="$PROJECT_DIR$/backbone/app/scripts/modules/admin/views/Nav.js" />
         <option value="$PROJECT_DIR$/backbone/app/scripts/modules/admin/views/WearerChangeOrderCondition.js" />
-        <option value="$PROJECT_DIR$/app/wearer_input.php" />
         <option value="$PROJECT_DIR$/backbone/app/scripts/modules/admin/views/WearerOrderCompleteCondition.js" />
         <option value="$PROJECT_DIR$/backbone/app/scripts/modules/admin/templates/wearerOrderComplete.hbs" />
         <option value="$PROJECT_DIR$/backbone/app/scripts/modules/admin/views/WearerOrderComplete.js" />
-        <option value="$PROJECT_DIR$/backbone/app/scripts/modules/admin/views/WearerInputCondition.js" />
         <option value="$PROJECT_DIR$/backbone/app/scripts/modules/admin/views/WearerSearchListItem.js" />
         <option value="$PROJECT_DIR$/app/wearer_change_order.php" />
-        <option value="$PROJECT_DIR$/app/wearer_search.php" />
-        <option value="$PROJECT_DIR$/backbone/app/scripts/modules/admin/templates/wearerOrderList.hbs" />
-        <option value="$PROJECT_DIR$/backbone/app/scripts/modules/admin/templates/wearerOrderCondition.hbs" />
         <option value="$PROJECT_DIR$/app/wearer_change.php" />
         <option value="$PROJECT_DIR$/backbone/app/scripts/modules/admin/controllers/WearerOrder.js" />
-        <option value="$PROJECT_DIR$/backbone/app/scripts/modules/admin/views/WearerOrderCondition.js" />
         <option value="$PROJECT_DIR$/backbone/app/scripts/modules/admin/templates/wearerEndListList.hbs" />
         <option value="$PROJECT_DIR$/backbone/app/scripts/modules/admin/templates/wearerEndListItem.hbs" />
-        <option value="$PROJECT_DIR$/app/wearer_end.php" />
         <option value="$PROJECT_DIR$/backbone/app/scripts/modules/admin/views/WearerOrderListList.js" />
-        <option value="$PROJECT_DIR$/backbone/app/scripts/modules/admin/views/WearerEndOrderList.js" />
-        <option value="$PROJECT_DIR$/backbone/app/scripts/modules/admin/controllers/WearerEndOrder.js" />
-        <option value="$PROJECT_DIR$/app/wearer_order.php" />
-        <option value="$PROJECT_DIR$/backbone/app/scripts/modules/admin/templates/wearerEndOrderCondition.hbs" />
         <option value="$PROJECT_DIR$/backbone/app/scripts/modules/admin/views/WearerEndListList.js" />
         <option value="$PROJECT_DIR$/backbone/app/scripts/modules/admin/views/ReasonKbnConditionOrder.js" />
         <option value="$PROJECT_DIR$/public/index.php" />
-        <option value="$PROJECT_DIR$/backbone/app/scripts/modules/admin/templates/wearerEndOrderList.hbs" />
-        <option value="$PROJECT_DIR$/backbone/app/scripts/modules/admin/views/WearerEndOrderCondition.js" />
-        <option value="$PROJECT_DIR$/backbone/app/scripts/modules/admin/views/SectionConditionOrder.js" />
-        <option value="$PROJECT_DIR$/backbone/app/scripts/modules/admin/views/WearerEndListItem.js" />
-        <option value="$PROJECT_DIR$/backbone/app/scripts/modules/admin/templates/sectionConditionOrder.hbs" />
-        <option value="$PROJECT_DIR$/app/wearer_end_order.php" />
         <option value="$PROJECT_DIR$/backbone/app/scripts/modules/admin/templates/jobTypeConditionOrder.hbs" />
         <option value="$PROJECT_DIR$/backbone/app/scripts/modules/admin/views/JobTypeConditionOrder.js" />
+        <option value="$PROJECT_DIR$/backbone/app/scripts/modules/admin/templates/ReasonKbnConditionOrder.hbs" />
+        <option value="$PROJECT_DIR$/backbone/app/scripts/modules/admin/templates/home.hbs" />
+        <option value="$PROJECT_DIR$/backbone/app/scripts/modules/admin/views/Home.js" />
+        <option value="$PROJECT_DIR$/backbone/app/scripts/modules/admin/views/WearerEndOrderList.js" />
+        <option value="$PROJECT_DIR$/backbone/app/scripts/modules/admin/templates/wearerOrderList.hbs" />
+        <option value="$PROJECT_DIR$/backbone/app/scripts/modules/admin/views/SectionConditionOrder.js" />
+        <option value="$PROJECT_DIR$/backbone/app/scripts/modules/admin/controllers/WearerEndOrder.js" />
+        <option value="$PROJECT_DIR$/backbone/app/scripts/modules/admin/templates/sectionConditionOrder.hbs" />
+        <option value="$PROJECT_DIR$/backbone/app/scripts/modules/admin/templates/wearerOrderCondition.hbs" />
         <option value="$PROJECT_DIR$/backbone/app/scripts/app.js" />
+        <option value="$PROJECT_DIR$/backbone/app/scripts/modules/admin/views/WearerEndListItem.js" />
+        <option value="$PROJECT_DIR$/backbone/app/scripts/modules/admin/templates/wearerEndOrderList.hbs" />
+        <option value="$PROJECT_DIR$/backbone/app/scripts/modules/admin/templates/wearerEndOrderCondition.hbs" />
+        <option value="$PROJECT_DIR$/app/wearer_order.php" />
+        <option value="$PROJECT_DIR$/app/wearer_end.php" />
+        <option value="$PROJECT_DIR$/backbone/app/scripts/modules/admin/views/WearerInputCondition.js" />
+        <option value="$PROJECT_DIR$/app/wearer_search.php" />
+        <option value="$PROJECT_DIR$/app/wearer_input.php" />
+        <option value="$PROJECT_DIR$/backbone/app/scripts/modules/admin/views/WearerEndOrder.js" />
+        <option value="$PROJECT_DIR$/backbone/app/scripts/modules/admin/views/AgreementNoConditionInput.js" />
+        <option value="$PROJECT_DIR$/backbone/app/scripts/modules/admin/views/WearerEditCondition.js" />
+        <option value="$PROJECT_DIR$/backbone/app/scripts/modules/admin/views/WearerEndCondition.js" />
+        <option value="$PROJECT_DIR$/backbone/app/scripts/modules/admin/views/WearerEnd.js" />
+        <option value="$PROJECT_DIR$/backbone/app/scripts/modules/admin/templates/wearerEnd.hbs" />
+        <option value="$PROJECT_DIR$/backbone/app/scripts/modules/admin/controllers/WearerChange.js" />
+        <option value="$PROJECT_DIR$/backbone/app/scripts/modules/admin/controllers/WearerEnd.js" />
+        <option value="$PROJECT_DIR$/backbone/app/scripts/modules/admin/views/WearerOrderCondition.js" />
+        <option value="$PROJECT_DIR$/app/wearer_end_order.php" />
+        <option value="$PROJECT_DIR$/backbone/app/scripts/modules/admin/views/WearerEndOrderCondition.js" />
       </list>
     </option>
   </component>
@@ -225,8 +223,7 @@
   </component>
   <component name="PhpWorkspaceProjectConfiguration" backward_compatibility_performed="true" />
   <component name="ProjectFrameBounds">
-    <option name="x" value="-3" />
-    <option name="y" value="29" />
+    <option name="y" value="23" />
     <option name="width" value="1440" />
     <option name="height" value="815" />
   </component>
@@ -610,7 +607,8 @@
       <workItem from="1475809943221" duration="55873000" />
       <workItem from="1476242380848" duration="51573000" />
       <workItem from="1476432629196" duration="8673000" />
-      <workItem from="1476445885210" duration="92986000" />
+      <workItem from="1476445885210" duration="133661000" />
+      <workItem from="1477360654343" duration="63000" />
     </task>
     <task id="LOCAL-00001" summary="commit">
       <created>1471261963970</created>
@@ -927,21 +925,27 @@
       <option name="project" value="LOCAL" />
       <updated>1476794682295</updated>
     </task>
-    <option name="localTasksCounter" value="46" />
+    <task id="LOCAL-00046" summary="貸与終了">
+      <created>1476954097036</created>
+      <option name="number" value="00046" />
+      <option name="presentableId" value="LOCAL-00046" />
+      <option name="project" value="LOCAL" />
+      <updated>1476954097036</updated>
+    </task>
+    <option name="localTasksCounter" value="47" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="702340000" />
+    <option name="totallyTimeSpent" value="743078000" />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-3" y="29" width="1440" height="815" extended-state="6" />
+    <frame x="0" y="23" width="1440" height="815" extended-state="6" />
     <editor active="false" />
     <layout>
-      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.27370688" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.28376436" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="9" side_tool="true" content_ui="tabs" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32684284" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32871014" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
@@ -954,6 +958,7 @@
       <window_info id="Command Line Tools Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.329429" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32684284" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
     </layout>
@@ -987,7 +992,8 @@
     <MESSAGE value="ログインセッション" />
     <MESSAGE value="ログアウト" />
     <MESSAGE value="SUNPEXIST_UNIVERSAL-41 発注管理（貸与開始）" />
-    <option name="LAST_COMMIT_MESSAGE" value="SUNPEXIST_UNIVERSAL-41 発注管理（貸与開始）" />
+    <MESSAGE value="貸与終了" />
+    <option name="LAST_COMMIT_MESSAGE" value="貸与終了" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -999,151 +1005,283 @@
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/backbone/app/scripts/modules/admin/views/WearerOrderCompleteCondition.js">
+    <entry file="file://$PROJECT_DIR$/backbone/app/scripts/modules/admin/views/WearerEditOrderCondition.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="210">
-          <caret line="14" column="35" selection-start-line="14" selection-start-column="35" selection-end-line="14" selection-end-column="35" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/backbone/app/scripts/modules/admin/templates/wearerOtherCondition.hbs">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
+        <state relative-caret-position="-1530">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/backbone/app/scripts/modules/admin/controllers/WearerChangeOrder.js">
+    <entry file="file://$PROJECT_DIR$/backbone/app/scripts/modules/admin/templates/home.hbs">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-1051">
-          <caret line="13" column="31" selection-start-line="13" selection-start-column="31" selection-end-line="13" selection-end-column="31" />
-          <folding />
+        <state relative-caret-position="405">
+          <caret line="33" column="128" selection-start-line="33" selection-start-column="128" selection-end-line="33" selection-end-column="128" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/wearer_search.php">
+    <entry file="file://$PROJECT_DIR$/backbone/app/scripts/modules/admin/views/Home.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="414">
-          <caret line="373" column="23" selection-start-line="373" selection-start-column="9" selection-end-line="373" selection-end-column="23" />
-          <folding />
+        <state relative-caret-position="628">
+          <caret line="55" column="12" selection-start-line="55" selection-start-column="12" selection-end-line="55" selection-end-column="12" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/backbone/app/scripts/modules/admin/templates/wearerOrderList.hbs">
+    <entry file="file://$PROJECT_DIR$/app/common.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="69">
-          <caret line="59" column="104" selection-start-line="59" selection-start-column="104" selection-end-line="59" selection-end-column="104" />
-          <folding>
-            <element signature="n#style#0;n#td#7;n#tr#0;n#tbody#0;n#table#1;n#div#0;n#div#0;n#!!top" expanded="false" />
-            <element signature="n#style#0;n#input#0;n#td#8;n#tr#0;n#tbody#0;n#table#1;n#div#0;n#div#0;n#!!top" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/backbone/app/scripts/modules/admin/views/OrderSendCondition.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-616">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/backbone/app/scripts/modules/admin/views/OrderSend.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/backbone/app/scripts/modules/admin/views/OrderSendListItem.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="299">
-          <caret line="31" column="61" selection-start-line="31" selection-start-column="61" selection-end-line="31" selection-end-column="61" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/wearer_input.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="193">
-          <caret line="577" column="42" selection-start-line="577" selection-start-column="42" selection-end-line="579" selection-end-column="43" />
-          <folding>
-            <element signature="e#41#93#0#PHP" expanded="true" />
-          </folding>
+        <state relative-caret-position="360">
+          <caret line="1276" column="68" selection-start-line="1276" selection-start-column="68" selection-end-line="1276" selection-end-column="68" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/app/wearer_change_order.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="208">
-          <caret line="361" column="35" selection-start-line="361" selection-start-column="14" selection-end-line="361" selection-end-column="35" />
-          <folding>
-            <marker date="1476759896000" expanded="true" signature="95037:95065" ph="UPDATE m_wea... " />
-            <marker date="1476759896000" expanded="true" signature="102816:102845" ph="INSERT INTO m_wearer_std_tran... " />
-            <marker date="1476759896000" expanded="true" signature="127788:127812" ph="INSERT INTO t_order_tran... " />
-            <marker date="1476759896000" expanded="true" signature="136554:136591" ph="INSERT INTO t_returned_plan_info_tran... " />
-            <marker date="1476759896000" expanded="true" signature="141495:141532" ph="INSERT INTO t_returned_plan_info_tran... " />
-            <marker date="1476759896000" expanded="true" signature="160849:160877" ph="UPDATE m_wea... " />
-            <marker date="1476759896000" expanded="true" signature="168420:168449" ph="INSERT INTO m_wearer_std_tran... " />
-            <marker date="1476759896000" expanded="true" signature="192580:192604" ph="INSERT INTO t_order_tran... " />
-            <marker date="1476759896000" expanded="true" signature="200830:200867" ph="INSERT INTO t_returned_plan_info_tran... " />
-            <marker date="1476759896000" expanded="true" signature="205609:205646" ph="INSERT INTO t_returned_plan_info_tran... " />
-          </folding>
+        <state relative-caret-position="55138">
+          <caret line="4806" column="39" selection-start-line="4806" selection-start-column="32" selection-end-line="4806" selection-end-column="39" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/backbone/app/scripts/modules/admin/templates/wearerSearchListList.hbs">
+    <entry file="file://$PROJECT_DIR$/backbone/app/scripts/modules/admin/templates/wearerOrderList.hbs">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="30">
-          <caret line="2" column="33" selection-start-line="2" selection-start-column="33" selection-end-line="22" selection-end-column="17" />
-          <folding>
-            <element signature="n#style#0;n#div#0;n#!!top" expanded="false" />
-          </folding>
+        <state relative-caret-position="381">
+          <caret line="59" column="76" selection-start-line="59" selection-start-column="63" selection-end-line="59" selection-end-column="76" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/backbone/app/scripts/modules/admin/templates/wearerOtherListList.hbs">
+    <entry file="file://$PROJECT_DIR$/backbone/app/scripts/modules/admin/templates/wearerChangeOrderList.hbs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="270">
+          <caret line="31" column="14" selection-start-line="0" selection-start-column="0" selection-end-line="169" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/backbone/app/scripts/modules/admin/templates/wearerEditCondition.hbs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-204">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/backbone/app/scripts/modules/admin/templates/wearerChangeOrderCondition.hbs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-549">
+          <caret line="21" column="7" selection-start-line="21" selection-start-column="7" selection-end-line="21" selection-end-column="7" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/backbone/app/scripts/modules/admin/views/WearerChangeOrder.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding>
-            <element signature="n#style#0;n#div#0;n#!!top" expanded="false" />
-          </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/backbone/app/scripts/modules/admin/templates/wearerOtherListItem.hbs">
+    <entry file="file://$PROJECT_DIR$/backbone/app/scripts/modules/admin/controllers/WearerChangeOrder.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="135">
-          <caret line="9" column="97" selection-start-line="9" selection-start-column="78" selection-end-line="9" selection-end-column="97" />
-          <folding />
+        <state relative-caret-position="-195">
+          <caret line="25" column="53" selection-start-line="25" selection-start-column="53" selection-end-line="25" selection-end-column="53" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/backbone/app/scripts/modules/admin/templates/wearerEndListItem.hbs">
+    <entry file="file://$PROJECT_DIR$/backbone/app/scripts/modules/admin/views/WearerChangeListItem.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="105">
-          <caret line="7" column="123" selection-start-line="7" selection-start-column="123" selection-end-line="7" selection-end-column="123" />
-          <folding />
+        <state relative-caret-position="315">
+          <caret line="54" column="73" selection-start-line="54" selection-start-column="73" selection-end-line="54" selection-end-column="73" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/backbone/app/scripts/modules/admin/views/WearerChangeOrderCondition.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="235">
+          <caret line="454" column="50" selection-start-line="454" selection-start-column="50" selection-end-line="454" selection-end-column="50" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/app/wearer_change.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="178">
-          <caret line="268" column="57" selection-start-line="268" selection-start-column="57" selection-end-line="270" selection-end-column="59" />
-          <folding />
+        <state relative-caret-position="1050">
+          <caret line="661" column="62" selection-start-line="661" selection-start-column="51" selection-end-line="661" selection-end-column="62" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/backbone/app/scripts/modules/admin/templates/sectionConditionOrder.hbs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="75">
+          <caret line="5" column="21" selection-start-line="5" selection-start-column="21" selection-end-line="5" selection-end-column="21" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/backbone/app/scripts/app.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="347">
+          <caret line="92" column="20" selection-start-line="92" selection-start-column="20" selection-end-line="92" selection-end-column="20" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/app/wearer_end.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="238">
-          <caret line="337" column="63" selection-start-line="337" selection-start-column="63" selection-end-line="337" selection-end-column="63" />
-          <folding />
+        <state relative-caret-position="199">
+          <caret line="497" column="20" selection-start-line="497" selection-start-column="20" selection-end-line="497" selection-end-column="20" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/wearer.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-8844">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/backbone/app/scripts/modules/admin/templates/wearerInput.hbs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/backbone/app/scripts/modules/admin/templates/agreementNoConditionInput.hbs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/backbone/app/scripts/modules/admin/views/WearerInput.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="220">
+          <caret line="56" column="49" selection-start-line="56" selection-start-column="44" selection-end-line="56" selection-end-column="49" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/backbone/app/scripts/modules/admin/views/WearerInputCondition.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="216">
+          <caret line="290" column="29" selection-start-line="290" selection-start-column="24" selection-end-line="290" selection-end-column="29" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/backbone/app/scripts/modules/admin/controllers/WearerInput.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1905">
+          <caret line="135" column="67" selection-start-line="135" selection-start-column="57" selection-end-line="135" selection-end-column="67" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/backbone/app/scripts/modules/admin/templates/wearerSearchListItem.hbs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/backbone/app/scripts/modules/admin/templates/wearerEndOrderList.hbs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-249">
+          <caret line="33" column="14" selection-start-line="33" selection-start-column="14" selection-end-line="33" selection-end-column="14" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/wearer_search.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1116">
+          <caret line="361" column="39" selection-start-line="361" selection-start-column="24" selection-end-line="361" selection-end-column="39" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/wearer_input.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="184">
+          <caret line="51" column="21" selection-start-line="51" selection-start-column="21" selection-end-line="51" selection-end-column="21" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/wearer_order.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="208">
+          <caret line="808" column="29" selection-start-line="808" selection-start-column="14" selection-end-line="808" selection-end-column="29" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/backbone/app/scripts/modules/admin/views/WearerEndListList.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="108">
+          <caret line="9" column="38" selection-start-line="9" selection-start-column="38" selection-end-line="9" selection-end-column="38" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/backbone/app/scripts/modules/admin/views/WearerEndOrderList.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="123">
+          <caret line="51" column="46" selection-start-line="51" selection-start-column="46" selection-end-line="51" selection-end-column="46" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/backbone/app/scripts/modules/admin/views/AgreementNoConditionInput.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="392">
+          <caret line="44" column="62" selection-start-line="44" selection-start-column="54" selection-end-line="44" selection-end-column="62" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/backbone/app/scripts/modules/admin/views/WearerEndOrder.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="360">
+          <caret line="24" column="32" selection-start-line="24" selection-start-column="32" selection-end-line="24" selection-end-column="32" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/backbone/app/scripts/modules/admin/views/WearerChange.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-106">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/backbone/app/scripts/modules/admin/views/WearerEndListItem.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-765">
+          <caret line="5" column="18" selection-start-line="5" selection-start-column="18" selection-end-line="5" selection-end-column="18" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/backbone/app/scripts/modules/admin/views/WearerEditCondition.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="585">
+          <caret line="66" column="22" selection-start-line="66" selection-start-column="22" selection-end-line="66" selection-end-column="22" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/backbone/app/scripts/modules/admin/views/WearerEnd.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="254">
+          <caret line="17" column="31" selection-start-line="17" selection-start-column="17" selection-end-line="17" selection-end-column="31" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/backbone/app/scripts/modules/admin/views/SectionConditionOrder.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="134">
+          <caret line="31" column="55" selection-start-line="31" selection-start-column="49" selection-end-line="31" selection-end-column="55" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/backbone/app/scripts/modules/admin/views/SectionConditionChange.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/backbone/app/scripts/modules/admin/views/SectionCondition.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="465">
+          <caret line="47" column="26" selection-start-line="47" selection-start-column="26" selection-end-line="47" selection-end-column="26" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/backbone/app/scripts/modules/admin/views/WearerChangeCondition.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="475">
+          <caret line="88" column="53" selection-start-line="88" selection-start-column="40" selection-end-line="88" selection-end-column="53" />
         </state>
       </provider>
     </entry>
@@ -1151,290 +1289,87 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/backbone/app/scripts/modules/admin/templates/wearerChangeOrderCondition.hbs">
+    <entry file="file://$PROJECT_DIR$/backbone/app/scripts/modules/admin/views/WearerEndCondition.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="270">
-          <caret line="21" column="7" selection-start-line="21" selection-start-column="7" selection-end-line="21" selection-end-column="7" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/backbone/app/scripts/modules/admin/templates/wearerOrderCondition.hbs">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2166">
-          <caret line="152" column="18" selection-start-line="85" selection-start-column="42" selection-end-line="152" selection-end-column="18" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/backbone/app/scripts/modules/admin/views/WearerOtherListList.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="300">
-          <caret line="46" column="39" selection-start-line="46" selection-start-column="28" selection-end-line="46" selection-end-column="39" />
-          <folding>
-            <marker date="1476445627000" expanded="true" signature="1404:1419" ph="..." />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/backbone/app/scripts/modules/admin/views/WearerOrderCondition.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="30">
-          <caret line="20" column="14" selection-start-line="20" selection-start-column="14" selection-end-line="55" selection-end-column="14" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/backbone/app/scripts/modules/admin/controllers/WearerOrder.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="449">
-          <caret line="128" column="77" selection-start-line="128" selection-start-column="77" selection-end-line="129" selection-end-column="77" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/backbone/app/scripts/modules/admin/templates/wearerChangeOrderList.hbs">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="180">
-          <caret line="25" column="36" selection-start-line="25" selection-start-column="36" selection-end-line="25" selection-end-column="36" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/backbone/app/scripts/modules/admin/views/WearerOther.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/backbone/app/scripts/modules/admin/templates/wearerInputCondition.hbs">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="480">
-          <caret line="47" column="47" selection-start-line="42" selection-start-column="18" selection-end-line="53" selection-end-column="18" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/backbone/app/scripts/modules/admin/WearerEnd.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/backbone/app/scripts/modules/admin/controllers/WearerEnd.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="74">
-          <caret line="48" column="76" selection-start-line="48" selection-start-column="76" selection-end-line="48" selection-end-column="76" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/backbone/app/scripts/modules/admin/templates/wearerEndListList.hbs">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="30">
-          <caret line="2" column="33" selection-start-line="2" selection-start-column="33" selection-end-line="2" selection-end-column="33" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/backbone/app/scripts/modules/admin/views/WearerEndListList.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="165">
-          <caret line="11" column="59" selection-start-line="11" selection-start-column="42" selection-end-line="11" selection-end-column="59" />
-          <folding>
-            <marker date="1476949837000" expanded="true" signature="1385:1400" ph="..." />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/public/index.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="320">
-          <caret line="65" column="40" selection-start-line="65" selection-start-column="40" selection-end-line="65" selection-end-column="40" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/backbone/app/scripts/modules/admin/templates/wearerEndOrderList.hbs">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="135">
-          <caret line="9" column="8" selection-start-line="9" selection-start-column="8" selection-end-line="9" selection-end-column="8" />
+        <state relative-caret-position="1035">
+          <caret line="69" column="65" selection-start-line="69" selection-start-column="64" selection-end-line="69" selection-end-column="65" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/backbone/app/scripts/modules/admin/views/WearerEndOrderCondition.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1080">
-          <caret line="72" column="58" selection-start-line="72" selection-start-column="58" selection-end-line="72" selection-end-column="58" />
+        <state relative-caret-position="15">
+          <caret line="97" column="0" selection-start-line="97" selection-start-column="0" selection-end-line="97" selection-end-column="0" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/backbone/app/scripts/modules/admin/controllers/WearerEndOrder.js">
+    <entry file="file://$PROJECT_DIR$/backbone/app/scripts/modules/admin/views/WearerOrderCondition.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="314">
-          <caret line="45" column="72" selection-start-line="45" selection-start-column="72" selection-end-line="45" selection-end-column="72" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/wearer_order.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="270">
-          <caret line="120" column="0" selection-start-line="120" selection-start-column="0" selection-end-line="191" selection-end-column="3" />
-          <folding>
-            <marker date="1476946334000" expanded="true" signature="45883:45907" ph="INSERT INTO t_order_tran... " />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/backbone/app/scripts/modules/admin/views/WearerInputCondition.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="105">
-          <caret line="45" column="32" selection-start-line="45" selection-start-column="32" selection-end-line="66" selection-end-column="19" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/backbone/app/scripts/modules/admin/views/WearerEndOrderList.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="345">
-          <caret line="23" column="56" selection-start-line="23" selection-start-column="56" selection-end-line="23" selection-end-column="56" />
-          <folding>
-            <marker date="1476942003000" expanded="true" signature="1068:1083" ph="..." />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/backbone/app/scripts/modules/admin/views/ReasonKbnConditionOrder.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="180">
-          <caret line="18" column="48" selection-start-line="18" selection-start-column="48" selection-end-line="24" selection-end-column="17" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/backbone/app/scripts/modules/admin/views/WearerEndCondition.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/backbone/app/scripts/modules/admin/views/WearerOrderListList.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-481">
-          <caret line="14" column="66" selection-start-line="0" selection-start-column="0" selection-end-line="86" selection-end-column="0" />
-          <folding>
-            <marker date="1475909115000" expanded="true" signature="1069:1084" ph="..." />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/backbone/app/scripts/modules/admin/templates/sectionConditionOrder.hbs">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="30">
-          <caret line="2" column="69" selection-start-line="2" selection-start-column="69" selection-end-line="2" selection-end-column="69" />
+        <state relative-caret-position="1380">
+          <caret line="92" column="62" selection-start-line="92" selection-start-column="62" selection-end-line="92" selection-end-column="62" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/app/wearer_end_order.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="111">
-          <caret line="170" column="0" selection-start-line="170" selection-start-column="0" selection-end-line="170" selection-end-column="0" />
+        <state relative-caret-position="4260">
+          <caret line="288" column="29" selection-start-line="288" selection-start-column="29" selection-end-line="288" selection-end-column="29" />
           <folding>
-            <marker date="1476953688000" expanded="true" signature="45815:45839" ph="INSERT INTO t_order_tran... " />
+            <marker date="1477208293000" expanded="true" signature="43981:44005" ph="INSERT INTO t_order_tran... " />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/backbone/app/scripts/modules/admin/views/WearerEndListItem.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="60">
-          <caret line="19" column="48" selection-start-line="19" selection-start-column="48" selection-end-line="19" selection-end-column="48" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/backbone/app/scripts/modules/admin/templates/jobTypeCondition.hbs">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/backbone/app/scripts/modules/admin/templates/jobTypeZaikoCondition.hbs">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/backbone/app/scripts/modules/admin/templates/jobTypeConditionOrder.hbs">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="45">
-          <caret line="3" column="112" selection-start-line="3" selection-start-column="112" selection-end-line="3" selection-end-column="112" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/backbone/app/scripts/modules/admin/views/WearerSearchListItem.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="540">
-          <caret line="36" column="61" selection-start-line="36" selection-start-column="61" selection-end-line="36" selection-end-column="61" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/backbone/app/scripts/modules/admin/views/SectionConditionOrder.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="240">
-          <caret line="28" column="48" selection-start-line="28" selection-start-column="48" selection-end-line="34" selection-end-column="17" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/backbone/app/scripts/modules/admin/templates/jobTypeConditionChange.hbs">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/backbone/app/scripts/modules/admin/views/JobTypeConditionOrder.js">
+    <entry file="file://$PROJECT_DIR$/backbone/app/scripts/modules/admin/templates/wearerOrderCondition.hbs">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="375">
-          <caret line="33" column="55" selection-start-line="33" selection-start-column="49" selection-end-line="33" selection-end-column="55" />
+          <caret line="25" column="8" selection-start-line="25" selection-start-column="8" selection-end-line="25" selection-end-column="8" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/backbone/app/scripts/modules/admin/templates/wearerEndOrderCondition.hbs">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="381">
-          <caret line="47" column="40" selection-start-line="47" selection-start-column="32" selection-end-line="47" selection-end-column="40" />
+        <state relative-caret-position="165">
+          <caret line="11" column="71" selection-start-line="11" selection-start-column="60" selection-end-line="11" selection-end-column="71" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/backbone/app/scripts/app.js">
+    <entry file="file://$PROJECT_DIR$/backbone/app/scripts/modules/admin/controllers/WearerEndOrder.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="190">
-          <caret line="196" column="38" selection-start-line="196" selection-start-column="38" selection-end-line="196" selection-end-column="38" />
+        <state relative-caret-position="180">
+          <caret line="12" column="28" selection-start-line="12" selection-start-column="28" selection-end-line="12" selection-end-column="28" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/backbone/app/scripts/modules/admin/controllers/WearerEnd.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="3795">
+          <caret line="253" column="16" selection-start-line="253" selection-start-column="16" selection-end-line="253" selection-end-column="16" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/backbone/app/scripts/modules/admin/templates/wearerEnd.hbs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="135">
+          <caret line="9" column="27" selection-start-line="9" selection-start-column="12" selection-end-line="9" selection-end-column="27" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/backbone/app/scripts/modules/admin/controllers/WearerChange.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="585">
+          <caret line="39" column="110" selection-start-line="39" selection-start-column="110" selection-end-line="40" selection-end-column="105" />
           <folding />
         </state>
       </provider>

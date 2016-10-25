@@ -294,10 +294,10 @@ $app->post('/wearer_search/req_param', function ()use($app){
 
     // パラメータ取得
     $cond = $params['data'];
-    $wearer_chg_post = $app->session->get("wearer_chg_post");
+    $wearer_odr_post = $app->session->get("wearer_odr_post");
 
-    if(isset($wearer_chg_post['order_reason_kbn'])){
-        $order_reason_kbn = $wearer_chg_post["order_reason_kbn"];
+    if(isset($wearer_odr_post['order_reason_kbn'])){
+        $order_reason_kbn = $wearer_odr_post["order_reason_kbn"];
 
     }elseif(isset($cond["order_reason_kbn"])){
         $order_reason_kbn = $cond["order_reason_kbn"];
@@ -306,13 +306,13 @@ $app->post('/wearer_search/req_param', function ()use($app){
     }
     if(isset($cond["order_tran_flg"])){
         $order_tran_flg = $cond["order_tran_flg"];
-    }elseif(isset($wearer_chg_post['order_tran_flg'])){
-        $order_tran_flg = $wearer_chg_post["order_tran_flg"];
+    }elseif(isset($wearer_odr_post['order_tran_flg'])){
+        $order_tran_flg = $wearer_odr_post["order_tran_flg"];
     }else{
         $order_tran_flg = '0';
     }
-    if(isset($wearer_chg_post['wearer_tran_flg'])){
-        $wearer_tran_flg = $wearer_chg_post["wearer_tran_flg"];
+    if(isset($wearer_odr_post['wearer_tran_flg'])){
+        $wearer_tran_flg = $wearer_odr_post["wearer_tran_flg"];
 
     }elseif(isset($cond["wearer_tran_flg"])){
         $wearer_tran_flg = $cond["wearer_tran_flg"];
@@ -347,19 +347,19 @@ $app->post('/wearer_search/req_param', function ()use($app){
     if(!isset($cond["werer_name_kana"])){
         $cond["werer_name_kana"] = '';
     }
-    if(!isset($cond["m_wearer_std_comb_hkey"])&&!isset($wearer_chg_post['m_wearer_std_comb_hkey'])){
+    if(!isset($cond["m_wearer_std_comb_hkey"])&&!isset($wearer_odr_post['m_wearer_std_comb_hkey'])){
         $cond["m_wearer_std_comb_hkey"] = '';
-    }elseif($wearer_chg_post['m_wearer_std_comb_hkey']){
-        $cond["m_wearer_std_comb_hkey"] = $wearer_chg_post['m_wearer_std_comb_hkey'];
+    }elseif($wearer_odr_post['m_wearer_std_comb_hkey']){
+        $cond["m_wearer_std_comb_hkey"] = $wearer_odr_post['m_wearer_std_comb_hkey'];
     }else{
         $cond["m_wearer_std_comb_hkey"] = $cond["m_wearer_std_comb_hkey"];
     }
 
     if(!isset($cond["order_req_no"])){
-        $cond["order_req_no"] = $wearer_chg_post['order_req_no'];
+        $cond["order_req_no"] = $wearer_odr_post['order_req_no'];
     }
     // POSTパラメータのセッション格納
-    $app->session->set("wearer_chg_post", array(
+    $app->session->set("wearer_odr_post", array(
         'rntl_cont_no' => $cond["rntl_cont_no"],
         'werer_cd' => $cond["werer_cd"],
         'werer_name' => $cond["werer_name"],

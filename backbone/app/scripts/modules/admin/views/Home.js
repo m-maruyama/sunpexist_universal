@@ -10,7 +10,8 @@ define([
 			model: new Backbone.Model(),
 			ui: {
 				"text_1": ".text_1",
-					"wearer_input": "#wearer_input"
+					"wearer_input": "#wearer_input",
+					"wearer_end": "#wearer_end"
 			},
 			bindings: {
 				'.text_1': 'text_1'
@@ -39,13 +40,20 @@ define([
 
 			events: {
 				'click @ui.wearer_input': function(e){
-							var $form = $('<form/>', {'action': '/universal/wearer_input.html', 'method': 'post'});
+					var $form = $('<form/>', {'action': '/universal/wearer_input.html', 'method': 'post'});
 
-							window.sessionStorage.setItem('referrer', 'home');
-							$form.appendTo(document.body);
-							$form.submit();
-						}
+					window.sessionStorage.setItem('referrer', 'home');
+					$form.appendTo(document.body);
+					$form.submit();
+				},
+				'click @ui.wearer_end': function(e){
+					var $form = $('<form/>', {'action': '/universal/wearer_end.html', 'method': 'post'});
+
+					window.sessionStorage.setItem('referrer', 'home');
+					$form.appendTo(document.body);
+					$form.submit();
 				}
+			},
 		});
 	});
 });

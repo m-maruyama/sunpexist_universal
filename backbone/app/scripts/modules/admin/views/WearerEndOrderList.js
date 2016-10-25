@@ -48,11 +48,11 @@ define([
 				var data = {
 					'job_type':job_type
 				}
-				// 発注送信一覧、
+				// 返却商品一覧、
 				var modelForUpdate = this.model;
-				modelForUpdate.url = App.api.WO0013;
+				modelForUpdate.url = App.api.WN0015;
 				var cond = {
-					"scr": '発注送信一覧',
+					"scr": '返却商品一覧',
 					"data": data,
 				};
 				modelForUpdate.fetchMx({

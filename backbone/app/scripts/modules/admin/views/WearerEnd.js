@@ -24,7 +24,7 @@ define([
 				var modelForUpdate = this.model;
 					modelForUpdate.url = App.api.CM0040;
 				var cond = {
-					"scr": '発注状況照会'
+					"scr": '貸与終了'
 				};
 					modelForUpdate.fetchMx({
 						data:cond,

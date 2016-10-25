@@ -359,7 +359,8 @@ $app->post('/wearer_end/search', function ()use($app){
             $t_order_tran_cnt = $result_obj["\0*\0_count"];
 
             // チェックスタート
-            $list['btnPattern'] = "";
+            $list['order_reason_kbn'] = '';
+            $list['order_req_no'] = '';
             $patarn_flg = true;
             if (!empty($t_order_tran_cnt)) {
                 $paginator_model = new PaginatorModel(
@@ -403,9 +404,8 @@ $app->post('/wearer_end/search', function ()use($app){
                         $list['wearer_end_red'] = "[済]";
                         $list['disabled'] = "disabled";
                         $list['return_reciept_button'] = "返却伝票ダウンロード";
-                    } elseif ($order_sts_kbn != '2' && $snd_kbn == '1') {
-                        //パターンD： 発注情報トラン．発注状況区分 = 貸与終了以外のデータがある場合、かつ、
-                        //その発注の送信区分 = 送信済の場合、ボタンの文言は「貸与終了」で非活性表示する。
+                    } elseif ($result->as_snd_kbn == '9') {
+                        //パターンD： 着用者基本マスタトラン.送信区分=処理中のデータがある場合、ボタンの文言は「貸与終了」で非活性表示する。
                         $list['wearer_end_button'] = "貸与終了";
                         $list['disabled'] = "disabled";
                     }
@@ -443,14 +443,123 @@ $app->post('/wearer_end/search', function ()use($app){
     $json_list['list'] = $all_list;
     echo json_encode($json_list);
 });
-/*
- * 着用者情報セッション登録
+
+
+/**
+ * 職種変更または異動
+ * 発注パターンNGチェック＆セッション保持
  */
-$app->post('/wearer_end/session', function ()use($app){
-    $json_list = array();
+$app->post('/wearer_end/order_check', function ()use($app){
     $params = json_decode(file_get_contents("php://input"), true);
+
     // アカウントセッション取得
     $auth = $app->session->get("auth");
 
+    // パラメータ取得
+    $cond = $params['data'];
+
+    $json_list = array();
+
+    $json_list = $cond;
+    // エラーメッセージ、エラーコード 0:正常 その他:要因エラー
+    $json_list["err_cd"] = '0';
+    $json_list["err_msg"] = '';
+
+    //※発注情報トラン参照
+    $query_list = array();
+    array_push($query_list, "corporate_id = '".$auth['corporate_id']."'");
+    array_push($query_list, "rntl_cont_no = '".$cond['rntl_cont_no']."'");
+    array_push($query_list, "werer_cd = '".$cond['werer_cd']."'");
+    array_push($query_list, "rntl_sect_cd = '".$cond['rntl_sect_cd']."'");
+    array_push($query_list, "job_type_cd = '".$cond['job_type_cd']."'");
+    $query = implode(' AND ', $query_list);
+
+    $arg_str = "";
+    $arg_str = "SELECT ";
+    $arg_str .= "*";
+    $arg_str .= " FROM ";
+    $arg_str .= "t_order_tran";
+    $arg_str .= " WHERE ";
+    $arg_str .= $query;
+    $arg_str .= " ORDER BY upd_date DESC";
+    $t_order_tran = new TOrderTran();
+    $results = new Resultset(NULL, $t_order_tran, $t_order_tran->getReadConnection()->query($arg_str));
+    $result_obj = (array)$results;
+    $results_cnt = $result_obj["\0*\0_count"];
+
+    if ($results_cnt > 0) {
+        $json_list["err_cd"] = "1";
+        $error_msg = "既に発注が入力されています。".PHP_EOL."貸与終了を行う場合は発注をキャンセルしてください。";
+        $json_list["err_msg"] = $error_msg;
+        echo json_encode($json_list);
+        return;
+    }
+
+    $wearer_end_post = $app->session->get("wearer_end_post");
+
+    if(isset($wearer_end_post['order_reason_kbn'])){
+        $order_reason_kbn = $wearer_end_post["order_reason_kbn"];
+
+    }elseif(isset($cond["order_reason_kbn"])){
+        $order_reason_kbn = $cond["order_reason_kbn"];
+    }else{
+        $order_reason_kbn = '7';
+    }
+    if(isset($cond["order_tran_flg"])){
+        $order_tran_flg = $cond["order_tran_flg"];
+    }elseif(isset($wearer_end_post['order_tran_flg'])){
+        $order_tran_flg = $wearer_end_post["order_tran_flg"];
+    }else{
+        $order_tran_flg = '0';
+    }
+    if(isset($wearer_end_post['wearer_tran_flg'])){
+        $wearer_tran_flg = $wearer_end_post["wearer_tran_flg"];
+
+    }elseif(isset($cond["wearer_tran_flg"])){
+        $wearer_tran_flg = $cond["wearer_tran_flg"];
+    }else{
+        $wearer_tran_flg = '0';
+    }
+
+    if(!$cond['ship_to_cd']){
+        // アカウントセッション取得
+        $auth = $app->session->get("auth");
+        //拠点のマスタチェック
+        $query_list = array();
+        // 部門マスタ．企業ID　＝　ログインしているアカウントの企業ID　AND
+        array_push($query_list,"corporate_id = '".$auth['corporate_id']."'");
+        // 部門マスタ．レンタル契約No.　＝　画面で選択されている契約No.
+        array_push($query_list,"rntl_cont_no = '".$cond['rntl_cont_no']."'");
+        // 部門マスタ．レンタル部門コード　＝　画面で選択されている拠点
+        array_push($query_list,"rntl_sect_cd = '".$cond['rntl_sect_cd']."'");
+
+        //sql文字列を' AND 'で結合
+        $query = implode(' AND ', $query_list);
+        //--- クエリー実行・取得 ---//
+        $m_section = MSection::find(array(
+            'conditions' => $query
+        ));
+        $cond['ship_to_cd'] = $m_section[0]->std_ship_to_cd;
+        $cond['ship_to_brnch_cd'] = $m_section[0]->std_ship_to_brnch_cd;
+    }
+
+    // POSTパラメータのセッション格納
+    $app->session->set("wearer_end_post", array(
+        'rntl_cont_no' => $cond["rntl_cont_no"],
+        'werer_cd' => $cond["werer_cd"],
+        'cster_emply_cd' => $cond["cster_emply_cd"],
+        'sex_kbn' => $cond["sex_kbn"],
+        'rntl_sect_cd' => $cond["rntl_sect_cd"],
+        'job_type_cd' => $cond["job_type_cd"],
+        'ship_to_cd' => $cond["ship_to_cd"],
+        'ship_to_brnch_cd' => $cond["ship_to_brnch_cd"],
+        'order_reason_kbn' => $order_reason_kbn,
+        'order_tran_flg' => $order_tran_flg,
+        'wearer_tran_flg' => $wearer_tran_flg,
+        'order_req_no' => $cond["order_req_no"],
+        'return_req_no' => $cond["return_req_no"],
+    ));
+
     echo json_encode($json_list);
 });
+

@@ -56,7 +56,6 @@ define([
 			},
 			onRender: function() {
 				var that = this;
-
 				// 着用者情報(着用者名、(読み仮名)、社員コード、発令日)
 				var modelForUpdate = this.model;
 				modelForUpdate.url = App.api.WO0010;
@@ -90,8 +89,11 @@ define([
 							flg = true;
 							that.ui.delete.val(res_list['order_req_no']);
 						}
+						console.log(res_list['rntl_cont_no']);
+						console.log(res_list['rntl_sect_cd']);
 						// 入力完了、発注送信ボタン表示/非表示制御
 						var data = {
+							'rntl_cont_no': res_list['rntl_cont_no'],
 							'rntl_sect_cd': res_list['rntl_sect_cd']
 						};
 						modelForUpdate.url = App.api.CM0140;
