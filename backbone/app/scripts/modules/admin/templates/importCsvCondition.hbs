@@ -1,43 +1,40 @@
-
-	  <!-- start 本文エリア -->
-		<div class="row">
-			<div id="overlay">
+<!-- start 本文エリア -->
+<div class="row">
+	<div id="overlay"></div>
+	<h1>一括データ取込（アップロード）</h1>
+	<form id='csv' method="post" action="/import_csv" name="csv_form" enctype="multipart/form-data" class="form-horizontal">
+		<div class="form-group">
+			<label class="col-md-2 control-label" for="no">
+				<a href="#" id="sample_download">▶アップロードサンプル</a>
+			</label>
+		</div>
+		<div class="form-group">
+				<div class="agreement_no"></div>
+		</div>
+		<div class="form-group">
+			<label class="col-md-2 control-label" for="no">取込ファイル</label>
+			<div class="col-md-6">
+				<input id="fake_input_file" onclick="$('#file_input').click();" readonly="readonly" type="text" value="" class="form-control input-sm" maxlength="12"  style='background-color: #fff'>
+				<input id="file_input" onchange="(files[0])?$('#fake_input_file').val(files[0].name):$('#fake_input_file').val('');" style="display: none;" class="form-control input-sm" type="file" name="file">
 			</div>
-			<h1>CSV取込</h1>
-
-            <div class="errors"></div>
-			<!-- start フォーム -->
-			<form id='csv' method="post" action="/import_csv" name="csv_form" enctype="multipart/form-data" class="form-horizontal">
-                <!-- 契約No -->
-                <div class="form-group">
-                    <div class="agreement_no"></div>
-                </div>
-				<div class="form-group">
-					<label class="col-md-2 control-label" for="no">取込ファイル</label>
-					<div class="col-md-6">
-					<input id="fake_input_file" onclick="$('#file_input').click();" readonly="readonly" type="text" value="" class="form-control input-sm" maxlength="12"  style='background-color: #fff'>
-					<input id="file_input" onchange="$('#fake_input_file').val(files[0].name)" style="display: none;" class="form-control input-sm" type="file" name="file">
-					</div>
-					<div class="col-md-2">
-					<input onclick="$('#file_input').click();" class="btn btn-default btn-sm btn-block open"　type="button" value="参 照" id="open">
-					</div>
-				</div>
-						<div id="loading">
-							<!-- <img src="loading.gif" > -->
-						</div>
-				<div class="form-group">
-					<div class="col-md-2 col-md-push-8">
-						<input type="button" class="btn btn-primary btn-sm btn-block import_csv" value="取 込" id="import_csv" onclick="window.sessionStorage.setItem('status', 'import_start');">
-					</div>
-				</div>
-			</form>
-            <iframe id="my_iframe" name="form_response"></iframe>
-
-            <!-- end フォーム -->
-			<br>
-			<br>
-			<br>
-            <hr>
-
-            <script type="text/javascript">
-            </script>
+			<div class="col-md-2">
+				<input type="button" onclick="$('#file_input').click();" class="btn btn-default btn-sm btn-block open" value="参 照" id="open">
+			</div>
+		</div>
+		<div id="loading">
+		</div>
+		<div class="form-group">
+			<div class="col-md-2 col-md-push-8">
+				<input type="button" class="btn btn-primary btn-sm btn-block import_csv" value="取 込" id="import_csv" onclick="window.sessionStorage.setItem('status', 'import_start');">
+			</div>
+		</div>
+	</form>
+	<iframe id="my_iframe" name="form_response" style="display:none;"></iframe>
+	<div class="errorMessage"  style="display:none; padding-bottom:10px;">
+		<span><font color="red" size="3">▼アップロードエラー</font></span>
+	</div>
+	<div class="errors"></div>
+	<br>
+	<br>
+	<br>
+	<hr>

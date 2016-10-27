@@ -1320,3 +1320,42 @@ $app->post('/btn_possible_chk', function ()use($app) {
   //ChromePhp::LOG($json_list);
   echo json_encode($json_list);
 });
+
+/*
+ * 共通系ダウンロード機能
+ *
+ * @param dl_type
+ * 1: 一括データ取込画面　サンプルダウンロード
+ * 2: ホーム画面　ドキュメント（運用マニュアル）
+ * 3: ホーム画面　ドキュメント（特寸サイズ依頼書）
+ *
+ */
+$app->post('/common_download', function ()use($app) {
+  ini_set('max_execution_time', 0);
+  ini_set('memory_limit', '500M');
+
+  $params = json_decode($_POST['data'], true);
+
+  // アカウントセッション
+  $auth = $app->session->get('auth');
+  //ChromePhp::LOG($auth);
+
+  // フロントパラメータ
+  $cond = $params['data'];
+  //ChromePhp::LOG($cond);
+
+  $json_list = array();
+
+  //--用途により読み込み先パスの変更--//
+  // 1: 一括データ取込画面　サンプルダウンロード
+  if ($cond["dl_type"] == "1") {
+    $filepath = APP_PATH.COMMON_PASS.$auth["corporate_id"]."/".IMPORT_SAMPLE_FILE;
+    $filename = IMPORT_SAMPLE_FILE;
+  }
+
+  header('Content-Type: application/force-download');
+  header('Content-Length: '.filesize($filepath));
+  header('Content-Disposition: attachment; filename="'.$filename.'"');
+  readfile($filepath);
+  exit;
+});

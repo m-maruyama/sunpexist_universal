@@ -16,6 +16,7 @@ $app->post('/wearer_other/search', function ()use($app){
 
   // アカウントセッション取得
   $auth = $app->session->get("auth");
+  //ChromePhp::LOG($auth);
 
   // フロント側パラメータ
   $cond = $params['cond'];

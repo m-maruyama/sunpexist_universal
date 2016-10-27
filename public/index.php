@@ -21,6 +21,11 @@ try {
      */
     include APP_PATH.'/app/config/services.php';
 
+    /**
+     * Read define.
+     */
+    include APP_PATH.'/app/config/define.php';
+
     /*
      * Starting the application
     */

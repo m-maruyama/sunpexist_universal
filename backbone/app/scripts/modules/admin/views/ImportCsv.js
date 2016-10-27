@@ -12,8 +12,7 @@ define([
 				"condition": ".condition"
 			},
 			onRender: function() {
-			},
-
+			}
 		});
 	});
 });
