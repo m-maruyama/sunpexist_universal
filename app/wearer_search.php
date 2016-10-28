@@ -72,11 +72,11 @@ $app->post('/wearer_search/search', function ()use($app){
     $arg_str .= "m_wearer_std_tran.snd_kbn as as_snd_kbn,";
     $arg_str .= "m_wearer_std_tran.appointment_ymd as as_appointment_ymd,";
     $arg_str .= "m_wearer_std_tran.resfl_ymd as as_resfl_ymd,";
+    $arg_str .= "m_wearer_std_tran.job_type_cd as as_job_type_cd,";
     $arg_str .= "t_order_tran.order_reason_kbn as as_order_reason_kbn,";
     $arg_str .= "t_order_tran.order_req_no as as_order_req_no,";
     $arg_str .= "m_section.rntl_sect_name as as_rntl_sect_name,";
-    $arg_str .= "m_job_type.job_type_name as as_job_type_name,";
-    $arg_str .= "m_job_type.job_type_cd as as_job_type_cd";
+    $arg_str .= "m_job_type.job_type_name as as_job_type_name";
     $arg_str .= " FROM m_wearer_std_tran LEFT JOIN t_order_tran";
     $arg_str .= " ON m_wearer_std_tran.m_wearer_std_comb_hkey = t_order_tran.m_wearer_std_comb_hkey";
     $arg_str .= " INNER JOIN m_section";

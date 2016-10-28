@@ -205,6 +205,9 @@ define([
 			"WN0014": host + "/wearer_end_order_info",
 			"WN0015": host + "/wearer_end_order_list",
 			"WN0016": host + "/wearer_end/order_check",
+			"WN0017": host + "/wearer_end_order_insert",
+			"WN0018": host + "/wearer_end_order_delete",
+			"WN0019": host + "/wearer_end_order_check",
 			"WC0010": host + "/wearer_change/search",
 			"WC0011": host + "/wearer_change/req_param",
 			"WC0012": host + "/agreement_no_change",
@@ -241,6 +244,7 @@ define([
 			"WO0013": host + '/wearer_order_list',
 			"WO0014": host + '/wearer_order_insert',
 			"WO0015": host + '/wearer_order_delete',
+			"WO0016": host + '/job_type_order',
 
 			"CM9010": host + "/api/CM9010"
 		};

@@ -51,7 +51,6 @@ $app->post('/agreement_no_input', function () use ($app) {
     if($referrer>-1){
         // 前画面セッション取得
         $wearer_odr_post = $app->session->get("wearer_odr_post");
-        ChromePhp::LOG($wearer_odr_post);
         foreach ($results as $result) {
             $list['rntl_cont_no'] = $result->mContract->rntl_cont_no;
             $list['rntl_cont_name'] = $result->mContract->rntl_cont_name;

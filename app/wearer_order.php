@@ -18,7 +18,6 @@ $app->post('/reason_kbn_order', function ()use($app){
 
     // 前画面セッション取得
     $wearer_odr_post = $app->session->get("wearer_odr_post");
-    //ChromePhp::LOG($wearer_odr_post);
 
     //--発注管理単位取得--//
     $query_list = array();
@@ -150,7 +149,6 @@ $app->post('/section_order', function ()use($app){
     $results = new Resultset(null, $m_section, $m_section->getReadConnection()->query($arg_str));
     $results_array = (array) $results;
     $results_cnt = $results_array["\0*\0_count"];
-    //ChromePhp::LOG($results_cnt);
 
     if ($results_cnt > 0) {
       $paginator_model = new PaginatorModel(
@@ -211,30 +209,6 @@ $app->post('/wearer_order_info', function ()use($app){
     $json_list['order_reason_kbn'] = $wearer_odr_post['order_reason_kbn'];
     $json_list['order_tran_flg'] = $wearer_odr_post['order_tran_flg'];
     $json_list['wearer_tran_flg'] = $wearer_odr_post['wearer_tran_flg'];
-
-    // 発注枚数
-    $query_list = array();
-    array_push($query_list, "m_input_item.job_type_cd = '".$wearer_odr_post['job_type_cd']."'");
-    $query = implode(' AND ', $query_list);
-
-    $arg_str = "";
-    $arg_str = "SELECT ";
-    $arg_str .= "SUM(m_input_item.std_input_qty) as_std_input_qty";
-    $arg_str .= " FROM ";
-    $arg_str .= "m_input_item";
-    $arg_str .= " WHERE ";
-    $arg_str .= "m_input_item.job_type_cd = '".$wearer_odr_post['job_type_cd']."'";
-    $arg_str .= " GROUP BY job_type_cd";
-
-    $m_input_item = new MInputItem();
-    $results = new Resultset(NULL, $m_input_item, $m_input_item->getReadConnection()->query($arg_str));
-    $result_obj = (array)$results;
-    $results_cnt = $result_obj["\0*\0_count"];
-    foreach ($results as $result) {
-        $json_list['order_count'] = $result->as_std_input_qty;
-    }
-    // 発注枚数ここまで
-
 
     //出荷先リスト
     //--出荷先選択ボックス生成--//
@@ -450,7 +424,6 @@ $app->post('/wearer_order_list', function ()use($app){
 
     // フロントパラメータ取得
     $cond = $params['data'];
-
     //貸与パターン変更時
     if(isset($cond['job_type'])){
         $wearer_odr_post['job_type_cd'] = $cond['job_type'];
@@ -476,14 +449,14 @@ $app->post('/wearer_order_list', function ()use($app){
     $arg_str = "SELECT ";
     $arg_str .= "*";
     $arg_str .= " FROM ";
-    $arg_str .= "(SELECT distinct on (m_input_item.item_cd,m_input_item.color_cd) ";
+    $arg_str .= "(SELECT distinct on (t_order_tran.item_cd,t_order_tran.color_cd) ";
     $arg_str .= "m_input_item.job_type_item_name as as_item_name,";
-    $arg_str .= "m_input_item.item_cd as as_item_cd,";
-    $arg_str .= "m_input_item.color_cd as as_color_cd,";
+    $arg_str .= "t_order_tran.item_cd as as_item_cd,";
+    $arg_str .= "t_order_tran.color_cd as as_color_cd,";
     $arg_str .= "m_input_item.std_input_qty as as_std_input_qty,";
     $arg_str .= "m_input_item.input_item_name as as_input_item_name,";
     $arg_str .= "m_input_item.size_two_cd as as_size_two_cd,";
-    $arg_str .= "m_input_item.job_type_cd as as_job_type_cd,";
+    $arg_str .= "t_order_tran.job_type_cd as as_job_type_cd,";
     $arg_str .= "m_input_item.job_type_item_cd as as_job_type_item_cd,";
     $arg_str .= "t_order_tran.size_cd as as_size_cd_tran,";
     $arg_str .= "t_order_tran.order_qty as as_order_qty_tran";
@@ -503,7 +476,6 @@ $app->post('/wearer_order_list', function ()use($app){
         as_input_item_name,as_size_two_cd,as_input_item_name,as_size_cd_tran,as_order_qty_tran,as_job_type_cd,as_job_type_item_cd";
     $arg_str .= ") as distinct_table";
     $arg_str .= " ORDER BY as_item_cd,as_color_cd ASC";
-
     $m_weare_std_tran= new MWearerStdTran();
     $results = new Resultset(null, $m_weare_std_tran, $m_weare_std_tran->getReadConnection()->query($arg_str));
     $result_obj = (array)$results;
@@ -521,6 +493,7 @@ $app->post('/wearer_order_list', function ()use($app){
         $paginator = $paginator_model->getPaginate();
         $results = $paginator->items;
         $t_order_tran_flg = true;
+        ChromePhp::LOG($results);
     }else{
         //発注情報トランにデータが存在しない場合
         //職種マスタを参照し、「発注商品一覧」を生成する。
@@ -647,7 +620,7 @@ $app->post('/wearer_order_list', function ()use($app){
         $size_list = array();
         $size_list_to = array();
         foreach ($m_item_results as $m_item_result){
-            if( $result->as_size_cd_tran == $m_item_result->size_cd){
+            if( isset($result->as_size_cd_tran)&&$result->as_size_cd_tran == $m_item_result->size_cd){
                 $size_list['selected'] = 'selected';
             }else{
                 $size_list['selected'] = '';
@@ -680,6 +653,26 @@ $app->post('/wearer_order_list', function ()use($app){
         $list["item_and_color"] = $list['item_cd']."-".$list['color_cd'];
         array_push($all_list,$list);
     }
+    // 発注総枚数
+    $list["order_count"] = 0;
+    $cnt = 0;
+    if (!empty($all_list)) {
+        $multiples = array();
+        foreach ($all_list as $add_map) {
+            if ($add_map["choice_type"] == "2") {
+                if (in_array($add_map["item_cd"], $multiples)) {
+                    continue;
+                } else {
+                    $list["order_count"] += $add_map["std_input_qty"];
+                    array_push($multiples, $add_map["item_cd"]);
+                }
+            } else {
+                $list["order_count"] += $add_map["std_input_qty"];
+            }
+        }
+    }
+    // 発注枚数ここまで
+    $json_list['order_count'] = $list["order_count"];
     $json_list["tran_flg"] = $t_order_tran_flg;
     $json_list["add_list_cnt"] = count($all_list);
     $json_list['list'] = $all_list;
@@ -804,24 +797,25 @@ $app->post('/wearer_order_insert', function () use ($app) {
 
     //着用者基本情報トラン
     $m_wearer_std_tran = new MWearerStdTran();
-    $m_wearer_std_tran->setTransaction($transaction);
     $now = date('Y/m/d H:i:s.sss');
     if(isset($wearer_odr_post['m_wearer_std_comb_hkey'])){
-        $for_exists = MWearerStdTran::find(array(
+        $m_wearer_std_tran = MWearerStdTran::find(array(
             'conditions' => 'm_wearer_std_comb_hkey = '."'".$wearer_odr_post['m_wearer_std_comb_hkey']."'"
         ));
     }
+    $create_flg = false;
     //--- クエリー実行・取得 ---//
-    if(isset($wearer_odr_post['m_wearer_std_comb_hkey'])&&count($for_exists)>0){
+    if(isset($wearer_odr_post['m_wearer_std_comb_hkey'])&&count($m_wearer_std_tran)>0){
+        $m_wearer_std_tran = $m_wearer_std_tran[0];
         //データを引き継いでいる場合
         $m_wearer_std_tran->werer_cd = $wearer_odr_post['werer_cd'];
         $m_wearer_std_tran->m_wearer_std_comb_hkey = $wearer_odr_post['m_wearer_std_comb_hkey'];
         $m_wearer_std_tran->corporate_id = $auth['corporate_id']; //企業ID
-        $m_wearer_std_tran->rntl_cont_no = $wearer_odr_post['rntl_cont_no']; //レンタル契約No.
         $m_wearer_std_tran->rntl_sect_cd = $cond['rntl_sect_cd']; //レンタル部門コード
-        $m_wearer_std_tran->job_type_cd = $cond['job_type'];//職種コード
+        $create_flg = true;
     }else{
         //新規登録の場合
+        $m_wearer_std_tran = new MWearerStdTran();
         $results = new Resultset(null, $m_wearer_std_tran, $m_wearer_std_tran->getReadConnection()->query("select nextval('werer_cd_seq')"));
         $m_wearer_std_tran->werer_cd = str_pad($results[0]->nextval, 10, '0', STR_PAD_LEFT); //着用者コード
         $m_wearer_std_tran->corporate_id = $auth['corporate_id']; //企業ID
@@ -848,7 +842,9 @@ $app->post('/wearer_order_insert', function () use ($app) {
         $m_wearer_std_tran->del_kbn ='0';//削除区分
         $m_wearer_std_tran->rgst_date  = $now;//登録日時
         $m_wearer_std_tran->rgst_user_id = $auth['accnt_no'];//登録ユーザーID
+        $create_flg = false;
     }
+    $m_wearer_std_tran->rntl_cont_no = $wearer_odr_post['rntl_cont_no']; //レンタル契約No.
     $m_wearer_std_tran->rntl_sect_cd = $cond['rntl_sect_cd']; //レンタル部門コード
     $m_wearer_std_tran->job_type_cd = $cond['job_type'];//職種コード
     $m_wearer_std_tran->upd_date  = $now;//更新日時
@@ -861,6 +857,36 @@ $app->post('/wearer_order_insert', function () use ($app) {
     $t_order_tran = new TOrderTran();
     $results = new Resultset(NULL, $t_order_tran, $t_order_tran->getReadConnection()->query('begin'));
     try {
+        if(!$create_flg){
+            ChromePhp::LOG($m_wearer_std_tran);
+            //新規作成
+            if ($m_wearer_std_tran->create() == false) {
+                // トランザクションロールバック
+                $m_wearer_std_tran = new MWearerStdTran();
+                $results = new Resultset(NULL, $m_wearer_std_tran, $m_wearer_std_tran->getReadConnection()->query('rollback'));
+                $json_list["error_code"] = "1";
+                $error_msg = "入力登録処理において、データ更新エラーが発生しました。";
+                array_push($json_list["error_msg"], $error_msg);
+
+                echo json_encode($json_list);
+                return;
+            }
+
+        }else{
+            //更新
+            if ($m_wearer_std_tran->update() == false) {
+                // トランザクションロールバック
+                $m_wearer_std_tran = new MWearerStdTran();
+                $results = new Resultset(NULL, $m_wearer_std_tran, $m_wearer_std_tran->getReadConnection()->query('rollback'));
+                $json_list["error_code"] = "1";
+                $error_msg = "入力登録処理において、データ更新エラーが発生しました。";
+                array_push($json_list["error_msg"], $error_msg);
+
+                echo json_encode($json_list);
+                return;
+            }
+
+        }
         //--発注情報トラン登録--//
         $cnt = 1;
 //        $add_item_input = $params["add_item"];
@@ -1105,11 +1131,12 @@ $app->post('/wearer_order_insert', function () use ($app) {
         $results = new Resultset(NULL, $m_wearer_std_tran, $m_wearer_std_tran->getReadConnection()->query('commit'));
     } catch (Exception $e) {
         // トランザクションロールバック
+        ChromePhp::LOG($e);
         $m_wearer_std_tran = new MWearerStdTran();
         $results = new Resultset(NULL, $m_wearer_std_tran, $m_wearer_std_tran->getReadConnection()->query('rollback'));
         $transaction->commit();
         $json_list["error_code"] = "1";
-        $error_msg = "入力登録処理において、データ更新エラーが発生しました。";
+        $error_msg = "入力登録処理において、データ更新エラーが発生しました。3";
         array_push($json_list["error_msg"], $error_msg);
 
         echo json_encode($json_list);
@@ -1171,4 +1198,76 @@ $app->post('/wearer_order_delete', function ()use($app){
     $results = new Resultset(NULL, $t_order_tran, $t_order_tran->getReadConnection()->query('commit'));
     $app->session->remove("wearer_odr_post");
   echo json_encode($json_list);
+});
+/**
+ * 発注入力（貸与開始）着用者情報
+ * 入力項目：貸与パターン
+ */
+$app->post('/job_type_order', function ()use($app){
+    $params = json_decode(file_get_contents("php://input"), true);
+
+    // アカウントセッション取得
+    $auth = $app->session->get("auth");
+    //ChromePhp::LOG($auth);
+
+    // 前画面セッション取得
+    $wearer_odr_post = $app->session->get("wearer_odr_post");
+    //ChromePhp::LOG($wearer_odr_post);
+
+    $query_list = array();
+    $list = array();
+    $all_list = array();
+    $json_list = array();
+
+    array_push($query_list, "corporate_id = '".$auth['corporate_id']."'");
+    array_push($query_list, "rntl_cont_no = '".$wearer_odr_post['rntl_cont_no']."'");
+    $query = implode(' AND ', $query_list);
+
+    $arg_str = 'SELECT ';
+    $arg_str .= ' distinct on (job_type_cd) *';
+    $arg_str .= ' FROM m_job_type';
+    $arg_str .= ' WHERE ';
+    $arg_str .= $query;
+    $arg_str .= ' ORDER BY job_type_cd asc';
+
+    $m_job_type = new MJobType();
+    $results = new Resultset(NULL, $m_job_type, $m_job_type->getReadConnection()->query($arg_str));
+    $results_array = (array) $results;
+    $results_cnt = $results_array["\0*\0_count"];
+    //ChromePhp::LOG($results_cnt);
+
+    if ($results_cnt > 0) {
+        $paginator_model = new PaginatorModel(
+            array(
+                "data"  => $results,
+                "limit" => $results_cnt,
+                "page" => 1
+            )
+        );
+        $paginator = $paginator_model->getPaginate();
+        $results = $paginator->items;
+
+        foreach ($results as $result) {
+            $list['job_type_cd'] = $result->job_type_cd;
+            $list['job_type_name'] = $result->job_type_name;
+            $list['sp_job_type_flg'] = $result->sp_job_type_flg;
+
+            // 初期選択状態版を生成
+            if ($list['job_type_cd'] == $wearer_odr_post['job_type_cd']) {
+                $list['selected'] = 'selected';
+            } else {
+                $list['selected'] = '';
+            }
+            array_push($all_list, $list);
+        }
+    } else {
+        $list['job_type_cd'] = NULL;
+        $list['job_type_name'] = '';
+        $list['sp_job_type_flg'] = '0';
+        $list['selected'] = '';
+        array_push($all_list, $list);
+    }
+
+    $json_list['job_type_list'] = $all_list;
+    echo json_encode($json_list);
 });

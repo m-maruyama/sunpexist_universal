@@ -10,7 +10,8 @@ define([
 			template: App.Admin.Templates.wearerEndListItem,
 			tagName: "tr",
 			ui: {
-				"wearer_end": "#wearer_end"
+				"wearer_end": "#wearer_end",
+				"werer_name": "#werer_name"
 			},
 			onRender: function() {
 			},
@@ -34,6 +35,7 @@ define([
 						'wearer_tran_flg': we_val[10],
 						'order_req_no': we_val[11],
 						'return_req_no': we_val[12],
+						'werer_name': this.ui.werer_name.val(),
 					};
 
 					// 発注入力遷移前に発注NGパターンチェック実施

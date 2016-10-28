@@ -72,9 +72,9 @@ define([
 							$(".delete").hide();
 						}
 						that.render(res_list);
-						// if (res_list["individual_flg"] == '1') {
-						// 	$('.individual_flg').css('display','');
-						// }
+						if (res_list["individual_flg"] == '1') {
+							$('.individual_flg').css('display','');
+						}
 						$.unblockUI();
 					}
 				});
