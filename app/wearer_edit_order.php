@@ -623,7 +623,7 @@ $app->post('/wearer_edit_complete', function ()use($app){
    $json_list = array();
    // DB更新エラーコード 0:正常 その他:要因エラー
    $json_list["error_code"] = "0";
-   $json_list["error_msg"] = array();
+   //$json_list["error_msg"] = array();
 
    if ($mode == "check") {
      //--入力内容確認--//
@@ -693,26 +693,24 @@ $app->post('/wearer_edit_complete', function ()use($app){
        $json_list["error_code"] = "1";
        if ($order_sts_kbn == "1" && $order_reason_kbn == "03") {
          $error_msg = "追加貸与の発注が登録されていた為、操作を完了できませんでした。追加貸与の発注を削除してから再度登録して下さい。";
-         $json_list["erorr_msg"] = $error_msg;
+         $json_list["error_msg"][] = $error_msg;
        }
        if ($order_sts_kbn == "2" && ($order_reason_kbn == "05" || $order_reason_kbn == "06" || $order_reason_kbn == "08" || $order_reason_kbn == "20")) {
          $error_msg = "貸与終了の発注が登録されていた為、操作を完了できませんでした。貸与終了の発注を削除してから再度登録して下さい。";
-         $json_list["erorr_msg"] = $error_msg;
+         $json_list["error_msg"][] = $error_msg;
        }
        if ($order_sts_kbn == "2" && $order_reason_kbn == "07") {
          $error_msg = "不要品返却の発注が登録されていた為、操作を完了できませんでした。不要品返却の発注を削除してから再度登録して下さい。";
-         $json_list["erorr_msg"] = $error_msg;
+         $json_list["error_msg"][] = $error_msg;
        }
        if ($order_sts_kbn == "3" || $order_sts_kbn == "4") {
          $error_msg = "交換の発注が登録されていた為、操作を完了できませんでした。交換の発注を削除してから再度登録して下さい。";
-         $json_list["erorr_msg"] = $error_msg;
+         $json_list["error_msg"][] = $error_msg;
        }
        if ($order_sts_kbn == "5" && ($order_reason_kbn == "09" || $order_reason_kbn == "10" || $order_reason_kbn == "11" || $order_reason_kbn == "24")) {
-         $json_list["err_cd"] = "1";
          $error_msg = "職種変更または異動の発注が登録されていた為、操作を完了できませんでした。職種変更または異動の発注を削除してから再度登録して下さい。";
-         $json_list["erorr_msg"] = $error_msg;
+         $json_list["error_msg"][] = $error_msg;
        }
-//       array_push($json_list["error_msg"], $error_msg);
 
        echo json_encode($json_list);
        return;
@@ -1089,7 +1087,7 @@ $app->post('/wearer_edit_complete', function ()use($app){
       // トランザクションロールバック
       $m_wearer_std_tran = new MWearerStdTran();
       $results = new Resultset(NULL, $m_wearer_std_tran, $m_wearer_std_tran->getReadConnection()->query('rollback'));
-      ChromePhp::LOG($e);
+      //ChromePhp::LOG($e);
 
       $json_list["error_code"] = "1";
       $error_msg = "発注登録処理において、データ更新エラーが発生しました。";
@@ -1202,26 +1200,24 @@ $app->post('/wearer_edit_send', function ()use($app){
       $json_list["error_code"] = "1";
       if ($order_sts_kbn == "1" && $order_reason_kbn == "03") {
         $error_msg = "追加貸与の発注が登録されていた為、操作を完了できませんでした。追加貸与の発注を削除してから再度登録して下さい。";
-        $json_list["erorr_msg"] = $error_msg;
+        $json_list["error_msg"] = $error_msg;
       }
       if ($order_sts_kbn == "2" && ($order_reason_kbn == "05" || $order_reason_kbn == "06" || $order_reason_kbn == "08" || $order_reason_kbn == "20")) {
         $error_msg = "貸与終了の発注が登録されていた為、操作を完了できませんでした。貸与終了の発注を削除してから再度登録して下さい。";
-        $json_list["erorr_msg"] = $error_msg;
+        $json_list["error_msg"] = $error_msg;
       }
       if ($order_sts_kbn == "2" && $order_reason_kbn == "07") {
         $error_msg = "不要品返却の発注が登録されていた為、操作を完了できませんでした。不要品返却の発注を削除してから再度登録して下さい。";
-        $json_list["erorr_msg"] = $error_msg;
+        $json_list["error_msg"] = $error_msg;
       }
       if ($order_sts_kbn == "3" || $order_sts_kbn == "4") {
         $error_msg = "交換の発注が登録されていた為、操作を完了できませんでした。交換の発注を削除してから再度登録して下さい。";
-        $json_list["erorr_msg"] = $error_msg;
+        $json_list["error_msg"] = $error_msg;
       }
       if ($order_sts_kbn == "5" && ($order_reason_kbn == "09" || $order_reason_kbn == "10" || $order_reason_kbn == "11" || $order_reason_kbn == "24")) {
-        $json_list["err_cd"] = "1";
         $error_msg = "職種変更または異動の発注が登録されていた為、操作を完了できませんでした。職種変更または異動の発注を削除してから再度登録して下さい。";
-        $json_list["erorr_msg"] = $error_msg;
+        $json_list["error_msg"] = $error_msg;
       }
-//      array_push($json_list["error_msg"], $error_msg);
 
       echo json_encode($json_list);
       return;

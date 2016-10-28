@@ -64,6 +64,8 @@ define([
 							$('.returnSlipDownload').css('display', '');
 						} else {
 							// 登録処理にエラーがある場合
+							$("#h").text('');
+							$(".explanation").text('');
 							that.triggerMethod('showAlerts', res_val["error_msg"]);
 						}
 					}

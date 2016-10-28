@@ -2516,7 +2516,7 @@ $app->post('/wearer_change_complete', function ()use($app){
        if ($order_sts_kbn == "6") {
          $json_list["error_code"] = "1";
          $error_msg = "着用者編集の発注が登録されていた為、操作を完了できませんでした。着用者編集の発注を削除してから再度登録して下さい。";
-         $json_list["erorr_msg"] = $error_msg;
+         $json_list["error_msg"] = $error_msg;
 
          //ChromePhp::LOG($json_list);
          echo json_encode($json_list);
@@ -2565,22 +2565,22 @@ $app->post('/wearer_change_complete', function ()use($app){
 
        // 発注情報トラン.発注状況区分 = 「異動」以外の情報がある際は発注NG
        if ($order_sts_kbn !== "5") {
-         $json_list["erorr_code"] = "1";
+         $json_list["error_code"] = "1";
          if ($order_sts_kbn == "1" && $order_reason_kbn == "03") {
            $error_msg = "追加貸与の発注が登録されていた為、操作を完了できませんでした。追加貸与の発注を削除してから再度登録して下さい。";
-           $json_list["erorr_msg"] = $error_msg;
+           $json_list["error_msg"] = $error_msg;
          }
          if ($order_sts_kbn == "2" && ($order_reason_kbn == "05" || $order_reason_kbn == "06" || $order_reason_kbn == "08" || $order_reason_kbn == "20")) {
            $error_msg = "貸与終了の発注が登録されていた為、操作を完了できませんでした。貸与終了の発注を削除してから再度登録して下さい。";
-           $json_list["erorr_msg"] = $error_msg;
+           $json_list["error_msg"] = $error_msg;
          }
          if ($order_sts_kbn == "2" && $order_reason_kbn == "07") {
            $error_msg = "不要品返却の発注が登録されていた為、操作を完了できませんでした。不要品返却の発注を削除してから再度登録して下さい。";
-           $json_list["erorr_msg"] = $error_msg;
+           $json_list["error_msg"] = $error_msg;
          }
          if ($order_sts_kbn == "3" || $order_sts_kbn == "4") {
            $error_msg = "交換の発注が登録されていた為、操作を完了できませんでした。交換の発注を削除してから再度登録して下さい。";
-           $json_list["erorr_msg"] = $error_msg;
+           $json_list["error_msg"] = $error_msg;
          }
 
          echo json_encode($json_list);
@@ -3811,9 +3811,9 @@ $app->post('/wearer_change_send', function ()use($app){
 
       // 着用者基本マスタトラン.発注状況区分 = 「着用者編集」の情報がある際は発注NG
       if ($order_sts_kbn == "6") {
-        $json_list["erorr_code"] = "1";
+        $json_list["error_code"] = "1";
         $error_msg = "着用者編集の発注が登録されていた為、操作を完了できませんでした。着用者編集の発注を削除してから再度登録して下さい。";
-        $json_list["erorr_msg"] = $error_msg;
+        $json_list["error_msg"] = $error_msg;
 
         //ChromePhp::LOG($json_list);
         echo json_encode($json_list);
@@ -3862,22 +3862,22 @@ $app->post('/wearer_change_send', function ()use($app){
 
       // 発注情報トラン.発注状況区分 = 「異動」以外の情報がある際は発注NG
       if ($order_sts_kbn !== "5") {
-        $json_list["erorr_code"] = "1";
+        $json_list["error_code"] = "1";
         if ($order_sts_kbn == "1" && $order_reason_kbn == "03") {
           $error_msg = "追加貸与の発注が登録されていた為、操作を完了できませんでした。追加貸与の発注を削除してから再度登録して下さい。";
-          $json_list["erorr_msg"] = $error_msg;
+          $json_list["error_msg"] = $error_msg;
         }
         if ($order_sts_kbn == "2" && ($order_reason_kbn == "05" || $order_reason_kbn == "06" || $order_reason_kbn == "08" || $order_reason_kbn == "20")) {
           $error_msg = "貸与終了の発注が登録されていた為、操作を完了できませんでした。貸与終了の発注を削除してから再度登録して下さい。";
-          $json_list["erorr_msg"] = $error_msg;
+          $json_list["error_msg"] = $error_msg;
         }
         if ($order_sts_kbn == "2" && $order_reason_kbn == "07") {
           $error_msg = "不要品返却の発注が登録されていた為、操作を完了できませんでした。不要品返却の発注を削除してから再度登録して下さい。";
-          $json_list["erorr_msg"] = $error_msg;
+          $json_list["error_msg"] = $error_msg;
         }
         if ($order_sts_kbn == "3" || $order_sts_kbn == "4") {
           $error_msg = "交換の発注が登録されていた為、操作を完了できませんでした。交換の発注を削除してから再度登録して下さい。";
-          $json_list["erorr_msg"] = $error_msg;
+          $json_list["error_msg"] = $error_msg;
         }
 
         echo json_encode($json_list);

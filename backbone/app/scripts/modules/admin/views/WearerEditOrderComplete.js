@@ -23,10 +23,10 @@ define([
 			model: new Backbone.Model(),
 			template: App.Admin.Templates.wearerEditOrderComplete,
 			behaviors: {
-				"Alerts": {
-					behaviorClass: App.Admin.Behaviors.Alerts
-				}
-			},
+        "Alerts": {
+          behaviorClass: App.Admin.Behaviors.Alerts
+        }
+      },
 			ui: {
 				'continueInput': '.continueInput',
 				'backHome': '.backHome',
@@ -56,6 +56,8 @@ define([
 						var res_val = res.attributes;
 						if (res_val["error_code"] == "1") {
 							// 登録処理にエラーがある場合
+							$("#h").text('');
+							$(".explanation").text('');
 							that.triggerMethod('showAlerts', res_val["error_msg"]);
 						}
 					}

@@ -1126,7 +1126,7 @@ $app->post('/wearer_add_complete', function ()use($app){
        if ($order_sts_kbn == "6") {
          $json_list["error_code"] = "1";
          $error_msg = "着用者編集の発注が登録されていた為、操作を完了できませんでした。着用者編集の発注を削除してから再度登録して下さい。";
-         $json_list["erorr_msg"] = $error_msg;
+         $json_list["error_msg"] = $error_msg;
 
          //ChromePhp::LOG($json_list);
          echo json_encode($json_list);
@@ -1174,16 +1174,16 @@ $app->post('/wearer_add_complete', function ()use($app){
 
        // 発注情報トラン.発注状況区分 = 「終了」または「異動」情報がある際は発注NG
        if ($order_sts_kbn == "2" && ($order_reason_kbn == "05" || $order_reason_kbn == "06" || $order_reason_kbn == "08" || $order_reason_kbn == "20")) {
-         $json_list["erorr_code"] = "1";
+         $json_list["error_code"] = "1";
          $error_msg = "貸与終了の発注が登録されていた為、操作を完了できませんでした。貸与終了の発注を削除してから再度登録して下さい。";
-         $json_list["erorr_msg"] = $error_msg;
+         $json_list["error_msg"] = $error_msg;
          echo json_encode($json_list);
          return;
        }
        if ($order_sts_kbn == "5" && ($order_reason_kbn == "09" || $order_reason_kbn == "10" || $order_reason_kbn == "11" || $order_reason_kbn == "24")) {
-         $json_list["erorr_code"] = "1";
+         $json_list["error_code"] = "1";
          $error_msg = "職種変更または異動の発注が登録されていた為、操作を完了できませんでした。職種変更または異動の発注を削除してから再度登録して下さい。";
-         $json_list["erorr_msg"] = $error_msg;
+         $json_list["error_msg"] = $error_msg;
          echo json_encode($json_list);
          return;
        }
@@ -1998,7 +1998,7 @@ ChromePhp::LOG($item_input);
       if ($order_sts_kbn == "6") {
         $json_list["error_code"] = "1";
         $error_msg = "着用者編集の発注が登録されていた為、操作を完了できませんでした。着用者編集の発注を削除してから再度登録して下さい。";
-        $json_list["erorr_msg"] = $error_msg;
+        $json_list["error_msg"] = $error_msg;
 
         //ChromePhp::LOG($json_list);
         echo json_encode($json_list);
@@ -2046,16 +2046,16 @@ ChromePhp::LOG($item_input);
 
       // 発注情報トラン.発注状況区分 = 「終了」または「異動」情報がある際は発注NG
       if ($order_sts_kbn == "2" && ($order_reason_kbn == "05" || $order_reason_kbn == "06" || $order_reason_kbn == "08" || $order_reason_kbn == "20")) {
-        $json_list["erorr_code"] = "1";
+        $json_list["error_code"] = "1";
         $error_msg = "貸与終了の発注が登録されていた為、操作を完了できませんでした。貸与終了の発注を削除してから再度登録して下さい。";
-        $json_list["erorr_msg"] = $error_msg;
+        $json_list["error_msg"] = $error_msg;
         echo json_encode($json_list);
         return;
       }
       if ($order_sts_kbn == "5" && ($order_reason_kbn == "09" || $order_reason_kbn == "10" || $order_reason_kbn == "11" || $order_reason_kbn == "24")) {
-        $json_list["erorr_code"] = "1";
+        $json_list["error_code"] = "1";
         $error_msg = "職種変更または異動の発注が登録されていた為、操作を完了できませんでした。職種変更または異動の発注を削除してから再度登録して下さい。";
-        $json_list["erorr_msg"] = $error_msg;
+        $json_list["error_msg"] = $error_msg;
         echo json_encode($json_list);
         return;
       }

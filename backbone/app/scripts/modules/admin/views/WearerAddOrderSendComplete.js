@@ -59,6 +59,8 @@ define([
 						var res_val = res.attributes;
 						if (res_val["error_code"] == "1") {
 							// 登録処理にエラーがある場合
+							$("#h").text('');
+							$(".explanation").text('');
 							that.triggerMethod('showAlerts', res_val["error_msg"]);
 						}
 					}
