@@ -27,22 +27,14 @@ define([
 
 				var getHash = location.search.replace(/^\?(.*)$/, '$1');
 				if(getHash){
-					console.log('入ってる');
+					//console.log('入ってる');
 					var getHash = getHash.split( '=' );
-					console.log(getHash);
+					//console.log(getHash);
 						if(getHash[0] == 'dp') {
 							$("#passwordContent").addClass("none");
 							if($('#passwordContent').length){
-								console.log('持ってる');
 							}
-							console.log('持ってるの次');
 
-							//this.model.set('getHash', getHash[1]);
-							//var errors = this.model.validate();
-							//if (errors) {
-							//	this.triggerMethod('showAlerts', errors);
-							//	return;
-							//}
 							var cond = {
 								"hashcheck": 'ハッシュチェック',
 								"hashid": getHash[1],
@@ -50,7 +42,7 @@ define([
 							this.model.fetchMx({
 								data: cond,
 								success: function (model) {
-									console.log(model);
+									//console.log(model);
 									//ハッシュタグが違う場合
 									if (model.attributes.errors) {
 										if(window.confirm('不正なURLです')){
@@ -68,14 +60,14 @@ define([
 							});
 						}else if(getHash[1] == 'account') {
 							this.ui.content.removeClass("none");
-							console.log('account');
+							//console.log('account');
 							this.ui.backBtn.removeClass("none");
 						}else if(getHash[1] == 'login') {
 							this.ui.content.removeClass("none");
-							console.log('login');
+							//console.log('login');
 						}
 					}else{
-						console.log('入ってない');
+						//console.log('入ってない');
 
 					}
 
@@ -93,11 +85,10 @@ define([
 					var getHash = location.search.replace(/^\?(.*)$/, '$1');
 					var getHash = getHash.split( '=' );
 
-					console.log(getHash);
 					if(getHash){
 
 						if(getHash[0] == 'dp') {
-							console.log('dp');
+							//console.log('dp');
 							var tmp_corporate_id = $("#tmp_corporate_id").val();
 							var tmp_user_id = ($("#tmp_user_id").val());
 							if (tmp_corporate_id) {
@@ -125,13 +116,11 @@ define([
 							};
 
 						}else if(getHash[1] == 'account') {
-							console.log(getHash[1]);
 							var accnt_no = window.sessionStorage.getItem('accnt_no');
 							this.model.set('accnt_no', accnt_no);
 							this.model.set('password', this.ui.password.val());
 							this.model.set('password_c', this.ui.password_c.val());
 							var errors = this.model.validate();
-							console.log(errors);
 
 							if (errors) {
 								this.triggerMethod('showAlerts', errors);
@@ -146,9 +135,7 @@ define([
 							};
 
 						}else if(getHash[1] == 'login') {
-							console.log('page');
-							console.log(window.sessionStorage.getItem('corporate_id'));
-							console.log(window.sessionStorage.getItem('user_id'));
+
 							var corporate_id = window.sessionStorage.getItem('corporate_id');
 							var user_id = window.sessionStorage.getItem('user_id');
 							this.model.set('corporate_id', corporate_id);
