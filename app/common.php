@@ -894,7 +894,7 @@ $app->post('/section_purchase', function () use ($app) {
     $list = array();
     $all_list = array();
     $json_list = array();
-    ChromePhp::log($params);
+    //ChromePhp::log($params);
     // アカウントセッション取得
     $auth = $app->session->get('auth');
 

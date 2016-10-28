@@ -61,19 +61,11 @@ $app->post('/purchase_input', function () use ($app) {
 
     if (!$cond['agreement_no'] == null) {
         $rntl_cont_no_value = $cond['agreement_no'];
-    }//$cond['agreement_no']
-
-    //ChromePhp::log($rntl_cont_no_value);
+    }
 
     $results = MSaleOrderItem::find(array(
-        //'order' => "$sort_key $order",
         'conditions' => "corporate_id LIKE '$login_corporate_id' AND rntl_cont_no LIKE '$rntl_cont_no_value'",
-        //'conditions'  => "'$user_name_val%"
     ));
-    //$results = MSaleOrderItem::find();
-
-
-    //ChromePhp::log($results);
 
 
     $results_count = (count($results));
@@ -95,12 +87,9 @@ $app->post('/purchase_input', function () use ($app) {
         array_push($all_list, $list);//$all_listに$listをpush
     }
 
-    //$page_list['records_per_page'] = $page['records_per_page'];
-    //$page_list['page_number'] = $page['page_number'];
     $page_list['total_records'] = $results_count;
     $json_list['page'] = $page_list;
     $json_list['list'] = $all_list;
-    //ChromePhp::log($results_count);
     echo json_encode($json_list);
 });
 
@@ -171,9 +160,7 @@ $app->post('/purchase_update', function () use ($app) {
             $arg_str = "SELECT LASTVAL()";
             $results[$i] = new Resultset(null, $t_sale_order_history[$i], $t_sale_order_history[$i]->getReadConnection()->query($arg_str));
 
-            //ChromePhp::log($results[$i][0]->lastval);
             array_push($lastval, $results[$i][0]->lastval);//最後に送ったシーケンス番号を配列にする
-            //ChromePhp::log($lastval);
         }
     }
     $transaction->commit();
