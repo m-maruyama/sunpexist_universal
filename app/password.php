@@ -8,7 +8,6 @@ use Phalcon\Mvc\Model\Resultset\Simple as Resultset;
 $app->post('/password', function () use ($app) {
 
     $params = json_decode(file_get_contents("php://input"), true);
-    ChromePhp::log($params);
 
 
     if (isset($params['hashid'])) {
@@ -30,17 +29,13 @@ $app->post('/password', function () use ($app) {
             $error_list['hashcheck'] = '不正なURLです。';
             $json_list['errors'] = $error_list;
         }
-        ChromePhp::log('ここ??');
         echo json_encode($json_list);
         return true;
-        ChromePhp::log('ここ通った');
     }
-    ChromePhp::log('ここ通らない');
 
 
     try {
         //$params = json_decode(file_get_contents("php://input"), true);
-        ChromePhp::log($params);
 
 
         $json_list = array();
@@ -70,13 +65,11 @@ $app->post('/password', function () use ($app) {
         //トランザクション
         $transaction = $app->transactionManager->get();
 
-        ChromePhp::log($params);
 
         $user_id = $app->session->get("user_id");
 
 
         if ($params['from'] == 'mail') {//
-            ChromePhp::log('mail通ってる');
             if (isset($params['tmp_user_id'])) {
                 $user_id = $params['tmp_user_id'];
             }
@@ -89,18 +82,15 @@ $app->post('/password', function () use ($app) {
                 "bind" => array(1 => $user_id)
             ));
         } elseif ($params['from'] == 'account') {//アカウント管理からの遷移
-            ChromePhp::log('account通ってる');
             if (isset($params['accn_no'])) {
                 $accnt_no = $params['accn_no'];
             }
-            ChromePhp::log($accnt_no);
 
             $account = MAccount::find(array(
                 "conditions" => "accnt_no = ?1",
                 "bind" => array(1 => $accnt_no)
             ));
         } elseif ($params['from'] == 'login90day') {//
-            ChromePhp::log('login90通ってる');
             if (isset($params['user_id'])) {
                 $user_id = $params['user_id'];
             }
@@ -114,10 +104,6 @@ $app->post('/password', function () use ($app) {
             ));
         }
 
-
-        ChromePhp::log($params['password']);
-        ChromePhp::log(md5($params['password']));
-        ChromePhp::log($account[0]->pass_word);
 
         if (md5($params['password']) == $account[0]->pass_word) {
             //前回と同じパスワードを受け付けない
@@ -138,10 +124,6 @@ $app->post('/password', function () use ($app) {
             }
         }
         //パスワード更新
-        //パスワード
-        // ChromePhp::log($params['password']);
-        //ChromePhp::log(md5($params['password']));
-
 
         //以前のファルコンhash
         //$hash_pass = $app->security->hash($params['password']);
@@ -163,7 +145,6 @@ $app->post('/password', function () use ($app) {
         }
 
         $auth = $app->session->get('auth');
-        ChromePhp::log($auth);
 
         if (isset($auth['user_id'])) {
             $account[0]->upd_user_id = $auth['user_id'];
@@ -220,11 +201,9 @@ $app->post('/login_password', function () use ($app) {
 
         $corporate_id = $params['corporate_id'];
         $user_id = $params['user_id'];
-        ChromePhp::log($user_id);
 
         if (!preg_match("/(?=.{8,})(?=.*\d+.*)(?=.*[a-zA-Z]+.*).*+.*/", $user_id)) {
             $error_list['user_id_preg'] = 'ログインIDは半角英数字混合、8文字以上で入力してください。';
-            ChromePhp::log($error_list['user_id_preg']);
             $json_list['status'] = 5;
             echo json_encode($json_list);
             return true;
@@ -236,7 +215,6 @@ $app->post('/login_password', function () use ($app) {
         $date = date('ymdHis');
         //生成した文字列からハッシュコード生成
         $tmp_password = md5($date);
-        ChromePhp::log($tmp_password);
 
         //if(strlen($params['password'])<8){
         //パスワード桁数は8文字以上であるか
@@ -275,14 +253,13 @@ $app->post('/login_password', function () use ($app) {
             $body = "下記のURLをクリックしてパスワードを変更してください。\n" . "http://" . "$url" . "/universal/password.html?dp=" . "$tmp_password";
 
             if (mb_send_mail($to, $subject, $body, $header)) {
-                ChromePhp::log('送信完了');
+
             } else {
                 $json_list['status'] = 1;
             }
 
 
             $account[0]->hash = $tmp_password;
-            ChromePhp::log($account[0]);
 
             if ($account[0]->save() == false) {
                 $error_list['update'] = 'アカウント情報の更新に失敗しました。';
@@ -301,7 +278,6 @@ $app->post('/login_password', function () use ($app) {
             $error_list['search'] = '該当するアカウントが見つかりませんでした。';
             $json_list['errors'] = $error_list;
             $json_list['status'] = 4;
-            ChromePhp::log('該当するアカウントが見つかりませんでした');
 
             echo json_encode($json_list);
             return true;

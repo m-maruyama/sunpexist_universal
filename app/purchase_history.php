@@ -199,7 +199,6 @@ $app->post('/purchase_history/search', function () use ($app) {
 
             return true;
         }
-        ChromePhp::log('ここまできちゃった');
         echo json_encode($json_list);
         return true;
     }

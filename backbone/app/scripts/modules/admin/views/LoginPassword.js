@@ -23,14 +23,11 @@ define([
 			},
 			events: {
 				"click @ui.submit": function(e){
-					console.log('submitをclick');
 					e.preventDefault();
 					var that = this;
 					that.triggerMethod('hideAlerts');
 					this.model.set('login_id', this.ui.login_id.val());
 					this.model.set('corporate_id', this.ui.corporate_id.val());
-					console.log(this.ui.corporate_id.val());
-					console.log(this.ui.login_id.val());
 
 
 					//this.model.set('password_c', this.ui.password_c.val());
@@ -51,7 +48,6 @@ define([
 					this.model.fetchMx({
 						data: cond,
 						success: function(model){
-							console.log(model);
 							if(model.get('status') === 0){
 								alert('対象アカウントへのパスワード変更手続きメールの送信が完了しました。');
 								//that.triggerMethod('success');

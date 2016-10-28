@@ -150,7 +150,6 @@ define([
 					this.triggerMethod('showAlerts', errors);
 					return;
 				}
-				console.log(agreement_no);
 				this.triggerMethod('click:search','line_no','desc');
 
 
@@ -179,7 +178,6 @@ define([
 						this.triggerMethod('showAlerts', errors);
 						return;
 					}
-					//console.log(this.ui.datepicker.val());
 					this.triggerMethod('click:search','line_no','desc');
 				},
 

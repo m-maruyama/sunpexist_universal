@@ -2242,8 +2242,8 @@ $app->post('/wearer_change_delete', function ()use($app){
     $results = new Resultset(NULL, $m_wearer_std_tran, $m_wearer_std_tran->getReadConnection()->query('rollback'));
 
     $json_list["error_code"] = "1";
-    ChromePhp::LOG("発注取消処理エラー");
-    ChromePhp::LOG($e);
+    //ChromePhp::LOG("発注取消処理エラー");
+    //ChromePhp::LOG($e);
 
     echo json_encode($json_list);
     return;
@@ -3539,7 +3539,7 @@ $app->post('/wearer_change_complete', function ()use($app){
       // トランザクションロールバック
       $m_wearer_std_tran = new MWearerStdTran();
       $results = new Resultset(NULL, $m_wearer_std_tran, $m_wearer_std_tran->getReadConnection()->query('rollback'));
-      ChromePhp::LOG($e);
+      //ChromePhp::LOG($e);
 
       $json_list["error_code"] = "1";
       $error_msg = "入力登録処理において、データ更新エラーが発生しました。";
@@ -4834,7 +4834,7 @@ $app->post('/wearer_change_send', function ()use($app){
      // トランザクションロールバック
      $m_wearer_std_tran = new MWearerStdTran();
      $results = new Resultset(NULL, $m_wearer_std_tran, $m_wearer_std_tran->getReadConnection()->query('rollback'));
-     ChromePhp::LOG($e);
+     //ChromePhp::LOG($e);
 
      $json_list["error_code"] = "1";
      $error_msg = "発注送信処理において、データ更新エラーが発生しました。";

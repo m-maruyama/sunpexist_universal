@@ -38,7 +38,6 @@ define([
 			events: {
 				'change @ui.agreement_no': function(e){
 					e.preventDefault();
-					alert('契約noが変更された！！！');
 				},
 				//'click @ui.cancel': function(){
 //

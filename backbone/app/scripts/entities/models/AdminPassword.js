@@ -15,7 +15,6 @@ define([
 				password_c: null
 			},
 			getReq: function(){
-				console.log('modelsのAdminPassword.jsのgetReq');
 				return {
 					user_id: this.get('user_id'),
 					password: this.get('password'),
