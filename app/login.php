@@ -52,6 +52,14 @@ $app->post('/login', function ()use($app) {
         ->join('MContract','MContract.corporate_id = MContractResource.corporate_id AND MContract.rntl_cont_no = MContractResource.rntl_cont_no')
         ->execute();
 
+
+    if($account[0]->mAccount->del_flg == '1' || count($account) == 0){
+        $json_list['status'] = 1;
+        echo json_encode($json_list);
+        return true;
+    }
+
+
     if (md5($params['password']) != $account[0]->mAccount->pass_word) {
 
         //if (!$app->security->checkHash($params['password'], $account[0]->mAccount->pass_word)) {
@@ -76,6 +84,8 @@ $app->post('/login', function ()use($app) {
         }
         return true;
     } else {
+
+
         //アカウントマスタに企業IDログインID、パスワードが一致するデータが存在する場合
         if($account[0]->mAccount->login_err_count + 1 >= 5 ){
             // 当該ユーザーのアカウントマスタをログインエラー回数を＋１した値で更新し、画面に下記エラーメッセージを表示して処理を終了する。
