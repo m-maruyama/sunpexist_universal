@@ -44,8 +44,6 @@ define([
 						clearInterval(hoge);
 
 						var agreement_no = $("#agreement_no").val();
-						//$(".table tbody tr").css('display' , 'none');
-						//$(".table tbody ."+agreement_no).css('display' , 'table-row');
 
 						$('#testTable tbody').each(function () {
 								var pre_element = null;
@@ -66,6 +64,18 @@ define([
 					}
 
 				}, 0);
+
+				//画像にclassを付加
+				$('img').addClass('miss');
+				//画像が見つからないときにエラーイベント発生
+				$('img.miss').error(function() {
+					//置換処理
+					$(this).attr({
+						src: './images/no_image.png',
+						alt: 'none image',
+						style:'border: 1px solid #eee;width:150px;height:150px;margin:25px;'
+					});
+				});
 			},
 
 
