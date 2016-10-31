@@ -9,6 +9,8 @@ $app->post('/login', function ()use($app) {
     $params = json_decode(file_get_contents("php://input"), true);
     $json_list = array();
     $json_list['status'] = 0;
+    print_r(123);
+    die();
 
     //仮パスワードが存在する場合はログイン処理までいかない
     $kari_check = MAccount::query()
