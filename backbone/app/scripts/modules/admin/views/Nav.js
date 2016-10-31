@@ -16,6 +16,7 @@ define([
 				"inquiryDetail": "li.nav_inquiryDetail",
 				"history": "li.nav_history",
 				"delivery": "li.nav_delivery",
+				"print": "li.nav_print",
 				"unreturn": "li.nav_unreturn",
 				"unreturned": "li.nav_unreturned",
 				"stock": "li.nav_stock",

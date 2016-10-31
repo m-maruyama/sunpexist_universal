@@ -36,7 +36,6 @@ define([
 				modelForUpdate.fetchMx({
 					data:cond,
 					success:function(res){
-
 						var errors = res.get('errors');
 						if(errors) {
 							var errorMessages = errors.map(function(v){

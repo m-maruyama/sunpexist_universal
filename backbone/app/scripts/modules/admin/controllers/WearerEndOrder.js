@@ -51,6 +51,12 @@ define([
 						wearerEndOrderView.triggerMethod('showAlerts', errors);
 					}
 				});
+				//エラーメッセージ
+				this.listenTo(wearerEndOrderConditionView, 'error_msg', function(errors){
+					if(errors){
+						wearerEndOrderConditionView.triggerMethod('showAlerts', errors);
+					}
+				});
 				App.main.show(wearerEndOrderView);
 				wearerEndOrderView.condition.show(wearerEndOrderConditionView);
 				wearerEndOrderView.listTable.show(wearerEndListListView);

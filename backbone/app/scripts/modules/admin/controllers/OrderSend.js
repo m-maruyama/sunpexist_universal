@@ -55,10 +55,6 @@ define([
 
 				var orderSendListItemView = new App.Admin.Views.OrderSendListItem();
 
-				console.log(orderSendListListView);
-
-				console.log(orderSendListItemView);
-
 				var paginationView = new App.Admin.Views.Pagination({model: pagerModel});
 				var paginationView2 = new App.Admin.Views.Pagination({model: pagerModel});
 

@@ -66,7 +66,7 @@ define([
 							that.triggerMethod('showAlerts', errorMessages);
 						}
 						var res_list = res.attributes;
-
+						$('#order_count').val(res_list['order_count']);
 						// 検索画面から遷移してきた場合、かつ発注トランにデータがある場合は「発注取消」ボタンを表示
 						if (res_list['tran_flg']) {
 							$(".delete").hide();

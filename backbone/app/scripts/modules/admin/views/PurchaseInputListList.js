@@ -84,29 +84,9 @@ define([
 					item[i]['upd_pg_id'] = null;
 					}
 
-
 					var item_count = Object.keys(item).length;//配列の数を数える
 
-					//console.log(item_count);
-
 					var model = this.model;
-
-					//model.set('corporate_id', corporate_id);
-					//model.set('rntl_cont_no', rntl_cont_no);
-					//model.set('rntl_sect_cd', rntl_sect_cd);
-					//model.set('sale_order_date', sale_order_date);
-					//model.set('item_cd', item_cd);
-					//model.set('color_cd', color_cd);
-					//model.set('size_cd', size_cd);
-					//model.set('item_name', item_name);
-					//model.set('piece_rate', piece_rate);
-					//model.set('quantity', quantity);
-					//model.set('total_amount', total_amount);
-					//model.set('accnt_no', accnt_no);
-					//model.set('snd_kbn', snd_kbn);
-					//model.set('rgst_user_id', rgst_user_id);
-					//model.set('upd_user_id', upd_user_id);
-					//model.set('upd_pg_id', upd_pg_id);
 
 					var that = this;
 					var errors = model.validate();
@@ -114,8 +94,6 @@ define([
 						this.triggerMethod('showAlerts', errors);
 						return;
 					}
-					//console.log(model.getReq());
-					//console.log(item);
 
 					model.url = App.api.PU0010;
 					var cond = {
@@ -123,7 +101,6 @@ define([
 						"item": item,
 						"total_record": total_records
 					};
-
 
 					model.fetchMx({
 						data:cond,
@@ -156,7 +133,6 @@ define([
 						}
 					});
 
-					alert('アップデートボタンを押したよ！');
 				}//upd
 
 			},

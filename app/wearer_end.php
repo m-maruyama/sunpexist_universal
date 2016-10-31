@@ -138,8 +138,6 @@ $app->post('/wearer_end/search', function ()use($app){
 
         $paginator = $paginator_model->getPaginate();
         $results = $paginator->items;
-        //ChromePhp::LOG("着用者基本マスタリスト");
-        //ChromePhp::LOG($results);
 
         foreach($results as $result) {
             //---着用者基本マスタトラン情報の既存データ重複参照---//
@@ -336,7 +334,9 @@ $app->post('/wearer_end/search', function ()use($app){
             }
             // 発注No(返却予定情報トラン)
             $list['return_req_no'] = $result->as_return_req_no;
-            //貸与終了ボタン
+
+
+            //---「貸与終了」ボタンの生成---//
             // 発注情報トラン参照
             $query_list = array();
             array_push($query_list, "corporate_id = '".$auth['corporate_id']."'");
@@ -357,66 +357,138 @@ $app->post('/wearer_end/search', function ()use($app){
             $t_order_tran_results = new Resultset(NULL, $t_order_tran, $t_order_tran->getReadConnection()->query($arg_str));
             $result_obj = (array)$t_order_tran_results;
             $t_order_tran_cnt = $result_obj["\0*\0_count"];
-
-            // チェックスタート
-            $list['order_reason_kbn'] = '';
-            $list['order_req_no'] = '';
+            // パターンチェックスタート
+            $list['btnPattern'] = "";
             $patarn_flg = true;
+            $list['order_req_no'] = '';
+            $list['order_reason_kbn'] = '';
             if (!empty($t_order_tran_cnt)) {
                 $paginator_model = new PaginatorModel(
                     array(
-                        "data" => $t_order_tran_results,
+                        "data"  => $t_order_tran_results,
                         "limit" => $t_order_tran_cnt,
                         "page" => 1
                     )
                 );
                 $paginator = $paginator_model->getPaginate();
                 $t_order_tran_results = $paginator->items;
+                //ChromePhp::LOG($results);
 
-                $a_flg = false;
-                //貸与終了ボタン
-                foreach ($t_order_tran_results as $t_order_tran_result) {
-                    $order_req_no = $t_order_tran_result->order_req_no;
-                    $order_sts_kbn = $t_order_tran_result->order_sts_kbn;
-                    $order_reason_kbn = $t_order_tran_result->order_reason_kbn;
-                    $snd_kbn = $t_order_tran_result->snd_kbn;
-                    //パターンA：
-                    if ($order_sts_kbn == '2' && ($order_reason_kbn != '05' && $order_reason_kbn != '06' && $order_reason_kbn != '08')) {
-                        $a_flg = true;
-                    } else {
-                        $a_flg = false;
-                        break;
+                // パターンD: 着用者基本マスタトラン.送信区分 = 処理中の場合、ボタンの文言は「貸与終了」で非活性表示する。
+                if ($list['wearer_tran_flg'] == "1" &&  $list['snd_kbn'] == '処理中') {
+                    $list['wearer_end_button'] = "貸与終了";
+                    $list['wearer_end_red'] = "";
+                    $list['disabled'] = "disabled";
+                    $list['btnPattern'] = "D";
+                }
+                if ($list['btnPattern'] == "") {
+                    //パターンD： その発注の発注情報トラン．送信区分 = 処理中の場合、ボタンの文言は「貸与終了」で非活性表示する。
+                    foreach ($t_order_tran_results as $t_order_tran_result) {
+                        $order_req_no = $t_order_tran_result->order_req_no;
+                        $order_sts_kbn = $t_order_tran_result->order_sts_kbn;
+                        $order_reason_kbn = $t_order_tran_result->order_reason_kbn;
+                        $snd_kbn = $t_order_tran_result->snd_kbn;
+                        if ($snd_kbn == '9')
+                        {
+                            $patarn_flg = false;
+                            break;
+                        }
                     }
                 }
-                if (!$a_flg) {
-                    if ($order_sts_kbn == '2' && $snd_kbn == '0') {
-                        //パターンB： 発注情報トラン．発注状況区分 = 貸与終了 かつ、発注情報トラン．理由区分 = 不要品返却以外のデータがある場合、かつ、
-                        //発注情報トラン．送信区分 = 未送信の場合、ボタンの文言は「貸与終了[済]」で表示する。)
-                        $list['wearer_end_button'] = "貸与終了";
-                        $list['wearer_end_red'] = "[済]";
+                if ($list['btnPattern'] == "") {
+                    //パターンA：
+                    $patarn_flg = false;
+                    foreach ($t_order_tran_results as $t_order_tran_result) {
+                        $order_req_no = $t_order_tran_result->order_req_no;
+                        $order_sts_kbn = $t_order_tran_result->order_sts_kbn;
+                        $order_reason_kbn = $t_order_tran_result->order_reason_kbn;
+                        $snd_kbn = $t_order_tran_result->snd_kbn;
+                        if ($order_sts_kbn == '2' && ($order_reason_kbn != '05' && $order_reason_kbn != '06' && $order_reason_kbn != '08')) {
+                            {
+                                $patarn_flg = true;
+                                break;
+                            }
+                        }
+                        if (!$patarn_flg) {
+                            $list['order_req_no'] = $order_req_no;
+                            $list['order_reason_kbn'] = $order_reason_kbn;
+                            $list['wearer_end_button'] = '貸与終了';
+                            $list['wearer_end_red'] = "";
+                            $list['disabled'] = "";
+                            $list['btnPattern'] = "A";
+                        }
+                    }
+                }
+                if ($list['btnPattern'] == "") {
+                    //パターンB： 発注情報トラン．発注状況区分 = 貸与終了 かつ、発注情報トラン．理由区分 = 不要品返却以外のデータがある場合、かつ、
+                    //発注情報トラン．送信区分 = 未送信の場合、ボタンの文言は「貸与終了[済]」で表示する。)
+                    $patarn_flg = true;
+                    foreach ($t_order_tran_results as $t_order_tran_result) {
+                        $order_req_no = $t_order_tran_result->order_req_no;
+                        $order_sts_kbn = $t_order_tran_result->order_sts_kbn;
+                        $order_reason_kbn = $t_order_tran_result->order_reason_kbn;
+                        $snd_kbn = $t_order_tran_result->snd_kbn;
+
+                        if ($order_sts_kbn == '2' && $snd_kbn == '0') {
+                            $patarn_flg = false;
+                            break;
+                        }
+                    }
+                    if (!$patarn_flg) {
                         $list['order_req_no'] = $order_req_no;
                         $list['order_reason_kbn'] = $order_reason_kbn;
-                        $list['return_reciept_button'] = "返却伝票ダウンロード";
-                    } elseif ($order_sts_kbn == '2' && $snd_kbn == '1') {
-                        //パターンC： 発注情報トラン．発注状況区分 = 貸与終了 かつ、発注情報トラン．理由区分 = 不要品返却以外のデータがある場合、かつ、
-                        //発注情報トラン．送信区分 = 送信済の場合、ボタンの文言は「貸与終了[済]」で非活性表示する。
-                        $list['wearer_end_button'] = "貸与終了[済]";
+                        $list['wearer_end_button'] = "貸与終了";
+                        $list['wearer_end_red'] = "[済]";
+                        $list['disabled'] = "";
+                        $list['btnPattern'] = "B";
+                    }
+                }
+                if ($list['btnPattern'] == "") {
+                    //パターンC： 発注情報トラン．発注状況区分 = 貸与終了 かつ、発注情報トラン．理由区分 = 不要品返却以外のデータがある場合、かつ、
+                    //発注情報トラン．送信区分 = 送信済の場合、ボタンの文言は「貸与終了[済]」で非活性表示する。
+                    $patarn_flg = true;
+                    foreach ($t_order_tran_results as $t_order_tran_result) {
+                        $order_req_no = $t_order_tran_result->order_req_no;
+                        $order_sts_kbn = $t_order_tran_result->order_sts_kbn;
+                        $order_reason_kbn = $t_order_tran_result->order_reason_kbn;
+                        $snd_kbn = $t_order_tran_result->snd_kbn;
+                        if ($order_sts_kbn == '2' && $order_sts_kbn == '1') {
+                            $patarn_flg = false;
+                            break;
+                        }
+                    }
+                    if (!$patarn_flg) {
+                        $list['order_req_no'] = $order_req_no;
+                        $list['order_reason_kbn'] = $order_reason_kbn;
+                        $list['wearer_end_button'] = "貸与終了";
                         $list['wearer_end_red'] = "[済]";
                         $list['disabled'] = "disabled";
-                        $list['return_reciept_button'] = "返却伝票ダウンロード";
-                    } elseif ($result->as_snd_kbn == '9') {
-                        //パターンD： 着用者基本マスタトラン.送信区分=処理中のデータがある場合、ボタンの文言は「貸与終了」で非活性表示する。
-                        $list['wearer_end_button'] = "貸与終了";
-                        $list['disabled'] = "disabled";
+                        $list['btnPattern'] = "C";
                     }
-                } else {
-                    //パターンA： 発注情報トラン．発注状況区分 = 貸与終了 かつ、発注情報トラン．理由区分 = 不要品返却以外のデータがない場合 、
-                    //ボタンの文言は「貸与終了」で表示する。
-                    $list['wearer_end_button'] = '貸与終了';
-                    $list['order_req_no'] = $order_req_no;
-                    $list['order_reason_kbn'] = $order_reason_kbn;
                 }
             }
+            // パターンE: 着用者基本マスタトラン.送信区分 = 処理中の場合、ボタンの文言は「職種変更または異動」で非活性表示する。
+            if ($list['btnPattern'] == "") {
+                if ($list['wearer_tran_flg'] == "1" && $list['snd_kbn'] == "処理中") {
+                    $list['wearer_end_button'] = "貸与終了";
+                    $list['wearer_end_red'] = "";
+                    $list['disabled'] = "disabled";
+                    $list['btnPattern'] = "D";
+                }
+            }
+            if ($list['btnPattern'] == "") {
+                //上記パターンに引っかからない場合はデフォ表示
+                $list['wearer_end_button'] = '貸与終了';
+                $list['wearer_end_red'] = "";
+                $list['disabled'] = "";
+                $list['return_reciept_button'] = false;
+                $list['btnPattern'] = "no_pattern";
+            }
+            //「返却伝票ダウンロード」ボタン生成
+            if ($list['btnPattern'] == "B" || $list['btnPattern'] == "C") {
+                $list['return_reciept_button'] = "返却伝票ダウンロード";
+            }
+
             // 発注入力へのパラメータ設定
             $list['param'] = '';
             $list['param'] .= $list['rntl_cont_no'].':';
@@ -446,7 +518,7 @@ $app->post('/wearer_end/search', function ()use($app){
 
 
 /**
- * 職種変更または異動
+ * 貸与終了
  * 発注パターンNGチェック＆セッション保持
  */
 $app->post('/wearer_end/order_check', function ()use($app){
@@ -472,6 +544,7 @@ $app->post('/wearer_end/order_check', function ()use($app){
     array_push($query_list, "werer_cd = '".$cond['werer_cd']."'");
     array_push($query_list, "rntl_sect_cd = '".$cond['rntl_sect_cd']."'");
     array_push($query_list, "job_type_cd = '".$cond['job_type_cd']."'");
+    array_push($query_list, "order_sts_kbn != '2'");
     $query = implode(' AND ', $query_list);
 
     $arg_str = "";
@@ -503,7 +576,7 @@ $app->post('/wearer_end/order_check', function ()use($app){
     }elseif(isset($cond["order_reason_kbn"])){
         $order_reason_kbn = $cond["order_reason_kbn"];
     }else{
-        $order_reason_kbn = '7';
+        $order_reason_kbn = '05';
     }
     if(isset($cond["order_tran_flg"])){
         $order_tran_flg = $cond["order_tran_flg"];
@@ -542,7 +615,6 @@ $app->post('/wearer_end/order_check', function ()use($app){
         $cond['ship_to_cd'] = $m_section[0]->std_ship_to_cd;
         $cond['ship_to_brnch_cd'] = $m_section[0]->std_ship_to_brnch_cd;
     }
-
     // POSTパラメータのセッション格納
     $app->session->set("wearer_end_post", array(
         'rntl_cont_no' => $cond["rntl_cont_no"],
@@ -558,6 +630,7 @@ $app->post('/wearer_end/order_check', function ()use($app){
         'wearer_tran_flg' => $wearer_tran_flg,
         'order_req_no' => $cond["order_req_no"],
         'return_req_no' => $cond["return_req_no"],
+        'werer_name' => $cond["werer_name"],
     ));
 
     echo json_encode($json_list);

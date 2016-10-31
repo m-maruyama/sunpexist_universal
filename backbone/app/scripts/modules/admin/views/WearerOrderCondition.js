@@ -82,15 +82,12 @@ define([
 						that.ui.zip_no.val(res_list['zip_no']);
 						that.ui.address.val(res_list['address1']+res_list['address2']+res_list['address3']+res_list['address4']);
 						that.ui.member_name_kana.val(res_list['wearer_info'][0]['werer_name_kana']);
-						that.ui.order_count.val(res_list['order_count']);
 						that.ui.back.val(res_list['param']);
 						var flg = false;
 						if(res_list['order_req_no']){
 							flg = true;
 							that.ui.delete.val(res_list['order_req_no']);
 						}
-						console.log(res_list['rntl_cont_no']);
-						console.log(res_list['rntl_sect_cd']);
 						// 入力完了、発注送信ボタン表示/非表示制御
 						var data = {
 							'rntl_cont_no': res_list['rntl_cont_no'],
@@ -212,7 +209,7 @@ define([
 							data:cond,
 							success:function(res){
 								var res_val = res.attributes;
-								if(res_val["error_msg"]) {
+								if(res_val["error_cd"]=='1') {
 									that.triggerMethod('error_msg', res_val["error_msg"]);
 								}else{
 									window.sessionStorage.setItem('referrer', 'wearer_input');
@@ -320,7 +317,7 @@ define([
 							if(res_val["error_code"]=='1') {
 								that.triggerMethod('error_msg', res_val["error_msg"]);
 							}else{
-								window.sessionStorage.setItem('referrer', 'wearer_order_input');
+								window.sessionStorage.setItem('referrer', 'wearer_order');
 								location.href="wearer_order_complete.html";
 							}
 						}
@@ -378,7 +375,7 @@ define([
 								if(res_val["error_code"]=='1') {
 									that.triggerMethod('error_msg', res_val["error_msg"]);
 								}else{
-									window.sessionStorage.setItem('referrer', 'wearer_order_send');
+									window.sessionStorage.setItem('referrer', 'wearer_order');
 									location.href="wearer_order_complete.html";
 								}
 							}

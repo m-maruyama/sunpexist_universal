@@ -71,7 +71,6 @@ $app->post('/purchase/input_item', function () use ($app) {
             $list['item_name'] = $result->item_name;
             array_push($all_list, $list);
         }
-        //ChromePhp::log($result);
 
     } else {
         $list['item_cd'] = null;
@@ -199,7 +198,6 @@ $app->post('/purchase_history/search', function () use ($app) {
 
             return true;
         }
-        ChromePhp::log('ここまできちゃった');
         echo json_encode($json_list);
         return true;
     }

@@ -60,6 +60,7 @@ define([
 								alert('仮パスワードを確認いたしました。パスワードを変更してください。');
 								that.triggerMethod('password');
 							}
+
 						}
 					});
 				}

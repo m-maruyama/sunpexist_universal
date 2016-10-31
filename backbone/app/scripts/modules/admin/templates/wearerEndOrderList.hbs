@@ -22,7 +22,7 @@
           <th rowspan="2">サイズ</th>
           <th rowspan="2" class="individual_flg" style="display:none;">対象</th>
           <th rowspan="2" class="individual_flg" style="display:none;">個体管理番号</th>
-          <th rowspan="2">発注枚数</th>
+          <th rowspan="2">返却枚数</th>
         </tr>
         <tr>
           <th>商品名</th>
@@ -38,6 +38,7 @@
             <input type="hidden" name="now_job_type_item_cd{{arr_num}}" value="{{job_type_item_cd}}">
             <input type="hidden" name="now_item_cd{{arr_num}}" value="{{item_cd}}">
             <input type="hidden" name="now_color_cd{{arr_num}}" value="{{color_cd}}">
+            <input type="hidden" name="now_size_cd{{arr_num}}" value="{{size_cd}}">
           </td>
           <td>{{item_name}}</td>
           <td>
@@ -52,28 +53,22 @@
               {{#each size_cd_list}}<option value="{{size_cd}}" {{selected}}>{{size_cd}}</option>{{/each}}
             </select>
           </td>
-          <input type="hidden" name="individual_disp{{arr_num}}" value="{{individual_disp}}">
           <input type="hidden" name="individual_cnt{{arr_num}}" value="{{individual_cnt}}">
           <td class="individual_flg" style="display:none;">
-            {{#if individual_disp}}
             {{#each individual_chk}}
             <label>
-              <input type="checkbox" id="now_target_flg{{name_no}}" name="now_target_flg{{name_no}}" value="{{individual_ctrl_no}}" {{checked}} {{disabled}}>
+              <input type="checkbox" id="now_target_flg{{name_no}}" name="now_target_flg{{name_no}}" value="{{individual_ctrl_no}}" checked disabled>
             </label>
             {{{br}}}
             {{/each}}
-            {{else}}
             <input type="hidden" id="now_target_flg{{arr_num}}" name="now_target_flg{{arr_num}}" value="empty">
-            {{/if}}
           </td>
           <td class="individual_flg" style="display:none;">
-            {{#if individual_disp}}
             {{{individual_ctrl_no}}}
-            {{/if}}
           </td>
           <td>
-            <input disabled type="text" style="width:4em; font-weight:normal; text-align:center;" class="input-sm" id="now_order_num{{arr_num}}" name="now_order_num{{arr_num}}" value="{{order_num}}" {{order_num_disable}}>
-            <input type="hidden" name="now_order_num_disable{{arr_num}}" value="{{order_num_disable}}">
+            <input disabled type="text" style="width:4em; font-weight:normal; text-align:center;" class="input-sm" id="now_return_num{{arr_num}}" name="now_return_num{{arr_num}}" value="{{return_num}}" {{return_num_disable}}>
+            <input type="hidden" name="now_return_num_disable{{arr_num}}" value="{{return_num_disable}}">
           </td>
         </tr>
         {{/each}}

@@ -235,11 +235,13 @@ $app->post('/account/modal', function () use ($app) {
 
     //パスワード
     if ($cond['password']) {
-        //パスワード
-        $hash_pass = $app->security->hash($cond['password']);
+        //パスワード md5化
+        //$hash_pass = $app->security->hash($cond['password']);
+        $hash_pass = md5($cond['password']);
         $old_pass_list = array();
         if ($m_account->pass_word) {
-            if ($app->security->checkHash($cond['password'], $m_account->pass_word)) {
+            //if ($app->security->checkHash($cond['password'], $m_account->pass_word)) {
+            if ($hash_pass == $m_account->pass_word) {
                 //前回と同じパスワードを受け付けない
                 // エラーメッセージを表示して処理を終了する。
                 $error_list['before_pass'] = '前回と同じパスワードは使用出来ません。';
@@ -247,7 +249,7 @@ $app->post('/account/modal', function () use ($app) {
             if (!$error_list) {
                 $old_pass_list = json_decode($m_account->old_pass_word, true);
                 foreach ($old_pass_list as $old_pass) {
-                    if ($app->security->checkHash($cond['password'], $old_pass)) {
+                    if ($hash_pass == $old_pass) {
                         //過去のパスワード10回分チェック、同じパスワードがあったらエラー
                         // エラーメッセージを表示して処理を終了する。
                         $error_list['old_pass'] = '過去に設定したことのあるパスワードは使用出来ません。';

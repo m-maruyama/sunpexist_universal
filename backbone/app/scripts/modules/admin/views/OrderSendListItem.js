@@ -32,7 +32,6 @@ define([
 					if(window.confirm('発注送信キャンセルを実行しますか？')) {
 					var osc_vals = this.ui.orderSend_cancel.val();
 					var osc_val = osc_vals.split(':');
-						console.log(osc_val);
 						var data = {
 							"corporate_id" : osc_val[0],//企業id
 							"werer_cd" : osc_val[1],//着用者コード
@@ -65,7 +64,6 @@ define([
 						});
 
 					} else{
-						console.log('no');
 						return;
 					}
 					// 「キャンセル」時の処理終了
@@ -76,7 +74,6 @@ define([
 					if(window.confirm('発注取り消しを実行しますか？')) {
 						var ocb_vals = this.ui.order_cancel.val();
 						var ocb_val = ocb_vals.split(':');
-						console.log(ocb_val);
 						//["000063", "RJ186952", "RB000131", "RB000131", "2"]
 						var data = {
 							"werer_cd" : ocb_val[0],//着用者コード
@@ -117,7 +114,6 @@ define([
 						});
 
 					} else{
-						console.log('no');
 						return;
 					}
 					// 「キャンセル」時の処理終了

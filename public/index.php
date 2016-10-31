@@ -49,6 +49,7 @@ try {
     include __DIR__.'/../app/unreturn.php';
     include __DIR__.'/../app/receive.php';
     include __DIR__.'/../app/lend.php';
+    include __DIR__.'/../app/print.php';
     include __DIR__.'/../app/stock.php';
     include __DIR__.'/../app/manpower_info.php';
     include __DIR__.'/../app/wearer.php';
