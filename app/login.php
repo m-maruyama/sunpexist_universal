@@ -54,7 +54,7 @@ $app->post('/login', function ()use($app) {
 
 
     //１件もない時とき
-    if(count($account) == 0){
+    if($account->count() == 0){
         $json_list['status'] = 1;
         echo json_encode($json_list);
         return true;
