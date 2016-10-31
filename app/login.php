@@ -52,8 +52,16 @@ $app->post('/login', function ()use($app) {
         ->join('MContract','MContract.corporate_id = MContractResource.corporate_id AND MContract.rntl_cont_no = MContractResource.rntl_cont_no')
         ->execute();
 
-    //１件もない時と論理削除フラグがある時
-    if($account[0]->mAccount->del_flg == '1' || count($account) == 0){
+
+    //１件もない時とき
+    if(count($account) == 0){
+        $json_list['status'] = 1;
+        echo json_encode($json_list);
+        return true;
+    }
+
+    //論理削除フラグがある時
+    if($account[0]->mAccount->del_flg == '1'){
         $json_list['status'] = 1;
         echo json_encode($json_list);
         return true;
