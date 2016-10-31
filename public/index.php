@@ -9,8 +9,6 @@ try {
     /*
      * Read the configuration
      */
-    print('aaa');
-    exit;
     $config = include APP_PATH.'/app/config/config.php';
 
     /**
