@@ -10,6 +10,7 @@ define([
 	'./SectionCondition',
 	'./JobTypeCondition',
 	'./SexKbnCondition',
+	'./SndKbnCondition',
 ], function(App) {
 	'use strict';
 	App.module('Admin.Views', function(Views, App, Backbone, Marionette, $, _){
@@ -25,6 +26,7 @@ define([
 				"section": ".section",
 				"job_type": ".job_type",
 				'sex_kbn': '.sex_kbn',
+				'snd_kbn': '.snd_kbn',
 			},
 			ui: {
 				'agreement_no': '#agreement_no',
@@ -32,6 +34,7 @@ define([
 				'werer_name': '#werer_name',
 				'section': '#section',
 				'sex_kbn': '.sex_kbn',
+				'snd_kbn': '.snd_kbn',
 				'job_type': '#job_type',
 				"reset": '.reset',
 				"search": '.search',
@@ -43,6 +46,7 @@ define([
 				'#member_name': 'member_name',
 				'#section': 'section',
 				'#sex_kbn': 'sex_kbn',
+				'#snd_kbn': 'snd_kbn',
 				'#job_type': 'job_type',
 				'#search': 'search',
 			},
@@ -60,6 +64,8 @@ define([
 					this.model.set('werer_name', this.ui.werer_name.val());
 					var sex_kbn = $("select[name='sex_kbn']").val();
 					this.model.set('sex_kbn', sex_kbn);
+					var snd_kbn = $("select[name='snd_kbn']").val();
+					this.model.set('snd_kbn', snd_kbn);
 					var section = $("select[name='section']").val();
 					this.model.set('section', section);
 					var job_type = $("select[name='job_type']").val();
@@ -102,9 +108,10 @@ define([
 				},
 				'change @ui.sex_kbn': function(){
 					this.ui.sex_kbn = $('#sex_kbn');
+				},
+				'change @ui.snd_kbn': function(){
+					this.ui.snd_kbn = $('#snd_kbn');
 				}
-
-
 			},
 		});
 	});

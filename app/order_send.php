@@ -20,7 +20,6 @@ $app->post('/order_send', function () use ($app) {
     $cond = $params['cond'];
     //$page = $params['page'];
     $query_list = array();
-
     //---注文情報マスタ---//
     //企業ID
     array_push($query_list, "m_wearer_std_tran.corporate_id = '" . $auth['corporate_id'] . "'");
@@ -39,6 +38,10 @@ $app->post('/order_send', function () use ($app) {
     //性別
     if (!empty($cond['sex_kbn'])) {
         array_push($query_list, "m_wearer_std_tran.sex_kbn = '" . $cond['sex_kbn'] . "'");
+    }
+    //状態
+    if (!empty($cond['snd_kbn'])) {
+        array_push($query_list, "m_wearer_std_tran.snd_kbn = '" . $cond['snd_kbn'] . "'");
     }
     //拠点
     if (!empty($cond['section'])) {
@@ -71,6 +74,7 @@ $app->post('/order_send', function () use ($app) {
     $arg_str .= "t_order_tran.snd_kbn as as_order_snd_kbn,";//送信区分
     $arg_str .= "t_order_tran.upd_date as as_order_upd_date,";//更新日時
     $arg_str .= "m_wearer_std_tran.sex_kbn as as_sex_kbn,";//性別
+    $arg_str .= "m_wearer_std_tran.snd_kbn as as_snd_kbn,";//性別
     $arg_str .= "m_wearer_std_tran.corporate_id as as_corporate_id,";//会社概要
     $arg_str .= "m_wearer_std_tran.rntl_cont_no as as_rntl_cont_no,";//レンタル契約no
     $arg_str .= "m_wearer_std_tran.rntl_sect_cd as as_rntl_sect_cd,";//レンタル部門コード
@@ -174,6 +178,7 @@ $app->post('/order_send', function () use ($app) {
 
     $tran_result_obj = (array)$results2;
     $tran_results_cnt = $tran_result_obj["\0*\0_count"];
+    ChromePhp::LOG($results2);
 
     if(!empty($tran_results_cnt)) {
 
@@ -297,16 +302,28 @@ $app->post('/order_send', function () use ($app) {
                 // 発注情報トラン無
                 $list['order_tran_flg'] = '0';
             }
-            // 状態、着用者マスタトラン有無フラグ
-            $list['snd_kbn'] = "-";
+
+
+            // 状態
+            $query_list = array();
+            array_push($query_list, "cls_cd = '026'");
+            array_push($query_list, "gen_cd = '" . $result->as_order_snd_kbn . "'");
+            $query = implode(' AND ', $query_list);
+            $gencode = MGencode::query()
+                ->where($query)
+                ->columns('*')
+                ->execute();
+            foreach ($gencode as $gencode_map) {
+                $list['snd_kbn'] = $gencode_map->gen_name;
+            }
+            // 着用者マスタトラン有無フラグ
+
+            //list['snd_kbn'] = "-";
             if (isset($result->as_order_snd_kbn)) {
                 // 状態
                 if ($result->as_order_snd_kbn == '0') {
-                    $list['snd_kbn'] = "未送信";
                 } elseif ($result->as_order_snd_kbn == '1') {
-                    $list['snd_kbn'] = "送信済";
                 } elseif ($result->as_order_snd_kbn == '9') {
-                    $list['snd_kbn'] = "処理中";
                 }
                 // 着用者マスタトラン有
                 $list['wearer_tran_flg'] = '1';
@@ -315,6 +332,7 @@ $app->post('/order_send', function () use ($app) {
                 // 着用者マスタトラン無
                 $list['wearer_tran_flg'] = '0';
             }
+
             // 拠点
             if (!empty($result->wst_rntl_sect_name)) {
                 $list['rntl_sect_name'] = $result->wst_rntl_sect_name;
@@ -327,18 +345,23 @@ $app->post('/order_send', function () use ($app) {
             } else {
                 $list['job_type_name'] = "-";
             }
-
-
             array_push($all_list, $list);
         }
     }
-    ChromePhp::LOG("bbb");
 
     $page_list['total_records'] = $results_cnt;
     $json_list['list'] = $all_list;
 
     echo json_encode($json_list);
 });
+
+
+
+
+
+
+
+
 
 
 /**
@@ -527,3 +550,75 @@ $app->post('/order_send/cancel', function () use ($app) {
 
 });
 
+
+
+
+/**
+ * 発注送信処理
+ * 入力項目：状態
+ */
+$app->post('/snd_kbn_change', function ()use($app){
+    $params = json_decode(file_get_contents("php://input"), true);
+
+    // アカウントセッション取得
+    $auth = $app->session->get("auth");
+    //ChromePhp::LOG($auth);
+
+    // 前画面セッション取得
+    //$wearer_chg_post = $app->session->get("wearer_chg_post");
+    //ChromePhp::LOG($wearer_chg_post);
+
+    $query_list = array();
+    $list = array();
+    $all_list = array();
+    $json_list = array();
+
+    array_push($query_list, "cls_cd = '026'");
+    $query = implode(' AND ', $query_list);
+
+    $arg_str = '';
+    $arg_str = 'SELECT ';
+    $arg_str .= ' * ';
+    $arg_str .= ' FROM ';
+    $arg_str .= 'm_gencode';
+    $arg_str .= ' WHERE ';
+    $arg_str .= $query;
+
+    $m_gencode = new MGencode();
+    $results = new Resultset(NULL, $m_gencode, $m_gencode->getReadConnection()->query($arg_str));
+    $results_array = (array) $results;
+    $results_cnt = $results_array["\0*\0_count"];
+
+    if ($results_cnt > 0) {
+        $paginator_model = new PaginatorModel(
+            array(
+                "data"  => $results,
+                "limit" => $results_cnt,
+                "page" => 1
+            )
+        );
+        $paginator = $paginator_model->getPaginate();
+        $results = $paginator->items;
+
+        foreach ($results as $result) {
+            $list['snd_kbn'] = $result->gen_cd;
+            $list['snd_kbn_name'] = $result->gen_name;
+
+            // 初期選択状態版を生成
+            //if ($list['snd_kbn'] == $wearer_chg_post['snd_kbn']) {
+            //    $list['selected'] = 'selected';
+            //} else {
+            //    $list['selected'] = '';
+            //}
+            array_push($all_list, $list);
+        }
+    } else {
+        $list['snd_kbn'] = NULL;
+        $list['snd_kbn_name'] = '';
+        $list['selected'] = '';
+        array_push($all_list, $list);
+    }
+
+    $json_list['snd_kbn_list'] = $all_list;
+    echo json_encode($json_list);
+});

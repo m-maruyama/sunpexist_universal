@@ -15,6 +15,7 @@ define([
 	'../views/SectionModalListList',
 	'../views/Pagination',
 	'../views/SexKbnCondition',
+	'../views/SndKbnCondition',
 	"entities/models/Pager",
 	"entities/models/AdminOrderSend",
 	"entities/models/AdminOrderSendListCondition",
@@ -42,6 +43,8 @@ define([
 				var sectionConditionView = new App.Admin.Views.SectionCondition();
 				var jobTypeConditionView = new App.Admin.Views.JobTypeCondition();
 				var sexKbnConditionView = new App.Admin.Views.SexKbnCondition();
+				var sndKbnConditionView = new App.Admin.Views.SndKbnCondition();
+
 
 				var orderSendListConditionModel = new App.Entities.Models.AdminOrderSendListCondition();
 				var orderSendConditionView = new App.Admin.Views.OrderSendCondition({
@@ -137,6 +140,7 @@ define([
 				orderSendConditionView.section.show(sectionConditionView);
 				orderSendConditionView.job_type.show(jobTypeConditionView);
 				orderSendConditionView.sex_kbn.show(sexKbnConditionView);
+				orderSendConditionView.snd_kbn.show(sndKbnConditionView);
 				orderSendView.sectionModal.show(sectionModalView.render());
 				sectionModalView.page.show(paginationView);
 				sectionModalView.condition.show(sectionModalConditionView);

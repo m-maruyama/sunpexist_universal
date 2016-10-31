@@ -14,6 +14,7 @@ define([
 					cster_emply_cd : null,
 					werer_name : null,
 					sex_kbn : null,
+					snd_kbn : null,
 					section : null,
 					job_type : null,
 					order_req_no :null,
@@ -30,6 +31,9 @@ define([
 				}
 				if(this.get('sex_kbn')) {
 					result.sex_kbn = this.get('sex_kbn');
+				}
+				if(this.get('snd_kbn')) {
+					result.snd_kbn = this.get('snd_kbn');
 				}
 				if(this.get('order_req_no')) {
 					result.order_req_no = this.get('order_req_no');
