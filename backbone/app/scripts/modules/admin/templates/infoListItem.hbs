@@ -1,8 +1,12 @@
 <td class='td_id'>{{index}}</td>
 <td class='td_corporate'>{{corporate_name}}</td>
-<td class='td_edit'><a class="btn btn-primary btn-large edit" id="{{index}}"><span class="glyphicon glyphicon-pencil"></span></a></td>
-<td class='td_delete'><a class="btn btn-primary btn-large delete" id="{{index}}"><span class="glyphicon glyphicon-remove-circle"></span></a></td>
+<td class='td_edit'>
+  <a class="btn btn-primary btn-large"><span class="glyphicon glyphicon-pencil edit" id="{{index}}"></span></a>
+</td>
+<td class='td_delete'>
+  <a class="btn btn-primary btn-large"><span class="glyphicon glyphicon-remove-circle delete" id="{{index}}"></span></a>
+</td>
 <td class='td_display_order'>{{display_order}}</td>
 <td class='td_open_date'>{{open_date}}</td>
 <td class='td_close_date'>{{close_date}}</td>
-<td class='td_message'>{{message}}</td>
+<td class='td_message' style="text-align:left;">{{message}}</td>

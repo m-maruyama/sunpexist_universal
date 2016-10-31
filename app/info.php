@@ -61,7 +61,7 @@ $app->post('/info/search', function ()use($app){
   		$list['index'] = $result->as_index;
       $list['corporate_id'] = $result->as_corporate_id;
       $list['corporate_name'] = $result->as_corporate_name;
-  		$list['message'] = htmlspecialchars($result->as_message);
+  		$list['message'] = mb_strimwidth(htmlspecialchars($result->as_message), 0, 100, "・・・");
   		$list['display_order'] = $result->as_display_order;
   		$list['open_date'] = date('Y/m/d H:i', strtotime($result->as_open_date));
   		$list['close_date'] = date('Y/m/d H:i', strtotime($result->as_close_date));
@@ -191,7 +191,7 @@ $app->post('/info/add', function () use ($app) {
 		} catch (Exception $e) {
 	    $transaction = new Resultset(NULL, $t_info, $t_info->getReadConnection()->query("rollback"));
 
-	    ChromePhp::log($e);
+	    //ChromePhp::log($e);
 			$json_list["error_code"] = "1";
 	    $error_msg[] = 'E001 登録処理中に予期せぬエラーが発生しました。';
 	    $json_list['error_msg'] = $error_msg;
@@ -224,6 +224,11 @@ $app->post('/info/edit', function () use ($app) {
 	$error_msg = array();
 
 	if ($cond["mode"] == "input") {
+		if (empty($cond["id"])) {
+			$json_list["error_code"] = "1";
+			echo json_encode($json_list);
+			return;
+		}
 		//--お知らせ参照--//
 		$query_list = array();
 		$query_list[] = "index = ".$cond["id"];
@@ -235,8 +240,9 @@ $app->post('/info/edit', function () use ($app) {
 	  $arg_str .= 't_info';
 		$arg_str .= ' WHERE ';
 	  $arg_str .= $query;
+		//ChromePhp::log($arg_str);
 	  $t_info = new TInfo();
-	  $results = new Resultset(null, $t_info, $t_infoe->getReadConnection()->query($arg_str));
+	  $results = new Resultset(null, $t_info, $t_info->getReadConnection()->query($arg_str));
 	  $results_array = (array) $results;
 	  $results_cnt = $results_array["\0*\0_count"];
 		if (!empty($results_cnt)) {
@@ -270,13 +276,13 @@ $app->post('/info/edit', function () use ($app) {
 			  if ($results_cnt > 0) {
 			    $paginator_model = new PaginatorModel(
 			      array(
-			        "data"  => $results,
+			        "data"  => $m_corporate_results,
 			        "limit" => 1,
 			        "page" => 1
 			      )
 			    );
 			    $paginator = $paginator_model->getPaginate();
-			    $results = $paginator->items;
+			    $m_corporate_results = $paginator->items;
 			    foreach ($m_corporate_results as $m_corporate_result) {
 						$json_list['corporate'] = $m_corporate_result->corporate_name;
 			    }
@@ -304,6 +310,10 @@ $app->post('/info/edit', function () use ($app) {
 	if ($cond["mode"] == "update") {
 		//--入力値チェック--//
 		_input_check($cond, $error_msg);
+		// ※別でIDチェック
+		if (empty($cond["info_id"])) {
+			$error_msg[] = "ID：値が不正です。";
+		}
 		if (!empty($error_msg)) {
 			// エラーがあった場合、以降処理をしない
 			$json_list["error_code"] = "1";
@@ -312,51 +322,41 @@ $app->post('/info/edit', function () use ($app) {
 			return;
 		}
 
-		//--お知らせ登録処理--//
-		// CALUM値の設定
-    $calum_list = array(
-      "corporate_id",
-      "message",
-      "display_order",
-      "open_date",
-      "close_date",
-      "rgst_date",
-      "rgst_user_id",
-      "upd_date",
-      "upd_user_id"
-    );
-    $calum_query = implode(",", $calum_list);
-		// VALUES値の設定
-    $values_list = array();
-		$values_list[] = "'".$cond["corporate"]."'";
-		$values_list[] = "'".$cond["message"]."'";
-		$values_list[] = "'".$cond["display_order"]."'";
-		$values_list[] = "'".$cond["open_date"]."'";
-		$values_list[] = "'".$cond["close_date"]."'";
-		$values_list[] = "'".date("Y-m-d H:i:s", time())."'";
-		$values_list[] = "'".$auth["accnt_no"]."'";
-		$values_list[] = "'".date("Y-m-d H:i:s", time())."'";
-		$values_list[] = "'".$auth["accnt_no"]."'";
-		$values_query = implode(",", $values_list);
+		//--お知らせ更新処理--//
+		$src_query_list = array();
+		$src_query_list[] = "index = ".$cond["info_id"];
+		$src_query = implode(' AND ', $src_query_list);
+
+		$up_query_list = array();
+		$up_query_list[] = "message = '".$cond["message"]."'";
+		$up_query_list[] = "display_order = '".$cond["display_order"]."'";
+		$up_query_list[] = "open_date = '".$cond["open_date"]."'";
+		$up_query_list[] = "close_date = '".$cond["close_date"]."'";
+		$up_query_list[] = "upd_date = '".date("Y-m-d H:i:s", time())."'";
+		$up_query_list[] = "upd_user_id = '".$auth["accnt_no"]."'";
+		$up_query = implode(',', $up_query_list);
 
 	  $t_info = new TInfo();
 	  $results = new Resultset(NULL, $t_info, $t_info->getReadConnection()->query('begin'));
 		try {
 			$arg_str = "";
-	    $arg_str = "INSERT INTO t_info";
-	    $arg_str .= "(".$calum_query.")";
-	    $arg_str .= " VALUES ";
-	    $arg_str .= "(".$values_query.")";
-	    //ChromePhp::LOG($arg_str);
-	    $results = new Resultset(NULL, $t_info, $t_info->getReadConnection()->query($arg_str));
+			$arg_str = "UPDATE t_info SET ";
+			$arg_str .= $up_query;
+			$arg_str .= " WHERE ";
+			$arg_str .= $src_query;
+			//ChromePhp::LOG($arg_str);
+			$t_info = new TInfo();
+			$results = new Resultset(NULL, $t_info, $t_info->getReadConnection()->query($arg_str));
+			$result_obj = (array)$results;
+			$results_cnt = $result_obj["\0*\0_count"];
 
 	    $transaction = new Resultset(NULL, $t_info, $t_info->getReadConnection()->query("commit"));
 		} catch (Exception $e) {
 	    $transaction = new Resultset(NULL, $t_info, $t_info->getReadConnection()->query("rollback"));
 
-	    ChromePhp::log($e);
+	    //ChromePhp::log($e);
 			$json_list["error_code"] = "1";
-	    $error_msg[] = 'E001 登録処理中に予期せぬエラーが発生しました。';
+	    $error_msg[] = 'E001 更新処理中に予期せぬエラーが発生しました。';
 	    $json_list['error_msg'] = $error_msg;
 	    echo json_encode($json_list);
 	    return;
@@ -364,6 +364,67 @@ $app->post('/info/edit', function () use ($app) {
 
 		echo json_encode($json_list);
 	}
+});
+
+/*
+ * お知らせ管理
+ * お知らせ削除
+ */
+$app->post('/info/delete', function () use ($app) {
+  $params = json_decode(file_get_contents('php://input'), true);
+
+  // アカウントセッション
+  $auth = $app->session->get('auth');
+
+  // フロントパラメータ
+	$cond = $params['data'];
+  //ChromePhp::LOG($cond);
+
+  $json_list = array();
+
+	// エラーコード 0:正常 1:異常
+	$json_list["error_code"] = "0";
+	$error_msg = array();
+
+	if (empty($cond["info_id"])) {
+		$json_list["error_code"] = "1";
+		$error_msg[] = "削除するIDが不正です。";
+		$json_list['error_msg'] = $error_msg;
+		echo json_encode($json_list);
+		return;
+	}
+
+	$t_info = new TInfo();
+	$results = new Resultset(NULL, $t_info, $t_info->getReadConnection()->query('begin'));
+	try {
+		$query_list = array();
+		$query_list[] = "index = ".$cond["info_id"];
+		$query = implode(' AND ', $query_list);
+
+		$arg_str = "";
+    $arg_str = "DELETE FROM ";
+    $arg_str .= "t_info";
+    $arg_str .= " WHERE ";
+    $arg_str .= $query;
+    //ChromePhp::LOG($arg_str);
+    $t_info = new TInfo();
+    $results = new Resultset(NULL, $t_info, $t_info->getReadConnection()->query($arg_str));
+    $result_obj = (array)$results;
+    $results_cnt = $result_obj["\0*\0_count"];
+
+		$transaction = new Resultset(NULL, $t_info, $t_info->getReadConnection()->query("commit"));
+	} catch (Exception $e) {
+		$transaction = new Resultset(NULL, $t_info, $t_info->getReadConnection()->query("rollback"));
+
+		//ChromePhp::log($e);
+		$json_list["error_code"] = "1";
+		$error_msg[] = 'E001 削除処理中に予期せぬエラーが発生しました。';
+		$json_list['error_msg'] = $error_msg;
+		echo json_encode($json_list);
+		return;
+	}
+
+	echo json_encode($json_list);
 });
 
 /**

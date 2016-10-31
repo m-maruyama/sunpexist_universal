@@ -7,9 +7,12 @@
 							<span aria-hidden="true">&times;</span>
 						</button>
 						<h1>お知らせ編集</h1>
+						<div class="errors"></div>
 						<div class="form-group">
-							<label class="col-md-3 control-label info_id" for="">ID</label>
-							<div class="col-md-8"></div>
+							<label class="col-md-3 control-label" for="">ID</label>
+							<div class="col-md-4">
+								<input type="text" class="form-control input-sm" id="info_id" value="" disabled="disabled">
+							</div>
 						</div>
 						<div class="form-group" style="margin-bottom: 40px">
 							<label class="col-md-3 control-label" for="">企業名</label>
@@ -47,7 +50,7 @@
 						</div>
 						<div class="row" style="margin-bottom: 20px">
 							<div class="col-md-3 col-md-push-5">
-								<span type="button" class="btn btn-primary btn-block btn-sm update" data-dismiss="modal" title="更新">更新</span>
+								<span type="button" class="btn btn-primary btn-block btn-sm update" title="更新">更新</span>
 							</div>
 							<div class="col-md-3 col-md-push-5">
 								<span type="button" class="btn btn-primary btn-block btn-sm cancel" data-dismiss="modal" title="キャンセル">キャンセル</span>

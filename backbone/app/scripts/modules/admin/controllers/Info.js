@@ -74,30 +74,24 @@ define([
 				// お知らせ追加モーダル処理 ここまで
 
 				// お知らせ編集モーダル処理 ここから
-				this.listenTo(infoListListView, 'childview:click:editBtn', function(id){
+				this.listenTo(infoListListView, 'childview:click:editBtn', function(view, id){
 					var infoEditModalView = new App.Admin.Views.InfoEditModal({
 						id: id
 					});
 					infoView.infoEditModal.show(infoEditModalView);
 					infoEditModalView.ui.modal.modal('show');
-
 					this.listenTo(infoEditModalView, 'complete', function(){
 						fetchList();
 					});
 				});
 				// お知らせ編集モーダル処理 ここまで
 
-				this.listenTo(infoView, 'updated', function(){
-					addFlag = false;
+				// お知らせ削除処理 ここから
+				this.listenTo(infoListListView, 'childview:complete', function(){
 					fetchList();
-					infoView = new App.Admin.Views.Info({
-						collection: infoListListCollection
-					});
 				});
+				// お知らせ削除処理 ここまで
 
-				this.listenTo(infoListListCollection, 'sync', function(){
-					addFlag = false;
-				});
 				App.main.show(infoView);
 				infoView.page.show(paginationView);
 				infoView.page_2.show(paginationView2);

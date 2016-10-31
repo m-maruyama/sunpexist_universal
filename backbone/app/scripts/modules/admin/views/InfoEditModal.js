@@ -9,7 +9,7 @@ define([
 	App.module('Admin.Views', function(Views, App, Backbone, Marionette, $, _){
 		Views.InfoEditModal = Marionette.ItemView.extend({
 			defaults: {
-				id: null
+				id: ''
 			},
 			initialize: function(options) {
 					this.options = options || {};
@@ -25,7 +25,7 @@ define([
 			ui: {
 				'modal': '#info_edit_modal',
 				'close': '.close',
-				'info_id': '.info_id',
+				'info_id': '#info_id',
 				'corporate': '#corporate',
 				'display_order': '#display_order',
 				'open_date': '#open_date',
@@ -49,7 +49,7 @@ define([
 				var modelForUpdate = this.model;
 				modelForUpdate.url = App.api.IN0030;
 				var cond = {
-					"scr": 'お問い合わせ追加-編集表示',
+					"scr": 'お問い合わせ更新-編集表示',
 					"log_type": "2",
 					"data": data
 				};
@@ -59,12 +59,11 @@ define([
 						var res_list = res.attributes;
 						// 異常があった場合
 						if (res_list["error_code"] !== "0") {
-							alert("対象のデータは既に存在しておりません。");
+							alert("対象の詳細データが見つかりませんでした。");
 							location.href = "info.html";
 						}
-
 						// ID
-						that.ui.info_id.text(res_list["index"]);
+						that.ui.info_id.val(res_list["info_id"]);
 						// 企業名
 						that.ui.corporate.val(res_list["corporate"]);
 						// 表示順
@@ -88,7 +87,7 @@ define([
 			},
 			events: {
 				// モーダル☓ボタン
-				"click @ui.close": function(e){
+				"click @ui.close": function(){
 					var that = this;
 					$(".errors").text('');
 					this.ui.display_order.val('');
@@ -98,7 +97,7 @@ define([
 					this.ui.modal.modal('hide');
 				},
 				// キャンセルボタン
-				"click @ui.cancel": function(e){
+				"click @ui.cancel": function(){
 					var that = this;
 					$(".errors").text('');
 					this.ui.display_order.val('');
@@ -107,25 +106,24 @@ define([
 					this.ui.message.val('');
 					this.ui.modal.modal('hide');
 				},
-				// 追加ボタン
-				"click @ui.add": function(e){
+				// 更新ボタン
+				"click @ui.update": function(){
 					var that = this;
-
 					// 入力値取得
 					var data = {
 						"mode": "update",
+						"info_id": this.ui.info_id.val(),
 						"corporate": this.ui.corporate.val(),
 						"display_order": this.ui.display_order.val(),
 						"open_date": this.ui.open_date.val(),
 						"close_date": this.ui.close_date.val(),
 						"message": this.ui.message.val()
 					};
-
 					// 入力値チェック、登録処理
 					var modelForUpdate = this.model;
-					modelForUpdate.url = App.api.IN0020;
+					modelForUpdate.url = App.api.IN0030;
 					var cond = {
-						"scr": 'お問い合わせ追加-新規登録',
+						"scr": 'お問い合わせ編集-更新',
 						"log_type": "2",
 						"data": data
 					};
