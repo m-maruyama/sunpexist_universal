@@ -6,6 +6,7 @@ use Phalcon\Mvc\Model\Resultset;
  * ログイン
  */
 $app->post('/login', function ()use($app) {
+    ChromePhp::LOG(APP_PATH);
     $params = json_decode(file_get_contents("php://input"), true);
     $json_list = array();
     $json_list['status'] = 0;
