@@ -7,6 +7,7 @@ use Phalcon\Paginator\Adapter\QueryBuilder as PaginatorQueryBuilder;
 
 // 共通処理（操作ログ登録）
 $app->before(function () use ($app) {
+    ChromePhp::LOG(1);
     $params = json_decode(file_get_contents('php://input'), true);
     if (!$params && isset($_FILES['file'])) {
         $params['scr'] = 'upfile:'.$_FILES['file']['name'];
