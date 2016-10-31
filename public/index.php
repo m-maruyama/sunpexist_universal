@@ -9,7 +9,7 @@ try {
     /*
      * Read the configuration
      */
-    ChromePhp::LOG(APP_PATH);
+    print_r(APP_PATH);
     $config = include APP_PATH.'/app/config/config.php';
 
     /**
