@@ -43,6 +43,7 @@ try {
     include __DIR__.'/../app/common.php';
     include __DIR__.'/../app/csv_download.php';
     include __DIR__.'/../app/account.php';
+    include __DIR__.'/../app/info.php';
     include __DIR__.'/../app/inquiry.php';
     include __DIR__.'/../app/history.php';
     include __DIR__.'/../app/unreturn.php';

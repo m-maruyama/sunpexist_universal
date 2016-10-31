@@ -1,0 +1,58 @@
+<div class="modal" id="info_add_modal" tabindex="-1">
+	<div class="modal-dialog">
+			<div class="row">
+				<form class="form-horizontal">
+					<div class="col-md-10 box_purple">
+						<button type="button" class="close" data-dismiss="modal">
+							<span aria-hidden="true">&times;</span>
+						</button>
+						<h1>お知らせ追加</h1>
+						<div class="errors"></div>
+						<div class="form-group" style="margin-bottom: 40px">
+							<label class="col-md-3 control-label" for="">企業名</label>
+							<div class="col-md-6">
+								<select class="form-control input-sm" id="corporate" name="corporate">
+								</select>
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-md-3 control-label" for="">表示順</label>
+							<div class="col-md-4">
+								<input type="text" class="form-control input-sm" id="display_order" name="display_order" value="">
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-md-3 control-label" for="open_date">公開開始日</label>
+							<div class="col-md-8 form-inline">
+								<div class='input-group date datetimepicker'>
+									<input type='text' class="form-control input-sm datetimepicker" id='open_date' name="open_date">
+								</div>
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-md-3 control-label" for="close_date">公開終了日</label>
+							<div class="col-md-8 form-inline">
+								<div class='input-group date datetimepicker'>
+									<input type='text' class="form-control input-sm datetimepicker" id='close_date' name="close_date">
+								</div>
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-md-3 control-label" for="">表示メッセージ</label>
+							<div class="col-md-8">
+								<textarea class="form-control input-sm" rows="10" id="message" name="message"></textarea>
+							</div>
+						</div>
+						<div class="row" style="margin-bottom: 20px">
+							<div class="col-md-3 col-md-push-5">
+								<span type="button" class="btn btn-primary btn-block btn-sm add" title="追加">追加</span>
+							</div>
+							<div class="col-md-3 col-md-push-5">
+								<span type="button" class="btn btn-primary btn-block btn-sm cancel" data-dismiss="modal" title="キャンセル">キャンセル</span>
+							</div>
+						</div>
+					</div>
+				</form>
+			</div>
+	</div>
+</div>

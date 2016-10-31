@@ -704,7 +704,6 @@ $app->post('/import_csv', function () use ($app) {
     //ChromePhp::LOG("インポートログ登録クエリー");
     //ChromePhp::LOG($arg_str);
     $results = new Resultset(NULL, $t_import_job, $t_import_job->getReadConnection()->query($arg_str));
-    $results_cnt = $result_obj["\0*\0_count"];
 
     // トランザクション-コミット
     $transaction = new Resultset(NULL, $t_import_job, $t_import_job->getReadConnection()->query("commit"));

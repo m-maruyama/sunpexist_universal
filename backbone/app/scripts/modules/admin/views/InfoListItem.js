@@ -10,24 +10,24 @@ define([
 			template: App.Admin.Templates.infoListItem,
 			tagName: "tr",
 			ui: {
-				"lockBtn": ".lock",
 				"editBtn": ".edit",
 				"deleteBtn": ".delete"
 			},
 			onRender: function() {
 			},
 			events: {
-				'click @ui.lockBtn': function(e){
-					e.preventDefault();
-					this.triggerMethod('click:a', this.model, '3');
-				},
 				'click @ui.editBtn': function(e){
 					e.preventDefault();
-					this.triggerMethod('click:a', this.model, '1');
+					var that = this;
+					var target_id = e.target.id;
+					alert(target_id)
+					this.triggerMethod('click:editBtn', target_id);
 				},
 				'click @ui.deleteBtn': function(e){
 					e.preventDefault();
-					this.triggerMethod('click:a', this.model, '2');
+					var that = this;
+					var target_id = e.target.id;
+					this.triggerMethod('click:deleteBtn', target_id);
 				},
 			},
 			templateHelpers: {

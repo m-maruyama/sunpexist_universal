@@ -1415,46 +1415,7 @@ $app->post('/info/modal', function ()use($app) {
 	echo json_encode($json_list);
 
 });
-/**
- * お知らせ検索
- */
-$app->post('/info/search', function ()use($app) {
 
-	$json_list = array();
-	$auth = $app->session->get("auth");
-	if($auth['user_type'] == '1'){
-		$json_list['redirect'] = $auth['user_type'];
-		echo json_encode($json_list);
-		return;
-	}
-	$params = json_decode(file_get_contents("php://input"), true);
-
-	$cond = $params['cond'];
-	$page = $params['page'];
-
-	$results = TInfo::find(array(
-		'order'	  => "index asc"
-	));
-	$list = array();
-	$all_list = array();
-	$json_list = array();
-	foreach ($results as $result) {
-		$list['index'] = $result->index;
-		$list['message'] = htmlspecialchars($result->message);
-		$list['display_order'] = $result->display_order;
-		$list['open_date'] = date('Y/m/d H:i',strtotime($result->open_date));
-		$list['close_date'] = date('Y/m/d H:i',strtotime($result->close_date));
-		array_push($all_list,$list);
-	}
-	$page_list['records_per_page'] = $page['records_per_page'];
-	$page_list['page_number'] = $page['page_number'];
-	$page_list['total_records'] = count($results);
-	$json_list['page'] = $page_list;
-	$json_list['list'] = $all_list;
-	// ChromePhp::log($json_list);
-
-	echo json_encode($json_list);
-});
 /**
  * 在庫専用貸与パターン取得
  */

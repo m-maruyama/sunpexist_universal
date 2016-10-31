@@ -7,6 +7,7 @@ define([
 	App.module('Admin.Views', function(Views, App, Backbone, Marionette, $, _){
 		Views.Info = Marionette.LayoutView.extend({
 			template: App.Admin.Templates.info,
+			model: new Backbone.Model(),
 			behaviors: {
 				"Alerts": {
 					behaviorClass: App.Admin.Behaviors.Alerts
@@ -14,14 +15,16 @@ define([
 			},
 			regions: {
 				"page": ".page",
-				"infoModal": '.info_modal',
-				"listTable": ".listTable"
+				"page_2": ".page_2",
+				"listTable": ".listTable",
+				"infoAddModal": '.info_add_modal',
+				"infoEditModal": '.info_edit_modal',
+				"infoDeleteModal": '.info_delete_modal'
 			},
 			ui: {
 				'modal': '#myModal',
 				'addBtn': '.add',
-				'message': '#message',
-				'updateBtn': 'button.update'
+				'message': '#message'
 			},
 			bindings: {
 			},
@@ -32,6 +35,7 @@ define([
 			events: {
 				'click @ui.addBtn': function(e){
 					e.preventDefault();
+					this.triggerMethod('click:addBtn');
 				},
 			}
 		});

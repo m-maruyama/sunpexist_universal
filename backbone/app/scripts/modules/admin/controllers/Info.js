@@ -3,13 +3,17 @@ define([
 	'./Abstract',
 	'../views/Info',
 	'../views/InfoListList',
-	'../views/InfoModal',
+	'../views/InfoAddModal',
+	'../views/InfoEditModal',
 	'../views/Pagination',
 	"entities/models/Pager",
 	"entities/models/AdminInfo",
 	"entities/models/AdminInfoListCondition",
+	"entities/models/AdminInfoAddModal",
+	"entities/models/AdminInfoEditModal",
 	"entities/collections/AdminInfoListList",
-	"entities/collections/AdminInfoModal",
+	"entities/collections/AdminInfoAddModal",
+	"entities/collections/AdminInfoEditModal",
 	'bootstrap'
 ], function(App) {
 	'use strict';
@@ -18,15 +22,20 @@ define([
 			_sync : function(){
 				var that = this;
 				this.setNav('info');
+				var addFlag = true;
 				var pagerModel = new App.Entities.Models.Pager();
 
-				var infoModel = null;
 				var infoListListCollection = new App.Entities.Collections.AdminInfoListList();
-				var AdminInfoModal = new App.Entities.Collections.AdminInfoModal();
-				
-				var infoModalView = new App.Admin.Views.InfoModal({
-					collection: AdminInfoModal
+				var AdminInfoAddModal = new App.Entities.Collections.AdminInfoAddModal();
+				var AdminInfoEditModal = new App.Entities.Collections.AdminInfoEditModal();
+
+				var infoAddModalView = new App.Admin.Views.InfoAddModal({
+					collection: AdminInfoAddModal
 				});
+				var infoEditModalView = new App.Admin.Views.InfoEditModal({
+					collection: AdminInfoEditModal
+				});
+
 				var infoListConditionModel = new App.Entities.Models.AdminInfoListCondition();
 				var infoView = new App.Admin.Views.Info({
 					model:infoListConditionModel
@@ -35,7 +44,9 @@ define([
 					collection: infoListListCollection,
 					pagerModel: pagerModel
 				});
+
 				var paginationView = new App.Admin.Views.Pagination({model: pagerModel});
+				var paginationView2 = new App.Admin.Views.Pagination({model: pagerModel});
 
 				var fetchList = function(pageNumber){
 					if(pageNumber){
@@ -47,11 +58,35 @@ define([
 				this.listenTo(paginationView, 'selected', function(pageNumber){
 					fetchList(pageNumber);
 				});
-				
-				this.listenTo(infoModalView, 'reload', function(){
+				this.listenTo(paginationView2, 'selected', function(pageNumber){
+					fetchList(pageNumber);
+				});
+
+				// お知らせ追加モーダル処理 ここから
+				this.listenTo(infoView, 'click:addBtn', function(){
+					infoAddModalView.addShow();
+					infoView.infoAddModal.show(infoAddModalView);
+					infoAddModalView.ui.modal.modal('show');
+				});
+				this.listenTo(infoAddModalView, 'complete', function(){
 					fetchList();
 				});
-				
+				// お知らせ追加モーダル処理 ここまで
+
+				// お知らせ編集モーダル処理 ここから
+				this.listenTo(infoListListView, 'childview:click:editBtn', function(id){
+					var infoEditModalView = new App.Admin.Views.InfoEditModal({
+						id: id
+					});
+					infoView.infoEditModal.show(infoEditModalView);
+					infoEditModalView.ui.modal.modal('show');
+
+					this.listenTo(infoEditModalView, 'complete', function(){
+						fetchList();
+					});
+				});
+				// お知らせ編集モーダル処理 ここまで
+
 				this.listenTo(infoView, 'updated', function(){
 					addFlag = false;
 					fetchList();
@@ -60,23 +95,13 @@ define([
 					});
 				});
 
-				this.listenTo(infoListListView, 'childview:click:a', function(view, model, display){
-					infoModalView.showMessage(model,display);
-				});
-				
-				//遷移するときのアラート
-				var addFlag = false;
-
-				this.listenTo(infoModalView, 'add', function(){
-					addFlag = true;
-				});
 				this.listenTo(infoListListCollection, 'sync', function(){
 					addFlag = false;
 				});
 				App.main.show(infoView);
 				infoView.page.show(paginationView);
+				infoView.page_2.show(paginationView2);
 				infoView.listTable.show(infoListListView);
-				infoView.infoModal.show(infoModalView);
 				fetchList();
 			}
 		});
