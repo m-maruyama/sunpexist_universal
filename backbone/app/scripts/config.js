@@ -1,6 +1,6 @@
 requirejs.config({
 	urlArgs: "ver=%timestamp%",
-	baseUrl: "/app/scripts",
+	baseUrl: "/universal/scripts",
 	paths: {
 		"jquery": '../bower_components/jquery/dist/jquery.min',
 		"underscore": '../bower_components/lodash/dist/lodash',
