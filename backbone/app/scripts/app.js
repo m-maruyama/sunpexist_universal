@@ -251,6 +251,7 @@ define([
 			"WO0013": host + '/wearer_order_list',
 			"WO0014": host + '/wearer_order_insert',
 			"WO0015": host + '/wearer_order_delete',
+			"WO0016": host + '/job_type_order',
 
 			"CM9010": host + "/api/CM9010"
 		};
