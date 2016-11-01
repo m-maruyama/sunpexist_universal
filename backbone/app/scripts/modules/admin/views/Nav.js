@@ -27,6 +27,7 @@ define([
 				"account": "li.nav_account",
 				"orderSend": "li.nav_orderSend",
 				"info": "li.nav_info",
+				"qa": "li.nav_qa",
 				"purchaseInput": "li.nav_purchaseInput",
 				"wearerEdit": "li.nav_wearerEdit",
 				"wearerEditOrder": "li.nav_wearerEditOrder",
