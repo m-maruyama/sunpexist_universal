@@ -202,6 +202,11 @@ class MWearerStdTran extends \Phalcon\Mvc\Model
     protected $appointment_ymd;
 
     /**
+     *
+     * @var string
+     */
+    protected $order_req_no;
+    /**
      * Method to set the value of field m_wearer_std_comb_hkey
      *
      * @param string $m_wearer_std_comb_hkey
@@ -631,6 +636,19 @@ class MWearerStdTran extends \Phalcon\Mvc\Model
     }
 
     /**
+     * Method to set the value of field m_section_comb_hkey
+     *
+     * @param string $m_section_comb_hkey
+     * @return $this
+     */
+    public function setOrderReqRo($order_req_no)
+    {
+        $this->order_req_no = $order_req_no;
+
+        return $this;
+    }
+
+    /**
      * Returns the value of field m_wearer_std_comb_hkey
      *
      * @return string
@@ -958,6 +976,16 @@ class MWearerStdTran extends \Phalcon\Mvc\Model
     public function getAppointmentYmd()
     {
         return $this->appointment_ymd;
+    }
+
+    /**
+     * Returns the value of field m_section_comb_hkey
+     *
+     * @return string
+     */
+    public function getOrderReqNo()
+    {
+        return $this->order_req_no;
     }
 
 
