@@ -45,6 +45,7 @@ try {
     include __DIR__.'/../app/account.php';
     include __DIR__.'/../app/info.php';
     include __DIR__.'/../app/inquiry.php';
+    include __DIR__.'/../app/q_and_a.php';
     include __DIR__.'/../app/history.php';
     include __DIR__.'/../app/unreturn.php';
     include __DIR__.'/../app/receive.php';
