@@ -18,21 +18,22 @@ $app->post('/login', function ()use($app) {
         ->execute();
 
     if($kari_check->count() > 0) {
+        $input_password_md5 = md5($params['password']);
         //0文字以上だたら
         //アカウントマスタに企業ID、ログインID、仮パスワードが一致するデータが存在する場合（パスワード未発行時）
         $account = MAccount::query()
             ->where("MAccount.user_id = '" . $params['login_id'] . "' AND MAccount.corporate_id = '" . $params['corporate_id'] .
-                "' AND MAccount.tentative_pass_word = '" . $params['password'] . "'")
-            ->columns(array('MAccount.*', 'MContractResource.*'))
-            ->join('MContractResource', 'MContractResource.accnt_no = MAccount.accnt_no')
+                "' AND MAccount.tentative_pass_word = '" . $input_password_md5 . "'")
+            ->columns('MAccount.*')
+            //->join('MContractResource', 'MContractResource.accnt_no = MAccount.accnt_no')
             ->execute();
 
         if ($account->count() > 0) {
 
             //仮パスワードが発行されている場合、パスワード
             $json_list['status'] = 4;
-            $app->session->set("corporate_id", $account[0]->mAccount->corporate_id);
-            $app->session->set("user_id", $account[0]->mAccount->user_id);
+            $app->session->set("corporate_id", $account[0]->corporate_id);
+            $app->session->set("user_id", $account[0]->user_id);
             echo json_encode($json_list);
             return true;
         }
@@ -41,16 +42,14 @@ $app->post('/login', function ()use($app) {
         echo json_encode($json_list);
         return true;
     }
-
-
+    
     //アカウントチェック
     $account = MAccount::query()
-        ->where("MAccount.user_id = '".$params['login_id']."' AND MAccount.corporate_id = '".$params['corporate_id']."'")
+        ->where("MAccount.user_id = '" . $params['login_id'] . "' AND MAccount.corporate_id = '" . $params['corporate_id'] . "'")
         ->columns(array('MAccount.*','MContractResource.*','MContract.*'))
         ->join('MContractResource','MContractResource.accnt_no = MAccount.accnt_no')
         ->join('MContract','MContract.corporate_id = MContractResource.corporate_id AND MContract.rntl_cont_no = MContractResource.rntl_cont_no')
         ->execute();
-
 
     //１件もない時とき
     if($account->count() == 0){
