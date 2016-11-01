@@ -73,6 +73,7 @@ $app->post('/wearer_search/search', function ()use($app){
     $arg_str .= "m_wearer_std_tran.appointment_ymd as as_appointment_ymd,";
     $arg_str .= "m_wearer_std_tran.resfl_ymd as as_resfl_ymd,";
     $arg_str .= "m_wearer_std_tran.job_type_cd as as_job_type_cd,";
+    $arg_str .= "m_wearer_std_tran.order_req_no as as_wearer_order_req_no,";
     $arg_str .= "t_order_tran.order_reason_kbn as as_order_reason_kbn,";
     $arg_str .= "t_order_tran.order_req_no as as_order_req_no,";
     $arg_str .= "m_section.rntl_sect_name as as_rntl_sect_name,";
@@ -158,13 +159,13 @@ $app->post('/wearer_search/search', function ()use($app){
             }
 
             // 発注、発注情報トラン有無フラグ
-            if (isset($result->as_order_sts_kbn)) {
+            if (isset($result->as_order_req_no)) {
                 $list['order_req_no'] = $result->as_order_req_no;
                 $list['order_kbn'] = "済";
                 // 発注情報トラン有
                 $list['order_tran_flg'] = '1';
             }else{
-                $list['order_req_no'] = null;
+                $list['order_req_no'] = $result->as_wearer_order_req_no;
                 $list['order_kbn'] = "未";
                 // 発注情報トラン無
                 $list['order_tran_flg'] = '0';

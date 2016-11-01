@@ -493,7 +493,6 @@ $app->post('/wearer_order_list', function ()use($app){
         $paginator = $paginator_model->getPaginate();
         $results = $paginator->items;
         $t_order_tran_flg = true;
-        ChromePhp::LOG($results);
     }else{
         //発注情報トランにデータが存在しない場合
         //職種マスタを参照し、「発注商品一覧」を生成する。
@@ -795,6 +794,51 @@ $app->post('/wearer_order_insert', function () use ($app) {
     }
     $transaction = $app->transactionManager->get();
 
+
+    // 発注依頼No.生成
+    //※シーケンス取得
+    $arg_str = "";
+    $arg_str = "SELECT NEXTVAL('t_order_seq')";
+    $t_order_tran = new TOrderTran();
+    $results = new Resultset(NULL, $t_order_tran, $t_order_tran->getReadConnection()->query($arg_str));
+    $result_obj = (array)$results;
+    $results_cnt = $result_obj["\0*\0_count"];
+    if (!empty($results_cnt)) {
+        $paginator_model = new PaginatorModel(
+            array(
+                "data"  => $results,
+                "limit" => 1,
+                "page" => 1
+            )
+        );
+        $paginator = $paginator_model->getPaginate();
+        $results = $paginator->items;
+        foreach ($results as $result) {
+            $order_no_seq = $result->nextval;
+        }
+        //※次シーケンスをセット
+        $arg_str = "";
+        $arg_str = "SELECT SETVAL('t_order_seq',".$order_no_seq.")";
+        $t_order_tran = new TOrderTran();
+        $results = new Resultset(NULL, $t_order_tran, $t_order_tran->getReadConnection()->query($arg_str));
+        $result_obj = (array)$results;
+        $results_cnt = $result_obj["\0*\0_count"];
+        if (!empty($results_cnt)) {
+            $paginator_model = new PaginatorModel(
+                array(
+                    "data"  => $results,
+                    "limit" => 1,
+                    "page" => 1
+                )
+            );
+            $paginator = $paginator_model->getPaginate();
+            $results = $paginator->items;
+            foreach ($results as $result) {
+                $order_no_seq = $result->setval;
+            }
+        }
+    }
+    $shin_order_req_no = "WB".str_pad($order_no_seq, 8, '0', STR_PAD_LEFT);
     //着用者基本情報トラン
     $m_wearer_std_tran = new MWearerStdTran();
     $now = date('Y/m/d H:i:s.sss');
@@ -842,6 +886,7 @@ $app->post('/wearer_order_insert', function () use ($app) {
         $m_wearer_std_tran->del_kbn ='0';//削除区分
         $m_wearer_std_tran->rgst_date  = $now;//登録日時
         $m_wearer_std_tran->rgst_user_id = $auth['accnt_no'];//登録ユーザーID
+        $m_wearer_std_tran->order_req_no  = $shin_order_req_no;//発注No
         $create_flg = false;
     }
     $m_wearer_std_tran->rntl_cont_no = $wearer_odr_post['rntl_cont_no']; //レンタル契約No.
@@ -858,7 +903,6 @@ $app->post('/wearer_order_insert', function () use ($app) {
     $results = new Resultset(NULL, $t_order_tran, $t_order_tran->getReadConnection()->query('begin'));
     try {
         if(!$create_flg){
-            ChromePhp::LOG($m_wearer_std_tran);
             //新規作成
             if ($m_wearer_std_tran->create() == false) {
                 // トランザクションロールバック
@@ -909,51 +953,6 @@ $app->post('/wearer_order_insert', function () use ($app) {
                 $t_order_tran = new TOrderTran();
                 $results = new Resultset(NULL, $t_order_tran, $t_order_tran->getReadConnection()->query($arg_str));
 //            }
-
-            // 発注依頼No.生成
-            //※シーケンス取得
-            $arg_str = "";
-            $arg_str = "SELECT NEXTVAL('t_order_seq')";
-            $t_order_tran = new TOrderTran();
-            $results = new Resultset(NULL, $t_order_tran, $t_order_tran->getReadConnection()->query($arg_str));
-            $result_obj = (array)$results;
-            $results_cnt = $result_obj["\0*\0_count"];
-            if (!empty($results_cnt)) {
-                $paginator_model = new PaginatorModel(
-                    array(
-                        "data"  => $results,
-                        "limit" => 1,
-                        "page" => 1
-                    )
-                );
-                $paginator = $paginator_model->getPaginate();
-                $results = $paginator->items;
-                foreach ($results as $result) {
-                    $order_no_seq = $result->nextval;
-                }
-                //※次シーケンスをセット
-                $arg_str = "";
-                $arg_str = "SELECT SETVAL('t_order_seq',".$order_no_seq.")";
-                $t_order_tran = new TOrderTran();
-                $results = new Resultset(NULL, $t_order_tran, $t_order_tran->getReadConnection()->query($arg_str));
-                $result_obj = (array)$results;
-                $results_cnt = $result_obj["\0*\0_count"];
-                if (!empty($results_cnt)) {
-                    $paginator_model = new PaginatorModel(
-                        array(
-                            "data"  => $results,
-                            "limit" => 1,
-                            "page" => 1
-                        )
-                    );
-                    $paginator = $paginator_model->getPaginate();
-                    $results = $paginator->items;
-                    foreach ($results as $result) {
-                        $order_no_seq = $result->setval;
-                    }
-                }
-            }
-            $shin_order_req_no = "WB".str_pad($order_no_seq, 8, '0', STR_PAD_LEFT);
             foreach ($add_item_input as $add_item_map) {
                 $calum_list = array();
                 $values_list = array();
@@ -1131,7 +1130,6 @@ $app->post('/wearer_order_insert', function () use ($app) {
         $results = new Resultset(NULL, $m_wearer_std_tran, $m_wearer_std_tran->getReadConnection()->query('commit'));
     } catch (Exception $e) {
         // トランザクションロールバック
-        ChromePhp::LOG($e);
         $m_wearer_std_tran = new MWearerStdTran();
         $results = new Resultset(NULL, $m_wearer_std_tran, $m_wearer_std_tran->getReadConnection()->query('rollback'));
         $transaction->commit();

@@ -755,6 +755,7 @@ $app->post('/input_insert', function () use ($app) {
         $m_wearer_std_tran->rntl_cont_no = $cond['agreement_no']; //レンタル契約No.
         $m_wearer_std_tran->rntl_sect_cd = $cond['rntl_sect_cd']; //レンタル部門コード
         $m_wearer_std_tran->job_type_cd = $deli_job[0];//職種コード
+        $m_wearer_std_tran->order_req_no = $wearer_odr_post['order_req_no']; //発注No
         $create_flg = false;
     }else{
         $results = new Resultset(null, $m_wearer_std_tran, $m_wearer_std_tran->getReadConnection()->query("select nextval('werer_cd_seq')"));
@@ -764,6 +765,7 @@ $app->post('/input_insert', function () use ($app) {
         $m_wearer_std_tran->rntl_cont_no = $cond['agreement_no']; //レンタル契約No.
         $m_wearer_std_tran->rntl_sect_cd = $cond['rntl_sect_cd']; //レンタル部門コード
         $m_wearer_std_tran->job_type_cd = $deli_job[0];//職種コード
+        $m_wearer_std_tran->order_req_no = '1'; //発注No
         $create_flg = true;
     }
     $m_wearer_std_tran->cster_emply_cd = $cond['cster_emply_cd'];//客先社員コード
@@ -794,6 +796,7 @@ $app->post('/input_insert', function () use ($app) {
     $m_wearer_std_tran->m_job_type_comb_hkey = $m_job_type[0]->m_job_type_comb_hkey;//職種マスタ_統合ハッシュキー
     $m_wearer_std_tran->m_section_comb_hkey = $m_section[0]->m_section_comb_hkey;//部門マスタ_統合ハッシュキー
     if($create_flg){
+        $m_wearer_std_tran->m_section_comb_hkey = $m_section[0]->m_section_comb_hkey;//部門マスタ_統合ハッシュキー
         //新規作成
         if ($m_wearer_std_tran->create() == false) {
             array_push($error_list, '着用者の登録に失敗しました。');
