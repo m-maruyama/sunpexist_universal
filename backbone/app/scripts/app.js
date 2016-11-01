@@ -115,7 +115,7 @@ define([
 		 * @type {{}}
 		 */
 
-		var host = "//" + location.host + "/app";
+		var host = "//" + location.host;
 		App.container.withCredentials = true;//CORSでアクセスしたいときはこれをtrueにすること。
 		App.api = {
 			"CM0001": host + "/account_session",
