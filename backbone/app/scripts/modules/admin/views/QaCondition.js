@@ -31,8 +31,18 @@ define([
 			onRender: function() {
 				var that = this;
 
-				// 画面コンディション
-				var data = "";
+				if (window.sessionStorage.getItem("back_qa_cond")) {
+					var cond = window.sessionStorage.getItem("back_qa_cond");
+					window.sessionStorage.removeItem("back_qa_cond");
+					var arr_str = new Array();
+					arr_str = cond.split(",");
+					var data = {
+						'corporate': arr_str[0]
+					};
+					//console.log(data);
+				} else {
+					var data = "";
+				}
 				var modelForUpdate = this.model;
 				modelForUpdate.url = App.api.QA0010;
 				var cond = {
@@ -63,11 +73,36 @@ define([
 				});
 			},
 			events: {
-				// 企業名
-				'change @ui.corporate': function(){
+				'change @ui.corporate': function() {
+					$.blockUI({ message: '<p><img src="ajax-loader.gif" style="margin: 0 auto;" /> 読み込み中...</p>' });
+					var data = {
+						"corporate": $("select[name='corporate']").val()
+					}
+					var modelForUpdate = this.model;
+					modelForUpdate.url = App.api.QA0020;
+					var cond = {
+						"scr": 'Q&A-QA内容',
+						"log_type": '2',
+						"data": data
+					};
+					modelForUpdate.fetchMx({
+						data:cond,
+						success:function(res){
+							var res_list = res.attributes;
+							$(".qa_area").html(res_list["case_info"]);
+						}
+					});
+					$.unblockUI();
 				},
-				// 編集ボタン
-				'click @ui.updateBtn': function(){
+				'click @ui.updateBtn': function() {
+					var cond = new Array(
+						$("select[name='corporate']").val()
+					);
+					var arr_str = cond.toString();
+
+					// 検索項目値、ページ数のセッション保持
+					window.sessionStorage.setItem("qa_cond", arr_str);
+					location.href = "q_and_a_input.html";
 				}
 			},
 		});

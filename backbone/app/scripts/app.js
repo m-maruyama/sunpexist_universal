@@ -27,6 +27,7 @@ define([
 			'AdminAccount': 'modules/admin/Account',
 			'AdminInfo': 'modules/admin/Info',
 			'AdminQa': 'modules/admin/Qa',
+			'AdminQaInput': 'modules/admin/QaInput',
 			'AdminPassword': 'modules/admin/Password',
 			'AdminLoginPassword': 'modules/admin/LoginPassword',
 			'AdminOrderSend': 'modules/admin/OrderSend',
@@ -116,7 +117,8 @@ define([
 		 * @type {{}}
 		 */
 
-		var host = "//" + location.host + "/app";
+		var host = "//" + location.host;
+//		var host = "//" + location.host + "/app";
 		App.container.withCredentials = true;//CORSでアクセスしたいときはこれをtrueにすること。
 		App.api = {
 			"CM0001": host + "/account_session",
@@ -178,6 +180,7 @@ define([
 			"CU0041": host + "/inquiry/update",
 			"QA0010": host + "/qa/condition",
 			"QA0020": host + "/qa/search",
+			"QA0030": host + "/qa/input",
 			"HM0010": host + "/home",
 			"LO0010": host + "/login",
 			"OU0010": host + "/logout",
