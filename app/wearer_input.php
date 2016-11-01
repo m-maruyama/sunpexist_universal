@@ -809,7 +809,6 @@ $app->post('/input_insert', function () use ($app) {
         }
 
     }else{
-        ChromePhp::LOG($m_wearer_std_tran);
         //更新
         if ($m_wearer_std_tran->update() == false) {
             array_push($error_list, '着用者の更新に失敗しました。');

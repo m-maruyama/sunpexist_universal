@@ -493,7 +493,6 @@ $app->post('/wearer_order_list', function ()use($app){
         $paginator = $paginator_model->getPaginate();
         $results = $paginator->items;
         $t_order_tran_flg = true;
-        ChromePhp::LOG($results);
     }else{
         //発注情報トランにデータが存在しない場合
         //職種マスタを参照し、「発注商品一覧」を生成する。
@@ -1131,7 +1130,6 @@ $app->post('/wearer_order_insert', function () use ($app) {
         $results = new Resultset(NULL, $m_wearer_std_tran, $m_wearer_std_tran->getReadConnection()->query('commit'));
     } catch (Exception $e) {
         // トランザクションロールバック
-        ChromePhp::LOG($e);
         $m_wearer_std_tran = new MWearerStdTran();
         $results = new Resultset(NULL, $m_wearer_std_tran, $m_wearer_std_tran->getReadConnection()->query('rollback'));
         $transaction->commit();
