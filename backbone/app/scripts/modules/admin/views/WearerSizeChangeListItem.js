@@ -42,7 +42,7 @@ define([
 					var modelForUpdate = this.model;
 					modelForUpdate.url = App.api.WR0012;
 					var cond = {
-						"scr": 'その他貸与/返却(追加貸与)-発注NGパターンチェック',
+						"scr": 'サイズ交換/その他交換(サイズ交換)-発注NGパターンチェック',
 						"log_type": '3',
 						"data": data
 					};
@@ -89,7 +89,7 @@ define([
 					var modelForUpdate = this.model;
 					modelForUpdate.url = App.api.WR0013;
 					var cond = {
-						"scr": 'その他貸与/返却(不要品返却)-発注NGパターンチェック',
+						"scr": 'サイズ交換/その他交換(その他交換)-発注NGパターンチェック',
 						"log_type": '3',
 						"data": data
 					};
@@ -112,13 +112,13 @@ define([
 			},
 			onShow: function(val, type, transition, data) {
 				var that = this;
-				// 追加貸与発注入力遷移
+				// 交換発注入力遷移
 				if (type == "WR0011_req") {
 					// 遷移時のPOSTパラメータ代行処理
 					var modelForUpdate = this.model;
 					modelForUpdate.url = App.api.WR0011;
 					var cond = {
-						"scr": '発注入力（追加貸与）POST値保持',
+						"scr": '発注入力（サイズ交換/その他交換）POST値保持',
 						"data": data
 					};
 					modelForUpdate.fetchMx({
@@ -137,13 +137,13 @@ define([
 							// 検索項目値、ページ数のセッション保持
 							window.sessionStorage.setItem("wearer_other_cond", arr_str);
 							if (transition == "add") {
-								// 追加貸与の発注入力画面へ遷移
-								var $form = $('<form/>', {'action': '/universal/wearer_add_order.html', 'method': 'post'});
+								// サイズ交換の発注入力画面へ遷移
+								var $form = $('<form/>', {'action': '/universal/wearer_size_change_order.html', 'method': 'post'});
 								$form.appendTo(document.body);
 								$form.submit();
 							} else if (transition == "return") {
-								// 追加貸与の発注入力画面へ遷移
-								var $form = $('<form/>', {'action': '/universal/wearer_return_order.html', 'method': 'post'});
+								// その他交換の発注入力画面へ遷移
+								var $form = $('<form/>', {'action': '/universal/wearer_other_change_order.html', 'method': 'post'});
 								$form.appendTo(document.body);
 								$form.submit();
 							}
