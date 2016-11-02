@@ -11,16 +11,16 @@ define([
 			template: App.Admin.Templates.wearerSizeChangeListItem,
 			tagName: "tr",
 			ui: {
-				"wearer_add": "#wearer_add",
-				"wearer_return": "#wearer_return"
+				"wearer_size_change": "#wearer_size_change",
+				"wearer_other_change": "#wearer_other_change"
 			},
 			events: {
-				// 追加貸与ボタン
-				'click @ui.wearer_add': function(e){
+				// サイズ交換ボタン
+				'click @ui.wearer_size_change': function(e){
 					var that = this;
 
 					e.preventDefault();
-					var we_vals = this.ui.wearer_add.val();
+					var we_vals = this.ui.wearer_size_change.val();
 					var we_val = we_vals.split(':');
 					var data = {
 						'rntl_cont_no': we_val[0],
@@ -40,7 +40,7 @@ define([
 
 					// 発注入力遷移前に発注NGパターンチェック実施
 					var modelForUpdate = this.model;
-					modelForUpdate.url = App.api.WR0012;
+					modelForUpdate.url = App.api.WSC0012;
 					var cond = {
 						"scr": 'サイズ交換/その他交換(サイズ交換)-発注NGパターンチェック',
 						"log_type": '3',
@@ -52,7 +52,7 @@ define([
 							var res_val = res.attributes;
 							if (res_val["err_cd"] == "0") {
 								var type = "WSC0010_req";
-								var transition = "add";
+								var transition = "size_change";
 								var data = cond["data"];
 								that.onShow(res_val, type, transition, data);
 							} else {
@@ -62,12 +62,12 @@ define([
 						}
 					});
 				},
-				// 不要品返却ボタン
-				'click @ui.wearer_return': function(e){
+				// その他交換ボタン
+				'click @ui.wearer_other_change': function(e){
 					var that = this;
 
 					e.preventDefault();
-					var we_vals = this.ui.wearer_return.val();
+					var we_vals = this.ui.wearer_other_change.val();
 					var we_val = we_vals.split(':');
 					var data = {
 						'rntl_cont_no': we_val[0],
@@ -87,7 +87,7 @@ define([
 
 					// 発注入力遷移前に発注NGパターンチェック実施
 					var modelForUpdate = this.model;
-					modelForUpdate.url = App.api.WR0013;
+					modelForUpdate.url = App.api.WSC0013;
 					var cond = {
 						"scr": 'サイズ交換/その他交換(その他交換)-発注NGパターンチェック',
 						"log_type": '3',
@@ -99,7 +99,7 @@ define([
 							var res_val = res.attributes;
 							if (res_val["err_cd"] == "0") {
 								var type = "WSC0010_req";
-								var transition = "return";
+								var transition = "other_change";
 								var data = cond["data"];
 								that.onShow(res_val, type, transition, data);
 							} else {
@@ -116,7 +116,7 @@ define([
 				if (type == "WSC0010_req") {
 					// 遷移時のPOSTパラメータ代行処理
 					var modelForUpdate = this.model;
-					modelForUpdate.url = App.api.WR0011;
+					modelForUpdate.url = App.api.WSC0011;
 					var cond = {
 						"scr": '発注入力（サイズ交換/その他交換）POST値保持',
 						"data": data
@@ -135,13 +135,13 @@ define([
 							);
 							var arr_str = cond.toString();
 							// 検索項目値、ページ数のセッション保持
-							window.sessionStorage.setItem("wearer_other_cond", arr_str);
-							if (transition == "add") {
+							window.sessionStorage.setItem("wearer_size_change_cond", arr_str);
+							if (transition == "size_change") {
 								// サイズ交換の発注入力画面へ遷移
 								var $form = $('<form/>', {'action': '/universal/wearer_size_change_order.html', 'method': 'post'});
 								$form.appendTo(document.body);
 								$form.submit();
-							} else if (transition == "return") {
+							} else if (transition == "other_change") {
 								// その他交換の発注入力画面へ遷移
 								var $form = $('<form/>', {'action': '/universal/wearer_other_change_order.html', 'method': 'post'});
 								$form.appendTo(document.body);

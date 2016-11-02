@@ -7,7 +7,7 @@
     {{job_type_name}}</td>
 <td>
   {{#if wearer_add_button}}
-    <button type="button" class="btn btn-primary" title="追加貸与" id="wearer_add" value="{{param}}" {{add_disabled}}>
+    <button type="button" class="btn btn-primary" title="サイズ交換" id="wearer_size_change" value="{{param}}" {{add_disabled}}>
       {{wearer_add_button}}
       {{#if wearer_add_red}}
       <span style='color:red'>
@@ -19,7 +19,7 @@
 </td>
 <td>
   {{#if wearer_return_button}}
-    <button type="button" class="btn btn-primary" title="不用品返却" id="wearer_return" value="{{param}}" {{return_disabled}}>
+    <button type="button" class="btn btn-primary" title="その他交換" id="wearer_other_change" value="{{param}}" {{return_disabled}}>
       {{wearer_return_button}}
       {{#if wearer_return_red}}
       <span style='color:red'>

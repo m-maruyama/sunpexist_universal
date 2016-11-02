@@ -616,14 +616,13 @@ $app->post('/wearer_size_change/search', function ()use($app){
   $json_list['page'] = $page_list;
   $json_list['list'] = $all_list;
 
-  //ChromePhp::LOG($json_list);
   echo json_encode($json_list);
 });
 
 /**
  * サイズ交換/その他交換
- * 「追加貸与」もしくは「不要品返却」ボタンの押下時のパラメータのセッション保持
- * →発注入力（追加貸与/不要品返却）にてパラメータ利用
+ * 「サイズ交換」もしくは「その他交換」ボタンの押下時のパラメータのセッション保持
+ * →発注入力（サイズ交換/その他交換）にてパラメータ利用
  */
 $app->post('/wearer_size_change/req_param', function ()use($app){
   $params = json_decode(file_get_contents("php://input"), true);
@@ -633,7 +632,6 @@ $app->post('/wearer_size_change/req_param', function ()use($app){
 
   // パラメータ取得
   $cond = $params['data'];
-  //ChromePhp::LOG($cond);
 
   // POSTパラメータのセッション格納
   $app->session->set("wearer_size_change_post", array(
@@ -670,7 +668,6 @@ $app->post('/wearer_size_change/order_check', function ()use($app){
 
   // パラメータ取得
   $cond = $params['data'];
-  //ChromePhp::LOG($cond);
 
   $json_list = array();
 
@@ -693,12 +690,10 @@ $app->post('/wearer_size_change/order_check', function ()use($app){
   $arg_str .= " WHERE ";
   $arg_str .= $query;
   $arg_str .= " ORDER BY upd_date DESC";
-  //ChromePhp::LOG($arg_str);
   $m_wearer_std_tran = new MWearerStdTran();
   $results = new Resultset(NULL, $m_wearer_std_tran, $m_wearer_std_tran->getReadConnection()->query($arg_str));
   $result_obj = (array)$results;
   $results_cnt = $result_obj["\0*\0_count"];
-  //ChromePhp::LOG($results_cnt);
   if (!empty($results_cnt)) {
     $paginator_model = new PaginatorModel(
         array(
@@ -709,7 +704,6 @@ $app->post('/wearer_size_change/order_check', function ()use($app){
     );
     $paginator = $paginator_model->getPaginate();
     $results = $paginator->items;
-    //ChromePhp::LOG($results);
     foreach ($results as $result) {
       $order_sts_kbn = $result->order_sts_kbn;
     }
@@ -732,7 +726,6 @@ $app->post('/wearer_size_change/order_check', function ()use($app){
       $error_msg = "着用者編集の発注が入力されています。".PHP_EOL."追加貸与を行う場合は着用者編集の発注をキャンセルしてください。";
       $json_list["err_msg"] = $error_msg;
 
-      //ChromePhp::LOG($json_list);
       echo json_encode($json_list);
       return;
     }
@@ -755,12 +748,10 @@ $app->post('/wearer_size_change/order_check', function ()use($app){
   $arg_str .= " WHERE ";
   $arg_str .= $query;
   $arg_str .= " ORDER BY upd_date DESC";
-  //ChromePhp::LOG($arg_str);
   $t_order_tran = new TOrderTran();
   $results = new Resultset(NULL, $t_order_tran, $t_order_tran->getReadConnection()->query($arg_str));
   $result_obj = (array)$results;
   $results_cnt = $result_obj["\0*\0_count"];
-  //ChromePhp::LOG($results_cnt);
   if (!empty($results_cnt)) {
     $paginator_model = new PaginatorModel(
         array(
@@ -771,7 +762,6 @@ $app->post('/wearer_size_change/order_check', function ()use($app){
     );
     $paginator = $paginator_model->getPaginate();
     $results = $paginator->items;
-    //ChromePhp::LOG($results);
     foreach ($results as $result) {
       $order_sts_kbn = $result->order_sts_kbn;
       $order_reason_kbn = $result->order_reason_kbn;
@@ -780,17 +770,16 @@ $app->post('/wearer_size_change/order_check', function ()use($app){
     // 発注情報トラン.発注状況区分 = 「終了」または「異動」情報がある際は発注NG
     if ($order_sts_kbn == "2" && ($order_reason_kbn == "05" || $order_reason_kbn == "06" || $order_reason_kbn == "08" || $order_reason_kbn == "20")) {
       $json_list["err_cd"] = "1";
-      $error_msg = "貸与終了の発注が入力されています。".PHP_EOL."追加貸与を行う場合は貸与終了の発注をキャンセルしてください。";
+      $error_msg = "貸与終了の発注が入力されています。".PHP_EOL."サイズ交換を行う場合は貸与終了の発注をキャンセルしてください。";
       $json_list["err_msg"] = $error_msg;
     }
     if ($order_sts_kbn == "5" && ($order_reason_kbn == "09" || $order_reason_kbn == "10" || $order_reason_kbn == "11" || $order_reason_kbn == "24")) {
       $json_list["err_cd"] = "1";
-      $error_msg = "職種変更または異動の発注が入力されています。".PHP_EOL."追加貸与を行う場合は職種変更または異動の発注をキャンセルしてください。";
+      $error_msg = "職種変更または異動の発注が入力されています。".PHP_EOL."サイズ交換を行う場合は職種変更または異動の発注をキャンセルしてください。";
       $json_list["err_msg"] = $error_msg;
     }
   }
 
-  //ChromePhp::LOG($json_list);
   echo json_encode($json_list);
 });
 
@@ -806,7 +795,6 @@ $app->post('/wearer_other_change/order_check', function ()use($app){
 
   // パラメータ取得
   $cond = $params['data'];
-  //ChromePhp::LOG($cond);
 
   $json_list = array();
 
@@ -829,12 +817,10 @@ $app->post('/wearer_other_change/order_check', function ()use($app){
   $arg_str .= " WHERE ";
   $arg_str .= $query;
   $arg_str .= " ORDER BY upd_date DESC";
-  //ChromePhp::LOG($arg_str);
   $m_wearer_std_tran = new MWearerStdTran();
   $results = new Resultset(NULL, $m_wearer_std_tran, $m_wearer_std_tran->getReadConnection()->query($arg_str));
   $result_obj = (array)$results;
   $results_cnt = $result_obj["\0*\0_count"];
-  //ChromePhp::LOG($results_cnt);
   if (!empty($results_cnt)) {
     $paginator_model = new PaginatorModel(
         array(
@@ -845,7 +831,6 @@ $app->post('/wearer_other_change/order_check', function ()use($app){
     );
     $paginator = $paginator_model->getPaginate();
     $results = $paginator->items;
-    //ChromePhp::LOG($results);
     foreach ($results as $result) {
       $order_sts_kbn = $result->order_sts_kbn;
     }
@@ -868,7 +853,6 @@ $app->post('/wearer_other_change/order_check', function ()use($app){
       $error_msg = "着用者編集の発注が入力されています".PHP_EOL."追加貸与を行う場合は着用者編集の発注をキャンセルしてください。";
       $json_list["err_msg"] = $error_msg;
 
-      //ChromePhp::LOG($json_list);
       echo json_encode($json_list);
       return;
     }
@@ -891,12 +875,10 @@ $app->post('/wearer_other_change/order_check', function ()use($app){
   $arg_str .= " WHERE ";
   $arg_str .= $query;
   $arg_str .= " ORDER BY upd_date DESC";
-  //ChromePhp::LOG($arg_str);
   $t_order_tran = new TOrderTran();
   $results = new Resultset(NULL, $t_order_tran, $t_order_tran->getReadConnection()->query($arg_str));
   $result_obj = (array)$results;
   $results_cnt = $result_obj["\0*\0_count"];
-  //ChromePhp::LOG($results_cnt);
   if (!empty($results_cnt)) {
     $paginator_model = new PaginatorModel(
         array(
@@ -907,7 +889,6 @@ $app->post('/wearer_other_change/order_check', function ()use($app){
     );
     $paginator = $paginator_model->getPaginate();
     $results = $paginator->items;
-    //ChromePhp::LOG($results);
     foreach ($results as $result) {
       $order_sts_kbn = $result->order_sts_kbn;
       $order_reason_kbn = $result->order_reason_kbn;
@@ -916,16 +897,15 @@ $app->post('/wearer_other_change/order_check', function ()use($app){
     // 発注情報トラン.発注状況区分 = 「終了」または「異動」情報がある際は発注NG
     if ($order_sts_kbn == "2" && ($order_reason_kbn == "05" || $order_reason_kbn == "06" || $order_reason_kbn == "08" || $order_reason_kbn == "20")) {
       $json_list["err_cd"] = "1";
-      $error_msg = "貸与終了の発注が入力されています。".PHP_EOL."不要品返却を行う場合は貸与終了の発注をキャンセルしてください。";
+      $error_msg = "貸与終了の発注が入力されています。".PHP_EOL."その他交換を行う場合は貸与終了の発注をキャンセルしてください。";
       $json_list["err_msg"] = $error_msg;
     }
     if ($order_sts_kbn == "5" && ($order_reason_kbn == "09" || $order_reason_kbn == "10" || $order_reason_kbn == "11" || $order_reason_kbn == "24")) {
       $json_list["err_cd"] = "1";
-      $error_msg = "職種変更または異動の発注が入力されています。".PHP_EOL."不要品返却を行う場合は職種変更または異動の発注をキャンセルしてください。";
+      $error_msg = "職種変更または異動の発注が入力されています。".PHP_EOL."その他交換を行う場合は職種変更または異動の発注をキャンセルしてください。";
       $json_list["err_msg"] = $error_msg;
     }
   }
 
-  //ChromePhp::LOG($json_list);
   echo json_encode($json_list);
 });
