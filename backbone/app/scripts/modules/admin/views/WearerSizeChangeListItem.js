@@ -51,7 +51,7 @@ define([
 						success:function(res){
 							var res_val = res.attributes;
 							if (res_val["err_cd"] == "0") {
-								var type = "WR0011_req";
+								var type = "WSC0010_req";
 								var transition = "add";
 								var data = cond["data"];
 								that.onShow(res_val, type, transition, data);
@@ -98,7 +98,7 @@ define([
 						success:function(res){
 							var res_val = res.attributes;
 							if (res_val["err_cd"] == "0") {
-								var type = "WR0011_req";
+								var type = "WSC0010_req";
 								var transition = "return";
 								var data = cond["data"];
 								that.onShow(res_val, type, transition, data);
@@ -113,7 +113,7 @@ define([
 			onShow: function(val, type, transition, data) {
 				var that = this;
 				// 交換発注入力遷移
-				if (type == "WR0011_req") {
+				if (type == "WSC0010_req") {
 					// 遷移時のPOSTパラメータ代行処理
 					var modelForUpdate = this.model;
 					modelForUpdate.url = App.api.WR0011;

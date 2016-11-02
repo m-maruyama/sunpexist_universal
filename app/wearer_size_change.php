@@ -660,9 +660,9 @@ $app->post('/wearer_size_change/req_param', function ()use($app){
 
 /**
  * サイズ交換/その他交換
- * 追加貸与の発注パターンNGチェック
+ * サイズ交換の発注パターンNGチェック
  */
-$app->post('/wearer_add/order_check', function ()use($app){
+$app->post('/wearer_size_change/order_check', function ()use($app){
   $params = json_decode(file_get_contents("php://input"), true);
 
   // アカウントセッション取得
@@ -796,9 +796,9 @@ $app->post('/wearer_add/order_check', function ()use($app){
 
 /**
  * サイズ交換/その他交換
- * 不要品返却の発注パターンNGチェック
+ * その他交換の発注パターンNGチェック
  */
-$app->post('/wearer_return/order_check', function ()use($app){
+$app->post('/wearer_other_change/order_check', function ()use($app){
   $params = json_decode(file_get_contents("php://input"), true);
 
   // アカウントセッション取得
