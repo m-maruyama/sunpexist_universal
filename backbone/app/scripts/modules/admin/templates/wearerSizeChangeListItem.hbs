@@ -1,0 +1,34 @@
+<td>{{cster_emply_cd}}<br>
+    {{werer_name}}</td>
+<td>{{sex_kbn_name}}</td>
+<td>{{{order_kbn}}}</td>
+<td>{{snd_kbn}}</td>
+<td>{{rntl_sect_name}}<br>
+    {{job_type_name}}</td>
+<td>
+  {{#if wearer_add_button}}
+    <button type="button" class="btn btn-primary" title="追加貸与" id="wearer_add" value="{{param}}" {{add_disabled}}>
+      {{wearer_add_button}}
+      {{#if wearer_add_red}}
+      <span style='color:red'>
+        {{wearer_add_red}}
+      </span>
+      {{/if}}
+    </button>
+  {{/if}}
+</td>
+<td>
+  {{#if wearer_return_button}}
+    <button type="button" class="btn btn-primary" title="不用品返却" id="wearer_return" value="{{param}}" {{return_disabled}}>
+      {{wearer_return_button}}
+      {{#if wearer_return_red}}
+      <span style='color:red'>
+        {{wearer_return_red}}
+      </span>
+      {{/if}}
+    </button>
+  {{/if}}
+  {{#if return_reciept_button}}
+  <button type="button" class="btn btn-primary" title="返却伝票ダウンロード" id="download">返却伝票ダウンロード</button>
+  {{/if}}
+</td>
