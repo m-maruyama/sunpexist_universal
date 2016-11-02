@@ -6,7 +6,7 @@ define([
 	App.module('Entities.Collections', function(Collections, App, Backbone, Marionette, $, _){
 		Collections.AdminWearerSizeChangeListList = Backbone.Collection.extend({
 			model: App.Entities.Models.AdminWearerSizeChangeListItem,
-			url: App.api.WR0010,
+			url: App.api.WSC0010,
 			parse:function(res, xhr){
 				this.trigger('parsed',res);
 				return res.list;

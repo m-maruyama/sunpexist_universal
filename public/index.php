@@ -72,6 +72,7 @@ try {
     include __DIR__.'/../app/wearer_search.php';
     include __DIR__.'/../app/wearer_order.php';
     include __DIR__.'/../app/wearer_end_order.php';
+    include __DIR__.'/../app/wearer_size_change.php';
     include __DIR__.'/../app/importCsv.php';
     include __DIR__.'/../app/ChromePhp.php';
 

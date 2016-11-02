@@ -39,7 +39,7 @@ $app->post('/agreement_no_input', function () use ($app) {
     $results = MContract::query()
         ->where($query)
         ->columns(array('MContract.*', 'MContractResource.*', 'MAccount.*'))
-        ->leftJoin('MContractResource', 'MContract.corporate_id = MContractResource.corporate_id AND MContract.rntl_cont_no = MContractResource.rntl_cont_no')
+        ->innerJoin('MContractResource', 'MContract.corporate_id = MContractResource.corporate_id AND MContract.rntl_cont_no = MContractResource.rntl_cont_no')
         ->join('MAccount', 'MAccount.accnt_no = MContractResource.accnt_no')
         ->execute();
 
@@ -150,7 +150,7 @@ $app->post('/wearer_input', function () use ($app) {
     $m_contract_resources = MContract::query()
         ->where($query)
         ->columns(array('MContractResource.rntl_sect_cd'))
-        ->leftJoin('MContractResource', 'MContract.corporate_id = MContractResource.corporate_id')
+        ->innerJoin('MContractResource', 'MContract.corporate_id = MContractResource.corporate_id')
         ->join('MAccount', 'MAccount.accnt_no = MContractResource.accnt_no')
         ->execute();
     $rntl_sect_cd = null;
@@ -572,7 +572,7 @@ $app->post('/input_insert', function () use ($app) {
     $results = MContract::query()
         ->where($query)
         ->columns(array('MContractResource.*'))
-        ->leftJoin('MContractResource','MContract.corporate_id = MContractResource.corporate_id')
+        ->innerJoin('MContractResource','MContract.corporate_id = MContractResource.corporate_id')
         ->join('MAccount','MAccount.accnt_no = MContractResource.accnt_no')
         ->execute();
     if($results[0]->update_ok_flg == '0'){

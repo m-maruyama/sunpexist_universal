@@ -51,10 +51,6 @@ $app->post('/wearer_size_change/search', function ()use($app){
   if(!empty($cond['job_type'])){
     array_push($query_list, "m_wearer_std.job_type_cd = '".$cond['job_type']."'");
   }
-  // 着用者状況区分(稼働)
-  array_push($query_list,"m_wearer_std.werer_sts_kbn = '1'");
-  // 追加貸与及び不用品返却可否フラグ(あり)
-  array_push($query_list,"wjt.add_and_rtn_rntl_flg = '1'");
   $query = implode(' AND ', $query_list);
 
   $arg_str = "";
@@ -125,8 +121,6 @@ $app->post('/wearer_size_change/search', function ()use($app){
   $results = new Resultset(null, $m_weare_std, $m_weare_std->getReadConnection()->query($arg_str));
   $result_obj = (array)$results;
   $results_cnt = $result_obj["\0*\0_count"];
-  //ChromePhp::LOG("着用者基本マスタ件数");
-  //ChromePhp::LOG($results_cnt);
 
   $paginator_model = new PaginatorModel(
       array(
@@ -143,8 +137,6 @@ $app->post('/wearer_size_change/search', function ()use($app){
   if(!empty($results_cnt)){
       $paginator = $paginator_model->getPaginate();
       $results = $paginator->items;
-      //ChromePhp::LOG("着用者基本マスタリスト");
-      //ChromePhp::LOG($results);
 
       foreach($results as $result) {
         //---着用者基本マスタトラン情報の既存データ重複参照---//
@@ -235,8 +227,6 @@ $app->post('/wearer_size_change/search', function ()use($app){
           );
           $paginator = $paginator_model->getPaginate();
           $tran_results = $paginator->items;
-          //ChromePhp::LOG("着用者基本マスタトラン重複情報");
-          //ChromePhp::LOG($tran_results);
 
           foreach($tran_results as $tran_result) {
             $result->as_rntl_cont_no = $tran_result->as_rntl_cont_no;
@@ -261,8 +251,6 @@ $app->post('/wearer_size_change/search', function ()use($app){
           // 着用者マスタトラン無
           $list['wearer_tran_flg'] = '0';
         }
-        //ChromePhp::LOG("チェック後の着用者リスト情報");
-        //ChromePhp::LOG($result);
 
         // レンタル契約No
         $list['rntl_cont_no'] = $result->as_rntl_cont_no;
@@ -347,7 +335,7 @@ $app->post('/wearer_size_change/search', function ()use($app){
             $list['job_type_name'] = "-";
         }
 
-        //--「追加貸与」、「不要品返却」ボタン生成--//
+        //--「サイズ交換」、「その他交換」ボタン生成--//
         // 発注情報トラン参照
         $query_list = array();
         array_push($query_list, "corporate_id = '".$auth['corporate_id']."'");
@@ -364,14 +352,12 @@ $app->post('/wearer_size_change/search', function ()use($app){
         $arg_str .= "t_order_tran";
         $arg_str .= " WHERE ";
         $arg_str .= $query;
-        //ChromePhp::LOG($arg_str);
         $t_order_tran = new TOrderTran();
         $t_order_tran_results = new Resultset(NULL, $t_order_tran, $t_order_tran->getReadConnection()->query($arg_str));
         $result_obj = (array)$t_order_tran_results;
         $t_order_tran_cnt = $result_obj["\0*\0_count"];
-        //ChromePhp::LOG($results_cnt);
 
-        // 「追加貸与」パターンチェックスタート
+        // 「サイズ交換」パターンチェックスタート
         $list['btnPattern'] = "";
         $patarn_flg = true;
         if (!empty($t_order_tran_cnt)) {
@@ -384,25 +370,23 @@ $app->post('/wearer_size_change/search', function ()use($app){
           );
           $paginator = $paginator_model->getPaginate();
           $t_order_tran_results = $paginator->items;
-          //ChromePhp::LOG($results);
 
-          // パターンE: 着用者基本マスタトラン.送信区分 = 処理中の場合、ボタンの文言は「追加貸与」で非活性表示する。
+          // パターンD: 着用者基本マスタトラン．送信区分 = 処理中のデータがある場合、ボタンの文言は「サイズ交換」で非活性表示する。
           if ($list['wearer_tran_flg'] == "1" && $list['snd_kbn'] == "処理中") {
             $list['wearer_add_button'] = "追加貸与";
             $list['wearer_add_red'] = "";
             $list['add_disabled'] = "disabled";
-            $list['btnPattern'] = "E";
+            $list['btnPattern'] = "D";
           }
           if ($list['btnPattern'] == "") {
-            //パターンB： 発注情報トラン．発注状況区分 = 貸与 かつ、発注情報トラン．理由区分 = 追加貸与のデータがある場合、かつ、
-            //発注情報トラン．送信区分 = 未送信の場合、ボタンの文言は「追加貸与[済]」で表示する。
+            //パターンB： 発注情報トラン．発注状況区分 = サイズ交換のデータがある場合、かつ、発注情報トラン．送信区分 = 未送信の場合、ボタンの文言は「サイズ交換[済]」で表示する。
             $patarn_flg = true;
             foreach ($t_order_tran_results as $t_order_tran_result) {
               $order_req_no = $t_order_tran_result->order_req_no;
               $order_sts_kbn = $t_order_tran_result->order_sts_kbn;
               $order_reason_kbn = $t_order_tran_result->order_reason_kbn;
               $snd_kbn = $t_order_tran_result->snd_kbn;
-              if ($order_sts_kbn == '1' && $order_reason_kbn == '03' && $snd_kbn == '0') {
+              if ($order_sts_kbn == '3' && $snd_kbn == '0') {
                 $patarn_flg = false;
                 break;
               }
@@ -410,22 +394,21 @@ $app->post('/wearer_size_change/search', function ()use($app){
             if (!$patarn_flg) {
               $list['order_req_no'] = $order_req_no;
               $list['order_reason_kbn'] = $order_reason_kbn;
-              $list['wearer_add_button'] = "追加貸与";
+              $list['wearer_add_button'] = "サイズ交換";
               $list['wearer_add_red'] = "[済]";
               $list['add_disabled'] = "";
               $list['btnPattern'] = "B";
             }
           }
           if ($list['btnPattern'] == "") {
-            //パターンC： 発注情報トラン．発注状況区分 = 貸与 かつ、発注情報トラン．理由区分 = 追加貸与のデータがある場合、かつ、
-            //発注情報トラン．送信区分 = 送信済みの場合、ボタンの文言は「追加貸与[済]」で非活性表示する。
+            //パターンC： 発注情報トラン．発注状況区分 = サイズ交換のデータがある場合、かつ、発注情報トラン．送信区分 = 送信済の場合、ボタンの文言は「サイズ交換[済]」で非活性表示する。
             $patarn_flg = true;
             foreach ($t_order_tran_results as $t_order_tran_result) {
               $order_req_no = $t_order_tran_result->order_req_no;
               $order_sts_kbn = $t_order_tran_result->order_sts_kbn;
               $order_reason_kbn = $t_order_tran_result->order_reason_kbn;
               $snd_kbn = $t_order_tran_result->snd_kbn;
-              if ($order_sts_kbn == '1' && $order_reason_kbn == '03' && $snd_kbn == '1') {
+              if ($order_sts_kbn == '3' && $order_reason_kbn == '03' && $snd_kbn == '1') {
                 $patarn_flg = false;
                 break;
               }
@@ -433,7 +416,7 @@ $app->post('/wearer_size_change/search', function ()use($app){
             if (!$patarn_flg) {
               $list['order_req_no'] = $order_req_no;
               $list['order_reason_kbn'] = $order_reason_kbn;
-              $list['wearer_add_button'] = "追加貸与";
+              $list['wearer_add_button'] = "サイズ交換";
               $list['wearer_add_red'] = "[済]";
               $list['add_disabled'] = "disabled";
               $list['btnPattern'] = "C";
@@ -462,7 +445,7 @@ $app->post('/wearer_size_change/search', function ()use($app){
             }
           }
           if ($list['btnPattern'] == "") {
-            //パターンA： 発注情報トラン．発注状況区分 = 貸与 かつ、発注情報トラン．理由区分 = 追加貸与のデータが無い
+            //パターンA： 発注情報トラン．発注状況区分 = サイズ交換のデータが無い場合、ボタンの文言は「サイズ交換」で表示する。
             $patarn_flg = false;
             foreach ($t_order_tran_results as $t_order_tran_result) {
               $order_req_no = $t_order_tran_result->order_req_no;
@@ -508,13 +491,13 @@ $app->post('/wearer_size_change/search', function ()use($app){
           $list['add_reciept_button'] = false;
         }
 
-        //「不要品返却」パターンチェックスタート
+        //「その他交換」パターンチェックスタート
         $list['btnPattern'] = "";
         $patarn_flg = true;
         if (!empty($t_order_tran_cnt)) {
           // パターンE: 着用者基本マスタトラン.送信区分 = 処理中の場合、ボタンの文言は「不要品返却」で非活性表示する。
           if ($list['wearer_tran_flg'] == "1" && $list['snd_kbn'] == "処理中") {
-            $list['wearer_return_button'] = "不要品返却";
+            $list['wearer_return_button'] = "その他交換";
             $list['wearer_return_red'] = "";
             $list['return_disabled'] = "disabled";
             $list['btnPattern'] = "E";

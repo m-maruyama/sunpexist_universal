@@ -9,12 +9,12 @@ define([
 		var order = 'asc';
 		var sort_key = 'order_req_no';
 		Views.WearerSizeChangeListList = Marionette.CompositeView.extend({
-			template: App.Admin.Templates.wearerChangeListList,
+			template: App.Admin.Templates.wearerSizeChangeListList,
 			emptyView: Backbone.Marionette.ItemView.extend({
                 tagName: "tr",
-				template: App.Admin.Templates.wearerOtherEmpty,
+				template: App.Admin.Templates.wearerSizeChangeEmpty,
 			}),
-			childView: Views.WearerChangeListItem,
+			childView: Views.WearerSizeChangeListItem,
 			childViewContainer: "tbody",
 			ui: {
 			},
@@ -42,11 +42,11 @@ define([
 					this.triggerMethod('sort', e.target.id,order);
 				}
 			},
-			fetch:function(wearerOtherListConditionModel){
+			fetch:function(wearerSizeChangeListConditionModel){
 				var cond = {
-					"scr": '職種変更または異動検索',
+					"scr": 'サイズ交換/その他交換',
 					"page":this.options.pagerModel.getPageRequest(),
-					"cond": wearerOtherListConditionModel.getReq()
+					"cond": wearerSizeChangeListConditionModel.getReq()
 				};
 				$.blockUI({ message: '<p><img src="ajax-loader.gif" style="margin: 0 auto;" /> 読み込み中...</p>' });
 				this.collection.fetchMx({

@@ -722,7 +722,7 @@ $app->post('/wearer_order_insert', function () use ($app) {
     $results = MContract::query()
         ->where($query)
         ->columns(array('MContractResource.*'))
-        ->leftJoin('MContractResource','MContract.corporate_id = MContractResource.corporate_id')
+        ->innerJoin('MContractResource','MContract.corporate_id = MContractResource.corporate_id')
         ->join('MAccount','MAccount.accnt_no = MContractResource.accnt_no')
         ->execute();
     if($results[0]->update_ok_flg == '0'){

@@ -259,6 +259,7 @@ define([
 			"WO0014": host + '/wearer_order_insert',
 			"WO0015": host + '/wearer_order_delete',
 			"WO0016": host + '/job_type_order',
+			"WSC0010": host + "/wearer_size_change/search",
 
 			"CM9010": host + "/api/CM9010"
 		};
