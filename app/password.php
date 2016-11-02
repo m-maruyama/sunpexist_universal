@@ -15,7 +15,7 @@ $app->post('/password', function () use ($app) {
         $json_list = array();
         $hash = $params['hashid'];
 
-        $transaction = $app->transactionManager->get();
+        //$transaction = $app->transactionManager->get();
         //ログインIDチェック
         $account = MAccount::find(array(
             "conditions" => "hash = '$hash'",
@@ -247,8 +247,8 @@ $app->post('/login_password', function () use ($app) {
             mb_language("Japanese");
             mb_internal_encoding("UTF-8");
 
-            $to = "mirainonakamura@gmail.com";
-            $header = "From: " . "tetsu_nakamura@pressman.ne.jp";
+            $to = "$mail_address";
+            $header = "From: " . "tetsu_nakamura@pressman.ne.jp";//本番時、客先メールアドレスに修正
             $subject = "パスワード変更URLの発行";
             $body = "下記のURLをクリックしてパスワードを変更してください。\n" . "http://" . "$url" . "/universal/password.html?dp=" . "$tmp_password";
 
