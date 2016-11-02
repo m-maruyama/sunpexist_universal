@@ -116,9 +116,14 @@ $app->post('/agreement_no', function () use ($app) {
   $arg_str .= '(SELECT distinct on (m_contract.rntl_cont_no) ';
   $arg_str .= 'm_contract.rntl_cont_no as as_rntl_cont_no,';
   $arg_str .= 'm_contract.rntl_cont_name as as_rntl_cont_name';
-  $arg_str .= ' FROM m_contract LEFT JOIN';
-  $arg_str .= ' (m_contract_resource INNER JOIN m_account ON m_contract_resource.accnt_no = m_account.accnt_no)';
+  $arg_str .= ' FROM ';
+  $arg_str .= 'm_contract';
+  $arg_str .= ' INNER JOIN m_contract_resource';
   $arg_str .= ' ON m_contract.corporate_id = m_contract_resource.corporate_id';
+  $arg_str .= ' AND m_contract.rntl_cont_no = m_contract_resource.rntl_cont_no';
+  $arg_str .= ' INNER JOIN m_account';
+  $arg_str .= ' ON m_contract_resource.accnt_no = m_account.accnt_no';
+  $arg_str .= ' AND m_contract_resource.corporate_id = m_account.corporate_id';
   $arg_str .= ' WHERE ';
   $arg_str .= $query;
   $arg_str .= ') as distinct_table';
@@ -1006,6 +1011,63 @@ $app->post('/sex_kbn', function () use ($app) {
   }
   //--性別ここまで
   $json_list['sex_kbn_list'] = $sex_kbn_list;
+  echo json_encode($json_list);
+});
+
+/**
+ * 状態
+ */
+$app->post('/snd_kbn', function ()use($app){
+  $params = json_decode(file_get_contents("php://input"), true);
+
+  // アカウントセッション取得
+  $auth = $app->session->get("auth");
+  //ChromePhp::LOG($auth);
+
+  $query_list = array();
+  $list = array();
+  $all_list = array();
+  $json_list = array();
+
+  $query_list[] = "cls_cd = '026'";
+  $query = implode(' AND ', $query_list);
+  $arg_str = '';
+  $arg_str .= 'SELECT ';
+  $arg_str .= ' * ';
+  $arg_str .= ' FROM ';
+  $arg_str .= 'm_gencode';
+  $arg_str .= ' WHERE ';
+  $arg_str .= $query;
+
+  $m_gencode = new MGencode();
+  $results = new Resultset(NULL, $m_gencode, $m_gencode->getReadConnection()->query($arg_str));
+  $results_array = (array) $results;
+  $results_cnt = $results_array["\0*\0_count"];
+  if ($results_cnt > 0) {
+      $paginator_model = new PaginatorModel(
+          array(
+              "data"  => $results,
+              "limit" => $results_cnt,
+              "page" => 1
+          )
+      );
+      $paginator = $paginator_model->getPaginate();
+      $results = $paginator->items;
+
+      foreach ($results as $result) {
+        $list['snd_kbn'] = $result->gen_cd;
+        $list['snd_kbn_name'] = $result->gen_name;
+        $list['selected'] = '';
+        $all_list[] = $list;
+      }
+  } else {
+      $list['snd_kbn'] = NULL;
+      $list['snd_kbn_name'] = '';
+      $list['selected'] = '';
+      $all_list[] = $list;
+  }
+  $json_list['snd_kbn_list'] = $all_list;
+
   echo json_encode($json_list);
 });
 
