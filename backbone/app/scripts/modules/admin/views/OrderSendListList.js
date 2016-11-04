@@ -22,9 +22,9 @@ define([
                 "checkall": '#checkall',
             },
             onRender: function () {
-                //	this.listenTo(this.collection, 'parsed', function(res){
-                //		this.options.pagerModel.set(res.page);
-                //	});
+              this.listenTo(this.collection, 'parsed', function(res){
+      					this.options.pagerModel.set(res.page);
+      				});
             },
             events: {
                 "click .sort": function (e) {
@@ -53,15 +53,12 @@ define([
                     else {
                         $("tbody .order_check.snd_kbn0").prop("checked", true);
                     }
-
-
                 },
                 'click @ui.updBtn': function (e) {
                     e.preventDefault();
                     //var model = new this.collection.model();
 
                     if (window.confirm('発注送信をしますか？')) {
-
                         var we_array = [];
                         $('[name="order_check"]:checked').each(function () {
                             we_array.push($(this).val());

@@ -69,7 +69,7 @@ define([
 					var cond = window.sessionStorage.getItem("wearer_edit_cond");
 					window.sessionStorage.setItem("back_wearer_edit_cond", cond);
 					// 検索画面へ遷移
-					location.href="wearer_Edit.html";
+					location.href="wearer_edit.html";
 				},
 				// 「ホーム画面へ戻る」ボタン
 				'click @ui.backHome': function(){

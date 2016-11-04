@@ -13,8 +13,8 @@ define([
 			    this.options = options || {};
 			    this.options = _.extend(this.defaults, this.options);
 			},
-			template: App.Admin.Templates.reasonKbnConditionChange,
 			model: new Backbone.Model(),
+			template: App.Admin.Templates.reasonKbnConditionChange,
 			ui: {
 				'reason_kbn': '.reason_kbn'
 			},
@@ -27,7 +27,7 @@ define([
 				var job_type = this.options.job_type;
 				var data = {
 					'job_type_cd': job_type
-				}
+				};
 				var modelForUpdate = this.model;
 				modelForUpdate.url = App.api.WC0013;
 				var cond = {
@@ -37,6 +37,7 @@ define([
 				modelForUpdate.fetchMx({
 					data:cond,
 					success:function(res){
+						//console.log(res);
 						var errors = res.get('errors');
 						if(errors) {
 							var errorMessages = errors.map(function(v){
