@@ -303,12 +303,6 @@ $app->post('/wearer_end/search', function ()use($app){
                 // 発注情報トラン無
                 $list['order_tran_flg'] = '0';
             }
-            // 発注
-            if (!empty($result->as_cster_emply_cd)) {
-                $list['order_kbn'] = "済";
-            }else{
-                $list['order_kbn'] = "未";
-            }
             // 状態
             $list['snd_kbn'] = "-";
             if (!empty($result->as_snd_kbn)) {
