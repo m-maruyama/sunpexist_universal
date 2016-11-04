@@ -32,15 +32,25 @@
 			<div class="form-group">
 				<label class="col-md-3 control-label" for="">理由区分</label>
 				<div class="col-md-3">
-					<select class="form-control input-sm"  id="reason_kbn" name="reason_kbn" disabled="disabled">
-						<option value="07" selected>不要品返却</option>
+					<select class="form-control input-sm"  id="reason_kbn" name="reason_kbn" >
 					</select>
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="col-md-3 control-label" for="return_date">返却予定日</label>
+				<div class="col-md-3">
+					<div class='input-group date datepicker'>
+						<input type="text" class="form-control  input-sm datepicker" id="return_date" name="return_date" value="">
+						<div class="input-group-addon">
+							<span class="glyphicon glyphicon-calendar"></span>
+						</div>
+					</div>
 				</div>
 			</div>
 			<div class="form-group">
 				<label class="col-md-3 control-label" for="">社員コード</label>
 				<div class="col-md-6">
-					<label class="checkbox-inline"><input type="checkbox" id="emply_cd_flg" name="emply_cd_flg[]" value="1" checked>社員コードあり</label>&nbsp;&nbsp;
+					<label class="checkbox-inline"><input type="checkbox" id="emply_cd_flg" name="emply_cd_flg[]">社員コードあり</label>&nbsp;&nbsp;
 					<input type="text" class="input-sm" id="member_no" name="member_no" value="">
 				</div>
 			</div>

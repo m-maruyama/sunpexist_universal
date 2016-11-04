@@ -28,10 +28,14 @@ define([
 				}
 			},
 			ui: {
+				'order_count': '#order_count',
 				'return_count': '#return_count',
+				'target_flg': '#target_flg',
 			},
 			bindings: {
-				'#return_count': 'return_count',
+				'order_count': '#order_count',
+				'return_count': '#return_count',
+				'target_flg': '#target_flg',
 			},
 			onShow: function() {
 				$.blockUI({ message: '<p><img src="ajax-loader.gif" style="margin: 0 auto;" /> 読み込み中...</p>' });
@@ -40,9 +44,9 @@ define([
 
 				// 発注商品一覧、
 				var modelForUpdate = this.model;
-				modelForUpdate.url = App.api.WR0020;
+				modelForUpdate.url = App.api.WOC0020;
 				var cond = {
-					"scr": '不要品返却-発注商品一覧',
+					"scr": 'その他交換-発注商品一覧',
 					"data": data,
 				};
 				modelForUpdate.fetchMx({

@@ -897,12 +897,12 @@ $app->post('/wearer_other_change/order_check', function ()use($app){
     // 発注情報トラン.発注状況区分 = 「終了」または「異動」情報がある際は発注NG
     if ($order_sts_kbn == "2" && ($order_reason_kbn == "05" || $order_reason_kbn == "06" || $order_reason_kbn == "08" || $order_reason_kbn == "20")) {
       $json_list["err_cd"] = "1";
-      $error_msg = "貸与終了の発注が入力されています。".PHP_EOL."その他交換を行う場合は貸与終了の発注をキャンセルしてください。";
+      $error_msg = "貸与終了の発注が入力されています。".PHP_EOL."を行う場合は貸与終了の発注をキャンセルしてください。";
       $json_list["err_msg"] = $error_msg;
     }
     if ($order_sts_kbn == "5" && ($order_reason_kbn == "09" || $order_reason_kbn == "10" || $order_reason_kbn == "11" || $order_reason_kbn == "24")) {
       $json_list["err_cd"] = "1";
-      $error_msg = "職種変更または異動の発注が入力されています。".PHP_EOL."その他交換を行う場合は職種変更または異動の発注をキャンセルしてください。";
+      $error_msg = "職種変更または異動の発注が入力されています。".PHP_EOL."不要品返却を行う場合は職種変更または異動の発注をキャンセルしてください。";
       $json_list["err_msg"] = $error_msg;
     }
   }

@@ -265,6 +265,11 @@ define([
 			"WSC0011": host + "/wearer_size_change/req_param",
 			"WSC0012": host + "/wearer_size_change/order_check",
 			"WSC0013": host + "/wearer_other_change/order_check",
+			"WOC0010": host + "/wearer_other_change_info",
+			"WOC0020": host + "/wearer_other_change_list",
+			"WOC0030": host + "/wearer_other_change_delete",
+			"WOC0040": host + "/wearer_other_change_complete",
+			"WOC0050": host + "/wearer_other_change_send",
 
 			"CM9010": host + "/api/CM9010"
 		};

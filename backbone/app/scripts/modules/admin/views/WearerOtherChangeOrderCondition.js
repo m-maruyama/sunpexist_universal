@@ -28,6 +28,7 @@ define([
 				'agreement_no': '#agreement_no',
 				'reason_kbn': '#reason_kbn',
 				'sex_kbn': '#sex_kbn',
+				'return_date': '#return_date',
 				'emply_cd_flg': '#emply_cd_flg',
 				'member_no': '#member_no',
 				'member_name': '#member_name',
@@ -40,14 +41,14 @@ define([
 				"delete": '.delete',
 				"complete": '.complete',
 				"orderSend": '.orderSend',
-				'datepicker1': '.datepicker1',
-				'datepicker2': '.datepicker2',
-				'timepicker': '.timepicker',
+				'datepicker': '.datepicker',
+				'timepicker': '.timepicker'
 			},
 			bindings: {
 				'#agreement_no': 'agreement_no',
 				'#reason_kbn': 'reason_kbn',
 				'#sex_kbn': 'sex_kbn',
+				'#return_date': 'return_date',
 				'#emply_cd_flg': 'emply_cd_flg',
 				'#member_no': 'member_no',
 				'#member_name': 'member_name',
@@ -59,18 +60,38 @@ define([
 				"#delete": 'delete',
 				"#complete": 'complete',
 				"#orderSend": 'orderSend',
-				'#datepicker1': 'datepicker1',
-				'#datepicker2': 'datepicker2',
-				'#timepicker': 'timepicker',
+				'datepicker': '.datepicker',
+				'timepicker': '.timepicker'
 			},
 			onRender: function() {
 				var that = this;
+				var maxTime = new Date();
+				maxTime.setHours(15);
+				maxTime.setMinutes(59);
+				maxTime.setSeconds(59);
+				var minTime = new Date();
+				minTime.setHours(9);
+				minTime.setMinutes(0);
+				this.ui.datepicker.datetimepicker({
+					format: 'YYYY/MM/DD',
+					//useCurrent: 'day',
+					//defaultDate: yesterday,
+					//maxDate: yesterday,
+					locale: 'ja',
+					sideBySide: true,
+					useCurrent: false,
+					// daysOfWeekDisabled:[0,6]
+				});
+				this.ui.datepicker.on('dp.change', function () {
+					$(this).data('DateTimePicker').hide();
+					//$(this).find('input').trigger('input');
+				});
 
 				// 着用者情報
 				var modelForUpdate = this.model;
-				modelForUpdate.url = App.api.WR0019;
+				modelForUpdate.url = App.api.WOC0010;
 				var cond = {
-					"scr": '不要品返却-着用者情報',
+					"scr": 'その他交換-着用者情報',
 				};
 				modelForUpdate.fetchMx({
 					data:cond,
@@ -83,7 +104,6 @@ define([
 							that.triggerMethod('showAlerts', errorMessages);
 						}
 						var res_list = res.attributes;
-						//console.log(res_list);
 
 						// 発注取消ボタンvalue値設定
 						var delete_param =
@@ -96,7 +116,7 @@ define([
 						;
 						that.ui.delete.val(delete_param);
 
-						// トラン情報に不要品返却がある場合は発注取消ボタンを表示
+						// トラン情報にその他交換がある場合は発注取消ボタンを表示
 						if (res_list['order_tran_flg'] == '1' && res_list['return_tran_flg'] == '1') {
 							$('.delete').css('display', '');
 						}
@@ -109,7 +129,7 @@ define([
 						var modelForUpdate2 = that.model;
 						modelForUpdate2.url = App.api.CM0140;
 						var cond = {
-							"scr": '不要品返却-発注入力・送信可否チェック',
+							"scr": 'その他交換-発注入力・送信可否チェック',
 							"log_type": '3',
 							"data": data,
 						};
@@ -129,10 +149,27 @@ define([
 						});
 						// 社員コード、着用者名、読みかな、コメント欄
 						if (res_list['wearer_info'][0]) {
-							that.ui.member_no.val(res_list['wearer_info'][0]['cster_emply_cd']);
+							if(res_list['wearer_info'][0]['cster_emply_cd']){
+								that.ui.emply_cd_flg.prop("checked", true);
+								that.ui.member_no.val(res_list['wearer_info'][0]['cster_emply_cd']);
+							}
 							that.ui.member_name.val(res_list['wearer_info'][0]['werer_name']);
 							that.ui.member_name_kana.val(res_list['wearer_info'][0]['werer_name_kana']);
+							that.ui.return_date.val(res_list['wearer_info'][0]['return_date']);
 							that.ui.comment.val(res_list['wearer_info'][0]['comment']);
+						}
+						// 性別
+						if (res_list['reason_kbn_list']) {
+							for (var i=0; i<res_list['reason_kbn_list'].length; i++) {
+								var option = document.createElement('option');
+								var text = document.createTextNode(res_list['reason_kbn_list'][i]['reason_kbn_name']);
+								option.setAttribute('value', res_list['reason_kbn_list'][i]['reason_kbn']);
+								if (res_list['reason_kbn_list'][i]['selected'] != "") {
+									option.setAttribute('selected', res_list['reason_kbn_list'][i]['selected']);
+								}
+								option.appendChild(text);
+								document.getElementById('reason_kbn').appendChild(option);
+							}
 						}
 						// 性別
 						if (res_list['sex_kbn_list']) {
@@ -214,7 +251,7 @@ define([
 					var modelForUpdate = this.model;
 					modelForUpdate.url = App.api.CM0130;
 					var cond = {
-						"scr": '不要品返却-発注取消-更新可否チェック',
+						"scr": 'その他交換-発注取消-更新可否チェック',
 						"log_type": '3',
 						"data": data,
 					};
@@ -236,7 +273,7 @@ define([
 					var modelForUpdate = this.model;
 					modelForUpdate.url = App.api.CM0130;
 					var cond = {
-						"scr": '不要品返却-入力完了-更新可否チェック',
+						"scr": 'その他交換-入力完了-更新可否チェック',
 						"log_type": '1',
 					};
 					modelForUpdate.fetchMx({
@@ -257,7 +294,7 @@ define([
 					var modelForUpdate = this.model;
 					modelForUpdate.url = App.api.CM0130;
 					var cond = {
-						"scr": '不要品返却-発注送信-更新可否チェック',
+						"scr": 'その他交換-発注送信-更新可否チェック',
 						"log_type": '1',
 					};
 					modelForUpdate.fetchMx({
@@ -305,7 +342,7 @@ define([
 						var modelForUpdate = this.model;
 						modelForUpdate.url = App.api.WR0021;
 						var cond = {
-							"scr": '不要品返却-発注取消',
+							"scr": 'その他交換-発注取消',
 							"data": data,
 						};
 						modelForUpdate.fetchMx({
@@ -405,7 +442,7 @@ define([
 					var modelForUpdate = this.model;
 					modelForUpdate.url = App.api.WR0022;
 					var cond = {
-						"scr": '不要品返却-入力完了-check',
+						"scr": 'その他交換-入力完了-check',
 						"mode": "check",
 						"wearer_data": wearer_data,
 						"item": item
@@ -418,7 +455,7 @@ define([
 								var msg = "入力を完了しますが、よろしいですか？";
 								if (window.confirm(msg)) {
 									var data = {
-										"scr": '不要品返却-入力完了-update',
+										"scr": 'その他交換-入力完了-update',
 										"mode": "update",
 										"wearer_data": wearer_data,
 										"item": item
@@ -506,7 +543,7 @@ define([
 					var modelForUpdate = this.model;
 					modelForUpdate.url = App.api.WR0023;
 					var cond = {
-						"scr": '不要品返却-発注送信',
+						"scr": 'その他交換-発注送信',
 						"mode": "check",
 						"wearer_data": wearer_data,
 						"item": item
@@ -519,7 +556,7 @@ define([
 								var msg = "発注送信を行いますが、よろしいですか？";
 								if (window.confirm(msg)) {
 									var data = {
-										"scr": '不要品返却-発注送信-update',
+										"scr": 'その他交換-発注送信-update',
 										"mode": "update",
 										"wearer_data": wearer_data,
 										"item": item

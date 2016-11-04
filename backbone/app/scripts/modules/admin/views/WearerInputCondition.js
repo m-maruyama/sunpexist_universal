@@ -219,11 +219,6 @@ define([
                         }
                     }
                 });
-
-
-
-
-
             },
             input_delete: function () {
                 var that = this;
