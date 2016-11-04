@@ -14,9 +14,9 @@ define([
 					cster_emply_cd : null,
 					werer_name : null,
 					sex_kbn : null,
-					snd_kbn : null,
 					section : null,
 					job_type : null,
+					snd_kbn : null,
 					order_req_no :null,
 					order_req_ymd :null,
 				};
@@ -32,9 +32,6 @@ define([
 				if(this.get('sex_kbn')) {
 					result.sex_kbn = this.get('sex_kbn');
 				}
-				if(this.get('snd_kbn')) {
-					result.snd_kbn = this.get('snd_kbn');
-				}
 				if(this.get('order_req_no')) {
 					result.order_req_no = this.get('order_req_no');
 				}
@@ -46,6 +43,9 @@ define([
 				}
 				if(this.get('job_type')) {
 					result.job_type = this.get('job_type');
+				}
+				if(this.get('snd_kbn')) {
+					result.snd_kbn = this.get('snd_kbn');
 				}
 				return result;
 			},

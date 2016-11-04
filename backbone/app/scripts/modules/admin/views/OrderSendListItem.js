@@ -23,7 +23,6 @@ define([
 			},
 			onShow:   function() {
 
-
 			},
 			events: {
 				'click @ui.orderSend_cancel': function(e){

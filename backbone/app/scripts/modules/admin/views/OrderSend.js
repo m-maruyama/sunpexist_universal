@@ -13,10 +13,8 @@ define([
 				"page_2": ".page_2",
 				"condition": ".condition",
 				"listTable": ".listTable",
-				"csv_download": ".csv_download",
 				"sectionModal": ".section_modal",
-				"sectionModal_2": ".section_modal_2",
-				"detailModal": '.detail_modal'
+				"sectionModal_2": ".section_modal_2"
 			},
 			model: new Backbone.Model(),
 			onShow: function() {

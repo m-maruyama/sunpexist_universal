@@ -211,6 +211,7 @@ $app->post('/reason_kbn_change', function ()use($app){
     }
 
     $json_list['reason_kbn_list'] = $all_list;
+    ///ChromePhp::LOG($json_list['reason_kbn_list']);
     echo json_encode($json_list);
 });
 

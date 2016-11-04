@@ -51,6 +51,8 @@ define([
 				'#search': 'search',
 			},
 			onRender: function() {
+				var that = this;
+				this.triggerMethod('first:section');
 			},
 			events: {
 				'click @ui.search': function(e){
@@ -64,20 +66,20 @@ define([
 					this.model.set('werer_name', this.ui.werer_name.val());
 					var sex_kbn = $("select[name='sex_kbn']").val();
 					this.model.set('sex_kbn', sex_kbn);
-					var snd_kbn = $("select[name='snd_kbn']").val();
-					this.model.set('snd_kbn', snd_kbn);
 					var section = $("select[name='section']").val();
 					this.model.set('section', section);
 					var job_type = $("select[name='job_type']").val();
 					this.model.set('job_type', job_type);
+					var snd_kbn = $("select[name='snd_kbn']").val();
+					this.model.set('snd_kbn', snd_kbn);
 					this.model.set('search', this.ui.search.val());
 					var errors = this.model.validate();
 					if(errors) {
 						this.triggerMethod('showAlerts', errors);
 						return;
 					}
-					this.triggerMethod('click:search','order_req_no','asc');
 
+					this.triggerMethod('click:search','order_req_no','asc',1);
 				},
 				'change @ui.agreement_no': function(){
 					this.ui.agreement_no = $('#agreement_no');
