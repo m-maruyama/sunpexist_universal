@@ -1531,11 +1531,14 @@ $app->post('/wearer_end_order_delete', function ()use($app){
     $params = json_decode(file_get_contents("php://input"), true);
 
     $json_list = array();
-    // アカウントセッション取得
+    // アカウントセッション
     $auth = $app->session->get('auth');
-
-    // 前画面セッション取得
+    // 前画面セッション
     $wearer_end_post = $app->session->get("wearer_end_post");
+    // フロントパラメータ
+    if (!empty($params['data'])) {
+      $cond = $params['data'];
+    }
 
     $query_list = array();
     $list = array();
@@ -1615,8 +1618,16 @@ $app->post('/wearer_end_order_delete', function ()use($app){
         // 発注情報トランを参照
         $query_list = array();
         array_push($query_list, "t_order_tran.corporate_id = '".$auth['corporate_id']."'");
-        array_push($query_list, "t_order_tran.order_req_no <> '".$wearer_end_post['order_req_no']."'");
-        array_push($query_list, "t_order_tran.werer_cd = '".$wearer_end_post['werer_cd']."'");
+        if (!empty($cond["order_req_no"])) {
+          array_push($query_list, "t_order_tran.order_req_no <> '".$cond['order_req_no']."'");
+        } else {
+          array_push($query_list, "t_order_tran.order_req_no <> '".$wearer_end_post['order_req_no']."'");
+        }
+        if (!empty($cond["werer_cd"])) {
+          array_push($query_list, "t_order_tran.werer_cd = '".$cond['werer_cd']."'");
+        } else {
+          array_push($query_list, "t_order_tran.werer_cd = '".$wearer_end_post['werer_cd']."'");
+        }
         $query = implode(' AND ', $query_list);
 
         $arg_str = "";

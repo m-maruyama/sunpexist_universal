@@ -9,8 +9,9 @@ use Phalcon\Paginator\Adapter\QueryBuilder as PaginatorQueryBuilder;
 
 /**
  * 発注送信処理
+ * 検索
  */
-$app->post('/order_send', function () use ($app) {
+$app->post('/order_send/search', function () use ($app) {
     $params = json_decode(file_get_contents("php://input"), true);
 
     // アカウントセッション取得
@@ -124,12 +125,6 @@ $app->post('/order_send', function () use ($app) {
           $list['order_req_no'] = $result->as_order_req_no;
         } else {
           $list['order_req_no'] = "";
-        }
-        // 発注No-返却予定情報トラン
-        if (!empty($result->as_order_req_no)) {
-          $list['rtn_order_req_no'] = $result->as_rtn_order_req_no;
-        } else {
-          $list['rtn_order_req_no'] = "";
         }
         // 発注No-返却予定情報トラン
         if (!empty($result->as_order_req_no)) {
@@ -276,6 +271,19 @@ $app->post('/order_send', function () use ($app) {
           $list['order_delete_bottom'] = false;
         }
 
+        // 発注入力へのパラメータ設定
+        $list['param'] = '';
+        $list['param'] .= $list['corporate_id'].':';
+        $list['param'] .= $list['rntl_cont_no'].':';
+        $list['param'] .= $list['werer_cd'].':';
+        $list['param'] .= $list['rntl_sect_cd'].':';
+        $list['param'] .= $list['job_type_cd'].':';
+        $list['param'] .= $list['order_sts_kbn'].':';
+        $list['param'] .= $list['order_reason_kbn'].':';
+        $list['param'] .= $list['wst_order_req_no'].':';
+        $list['param'] .= $list['order_req_no'].':';
+        $list['param'] .= $list['rtn_order_req_no'];
+
         $all_list[] = $list;
       }
     }
@@ -291,182 +299,210 @@ $app->post('/order_send', function () use ($app) {
 });
 
 /**
- * 発注送信ボタン押した時の
- *
+ * 発注送信処理
+ * 発注送信
  */
-$app->post('/order_change', function () use ($app) {
+$app->post('/order_send/send', function () use ($app) {
+  $params = json_decode(file_get_contents("php://input"), true);
 
-    $params = json_decode(file_get_contents("php://input"), true);
+  // アカウントセッション
+  $auth = $app->session->get("auth");
+  //ChromePhp::LOG($auth);
 
-    // アカウントセッション取得
-    $auth = $app->session->get("auth");
+  // フロントパラメータ
+  $order_data = $params['data'];
+  //ChromePhp::LOG($order_data);
 
-    // パラメータ取得
-    $order_data = $params['data'];
-    //リスト作成
-    $json_list = array();
-    $error_list = array();
+  $json_list = array();
 
-    if ($error_list) {
-        $json_list['errors'] = $error_list;
-        echo json_encode($json_list);
+  $json_list["error_code"] = "0";
 
-        return true;
+  // 各トラン情報更新処理
+  if (!empty($order_data)) {
+    $wst_query_list = array();
+    $ord_query_list = array();
+    $rtn_query_list = array();
+    foreach ($order_data as $data) {
+      if (!empty($data["wst_order_req_no"])) {
+        $wst_query_list[] = "'".$data["wst_order_req_no"]."'";
+      }
+      if (!empty($data["order_req_no"])) {
+        $ord_query_list[] = "'".$data["order_req_no"]."'";
+      }
+      if (!empty($data["rtn_order_req_no"])) {
+        $rtn_query_list[] = "'".$data["rtn_order_req_no"]."'";
+      }
     }
-
-    $transaction = $app->transactionManager->get();
-
-    foreach ($order_data as $order) {
-
-        $corporate_id = $order['corporate_id'];
-        $werer_cd = $order['werer_cd'];
-        $rntl_cont_no = $order['rntl_cont_no'];
-        $job_type_cd = $order['job_type_cd'];
-        $order_req_no = $order['order_req_no'];
-
-
-        //着用者情報マスタトランの更新設定
-        $m_wearer_std_tran_results = MWearerStdTran::find(array(
-            'conditions' => "corporate_id = '$corporate_id' AND werer_cd = '$werer_cd' AND rntl_cont_no = '$rntl_cont_no' AND job_type_cd = '$job_type_cd'"
-        ));
-        $m_wearer_std_tran_results[0]->snd_kbn = 1;//送信済
-        $m_wearer_std_tran_results[0]->upd_date = date('Y/m/d H:i:s.sss', time()); //更新日時
-
-        $m_wearer_std_tran = $m_wearer_std_tran_results[0];
-
-
-        //発注者情報トランの更新設定
-        $t_order_tran_results = TOrderTran::find(array(
-            'conditions' => "corporate_id = '$corporate_id' AND werer_cd = '$werer_cd' AND rntl_cont_no = '$rntl_cont_no' AND job_type_cd = '$job_type_cd' AND order_req_no = '$order_req_no'"
-        ));
-
-
-        if ($m_wearer_std_tran->save() == false) {
-            $error_list['order'] = '送信区分の変更が失敗しました。';
-            $json_list['errors'] = $error_list;
-            echo json_encode($json_list);
-            $transaction->rollBack();
-            return;
-        }
-
-        foreach ($t_order_tran_results as $t_order_tran_value) {
-            $t_order_tran_value->snd_kbn = 1;//送信済
-            $t_order_tran_value->upd_date = date('Y/m/d H:i:s.sss', time()); //更新日時
-            $t_order_tran = $t_order_tran_value;
-            if ($t_order_tran->save() == false) {
-                $error_list['order'] = '送信区分の変更が失敗しました。';
-                $json_list['errors'] = $error_list;
-                echo json_encode($json_list);
-                $transaction->rollBack();
-                return;
-            }
-        }
-        //ChromePhp::LOG($t_order_tran_results);
-        //ChromePhp::LOG($t_order_tran);
-
-        //if ($t_order_tran->save() == false) {
-        //    $error_list['order'] = '送信区分の変更が失敗しました。';
-        //   $json_list['errors'] = $error_list;
-        //   echo json_encode($json_list);
-        //   $transaction->rollBack();
-        //   return;
-        // }
-
+    // 着用者基本マスタトラン発注No
+    if (!empty($wst_query_list)) {
+      $wst_query = implode(',', $wst_query_list);
+      $wst_query = "order_req_no IN (".$wst_query.")";
+    } else {
+      $wst_query = "";
     }
+    // 発注情報トラン発注No
+    if (!empty($ord_query_list)) {
+      $ord_query = implode(',', $ord_query_list);
+      $ord_query = "order_req_no IN (".$ord_query.")";
+    } else {
+      $ord_query = "";
+    }
+    // 返却予定情報トラン発注No
+    if (!empty($rtn_query_list)) {
+      $rtn_query = implode(',', $rtn_query_list);
+      $rtn_query = "order_req_no IN (".$rtn_query.")";
+    } else {
+      $rtn_query = "";
+    }
+    //ChromePhp::LOG("着".$wst_query);
+    //ChromePhp::LOG("発".$ord_query);
+    //ChromePhp::LOG("返".$rtn_query);
 
-    $transaction->commit();
+    $m_wearer_std_tran = new MWearerStd();
+    $transaction = new Resultset(NULL, $m_wearer_std_tran, $m_wearer_std_tran->getReadConnection()->query("begin"));
+    try {
+      // 着用者基本マスタトラン更新
+      if (!empty($wst_query)) {
+        $arg_str = "";
+        $arg_str .= "UPDATE m_wearer_std_tran SET ";
+        $arg_str .= "snd_kbn = '1'";
+        $arg_str .= " WHERE ";
+        $arg_str .= $wst_query;
+        //ChromePhp::LOG($arg_str);
+        $results = new Resultset(NULL, $m_wearer_std_tran, $m_wearer_std_tran->getReadConnection()->query($arg_str));
+        $result_obj = (array)$results;
+        $results_cnt = $result_obj["\0*\0_count"];
+      }
+      // 発注情報トラン更新
+      if (!empty($ord_query)) {
+        $arg_str = "";
+        $arg_str .= "UPDATE t_order_tran SET ";
+        $arg_str .= "snd_kbn = '1'";
+        $arg_str .= " WHERE ";
+        $arg_str .= $ord_query;
+        //ChromePhp::LOG($arg_str);
+        $results = new Resultset(NULL, $m_wearer_std_tran, $m_wearer_std_tran->getReadConnection()->query($arg_str));
+        $result_obj = (array)$results;
+        $results_cnt = $result_obj["\0*\0_count"];
+      }
+      // 返却予定情報トラン更新
+      if (!empty($rtn_query)) {
+        $arg_str = "";
+        $arg_str .= "UPDATE t_returned_plan_info_tran SET ";
+        $arg_str .= "snd_kbn = '1'";
+        $arg_str .= " WHERE ";
+        $arg_str .= $rtn_query;
+        //ChromePhp::LOG($arg_str);
+        $results = new Resultset(NULL, $m_wearer_std_tran, $m_wearer_std_tran->getReadConnection()->query($arg_str));
+        $result_obj = (array)$results;
+        $results_cnt = $result_obj["\0*\0_count"];
+      }
 
-    echo json_encode($json_list);
-    return true;
+      $transaction = new Resultset(NULL, $m_wearer_std_tran, $m_wearer_std_tran->getReadConnection()->query("commit"));
+    } catch (Exception $e) {
+      $transaction = new Resultset(NULL, $m_wearer_std_tran, $m_wearer_std_tran->getReadConnection()->query("rollback"));
+      //ChromePhp::LOG($e);
 
+      $json_list["error_code"] = "1";
+      echo json_encode($json_list);
+      return;
+    }
+  }
+
+  echo json_encode($json_list);
 });
 
 /**
- * 発注送信キャンセルボタン押した時
- *
+ * 発注送信処理
+ * 発注送信キャンセル
  */
 $app->post('/order_send/cancel', function () use ($app) {
+  $params = json_decode(file_get_contents("php://input"), true);
 
-    $params = json_decode(file_get_contents("php://input"), true);
+  // アカウントセッション
+  $auth = $app->session->get("auth");
+  //ChromePhp::LOG($auth);
 
-    // アカウントセッション取得
-    $auth = $app->session->get("auth");
+  // フロントパラメータ
+  $order_data = $params['data'];
+  //ChromePhp::LOG($order_data);
 
-    // パラメータ取得
-    $order_data = $params['data'];
-    //リスト作成
-    $json_list = array();
-    $error_list = array();
+  $json_list = array();
 
-    if ($error_list) {
-        $json_list['errors'] = $error_list;
-        echo json_encode($json_list);
+  $json_list["error_code"] = "0";
 
-        return true;
+  // 各トラン情報更新処理
+  // 着用者基本マスタトラン発注No
+  if (!empty($order_data["wst_order_req_no"])) {
+    $wst_query = "order_req_no = '".$order_data["wst_order_req_no"]."'";
+  } else {
+    $wst_query = "";
+  }
+  // 発注情報トラン発注No
+  if (!empty($order_data["order_req_no"])) {
+    $ord_query = "order_req_no = '".$order_data["order_req_no"]."'";
+  } else {
+    $ord_query = "";
+  }
+  // 返却予定情報トラン発注No
+  if (!empty($order_data["rtn_order_req_no"])) {
+    $rtn_query = "order_req_no = '".$order_data["rtn_order_req_no"]."'";
+  } else {
+    $rtn_query = "";
+  }
+  //ChromePhp::LOG("着".$wst_query);
+  //ChromePhp::LOG("発".$ord_query);
+  //ChromePhp::LOG("返".$rtn_query);
+
+  $m_wearer_std_tran = new MWearerStd();
+  $transaction = new Resultset(NULL, $m_wearer_std_tran, $m_wearer_std_tran->getReadConnection()->query("begin"));
+  try {
+    // 着用者基本マスタトラン更新
+    if (!empty($wst_query)) {
+      $arg_str = "";
+      $arg_str .= "UPDATE m_wearer_std_tran SET ";
+      $arg_str .= "snd_kbn = '0'";
+      $arg_str .= " WHERE ";
+      $arg_str .= $wst_query;
+      //ChromePhp::LOG($arg_str);
+      $results = new Resultset(NULL, $m_wearer_std_tran, $m_wearer_std_tran->getReadConnection()->query($arg_str));
+      $result_obj = (array)$results;
+      $results_cnt = $result_obj["\0*\0_count"];
+    }
+    // 発注情報トラン更新
+    if (!empty($ord_query)) {
+      $arg_str = "";
+      $arg_str .= "UPDATE t_order_tran SET ";
+      $arg_str .= "snd_kbn = '0'";
+      $arg_str .= " WHERE ";
+      $arg_str .= $ord_query;
+      //ChromePhp::LOG($arg_str);
+      $results = new Resultset(NULL, $m_wearer_std_tran, $m_wearer_std_tran->getReadConnection()->query($arg_str));
+      $result_obj = (array)$results;
+      $results_cnt = $result_obj["\0*\0_count"];
+    }
+    // 返却予定情報トラン更新
+    if (!empty($rtn_query)) {
+      $arg_str = "";
+      $arg_str .= "UPDATE t_returned_plan_info_tran SET ";
+      $arg_str .= "snd_kbn = '0'";
+      $arg_str .= " WHERE ";
+      $arg_str .= $rtn_query;
+      //ChromePhp::LOG($arg_str);
+      $results = new Resultset(NULL, $m_wearer_std_tran, $m_wearer_std_tran->getReadConnection()->query($arg_str));
+      $result_obj = (array)$results;
+      $results_cnt = $result_obj["\0*\0_count"];
     }
 
-    $transaction = $app->transactionManager->get();
+    $transaction = new Resultset(NULL, $m_wearer_std_tran, $m_wearer_std_tran->getReadConnection()->query("commit"));
+  } catch (Exception $e) {
+    $transaction = new Resultset(NULL, $m_wearer_std_tran, $m_wearer_std_tran->getReadConnection()->query("rollback"));
+    //ChromePhp::LOG($e);
 
-
-        $corporate_id = $order_data['corporate_id'];
-        $werer_cd = $order_data['werer_cd'];
-        $rntl_cont_no = $order_data['rntl_cont_no'];
-        $job_type_cd = $order_data['job_type_cd'];
-        $order_req_no = $order_data['order_req_no'];
-
-
-        //着用者情報マスタトランの更新設定
-        $m_wearer_std_tran_results = MWearerStdTran::find(array(
-            'conditions' => "corporate_id = '$corporate_id' AND werer_cd = '$werer_cd' AND rntl_cont_no = '$rntl_cont_no' AND job_type_cd = '$job_type_cd'"
-        ));
-        $m_wearer_std_tran_results[0]->snd_kbn = 0;//送信済
-        $m_wearer_std_tran_results[0]->upd_date = date('Y/m/d H:i:s.sss', time()); //更新日時
-
-        $m_wearer_std_tran = $m_wearer_std_tran_results[0];
-
-
-        //発注者情報トランの更新設定
-        $t_order_tran_results = TOrderTran::find(array(
-            'conditions' => "corporate_id = '$corporate_id' AND werer_cd = '$werer_cd' AND rntl_cont_no = '$rntl_cont_no' AND job_type_cd = '$job_type_cd' AND order_req_no = '$order_req_no'"
-        ));
-
-
-        if ($m_wearer_std_tran->save() == false) {
-            $error_list['order'] = '送信区分の変更が失敗しました。';
-            $json_list['errors'] = $error_list;
-            echo json_encode($json_list);
-            $transaction->rollBack();
-            return;
-        }
-
-        foreach ($t_order_tran_results as $t_order_tran_value) {
-            //ChromePhp::LOG($t_order_tran_value);
-            $t_order_tran_value->snd_kbn = 0;//送信済
-            $t_order_tran_value->upd_date = date('Y/m/d H:i:s.sss', time()); //更新日時
-            $t_order_tran = $t_order_tran_value;
-            if ($t_order_tran->save() == false) {
-                $error_list['order'] = '送信区分の変更が失敗しました。';
-                $json_list['errors'] = $error_list;
-                echo json_encode($json_list);
-                $transaction->rollBack();
-                return;
-            }
-        }
-        //ChromePhp::LOG($t_order_tran_results);
-        //ChromePhp::LOG($t_order_tran);
-
-        //if ($t_order_tran->save() == false) {
-        //    $error_list['order'] = '送信区分の変更が失敗しました。';
-        //   $json_list['errors'] = $error_list;
-        //   echo json_encode($json_list);
-        //   $transaction->rollBack();
-        //   return;
-        // }
-
-
-    $transaction->commit();
-
+    $json_list["error_code"] = "1";
     echo json_encode($json_list);
-    return true;
+    return;
+  }
 
+  echo json_encode($json_list);
 });

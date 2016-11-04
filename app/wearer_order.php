@@ -1151,10 +1151,14 @@ $app->post('/wearer_order_insert', function () use ($app) {
 $app->post('/wearer_order_delete', function ()use($app){
   $params = json_decode(file_get_contents("php://input"), true);
 
-  // アカウントセッション取得
+  // アカウントセッション
   $auth = $app->session->get("auth");
-  // 前画面セッション取得
+  // 前画面セッション
   $wearer_odr_post = $app->session->get("wearer_odr_post");
+  // フロントパラメータ
+  if (!empty($params['data'])) {
+    $cond = $params['data'];
+  }
 
   $json_list = array();
   // DB更新エラーコード 0:正常 1:更新エラー
@@ -1163,7 +1167,11 @@ $app->post('/wearer_order_delete', function ()use($app){
       //--発注情報トラン削除--//
       $query_list = array();
       array_push($query_list, "t_order_tran.corporate_id = '".$auth['corporate_id']."'");
-      array_push($query_list, "t_order_tran.order_req_no = '".$wearer_odr_post['order_req_no']."'");
+      if (!empty($cond["order_req_no"])) {
+        array_push($query_list, "t_order_tran.order_req_no = '".$cond['order_req_no']."'");
+      } else {
+        array_push($query_list, "t_order_tran.order_req_no = '".$wearer_odr_post['order_req_no']."'");
+      }
       // 発注区分「貸与」
       array_push($query_list, "t_order_tran.order_sts_kbn = '1'");
       $query = implode(' AND ', $query_list);

@@ -1,6 +1,6 @@
 <td>
   {{#if send_choice_chk}}
-  <input type="checkbox" name="order_check" class="order_check snd_kbn{{order_snd_kbn}}" value="{{corporate_id}}:{{werer_cd}}:{{rntl_cont_no}}:{{job_type_cd}}:{{order_req_no}}">
+  <input type="checkbox" name="order_check" class="order_check snd_kbn{{order_snd_kbn}}" value="{{param}}">
   {{/if}}
 </td>
 <td>
@@ -23,11 +23,11 @@
 <td>{{snd_kbn}}</td>
 <td>
   {{#if send_cancel_bottom}}
-  <button type="button" class="btn btn-primary orderSend_cancel snd_kbn{{order_snd_kbn}}" title="発注送信キャンセル" value="{{corporate_id}}:{{werer_cd}}:{{rntl_cont_no}}:{{job_type_cd}}:{{order_req_no}}">発注送信キャンセル</button>
+  <button type="button" class="btn btn-primary orderSend_cancel snd_kbn{{order_snd_kbn}}" title="発注送信キャンセル" value="{{param}}">発注送信キャンセル</button>
   {{/if}}
 </td>
 <td>
   {{#if order_delete_bottom}}
-  <button type="button" class="btn btn-primary order_cancel snd_kbn{{order_snd_kbn}}" title="発注取消" value="{{werer_cd}}:{{order_req_no}}:{{rntl_cont_no}}:{{rntl_sect_cd}}:{{job_type_cd}}">発注取消</button>
+  <button type="button" class="btn btn-primary order_cancel snd_kbn{{order_snd_kbn}}" title="発注取消" value="{{param}}">発注取消</button>
   {{/if}}
 </td>

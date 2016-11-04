@@ -36,7 +36,6 @@ define([
 				'sex_kbn': '.sex_kbn',
 				'snd_kbn': '.snd_kbn',
 				'job_type': '#job_type',
-				"reset": '.reset',
 				"search": '.search',
 			},
 			bindings: {

@@ -96,6 +96,7 @@ $app->post('/wearer_end/search', function ()use($app){
     $arg_str .= " AND t_order_tran.rntl_cont_no = ojt.rntl_cont_no";
     $arg_str .= " AND t_order_tran.job_type_cd = ojt.job_type_cd))";
     $arg_str .= " ON (m_wearer_std.corporate_id = t_order_tran.corporate_id";
+    $arg_str .= " AND m_wearer_std.werer_cd = t_order_tran.werer_cd";
     $arg_str .= " AND m_wearer_std.rntl_cont_no = t_order_tran.rntl_cont_no";
     $arg_str .= " AND m_wearer_std.rntl_sect_cd = t_order_tran.rntl_sect_cd";
     $arg_str .= " AND m_wearer_std.job_type_cd = t_order_tran.job_type_cd)";
@@ -109,6 +110,7 @@ $app->post('/wearer_end/search', function ()use($app){
     $arg_str .= " AND t_returned_plan_info_tran.rntl_cont_no = rjt.rntl_cont_no";
     $arg_str .= " AND t_returned_plan_info_tran.job_type_cd = rjt.job_type_cd))";
     $arg_str .= " ON (m_wearer_std.corporate_id = t_returned_plan_info_tran.corporate_id";
+    $arg_str .= " AND m_wearer_std.werer_cd = t_returned_plan_info_tran.werer_cd";
     $arg_str .= " AND m_wearer_std.rntl_cont_no = t_returned_plan_info_tran.rntl_cont_no";
     $arg_str .= " AND m_wearer_std.rntl_sect_cd = t_returned_plan_info_tran.rntl_sect_cd";
     $arg_str .= " AND m_wearer_std.job_type_cd = t_returned_plan_info_tran.job_type_cd)";
@@ -195,6 +197,7 @@ $app->post('/wearer_end/search', function ()use($app){
             $arg_str .= " AND t_order_tran.rntl_cont_no = ojt.rntl_cont_no";
             $arg_str .= " AND t_order_tran.job_type_cd = ojt.job_type_cd))";
             $arg_str .= " ON (m_wearer_std_tran.corporate_id = t_order_tran.corporate_id";
+            $arg_str .= " AND m_wearer_std_tran.werer_cd = t_order_tran.werer_cd";
             $arg_str .= " AND m_wearer_std_tran.rntl_cont_no = t_order_tran.rntl_cont_no";
             $arg_str .= " AND m_wearer_std_tran.rntl_sect_cd = t_order_tran.rntl_sect_cd";
             $arg_str .= " AND m_wearer_std_tran.job_type_cd = t_order_tran.job_type_cd)";
@@ -208,6 +211,7 @@ $app->post('/wearer_end/search', function ()use($app){
             $arg_str .= " AND t_returned_plan_info_tran.rntl_cont_no = rjt.rntl_cont_no";
             $arg_str .= " AND t_returned_plan_info_tran.job_type_cd = rjt.job_type_cd))";
             $arg_str .= " ON (m_wearer_std_tran.corporate_id = t_returned_plan_info_tran.corporate_id";
+            $arg_str .= " AND m_wearer_std_tran.werer_cd = t_returned_plan_info_tran.werer_cd";
             $arg_str .= " AND m_wearer_std_tran.rntl_cont_no = t_returned_plan_info_tran.rntl_cont_no";
             $arg_str .= " AND m_wearer_std_tran.rntl_sect_cd = t_returned_plan_info_tran.rntl_sect_cd";
             $arg_str .= " AND m_wearer_std_tran.job_type_cd = t_returned_plan_info_tran.job_type_cd)";
@@ -629,4 +633,3 @@ $app->post('/wearer_end/order_check', function ()use($app){
 
     echo json_encode($json_list);
 });
-

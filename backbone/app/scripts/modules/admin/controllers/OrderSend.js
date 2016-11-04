@@ -170,7 +170,7 @@ define([
 				this.listenTo(orderSendListListView, 'reload', function(){
 					fetchList();
 				});
-				this.listenTo(orderSendListListView, 'childview:reload2', function(){
+				this.listenTo(orderSendListListView, 'childview:reload', function(){
 					fetchList();
 				});
 

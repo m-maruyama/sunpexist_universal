@@ -27,95 +27,89 @@ define([
       				});
             },
             events: {
-                "click .sort": function (e) {
-                    e.preventDefault();
-                    var that = this;
-                    //同じソートキーの場合は昇順降順切り替え
-                    if (sort_key == e.target.id) {
-                        if (order == 'asc') {
-                            order = 'desc';
-                        } else {
-                            order = 'asc';
-                        }
-                    } else {
-                        //ソートキーが変更された場合は昇順
-                        order = 'asc';
-                    }
-                    sort_key = e.target.id;
-                    this.triggerMethod('sort', e.target.id, order);
-                },
-                'change @ui.checkall': function (e) {
-                    e.preventDefault();
-
-                    if ($("tbody .order_check.snd_kbn0").prop('checked')) {
-                        $("tbody .order_check.snd_kbn0").prop("checked", false);
-                    }
-                    else {
-                        $("tbody .order_check.snd_kbn0").prop("checked", true);
-                    }
-                },
-                'click @ui.updBtn': function (e) {
-                    e.preventDefault();
-                    //var model = new this.collection.model();
-
-                    if (window.confirm('発注送信をしますか？')) {
-                        var we_array = [];
-                        $('[name="order_check"]:checked').each(function () {
-                            we_array.push($(this).val());
-                        });
-                        window.sessionStorage.setItem('we_array', we_array);
-                        var we_val = window.sessionStorage.getItem('we_array').split(',');
-
-                        if (!we_val[0]) {
-                            alert('チェックボックスが選択されていません。');
-                            return;
-                        }
-
-                        //var we_vals = we_val.split(',');
-                        var we_length = we_val.length;
-                        var item = new Object();
-                        var data = new Object();
-
-                        for (var i = 0; i < we_length; i++) {
-                            item[i] = new Object();
-                            item[i] = we_val[i].split(':');
-                            data[i] = {
-                                "corporate_id": item[i][0],//企業id
-                                "werer_cd": item[i][1],//着用者コード
-                                "rntl_cont_no": item[i][2],//レンタル企業no
-                                "job_type_cd": item[i][3],
-                                "order_req_no": item[i][4],
-                            };
-                        }
-
-                        var that = this;
-                       // console.log(that);
-                       // console.log(OrderSendListList);
-                        var modelForUpdate = this.model;
-                        modelForUpdate.url = App.api.OC0010;
-                        var cond = {
-                            "scr": '発注送信',
-                            "data": data
-                        };
-                        modelForUpdate.fetchMx({
-                            data: cond,
-                            success: function (res) {
-                                var errors = res.get('errors');
-                                if (errors) {
-                                    var errorMessages = errors.map(function (v) {
-                                        return v.error_message;
-                                    });
-                                    this.triggerMethod('showAlerts', errorMessages);
-                                }
-                                sessionStorage.clear();
-                                that.triggerMethod('reload');
-                            }
-                        });
-                    }
-                    else {
-                        return;
-                    }
+              "click .sort": function (e) {
+                  e.preventDefault();
+                  var that = this;
+                  if (sort_key == e.target.id) {
+                      if (order == 'asc') {
+                          order = 'desc';
+                      } else {
+                          order = 'asc';
+                      }
+                  } else {
+                      order = 'asc';
+                  }
+                  sort_key = e.target.id;
+                  this.triggerMethod('sort', e.target.id, order);
+              },
+              'change @ui.checkall': function (e) {
+                e.preventDefault();
+                if ($("#checkall").prop('checked')) {
+                  $("tbody .order_check.snd_kbn0").prop("checked", true);
+                } else {
+                  $("tbody .order_check.snd_kbn0").prop("checked", false);
                 }
+              },
+              'click @ui.updBtn': function (e) {
+                e.preventDefault();
+                var that = this;
+
+                var we_array = [];
+                $('[name="order_check"]:checked').each(function () {
+                    we_array.push($(this).val());
+                });
+                window.sessionStorage.setItem('we_array', we_array);
+                var we_val = window.sessionStorage.getItem('we_array').split(',');
+                  if (!we_val[0]) {
+                  alert('発注送信を行う場合は選択欄の何れかにチェックを入れてください。');
+                  return;
+                }
+
+                if (window.confirm('選択されているデータの発注送信を行います。\nよろしいですか？')) {
+                  $.blockUI({message: '<p><img src="ajax-loader.gif" style="margin: 0 auto;" />発注送信処理中...</p>'});
+                  var we_length = we_val.length;
+                  var item = new Object();
+                  var data = new Object();
+                  for (var i = 0; i < we_length; i++) {
+                    item[i] = new Object();
+                    item[i] = we_val[i].split(':');
+                    data[i] = {
+                      "corporate_id": item[i][0],
+                      "rntl_cont_no": item[i][1],
+                      "werer_cd": item[i][2],
+                      "rntl_sect_cd": item[i][3],
+                      "job_type_cd": item[i][4],
+                      "order_sts_kbn": item[i][5],
+                      "order_reason_kbn": item[i][6],
+                      "wst_order_req_no": item[i][7],
+                      "order_req_no": item[i][8],
+                      "rtn_order_req_no": item[i][9]
+                    };
+                  }
+                  //console.log(data);
+                  var modelForUpdate = this.model;
+                  modelForUpdate.url = App.api.OS0011;
+                  var cond = {
+                      "scr": '発注送信処理-発注送信',
+                      "log_type": '2',
+                      "data": data
+                  };
+                  modelForUpdate.fetchMx({
+                    data: cond,
+                    success: function (res) {
+                      var res_list = res.attributes;
+                      sessionStorage.clear();
+                      if (res_list["error_code"] == "0") {
+                        that.triggerMethod('reload');
+                        $.unblockUI();
+                      } else {
+                        $.unblockUI();
+                        alert("更新処理中にエラーが発生しました。");
+                      }
+                    }
+                  });
+                }
+              }
             },
             fetch: function (orderSendListConditionModel) {
                 var cond = {
