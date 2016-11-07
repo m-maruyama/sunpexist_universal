@@ -40,6 +40,7 @@ define([
 				"wearerOther": "li.nav_wearerOther",
 				"wearerSizeChange": "li.nav_wearerSizeChange",
 				"wearerOtherChangeOrder": "li.nav_wearerOtherChangeOrder",
+				"wearerExchangeOrder": "li.nav_wearerExchangeOrder",
 				"wearerAddOrder": "li.nav_wearerAddOrder",
 				"wearerReturnOrder": "li.nav_wearerReturnOrder",
 				"wearerInputComplete": "li.nav_wearerInputComplete",

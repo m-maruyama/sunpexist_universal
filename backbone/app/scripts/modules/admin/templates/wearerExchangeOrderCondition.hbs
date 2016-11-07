@@ -1,0 +1,95 @@
+<div class="row">
+	<h1>発注入力（サイズ交換）</h1>
+	<!-- start フォーム -->
+	<div class="row">
+		<div class="col-md-1">
+			<button class="btn btn-primary back" title="戻る">戻る</button>
+		</div>
+		<div class="col-md-1">
+			<button class="btn btn-primary delete" style="display:none;" name="delete_param" value="{{delete_param}}" title="発注取消">発注取消</button>
+		</div>
+		<div class="col-md-1">
+			<button class="btn btn-primary complete" style="display:none;" title="入力完了">入力完了</button>
+		</div>
+		<div class="col-md-1">
+			<button class="btn btn-primary orderSend" style="display:none;" title="発注送信">発注送信</button>
+		</div>
+	</div>
+
+	<!--エラーメッセージ-->
+	<div style="padding-top:20px;">
+		<div class="errors"></div>
+	<div>
+
+	<form class="form-horizontal">
+		<div class="col-md-10 box_purple">
+			<!--契約No-->
+			<div class="agreement_no"></div>
+
+			<!--理由区分-->
+			<div class="reason_kbn"></div>
+
+			<div class="form-group">
+				<label class="col-md-3 control-label" for="">社員コード</label>
+				<div class="col-md-6">
+					<label class="checkbox-inline"><input type="checkbox" id="emply_cd_flg" name="emply_cd_flg[]" value="1" checked>社員コードあり</label>&nbsp;&nbsp;
+					<input type="text" class="input-sm" id="member_no" name="member_no" value="">
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="col-md-3 control-label" for="">着用者名</label>
+				<div class="col-md-7">
+					<input type="text" class="form-control input-sm" id="member_name" name="member_name" value="">
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="col-md-3 control-label" for="">着用者名（読み仮名）</label>
+				<div class="col-md-7">
+					<input type="text" class="form-control input-sm"  id="member_name_kana" name="member_name_kana" value="">
+				</div>
+			</div>
+
+			<!--性別-->
+			<div class="sex_kbn"></div>
+
+			<div class="form-group">
+				<label class="col-md-3 control-label" for="">発令日</label>
+				<div class="col-md-8 form-inline">
+					<div class='input-group date datepicker1'>
+						<input type='text' class="form-control input-sm datepicker1" id='appointment_ymd' name="appointment_ymd">
+						<div class="input-group-addon">
+							<span class="glyphicon glyphicon-calendar"></span>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="col-md-3 control-label" for="">着用開始日</label>
+				<div class="col-md-8 form-inline">
+					<div class='input-group date datepicker2'>
+						<input type='text' class="form-control input-sm datepicker2" id='resfl_ymd' name="resfl_ymd">
+						<div class="input-group-addon">
+							<span class="glyphicon glyphicon-calendar"></span>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!--拠点-->
+			<div class="section"></div>
+
+			<!--貸与パターン-->
+			<div class="job_type"></div>
+
+			<!--出荷先、郵便番号、住所-->
+			<div class="shipment"></div>
+
+			<div class="form-group row">
+				<label class="col-md-3 control-label" for="">コメント欄</label>
+				<div class="col-md-9">
+					<textarea rows="5" class="form-control input-sm" id="comment" name="comment"></textarea>
+				</div>
+			</div>
+		</div>
+	</form>
+	<!-- end フォーム -->

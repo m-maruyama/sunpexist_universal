@@ -138,7 +138,7 @@ define([
 							window.sessionStorage.setItem("wearer_size_change_cond", arr_str);
 							if (transition == "size_change") {
 								// サイズ交換の発注入力画面へ遷移
-								var $form = $('<form/>', {'action': '/universal/wearer_size_change_order.html', 'method': 'post'});
+								var $form = $('<form/>', {'action': '/universal/wearer_exchange_order.html', 'method': 'post'});
 								$form.appendTo(document.body);
 								$form.submit();
 							} else if (transition == "other_change") {

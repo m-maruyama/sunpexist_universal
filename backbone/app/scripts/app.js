@@ -43,6 +43,7 @@ define([
 			'AdminWearerOther': 'modules/admin/WearerOther',
 			'AdminWearerSizeChange': 'modules/admin/WearerSizeChange',
 			'AdminWearerOtherChangeOrder': 'modules/admin/WearerOtherChangeOrder',
+			'AdminWearerExchangeOrder': 'modules/admin/WearerExchangeOrder',
 			'AdminWearerAddOrder': 'modules/admin/WearerAddOrder',
 			'AdminWearerReturnOrder': 'modules/admin/WearerReturnOrder',
 			'AdminWearerInputComplete': 'modules/admin/WearerInputComplete',
