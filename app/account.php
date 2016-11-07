@@ -233,6 +233,10 @@ $app->post('/account/modal', function () use ($app) {
         $error_list['user_id_preg'] = 'ログインIDは半角英数字混合、8文字以上で入力してください。';
     }
 
+    if (!preg_match("/^([a-zA-Z0-9])+([a-zA-Z0-9\._-])*@([a-zA-Z0-9_-])+([a-zA-Z0-9\._-]+)+$/", $cond['mail_address'])) {
+        $error_list['mail_address_preg'] = 'メールアドレスが不正です。';
+    }
+
     //パスワード
     if ($cond['password']) {
         //パスワード md5化
