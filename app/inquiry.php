@@ -505,9 +505,14 @@ $app->post('/inquiry/input', function () use ($app) {
   $arg_str .= '(SELECT distinct on (m_contract.rntl_cont_no) ';
   $arg_str .= 'm_contract.rntl_cont_no as as_rntl_cont_no,';
   $arg_str .= 'm_contract.rntl_cont_name as as_rntl_cont_name';
-  $arg_str .= ' FROM m_contract INNER JOIN';
-  $arg_str .= ' (m_contract_resource INNER JOIN m_account ON m_contract_resource.accnt_no = m_account.accnt_no)';
+  $arg_str .= ' FROM ';
+  $arg_str .= 'm_contract';
+  $arg_str .= ' INNER JOIN m_contract_resource';
   $arg_str .= ' ON m_contract.corporate_id = m_contract_resource.corporate_id';
+  $arg_str .= ' AND m_contract.rntl_cont_no = m_contract_resource.rntl_cont_no';
+  $arg_str .= ' INNER JOIN m_account';
+  $arg_str .= ' ON m_contract_resource.accnt_no = m_account.accnt_no';
+  $arg_str .= ' AND m_contract_resource.corporate_id = m_account.corporate_id';
   $arg_str .= ' WHERE ';
   $arg_str .= $query;
   $arg_str .= ') as distinct_table';
