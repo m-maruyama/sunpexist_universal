@@ -152,7 +152,7 @@ define([
                         var res_val = res.attributes;
                         if(res_val["errors"]) {
                             var wearerInputView = new App.Admin.Views.WearerInput();
-                            that.triggerMethod('error_msg', res_val["errors"]);
+                            that.triggerMethod('error_msg', res_val["error_msg"]);
                         }else{
                             alert('着用者を登録しました。');
                             location.href = './wearer_input_complete.html';

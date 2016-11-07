@@ -105,7 +105,7 @@ define([
 				this.listenTo(wearerInputView, 'click:input_insert', function(agreement_no){
 					var errors = wearerInputConditionView.insert_wearer(agreement_no);
 					if(errors){
-						wearerInputView.triggerMethod('showAlerts', errors['errors']);
+						wearerInputView.triggerMethod('showAlerts', errors);
 					}
 				});
 				//エラーメッセージ
