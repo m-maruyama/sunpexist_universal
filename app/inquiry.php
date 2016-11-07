@@ -283,7 +283,7 @@ $app->post('/inquiry/search', function ()use($app){
 	}
 	//お問い合わせ日付to
 	if(!empty($cond['contact_day_to'])){
-    $cond['contact_day_to'] = date('Y-m-d 00:00:00', strtotime($cond['contact_day_to']));
+    $cond['contact_day_to'] = date('Y-m-d 23:59:59', strtotime($cond['contact_day_to']));
     array_push($query_list,"t_inquiry.interrogator_date <= '".$cond['contact_day_to']."'");
 	}
 	//回答日付from
