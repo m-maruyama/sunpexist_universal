@@ -216,10 +216,12 @@ $app->post('/account/modal', function () use ($app) {
 
             return true;
         }
-        //user_idの重複チェック（削除フラグがゼロのレコードがない場合。
-        foreach($ac as $item){
-            if($item->del_flg == 0){
-                $error_list['user_id'] = 'ログインIDが重複しています。';
+        //user_idの重複チェック（削除フラグがゼロのレコードがない場合。）
+        if (count($ac) > 0) {
+            foreach ($ac as $item) {
+                if ($item->del_flg == 0) {
+                    $error_list['user_id'] = 'ログインIDが重複しています。';
+                }
             }
         }
 
