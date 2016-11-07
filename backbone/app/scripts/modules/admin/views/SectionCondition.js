@@ -29,14 +29,22 @@ define([
 				var agreement_no = this.options.agreement_no;
 				var section = this.options.section;
 				var not_all_flg = this.options.not_all_flg;
-
+				if (not_all_flg != '') {
+					var corporate_flg = true;
+					var corporate = $('#corporate').val();
+				} else {
+					var corporate_flg = false;
+					var corporate = "";
+				}
 				var modelForUpdate = this.model;
 				modelForUpdate.url = App.api.CM0020;
 				var cond = {
 					"scr": '拠点',
 					"agreement_no": agreement_no,
 					"section": section,
-					"not_all_flg": not_all_flg
+					"not_all_flg": not_all_flg,
+					"corporate_flg": corporate_flg,
+					"corporate": corporate
 				};
 				modelForUpdate.fetchMx({
 					data:cond,

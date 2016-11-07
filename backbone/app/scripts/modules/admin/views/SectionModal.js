@@ -9,6 +9,7 @@ define([
 			template: App.Admin.Templates.sectionModal,
 			ui: {
 				'modal': '#section_modal',
+				'close': '.close'
 			},
 			regions: {
 				"page": ".page",
@@ -16,9 +17,13 @@ define([
 				"listTable": ".listTable",
 			},
 			model: new Backbone.Model(),
-			onShow: function() {
+			onRender: function() {
 			},
 			events: {
+				'click @ui.close': function(){
+					//$('#modal_page').css('display', 'none');
+					//$('#modal_listTable').css('display', 'none');
+				},
 			},
 			templateHelpers: {
 			}

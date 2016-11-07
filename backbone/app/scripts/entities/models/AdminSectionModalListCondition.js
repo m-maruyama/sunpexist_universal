@@ -13,6 +13,8 @@ define([
 					rntl_sect_cd : null,
 					rntl_sect_name : null,
 					agreement_no : null,
+					corporate : null,
+					corporate_flg : false,
 					// sort_key : null,
 					// order : null,
 				};
@@ -24,6 +26,12 @@ define([
 				}
 				if(this.get('agreement_no')) {
 					result.agreement_no = this.get('agreement_no');
+				}
+				if(this.get('corporate')) {
+					result.corporate = this.get('corporate');
+				}
+				if(this.get('corporate_flg')) {
+					result.corporate_flg = true;
 				}
 				// if(this.get('sort_key')) {
 				// 	result.sort_key = this.get('sort_key');

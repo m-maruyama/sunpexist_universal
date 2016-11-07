@@ -23,14 +23,14 @@ define([
 				'.section_btn': 'section_btn'
 			},
 			onShow: function() {
-				var agreement_no = this.options.agreement_no;
 				var that = this;
+				var agreement_no = this.options.agreement_no;
 
 				var modelForUpdate = this.model;
 				modelForUpdate.url = App.api.WC0014;
 				var cond = {
 					"scr": '拠点',
-					"agreement_no": agreement_no,
+					"agreement_no": agreement_no
 				};
 				modelForUpdate.fetchMx({
 					data:cond,

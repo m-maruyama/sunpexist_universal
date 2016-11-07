@@ -7,7 +7,7 @@ define([
 	'typeahead',
 	'bloodhound',
 	'../controllers/Inquiry',
-	'./SectionCondition',
+	'./SectionCondition'
 ], function(App) {
 	'use strict';
 	App.module('Admin.Views', function(Views, App, Backbone, Marionette, $, _){
@@ -312,10 +312,43 @@ define([
 					window.sessionStorage.setItem("inquiry_cond", arr_str);
 					location.href = "inquiry_input.html";
 				},
+				'change @ui.corporate': function(){
+					var that = this;
+					var corporate = $("select[name='corporate']").val();
+					var agreement_no = $("select[name='agreement_no']").val();
+					var data = {
+						"corporate": corporate
+					};
+					var modelForUpdate = that.model;
+					modelForUpdate.url = App.api.CU0011;
+					var cond = {
+						"scr": 'お問い合わせ一覧-契約No',
+						"log_type": '2',
+						"data": data,
+					};
+					modelForUpdate.fetchMx({
+						data:cond,
+						success:function(res){
+							var res_list = res.attributes;
+							that.ui.agreement_no.empty();
+							for (var i=0; i<res_list['agreement_no_list'].length; i++) {
+								var option = document.createElement('option');
+								var str = res_list['agreement_no_list'][i]['rntl_cont_no'] + ' ' + res_list['agreement_no_list'][i]['rntl_cont_name'];
+								var text = document.createTextNode(str);
+								option.setAttribute('value', res_list['agreement_no_list'][i]['rntl_cont_no']);
+								if (res_list['agreement_no_list'][i]['selected'] != "") {
+									option.setAttribute('selected', res_list['agreement_no_list'][i]['selected']);
+								}
+								option.appendChild(text);
+								document.getElementById('agreement_no').appendChild(option);
+							}
+						}
+					});
+					this.triggerMethod('change:section_select',agreement_no);
+				},
 				'change @ui.agreement_no': function(){
 					this.ui.agreement_no = $('#agreement_no');
 					var agreement_no = $("select[name='agreement_no']").val();
-					// 拠点セレクト変更
 					this.triggerMethod('change:section_select',agreement_no);
 				}
 			},

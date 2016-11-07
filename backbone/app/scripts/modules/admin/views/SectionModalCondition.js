@@ -28,6 +28,10 @@ define([
 					this.model.set('rntl_sect_cd', this.ui.rntl_sect_cd.val());
 					this.model.set('rntl_sect_name', this.ui.rntl_sect_name.val());
 					this.model.set('agreement_no', $('#agreement_no').val());
+					if (document.getElementById("corporate") != null) {
+						this.model.set('corporate', $('#corporate').val());
+						this.model.set('corporate_flg', true);
+					}
 					// this.model.set('sort_key', 'rntl_sect_cd');
 					// this.model.set('order','asc');
 					var errors = this.model.validate();
@@ -36,6 +40,8 @@ define([
 						return;
 					}
 					this.triggerMethod('click:section_search',this.model.get('sort_key'),this.model.get('order'));
+					//$('#modal_page').css('display', '');
+					//$('#modal_listTable').css('display', '');
 				},
 			},
 			fetchSection: function(model) {

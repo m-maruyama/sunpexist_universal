@@ -36,7 +36,9 @@ define([
 				var inquiryListListCollection = new App.Entities.Collections.AdminInquiryListList();
 				var sectionListListCollection = new App.Entities.Collections.AdminSectionModalListList();
 
-				var sectionConditionView = new App.Admin.Views.SectionCondition();
+				var sectionConditionView = new App.Admin.Views.SectionCondition({
+					not_all_flg: "1"
+				});
 
 				var inquiryListConditionModel = new App.Entities.Models.AdminInquiryListCondition();
 				var inquiryConditionView = new App.Admin.Views.InquiryCondition({

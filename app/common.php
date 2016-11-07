@@ -103,10 +103,22 @@ $app->post('/agreement_no', function () use ($app) {
   $all_list = array();
   $json_list = array();
 
-  array_push($query_list, "m_contract.corporate_id = '".$auth['corporate_id']."'");
+  if (!empty($cond["corporate"])) {
+    array_push($query_list, "m_contract.corporate_id = '".$cond["corporate"]."'");
+  } else {
+    array_push($query_list, "m_contract.corporate_id = '".$auth['corporate_id']."'");
+  }
   array_push($query_list, "m_contract.rntl_cont_flg = '1'");
-  array_push($query_list, "m_contract_resource.corporate_id = '".$auth['corporate_id']."'");
-  array_push($query_list, "m_account.corporate_id = '".$auth['corporate_id']."'");
+  if (!empty($cond["corporate"])) {
+    array_push($query_list, "m_contract_resource.corporate_id = '".$cond["corporate"]."'");
+  } else {
+    array_push($query_list, "m_contract_resource.corporate_id = '".$auth['corporate_id']."'");
+  }
+  if (!empty($cond["corporate"])) {
+    array_push($query_list, "m_account.corporate_id = '".$cond["corporate"]."'");
+  } else {
+    array_push($query_list, "m_account.corporate_id = '".$auth['corporate_id']."'");
+  }
   array_push($query_list, "m_account.user_id = '".$auth['user_id']."'");
   $query = implode(' AND ', $query_list);
 
@@ -311,6 +323,8 @@ $app->post('/corporate_id', function () use ($app) {
  */
 $app->post('/section', function () use ($app) {
   $params = json_decode(file_get_contents('php://input'), true);
+  //ChromePhp::log($params);
+
   $query_list = array();
   $list = array();
   $all_list = array();
@@ -319,19 +333,29 @@ $app->post('/section', function () use ($app) {
   // アカウントセッション取得
   $auth = $app->session->get('auth');
 
-  array_push($query_list, "corporate_id = '".$auth['corporate_id']."'");
+  if (!empty($params["corporate_flg"])) {
+    if (!empty($params["corporate"])) {
+      array_push($query_list, "corporate_id = '".$params["corporate"]."'");
+    }
+  } else {
+    array_push($query_list, "corporate_id = '".$auth["corporate_id"]."'");
+  }
   if (!empty($params['agreement_no'])) {
     array_push($query_list, "rntl_cont_no = '".$params['agreement_no']."'");
   } else {
-    array_push($query_list, "rntl_cont_no = '".$app->session->get('first_rntl_cont_no')."'");
+    if (empty($params["corporate_flg"])) {
+      array_push($query_list, "rntl_cont_no = '".$app->session->get('first_rntl_cont_no')."'");
+    }
   }
   $query = implode(' AND ', $query_list);
 
   $arg_str = 'SELECT ';
   $arg_str .= ' distinct on (rntl_sect_cd) *';
   $arg_str .= ' FROM m_section';
-  $arg_str .= ' WHERE ';
-  $arg_str .= $query;
+  if (!empty($query)) {
+    $arg_str .= ' WHERE ';
+    $arg_str .= $query;
+  }
   $arg_str .= ' ORDER BY rntl_sect_cd asc';
 
   $m_section = new MSection();
@@ -340,11 +364,9 @@ $app->post('/section', function () use ($app) {
   $results_cnt = $results_array["\0*\0_count"];
 
   if ($results_cnt > 0) {
-    if (empty($params['not_all_flg'])) {
-      $list['rntl_sect_cd'] = null;
-      $list['rntl_sect_name'] = '全て';
-      array_push($all_list, $list);
-    }
+    $list['rntl_sect_cd'] = null;
+    $list['rntl_sect_name'] = '全て';
+    array_push($all_list, $list);
 
     $paginator_model = new PaginatorModel(
       array(
@@ -841,15 +863,24 @@ $app->post('/section_modal', function () use ($app) {
     $query_list = array();
     $cond = $params['cond'];
     $page = $params['page'];
+    //ChromePhp::log($cond);
 
     // アカウントセッション取得
     $auth = $app->session->get('auth');
     //拠点
     //--- 検索条件 ---//
     // 部門マスタ. 企業ID
-    array_push($query_list, "corporate_id = '".$auth['corporate_id']."'");
+    if (!empty($cond["corporate_flg"])) {
+      if (!empty($cond["corporate"])) {
+        array_push($query_list, "corporate_id = '".$cond["corporate"]."'");
+      }
+    } else {
+      array_push($query_list, "corporate_id = '".$auth["corporate_id"]."'");
+    }
     // 部門マスタ. レンタル契約No
-    array_push($query_list, "rntl_cont_no = '".$cond['agreement_no']."'");
+    if (!empty($cond['agreement_no'])) {
+      array_push($query_list, "rntl_cont_no = '".$cond['agreement_no']."'");
+    }
     if (isset($cond['rntl_sect_cd'])) {
         array_push($query_list, "rntl_sect_cd LIKE '%".$cond['rntl_sect_cd']."'");
     }
