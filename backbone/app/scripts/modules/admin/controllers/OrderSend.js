@@ -71,8 +71,8 @@ define([
 					}
 					orderSendListListView.fetch(orderSendListConditionModel);
 					orderSendView.listTable.show(orderSendListListView);
-					orderSendView.page.show(paginationView);
-					orderSendView.page_2.show(paginationView2);
+					//orderSendView.page.show(paginationView);
+					//orderSendView.page_2.show(paginationView2);
 				};
 				var fetchList_2 = function(pageNumber,sortKey,order){
 					if(pageNumber){
@@ -84,8 +84,8 @@ define([
 					}
 					orderSendListListView.fetch(orderSendListConditionModel);
 					orderSendView.listTable.show(orderSendListListView);
-					orderSendView.page.show(paginationView3);
-					orderSendView.page_2.show(paginationView4);
+					//orderSendView.page.show(paginationView3);
+					//orderSendView.page_2.show(paginationView4);
 				};
 
 				this.listenTo(orderSendConditionView, 'first:section', function() {

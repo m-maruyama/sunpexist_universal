@@ -102,8 +102,8 @@ $app->post('/order_send/search', function () use ($app) {
       $paginator_model = new PaginatorModel(
         array(
           "data" => $results,
-          "limit" => $page['records_per_page'],
-          "page" => $page['page_number']
+          "limit" => $results_cnt,
+          "page" => 1
         )
       );
       $paginator = $paginator_model->getPaginate();
@@ -114,6 +114,11 @@ $app->post('/order_send/search', function () use ($app) {
     $all_list = array();
     if (!empty($results_cnt)) {
       foreach ($results as $result) {
+        // 発注区分=貸与で発注情報トランのデータが存在しない場合は対象外とする
+        if ($result->as_wst_order_sts_kbn == "1" && empty($result->as_order_req_no)) {
+          continue;
+        }
+
         // 発注No-着用者基本マスタトラン
         if (!empty($result->as_wst_order_req_no)) {
           $list['wst_order_req_no'] = $result->as_wst_order_req_no;
@@ -287,11 +292,10 @@ $app->post('/order_send/search', function () use ($app) {
         $all_list[] = $list;
       }
     }
-
-    $page_list['records_per_page'] = $page['records_per_page'];
-    $page_list['page_number'] = $page['page_number'];
-    $page_list['total_records'] = $results_cnt;
-    $json_list['page'] = $page_list;
+//    $page_list['records_per_page'] = $page['records_per_page'];
+//    $page_list['page_number'] = $page['page_number'];
+//    $page_list['total_records'] = $results_cnt;
+//    $json_list['page'] = $page_list;
     $json_list['list'] = $all_list;
     //ChromePhp::LOG($json_list);
 

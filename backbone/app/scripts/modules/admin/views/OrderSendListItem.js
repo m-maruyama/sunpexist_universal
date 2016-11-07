@@ -225,7 +225,7 @@ define([
 					}
 				}
 				// 貸与終了-発注取消
-				if (type == "WO0015_req") {
+				if (type == "WN0018_req") {
 					if(window.confirm('発注No.' + data["wst_order_req_no"] + 'の発注取消を実行します。\nよろしいですか？')) {
 						$.blockUI({ message: '<p><img src="ajax-loader.gif" style="margin: 0 auto;" /> 発注取消中...</p>' });
 						var data = {
