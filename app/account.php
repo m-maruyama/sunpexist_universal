@@ -216,10 +216,14 @@ $app->post('/account/modal', function () use ($app) {
 
             return true;
         }
-        //user_idの重複チェック
-        if (count($ac) > 0) {
-            $error_list['user_id'] = 'ログインIDが重複しています。';
+        //user_idの重複チェック（削除フラグがゼロのレコードがない場合。
+        foreach($ac as $item){
+            if($item->del_flg == 0){
+                $error_list['user_id'] = 'ログインIDが重複しています。';
+            }
         }
+
+
         if (!preg_match("/(?=.{8,})(?=.*\d+.*)(?=.*[a-zA-Z]+.*).*[!#$%&*+@?]+.*/", $cond['password'])) {
             $error_list['password_preg'] = 'パスワードは半角英数字、半角記号(!#$%&*+@?)混合、8文字以上で入力してください。';
         }
