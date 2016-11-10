@@ -16,8 +16,6 @@ $app->post('/print/pdf', function ()use($app){
     $json_list = array();
     // アカウントセッション取得
     $auth = $app->session->get("auth");
-    ChromePhp::log($auth);
-    //ChromePhp::log($params);
     $cond = $params["cond"];
     //個別管理番号あるなし　1:あり 0:なし
     $individual_check = $cond['individual_number'];
@@ -38,11 +36,10 @@ $app->post('/print/pdf', function ()use($app){
     }
     //sql文字列を' AND 'で結合
     $query = implode(' AND ', $query_list);
-    ChromePhp::log($query);
 
 
 
-    $q_sort_key = 'as_item_cd';
+    $q_sort_key = 'as_item_cd, as_color_cd, as_size_cd, as_individual_ctrl_no';
     $order = 'asc';
 
     //---SQLクエリー実行---//
@@ -58,6 +55,7 @@ $app->post('/print/pdf', function ()use($app){
     $arg_str .= "m_wearer_std.werer_name as as_werer_name,";
     $arg_str .= "m_input_item.input_item_name as as_input_item_name,";
     $arg_str .= "t_order.order_qty as as_order_qty,";
+    $arg_str .= "t_order.size_two_cd as as_size_two_cd,";
     $arg_str .= "m_corporate.corporate_name as as_corporate_name,";
     $arg_str .= "t_returned_plan_info.cster_emply_cd as as_cster_emply_cd,";
     $arg_str .= "t_returned_plan_info.corporate_id as as_corporate_id,";
@@ -101,9 +99,6 @@ $app->post('/print/pdf', function ()use($app){
         $arg_str .= " ORDER BY ";
         $arg_str .= $q_sort_key." ".$order;
     }
-
-
-
     $t_returned_plan_info = new TReturnedPlanInfo();
     $results = new Resultset(null, $t_returned_plan_info, $t_returned_plan_info->getReadConnection()->query($arg_str));
     $result_obj = (array)$results;
@@ -116,6 +111,12 @@ $app->post('/print/pdf', function ()use($app){
             "page" => $page['page_number']
         )
     );
+    $item_check = "";
+    $list_array = array();
+    $each_array = array();
+    $sum_return_qty = 0;
+
+
 
     //---発注区分名 取り出し---//
     $query_list = array();
@@ -159,7 +160,7 @@ $app->post('/print/pdf', function ()use($app){
     $pdf -> SetFont($regularFont, '', 8);
 
     // PDFの余白(上左右)を設定
-    $pdf->SetMargins(0, 0, 0);
+    $pdf->SetMargins(0, 3.0, 0);
 
     //自動改ページをしない
     $pdf -> SetAutoPageBreak(false);
@@ -187,11 +188,13 @@ $app->post('/print/pdf', function ()use($app){
     //タイトル
     //$now_date = date("Y/m/d");
     $pdf -> SetFont($boldFont, '', 16);
-    $pdf -> Text(117, 3, "レンタル商品返却伝票");
+    $pdf -> Text(117, 5, "レンタル商品返却伝票");
 
+    //全体のページのno計算
+    $all_page_no = ceil(count($results) / 15);
 
     $pdf -> SetFont($regularFont, '', 10);
-    $pdf -> Text(280, 3, "1/3");
+    $pdf -> Text(280, 5, "1/" . $all_page_no);
 
 
 
@@ -257,362 +260,286 @@ $app->post('/print/pdf', function ()use($app){
     $pdf->write1DBarcode($results[0]->as_order_req_no, 'C39', 190, 26, 60, 28, 0.4, $style, 'N');
     //RIGHTエリア
 
-    if ($individual_check == '0'){  //個体管理番号あり
+
+    //個体管理番号ありの前処理
+    if ($individual_check == '1') {
+        foreach ($results as $item) {
+            if ($item_check === $item->as_item_cd . $item->as_color_cd . $item->as_size_cd) {
+
+                if (count($each_array) > 1) {
+                    $group_array[] = $each_array;
+                }
+                $sum_return_qty = $sum_return_qty + $item->as_return_plan_qty;
+                $group_array[] = array(
+                    'item_cd' => "",
+                    'color_cd' => "",
+                    'size_cd' => "",
+                    'return_plan_qty' => "",
+                    'input_item_name' => "",
+                    'individual_ctrl_no' => $item->as_individual_ctrl_no,
+                    'border' => 0,
+                );
+                $each_array = array();
+            } else {
+
+                //前の行と違う場合に、$each_arrayに値が入っていれば出力用の配列に入れる
+                if (count($group_array) > 0) {
+                    $group_array[0]["return_plan_qty"] = $sum_return_qty;
+                    $group_array[0]["border"] = 0;
+
+                    //商品ごとのグループを１行ずつ、出力用の配列に入れる
+                    $i = 0;
+                    foreach($group_array as $value){
+                        array_push($list_array,$group_array[$i++]);
+                    }
+
+                    $group_array = array();
+                    $sum_return_qty = 0;
+                }
+                //前の行と違う場合に、$each_arrayに値が入っていれば出力用の配列に入れる
+                if (count($each_array) > 0) {
+                    array_push($list_array, $each_array);
+                    $each_array = array();
+                    $sum_return_qty = 0;
+                }
+
+
+                //サイズコード2がある場合は連結
+                if(mb_strlen(trim($item->as_size_two_cd)) !== 0){
+                    $size_cd = $item->as_size_cd . "-" . $item->as_size_two_cd;
+                }else{
+                    $size_cd = $item->as_size_cd;
+                }
+
+                $each_array = array(
+                    'item_cd' => $item->as_item_cd . "-" . $item->as_color_cd,
+                    'color_cd' => $item->as_color_cd,
+                    'size_cd' => $size_cd,
+                    'return_plan_qty' => $item->as_return_plan_qty,
+                    'individual_ctrl_no' => $item->as_individual_ctrl_no,
+                    'input_item_name' => $item->as_input_item_name,
+                    'border' => 1,
+                );
+
+                $sum_return_qty = $sum_return_qty + $item->as_return_plan_qty;
+                $item_check = $item->as_item_cd . $item->as_color_cd . $item->as_size_cd;
+            }
+
+        }
+        if (count($group_array) > 0) {
+            $group_array[0]["return_plan_qty"] = count($group_array);
+            $group_array[0]["border"] = 0;
+
+            //商品ごとのグループを１行ずつ、出力用の配列に入れる
+            $i = 0;
+            foreach($group_array as $value){
+                array_push($list_array,$group_array[$i++]);
+            }
+            $group_array = array();
+            $sum_return_qty = 0;
+        }
+
+        //最後の行を出力用の配列に入れる
+        if (count($each_array) > 0) {
+            array_push($list_array, $each_array);
+        }
+    }
+
+
+    if ($individual_check == '1'){  //個体管理番号ありの出力
         //商品レコード見出しの高さ
         $header_height = 6;
 
         //角横幅(Width)しきい値
         $width01 = 12;//項番
-        $width02 = 30;//発注日
-        $width03 = 55;//商品-色
-        $width04 = 55;//商品名
-        $width05 = 30;//サイズ
-        $width06 = 35;//返却する数量（枚）
-        $width07 = 30;//個体管理番号
-        $width08 = 25;//チェック欄
+        $width02 = 60;//商品-色
+        $width03 = 60;//商品名
+        $width04 = 30;//サイズ
+        $width05 = 30;//返却する数量（枚）
+        $width06 = 54;//個体管理番号
+        $width07 = 25;//チェック欄
 
         //商品レコード欄
-        $item_height = 24;//商品行Y幅
+        $item_height = 7.8;//商品行Y幅
         $item_startX = 12.0;//商品行左側余白
 
+
         //しきい値（返却枚数合計）
-        $returnSetX = 54.0; //X位置
-        $returnTitleW = 140; //見出し枠の横幅
-        $returnSumW = 35; //合計枠の横幅
+        $returnSetX = 24.0; //X位置
+        $returnTitleW = 150; //見出し枠の横幅
+        $returnSumW = 30; //合計枠の横幅
         $returnSumH = 8; //見出し枠と合計枠の縦幅
 
-        //受注情報エリア 返却商品の数だけforを回す
-        for($count = 1; $count <= $results_cnt; $count++){
+        $no_list = 1;
+        $i = 0;
+        $page_no = 1;
+        $sum_all_qty = 0;
+        $i_page = 0;
 
-            if($count == 1){       //返却商品が1個ある時
+        //受注情報エリア 返却商品の数だけforを回す
+        for($count = 1; $count <= $results_cnt/*$results_cnt*/; $count++) {
+
+
+            if ($count == 1) {       //返却商品が1個ある時
                 //テンプレ $pdf->Cell(横幅, 縦幅, '文字列', ボーダー(0 or 1), 次の位置(0 or 1), 'C');
                 //tableHeader
-                $pdf -> SetFontSize(11);
+                $pdf->SetFontSize(11);
                 $pdf->SetXY($item_startX, 53.0);
                 $pdf->Cell($width01, $header_height, 'No.', 1, 0, 'C');
-                $pdf->Cell($width02, $header_height, '発注日', 1, 0, 'C');
-                $pdf->Cell($width03, $header_height, '商品コード', 1, 0, 'C');
-                $pdf->Cell($width04, $header_height, '商品名', 1, 0, 'C');
-                $pdf->Cell($width05, $header_height, 'サイズ', 1, 0, 'C');
-                $pdf->Cell($width06, $header_height, '返却する数量（枚）', 1, 0, 'C');
-                $pdf->Cell($width07, $header_height, '個体管理番号', 1, 0, 'C');
-                $pdf->Cell($width08, $header_height, 'チェック欄', 1, 1, 'C');
+                $pdf->Cell($width02, $header_height, '商品コード', 1, 0, 'C');
+                $pdf->Cell($width03, $header_height, '商品名', 1, 0, 'C');
+                $pdf->Cell($width04, $header_height, 'サイズ', 1, 0, 'C');
+                $pdf->Cell($width05, $header_height, '返却数', 1, 0, 'C');
+                $pdf->Cell($width06, $header_height, '個体管理番号', 1, 0, 'C');
+                $pdf->Cell($width07, $header_height, 'チェック欄', 1, 1, 'C');
                 //tableHeader
+            }
 
 
-                //個体管理番号取り出し
-                $order_req_no_check = $results[0]->as_order_req_no;
-                $item_cd_check = $results[0]->as_item_cd;
-                $color_cd_check = $results[0]->as_color_cd;
-                $size_cd_check = $results[0]->as_size_cd;
-
-                $getIndiNo = TReturnedPlanInfo::find(array(
-                    'order' => "order_req_no asc",
-                    'conditions' => "order_req_no = '$order_req_no_check' AND item_cd = '$item_cd_check' AND color_cd = '$color_cd_check' AND size_cd = '$size_cd_check'",
-                    //'conditions'  => "'$user_name_val%"
-                ));
-                $getIndNo_count = count($getIndiNo);
-                //個体管理番号取り出し
-
-
-                //個体管理番号とチェックボックスの整形
-                if( $getIndNo_count >= 2 ) {
-                    //個体管理番号が二つ以上の場合は、個体管理番号を改行コードと連結
-                    foreach ($getIndiNo as $item) {
-                        $individual_array[] = $item->individual_ctrl_no;
-                        $return_plan_qty_array[] = $item->return_plan_qty;
+            //15行目の商品があればボーターあり、無しなら下線だけあり
+            if (($count % 15) == 0) {
+                if($list_array[$i]["input_item_name"] !== ""){
+                    if($list_array[$i]["return_plan_qty"] == 1){
+                    $list_array[$i]["border"] = 1;
+                    }else{
+                        $list_array[$i]["border"] = 'TB';
                     }
-                    $indivisual_implode = implode("\n", $individual_array);
-                    $return_plan_qty_sum = array_sum($return_plan_qty_array);
-                    $check_count = 0;
-                    while ($check_count < $getIndNo_count){
-                        $check_box_array[] = "□";
-                        $check_box_output = implode("\n", $check_box_array);
-
-                        $check_count++;
-                    }
-
-                }else{
-                    //個体管理番号が一つの場合は、そのまま使用する
-                    $indivisual_implode = $results[0]->as_individual_ctrl_no;
-                    $check_box_output = "□";
-                    $return_plan_qty_sum = $results[0]->as_return_plan_qty;
-                }
-
-
-                //1行目のセルを整形
-                $pdf->SetX($item_startX);
-                $pdf->Cell($width01, $item_height, '1', 1, 0, 'C');
-                $pdf->Cell($width02, $item_height, $results[0]->as_order_req_ymd, 1, 0, 'C');
-                $pdf->Cell($width03, $item_height, $results[0]->as_item_cd."-".$results[0]->as_color_cd, 1, 0, 'C');
-                $pdf->Cell($width04, $item_height, $results[0]->as_input_item_name, 1, 0, 'C');
-                $pdf->Cell($width05, $item_height, $results[0]->as_size_cd, 1, 0, 'C');
-                $pdf->Cell($width06, $item_height, $return_plan_qty_sum, 1, 0, 'C');
-                $pdf->MultiCell($width07, $item_height, $indivisual_implode, 1 , 'C' ,0,0, '', '', true, 0, false, true, 8, 'M', true);
-                $pdf->MultiCell($width08, $item_height, $check_box_output, 1 , 'C' ,0,1, '', '', true, 0, false, true, 8, 'M', true);
-
-                //$pdf->Cell($width07, $item_height, $results[0]->as_individual_ctrl_no, 1, 0, 'C');
-                //$pdf->Cell($width08, $item_height, '□', 1, 1, 'C');
-                if ($results_cnt == 1){
-                    //返却枚数合計
-                    $pdf->SetX($returnSetX);
-                    $pdf->Cell($returnTitleW, $returnSumH, '返却枚数合計（枚）', 1, 0, 'C');
-                    $pdf->Cell($returnSumW, $returnSumH, $results[0]->as_return_plan_qty, 1, 0, 'C');
-                }
-
-            }elseif($count == 2){       //返却商品が2個ある時
-
-                //個体管理番号取り出し
-                $item_cd_check = $results[1]->as_item_cd;
-                $color_cd_check = $results[1]->as_color_cd;
-                $size_cd_check = $results[1]->as_size_cd;
-
-                $getIndiNo = TReturnedPlanInfo::find(array(
-                    'order' => "order_req_no asc",
-                    'conditions' => "order_req_no = '$order_req_no_check' AND item_cd = '$item_cd_check' AND color_cd = '$color_cd_check' AND size_cd = '$size_cd_check'",
-                    //'conditions'  => "'$user_name_val%"
-                ));
-                $getIndNo_count = count($getIndiNo);
-                //個体管理番号取り出し
-
-
-                //個体管理番号とチェックボックスの整形
-                if( $getIndNo_count >= 2 ) {
-                    //個体管理番号が二つ以上の場合は、個体管理番号を改行コードと連結
-                    foreach ($getIndiNo as $item) {
-                        $individual_array[] = $item->individual_ctrl_no;
-                        $return_plan_qty_array[] = $item->return_plan_qty;
-                    }
-                    $indivisual_implode = implode("\n", $individual_array);
-                    $return_plan_qty_sum = array_sum($return_plan_qty_array);
-                    $check_count = 0;
-                    while ($check_count < $getIndNo_count){
-                        ChromePhp::log($check_count);
-                        $check_box_array[] = "□";
-                        ChromePhp::log($check_box_array);
-                        $check_box_output = implode("\n", $check_box_array);
-
-                        $check_count++;
-                    }
-
-                }else{
-                    //個体管理番号が一つの場合は、そのまま使用する
-                    $indivisual_implode = $results[1]->as_individual_ctrl_no;
-                    $check_box_output = "□";
-                    $return_plan_qty_sum = $results[0]->as_return_plan_qty;
-                }
-                //個体管理番号とチェックボックスの整形
-
-
-                //2行目のセルを整形
-                $pdf->SetX($item_startX);
-                $pdf->Cell($width01, $item_height, '2', 1, 0, 'C');
-                $pdf->Cell($width02, $item_height, $results[1]->as_order_req_ymd, 1, 0, 'C');
-                $pdf->Cell($width03, $item_height, $results[1]->as_item_cd."-".$results[0]->as_color_cd, 1, 0, 'C');
-                $pdf->Cell($width04, $item_height, $results[1]->as_input_item_name, 1, 0, 'C');
-                $pdf->Cell($width05, $item_height, $results[1]->as_size_cd, 1, 0, 'C');
-                $pdf->Cell($width06, $item_height, $return_plan_qty_sum, 1, 0, 'C');
-                $pdf->MultiCell($width07, $item_height, $indivisual_implode, 1 , 'C' ,0,0, '', '', true, 0, false, true, 8, 'M', true);
-                $pdf->MultiCell($width08, $item_height, $check_box_output, 1 , 'C' ,0,1, '', '', true, 0, false, true, 8, 'M', true);
-                if ($results_cnt == 2){
-                    //返却枚数合計
-                    $sum_return_plan_qty = $results[0]->as_return_plan_qty + $results[1]->as_return_plan_qty;
-                    $pdf->SetX($returnSetX);
-                    $pdf->Cell($returnTitleW, $returnSumH, '返却枚数合計（枚）', 1, 0, 'C');
-                    $pdf->Cell($returnSumW, $returnSumH, "$sum_return_plan_qty", 1, 0, 'C');
-                }
-
-            }elseif($count == 3){       //返却商品が3個ある時
-
-                //個体管理番号取り出し
-                $item_cd_check = $results[2]->as_item_cd;
-                $color_cd_check = $results[2]->as_color_cd;
-                $size_cd_check = $results[2]->as_size_cd;
-
-                $getIndiNo = TReturnedPlanInfo::find(array(
-                    'order' => "order_req_no asc",
-                    'conditions' => "order_req_no = '$order_req_no_check' AND item_cd = '$item_cd_check' AND color_cd = '$color_cd_check' AND size_cd = '$size_cd_check'",
-                    //'conditions'  => "'$user_name_val%"
-                ));
-                //個体管理番号取り出し
-                $getIndNo_count = count($getIndiNo);
-
-
-                //個体管理番号とチェックボックスの整形
-                if( $getIndNo_count >= 2 ) {
-                    //個体管理番号が二つ以上の場合は、個体管理番号を改行コードと連結
-                    foreach ($getIndiNo as $item) {
-                        $individual_array[] = $item->individual_ctrl_no;
-                        $return_plan_qty_array[] = $item->return_plan_qty;
-                    }
-                    $indivisual_implode = implode("\n", $individual_array);
-                    $return_plan_qty_sum = array_sum($return_plan_qty_array);
-                    $check_count = 0;
-                    while ($check_count < $getIndNo_count){
-                        $check_box_array[] = "□";
-                        $check_box_output = implode("\n", $check_box_array);
-
-                        $check_count++;
-                    }
-
-                }else{
-                    //個体管理番号が一つの場合は、そのまま使用する
-                    $indivisual_implode = $results[2]->as_individual_ctrl_no;
-                    $check_box_output = "□";
-                    $return_plan_qty_sum = $results[2]->as_return_plan_qty;
-                }
-                //個体管理番号とチェックボックスの整形
-
-
-                //3行目のセルを整形
-                $pdf->SetX($item_startX);
-                $pdf->Cell($width01, $item_height, '3', 1, 0, 'C');
-                $pdf->Cell($width02, $item_height, $results[2]->as_order_req_ymd, 1, 0, 'C');
-                $pdf->Cell($width03, $item_height, $results[2]->as_item_cd."-".$results[0]->as_color_cd, 1, 0, 'C');
-                $pdf->Cell($width04, $item_height, $results[2]->as_input_item_name, 1, 0, 'C');
-                $pdf->Cell($width05, $item_height, $results[2]->as_size_cd, 1, 0, 'C');
-                $pdf->Cell($width06, $item_height, $return_plan_qty_sum, 1, 0, 'C');
-                $pdf->MultiCell($width07, $item_height, $indivisual_implode, 1 , 'C' ,0,0, '', '', true, 0, false, true, 8, 'M', true);
-                $pdf->MultiCell($width08, $item_height, $check_box_output, 1 , 'C' ,0,1, '', '', true, 0, false, true, 8, 'M', true);
-                if ($results_cnt == 3){
-                    //返却枚数合計
-                    $sum_return_plan_qty = $results[0]->as_return_plan_qty + $results[1]->as_return_plan_qty + $results[2]->as_return_plan_qty;
-                    $pdf->SetX($returnSetX);
-                    $pdf->Cell($returnTitleW, $returnSumH, '返却数合計', 1, 0, 'C');
-                    $pdf->Cell($returnSumW, $returnSumH, $sum_return_plan_qty, 1, 0, 'C');
-                }
-                //3行目のセルを整形
-
-
-
-            }elseif($count == 4){       //返却商品が4個ある時
-
-                //個体管理番号取り出し
-                $item_cd_check = $results[3]->as_item_cd;
-                $color_cd_check = $results[3]->as_color_cd;
-                $size_cd_check = $results[3]->as_size_cd;
-
-                $getIndiNo = TReturnedPlanInfo::find(array(
-                    'order' => "order_req_no asc",
-                    'conditions' => "order_req_no = '$order_req_no_check' AND item_cd = '$item_cd_check' AND color_cd = '$color_cd_check' AND size_cd = '$size_cd_check'",
-                    //'conditions'  => "'$user_name_val%"
-                ));
-                //個体管理番号取り出し
-                $getIndNo_count = count($getIndiNo);
-
-
-                //個体管理番号とチェックボックスの整形
-                if( $getIndNo_count >= 2 ) {
-                    //個体管理番号が二つ以上の場合は、個体管理番号を改行コードと連結
-                    foreach ($getIndiNo as $item) {
-                        $individual_array[] = $item->individual_ctrl_no;
-                        $return_plan_qty_array[] = $item->return_plan_qty;
-                    }
-                    $indivisual_implode = implode("\n", $individual_array);
-                    $return_plan_qty_sum = array_sum($return_plan_qty_array);
-                    $check_count = 0;
-                    while ($check_count < $getIndNo_count){
-                        $check_box_array[] = "□";
-                        $check_box_output = implode("\n", $check_box_array);
-
-                        $check_count++;
-                    }
-
-                }else{
-                    //個体管理番号が一つの場合は、そのまま使用する
-                    $indivisual_implode = $results[3]->as_individual_ctrl_no;
-                    $check_box_output = "□";
-                    $return_plan_qty_sum = $results[3]->as_return_plan_qty;
-                }
-                //個体管理番号とチェックボックスの整形
-
-
-                //4行目のセルを整形
-                $pdf->SetX($item_startX);
-                $pdf->Cell($width01, $item_height, '4', 1, 0, 'C');
-                $pdf->Cell($width02, $item_height, $results[3]->as_order_req_ymd, 1, 0, 'C');
-                $pdf->Cell($width03, $item_height, $results[3]->as_item_cd."-".$results[0]->as_color_cd, 1, 0, 'C');
-                $pdf->Cell($width04, $item_height, $results[3]->as_input_item_name, 1, 0, 'C');
-                $pdf->Cell($width05, $item_height, $results[3]->as_size_cd, 1, 0, 'C');
-                $pdf->Cell($width06, $item_height, $return_plan_qty_sum, 1, 0, 'C');
-                $pdf->MultiCell($width07, $item_height, $indivisual_implode, 1 , 'C' ,0,0, '', '', true, 0, false, true, 8, 'M', true);
-                $pdf->MultiCell($width08, $item_height, $check_box_output, 1 , 'C' ,0,1, '', '', true, 0, false, true, 8, 'M', true);
-                if ($results_cnt == 4){
-                    //返却枚数合計
-                    $sum_return_plan_qty = $results[0]->as_return_plan_qty + $results[1]->as_return_plan_qty + $results[2]->as_return_plan_qty + $results[3]->as_return_plan_qty;
-                    $pdf->SetX($returnSetX);
-                    $pdf->Cell($returnTitleW, $returnSumH, '返却数合計', 1, 0, 'C');
-                    $pdf->Cell($returnSumW, $returnSumH, $sum_return_plan_qty, 1, 0, 'C');
-                }
-                //4行目のセルを整形
-
-
-            }elseif($count == 5) {        //返却商品が5個ある時
-
-                //個体管理番号取り出し
-                $item_cd_check = $results[4]->as_item_cd;
-                $color_cd_check = $results[4]->as_color_cd;
-                $size_cd_check = $results[4]->as_size_cd;
-
-                $getIndiNo = TReturnedPlanInfo::find(array(
-                    'order' => "order_req_no asc",
-                    'conditions' => "order_req_no = '$order_req_no_check' AND item_cd = '$item_cd_check' AND color_cd = '$color_cd_check' AND size_cd = '$size_cd_check'",
-                    //'conditions'  => "'$user_name_val%"
-                ));
-                //個体管理番号取り出し
-                $getIndNo_count = count($getIndiNo);
-
-
-                //個体管理番号とチェックボックスの整形
-                if( $getIndNo_count >= 2 ) {
-                    //個体管理番号が二つ以上の場合は、個体管理番号を改行コードと連結
-                    foreach ($getIndiNo as $item) {
-                        $individual_array[] = $item->individual_ctrl_no;
-                        $return_plan_qty_array[] = $item->return_plan_qty;
-                    }
-                    $indivisual_implode = implode("\n", $individual_array);
-                    $return_plan_qty_sum = array_sum($return_plan_qty_array);
-                    $check_count = 0;
-                    while ($check_count < $getIndNo_count){
-                        $check_box_array[] = "□";
-                        $check_box_output = implode("\n", $check_box_array);
-
-                        $check_count++;
-                    }
-
-                }else{
-                    //個体管理番号が一つの場合は、そのまま使用する
-                    $indivisual_implode = $results[4]->as_individual_ctrl_no;
-                    $check_box_output = "□";
-                    $return_plan_qty_sum = $results[4]->as_return_plan_qty;
-                }
-                //個体管理番号とチェックボックスの整形
-
-
-                //5行目のセルを整形
-                $pdf->SetX($item_startX);
-                $pdf->Cell($width01, $item_height, '5', 1, 0, 'C');
-                $pdf->Cell($width02, $item_height, $results[4]->as_order_req_ymd, 1, 0, 'C');
-                $pdf->Cell($width03, $item_height, $results[4]->as_item_cd."-".$results[0]->as_color_cd, 1, 0, 'C');
-                $pdf->Cell($width04, $item_height, $results[4]->as_input_item_name, 1, 0, 'C');
-                $pdf->Cell($width05, $item_height, $results[4]->as_size_cd, 1, 0, 'C');
-                $pdf->Cell($width06, $item_height, $return_plan_qty_sum, 1, 0, 'C');
-                $pdf->MultiCell($width07, $item_height, $indivisual_implode, 1 , 'C' ,0,0, '', '', true, 0, false, true, 8, 'M', true);
-                $pdf->MultiCell($width08, $item_height, $check_box_output, 1 , 'C' ,0,1, '', '', true, 0, false, true, 8, 'M', true);
-                if ($results_cnt == 5){
-                    //返却枚数合計
-                    $sum_return_plan_qty = $results[0]->as_return_plan_qty + $results[1]->as_return_plan_qty + $results[2]->as_return_plan_qty + $results[3]->as_return_plan_qty + $results[4]->as_return_plan_qty;
-                    $pdf->SetX($returnSetX);
-                    $pdf->Cell($returnTitleW, $returnSumH, '返却数合計', 1, 0, 'C');
-                    $pdf->Cell($returnSumW, $returnSumH, $sum_return_plan_qty, 1, 0, 'C');
+                }else {
+                    $list_array[$i]["border"] = 'B';
                 }
             }
 
+
+            $pdf->SetX($item_startX);
+
+            $pdf->SetFontSize(11);
+            //1行目のセルを整形
+            $pdf->Cell($width01, $item_height, $no_list++, 1, 0, 'C');
+            $pdf->Cell($width02, $item_height, $list_array[$i]["item_cd"], $list_array[$i]["border"], 0, 'C');
+            $pdf->Cell($width03, $item_height, $list_array[$i]["input_item_name"], $list_array[$i]["border"], 0, 'C');
+            $pdf->Cell($width04, $item_height, $list_array[$i]["size_cd"], $list_array[$i]["border"], 0, 'C');
+            $pdf->Cell($width05, $item_height, $list_array[$i]["return_plan_qty"], $list_array[$i]["border"], 0, 'C');
+            $pdf->Cell($width06, $item_height, $list_array[$i]["individual_ctrl_no"], 1, 0, 'C');
+            $pdf->Cell($width07, $item_height, '□', 1, 1, 'C');
+            $sum_all_qty = $sum_all_qty + $list_array[$i]["return_plan_qty"];
+            $i++;
+
+            if (($count % 15) == 0) {
+                //15,30,45,60などの15で割り切れる数の場合は処理をしない。
+                $i_page++;
+                if ($i_page < $all_page_no) {
+                    //着用者コード
+                    $pdf->SetFontSize(8);
+                    $pdf->Text(31, 191, $results[0]->as_werer_cd);
+                    //着用者コード
+
+                    //2ページ目を作成
+                    $pdf->AddPage();
+                    //既存のテンプレート用PDFを読み込む
+                    $pdf->setSourceFile('template_none.pdf');
+                    //既存のテンプレートの１枚目をテンプレートに設定する。
+                    $page = $pdf->importPage(1);
+                    $pdf->useTemplate($page);
+
+                    //HEADERエリア
+
+                    //タイトル
+                    //$now_date = date("Y/m/d");
+                    $pdf->SetFont($boldFont, '', 16);
+                    $pdf->Text(117, 5, "レンタル商品返却伝票");
+
+
+                    $pdf->SetFont($regularFont, '', 10);
+
+                    $pdf->Text(280, 5, ++$page_no . "/" . $all_page_no);
+
+
+                    $pdf->SetFont($regularFont, '', 8);
+                    //企業名
+                    $pdf->SetFontSize(10);
+                    $pdf->Text($headerX, 14, $results[0]->as_corporate_name . " 様");
+                    //$pdf -> Text(72, 21, "１２３４５６７８９０１２３４５６７８９０１");
+
+                    //契約no (企業id)
+                    $pdf->SetFontSize(10);
+                    $pdf->Text($headerX, 22, $results[0]->as_rntl_cont_no . "     ( " . $results[0]->as_corporate_id . " )");
+
+                    //拠点名 + 拠点cd
+                    $pdf->SetFontSize(10);
+                    $pdf->Text($headerX, 29, $results[0]->as_rntl_sect_name . "    ( " . $results[0]->as_rntl_sect_cd . " )");
+
+                    //着用者名
+                    $pdf->SetFontSize(10);
+                    $pdf->Text($headerX, 37, $results[0]->as_werer_name);
+
+                    //客先社員コード
+                    $pdf->SetFontSize(10);
+                    $pdf->Text(105, 37, $results[0]->as_cster_emply_cd);
+
+                    //部門名 + 部門コード
+                    $pdf->SetFontSize(10);
+                    $pdf->Text($headerX, 45, $results[0]->as_job_type_name . "    ( " . $results[0]->as_job_type_cd . " )");
+
+                    //HEADERエリア
+
+
+                    //RIGHTエリア
+
+                    //発注番号
+                    $pdf->SetFontSize(11);
+                    $pdf->Text(170, 14, $results[0]->as_order_req_no);
+
+                    //発注日 日付にスラッシュを入れて出力
+                    $order_date = $results[0]->as_order_req_ymd;
+                    $pdf->Text(250, 14, date('Y/m/d', strtotime($order_date)));
+
+
+                    //発注区分 理由区分
+                    $pdf->Text(170, 22, $list['order_sts_kbn_name'] . "   " . $list['order_reason_kbn_name'] . " ");
+
+
+                    //バーコード３９生成
+                    $style = array(
+                        'position' => 'S',
+                        'border' => false,
+                        'padding' => 4,
+                        'fgcolor' => array(0, 0, 0), //0～255三元色
+                        'bgcolor' => false,
+                        'text' => false, //下に値を出す
+                        'font' => 'helvetica',
+                        'fontsize' => 8,
+                        'stretchtext' => 4
+                    );
+
+
+                    //$pdf->write1DBarcode(バーコード値, 'C39', x座標, y座標, 幅, 高さ, 0.4, $style, 'N');
+                    $pdf->write1DBarcode($results[0]->as_order_req_no, 'C39', 190, 26, 60, 28, 0.4, $style, 'N');
+                    //RIGHTエリア
+
+                    //tableHeader
+                    $pdf->SetFontSize(11);
+                    $pdf->SetXY($item_startX, 53.0);
+                    $pdf->Cell($width01, $header_height, 'No.', 1, 0, 'C');
+                    $pdf->Cell($width02, $header_height, '商品コード', 1, 0, 'C');
+                    $pdf->Cell($width03, $header_height, '商品名', 1, 0, 'C');
+                    $pdf->Cell($width04, $header_height, 'サイズ', 1, 0, 'C');
+                    $pdf->Cell($width05, $header_height, '返却数', 1, 0, 'C');
+                    $pdf->Cell($width06, $header_height, '個体管理番号', 1, 0, 'C');
+                    $pdf->Cell($width07, $header_height, 'チェック欄', 1, 1, 'C');
+                    //tableHeader
+                }
+            }
         }
         //受注情報エリア
 
+        //返却枚数合計
+        $pdf->SetX($returnSetX);
+        $pdf->Cell($returnTitleW, $returnSumH, '返却数合計', 1, 0, 'C');
+        $pdf->Cell($returnSumW, $returnSumH, $sum_all_qty/*合計*/, 1, 0, 'C');
 
-    }elseif($individual_check == '1'){ //個体管理番号なし
+
+
+    }elseif($individual_check == '0'){ //個体管理番号なしの出力
         //商品レコード見出しの高さ
         $header_height = 6;
 
@@ -626,22 +553,25 @@ $app->post('/print/pdf', function ()use($app){
 
 
         //商品レコード欄
-        $item_height = 8;//商品行Y幅
+        $item_height = 7.8;//商品行Y幅
         $item_startX = 12.0;//商品行左側余白
 
 
         //しきい値（返却枚数合計）
-        $returnSetX = 104.0; //X位置
-        $returnTitleW = 115; //見出し枠の横幅
+        $returnSetX = 24.0; //X位置
+        $returnTitleW = 195; //見出し枠の横幅
         $returnSumW = 40; //合計枠の横幅
         $returnSumH = 8; //見出し枠と合計枠の縦幅
 
         $no_list = 1;
         $i = 0;
         $page_no = 1;
+        $i_page = 0;
+        $sum_all_qty = 0;
+
 
         //受注情報エリア 返却商品の数だけforを回す
-        for($count = 1; $count <= 35/*$results_cnt*/; $count++){
+        for($count = 1; $count <= $results_cnt; $count++){
 
             if($count == 1) {       //返却商品が1個ある時
                 //テンプレ $pdf->Cell(横幅, 縦幅, '文字列', ボーダー(0 or 1), 次の位置(0 or 1), 'C');
@@ -656,154 +586,161 @@ $app->post('/print/pdf', function ()use($app){
                 $pdf->Cell($width06, $header_height, 'チェック欄', 1, 1, 'C');
                 //tableHeader
             }
+
                 $pdf->SetX($item_startX);
+
+            //サイズコード2がある場合は連結
+            if(isset($results[$i]->as_size_two_cd)){
+                $size_cd = $results[$i]->as_size_cd . "-" . $results[$i]->as_size_two_cd;
+            }else{
+                $size_cd = $results[$i]->as_size_cd;
+            }
 
                 $pdf->SetFontSize(11);
             //1行目
                 $pdf->Cell($width01, $item_height, $no_list++, 1, 0, 'C');
-                $pdf->Cell($width02, $item_height, $results[0]->as_item_cd."-".$results[0]->as_color_cd, 1, 0, 'C');
-                $pdf->Cell($width03, $item_height, $results[0]->as_input_item_name, 1, 0, 'C');
-                $pdf->Cell($width04, $item_height, $results[0]->as_size_cd, 1, 0, 'C');
-                $pdf->Cell($width05, $item_height, $results[0]->as_return_plan_qty, 1, 0, 'C');
+                $pdf->Cell($width02, $item_height, $results[$i]->as_item_cd."-".$results[$i]->as_color_cd, 1, 0, 'C');
+                $pdf->Cell($width03, $item_height, $results[$i]->as_input_item_name, 1, 0, 'C');
+                $pdf->Cell($width04, $item_height, $size_cd, 1, 0, 'C');
+                $pdf->Cell($width05, $item_height, $results[$i]->as_return_plan_qty, 1, 0, 'C');
                 $pdf->Cell($width06, $item_height, '□', 1, 1, 'C');
+
+                $sum_all_qty = $sum_all_qty + $results[$i]->as_return_plan_qty;
                 $i++;
 
-            if(($count % 15) == 0){
-                //着用者コード
-                $pdf -> SetFontSize(8);
-                $pdf -> Text(31, 191, $results[0]->as_werer_cd);
-                //着用者コード
+            if(($count % 15) == 0) {
+                //15,30,45,60などの15で割り切れる数の場合は処理をしない。
+                $i_page++;
+                if ($i_page < $all_page_no) {
+                    //着用者コード
+                    $pdf->SetFontSize(8);
+                    $pdf->Text(31, 191, $results[0]->as_werer_cd);
+                    //着用者コード
 
-                //2ページ目を作成
-                $pdf -> AddPage();
-                //既存のテンプレート用PDFを読み込む
-                $pdf -> setSourceFile('template_none.pdf');
-                //既存のテンプレートの１枚目をテンプレートに設定する。
-                $page = $pdf -> importPage(1);
-                $pdf -> useTemplate($page);
+                    //2ページ目を作成
+                    $pdf->AddPage();
+                    //既存のテンプレート用PDFを読み込む
+                    $pdf->setSourceFile('template_none.pdf');
+                    //既存のテンプレートの１枚目をテンプレートに設定する。
+                    $page = $pdf->importPage(1);
+                    $pdf->useTemplate($page);
 
-                //HEADERエリア
+                    //HEADERエリア
 
-                //タイトル
-                //$now_date = date("Y/m/d");
-                $pdf -> SetFont($boldFont, '', 16);
-                $pdf -> Text(117, 3, "レンタル商品返却伝票");
-
-
-                $pdf -> SetFont($regularFont, '', 10);
-                $pdf -> Text(280, 3, ++$page_no . "/3");
-
+                    //タイトル
+                    //$now_date = date("Y/m/d");
+                    $pdf->SetFont($boldFont, '', 16);
+                    $pdf->Text(117, 5, "レンタル商品返却伝票");
 
 
-                $pdf -> SetFont($regularFont, '', 8);
-                //企業名
-                $pdf -> SetFontSize(10);
-                $pdf -> Text($headerX, 14, $results[0]->as_corporate_name . " 様");
-                //$pdf -> Text(72, 21, "１２３４５６７８９０１２３４５６７８９０１");
-
-                //契約no (企業id)
-                $pdf -> SetFontSize(10);
-                $pdf -> Text($headerX, 22, $results[0]->as_rntl_cont_no . "     ( " . $results[0]->as_corporate_id . " )");
-
-                //拠点名 + 拠点cd
-                $pdf -> SetFontSize(10);
-                $pdf -> Text($headerX, 29, $results[0]->as_rntl_sect_name . "    ( " . $results[0]->as_rntl_sect_cd . " )");
-
-                //着用者名
-                $pdf -> SetFontSize(10);
-                $pdf -> Text($headerX, 37, $results[0]->as_werer_name);
-
-                //客先社員コード
-                $pdf -> SetFontSize(10);
-                $pdf -> Text(105, 37, $results[0]->as_cster_emply_cd);
-
-                //部門名 + 部門コード
-                $pdf -> SetFontSize(10);
-                $pdf -> Text($headerX, 45, $results[0]->as_job_type_name . "    ( " . $results[0]->as_job_type_cd . " )");
-
-                //HEADERエリア
+                    $pdf->SetFont($regularFont, '', 10);
+                    $pdf->Text(280, 5, ++$page_no . "/" . $all_page_no);
 
 
-                //RIGHTエリア
+                    $pdf->SetFont($regularFont, '', 8);
+                    //企業名
+                    $pdf->SetFontSize(10);
+                    $pdf->Text($headerX, 14, $results[0]->as_corporate_name . " 様");
+                    //$pdf -> Text(72, 21, "１２３４５６７８９０１２３４５６７８９０１");
 
-                //発注番号
-                $pdf -> SetFontSize(11);
-                $pdf -> Text(170, 14, $results[0]->as_order_req_no);
+                    //契約no (企業id)
+                    $pdf->SetFontSize(10);
+                    $pdf->Text($headerX, 22, $results[0]->as_rntl_cont_no . "     ( " . $results[0]->as_corporate_id . " )");
 
-                //発注日 日付にスラッシュを入れて出力
-                $order_date = $results[0]->as_order_req_ymd;
-                $pdf -> Text(250, 14, date('Y/m/d', strtotime($order_date)));
+                    //拠点名 + 拠点cd
+                    $pdf->SetFontSize(10);
+                    $pdf->Text($headerX, 29, $results[0]->as_rntl_sect_name . "    ( " . $results[0]->as_rntl_sect_cd . " )");
 
+                    //着用者名
+                    $pdf->SetFontSize(10);
+                    $pdf->Text($headerX, 37, $results[0]->as_werer_name);
 
-                //発注区分 理由区分
-                $pdf -> Text(170, 22, $list['order_sts_kbn_name'] . "   " . $list['order_reason_kbn_name'] . " ");
+                    //客先社員コード
+                    $pdf->SetFontSize(10);
+                    $pdf->Text(105, 37, $results[0]->as_cster_emply_cd);
 
+                    //部門名 + 部門コード
+                    $pdf->SetFontSize(10);
+                    $pdf->Text($headerX, 45, $results[0]->as_job_type_name . "    ( " . $results[0]->as_job_type_cd . " )");
 
-                //バーコード３９生成
-                $style = array(
-                    'position' => 'S',
-                    'border' => false,
-                    'padding' => 4,
-                    'fgcolor' => array(0,0,0), //0～255三元色
-                    'bgcolor' => false,
-                    'text' => false, //下に値を出す
-                    'font' => 'helvetica',
-                    'fontsize' => 8,
-                    'stretchtext' => 4
-                );
+                    //HEADERエリア
 
 
-                //$pdf->write1DBarcode(バーコード値, 'C39', x座標, y座標, 幅, 高さ, 0.4, $style, 'N');
-                $pdf->write1DBarcode($results[0]->as_order_req_no, 'C39', 190, 26, 60, 28, 0.4, $style, 'N');
-                //RIGHTエリア
+                    //RIGHTエリア
 
-                //tableHeader
-                $pdf -> SetFontSize(11);
-                $pdf->SetXY($item_startX, 53.0);
-                $pdf->Cell($width01, $header_height, 'No.', 1, 0, 'C');
-                $pdf->Cell($width02, $header_height, '商品コード', 1, 0, 'C');
-                $pdf->Cell($width03, $header_height, '商品名', 1, 0, 'C');
-                $pdf->Cell($width04, $header_height, 'サイズ', 1, 0, 'C');
-                $pdf->Cell($width05, $header_height, '返却数', 1, 0, 'C');
-                $pdf->Cell($width06, $header_height, 'チェック欄', 1, 1, 'C');
-                //tableHeader
+                    //発注番号
+                    $pdf->SetFontSize(11);
+                    $pdf->Text(170, 14, $results[0]->as_order_req_no);
 
+                    //発注日 日付にスラッシュを入れて出力
+                    $order_date = $results[0]->as_order_req_ymd;
+                    $pdf->Text(250, 14, date('Y/m/d', strtotime($order_date)));
+
+
+                    //発注区分 理由区分
+                    $pdf->Text(170, 22, $list['order_sts_kbn_name'] . "   " . $list['order_reason_kbn_name'] . " ");
+
+
+                    //バーコード３９生成
+                    $style = array(
+                        'position' => 'S',
+                        'border' => false,
+                        'padding' => 4,
+                        'fgcolor' => array(0, 0, 0), //0～255三元色
+                        'bgcolor' => false,
+                        'text' => false, //下に値を出す
+                        'font' => 'helvetica',
+                        'fontsize' => 8,
+                        'stretchtext' => 4
+                    );
+
+
+                    //$pdf->write1DBarcode(バーコード値, 'C39', x座標, y座標, 幅, 高さ, 0.4, $style, 'N');
+                    $pdf->write1DBarcode($results[0]->as_order_req_no, 'C39', 190, 26, 60, 28, 0.4, $style, 'N');
+                    //RIGHTエリア
+
+                    //tableHeader
+                    $pdf->SetFontSize(11);
+                    $pdf->SetXY($item_startX, 53.0);
+                    $pdf->Cell($width01, $header_height, 'No.', 1, 0, 'C');
+                    $pdf->Cell($width02, $header_height, '商品コード', 1, 0, 'C');
+                    $pdf->Cell($width03, $header_height, '商品名', 1, 0, 'C');
+                    $pdf->Cell($width04, $header_height, 'サイズ', 1, 0, 'C');
+                    $pdf->Cell($width05, $header_height, '返却数', 1, 0, 'C');
+                    $pdf->Cell($width06, $header_height, 'チェック欄', 1, 1, 'C');
+                    //tableHeader
+
+                }
             }
-
 
         }
         //受注情報エリア
-    }
-
         //返却枚数合計
         $pdf->SetX($returnSetX);
         $pdf->Cell($returnTitleW, $returnSumH, '返却数合計', 1, 0, 'C');
-        $pdf->Cell($returnSumW, $returnSumH, 105/*合計*/, 1, 0, 'C');
+        $pdf->Cell($returnSumW, $returnSumH, $sum_all_qty/*合計*/, 1, 0, 'C');
 
-
+    }
 
     //着用者コード
     $pdf -> SetFontSize(8);
     $pdf -> Text(31, 191, $results[0]->as_werer_cd);
     //着用者コード
 
-
-
     //作成したPDFをダウンロードする I:ブラウザ D:ダウンロード
     ob_end_clean();
     $pdf -> Output('sumple.pdf' , 'D');
 
-
-
-
-
-
-
-
-
     echo json_encode($json_list);
     return true;
 });
+
+
+
+
+
+
+
 /**
  * 返却状況照会検索
  */
@@ -813,7 +750,6 @@ $app->post('/print/search', function ()use($app){
 
 	// アカウントセッション取得
 	$auth = $app->session->get("auth");
-    ChromePhp::log($auth);
 	$cond = $params['cond'];
 	$page = $params['page'];
 	$query_list = array();
@@ -988,7 +924,6 @@ $app->post('/print/search', function ()use($app){
 
 	//sql文字列を' AND 'で結合
 	$query = implode(' AND ', $query_list);
-    ChromePhp::log($query);
 	$sort_key ='';
 	$order ='';
 
@@ -1107,7 +1042,7 @@ $app->post('/print/search', function ()use($app){
 	$results = new Resultset(null, $t_order, $t_order->getReadConnection()->query($arg_str));
 	$result_obj = (array)$results;
 	$results_cnt = $result_obj["\0*\0_count"];
-ChromePhp::log($arg_str);
+
 	$paginator_model = new PaginatorModel(
 		array(
 			"data"  => $results,
