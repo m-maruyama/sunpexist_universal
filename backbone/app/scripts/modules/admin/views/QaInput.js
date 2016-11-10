@@ -5,14 +5,13 @@ define([
 	'use strict';
 	App.module('Admin.Views', function(Views, App, Backbone, Marionette, $, _){
 		Views.QaInput = Marionette.LayoutView.extend({
-			template: App.Admin.Templates.qaInput,
 			model: new Backbone.Model(),
+			template: App.Admin.Templates.qaInput,
 			ui: {
 			},
 			regions: {
 				"condition": ".condition"
 			},
-			model: new Backbone.Model(),
 			onShow: function() {
 				var that = this;
 				var modelForUpdate = this.model;
