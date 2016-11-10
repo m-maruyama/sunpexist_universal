@@ -584,7 +584,6 @@ $app->post('/wearer_other_change_list', function ()use($app){
 
     $json_list = array();
     $all_list = array();
-
     // 返却予定情報トラン(その他交換発注履歴)確認
     $tran_list = array();
     $list = array();
@@ -602,7 +601,7 @@ $app->post('/wearer_other_change_list', function ()use($app){
     $arg_str = "SELECT ";
     $arg_str .= " * ";
     $arg_str .= " FROM ";
-    $arg_str .= "(SELECT distinct on (t_returned_plan_info_tran.item_cd, t_returned_plan_info_tran.color_cd, t_returned_plan_info_tran.size_cd) ";
+    $arg_str .= "(SELECT distinct on (t_returned_plan_info_tran.individual_ctrl_no,t_returned_plan_info_tran.item_cd, t_returned_plan_info_tran.color_cd, t_returned_plan_info_tran.size_cd) ";
     $arg_str .= "t_returned_plan_info_tran.item_cd as as_order_item_cd,";
     $arg_str .= "t_returned_plan_info_tran.color_cd as as_order_color_cd,";
     $arg_str .= "t_returned_plan_info_tran.size_cd as as_order_size_cd,";
@@ -624,15 +623,6 @@ $app->post('/wearer_other_change_list', function ()use($app){
     $results_cnt = $result_obj["\0*\0_count"];
     if (!empty($results_cnt)) {
         // 発注情報トランに情報が存在する場合、こちらで商品一覧生成
-        $paginator_model = new PaginatorModel(
-            array(
-                "data"  => $results,
-                "limit" => $results_cnt,
-                "page" => 1
-            )
-        );
-        $paginator = $paginator_model->getPaginate();
-        $results = $paginator->items;
         $arr_num = 0;
         $list_cnt = 1;
         foreach ($results as $result) {
@@ -659,9 +649,10 @@ $app->post('/wearer_other_change_list', function ()use($app){
 
         $arg_str = "";
         $arg_str = "SELECT ";
-        $arg_str .= " * ";
+        $arg_str .= " *, ";
+        $arg_str .= " count(*) as_rtn_ok_cnt";
         $arg_str .= " FROM ";
-        $arg_str .= "(SELECT distinct on (m_item.item_cd, m_item.color_cd, m_item.size_cd) ";
+        $arg_str .= "(SELECT distinct on (t_delivery_goods_state_details.individual_ctrl_no, m_item.item_cd, m_item.color_cd, m_item.size_cd) ";
         $arg_str .= "t_delivery_goods_state_details.quantity as as_quantity,";
         $arg_str .= "t_delivery_goods_state_details.return_plan__qty as as_return_plan_qty,";
         $arg_str .= "t_delivery_goods_state_details.returned_qty as as_returned_qty,";
@@ -685,21 +676,23 @@ $app->post('/wearer_other_change_list', function ()use($app){
         $arg_str .= " WHERE ";
         $arg_str .= $query;
         $arg_str .= ") as distinct_table";
+        $arg_str .= " GROUP BY as_quantity,
+         as_return_plan_qty,
+         as_returned_qty,
+         as_item_cd,
+         as_color_cd,
+         as_size_cd,
+         as_job_type_item_cd,
+         as_std_input_qty,
+         as_item_name,
+         as_input_item_name,
+         as_std_input_qty";
         $arg_str .= " ORDER BY as_item_cd ASC, as_color_cd ASC";
         $m_input_item = new MInputItem();
         $item_results = new Resultset(null, $m_input_item, $m_input_item->getReadConnection()->query($arg_str));
         $result_obj = (array)$item_results;
         $results_cnt = $result_obj["\0*\0_count"];
         if (!empty($results_cnt)) {
-            $paginator_model = new PaginatorModel(
-                array(
-                    "data"  => $item_results,
-                    "limit" => $results_cnt,
-                    "page" => 1
-                )
-            );
-            $paginator = $paginator_model->getPaginate();
-            $item_results = $paginator->items;
             foreach ($item_results as $item_result) {
                 // name属性用カウント値
                 $list["arr_num"] = $arr_num++;
@@ -708,13 +701,18 @@ $app->post('/wearer_other_change_list', function ()use($app){
                 // アイテム
                 $list["item_name"] = $item_result->as_item_name;
                 // 数量
-                $list["quantity"] = $item_result->as_quantity;
+                if(isset($item_result->as_quantity)){
+                    $list["quantity"] = $item_result->as_quantity;
+                }else{
+                    $list["quantity"] = '0';
+                }
                 // 返却予定数
                 $list["return_plan_qty"] = $item_result->as_return_plan_qty;
                 // 返却済数
                 $list["returned_qty"] = $item_result->as_returned_qty;
-                // 商品単位の返却可能枚数(所持枚数)
-                $list["possible_num"] = $list["quantity"] - $list["return_plan_qty"] - $list["returned_qty"];
+                // 標準枚数
+                $list["possible_num"] = $item_result->as_std_input_qty;
+//                $list["possible_num"] = $list["quantity"] - $list["return_plan_qty"] - $list["returned_qty"];
                 // 商品コード
                 $list["item_cd"] = $item_result->as_item_cd;
                 // 色コード
@@ -725,8 +723,13 @@ $app->post('/wearer_other_change_list', function ()use($app){
                 $list["input_item_name"] = $item_result->as_input_item_name;
                 // サイズ
                 $list["size_cd"] = $item_result->as_size_cd;
+                //返却数、発注数初期化
+                $list["return_num"] = 0;
+                $list["order_num"] = 0;
                 // 対象、個体管理番号
                 if ($auth["individual_flg"] == "1") {
+                    $list["order_num_disable"] = "disabled";
+                    $list["return_num_disable"] = "disabled";
                     // 返却予定情報トラン参照（個体管理番号取得）
                     $individual_list = array();
                     $query_list = array();
@@ -753,15 +756,6 @@ $app->post('/wearer_other_change_list', function ()use($app){
                     $result_obj = (array)$t_returned_plan_info_tran_results;
                     $results_cnt = $result_obj["\0*\0_count"];
                     if (!empty($results_cnt)) {
-                        $paginator_model = new PaginatorModel(
-                            array(
-                                "data"  => $t_returned_plan_info_tran_results,
-                                "limit" => $results_cnt,
-                                "page" => 1
-                            )
-                        );
-                        $paginator = $paginator_model->getPaginate();
-                        $t_returned_plan_info_tran_results = $paginator->items;
                         foreach ($t_returned_plan_info_tran_results as $t_returned_plan_info_tran_result) {
                             array_push($individual_list, $t_returned_plan_info_tran_result->individual_ctrl_no);
                         }
@@ -803,6 +797,7 @@ $app->post('/wearer_other_change_list', function ()use($app){
                     $paginator = $paginator_model->getPaginate();
                     $t_delivery_goods_state_details_results = $paginator->items;
                     $i = 0;
+                    $return_num = 0;
                     foreach ($t_delivery_goods_state_details_results as $t_delivery_goods_state_details_result) {
                         // 返却予定情報トランの個体管理番号があるか確認
                         $element["checked"] = "";
@@ -810,9 +805,14 @@ $app->post('/wearer_other_change_list', function ()use($app){
                             foreach ($individual_list as $tran_individual_ctrl_no) {
                                 if ($t_delivery_goods_state_details_result->individual_ctrl_no == $tran_individual_ctrl_no) {
                                     $element["checked"] = "checked";
+                                    // 返却枚数
+                                    // ※返却予定情報トランに存在する場合はこちらを設定
+                                    $return_num += 1;
                                 }
                             }
                         }
+                        $list["return_num"] = $return_num;
+                        $list["order_num"] = $return_num;
                         array_push($list["individual_ctrl_no"], $t_delivery_goods_state_details_result->individual_ctrl_no);
                         $element["name_no"] = $list["arr_num"];
                         $element["individual_ctrl_no"] = $t_delivery_goods_state_details_result->individual_ctrl_no;
@@ -827,19 +827,26 @@ $app->post('/wearer_other_change_list', function ()use($app){
                     $list["individual_cnt"] = count($list["individual_ctrl_no"]);
                     // 個体管理番号(表示用)
                     $list["individual_ctrl_no"] = implode("<br/>", $list["individual_ctrl_no"]);
-                }
-                // 返却枚数
-                // ※返却予定情報トランに存在する場合はこちらを設定
-                $list["return_num"] = "";
-                foreach ($tran_list as $tran_map) {
-                    if (
-                        $list["item_cd"] == $tran_map["item_cd"] &&
-                        $list["color_cd"] == $tran_map["color_cd"] &&
-                        $list["size_cd"] == $tran_map["size_cd"]
-                    )
-                    {
-                        $list["return_num"] = $tran_map["return_plan_qty"];
+                }else{
+                    // 交換可能枚数
+                    $list["rtn_ok_cnt"] = $item_result->as_rtn_ok_cnt;
+                    foreach ($tran_list as $tran_map) {
+                        if (
+                            $list["item_cd"] == $tran_map["item_cd"] &&
+                            $list["color_cd"] == $tran_map["color_cd"] &&
+                            $list["size_cd"] == $tran_map["size_cd"]
+                        )
+                        {
+                            $list["return_num"] += $tran_map["return_plan_qty"];
+                            $list["order_num"] += $tran_map["return_plan_qty"];
+                        }
                     }
+                }
+                if(!$list["return_num"]){
+                    $list["return_num"] = '0';
+                }
+                if(!$list["order_num"]){
+                    $list["order_num"] = '0';
                 }
                 // 個体管理番号表示フラグ
                 if ($auth["individual_flg"] == "1") {
@@ -861,24 +868,19 @@ $app->post('/wearer_other_change_list', function ()use($app){
         }
         // 返却総枚数(返却可能枚数)
         $json_list["sum_num"] = array();
-        $list["sum_return_num"] = '';
-        $list["sum_order_num"] = '';
+        $sum_list = array();
+        $sum_list["sum_return_num"] = '';
+        $sum_list["sum_order_num"] = '';
         if (!empty($all_list)) {
-//             $quantity = 0;
-//             $return_plan_qty = 0;
-//             $returned_qty = 0;
             $sum_return_num = 0;
             $sum_order_num = 0;
             foreach ($all_list as $all_map) {
-//             $quantity += $all_map["quantity"];
                 $sum_return_num += $all_map["return_num"];
-                $sum_order_num += $all_map["quantity"];
-//             $returned_qty += $all_map["returned_qty"];
             }
-            $list["sum_return_num"] = $sum_return_num;
-            $list["sum_order_num"] = $sum_order_num;
+            $sum_list["sum_return_num"] = $sum_return_num;
+            $sum_list["sum_order_num"] = $sum_return_num;
         }
-        array_push($json_list["sum_num"], $list);
+        array_push($json_list["sum_num"], $sum_list);
     } else {
         // 発注情報トランに情報が存在しない場合、こちらで商品一覧生成
         $all_list = array();
@@ -892,9 +894,10 @@ $app->post('/wearer_other_change_list', function ()use($app){
 
         $arg_str = "";
         $arg_str = "SELECT ";
-        $arg_str .= " * ";
+        $arg_str .= " *, ";
+        $arg_str .= " count(*) as_rtn_ok_cnt";
         $arg_str .= " FROM ";
-        $arg_str .= "(SELECT distinct on (m_item.item_cd, m_item.color_cd, m_item.size_cd) ";
+        $arg_str .= "(SELECT distinct on (t_delivery_goods_state_details.individual_ctrl_no, m_item.item_cd, m_item.color_cd, m_item.size_cd)";
         $arg_str .= "t_delivery_goods_state_details.quantity as as_quantity,";
         $arg_str .= "t_delivery_goods_state_details.return_plan__qty as as_return_plan_qty,";
         $arg_str .= "t_delivery_goods_state_details.returned_qty as as_returned_qty,";
@@ -918,6 +921,17 @@ $app->post('/wearer_other_change_list', function ()use($app){
         $arg_str .= " WHERE ";
         $arg_str .= $query;
         $arg_str .= ") as distinct_table";
+        $arg_str .= " GROUP BY as_quantity,
+         as_return_plan_qty,
+         as_returned_qty,
+         as_item_cd,
+         as_color_cd,
+         as_size_cd,
+         as_job_type_item_cd,
+         as_std_input_qty,
+         as_item_name,
+         as_input_item_name,
+         as_std_input_qty";
         $arg_str .= " ORDER BY as_item_cd ASC, as_color_cd ASC";
         $t_delivery_goods_state_details = new TDeliveryGoodsStateDetails();
         $results = new Resultset(null, $t_delivery_goods_state_details, $t_delivery_goods_state_details->getReadConnection()->query($arg_str));
@@ -925,15 +939,6 @@ $app->post('/wearer_other_change_list', function ()use($app){
         $results_cnt = $result_obj["\0*\0_count"];
         if (!empty($results_cnt)) {
             // 発注情報トランに情報が存在する場合、こちらで商品一覧生成
-            $paginator_model = new PaginatorModel(
-                array(
-                    "data"  => $results,
-                    "limit" => $results_cnt,
-                    "page" => 1
-                )
-            );
-            $paginator = $paginator_model->getPaginate();
-            $results = $paginator->items;
             $arr_num = 0;
             $list_cnt = 1;
             foreach ($results as $result) {
@@ -943,14 +948,19 @@ $app->post('/wearer_other_change_list', function ()use($app){
                 $list["list_no"] = $list_cnt++;
                 // アイテム
                 $list["item_name"] = $result->as_item_name;
-                // 所持枚数
-                $list["possible_num"] = $result->as_quantity - $result->as_return_plan_qty - $result->as_returned_qty;
+                // 標準枚数
+                $list["possible_num"] = $result->as_std_input_qty;
+//                $list["possible_num"] = $result->as_quantity - $result->as_return_plan_qty - $result->as_returned_qty;
                 // 数量
-                $list["quantity"] = '0';
+                if(isset($result->as_quantity)){
+                    $list["quantity"] = $result->as_quantity;
+                }else{
+                    $list["quantity"] = '0';
+                }
                 // 返却予定数
-                $list["return_plan_qty"] = '0';
+                $list["return_plan_qty"] = $result->as_return_plan_qty;
                 // 返却済数
-                $list["returned_qty"] = '0';
+                $list["returned_qty"] = $result->as_return_plan_qty;
                 // 商品コード
                 $list["item_cd"] = $result->as_item_cd;
                 // 色コード
@@ -963,6 +973,8 @@ $app->post('/wearer_other_change_list', function ()use($app){
                 $list["size_cd"] = $result->as_size_cd;
                 // 対象、個体管理番号
                 if ($auth["individual_flg"] == "1") {
+                    $list["order_num_disable"] = "disabled";
+                    $list["return_num_disable"] = "disabled";
                     // 納品状況明細情報参照
                     $list["individual_chk"] = array();
                     $element = array();
@@ -989,17 +1001,8 @@ $app->post('/wearer_other_change_list', function ()use($app){
                     $t_delivery_goods_state_details_results = new Resultset(null, $t_delivery_goods_state_details, $t_delivery_goods_state_details->getReadConnection()->query($arg_str));
                     $result_obj = (array)$t_delivery_goods_state_details_results;
                     $results_cnt = $result_obj["\0*\0_count"];
-                    //ChromePhp::LOG($results_cnt);
-                    $paginator_model = new PaginatorModel(
-                        array(
-                            "data"  => $t_delivery_goods_state_details_results,
-                            "limit" => $results_cnt,
-                            "page" => 1
-                        )
-                    );
-                    $paginator = $paginator_model->getPaginate();
-                    $t_delivery_goods_state_details_results = $paginator->items;
                     $i = 0;
+                    $return_num = 0;
                     foreach ($t_delivery_goods_state_details_results as $t_delivery_goods_state_details_result) {
                         array_push($list["individual_ctrl_no"], $t_delivery_goods_state_details_result->individual_ctrl_no);
                         $element["name_no"] = $list["arr_num"];
@@ -1015,9 +1018,18 @@ $app->post('/wearer_other_change_list', function ()use($app){
                     $list["individual_cnt"] = count($list["individual_ctrl_no"]);
                     // 個体管理番号(表示用)
                     $list["individual_ctrl_no"] = implode("<br/>", $list["individual_ctrl_no"]);
+                }else{
+                    // 交換可能枚数
+                    $list["rtn_ok_cnt"] = $result->as_rtn_ok_cnt;
                 }
                 // 返却枚数
-                $list["return_num"] = "0";
+                if(!isset($list["return_num"])){
+                    $list["return_num"] = '0';
+                }
+                // 発注数
+                if(!isset($list["order_num"])){
+                    $list["order_num"] = '0';
+                }
                 // 個体管理番号表示フラグ
                 if ($auth["individual_flg"] == "1") {
                     $list["individual_flg"] = true;
@@ -1034,12 +1046,22 @@ $app->post('/wearer_other_change_list', function ()use($app){
 
                 array_push($all_list, $list);
             }
-
-            $list["sum_return_num"] = '0';
-            $list["sum_order_num"] = '0';
+            // 返却総枚数(返却可能枚数)
+            $json_list["sum_num"] = array();
+            $sum_list = array();
+            $sum_list["sum_return_num"] = '';
+            $sum_list["sum_order_num"] = '';
+            if (!empty($all_list)) {
+                $sum_return_num = 0;
+                $sum_order_num = 0;
+                foreach ($all_list as $all_map) {
+                    $sum_return_num += $all_map["return_num"];
+                }
+                $sum_list["sum_return_num"] = $sum_return_num;
+                $sum_list["sum_order_num"] = $sum_return_num;
+            }
+            array_push($json_list["sum_num"], $sum_list);
         }
-        $json_list["sum_num"] = array();
-        array_push($json_list["sum_num"], $list);
     }
 
     // 商品リスト件数による一覧表示制御

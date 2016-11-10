@@ -221,10 +221,10 @@ define([
 				// 「戻る」ボタン
 				'click @ui.back': function(){
 					// 検索画面の条件項目を取得
-					var cond = window.sessionStorage.getItem("wearer_other_cond");
-					window.sessionStorage.setItem("back_wearer_other_cond", cond);
+					var cond = window.sessionStorage.getItem("wearer_size_change_cond");
+					window.sessionStorage.setItem("back_wearer_size_change_cond", cond);
 					// 検索一覧画面へ遷移
-					location.href="wearer_other.html";
+					location.href="wearer_size_change.html";
 				},
 				// 「発注取消」ボタン
 				'click @ui.delete': function(){

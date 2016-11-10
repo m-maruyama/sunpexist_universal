@@ -21,7 +21,7 @@ define([
 				var modelForUpdate = this.model;
 				modelForUpdate.url = App.api.CM0040;
 				var cond = {
-					"scr": '発注入力（不要品返却）'
+					"scr": '発注入力（その他交換）'
 				};
 
 				modelForUpdate.fetchMx({

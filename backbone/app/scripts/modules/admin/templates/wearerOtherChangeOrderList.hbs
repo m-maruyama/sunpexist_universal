@@ -11,7 +11,7 @@
           発注枚数 <input type="text" class="input-sm" id="order_count" name="order_count" disabled="disabled" value="{{#each sum_num}}{{sum_order_num}}{{/each}}" style="width:4em; font-weight:normal; text-align:center;"> 枚　　　
           返却枚数 <input type="text" class="input-sm" id="return_count" name="return_count" disabled="disabled" value="{{#each sum_num}}{{sum_return_num}}{{/each}}" style="width:4em; font-weight:normal; text-align:center;"> 枚
         </th>
-        <input type="hidden" name="list_cnt" value="{{list_cnt}}">
+        <input type="hidden" id="list_cnt" name="list_cnt" value="{{list_cnt}}">
       </table>
     </div>
     <table class="table table-bordered order_table">
@@ -19,11 +19,13 @@
         <tr>
           <th rowspan="2">No.</th>
           <th rowspan="2">アイテム</th>
-          <th rowspan="2">所持枚数</th>
+          <th rowspan="2">標準枚数</th>
           <th>商品-色</th>
           <th rowspan="2">サイズ</th>
+          <th rowspan="2" class="no_individual_flg" style="display:none;">交換可能枚数</th>
           <th rowspan="2" class="individual_flg" style="display:none;">対象</th>
           <th rowspan="2" class="individual_flg" style="display:none;">個体管理番号</th>
+          <th rowspan="2">発注枚数</th>
           <th rowspan="2">返却枚数</th>
         </tr>
         <tr>
@@ -54,10 +56,14 @@
             {{size_cd}}
             <input type="hidden" name="size_cd{{arr_num}}" value="{{size_cd}}">
           </td>
+          <td class="no_individual_flg" style="display:none;">
+            {{{rtn_ok_cnt}}}
+            <input type="hidden" name="rtn_ok_cnt{{arr_num}}" value="{{rtn_ok_cnt}}">
+          </td>
           <td class="individual_flg" style="display:none;">
             {{#each individual_chk}}
               <label>
-                <input type="checkbox" id="target_flg{{name_no}}" name="target_flg{{name_no}}" value="{{individual_ctrl_no}}" {{checked}}>
+                <input type="checkbox" id="target_flg" name="target_flg{{name_no}}" value="{{name_no}}" {{checked}}>
               </label>
               {{{br}}}
             {{/each}}
@@ -67,11 +73,13 @@
             <input type="hidden" name="individual_cnt{{arr_num}}" value="{{individual_cnt}}">
           </td>
           <td>
-            {{#if individual_flg}}
-            <span></span>
-            {{else}}
-            <input type="text" style="width:4em; font-weight:normal; text-align:center;" class="input-sm individual_flg" id="return_num{{arr_num}}" name="return_num{{arr_num}}" value="{{return_num}}">
-            {{/if}}
+              <!--<input type="text" style="width:4em; font-weight:normal; text-align:center;" class="input-sm" id="add_order_num{{arr_num}}" name="add_order_num{{arr_num}}" value="{{order_num}}" {{order_num_disable}}>-->
+              <input type="text" style="width:4em; font-weight:normal; text-align:center;" class="input-sm order_num" id="order_num{{arr_num}}" name="order_num{{arr_num}}" value="{{order_num}}" {{order_num_disable}}>
+              <input type="hidden" id="order_num_val{{arr_num}}" name="order_num_val{{arr_num}}" value="{{quantity}}" {{order_num_disable}}>
+            </td>
+          <td>
+              <input type="text" style="width:4em; font-weight:normal; text-align:center;" class="input-sm return_num" id="return_num{{arr_num}}" name="return_num{{arr_num}}" value="{{return_num}}" disabled>
+              <input type="hidden" id="return_num_val{{arr_num}}" name="return_num_val{{arr_num}}" value="{{return_num}}" {{return_num_disable}}>
           </td>
         </tr>
         {{/each}}
