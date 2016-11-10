@@ -14,7 +14,7 @@ define([
 				//
 				// this.setNav('password');
 
-				var passwordView = new App.Admin.Views.Password({model: new App.Entities.Models.AdminPassword()});
+				var passwordView = new App.Admin.Views.Password;//({model: new App.Entities.Models.AdminPassword()});
 				passwordView.listenTo(passwordView, 'success', function(){
 					location.href = './login.html';
 					return;
