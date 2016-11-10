@@ -698,6 +698,12 @@ $app->post('/zaiko_job_type', function () use ($app) {
     $paginator = $paginator_model->getPaginate();
     $results = $paginator->items;
 
+    if ($results_cnt > 1) {
+      $list['rent_pattern_data'] = null;
+      $list['rent_pattern_name'] = '全て';
+      array_push($all_list, $list);
+    }
+
     foreach ($results as $result) {
       $list['rent_pattern_data'] = $result->rent_pattern_data;
       $list['rent_pattern_name'] = $result->rent_pattern_name;
@@ -734,7 +740,7 @@ $app->post('/zaiko_item', function () use ($app) {
     array_push($query_list, "t_sdmzk.rntl_cont_no = '".$app->session->get('first_rntl_cont_no')."'");
   }
   if (!empty($params['job_type_zaiko'])) {
-    array_push($query_list, "t_sdmzk.rent_pattern_data = '".$params['job_type_zaiko']."'");
+    array_push($query_list, "substring(t_sdmzk.rent_pattern_data, 3) = '".$params['job_type_zaiko']."'");
   }
   $query = implode(' AND ', $query_list);
 
@@ -804,7 +810,7 @@ $app->post('/zaiko_item_color', function () use ($app) {
     array_push($query_list, "t_sdmzk.rntl_cont_no = '".$app->session->get('first_rntl_cont_no')."'");
   }
   if (!empty($params['job_type_zaiko'])) {
-    array_push($query_list, "t_sdmzk.rent_pattern_data = '".$params['job_type_zaiko']."'");
+    array_push($query_list, "substring(t_sdmzk.rent_pattern_data, 3) = '".$params['job_type_zaiko']."'");
   }
   if (!empty($params['item'])) {
     array_push($query_list, "m_item.item_cd = '".$params['item']."'");

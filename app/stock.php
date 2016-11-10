@@ -18,10 +18,10 @@ $app->post('/stock/search', function ()use($app){
 	$auth = $app->session->get("auth");
 
 	$cond = $params['cond'];
+	//ChromePhp::LOG($cond);
 	$page = $params['page'];
 	$query_list = array();
 
-	//---検索条件---//
 	//企業ID
 	array_push($query_list,"t_sdmzk.corporate_id = '".$auth['corporate_id']."'");
 	//契約No
@@ -30,7 +30,7 @@ $app->post('/stock/search', function ()use($app){
 	}
 	//貸与パターン
 	if(!empty($cond['job_type_zaiko'])){
-		array_push($query_list,"t_sdmzk.rent_pattern_data = '".$cond['job_type_zaiko']."'");
+		array_push($query_list,"substring(t_sdmzk.rent_pattern_data, 3) = '".$cond['job_type_zaiko']."'");
 	}
 	//商品
 	if(!empty($cond['item'])){
@@ -91,7 +91,6 @@ $app->post('/stock/search', function ()use($app){
 		$order = 'asc';
 	}
 
-	//---SQLクエリー実行---//
 	$arg_str = "SELECT ";
 	$arg_str .= "t_sdmzk.zkwhcd as as_zkwhcd,";
 	$arg_str .= "t_sdmzk.zkprcd as as_zkprcd,";
@@ -112,7 +111,7 @@ $app->post('/stock/search', function ()use($app){
 	$arg_str .= "m_item.item_name as as_item_name";
 	$arg_str .= " FROM t_sdmzk";
 	$arg_str .= " INNER JOIN m_item ON t_sdmzk.m_item_comb_hkey = m_item.m_item_comb_hkey";
-	$arg_str .= " INNER JOIN m_rent_pattern_for_sdmzk ON t_sdmzk.rent_pattern_data = m_rent_pattern_for_sdmzk.rent_pattern_data";
+	$arg_str .= " INNER JOIN m_rent_pattern_for_sdmzk ON substring(t_sdmzk.rent_pattern_data, 3) = m_rent_pattern_for_sdmzk.rent_pattern_data";
 	$arg_str .= " WHERE ";
 	$arg_str .= $query;
 	if (!empty($q_sort_key)) {
