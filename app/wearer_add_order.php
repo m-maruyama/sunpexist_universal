@@ -12,7 +12,7 @@ use Phalcon\Paginator\Adapter\QueryBuilder as PaginatorQueryBuilder;
  * 入力項目：初期値情報、前画面セッション取得
  *
  */
-$app->post('/wearer_add_info', function ()use($app){
+$app->post('/wearer_add/info', function ()use($app){
   $params = json_decode(file_get_contents("php://input"), true);
 
   // アカウントセッション取得
@@ -451,7 +451,7 @@ $app->post('/wearer_add_info', function ()use($app){
  * 発注入力（追加貸与）
  * 入力項目：発注商品一覧
  */
- $app->post('/wearer_add_list', function ()use($app){
+ $app->post('/wearer_add/list', function ()use($app){
    $params = json_decode(file_get_contents("php://input"), true);
 
    // アカウントセッション取得
@@ -892,7 +892,7 @@ $app->post('/wearer_add_info', function ()use($app){
  * 発注入力（追加貸与）
  * 発注取消処理
  */
-$app->post('/wearer_add_delete', function ()use($app){
+$app->post('/wearer_add/delete', function ()use($app){
   $params = json_decode(file_get_contents("php://input"), true);
 
   // アカウントセッション取得
@@ -1012,7 +1012,7 @@ $app->post('/wearer_add_delete', function ()use($app){
  * 発注入力（追加貸与）
  * 入力完了処理
  */
-$app->post('/wearer_add_complete', function ()use($app){
+$app->post('/wearer_add/complete', function ()use($app){
    $params = json_decode(file_get_contents("php://input"), true);
 
    // アカウントセッション取得
@@ -1874,7 +1874,7 @@ $app->post('/wearer_add_complete', function ()use($app){
  * 発注入力（追加貸与）
  * 発注送信処理
  */
-$app->post('/wearer_add_send', function ()use($app){
+$app->post('/wearer_add/send', function ()use($app){
   $params = json_decode(file_get_contents("php://input"), true);
 
   // アカウントセッション取得

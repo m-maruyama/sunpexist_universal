@@ -621,7 +621,7 @@ $app->post('/shipment_change', function ()use($app){
  * 入力項目：社員コード、着用者名、着用者名（かな）、コメント欄
  * ※前画面セッション情報
  */
-$app->post('/wearer_change_info', function ()use($app){
+$app->post('/wearer_change/info', function ()use($app){
     $params = json_decode(file_get_contents("php://input"), true);
 
     // アカウントセッション取得
@@ -942,7 +942,7 @@ $app->post('/wearer_change_info', function ()use($app){
  * 発注入力（職種変更または異動）
  * 入力項目：現在貸与中のアイテム、新たに追加するアイテム
  */
- $app->post('/wearer_change_list', function ()use($app){
+ $app->post('/wearer_change/list', function ()use($app){
    $params = json_decode(file_get_contents("php://input"), true);
 
    // アカウントセッション取得
@@ -2065,7 +2065,7 @@ $app->post('/wearer_change_info', function ()use($app){
  * 発注入力（職種変更または異動）
  * 発注取消処理
  */
-$app->post('/wearer_change_delete', function ()use($app){
+$app->post('/wearer_change/delete', function ()use($app){
   $params = json_decode(file_get_contents("php://input"), true);
 
   // アカウントセッション取得
@@ -2259,7 +2259,7 @@ $app->post('/wearer_change_delete', function ()use($app){
  * 発注入力（職種変更または異動）
  * 入力完了処理
  */
-$app->post('/wearer_change_complete', function ()use($app){
+$app->post('/wearer_change/complete', function ()use($app){
    $params = json_decode(file_get_contents("php://input"), true);
 
    // アカウントセッション取得
@@ -3558,7 +3558,7 @@ $app->post('/wearer_change_complete', function ()use($app){
  * 発注入力（職種変更または異動）
  * 発注送信処理
  */
-$app->post('/wearer_change_send', function ()use($app){
+$app->post('/wearer_change/send', function ()use($app){
   $params = json_decode(file_get_contents("php://input"), true);
 
   // アカウントセッション取得

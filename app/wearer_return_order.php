@@ -12,7 +12,7 @@ use Phalcon\Paginator\Adapter\QueryBuilder as PaginatorQueryBuilder;
  * 入力項目：初期値情報、前画面セッション取得
  *
  */
-$app->post('/wearer_return_info', function ()use($app){
+$app->post('/wearer_return/info', function ()use($app){
   $params = json_decode(file_get_contents("php://input"), true);
 
   // アカウントセッション取得
@@ -496,7 +496,7 @@ $app->post('/wearer_return_info', function ()use($app){
  * 発注入力（不要品返却）
  * 入力項目：発注商品一覧
  */
- $app->post('/wearer_return_list', function ()use($app){
+ $app->post('/wearer_return/list', function ()use($app){
    $params = json_decode(file_get_contents("php://input"), true);
 
    // アカウントセッション取得
@@ -1008,7 +1008,7 @@ $app->post('/wearer_return_info', function ()use($app){
  * 発注入力（不要品返却）
  * 発注取消処理
  */
-$app->post('/wearer_return_delete', function ()use($app){
+$app->post('/wearer_return/delete', function ()use($app){
   $params = json_decode(file_get_contents("php://input"), true);
 
   // アカウントセッション取得
@@ -1152,7 +1152,7 @@ $app->post('/wearer_return_delete', function ()use($app){
  * 発注入力（不要品返却）
  * 入力完了処理
  */
-$app->post('/wearer_return_complete', function ()use($app){
+$app->post('/wearer_return/complete', function ()use($app){
    $params = json_decode(file_get_contents("php://input"), true);
 
    // アカウントセッション取得
@@ -2336,6 +2336,11 @@ $app->post('/wearer_return_complete', function ()use($app){
       return;
     }
 
+    // 返却伝票用パラメータ
+    $json_list['param'] = '';
+    $json_list['param'] .= $wearer_data_input['agreement_no'].':';
+    $json_list['param'] .= $shin_order_req_no;
+
     echo json_encode($json_list);
   }
 });
@@ -2344,7 +2349,7 @@ $app->post('/wearer_return_complete', function ()use($app){
  * 発注入力（不要品返却）
  * 発注送信処理
  */
-$app->post('/wearer_return_send', function ()use($app){
+$app->post('/wearer_return/send', function ()use($app){
   $params = json_decode(file_get_contents("php://input"), true);
 
   // アカウントセッション取得

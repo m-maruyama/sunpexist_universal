@@ -639,6 +639,9 @@ $app->post('/wearer_other/search', function ()use($app){
         //「返却伝票ダウンロード」ボタン生成
         if ($list['btnPattern'] == "B" || $list['btnPattern'] == "C") {
           $list['return_reciept_button'] = true;
+          $list['return_reciept_param'] = "";
+          $list['return_reciept_param'] .= $list['rntl_cont_no'].":";
+          $list['return_reciept_param'] .= $list['order_req_no'];
         } else {
           $list['return_reciept_button'] = false;
         }
