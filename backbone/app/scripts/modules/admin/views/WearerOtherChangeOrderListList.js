@@ -99,9 +99,13 @@ define([
 				'change @ui.order_num': function(e){
 					var order_num = 0;
 					order_num = parseInt(e.target.value);
+					if(isNaN(order_num)){
+						order_num = 0;
+					}
 					var order_id = e.target.id;
 					var return_num = order_id.replace( /order_num/g , "return_num" ) ;
 					$('#'+return_num).val(order_num);
+					$('#'+e.target.id).val(order_num);
 
 					var list_cnt = $('#list_cnt').val();
 					var sum_order_num = 0;

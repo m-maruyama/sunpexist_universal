@@ -267,23 +267,105 @@ define([
 					});
 				},
 				// 「入力完了」ボタン
-				'click @ui.complete': function(){
+				'click @ui.complete': function(e){
+					e.preventDefault();
 					var that = this;
 
-					var modelForUpdate = this.model;
-					modelForUpdate.url = App.api.CM0130;
+					//--画面入力項目--//
+					// 着用者情報
+					var agreement_no = $("select[name='agreement_no']").val();
+					var reason_kbn = $("select[name='reason_kbn']").val();
+					var emply_cd_flg = $("#emply_cd_flg").prop("checked");
+					var member_no = $("input[name='member_no']").val();
+					var member_name = $("input[name='member_name']").val();
+					var member_name_kana = $("input[name='member_name_kana']").val();
+					var sex_kbn = $("select[name='sex_kbn']").val();
+					var section = $("select[name='section']").val();
+					var job_type = $("select[name='job_type']").val();
+					var comment = $("#comment").val();
+					var return_date = $("#return_date").val();
+					var order_count = $("#order_count").val();
+					var data = {
+						'agreement_no': agreement_no,
+						'reason_kbn': reason_kbn,
+						'emply_cd_flg': emply_cd_flg,
+						'member_no': member_no,
+						'member_name': member_name,
+						'member_name_kana': member_name_kana,
+						'sex_kbn': sex_kbn,
+						'section': section,
+						'job_type': job_type,
+						'return_date': return_date,
+						'order_count': order_count,
+						'comment': comment
+					}
+
+
+					// 発注商品一覧
+					var list_cnt = $("input[name='list_cnt']").val();
+					var item = new Object();
+					for (var i=0; i<list_cnt; i++) {
+						item[i] = new Object();
+						item[i]["rntl_sect_cd"] = $("input[name='rntl_sect_cd"+i+"']").val();
+						item[i]["job_type_cd"] = $("input[name='job_type_cd"+i+"']").val();
+						item[i]["job_type_item_cd"] = $("input[name='job_type_item_cd"+i+"']").val();
+						item[i]["item_cd"] = $("input[name='item_cd"+i+"']").val();
+						item[i]["color_cd"] = $("input[name='color_cd"+i+"']").val();
+						item[i]["size_cd"] = $("input[name='size_cd"+i+"']").val();
+						item[i]["possible_num"] = $("input[name='possible_num"+i+"']").val();
+						item[i]["individual_flg"] = $("input[name='individual_flg"+i+"']").val();
+						item[i]["individual_data"] = new Object();
+						if (item[i]["individual_flg"]) {
+							//個体管理番号表示フラグがONの場合、対象、個体管理番号単位
+							item[i]["individual_cnt"] = $("input[name='individual_cnt"+i+"']").val();
+							var Name = 'target_flg'+i;
+							var individual_ctrl_no = $("input[name='individual_val"+i+"']").val();
+							var individual_ctrl_no_list = individual_ctrl_no.split(",");
+							var chk_num = 0;
+							for (var j=0; j<item[i]["individual_cnt"]; j++) {
+								var chk_val = document.getElementsByName(Name)[j].value;
+								item[i]["individual_data"][j] = new Object();
+								var checked = document.getElementsByName(Name)[j].checked;
+								if(checked == true){
+									item[i]["individual_data"][j]["target_flg"] = '1';
+									//個体管理番号
+									item[i]["individual_data"][j]["individual_ctrl_no"] = individual_ctrl_no_list[j];
+									chk_num = chk_num + 1;
+								} else {
+									item[i]["individual_data"][j]["target_flg"] = '0';
+									//個体管理番号
+									item[i]["individual_data"][j]["individual_ctrl_no"] = individual_ctrl_no_list[j];
+								}
+								// 対象=trueの数（商品単位返却数）
+								item[i]["individual_data"][j]["return_num"] = chk_num;
+							}
+						} else {
+							//個体管理番号表示フラグがOFFの場合、商品単位の返却数
+							item[i]["return_num"] = $("input[name='return_num"+i+"']").val();
+						}
+					}
 					var cond = {
-						"scr": 'その他交換-入力完了-更新可否チェック',
-						"log_type": '1',
+						"scr": 'その他交換-入力完了',
+						"cond": data,
+						"snd_kbn": '0',
+						"item": item
 					};
+					var modelForUpdate = this.model;
+					modelForUpdate.url = App.api.WOC0050;
 					modelForUpdate.fetchMx({
-						data:cond,
-						success:function(res){
-							var type = "cm0130_res";
+						data: cond,
+						success: function (res) {
 							var res_val = res.attributes;
-							var transition = "WR0022_req";
-							var data = "";
-							that.onShow(res_val, type, transition, data);
+							if(res_val["error_code"]=='1') {
+								that.triggerMethod('error_msg', res_val["error_msg"]);
+							}else if(res_val["error_code"]=='2') {
+								window.sessionStorage.setItem('error_msg', res_val["error_msg"]);
+								window.sessionStorage.setItem('referrer', 'wearer_end_order_err');
+								location.href="wearer_order_complete.html";
+							}else{
+								window.sessionStorage.setItem('referrer', 'wearer_end_order');
+								location.href="wearer_order_complete.html";
+							}
 						}
 					});
 				},
@@ -305,6 +387,110 @@ define([
 							var transition = "WR0023_req";
 							var data = "";
 							that.onShow(res_val, type, transition, data);
+						}
+					});
+					var that = this;
+					// 入力項目チェック処理
+					var modelForUpdate = this.model;
+					modelForUpdate.url = App.api.WSC0013;
+					var cond = {
+						"scr": 'その他交換NGパターンチェック'
+					};
+					modelForUpdate.fetchMx({
+						data: cond,
+						success: function (res) {
+							var res_val = res.attributes;
+							if (res_val["error_code"] == "1") {
+								that.triggerMethod('error_msg', res_val["error_msg"]);
+							}else{
+								if(confirm('入力を完了します。よろしいですか？')){
+
+									var modelForUpdate = that.model;
+									modelForUpdate.url = App.api.WN0017;
+									if(that.ui.shipment_to.val()){
+										var m_shipment_to_array = that.ui.shipment_to.val().split(',');
+									}
+									that.ui.section = $('#section');
+									var section = $("select[name='section']").val();
+									var job_types = $('#job_type').val().split(':');
+									that.ui.comment = $('#comment');
+									var data = {
+										'reason_kbn': $("select[name='reason_kbn']").val(),
+										'rntl_sect_cd': section,
+										'job_type': job_types[0],
+										'return_date': that.ui.return_date.val(),
+										'order_count': that.ui.order_count.val(),
+										'comment': that.ui.comment.val()
+									};
+									// 追加されるアイテム
+									var now_list_cnt = $("input[name='now_list_cnt']").val();
+									var now_item = new Object();
+									for (var i=0; i<now_list_cnt; i++) {
+										now_item[i] = new Object();
+										now_item[i]["now_rntl_sect_cd"] = $("input[name='now_rntl_sect_cd"+i+"']").val();
+										now_item[i]["now_job_type_cd"] = $("input[name='now_job_type_cd"+i+"']").val();
+										now_item[i]["now_job_type_item_cd"] = $("input[name='now_job_type_item_cd"+i+"']").val();
+										now_item[i]["now_item_cd"] = $("input[name='now_item_cd"+i+"']").val();
+										now_item[i]["now_color_cd"] = $("input[name='now_color_cd"+i+"']").val();
+										now_item[i]["now_choice_type"] = $("input[name='now_choice_type"+i+"']").val();
+										now_item[i]["now_std_input_qty"] = $("input[name='now_std_input_qty"+i+"']").val();
+										now_item[i]["now_size_cd"] = $("input[name='now_size_cd"+i+"']").val();
+										now_item[i]["individual_cnt"] = $("input[name='individual_cnt"+i+"']").val();
+										now_item[i]["possible_num"] = $("input[name='possible_num"+i+"']").val();
+										now_item[i]["individual_flg"] = $("input[name='individual_flg']").val();
+										// 商品毎の「対象」チェック状態、「個体管理番号」を取得
+										now_item[i]["individual_data"] = new Object();
+										if (now_item[i]["individual_flg"]) {
+											//個体管理番号表示フラグがONの場合、対象、個体管理番号単位
+											now_item[i]["individual_cnt"] = $("input[name='individual_cnt"+i+"']").val();
+											var Name = 'now_target_flg'+i;
+											var chk_num = 0;
+											for (var j=0; j<now_item[i]["individual_cnt"]; j++) {
+												var chk_val = document.getElementsByName(Name)[j].value;
+												now_item[i]["individual_data"][j] = new Object();
+												var checked = document.getElementsByName(Name)[j].checked;
+												if(checked == true){
+													now_item[i]["individual_data"][j]["now_target_flg"] = '1';
+													now_item[i]["individual_data"][j]["individual_ctrl_no"] = chk_val;
+													chk_num = chk_num + 1;
+												} else {
+													now_item[i]["individual_data"][j]["now_target_flg"] = '0';
+													now_item[i]["individual_data"][j]["individual_ctrl_no"] = chk_val;
+												}
+												// 対象=trueの数（商品単位返却数）
+												now_item[i]["individual_data"][j]["return_num"] = chk_num;
+											}
+										} else {
+											//個体管理番号表示フラグがOFFの場合、商品単位の返却数
+											now_item[i]["return_num"] = $("input[name='return_num"+i+"']").val();
+										}
+										now_item[i]["now_return_num"] = $("input[name='now_return_num"+i+"']").val();
+										now_item[i]["now_return_num_disable"] = $("input[name='now_return_num_disable"+i+"']").val();
+									}
+									var cond = {
+										"scr": '貸与終了発注送信',
+										"cond": data,
+										"snd_kbn": '1',
+										"now_item": now_item
+									};
+									modelForUpdate.fetchMx({
+										data: cond,
+										success: function (res) {
+											var res_val = res.attributes;
+											if(res_val["error_code"]=='1') {
+												that.triggerMethod('error_msg', res_val["error_msg"]);
+											}else if(res_val["error_code"]=='2') {
+												window.sessionStorage.setItem('error_msg', res_val["error_msg"]);
+												window.sessionStorage.setItem('referrer', 'wearer_end_order_err');
+												location.href="wearer_order_complete.html";
+											}else{
+												window.sessionStorage.setItem('referrer', 'wearer_end_order');
+												location.href="wearer_order_complete.html";
+											}
+										}
+									});
+								};
+							}
 						}
 					});
 				}
