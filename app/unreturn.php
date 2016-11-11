@@ -111,6 +111,7 @@ $app->post('/unreturn/search', function ()use($app){
 	$order_kbn = array();
 	if($cond['order_kbn0']){
 		array_push($order_kbn,'3');
+		array_push($order_kbn,'4');
 	}
 	if($cond['order_kbn1']){
 		array_push($order_kbn,'5');
@@ -176,7 +177,7 @@ $app->post('/unreturn/search', function ()use($app){
 	}
 	if(!empty($reason_kbn)){
 		$reason_kbn_str = implode("','",$reason_kbn);
-		$reason_kbn_query = "t_order.order_reason_kbn IN ('".$reason_kbn_str."')";
+		$reason_kbn_query = "t_returned_plan_info.order_reason_kbn IN ('".$reason_kbn_str."')";
 //		array_push($query_list,"order_reason_kbn IN ('".$reason_kbn_str."')");
 		array_push($status_kbn_list,$reason_kbn_query);
 	}
