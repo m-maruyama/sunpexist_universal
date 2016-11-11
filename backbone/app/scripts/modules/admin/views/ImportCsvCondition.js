@@ -119,6 +119,7 @@ define([
               } else {
                 $('#fake_input_file').val('');
                 alert('一括データ取込みの処理が正常に完了しました。');
+                location.href = "importCsv.html";
               }
               $.unblockUI();
             }catch(e){
