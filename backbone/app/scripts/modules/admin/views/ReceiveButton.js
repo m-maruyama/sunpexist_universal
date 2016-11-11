@@ -64,7 +64,6 @@ define([
 							        receive_chk_arr.push(document.receive_list.elements[receive_chk_box][i].value + ',2');
 							    }
 							}
-
 							var cond = {
 								"scr": '受領更新',
 								"page":that.options.pagerModel.getPageRequest(),
@@ -74,13 +73,14 @@ define([
 							modelForUpdate.url = App.api.RE0020;
 							modelForUpdate.fetchMx({
 								data: cond,
-								success:function(model){
-									var errors = model.get('errors');
-									if(errors) {
-										alert(errors);
-									}else{
-										var page = model.get('page');
+								success:function(res){
+									var res_val = res.attributes;
+									//console.log(res_val);
+									if(res_val["error_code"] == "0") {
+										var page = res_val["page"];
 										that.triggerMethod('research',that.model.get('sort_key'),that.model.get('order'),page['page_number']);
+									}else{
+										alert("受領更新に失敗しました。");
 									}
 								}
 							});

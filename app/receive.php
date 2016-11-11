@@ -476,23 +476,7 @@ $app->post('/receive/search', function ()use($app){
 			foreach ($gencode as $gencode_map) {
 				$list['order_sts_name'] = $gencode_map->gen_name;
 			}
-/*
-			//---理由区分名称---//
-			$query_list = array();
-			// 汎用コードマスタ.分類コード
-			array_push($query_list, "cls_cd = '002'");
-			// 汎用コードマスタ. レンタル契約No
-			array_push($query_list, "gen_cd = '".$list['order_reason_kbn']."'");
-			//sql文字列を' AND 'で結合
-			$query = implode(' AND ', $query_list);
-			$gencode = MGencode::query()
-				->where($query)
-				->columns('*')
-				->execute();
-			foreach ($gencode as $gencode_map) {
-				$list['order_reason_name'] = $gencode_map->gen_name;
-			}
-*/
+
 			//---受領ステータス名称---//
 			$query_list = array();
 			// 汎用コードマスタ.分類コード
@@ -507,6 +491,17 @@ $app->post('/receive/search', function ()use($app){
 				->execute();
 			foreach ($gencode as $gencode_map) {
 				$list['receipt_status_name'] = $gencode_map->gen_name;
+			}
+
+			//--受領チェック表示--//
+			if ($list['receipt_date'] == "-") {
+				$list['chk_disp'] = true;
+			} else {
+				if (strtotime($list['receipt_date']) >= strtotime(date("Y/m/d", time()))) {
+					$list['chk_disp'] = true;
+				} else {
+					$list['chk_disp'] = false;
+				}
 			}
 
 			array_push($all_list,$list);
@@ -529,29 +524,6 @@ $app->post('/receive/search', function ()use($app){
 	} else {
 		$individual_flg = false;
 	}
-/*
-	$query_list = array();
-	array_push($query_list, "corporate_id = '".$auth['corporate_id']."'");
-	array_push($query_list, "rntl_cont_no = '".$cond['agreement_no']."'");
-	$query = implode(' AND ', $query_list);
-	$m_contract = MContract::query()
-		->where($query)
-		->columns('*')
-		->execute();
-	$m_contract_obj = (array)$m_contract;
-	$cnt = $m_contract_obj["\0*\0_count"];
-	$individual_flg = "";
-	if (!empty($cnt)) {
-		foreach ($m_contract as $m_contract_map) {
-			$individual_flg = $m_contract_map->individual_flg;
-		}
-		if ($individual_flg == 1) {
-			$individual_flg = true;
-		} else {
-			$individual_flg = false;
-		}
-	}
-*/
 
 	$page_list['records_per_page'] = $page['records_per_page'];
 	$page_list['page_number'] = $page['page_number'];
@@ -568,28 +540,20 @@ $app->post('/receive/search', function ()use($app){
  * 受領ステータス更新
  */
 $app->post('/receive/update', function ()use($app) {
-	//---処理時間帯チェック---//
-	$start_time = '18:00:00';
-	$end_time = '6:00:00';
-	$now = date('H:i:s');
-	$auth = $app->session->get("auth");
-	if($auth['user_type']!=3){//スーパーユーザーは操作可能
-		if(strtotime($now) > strtotime($start_time) || strtotime($now) < strtotime($end_time)){
-				$json_list['errors'] = '18時〜6時までは受領更新不可となります。';
-				echo json_encode($json_list);
-				return true;
-		}
-	}
-
-	//---受領・未受領更新処理---//
 	$data = json_decode(file_get_contents("php://input"), true);
+
 	$cond = $data['cond'];
+	//ChromePhp::LOG($cond);
 	$page = $data['page'];
+	//ChromePhp::LOG($page);
+
+	$json_list = array();
+
+	$json_list["error_code"] = "0";
+	$json_list["error_msg"] = array();
 
 	$on_list = array();
 	$off_list = array();
-	$json_list = array();
-
 	if (!empty($cond)) {
 		foreach ($cond as $key) {
 			// チェック/未チェック確認、受領ステータス条件リスト生成
@@ -604,88 +568,78 @@ $app->post('/receive/update', function ()use($app) {
 			}
 		}
 	}
+	//ChromePhp::LOG($on_list);
+	//ChromePhp::LOG($off_list);
 
+	$t_delivery_goods_state_details = new TDeliveryGoodsStateDetails();
+	$results = new Resultset(NULL, $t_delivery_goods_state_details, $t_delivery_goods_state_details->getReadConnection()->query('begin'));
 	try {
-		// トランザクション開始
-		$transaction = $app->transactionManager->get();
-
 		// 受領ステータス「未受領」更新
 		if(!empty($off_list)){
 			foreach ($off_list as $off_map) {
-				// 検索条件
-				$query_list = array();
-				$arr = explode(' ', $off_map);
+				$src_query_list = array();
+				$arr = "";
+				$arr = explode(':', $off_map);
 				$ship_no = $arr[0];
 				$ship_no_qy = "ship_no = '".$ship_no."'";
-				array_push($query_list, $ship_no_qy);
+				$src_query_list[] = $ship_no_qy;
 				$ship_line_no = $arr[1];
-				$ship_line_no_qy = "ship_line_no = '".$ship_line_no."'";
-				array_push($query_list, $ship_line_no_qy);
-				$query = implode(' AND ', $query_list);
+				$ship_line_no_qy = "ship_line_no = ".$ship_line_no;
+				$src_query_list[] = $ship_line_no_qy;
+				$src_query = implode(' AND ', $src_query_list);
 
-				// データ参照
-				$tDeliveryGoodsStateDetails = TDeliveryGoodsStateDetails::find(
-					array(
-						'conditions' => $query
-				));
+				$up_query_list = array();
+				$up_query_list[] = "receipt_status = '1'";
+				$up_query_list[] = "receipt_date = NULL";
+				$up_query = implode(',', $up_query_list);
 
-				// データ更新
-				foreach ($tDeliveryGoodsStateDetails as $tDeliveryGoodsStateDetail) {
-					$tDeliveryGoodsStateDetail->receipt_status = '1';
-					$now = date('Y/m/d H:i:s.sss');
-					$tDeliveryGoodsStateDetail->receipt_date = $now;
-					if($tDeliveryGoodsStateDetail->update() == false) {
-							$error_list['update'] = '受領ステータスの更新に失敗しました。';
-							$json_list['errors'] = $error_list;
-							echo json_encode($json_list);
-							return true;
-					}
-				}
+				$arg_str = "";
+				$arg_str .= "UPDATE t_delivery_goods_state_details SET ";
+				$arg_str .= $up_query;
+				$arg_str .= " WHERE ";
+				$arg_str .= $src_query;
+				//ChromePhp::LOG($arg_str);
+				$results = new Resultset(NULL, $t_delivery_goods_state_details, $t_delivery_goods_state_details->getReadConnection()->query($arg_str));
 			}
 		}
 		// 受領ステータス「受領済み」更新
 		if($on_list){
 			foreach ($on_list as $on_map) {
-				// 検索条件
-				$query_list = array();
-				$arr = explode(' ', $on_map);
+				$src_query_list = array();
+				$arr = "";
+				$arr = explode(':', $on_map);
 				$ship_no = $arr[0];
 				$ship_no_qy = "ship_no = '".$ship_no."'";
-				array_push($query_list, $ship_no_qy);
+				$src_query_list[] = $ship_no_qy;
 				$ship_line_no = $arr[1];
-				$ship_line_no_qy = "ship_line_no = '".$ship_line_no."'";
-				array_push($query_list, $ship_line_no_qy);
-				$query = implode(' AND ', $query_list);
+				$ship_line_no_qy = "ship_line_no = ".$ship_line_no;
+				$src_query_list[] = $ship_line_no_qy;
+				$src_query = implode(' AND ', $src_query_list);
 
-				// データ参照
-				$tDeliveryGoodsStateDetails = TDeliveryGoodsStateDetails::find(
-					array(
-						'conditions' => $query
-				));
+				$up_query_list = array();
+				$up_query_list[] = "receipt_status = '2'";
+				$up_query_list[] = "receipt_date = '".date('Y-m-d H:i:s.sss', time())."'";
+				$up_query = implode(',', $up_query_list);
 
-				// データ更新
-				foreach ($tDeliveryGoodsStateDetails as $tDeliveryGoodsStateDetail) {
-					$tDeliveryGoodsStateDetail->receipt_status = '2';
-					$now = date('Y/m/d H:i:s.sss');
-					$tDeliveryGoodsStateDetail->receipt_date = $now;
-					if($tDeliveryGoodsStateDetail->update() == false) {
-							$error_list['update'] = '受領ステータスの更新に失敗しました。';
-							$json_list['errors'] = $error_list;
-							echo json_encode($json_list);
-							return true;
-					}
-				}
+				$arg_str = "";
+				$arg_str .= "UPDATE t_delivery_goods_state_details SET ";
+				$arg_str .= $up_query;
+				$arg_str .= " WHERE ";
+				$arg_str .= $src_query;
+				//ChromePhp::LOG($arg_str);
+				$results = new Resultset(NULL, $t_delivery_goods_state_details, $t_delivery_goods_state_details->getReadConnection()->query($arg_str));
 			}
 		}
 
-		$transaction->commit();
+		$results = new Resultset(NULL, $t_delivery_goods_state_details, $t_delivery_goods_state_details->getReadConnection()->query('commit'));
 	} catch (Exception $e) {
-		$transaction->rollback();
+		$results = new Resultset(NULL, $t_delivery_goods_state_details, $t_delivery_goods_state_details->getReadConnection()->query('rollback'));
 
-		$error_list['update'] = '受領ステータスの更新に失敗しました。';
-		$json_list['errors'] = $error_list;
+		//ChromePhp::LOG($e);
+		$json_list["error_code"] = "1";
+		$json_list["error_msg"] = '受領ステータスの更新に失敗しました。';
 		echo json_encode($json_list);
-		return true;
+		return;
 	}
 
 	$page_list['page_number'] = $page['page_number'];
