@@ -196,6 +196,7 @@ define([
 			"PA0010": host + "/password",
 			"PR0010": host + "/print/search",
 			"PR0011": host + "/print/pdf",
+			"PR0012": host + "/print/pdf_tran",
 			"PI0010": host + "/purchase_input",
 			"PU0010": host + "/purchase_update",
 			"PH0010": host + "/purchase_history/search",

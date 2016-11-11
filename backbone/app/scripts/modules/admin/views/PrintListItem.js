@@ -22,7 +22,6 @@ define([
 				},
 				'click @ui.print_download': function(e){
 					e.preventDefault();
-					//console.log(e.target.id);
 					//var printData = [];
 					var pdf_vals = e.target.id;
 					var pdf_val = pdf_vals.split(':');
@@ -72,10 +71,6 @@ define([
 					});
 
 				}*/
-
-
-
-
 			},
 			templateHelpers: {
 				//ステータス

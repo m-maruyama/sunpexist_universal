@@ -73,22 +73,46 @@ define([
 			},
 			events: {
 				// 「続けて入力する」ボタン
-				'click @ui.continueInput': function(){
+				'click @ui.continueInput': function () {
 					// 検索画面の条件項目を取得
 					var cond = window.sessionStorage.getItem("wearer_change_cond");
 					window.sessionStorage.setItem("back_wearer_change_cond", cond);
 					// 検索画面へ遷移
-					location.href="wearer_change.html";
+					location.href = "wearer_change.html";
 				},
 				// 「ホーム画面へ戻る」ボタン
-				'click @ui.backHome': function(){
+				'click @ui.backHome': function () {
 					// ホーム画面へ遷移
-					location.href="home.html";
+					location.href = "home.html";
 				},
 				// 「返却伝票ダウンロード」ボタン
-				'click @ui.returnSlipDownload': function(){
-					alert("てっちゃんへ、機能の実装よろしくお願いします。");
-				},
+				'click @ui.returnSlipDownload': function (e) {
+					e.preventDefault();
+					var pdf_vals = e.target.value;
+
+					var pdf_val = pdf_vals.split(':');
+					var printData = new Object();
+					printData["rntl_cont_no"] = pdf_val[0];
+					printData["order_req_no"] = pdf_val[1];
+
+					var msg = "データ量により、ダウンロード処理に時間がかかる可能性があります。ダウンロードを実施してよろしいですか？";
+					if (window.confirm(msg)) {
+						var cond = {
+							"scr": 'PDFダウンロード',
+							"cond": printData
+						};
+						var form = $('<form action="' + App.api.PR0012 + '" method="post"></form>');
+						var data = $('<input type="hidden" name="data" />');
+						data.val(JSON.stringify(cond));
+						form.append(data);
+						$('body').append(form);
+						form.submit();
+						data.remove();
+						form.remove();
+						form = null;
+						return;
+					}
+				}
 			}
 		});
 	});
