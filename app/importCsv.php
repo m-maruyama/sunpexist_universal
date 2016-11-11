@@ -52,7 +52,7 @@ $app->post('/import_csv', function () use ($app) {
       echo json_encode($json_list);
       return;
     }
-
+ChromePhp::log($chk_file);
     $new_list = array();
     $no_chk_list = array();
     $no_list = array();
@@ -708,14 +708,14 @@ $app->post('/import_csv', function () use ($app) {
     //ChromePhp::LOG("インポートログ登録クエリー");
     //ChromePhp::LOG($arg_str);
     $results = new Resultset(NULL, $t_import_job, $t_import_job->getReadConnection()->query($arg_str));
-
+    ChromePhp::log($results);
     // トランザクション-コミット
     $transaction = new Resultset(NULL, $t_import_job, $t_import_job->getReadConnection()->query("commit"));
   } catch (Exception $e) {
-    // トランザクション-ロールバック
+      ChromePhp::log($e);
+      // トランザクション-ロールバック
     $transaction = new Resultset(NULL, $t_import_job, $t_import_job->getReadConnection()->query("rollback"));
 
-    ChromePhp::log($e);
     $error_list[] = 'E001 取込処理中に予期せぬエラーが発生しました。';
     $json_list['errors'] = $error_list;
     $json_list["error_code"] = "1";
