@@ -576,7 +576,10 @@ $app->post('/import_csv', function () use ($app) {
       )
       {
         $values_list[] = "'".$app->session->get("chk_order_req_no_1")."'";
+        $order_line_no = $app->session->get("chk_order_line_no");
         $values_list[] = $order_line_no + 1;
+        $order_line_no = $order_line_no + 1;
+        $app->session->set("chk_order_line_no", $order_line_no);
       } else {
         $app->session->set("chk_cster_emply_cd_1", $line_new[0]);
         $app->session->set("chk_order_kbn", $line_new[7]);
@@ -588,9 +591,10 @@ $app->post('/import_csv', function () use ($app) {
         );
         $shin_order_req_no = "WB".str_pad($results[0]->nextval, 8, '0', STR_PAD_LEFT);
         $order_line_no = 1;
-        $app->session->set("chk_order_req_no_1", $shin_order_req_no);
         $values_list[] = "'".$shin_order_req_no."'";
         $values_list[] = $order_line_no;
+        $app->session->set("chk_order_req_no_1", $shin_order_req_no);
+        $app->session->set("chk_order_line_no", $order_line_no);
       }
       // 社員番号
       $values_list[] = "'".$line_new[0]."'";
