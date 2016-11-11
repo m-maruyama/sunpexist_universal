@@ -62,6 +62,7 @@ define([
 						if (res_val["error_code"] == "0") {
 							//「返却伝票ダウンロード」ボタン表示
 							$('.returnSlipDownload').css('display', '');
+							$('#return_slip_dl').val(res_val["param"]);
 						} else {
 							// 登録処理にエラーがある場合
 							$("#h").text('');

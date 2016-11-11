@@ -66,7 +66,6 @@ define([
 							// 正常完了の場合、「返却伝票印刷」ボタンを表示
 							$('.returnSlipDownload').css('display', '');
 							$('#return_slip_dl').val(res_val["param"]);
-
 						}
 					}
 				});
