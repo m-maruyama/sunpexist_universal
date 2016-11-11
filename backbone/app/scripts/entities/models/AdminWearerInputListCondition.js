@@ -13,6 +13,7 @@ define([
 				var result = {
 					agreement_no : null,
 					rntl_cont_no : null,
+					cster_emply_cd_chk : null,
 					cster_emply_cd : null,
 					werer_name : null,
 					werer_cd : null,
@@ -32,6 +33,9 @@ define([
 				}
 				if(this.get('agreement_no')) {
 					result.agreement_no = this.get('agreement_no');
+				}
+				if(this.get('cster_emply_cd_chk')) {
+					result.cster_emply_cd_chk = this.get('cster_emply_cd_chk');
 				}
 				if(this.get('cster_emply_cd')) {
 					result.cster_emply_cd = this.get('cster_emply_cd');

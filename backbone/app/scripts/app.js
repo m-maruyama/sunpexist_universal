@@ -196,6 +196,7 @@ define([
 			"PA0010": host + "/password",
 			"PR0010": host + "/print/search",
 			"PR0011": host + "/print/pdf",
+			"PR0012": host + "/print/pdf_tran",
 			"PI0010": host + "/purchase_input",
 			"PU0010": host + "/purchase_update",
 			"PH0010": host + "/purchase_history/search",
@@ -275,7 +276,7 @@ define([
 			"WOC0020": host + "/wearer_other_change_list",
 			"WOC0030": host + "/wearer_other_change_delete",
 			"WOC0040": host + "/wearer_other_change_complete",
-			"WOC0050": host + "/wearer_other_change_send",
+			"WOC0050": host + "/wearer_other_change_insert",
 
 			"CM9010": host + "/api/CM9010"
 		};

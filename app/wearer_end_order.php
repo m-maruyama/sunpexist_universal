@@ -1019,11 +1019,13 @@ $app->post('/wearer_end_order_insert', function () use ($app) {
         //着用者基本情報トラン
         $now = date('Y/m/d H:i:s.sss');
 
+        $now_date = date("Ymd");
         $m_wearer_std_tran = $m_wearer_std_tran[0];
         //--- クエリー実行・取得 ---//
         $m_wearer_std_tran->resfl_ymd  = $cond['resfl_ymd'];//異動日
         $m_wearer_std_tran->werer_sts_kbn  = '3';//着用者状況区分
         $m_wearer_std_tran->order_sts_kbn = '2'; //発注状況区分 汎用コード：終了
+        $m_wearer_std_tran->upd_kbn = '2'; //更新区分 汎用コード：終了
         $m_wearer_std_tran->upd_date  = $now;//更新日時
         $m_wearer_std_tran->upd_user_id = $auth['accnt_no'];//更新ユーザーID
         $m_wearer_std_tran->upd_pg_id = $auth['accnt_no'];//更新プログラムID

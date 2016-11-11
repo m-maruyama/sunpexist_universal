@@ -100,7 +100,10 @@ define([
                         $('#agreement_no').prop("disabled", true);
                         that.render();
                         if(res_list['rntl_cont_no']&&(referrer > -1)){
-                            that.ui.cster_emply_cd.val(res_list['wearer_info'][0]['cster_emply_cd']);
+                            if(res_list['wearer_info'][0]['cster_emply_cd']){
+                                that.ui.cster_emply_cd_chk.prop('checked',true);
+                                that.ui.cster_emply_cd.val(res_list['wearer_info'][0]['cster_emply_cd']);
+                            }
                             that.ui.werer_name.val(res_list['wearer_info'][0]['werer_name']);
                             that.ui.werer_name_kana.val(res_list['wearer_info'][0]['werer_name_kana']);
                             that.ui.appointment_ymd.val(res_list['appointment_ymd']);
@@ -152,7 +155,7 @@ define([
                         var res_val = res.attributes;
                         if(res_val["errors"]) {
                             var wearerInputView = new App.Admin.Views.WearerInput();
-                            that.triggerMethod('error_msg', res_val["error_msg"]);
+                            that.triggerMethod('error_msg', res_val["errors"]);
                         }else{
                             alert('着用者を登録しました。');
                             location.href = './wearer_input_complete.html';
