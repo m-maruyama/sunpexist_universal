@@ -715,7 +715,7 @@ $app->post('/import_csv', function () use ($app) {
     // トランザクション-ロールバック
     $transaction = new Resultset(NULL, $t_import_job, $t_import_job->getReadConnection()->query("rollback"));
 
-    //ChromePhp::log($e);
+    ChromePhp::log($e);
     $error_list[] = 'E001 取込処理中に予期せぬエラーが発生しました。';
     $json_list['errors'] = $error_list;
     $json_list["error_code"] = "1";
@@ -1572,7 +1572,7 @@ $app->post('/import_csv', function () use ($app) {
     // トランザクション-ロールバック
     $transaction = new Resultset(NULL, $t_import_job, $t_import_job->getReadConnection()->query("rollback"));
 
-    //ChromePhp::log($e);
+    ChromePhp::log($e);
     $error_list[] = 'E002 取込処理中に予期せぬエラーが発生しました。';
     $json_list['errors'] = $error_list;
     $json_list["error_code"] = "1";
