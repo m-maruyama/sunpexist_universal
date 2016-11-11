@@ -52,7 +52,6 @@ $app->post('/import_csv', function () use ($app) {
       echo json_encode($json_list);
       return;
     }
-ChromePhp::log($chk_file);
     $new_list = array();
     $no_chk_list = array();
     $no_list = array();
@@ -708,11 +707,9 @@ ChromePhp::log($chk_file);
     //ChromePhp::LOG("インポートログ登録クエリー");
     //ChromePhp::LOG($arg_str);
     $results = new Resultset(NULL, $t_import_job, $t_import_job->getReadConnection()->query($arg_str));
-    ChromePhp::log($results);
     // トランザクション-コミット
     $transaction = new Resultset(NULL, $t_import_job, $t_import_job->getReadConnection()->query("commit"));
   } catch (Exception $e) {
-      ChromePhp::log($e);
       // トランザクション-ロールバック
     $transaction = new Resultset(NULL, $t_import_job, $t_import_job->getReadConnection()->query("rollback"));
 
@@ -747,10 +744,9 @@ ChromePhp::log($chk_file);
   $arg_str .= " FROM ";
   $arg_str .= "(SELECT * FROM t_import_job WHERE order_kbn = '5') AS T1 ";
   $arg_str .= "WHERE NOT EXISTS ";
-  $arg_str .= "( SELECT * FROM (SELECT * FROM m_wearer_std WHERE corporate_id = '$corporate_id' AND rntl_cont_no = '$agreement_no'  AND rntl_sect_cd = T1.rntl_sect_cd AND job_type_cd = T1.rent_pattern_code) AS T2 ";
+  $arg_str .= "( SELECT * FROM (SELECT * FROM m_wearer_std WHERE corporate_id = '$corporate_id' AND rntl_cont_no = '$agreement_no' job_type_cd = T1.rent_pattern_code) AS T2 ";
   $arg_str .= "WHERE T1.cster_emply_cd = T2.cster_emply_cd AND T2.werer_sts_kbn = '1') ";
   $arg_str .= "ORDER BY line_no ";
-  //ChromePhp::log($arg_str);
   $results = new Resultset(null, $t_import_job, $t_import_job->getReadConnection()->query($arg_str));
   $result_obj = (array)$results;
   $results_cnt = $result_obj["\0*\0_count"];
