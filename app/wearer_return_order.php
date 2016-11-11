@@ -3110,14 +3110,14 @@ $app->post('/wearer_return/send', function ()use($app){
             array_push($calum_list, "size_two_cd");
             array_push($values_list, "' '");
             // 倉庫コード
-            //rray_push($calum_list, "whse_cd");
-            //array_push($values_list, "NULL");
+            //array_push($calum_list, "whse_cd");
+            //array_push($values_list, " ");
             // 在庫USRコード
             //array_push($calum_list, "stk_usr_cd");
-            //array_push($values_list, "NULL");
+            //array_push($values_list, " ");
             // 在庫USR支店コード
             //array_push($calum_list, "stk_usr_brnch_cd");
-            //array_push($values_list, "NULL");
+            //array_push($values_list, " ");
             // 出荷先、出荷先支店コード
             if (!empty($wearer_data_input['shipment'])) {
               $shipment = explode(':', $wearer_data_input['shipment']);
@@ -3524,7 +3524,7 @@ $app->post('/wearer_return/send', function ()use($app){
      // トランザクションロールバック
      $m_wearer_std_tran = new MWearerStdTran();
      $results = new Resultset(NULL, $m_wearer_std_tran, $m_wearer_std_tran->getReadConnection()->query('rollback'));
-     ChromePhp::LOG($e);
+     //ChromePhp::LOG($e);
 
      $json_list["error_code"] = "1";
      $error_msg = "発注送信処理において、データ更新エラーが発生しました。";
@@ -3533,6 +3533,11 @@ $app->post('/wearer_return/send', function ()use($app){
      echo json_encode($json_list);
      return;
    }
+
+   // 返却伝票用パラメータ
+   $json_list['param'] = '';
+   $json_list['param'] .= $wearer_data_input['agreement_no'].':';
+   $json_list['param'] .= $shin_order_req_no;
 
    echo json_encode($json_list);
  }
