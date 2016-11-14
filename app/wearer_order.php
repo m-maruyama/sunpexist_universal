@@ -856,6 +856,14 @@ $app->post('/wearer_order_insert', function () use ($app) {
         $m_wearer_std_tran->m_wearer_std_comb_hkey = $wearer_odr_post['m_wearer_std_comb_hkey'];
         $m_wearer_std_tran->corporate_id = $auth['corporate_id']; //企業ID
         $m_wearer_std_tran->rntl_sect_cd = $cond['rntl_sect_cd']; //レンタル部門コード
+        $m_wearer_std_tran->cster_emply_cd = $wearer_odr_post['cster_emply_cd'];//客先社員コード
+        $m_wearer_std_tran->werer_name = $wearer_odr_post['werer_name'];//着用者名（漢字）
+        $m_wearer_std_tran->werer_name_kana = $wearer_odr_post['werer_name_kana']; //着用者名（カナ）
+        $m_wearer_std_tran->sex_kbn = $wearer_odr_post['sex_kbn'];//性別区分
+        $m_wearer_std_tran->appointment_ymd = date("Ymd", strtotime($wearer_odr_post['appointment_ymd']));//発令日
+        $m_wearer_std_tran->resfl_ymd = date("Ymd", strtotime($wearer_odr_post['resfl_ymd']));//着用開始日
+        $m_wearer_std_tran->ship_to_cd = $wearer_odr_post['ship_to_cd']; //出荷先コード
+        $m_wearer_std_tran->ship_to_brnch_cd = $wearer_odr_post['ship_to_brnch_cd']; //出荷先支店コード
         $create_flg = true;
     }else{
         //新規登録の場合
@@ -881,13 +889,20 @@ $app->post('/wearer_order_insert', function () use ($app) {
         $m_wearer_std_tran->order_sts_kbn = '1'; //発注状況区分 汎用コード：貸与
         $m_wearer_std_tran->upd_kbn = '1';//更新区分　汎用コード：web発注システム（新規登録）
         $m_wearer_std_tran->web_upd_date = $now;//WEB更新日付
-        $m_wearer_std_tran->snd_kbn = '0';//送信区分
         $m_wearer_std_tran->snd_date  = $now;//送信日時
         $m_wearer_std_tran->del_kbn ='0';//削除区分
         $m_wearer_std_tran->rgst_date  = $now;//登録日時
         $m_wearer_std_tran->rgst_user_id = $auth['accnt_no'];//登録ユーザーID
         $m_wearer_std_tran->order_req_no  = $shin_order_req_no;//発注No
         $create_flg = false;
+    }
+    // 送信区分
+    if($params['snd_kbn']=='0'){
+        //未送信
+        $m_wearer_std_tran->snd_kbn = '0';//送信区分
+    }else{
+        //送信
+        $m_wearer_std_tran->snd_kbn = '1';//送信区分
     }
     $m_wearer_std_tran->rntl_cont_no = $wearer_odr_post['rntl_cont_no']; //レンタル契約No.
     $m_wearer_std_tran->rntl_sect_cd = $cond['rntl_sect_cd']; //レンタル部門コード

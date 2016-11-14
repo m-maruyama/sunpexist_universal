@@ -229,20 +229,20 @@ $app->post('/wearer_search/search', function ()use($app){
                 $list['wearer_input_red'] = "[済]";
                 $list['disabled'] = "disabled";
             }
-//
-//            //「返却伝票ダウンロード」ボタン生成
-//            if (
-//                ($result->as_order_sts_kbn == '1'
-//                    && ($result->as_order_reason_kbn == '4' || $result->as_order_reason_kbn == '8' || $result->as_order_reason_kbn == '9' || $result->as_order_reason_kbn == '11')
-//                    && $result->as_snd_kbn == '0') ||
-//                ($result->as_order_sts_kbn == '2'
-//                    && ($result->as_order_reason_kbn == '4' || $result->as_order_reason_kbn == '8' || $result->as_order_reason_kbn == '9' || $result->as_order_reason_kbn == '11')
-//                    && $result->as_snd_kbn == '1'))
-//            {
-//                //「貸与開始」ボタン生成のパターンBかCの場合に表示
-//                $list['return_reciept_button'] = "返却伝票ダウンロード";
-//            }
-//
+
+            //「返却伝票ダウンロード」ボタン生成
+            if (
+                ($result->as_order_sts_kbn == '1'
+                    && ($result->as_order_reason_kbn == '4' || $result->as_order_reason_kbn == '8' || $result->as_order_reason_kbn == '9' || $result->as_order_reason_kbn == '11')
+                    && $result->as_snd_kbn == '0') ||
+                ($result->as_order_sts_kbn == '2'
+                    && ($result->as_order_reason_kbn == '4' || $result->as_order_reason_kbn == '8' || $result->as_order_reason_kbn == '9' || $result->as_order_reason_kbn == '11')
+                    && $result->as_snd_kbn == '1'))
+            {
+                //「貸与開始」ボタン生成のパターンBかCの場合に表示
+                $list['return_reciept_button'] = "返却伝票ダウンロード";
+            }
+
 
             // 発注入力へのパラメータ設定
             $list['param'] = '';

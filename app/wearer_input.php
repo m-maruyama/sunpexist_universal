@@ -85,8 +85,12 @@ $app->post('/agreement_no_input', function () use ($app) {
                 $json_list['job_type_cd'] = $wearer_odr_post['job_type_cd'];
                 $json_list['ship_to_cd'] = $wearer_odr_post['ship_to_cd'];
                 $json_list['ship_to_brnch_cd'] = $wearer_odr_post['ship_to_brnch_cd'];
-                $json_list['appointment_ymd'] = date('Y/m/d', strtotime($wearer_odr_post['appointment_ymd']));
-                $json_list['resfl_ymd'] = date('Y/m/d', strtotime($wearer_odr_post['resfl_ymd']));
+                if($wearer_odr_post['appointment_ymd']){
+                    $json_list['appointment_ymd'] = date('Y/m/d', strtotime($wearer_odr_post['appointment_ymd']));
+                }
+                if($wearer_odr_post['resfl_ymd']){
+                    $json_list['resfl_ymd'] = date('Y/m/d', strtotime($wearer_odr_post['resfl_ymd']));
+                }
             }
         }else{
             foreach ($results as $result) {
@@ -208,8 +212,12 @@ $app->post('/wearer_input', function () use ($app) {
             $json_list['job_type_cd'] = $wearer_odr_post['job_type_cd'];
             $json_list['ship_to_cd'] = $wearer_odr_post['ship_to_cd'];
             $json_list['ship_to_brnch_cd'] = $wearer_odr_post['ship_to_brnch_cd'];
-            $json_list['appointment_ymd'] = date('Y/m/d', strtotime($wearer_odr_post['appointment_ymd']));
-            $json_list['resfl_ymd'] = date('Y/m/d', strtotime($wearer_odr_post['resfl_ymd']));
+            if($wearer_odr_post['appointment_ymd']){
+                $json_list['appointment_ymd'] = date('Y/m/d', strtotime($wearer_odr_post['appointment_ymd']));
+            }
+            if($wearer_odr_post['resfl_ymd']){
+                $json_list['resfl_ymd'] = date('Y/m/d', strtotime($wearer_odr_post['resfl_ymd']));
+            }
         }
     }else{
         foreach ($results as $result) {
@@ -219,7 +227,6 @@ $app->post('/wearer_input', function () use ($app) {
         }
         $app->session->remove("wearer_odr_post");
     }
-
     $m_section_list = $all_list;
     //--拠点ここまで
 
@@ -306,7 +313,10 @@ $app->post('/wearer_input', function () use ($app) {
         $json_list['sex_kbn'] = $wearer_odr_post['sex_kbn'];
         $json_list['rntl_sect_cd'] = $wearer_odr_post['rntl_sect_cd'];
         $json_list['job_type_cd'] = $wearer_odr_post['job_type_cd'];
-        $json_list['appointment_ymd'] = date('Y/m/d', strtotime($wearer_odr_post['appointment_ymd']));
+        if($wearer_odr_post['appointment_ymd']){
+            ChromePhp::LOG($wearer_odr_post['appointment_ymd']);
+            $json_list['appointment_ymd'] = date('Y/m/d', strtotime($wearer_odr_post['appointment_ymd']));
+        }
         $json_list['resfl_ymd'] = date('Y/m/d', strtotime($wearer_odr_post['resfl_ymd']));
 
         $query_list = array();

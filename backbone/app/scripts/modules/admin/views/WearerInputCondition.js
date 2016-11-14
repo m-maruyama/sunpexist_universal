@@ -202,7 +202,9 @@ define([
                     success:function(res){
                         var res_val = res.attributes;
                         if(res_val["errors"]) {
-                            that.triggerMethod('error_msg', res_val["errors"]);
+                            var er = res_val["errors"]
+                            res.attributes["errors"] = null;
+                            that.triggerMethod('error_msg', er);
                         }else{
                             model.set('rntl_cont_no', rntl_cont_no);
                             var cond = {
@@ -210,7 +212,6 @@ define([
                                 "data": model.getReq()
                             };
                             model.url = App.api.WS0011;
-
                             model.fetchMx({
                                 data:cond,
                                 success:function(res){
