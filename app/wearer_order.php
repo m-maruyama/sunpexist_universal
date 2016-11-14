@@ -974,7 +974,6 @@ $app->post('/wearer_order_insert', function () use ($app) {
             $results = new Resultset(NULL, $m_wearer_std, $m_wearer_std->getReadConnection()->query($arg_str));
         }
         //更新もしくは新規追加
-
         $calum_list = array();
         $values_list = array();
 
@@ -1157,7 +1156,7 @@ $app->post('/wearer_order_insert', function () use ($app) {
                 array_push($values_list, "'".$add_item_map['add_job_type_item_cd']."'");
                 // 着用者コード
                 array_push($calum_list, "werer_cd");
-                array_push($values_list, "'".$m_wearer_std_tran->werer_cd."'");
+                array_push($values_list, "'".$werer_cd."'");
                 // 商品コード
                 array_push($calum_list, "item_cd");
                 array_push($values_list, "'".$add_item_map['add_item_cd']."'");
@@ -1254,7 +1253,7 @@ $app->post('/wearer_order_insert', function () use ($app) {
                 array_push($calum_list, "m_section_comb_hkey");
                 array_push($values_list, "'".$m_section[0]->m_section_comb_hkey."'");
                 // 着用者基本マスタ_統合ハッシュキー(企業ID、着用者コード、レンタル契約No.、レンタル部門コード、職種コード)
-                $m_wearer_std_comb_hkey = $m_wearer_std_tran->m_wearer_std_comb_hkey;
+                $m_wearer_std_comb_hkey = $m_wearer_std_comb_hkey;
                 array_push($calum_list, "m_wearer_std_comb_hkey");
                 array_push($values_list, "'".$m_wearer_std_comb_hkey."'");
                 // 着用者商品マスタ_統合ハッシュキー(企業ID、着用者コード、レンタル契約No.、レンタル部門コード、職種コード、職種アイテムコード、商品コード、色コード、サイズコード)

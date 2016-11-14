@@ -836,17 +836,9 @@ $app->post('/input_insert', function () use ($app) {
         $rgst_user_id = $auth['accnt_no'];//登録ユーザーID
         $rntl_sect_cd = $cond['rntl_sect_cd']; //レンタル部門コード
         $job_type_cd = $deli_job[0];//職種コード
-        if ($cond['cster_emply_cd']) {
-            $cster_emply_cd = $cond['cster_emply_cd'];//客先社員コード
-        } else {
-            $cster_emply_cd = '';//客先社員コード
-        }
+        $cster_emply_cd = $cond['cster_emply_cd'];//客先社員コード
         $werer_name = $cond['werer_name'];//着用者名（漢字）
-        if ($cond['werer_name_kana']) {
-            $werer_name_kana = $cond['werer_name_kana']; //着用者名（カナ）
-        } else {
-            $werer_name_kana = ''; //着用者名（カナ）
-        }
+        $werer_name_kana = $cond['werer_name_kana']; //着用者名（カナ）
         $sex_kbn = $cond['sex_kbn'];//性別区分
         $werer_sts_kbn = '7';//着用者状況区分
         $appointment_ymd = date("Ymd", strtotime($cond['appointment_ymd']));//発令日
