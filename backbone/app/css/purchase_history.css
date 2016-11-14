@@ -35,7 +35,7 @@ h4{
  Bootstrap class
 ------------------------------- */
 .container{
-	max-width:950px;
+	max-width:1200px;
 }
 .container-list{
 	margin-left: 8%;
@@ -46,17 +46,17 @@ h4{
 .navbar, .navbar-default{
 	margin-bottom:5px;
 }
-  .navbar .navbar-nav .open .dropdown-menu > .active > a,
-  .navbar .navbar-nav .open .dropdown-menu > .active > a:hover,
-  .navbar .navbar-nav .open .dropdown-menu > .active > a:focus {
-    color: #fff;
-    background-image: -webkit-linear-gradient(top, #4b67a7 0%, #4b67a7 100%);
-    background-image:      -o-linear-gradient(top, #4b67a7 0%, #4b67a7 100%);
-    background-image: -webkit-gradient(linear, left top, left bottom, from(#4b67a7), to(#4b67a7));
-    background-image:         linear-gradient(to bottom, #4b67a7 0%, #4b67a7 100%);
-    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff4b67a7', endColorstr='#ff4b67a7', GradientType=0);
-    background-repeat: repeat-x;
-  }
+.navbar .navbar-nav .open .dropdown-menu > .active > a,
+.navbar .navbar-nav .open .dropdown-menu > .active > a:hover,
+.navbar .navbar-nav .open .dropdown-menu > .active > a:focus {
+	color: #fff;
+	background-image: -webkit-linear-gradient(top, #4b67a7 0%, #4b67a7 100%);
+	background-image:      -o-linear-gradient(top, #4b67a7 0%, #4b67a7 100%);
+	background-image: -webkit-gradient(linear, left top, left bottom, from(#4b67a7), to(#4b67a7));
+	background-image:         linear-gradient(to bottom, #4b67a7 0%, #4b67a7 100%);
+	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff4b67a7', endColorstr='#ff4b67a7', GradientType=0);
+	background-repeat: repeat-x;
+}
 /* pagenation */
 .pagination li a{
 	color:#4b67a7;

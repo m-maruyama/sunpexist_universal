@@ -846,7 +846,8 @@ $app->post('/print/search', function ()use($app){
 	$order_kbn = array();
 	if($cond['order_kbn0']){
 		array_push($order_kbn,'3');
-	}
+        array_push($order_kbn,'4');
+    }
 	if($cond['order_kbn1']){
 		array_push($order_kbn,'5');
 	}

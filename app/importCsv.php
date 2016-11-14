@@ -715,7 +715,7 @@ $app->post('/import_csv', function () use ($app) {
     // トランザクション-ロールバック
     $transaction = new Resultset(NULL, $t_import_job, $t_import_job->getReadConnection()->query("rollback"));
 
-    ChromePhp::log($e);
+    //ChromePhp::log($e);
     $error_list[] = 'E001 取込処理中に予期せぬエラーが発生しました。';
     $json_list['errors'] = $error_list;
     $json_list["error_code"] = "1";
@@ -747,7 +747,7 @@ $app->post('/import_csv', function () use ($app) {
   $arg_str .= " FROM ";
   $arg_str .= "(SELECT * FROM t_import_job WHERE order_kbn = '5') AS T1 ";
   $arg_str .= "WHERE NOT EXISTS ";
-  $arg_str .= "( SELECT * FROM (SELECT * FROM m_wearer_std WHERE corporate_id = '$corporate_id' AND rntl_cont_no = '$agreement_no'  AND rntl_sect_cd = T1.rntl_sect_cd AND job_type_cd = T1.rent_pattern_code) AS T2 ";
+  $arg_str .= "( SELECT * FROM (SELECT * FROM m_wearer_std WHERE corporate_id = '$corporate_id' AND rntl_cont_no = '$agreement_no' AND job_type_cd = T1.rent_pattern_code) AS T2 ";
   $arg_str .= "WHERE T1.cster_emply_cd = T2.cster_emply_cd AND T2.werer_sts_kbn = '1') ";
   $arg_str .= "ORDER BY line_no ";
   //ChromePhp::log($arg_str);
@@ -1572,7 +1572,7 @@ $app->post('/import_csv', function () use ($app) {
     // トランザクション-ロールバック
     $transaction = new Resultset(NULL, $t_import_job, $t_import_job->getReadConnection()->query("rollback"));
 
-    ChromePhp::log($e);
+    //ChromePhp::log($e);
     $error_list[] = 'E002 取込処理中に予期せぬエラーが発生しました。';
     $json_list['errors'] = $error_list;
     $json_list["error_code"] = "1";
