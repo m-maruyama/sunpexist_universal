@@ -33,10 +33,12 @@ define([
 				var pagerModel = new App.Entities.Models.Pager();
 				var pagerModel2 = new App.Entities.Models.Pager();
 				var pagerModel3 = new App.Entities.Models.Pager();
+				var pagerModel4 = new App.Entities.Models.Pager();
 				var modal = false;
 				var wearerEndModel = null;
 				var wearerEndView = new App.Admin.Views.WearerEnd();
 				var wearerEndListListCollection = new App.Entities.Collections.AdminWearerEndListList();
+				var sectionListListCollection = new App.Entities.Collections.AdminSectionModalListList();
 
 				var agreementNoConditionView = new App.Admin.Views.AgreementNoCondition();
 				var sectionConditionView = new App.Admin.Views.SectionCondition();
@@ -56,7 +58,6 @@ define([
 				var paginationView3 = new App.Admin.Views.Pagination({model: pagerModel});
 				var paginationView4 = new App.Admin.Views.Pagination({model: pagerModel});
 				var paginationSectionView = new App.Admin.Views.Pagination({model: pagerModel2});
-				var sectionListListCollection = new App.Entities.Collections.AdminSectionModalListList();
 
 				var fetchList = function(pageNumber,sortKey,order){
 					if(pageNumber){
@@ -71,9 +72,24 @@ define([
 					wearerEndView.page.show(paginationView);
 					wearerEndView.page_2.show(paginationView2);
 				};
+				var fetchList_2 = function(pageNumber,sortKey,order){
+					if(pageNumber){
+						pagerModel.set('page_number', pageNumber);
+					}
+					if(sortKey){
+						pagerModel.set('sort_key', sortKey);
+						pagerModel.set('order', order);
+					}
+					wearerEndListListView.fetch(wearerEndListConditionModel);
+					wearerEndView.listTable.show(wearerEndListListView);
+					wearerEndView.page.show(paginationView3);
+					wearerEndView.page_2.show(paginationView4);
+				};
+
 				this.listenTo(wearerEndConditionView, 'first:section', function() {
 					var sectionConditionView = new App.Admin.Views.SectionCondition();
 					wearerEndConditionView.section.show(sectionConditionView);
+
 					//拠点絞り込み--ここから
 					var sectionListListCollection = new App.Entities.Collections.AdminSectionModalListList();
 					var sectionModalListListView = new App.Admin.Views.SectionModalListList({
@@ -107,8 +123,8 @@ define([
 						modal = true;
 						fetchList_section(1, sortKey, order);
 					});
-					this.listenTo(sectionModalView, 'fetched', function () {
-						// wearerEndView.detailModal.show();
+					this.listenTo(sectionModalView, 'fetched', function(){
+						// wearerChangeView.detailModal.show();
 						// sectionModalView.render();
 						sectionModalView.ui.modal.modal('show');
 					});
@@ -117,9 +133,15 @@ define([
 						sectionConditionView.ui.section[0].value = model.model.attributes.rntl_sect_cd;
 						sectionModalView.ui.modal.modal('hide');
 					});
+					wearerEndView.sectionModal.show(sectionModalView.render());
+					sectionModalView.condition.show(sectionModalConditionView);
+					sectionModalView.page.show(paginationSectionView);
 					//拠点絞り込み--ここまで
 				});
 
+				this.listenTo(paginationSectionView, 'selected', function(pageNumber){
+					fetchList_section(pageNumber);
+				});
 				this.listenTo(paginationView, 'selected', function(pageNumber){
 					if(modal){
 						fetchList_section(pageNumber);
@@ -128,6 +150,20 @@ define([
 					}
 				});
 				this.listenTo(paginationView2, 'selected', function(pageNumber){
+					if(modal){
+						fetchList_section(pageNumber);
+					}else{
+						fetchList(pageNumber);
+					}
+				});
+				this.listenTo(paginationView3, 'selected', function(pageNumber){
+					if(modal){
+						fetchList_section(pageNumber);
+					}else{
+						fetchList(pageNumber);
+					}
+				});
+				this.listenTo(paginationView4, 'selected', function(pageNumber){
 					if(modal){
 						fetchList_section(pageNumber);
 					}else{
