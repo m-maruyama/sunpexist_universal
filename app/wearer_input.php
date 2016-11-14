@@ -314,10 +314,11 @@ $app->post('/wearer_input', function () use ($app) {
         $json_list['rntl_sect_cd'] = $wearer_odr_post['rntl_sect_cd'];
         $json_list['job_type_cd'] = $wearer_odr_post['job_type_cd'];
         if($wearer_odr_post['appointment_ymd']){
-            ChromePhp::LOG($wearer_odr_post['appointment_ymd']);
             $json_list['appointment_ymd'] = date('Y/m/d', strtotime($wearer_odr_post['appointment_ymd']));
         }
-        $json_list['resfl_ymd'] = date('Y/m/d', strtotime($wearer_odr_post['resfl_ymd']));
+        if($wearer_odr_post['resfl_ymd']){
+            $json_list['resfl_ymd'] = date('Y/m/d', strtotime($wearer_odr_post['resfl_ymd']));
+        }
 
         $query_list = array();
         array_push($query_list, "corporate_id = '".$auth['corporate_id']."'");
