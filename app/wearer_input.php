@@ -89,7 +89,6 @@ $app->post('/agreement_no_input', function () use ($app) {
                 $json_list['resfl_ymd'] = date('Y/m/d', strtotime($wearer_odr_post['resfl_ymd']));
             }
         }else{
-            ChromePhp::LOG($results);
             foreach ($results as $result) {
                 $list['rntl_cont_no'] = $result->as_rntl_cont_no;
                 $list['rntl_cont_name'] = $result->as_rntl_cont_name;
@@ -183,41 +182,41 @@ $app->post('/wearer_input', function () use ($app) {
     $results_array = (array) $results;
     $results_cnt = $results_array["\0*\0_count"];
 
-    if ($results_cnt > 0) {
-        $list['rntl_sect_cd'] = null;
-        $list['rntl_sect_name'] = '全て';
-        array_push($all_list, $list);
 
-        $paginator_model = new PaginatorModel(
-            array(
-                "data"  => $results,
-                "limit" => $results_cnt,
-                "page" => 1
-            )
-        );
-        $paginator = $paginator_model->getPaginate();
-        $results = $paginator->items;
-
+    // 前画面が着用者検索画面でない場合、セッションを削除
+    if($referrer>-1){
+        // 前画面セッション取得
+        $wearer_odr_post = $app->session->get("wearer_odr_post");
         foreach ($results as $result) {
-            $list['rntl_sect_cd'] = $result->rntl_sect_cd;
-            $list['rntl_sect_name'] = $result->rntl_sect_name;
-            if (!empty($params['section'])) {
-                if ($list['rntl_sect_cd'] == $params['section']) {
-                    $list['selected'] = "selected";
-                } else {
-                    $list['selected'] = "";
-                }
+            $list['rntl_cont_no'] = $result->rntl_cont_no;
+            $list['rntl_cont_name'] = $result->rntl_cont_name;
+            if (($list['rntl_cont_no'] == $wearer_odr_post['rntl_cont_no'])&&($referrer>-1)) {
+                $list['selected'] = 'selected';
             } else {
-                $list['selected'] = "";
+                $list['selected'] = '';
             }
 
             array_push($all_list, $list);
         }
-    } else {
-        $list['rntl_sect_cd'] = null;
-        $list['rntl_sect_name'] = '';
-        $list['selected'] = "";
-        array_push($all_list, $list);
+        if(isset($wearer_odr_post)){
+            $json_list['rntl_cont_no'] = $wearer_odr_post['rntl_cont_no'];
+            $json_list['werer_cd'] = $wearer_odr_post['werer_cd'];
+            $json_list['cster_emply_cd'] = $wearer_odr_post['cster_emply_cd'];
+            $json_list['sex_kbn'] = $wearer_odr_post['sex_kbn'];
+            $json_list['rntl_sect_cd'] = $wearer_odr_post['rntl_sect_cd'];
+            $json_list['job_type_cd'] = $wearer_odr_post['job_type_cd'];
+            $json_list['ship_to_cd'] = $wearer_odr_post['ship_to_cd'];
+            $json_list['ship_to_brnch_cd'] = $wearer_odr_post['ship_to_brnch_cd'];
+            $json_list['appointment_ymd'] = date('Y/m/d', strtotime($wearer_odr_post['appointment_ymd']));
+            $json_list['resfl_ymd'] = date('Y/m/d', strtotime($wearer_odr_post['resfl_ymd']));
+        }
+    }else{
+        foreach ($results as $result) {
+            $list['rntl_sect_cd'] = $result->rntl_sect_cd;
+            $list['rntl_sect_name'] = $result->rntl_sect_name;
+            array_push($all_list, $list);
+        }
+        $app->session->remove("wearer_odr_post");
     }
 
     $m_section_list = $all_list;
@@ -660,7 +659,6 @@ $app->post('/input_insert', function () use ($app) {
         array_push($error_list,'契約Noの値が不正です。');
     }
     // 社員コード
-    ChromePhp::LOG($cond);
     if ($cond['cster_emply_cd_chk']) {
         if (mb_strlen($cond['cster_emply_cd']) == 0) {
             $json_list["error_code"] = "1";

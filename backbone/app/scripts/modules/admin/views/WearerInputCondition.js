@@ -101,7 +101,7 @@ define([
                         that.render();
                         if(res_list['rntl_cont_no']&&(referrer > -1)){
                             if(res_list['wearer_info'][0]['cster_emply_cd']){
-                                that.ui.cster_emply_cd_chk.prop('checked',true);
+                                that.ui.cster_emply_cd_chk.prop();
                                 that.ui.cster_emply_cd.val(res_list['wearer_info'][0]['cster_emply_cd']);
                             }
                             that.ui.werer_name.val(res_list['wearer_info'][0]['werer_name']);
@@ -269,7 +269,7 @@ define([
                         change_select(this.model, $('#agreement_no').val(), this.ui.section.val(), this.ui.m_shipment_to.val(), this.ui.m_shipment_to.children(':selected').text());
                     } else {
                         $('#zip_no').val('');
-                        $('#address').text('');
+                        $('#address').val('');
                         $('#m_shipment_to').val('');
                     }
 
