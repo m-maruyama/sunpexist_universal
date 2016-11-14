@@ -77,12 +77,13 @@ $app->post('/wearer_search/search', function ()use($app){
     $arg_str .= "t_order_tran.order_req_no as as_order_req_no,";
     $arg_str .= "m_section.rntl_sect_name as as_rntl_sect_name,";
     $arg_str .= "m_job_type.job_type_name as as_job_type_name";
-    $arg_str .= " FROM m_wearer_std_tran LEFT JOIN t_order_tran";
-    $arg_str .= " ON m_wearer_std_tran.m_wearer_std_comb_hkey = t_order_tran.m_wearer_std_comb_hkey";
-    $arg_str .= " LEFT JOIN m_section";
+    $arg_str .= " FROM m_wearer_std_tran";
+    $arg_str .= " INNER JOIN m_section";
     $arg_str .= " ON m_wearer_std_tran.m_section_comb_hkey = m_section.m_section_comb_hkey";
-    $arg_str .= " LEFT JOIN m_job_type";
+    $arg_str .= " INNER JOIN m_job_type";
     $arg_str .= " ON m_wearer_std_tran.m_job_type_comb_hkey = m_job_type.m_job_type_comb_hkey";
+    $arg_str .= " LEFT JOIN t_order_tran";
+    $arg_str .= " ON m_wearer_std_tran.m_wearer_std_comb_hkey = t_order_tran.m_wearer_std_comb_hkey";
     $arg_str .= " WHERE ";
     $arg_str .= $query;
     $arg_str .= ") as distinct_table";
@@ -190,6 +191,7 @@ $app->post('/wearer_search/search', function ()use($app){
             if (!empty($result->as_rntl_sect_name)) {
                 $list['rntl_sect_name'] = $result->as_rntl_sect_name;
             } else {
+                ChromePhp::LOG($result->as_rntl_sect_name);
                 $list['rntl_sect_name'] = "-";
             }
             // 貸与パターン
