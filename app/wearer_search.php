@@ -44,10 +44,10 @@ $app->post('/wearer_search/search', function ()use($app){
     if(!empty($cond['job_type'])){
         array_push($query_list, "m_wearer_std_tran.job_type_cd = '".$cond['job_type']."'");
     }
-//    // 発注情報トラン．発注状況区分 = 貸与
-//    array_push($query_list,"(t_order_tran.order_sts_kbn = '1' or t_order_tran.order_sts_kbn IS NULL)");
-////    // 発注情報トラン．理由区分 <> 追加貸与
-//    array_push($query_list,"(t_order_tran.order_reason_kbn != '03' or t_order_tran.order_reason_kbn IS NULL)");
+    // 発注情報トラン．発注状況区分 = 貸与
+    array_push($query_list,"(t_order_tran.order_sts_kbn = '1' or t_order_tran.order_sts_kbn IS NULL)");
+    // 発注情報トラン．理由区分 <> 追加貸与
+    array_push($query_list,"(t_order_tran.order_reason_kbn != '03' or t_order_tran.order_reason_kbn IS NULL)");
 
     $query = implode(' AND ', $query_list);
 
@@ -90,8 +90,7 @@ $app->post('/wearer_search/search', function ()use($app){
     $m_weare_std_tran= new MWearerStdTran();
     $results = new Resultset(null, $m_weare_std_tran, $m_weare_std_tran->getReadConnection()->query($arg_str));
     $result_obj = (array)$results;
-    $results_cnt = $result_obj["\0*\0_count"];
-
+    $results_cnt = $result_obj["\0*\0_count"];ChromePhp::LOG($results_cnt);
     $paginator_model = new PaginatorModel(
         array(
             "data"  => $results,
