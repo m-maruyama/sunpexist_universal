@@ -42,11 +42,10 @@ define([
 				var that = this;
 				var data = this.options.data;
 
-				// 現在貸与中のアイテム・新たに追加されるアイテム一覧、
 				var modelForUpdate = this.model;
-				modelForUpdate.url = App.api.WC0019;
+				modelForUpdate.url = App.api.WX0011;
 				var cond = {
-					"scr": '現在貸与中のアイテム',
+					"scr": 'サイズ交換-発注商品一覧',
 					"data": data,
 				};
 				modelForUpdate.fetchMx({
@@ -64,6 +63,8 @@ define([
 						that.render(res_list);
 						if (res_list["individual_flg"] == '1') {
 							$('.individual_flg').css('display','');
+						} else {
+							$('.exchange_possible_num').css('display','');
 						}
 						$.unblockUI();
 					}

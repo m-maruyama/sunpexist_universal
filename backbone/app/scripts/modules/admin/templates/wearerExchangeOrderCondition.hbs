@@ -1,6 +1,5 @@
 <div class="row">
 	<h1>発注入力（サイズ交換）</h1>
-	<!-- start フォーム -->
 	<div class="row">
 		<div class="col-md-1">
 			<button class="btn btn-primary back" title="戻る">戻る</button>
@@ -15,20 +14,36 @@
 			<button class="btn btn-primary orderSend" style="display:none;" title="発注送信">発注送信</button>
 		</div>
 	</div>
-
-	<!--エラーメッセージ-->
 	<div style="padding-top:20px;">
 		<div class="errors"></div>
 	<div>
-
 	<form class="form-horizontal">
 		<div class="col-md-10 box_purple">
-			<!--契約No-->
-			<div class="agreement_no"></div>
-
-			<!--理由区分-->
-			<div class="reason_kbn"></div>
-
+			<div class="form-group">
+				<label class="col-md-3 control-label" for="">契約No</label>
+				<div class="col-md-5">
+					<select class="form-control input-sm" id="agreement_no" name="agreement_no" disabled="disabled">
+					</select>
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="col-md-3 control-label" for="">理由区分</label>
+				<div class="col-md-3">
+					<select class="form-control input-sm"  id="reason_kbn" name="reason_kbn">
+					</select>
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="col-md-3 control-label" for="">返却予定日</label>
+				<div class="col-md-8 form-inline">
+					<div class='input-group date datepicker'>
+						<input type='text' class="form-control input-sm datepicker" id='return_date' name="return_date">
+						<div class="input-group-addon">
+							<span class="glyphicon glyphicon-calendar"></span>
+						</div>
+					</div>
+				</div>
+			</div>
 			<div class="form-group">
 				<label class="col-md-3 control-label" for="">社員コード</label>
 				<div class="col-md-6">
@@ -48,42 +63,31 @@
 					<input type="text" class="form-control input-sm"  id="member_name_kana" name="member_name_kana" value="">
 				</div>
 			</div>
-
-			<!--性別-->
-			<div class="sex_kbn"></div>
-
-			<div class="form-group">
-				<label class="col-md-3 control-label" for="">発令日</label>
-				<div class="col-md-8 form-inline">
-					<div class='input-group date datepicker1'>
-						<input type='text' class="form-control input-sm datepicker1" id='appointment_ymd' name="appointment_ymd">
-						<div class="input-group-addon">
-							<span class="glyphicon glyphicon-calendar"></span>
-						</div>
-					</div>
+			<div class="form-group" style="margin-bottom: 40px">
+				<label class="col-md-3 control-label" for="">性別</label>
+				<div class="col-md-2">
+					<select class="form-control input-sm" name="sex_kbn" id="sex_kbn">
+					</select>
 				</div>
 			</div>
 			<div class="form-group">
-				<label class="col-md-3 control-label" for="">着用開始日</label>
-				<div class="col-md-8 form-inline">
-					<div class='input-group date datepicker2'>
-						<input type='text' class="form-control input-sm datepicker2" id='resfl_ymd' name="resfl_ymd">
-						<div class="input-group-addon">
-							<span class="glyphicon glyphicon-calendar"></span>
-						</div>
-					</div>
+				<label class="col-md-3 control-label" for="">拠点</label>
+				<div class="col-md-5 dspilb">
+					<select class="form-control input-sm" id="section" name="section" disabled="disabled">
+					</select>
+				</div>
+				<div class="col-md-2 dspilb">
+					<a href="" type="button" id="section_btn" class="btn btn-primary btn-sm btn-block" title="絞り込み" data-toggle="modal" data-target="#modal-example" disabled>絞り込み</a>
 				</div>
 			</div>
-
-			<!--拠点-->
-			<div class="section"></div>
-
-			<!--貸与パターン-->
-			<div class="job_type"></div>
-
-			<!--出荷先、郵便番号、住所-->
-			<div class="shipment"></div>
-
+			<div class="form-group">
+				<label class="col-md-3 control-label" for="">貸与パターン</label>
+				<div class="col-md-5">
+					<select class="form-control input-sm" id="job_type" name="job_type" disabled="disabled">
+					</select>
+				</div>
+			</div>
+			<input type="hidden" id="shipment" name="shipment" value="">
 			<div class="form-group row">
 				<label class="col-md-3 control-label" for="">コメント欄</label>
 				<div class="col-md-9">
@@ -92,4 +96,3 @@
 			</div>
 		</div>
 	</form>
-	<!-- end フォーム -->
