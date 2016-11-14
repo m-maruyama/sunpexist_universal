@@ -12,6 +12,7 @@ $app->post('/wearer_search/search', function ()use($app){
 
     $params = json_decode(file_get_contents("php://input"), true);
 
+    ChromePhp::LOG($params);
     // アカウントセッション取得
     $auth = $app->session->get("auth");
     $cond = $params['cond'];
@@ -90,7 +91,8 @@ $app->post('/wearer_search/search', function ()use($app){
     $m_weare_std_tran= new MWearerStdTran();
     $results = new Resultset(null, $m_weare_std_tran, $m_weare_std_tran->getReadConnection()->query($arg_str));
     $result_obj = (array)$results;
-    $results_cnt = $result_obj["\0*\0_count"];ChromePhp::LOG($results_cnt);
+    $results_cnt = $result_obj["\0*\0_count"];
+    ChromePhp::LOG($results_cnt);
     $paginator_model = new PaginatorModel(
         array(
             "data"  => $results,
