@@ -1421,7 +1421,8 @@ $app->post('/import_csv', function () use ($app) {
         $values_list[] = "'".$auth['corporate_id']."'";
         $values_list[] = "'".$result->order_req_no."'";
         $values_list[] = "'".$result->order_req_line_no."'";
-        $values_list[] = "'".date("Y-m-d H:i:s", time())."'";
+        $order_req_ymd = str_replace("/", "", date("Y/m/d", time()));
+        $values_list[] = "'".$order_req_ymd."'";
         $values_list[] = "'".$result->order_kbn."'";
         $values_list[] = "'".$agreement_no."'";
         $values_list[] = "'".$result->rntl_sect_cd."'";
