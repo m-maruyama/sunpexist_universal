@@ -13,7 +13,7 @@
         <input type="hidden" name="list_cnt" value="{{list_cnt}}">
       </table>
     </div>
-    <table class="table table-bordered order_table">
+    <table class="table table-bordered order_table" id="order_table">
       <thead class="grad_head">
         <tr>
           <th rowspan="2">No.</th>
@@ -58,11 +58,14 @@
             <input type="hidden" name="now_size_cd{{arr_num}}" value="{{now_size_cd}}">
           </td>
           <td>
+            {{#if size_add_flg}}
+            {{else}}
             <select class="form-control input-sm" id="size_cd{{arr_num}}" name="size_cd{{arr_num}}">
               {{#each size_cd}}
               <option value="{{size}}" {{selected}}>{{size}}</option>
               {{/each}}
             </select>
+            {{/if}}
           </td>
           <td class="exchange_possible_num" style="display:none;">
             {{exchange_possible_num}}
@@ -85,13 +88,19 @@
             <input type="hidden" name="order_num{{arr_num}}" value="{{order_num}}">
           </td>
           <td>
-            {{return_num}}
-            <input type="hidden" name="return_num{{arr_num}}" value="{{return_num}}">
-            <!--<input type="text" style="width:4em; font-weight:normal; text-align:center;" class="input-sm individual_flg" id="return_num{{arr_num}}" name="return_num{{arr_num}}" value="{{return_num}}">-->
+            {{#if return_num_text_disp}}
+              <input type="text" style="width:4em; font-weight:normal; text-align:center;" class="input-sm" id="return_num{{arr_num}}" name="return_num{{arr_num}}" value="{{return_num}}" {{return_num_disable}}>
+              <!--<input type="text" style="width:4em; font-weight:normal; text-align:center;" class="input-sm individual_flg" id="return_num{{arr_num}}" name="return_num{{arr_num}}" value="{{return_num}}">-->
+            {{else}}
+              {{return_num}}
+              <input type="hidden" name="return_num{{arr_num}}" value="{{return_num}}">
+              <!--<input type="text" style="width:4em; font-weight:normal; text-align:center;" class="input-sm individual_flg" id="return_num{{arr_num}}" name="return_num{{arr_num}}" value="{{return_num}}">-->
+            {{/if}}
           </td>
           <td>
             {{#if size_add_flg}}
-            <a href="#" class="size_add" style="text-decoration:none;">サイズ追加</a>
+            <button type="button" class="btn btn-primary size_add" title="サイズ追加" id="size_add{{list_no}}" value="{{add_param}}">サイズ追加</button>
+            <input type="hidden" name="add_cnt{{list_no}}" value="0">
             {{/if}}
           </td>
         </tr>

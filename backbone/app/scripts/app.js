@@ -272,6 +272,7 @@ define([
 			"WX0012": host + "/wearer_exchange/delete",
 			"WX0013": host + "/wearer_exchange/complete",
 			"WX0014": host + "/wearer_exchange/send",
+			"WX0015": host + "/wearer_exchange/add_size",
 			"WOC0010": host + "/wearer_other_change_info",
 			"WOC0020": host + "/wearer_other_change_list",
 			"WOC0030": host + "/wearer_other_change_delete",
