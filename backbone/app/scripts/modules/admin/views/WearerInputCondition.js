@@ -99,6 +99,7 @@ define([
                         var res_list = res.attributes;
                         $('#agreement_no').prop("disabled", true);
                         that.render();
+                        $('#input_item').val(res_list['param']);
                         if(res_list['rntl_cont_no']&&(referrer > -1)){
                             if(res_list['wearer_info'][0]['cster_emply_cd']){
                                 that.ui.cster_emply_cd_chk.prop('checked',true);

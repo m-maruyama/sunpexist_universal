@@ -839,6 +839,37 @@ $app->post('/wearer_order_insert', function () use ($app) {
         }
     }
     $shin_order_req_no = "WB".str_pad($order_no_seq, 8, '0', STR_PAD_LEFT);
+    //貸与パターン
+    $query_list = array();
+    // 職種マスタ．企業ID　＝　ログインしているアカウントの企業ID　AND
+    array_push($query_list,"corporate_id = '".$auth['corporate_id']."'");
+    // 職種マスタ．レンタル契約No.　＝　画面で選択されている契約No.
+    array_push($query_list,"rntl_cont_no = '".$wearer_odr_post['rntl_cont_no']."'");
+    $deli_job = explode(',',$cond['job_type']);
+    // 職種マスタ．レンタル部門コード　＝　画面で選択されている貸与パターン
+    array_push($query_list,"job_type_cd = '".$cond['job_type']."'");
+
+    //sql文字列を' AND 'で結合
+    $query = implode(' AND ', $query_list);
+    //--- クエリー実行・取得 ---//
+    $m_job_type = MJobType::find(array(
+        'conditions' => $query
+    ));
+    //拠点のマスタチェック
+    $query_list = array();
+    // 部門マスタ．企業ID　＝　ログインしているアカウントの企業ID　AND
+    array_push($query_list,"corporate_id = '".$auth['corporate_id']."'");
+    // 部門マスタ．レンタル契約No.　＝　画面で選択されている契約No.
+    array_push($query_list,"rntl_cont_no = '".$wearer_odr_post['rntl_cont_no']."'");
+    // 部門マスタ．レンタル部門コード　＝　画面で選択されている拠点
+    array_push($query_list,"rntl_sect_cd = '".$cond['rntl_sect_cd']."'");
+
+    //sql文字列を' AND 'で結合
+    $query = implode(' AND ', $query_list);
+    //--- クエリー実行・取得 ---//
+    $m_section = MSection::find(array(
+        'conditions' => $query
+    ));
     //着用者基本情報トラン
     $m_wearer_std_tran = new MWearerStdTran();
     $now = date('Y/m/d H:i:s.sss');
@@ -910,8 +941,8 @@ $app->post('/wearer_order_insert', function () use ($app) {
     $m_wearer_std_tran->upd_date  = $now;//更新日時
     $m_wearer_std_tran->upd_user_id = $auth['accnt_no'];//更新ユーザーID
     $m_wearer_std_tran->upd_pg_id = $auth['accnt_no'];//更新プログラムID
-    $m_wearer_std_tran->m_job_type_comb_hkey = 1;//職種マスタ_統合ハッシュキー
-    $m_wearer_std_tran->m_section_comb_hkey = 1;//部門マスタ_統合ハッシュキー
+    $m_wearer_std_tran->m_job_type_comb_hkey = $m_job_type[0]->m_job_type_comb_hkey;//職種マスタ_統合ハッシュキー
+    $m_wearer_std_tran->m_section_comb_hkey = $m_section[0]->m_section_comb_hkey;//部門マスタ_統合ハッシュキー
 
     // トランザクション開始
     $t_order_tran = new TOrderTran();
@@ -1113,13 +1144,11 @@ $app->post('/wearer_order_insert', function () use ($app) {
                 array_push($calum_list, "m_item_comb_hkey");
                 array_push($values_list, "'".$m_item_comb_hkey."'");
                 // 職種マスタ_統合ハッシュキー(企業ID、レンタル契約No.、職種コード)
-                $m_job_type_comb_hkey = '1';
                 array_push($calum_list, "m_job_type_comb_hkey");
-                array_push($values_list, "'".$m_job_type_comb_hkey."'");
+                array_push($values_list, "'".$m_job_type[0]->m_job_type_comb_hkey."'");
                 // 部門マスタ_統合ハッシュキー(企業ID、レンタル契約No.、レンタル部門コード)
-                $m_section_comb_hkey = '1';
                 array_push($calum_list, "m_section_comb_hkey");
-                array_push($values_list, "'".$m_section_comb_hkey."'");
+                array_push($values_list, "'".$m_section[0]->m_section_comb_hkey."'");
                 // 着用者基本マスタ_統合ハッシュキー(企業ID、着用者コード、レンタル契約No.、レンタル部門コード、職種コード)
                 $m_wearer_std_comb_hkey = $m_wearer_std_tran->m_wearer_std_comb_hkey;
                 array_push($calum_list, "m_wearer_std_comb_hkey");

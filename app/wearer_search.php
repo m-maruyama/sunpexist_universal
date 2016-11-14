@@ -191,7 +191,6 @@ $app->post('/wearer_search/search', function ()use($app){
             if (!empty($result->as_rntl_sect_name)) {
                 $list['rntl_sect_name'] = $result->as_rntl_sect_name;
             } else {
-                ChromePhp::LOG($result->as_rntl_sect_name);
                 $list['rntl_sect_name'] = "-";
             }
             // 貸与パターン
