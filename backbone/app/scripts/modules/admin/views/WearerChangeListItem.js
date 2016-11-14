@@ -11,7 +11,8 @@ define([
 			template: App.Admin.Templates.wearerChangeListItem,
 			tagName: "tr",
 			ui: {
-				"wearer_change": "#wearer_change"
+				"wearer_change": "#wearer_change",
+				"download": "#download",
 			},
 			events: {
 				'click @ui.wearer_change': function(e){
@@ -59,7 +60,36 @@ define([
 							}
 						}
 					});
-				}
+				},
+				'click @ui.download': function(e) {
+					e.preventDefault();
+					//var printData = [];
+					var pdf_vals = e.target.value;
+
+					var pdf_val = pdf_vals.split(':');
+					//console.log(pdf_val);
+					var printData = new Object();
+					printData["rntl_cont_no"] = pdf_val[0];
+					printData["order_req_no"] = pdf_val[1];
+
+					var msg = "データ量により、ダウンロード処理に時間がかかる可能性があります。ダウンロードを実施してよろしいですか？";
+					if (window.confirm(msg)) {
+						var cond = {
+							"scr": 'PDFダウンロード',
+							"cond": printData
+						};
+						var form = $('<form action="' + App.api.PR0012 + '" method="post"></form>');
+						var data = $('<input type="hidden" name="data" />');
+						data.val(JSON.stringify(cond));
+						form.append(data);
+						$('body').append(form);
+						form.submit();
+						data.remove();
+						form.remove();
+						form=null;
+						return;
+					}
+				},
 			},
 			onShow: function(val, type, transition, data) {
 				var that = this;
