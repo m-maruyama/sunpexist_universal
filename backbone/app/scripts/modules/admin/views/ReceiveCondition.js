@@ -385,6 +385,70 @@ define([
 					});
 					itemColorConditionView.onShow();
 					this.item_color.show(itemColorConditionView);
+				},
+				//貸与開始
+				'change @ui.order_kbn0': function(){
+					if ($("#order_kbn0").is(':checked')) {
+						$("#reason_kbn0").prop('checked', true);
+						$("#reason_kbn1").prop('checked', true);
+						$("#reason_kbn2").prop('checked', true);
+						$("#reason_kbn3").prop('checked', true);
+						$("#reason_kbn4").prop('checked', true);
+					} else {
+						$("#reason_kbn0").prop('checked', false);
+						$("#reason_kbn1").prop('checked', false);
+						$("#reason_kbn2").prop('checked', false);
+						$("#reason_kbn3").prop('checked', false);
+						$("#reason_kbn4").prop('checked', false);
+					}
+				},
+				//交換
+				'change @ui.order_kbn1': function(){
+					if ($("#order_kbn1").is(':checked')) {
+						$("#reason_kbn5").prop('checked', true);
+						$("#reason_kbn6").prop('checked', true);
+						$("#reason_kbn7").prop('checked', true);
+						$("#reason_kbn8").prop('checked', true);
+						$("#reason_kbn9").prop('checked', true);
+						$("#reason_kbn10").prop('checked', true);
+						$("#reason_kbn11").prop('checked', true);
+					} else {
+						$("#reason_kbn5").prop('checked', false);
+						$("#reason_kbn6").prop('checked', false);
+						$("#reason_kbn7").prop('checked', false);
+						$("#reason_kbn8").prop('checked', false);
+						$("#reason_kbn9").prop('checked', false);
+						$("#reason_kbn10").prop('checked', false);
+						$("#reason_kbn11").prop('checked', false);
+					}
+				},
+				//職種変更または異動
+				'change @ui.order_kbn2': function(){
+					if ($("#order_kbn2").is(':checked')) {
+						$("#reason_kbn12").prop('checked', true);
+						$("#reason_kbn13").prop('checked', true);
+						$("#reason_kbn14").prop('checked', true);
+					} else {
+						$("#reason_kbn12").prop('checked', false);
+						$("#reason_kbn13").prop('checked', false);
+						$("#reason_kbn14").prop('checked', false);
+					}
+				},
+				//貸与終了
+				'change @ui.order_kbn3': function(){
+					if ($("#order_kbn3").is(':checked')) {
+						$("#reason_kbn15").prop('checked', true);
+						$("#reason_kbn16").prop('checked', true);
+						$("#reason_kbn17").prop('checked', true);
+						$("#reason_kbn18").prop('checked', true);
+						$("#reason_kbn19").prop('checked', true);
+					} else {
+						$("#reason_kbn15").prop('checked', false);
+						$("#reason_kbn16").prop('checked', false);
+						$("#reason_kbn17").prop('checked', false);
+						$("#reason_kbn18").prop('checked', false);
+						$("#reason_kbn19").prop('checked', false);
+					}
 				}
 			}
 		});
