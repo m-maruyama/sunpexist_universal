@@ -853,10 +853,12 @@ $app->post('/input_insert', function () use ($app) {
     $m_wearer_std_tran->upd_date  = $now;//更新日時
     $m_wearer_std_tran->upd_user_id = $auth['accnt_no'];//更新ユーザーID
     $m_wearer_std_tran->upd_pg_id = $auth['accnt_no'];//更新プログラムID
-    $m_wearer_std_tran->m_job_type_comb_hkey = $m_job_type[0]->m_job_type_comb_hkey;//職種マスタ_統合ハッシュキー
-    $m_wearer_std_tran->m_section_comb_hkey = $m_section[0]->m_section_comb_hkey;//部門マスタ_統合ハッシュキー
+    $m_wearer_std_tran->m_job_type_comb_hkey = 1;//職種マスタ_統合ハッシュキー
+    $m_wearer_std_tran->m_section_comb_hkey = 1;//部門マスタ_統合ハッシュキー
+//    $m_wearer_std_tran->m_job_type_comb_hkey = $m_job_type[0]->m_job_type_comb_hkey;//職種マスタ_統合ハッシュキー
+//    $m_wearer_std_tran->m_section_comb_hkey = $m_section[0]->m_section_comb_hkey;//部門マスタ_統合ハッシュキー
     if($create_flg){
-        $m_wearer_std_tran->m_section_comb_hkey = $m_section[0]->m_section_comb_hkey;//部門マスタ_統合ハッシュキー
+//        $m_wearer_std_tran->m_section_comb_hkey = $m_section[0]->m_section_comb_hkey;//部門マスタ_統合ハッシュキー
         //新規作成
         if ($m_wearer_std_tran->create() == false) {
             array_push($error_list, '着用者の登録に失敗しました。');
