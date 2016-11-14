@@ -130,69 +130,82 @@ $app->post('/wearer_input', function () use ($app) {
     //--性別ここまで
 
     //拠点--ここから
+    $all_list = array();
     $query_list = array();
-    //--- 検索条件 ---//
-    // 契約マスタ. 企業ID
-    array_push($query_list, "MContract.corporate_id = '".$auth['corporate_id']."'");
-    // 契約リソースマスタ. 企業ID
-    array_push($query_list, "MContractResource.corporate_id = '".$auth['corporate_id']."'");
-    // 契約リソースマスタ. レンタル契約No = 画面で選択されている契約No.
-    array_push($query_list, "MContractResource.rntl_cont_no = '".$cond['agreement_no']."'");
-    // アカウントマスタ.企業ID
-    array_push($query_list, "MAccount.corporate_id = '".$auth['corporate_id']."'");
-    // アカウントマスタ. ユーザーID
-    array_push($query_list, "MAccount.user_id = '".$auth['user_id']."'");
-
-    //sql文字列を' AND 'で結合
-    $query = implode(' AND ', $query_list);
-
-    //--- クエリー実行・取得 ---//
-    $m_contract_resources = MContract::query()
-        ->where($query)
-        ->columns(array('MContractResource.rntl_sect_cd'))
-        ->innerJoin('MContractResource', 'MContract.corporate_id = MContractResource.corporate_id')
-        ->join('MAccount', 'MAccount.accnt_no = MContractResource.accnt_no')
-        ->execute();
-    $rntl_sect_cd = null;
-    foreach ($m_contract_resources as $m_contract_resource) {
-        $rntl_sect_cd = $m_contract_resource->rntl_sect_cd;
-    }
-    $query_list = array();
-    $list = array();
-    $m_section_list = array();
-    //--- 検索条件 ---//
-    // 部門マスタ. 企業ID
-    array_push($query_list, "corporate_id = '".$auth['corporate_id']."'");
-    // 部門マスタ. レンタル契約No
-    array_push($query_list, "rntl_cont_no = '".$cond['agreement_no']."'");
-    if ($rntl_sect_cd) {
-        // 部門マスタ. レンタル部門コード
-        array_push($query_list, "rntl_sect_cd = '".$rntl_sect_cd."'");
-    }
-
-    //sql文字列を' AND 'で結合
-    $query = implode(' AND ', $query_list);
-
-    //--- クエリー実行・取得 ---//
-    $m_section_results = MSection::query()
-        ->where($query)
-        ->columns('*')
-        ->execute();
-    foreach ($m_section_results as $m_section_result) {
-        $list['rntl_sect_cd'] = $m_section_result->rntl_sect_cd;
-        $list['rntl_sect_name'] = $m_section_result->rntl_sect_name;
-        if (($list['rntl_sect_cd'] == $wearer_odr_post['rntl_sect_cd'])&&($referrer>-1)) {
-            $list['rntl_sect_cd_selected'] = 'selected';
-        } else {
-            $list['rntl_sect_cd_selected'] = '';
+    if (!empty($params["corporate_flg"])) {
+        if (!empty($params["corporate"])) {
+            array_push($query_list, "corporate_id = '".$params["corporate"]."'");
         }
-        array_push($m_section_list, $list);
+    } else {
+        array_push($query_list, "corporate_id = '".$auth["corporate_id"]."'");
     }
+    if (!empty($params['agreement_no'])) {
+        array_push($query_list, "rntl_cont_no = '".$params['agreement_no']."'");
+    } else {
+        if (empty($params["corporate_flg"])) {
+            array_push($query_list, "rntl_cont_no = '".$app->session->get('first_rntl_cont_no')."'");
+        }
+    }
+    $query = implode(' AND ', $query_list);
+
+    $arg_str = 'SELECT ';
+    $arg_str .= ' distinct on (rntl_sect_cd) *';
+    $arg_str .= ' FROM m_section';
+    if (!empty($query)) {
+        $arg_str .= ' WHERE ';
+        $arg_str .= $query;
+    }
+    $arg_str .= ' ORDER BY rntl_sect_cd asc';
+
+    $m_section = new MSection();
+    $results = new Resultset(null, $m_section, $m_section->getReadConnection()->query($arg_str));
+    $results_array = (array) $results;
+    $results_cnt = $results_array["\0*\0_count"];
+
+    if ($results_cnt > 0) {
+        $list['rntl_sect_cd'] = null;
+        $list['rntl_sect_name'] = '全て';
+        array_push($all_list, $list);
+
+        $paginator_model = new PaginatorModel(
+            array(
+                "data"  => $results,
+                "limit" => $results_cnt,
+                "page" => 1
+            )
+        );
+        $paginator = $paginator_model->getPaginate();
+        $results = $paginator->items;
+
+        foreach ($results as $result) {
+            $list['rntl_sect_cd'] = $result->rntl_sect_cd;
+            $list['rntl_sect_name'] = $result->rntl_sect_name;
+            if (!empty($params['section'])) {
+                if ($list['rntl_sect_cd'] == $params['section']) {
+                    $list['selected'] = "selected";
+                } else {
+                    $list['selected'] = "";
+                }
+            } else {
+                $list['selected'] = "";
+            }
+
+            array_push($all_list, $list);
+        }
+    } else {
+        $list['rntl_sect_cd'] = null;
+        $list['rntl_sect_name'] = '';
+        $list['selected'] = "";
+        array_push($all_list, $list);
+    }
+
+    $m_section_list = $all_list;
     //--拠点ここまで
 
     //貸与パターン--ここから
     $query_list = array();
     $list = array();
+    $all_list = array();
     $job_type_list = array();
     //--- 検索条件 ---//
     // 職種マスタ. 企業ID
