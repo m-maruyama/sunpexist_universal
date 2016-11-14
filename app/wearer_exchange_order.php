@@ -1075,6 +1075,14 @@ $app->post('/wearer_exchange/list', function ()use($app){
         // 職種アイテムコード
         $list["job_type_item_cd"] = $item_result->as_job_type_item_cd;
 
+        //--サイズ追加パラメータ--//
+        $list["add_param"] =
+          $list["list_no"].":".
+          $list["item_cd"].":".
+          $list["color_cd"].":".
+          $list["now_size_cd"]
+        ;
+
         $all_list[] = $list;
       }
     }
@@ -1168,43 +1176,41 @@ $app->post('/wearer_exchange/list', function ()use($app){
         $list["now_size_cd"] = $result->as_size_cd;
         // サイズ
         $list["size_cd"] = array();
-        if ($result->as_size_add_flg == "0") {
-          $element = array();
-          $query_list = array();
-          $query_list[] = "item_cd = '".$list["item_cd"]."'";
-          $query_list[] = "color_cd = '".$list["color_cd"]."'";
-          $query = implode(' AND ', $query_list);
-          $arg_str = "";
-          $arg_str = "SELECT ";
-          $arg_str .= "size_cd";
-          $arg_str .= " FROM ";
-          $arg_str .= "m_item";
-          $arg_str .= " WHERE ";
-          $arg_str .= $query;
-          $arg_str .= " ORDER BY item_cd ASC, color_cd ASC";
-          $m_item = new MItem();
-          $m_item_results = new Resultset(NULL, $m_item, $m_item->getReadConnection()->query($arg_str));
-          $result_obj = (array)$m_item_results;
-          $results_cnt = $result_obj["\0*\0_count"];
-          $results_rows = $result_obj["\0*\0_rows"];
-          //ChromePhp::LOG($results_rows);
-          //ChromePhp::LOG($list["order_size_cd"]);
-          if (!empty($results_cnt)) {
-            $paginator_model = new PaginatorModel(
-                array(
-                    "data"  => $m_item_results,
-                    "limit" => $results_cnt,
-                    "page" => 1
-                )
-            );
-            $paginator = $paginator_model->getPaginate();
-            $m_item_results = $paginator->items;
-            foreach ($m_item_results as $m_item_result) {
-              if ($list["now_size_cd"] !== $m_item_result->size_cd) {
-                $element["size"] = $m_item_result->size_cd;
-                $element["selected"] = "";
-                $list["size_cd"][] = $element;
-              }
+        $element = array();
+        $query_list = array();
+        $query_list[] = "item_cd = '".$list["item_cd"]."'";
+        $query_list[] = "color_cd = '".$list["color_cd"]."'";
+        $query = implode(' AND ', $query_list);
+        $arg_str = "";
+        $arg_str = "SELECT ";
+        $arg_str .= "size_cd";
+        $arg_str .= " FROM ";
+        $arg_str .= "m_item";
+        $arg_str .= " WHERE ";
+        $arg_str .= $query;
+        $arg_str .= " ORDER BY item_cd ASC, color_cd ASC";
+        $m_item = new MItem();
+        $m_item_results = new Resultset(NULL, $m_item, $m_item->getReadConnection()->query($arg_str));
+        $result_obj = (array)$m_item_results;
+        $results_cnt = $result_obj["\0*\0_count"];
+        $results_rows = $result_obj["\0*\0_rows"];
+        //ChromePhp::LOG($results_rows);
+        //ChromePhp::LOG($list["order_size_cd"]);
+        if (!empty($results_cnt)) {
+          $paginator_model = new PaginatorModel(
+              array(
+                  "data"  => $m_item_results,
+                  "limit" => $results_cnt,
+                  "page" => 1
+              )
+          );
+          $paginator = $paginator_model->getPaginate();
+          $m_item_results = $paginator->items;
+          foreach ($m_item_results as $m_item_result) {
+            if ($list["now_size_cd"] !== $m_item_result->size_cd) {
+              $element["size"] = $m_item_result->size_cd;
+              $element["selected"] = "";
+              $list["size_cd"][] = $element;
             }
           }
         }
@@ -1300,6 +1306,8 @@ $app->post('/wearer_exchange/list', function ()use($app){
         $list["return_num"] = "";
         if ($result->as_size_add_flg == "0") {
           $list["return_num"] = $list["exchange_possible_num"];
+        } else {
+          $list["return_num_text_disp"] = true;
         }
         // サイズ追加リンク表示
         if ($result->as_size_add_flg == "1") {
@@ -1320,6 +1328,14 @@ $app->post('/wearer_exchange/list', function ()use($app){
         $list["job_type_cd"] = $wearer_size_change_post['job_type_cd'];
         // 職種アイテムコード
         $list["job_type_item_cd"] = $result->as_job_type_item_cd;
+
+        //--サイズ追加パラメータ--//
+        $list["add_param"] =
+          $list["list_no"].":".
+          $list["item_cd"].":".
+          $list["color_cd"].":".
+          $list["now_size_cd"]
+        ;
 
         $all_list[] = $list;
       }
@@ -1366,6 +1382,197 @@ $app->post('/wearer_exchange/list', function ()use($app){
   echo json_encode($json_list);
   //ChromePhp::LOG('JSON_LIST');
   //ChromePhp::LOG($json_list);
+});
+
+/**
+ * 発注入力（サイズ交換）
+ * 入力項目：サイズ追加
+ */
+$app->post('/wearer_exchange/add_size', function ()use($app){
+  $params = json_decode(file_get_contents("php://input"), true);
+
+  // アカウントセッション取得
+  $auth = $app->session->get("auth");
+  //ChromePhp::LOG($auth);
+
+  // 前画面セッション取得
+  $wearer_size_change_post = $app->session->get("wearer_size_change_post");
+  //ChromePhp::LOG($wearer_size_change_post);
+
+  // フロントパラメータ取得
+  $cond = $params['data'];
+  //ChromePhp::LOG("フロント側パラメータ");
+  //ChromePhp::LOG($cond);
+
+  $json_list = array();
+
+  $all_list = array();
+  $list = array();
+  $query_list = array();
+  $query_list[] = "t_delivery_goods_state_details.corporate_id = '".$auth['corporate_id']."'";
+  $query_list[] = "t_delivery_goods_state_details.rntl_cont_no = '".$wearer_size_change_post['rntl_cont_no']."'";
+  $query_list[] = "t_delivery_goods_state_details.werer_cd = '".$wearer_size_change_post['werer_cd']."'";
+  $query_list[] = "t_delivery_goods_state_details.item_cd = '".$cond['item_cd']."'";
+  $query_list[] = "t_delivery_goods_state_details.color_cd = '".$cond['color_cd']."'";
+  $query_list[] = "t_delivery_goods_state_details.size_cd = '".$cond['size_cd']."'";
+  $query = implode(' AND ', $query_list);
+
+  $arg_str = "";
+  $arg_str = "SELECT ";
+  $arg_str .= " * ";
+  $arg_str .= " FROM ";
+  $arg_str .= "(SELECT distinct on (m_item.item_cd, m_item.color_cd) ";
+  $arg_str .= "t_delivery_goods_state_details.quantity as as_quantity,";
+  $arg_str .= "t_delivery_goods_state_details.return_plan__qty as as_return_plan_qty,";
+  $arg_str .= "t_delivery_goods_state_details.returned_qty as as_returned_qty,";
+  $arg_str .= "m_item.item_cd as as_item_cd,";
+  $arg_str .= "m_item.color_cd as as_color_cd,";
+  $arg_str .= "m_item.size_cd as as_size_cd,";
+  $arg_str .= "m_item.item_name as as_item_name,";
+  $arg_str .= "m_input_item.job_type_item_cd as as_job_type_item_cd,";
+  $arg_str .= "m_input_item.input_item_name as as_input_item_name,";
+  $arg_str .= "m_input_item.std_input_qty as as_std_input_qty,";
+  $arg_str .= "m_input_item.size_add_flg as as_size_add_flg";
+  $arg_str .= " FROM ";
+  $arg_str .= "t_delivery_goods_state_details INNER JOIN m_item";
+  $arg_str .= " ON (t_delivery_goods_state_details.corporate_id = m_item.corporate_id";
+  $arg_str .= " AND t_delivery_goods_state_details.item_cd = m_item.item_cd";
+  $arg_str .= " AND t_delivery_goods_state_details.color_cd = m_item.color_cd";
+  $arg_str .= " AND t_delivery_goods_state_details.size_cd = m_item.size_cd)";
+  $arg_str .= " INNER JOIN m_input_item";
+  $arg_str .= " ON (m_item.corporate_id = m_item.corporate_id";
+  $arg_str .= " AND m_item.item_cd = m_input_item.item_cd";
+  $arg_str .= " AND m_item.color_cd = m_input_item.color_cd)";
+  $arg_str .= " WHERE ";
+  $arg_str .= $query;
+  $arg_str .= ") as distinct_table";
+  $arg_str .= " ORDER BY as_item_cd ASC, as_color_cd ASC";
+  //ChromePhp::LOG($arg_str);
+  $t_delivery_goods_state_details = new TDeliveryGoodsStateDetails();
+  $results = new Resultset(null, $t_delivery_goods_state_details, $t_delivery_goods_state_details->getReadConnection()->query($arg_str));
+  $result_obj = (array)$results;
+  $results_cnt = $result_obj["\0*\0_count"];
+  //ChromePhp::LOG("通常商品一覧件数");
+  //ChromePhp::LOG($results_cnt);
+  if (!empty($results_cnt)) {
+    // 発注情報トランに情報が存在する場合、こちらで商品一覧生成
+    $paginator_model = new PaginatorModel(
+        array(
+            "data"  => $results,
+            "limit" => $results_cnt,
+            "page" => 1
+        )
+    );
+    $paginator = $paginator_model->getPaginate();
+    $results = $paginator->items;
+    //ChromePhp::LOG("発注情報トラン商品一覧仮リスト");
+    //ChromePhp::LOG($results);
+    $arr_num = 0;
+    $list_cnt = 1;
+    foreach ($results as $result) {
+      // アイテム
+      $list["item_name"] = $result->as_item_name;
+      // 標準数
+      $list["possible_num"] = $result->as_std_input_qty;
+      // 数量
+      $list["quantity"] = $result->as_quantity;
+      // 返却予定数
+      $list["return_plan_qty"] = $result->as_return_plan_qty;
+      // 返却済数
+      $list["returned_qty"] = $result->as_returned_qty;
+      // 商品コード
+      $list["item_cd"] = $result->as_item_cd;
+      // 色コード
+      $list["color_cd"] = $result->as_color_cd;
+      // 商品-色
+      $list["item_and_color"] = $list["item_cd"]."-".$list["color_cd"];
+      // 商品名
+      $list["input_item_name"] = $result->as_input_item_name;
+      // 現在のサイズ
+      $list["now_size_cd"] = $result->as_size_cd;
+      // サイズ
+      $list["size_cd"] = array();
+      $element = array();
+      $query_list = array();
+      $query_list[] = "item_cd = '".$list["item_cd"]."'";
+      $query_list[] = "color_cd = '".$list["color_cd"]."'";
+      $query = implode(' AND ', $query_list);
+      $arg_str = "";
+      $arg_str = "SELECT ";
+      $arg_str .= "size_cd";
+      $arg_str .= " FROM ";
+      $arg_str .= "m_item";
+      $arg_str .= " WHERE ";
+      $arg_str .= $query;
+      $arg_str .= " ORDER BY item_cd ASC, color_cd ASC";
+      $m_item = new MItem();
+      $m_item_results = new Resultset(NULL, $m_item, $m_item->getReadConnection()->query($arg_str));
+      $result_obj = (array)$m_item_results;
+      $results_cnt = $result_obj["\0*\0_count"];
+      $results_rows = $result_obj["\0*\0_rows"];
+      //ChromePhp::LOG($results_rows);
+      //ChromePhp::LOG($list["order_size_cd"]);
+      if (!empty($results_cnt)) {
+        $paginator_model = new PaginatorModel(
+            array(
+                "data"  => $m_item_results,
+                "limit" => $results_cnt,
+                "page" => 1
+            )
+        );
+        $paginator = $paginator_model->getPaginate();
+        $m_item_results = $paginator->items;
+        foreach ($m_item_results as $m_item_result) {
+          if ($list["now_size_cd"] !== $m_item_result->size_cd) {
+            $element["size"] = $m_item_result->size_cd;
+            $element["selected"] = "";
+            $list["size_cd"][] = $element;
+          }
+        }
+      }
+      // 交換可能枚数
+      $list["exchange_possible_num"] = 0;
+      $query_list = array();
+      $query_list[] = "t_delivery_goods_state_details.corporate_id = '".$auth['corporate_id']."'";
+      $query_list[] = "t_delivery_goods_state_details.rntl_cont_no = '".$wearer_size_change_post['rntl_cont_no']."'";
+      $query_list[] = "t_delivery_goods_state_details.werer_cd = '".$wearer_size_change_post['werer_cd']."'";
+      $query_list[] = "t_delivery_goods_state_details.item_cd = '".$list["item_cd"]."'";
+      $query_list[] = "t_delivery_goods_state_details.color_cd = '".$list["color_cd"]."'";
+      $query_list[] = "t_delivery_goods_state_details.size_cd = '".$list["now_size_cd"]."'";
+      $query_list[] = "t_delivery_goods_state_details.rtn_ok_flg = '1'";
+      $query = implode(' AND ', $query_list);
+
+      $arg_str = "";
+      $arg_str .= "SELECT ";
+      $arg_str .= " * ";
+      $arg_str .= " FROM ";
+      $arg_str .= "t_delivery_goods_state_details";
+      $arg_str .= " WHERE ";
+      $arg_str .= $query;
+      //ChromePhp::LOG($arg_str);
+      $t_delivery_goods_state_details = new TDeliveryGoodsStateDetails();
+      $t_delivery_goods_state_details_results = new Resultset(null, $t_delivery_goods_state_details, $t_delivery_goods_state_details->getReadConnection()->query($arg_str));
+      $result_obj = (array)$t_delivery_goods_state_details_results;
+      $results_cnt = $result_obj["\0*\0_count"];
+      if ($results_cnt > 0) {
+        $list["exchange_possible_num"] = $results_cnt;
+      }
+
+      //--その他の必要hiddenパラメータ--//
+      // 部門コード
+      $list["rntl_sect_cd"] = $wearer_size_change_post["rntl_sect_cd"];
+      // 職種コード
+      $list["job_type_cd"] = $wearer_size_change_post['job_type_cd'];
+      // 職種アイテムコード
+      $list["job_type_item_cd"] = $result->as_job_type_item_cd;
+
+      $all_list[] = $list;
+    }
+  }
+
+  $json_list["add_item"] = $all_list;
+
+  echo json_encode($json_list);
 });
 
 /**
