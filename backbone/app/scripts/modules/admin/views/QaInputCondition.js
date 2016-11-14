@@ -25,6 +25,7 @@ define([
 				'corporate': '#corporate',
 				'corporate_id': '#corporate_id',
 				'case_info': '#case_info',
+				'checkArea': '#checkArea',
 				"back": '.back',
 				"confirm": '.confirm',
 				"input_back": '.input_back',
@@ -89,7 +90,11 @@ define([
 				// 入力画面-確認ボタン
 				'click @ui.confirm': function(){
 					var that = this;
-
+					var find = $("#case_info").val();
+					//find.replace((/'/g, ''));
+					console.log(find);
+					$("#case_info").css('display', 'none');
+					$("#checkArea").html(find);
 					// 説明文、ボタンの表示切り替え
 					$('.confirm').css('display', 'none');
 					$('.back').css('display', 'none');
@@ -97,7 +102,7 @@ define([
 					$('.input_back').css('display', '');
 
 					// 入力項目をdisabled設定
-					$("#case_info").prop("disabled", true);
+					//$("#case_info").prop("disabled", true);
 				},
 				// 確認画面-戻るボタン
 				'click @ui.input_back': function(){
@@ -110,7 +115,9 @@ define([
 					$('.input_back').css('display', 'none');
 
 					// 入力項目をdisabled解除
-					$("#case_info").prop("disabled", false);
+					$("#case_info").css('display', '');
+					$("#checkArea").html('');
+					//$("#case_info").prop("disabled", false);
 				},
 				// 確認画面-OKボタン
 				'click @ui.complete': function(){
