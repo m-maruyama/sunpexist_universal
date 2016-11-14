@@ -188,7 +188,7 @@ $app->post('/purchase_history/search', function () use ($app) {
         $transaction = $app->transactionManager->get();
 
         if ($ac[0]->delete() == false) {
-            $error_list['delete'] = 'アカウントの削除に失敗しました。';
+            $error_list['delete'] = '注文の削除に失敗しました。';
             $json_list['errors'] = $error_list;
             echo json_encode($json_list);
             return true;
@@ -203,9 +203,6 @@ $app->post('/purchase_history/search', function () use ($app) {
     }
 
 
-
-
-
     //検索の場合
     $cond = $params['cond'];
     $page = $params['page'];
@@ -213,8 +210,8 @@ $app->post('/purchase_history/search', function () use ($app) {
 
 
     //初期表示は一番若い契約のnoを入れる
-    if(isset($cond['rntl_cont_no'])){
-    }else{
+    if (isset($cond['rntl_cont_no'])) {
+    } else {
         $login_corporate_id = $auth['corporate_id'];
 
         //sectionで一番若い契約Noを取得
@@ -236,43 +233,42 @@ $app->post('/purchase_history/search', function () use ($app) {
 
     //
     if (isset($auth['corporate_id'])) {
-        array_push($query_list, "TSaleOrderHistory.corporate_id = '" . $auth['corporate_id'] . "'");
+        array_push($query_list, "t_sale_order_history.corporate_id = '" . $auth['corporate_id'] . "'");
     }
     //契約no
     if (isset($cond['rntl_cont_no'])) {
-        array_push($query_list, "TSaleOrderHistory.rntl_cont_no = '" . $cond['rntl_cont_no'] . "'");
+        array_push($query_list, "t_sale_order_history.rntl_cont_no = '" . $cond['rntl_cont_no'] . "'");
     }
     //
     if (isset($cond['section'])) {
-        array_push($query_list, "TSaleOrderHistory.rntl_sect_cd = '" . $cond['section'] . "'");
+        array_push($query_list, "t_sale_order_history.rntl_sect_cd = '" . $cond['section'] . "'");
     }
     //この日付から
     if (isset($cond['order_day_from'])) {
-        array_push($query_list, "TSaleOrderHistory.sale_order_date >= '" . $cond['order_day_from'] . "'");
+        array_push($query_list, "t_sale_order_history.sale_order_date >= '" . $cond['order_day_from'] . "'");
     }
     //この日付まで
     if (isset($cond['order_day_to'])) {
-        array_push($query_list, "TSaleOrderHistory.sale_order_date <= '" . $cond['order_day_to'] . " 23:59:59'");
+        array_push($query_list, "t_sale_order_history.sale_order_date <= '" . $cond['order_day_to'] . " 23:59:59'");
     }
 
     //商品コード
     if (isset($cond['item_cd'])) {
-        array_push($query_list, "TSaleOrderHistory.item_cd = '" . $cond['item_cd'] . "'");
+        array_push($query_list, "t_sale_order_history.item_cd = '" . $cond['item_cd'] . "'");
     }
     //色コード
     if (isset($cond['item_color'])) {
-        array_push($query_list, "TSaleOrderHistory.color_cd = '" . $cond['item_color'] . "'");
+        array_push($query_list, "t_sale_order_history.color_cd = '" . $cond['item_color'] . "'");
     }
     //サイズ
     if (isset($cond['item_size'])) {
-        array_push($query_list, "TSaleOrderHistory.size_cd = '" . $cond['item_size'] . "'");
+        array_push($query_list, "t_sale_order_history.size_cd = '" . $cond['item_size'] . "'");
     }
 
     //sql文字列を' AND 'で結合
     $query = implode(' AND ', $query_list);
     $sort_key = '';
     $order = '';
-
 
     //第一ソート設定
     if (!empty($page['sort_key'])) {
@@ -281,77 +277,73 @@ $app->post('/purchase_history/search', function () use ($app) {
             $order = $page['order'];
         }
         if ($sort_key == 'line_no') {
-            $q_sort_key = 'line_no';
+            $q_sort_key = 'as_line_no';
         }
         if ($sort_key == 'sale_order_date') {
-            $q_sort_key = 'sale_order_date';
+            $q_sort_key = 'as_sale_order_date';
         }
         if ($sort_key == 'rntl_sect_name') {
-            $q_sort_key = 'rntl_sect_name';
+            $q_sort_key = 'as_rntl_sect_name';
         }
         if ($sort_key == 'item_name') {
-            $q_sort_key = 'item_name';
+            $q_sort_key = 'as_item_name';
         }
         if ($sort_key == 'color_cd') {
-            $q_sort_key = 'color_cd';
+            $q_sort_key = 'as_color_cd';
         }
         if ($sort_key == 'size_cd') {
-            $q_sort_key = 'size_cd';
+            $q_sort_key = 'as_size_cd';
         }
         if ($sort_key == 'quantity') {
-            $q_sort_key = 'quantity';
+            $q_sort_key = 'as_quantity';
         }
-
-
     } else {
         //指定がなければ社員番号
-        $sort_key = 'line_no';
-        $order = 'desc';
+        $sort_key = 'as_line_no';
+        //$order = 'asc';
     }
-
+    if ($order == 'asc') {
+        $order = 'desc';
+    } elseif ($order == 'desc') {
+        $order = 'asc';
+    }
 
     $all_list = array();
     $json_list = array();
 
-    $results = $app->modelsManager->createBuilder()
-        ->where($query)
-        ->from('TSaleOrderHistory')
-        ->columns('*')
-        //->columns(array('TSaleOrderHistory.*','MSection.*'))
-        ->join('MSection', 'TSaleOrderHistory.rntl_sect_cd = MSection.rntl_sect_cd')
-        ->orderBy($sort_key . ' ' . $order)
-        ->getQuery()
-        ->execute();
 
-    //->columns(array('TReturnedPlanInfo.*','TReturnedResults.*','MSection.*','MJobType.*','MItem.*'))
-    //->leftJoin('TReturnedPlanInfo','TReturnedPlanInfo.t_returned_plan_info_comb_hkey = TReturnedResults.t_returned_plan_info_comb_hkey')
-    //->join('MJobType','MJobType.rntl_cont_no = TReturnedResults.rntl_cont_no AND MJobType.job_type_cd = TReturnedResults.rent_pattern_code')
-    //->join('MSection','MSection.m_section_comb_hkey = TReturnedResults.m_section_comb_hkey')
-    //->join('MItem','MItem.m_item_comb_hkey = TReturnedResults.m_item_comb_hkey')
-    //->orderBy($sort_key.' '.$order)
+    $arg_str = "SELECT ";
+    $arg_str .= "t_sale_order_history.line_no as as_line_no,";
+    $arg_str .= "t_sale_order_history.sale_order_date as as_sale_order_date,";
+    $arg_str .= "t_sale_order_history.item_name as as_item_name,";
+    $arg_str .= "t_sale_order_history.color_cd as as_color_cd,";
+    $arg_str .= "t_sale_order_history.size_cd as as_size_cd,";
+    $arg_str .= "t_sale_order_history.quantity as as_quantity,";
+    $arg_str .= "m_section.rntl_sect_name as as_rntl_sect_name,";
+    $arg_str .= "t_sale_order_history.snd_kbn as as_snd_kbn";
+    $arg_str .= " FROM t_sale_order_history";
+    $arg_str .= " INNER JOIN m_section";
+    $arg_str .= " ON (t_sale_order_history.corporate_id = m_section.corporate_id";
+    $arg_str .= " AND t_sale_order_history.rntl_cont_no = m_section.rntl_cont_no";
+    $arg_str .= " AND t_sale_order_history.rntl_sect_cd = m_section.rntl_sect_cd)";
+    $arg_str .= " WHERE ";
+    $arg_str .= $query;
+    $arg_str .= " ORDER BY " . $q_sort_key . " " . $order;
 
+    $t_sale_order_history = new TSaleOrderHistory();
 
-    //$user_id_val = $cond['user_id'];
-    //$user_name_val = $cond['user_name'];
-    //$mail_address = $cond['mail_address'];
-
-    //全検索
-    //$results = TSaleOrderHistory::find(array(
-    //    'order' => "$sort_key $order",
-    //'order' => "$sort_key $order",
-    //   'conditions' =>
-    //       "corporate_id = '$corporate_id'
-    //        ",
-    //'conditions'  => "'$user_name_val%"
-    //));
-    $results_count = (count($results));//ページング処理２０個制限の前に数を数える
+    $results = new Resultset(null, $t_sale_order_history, $t_sale_order_history->getReadConnection()->query($arg_str));
+    $result_obj = (array)$results;
+    $results_cnt = $result_obj["\0*\0_count"];
     $paginator_model = new PaginatorModel(
         array(
-            'data' => $results,
-            'limit' => $page['records_per_page'],
-            'page' => $page['page_number'],
+            "data" => $results,
+            "limit" => $page['records_per_page'],
+            "page" => $page['page_number']
         )
     );
+
+    $results_count = (count($results));//ページング処理２０個制限の前に数を数える
 
     //リスト作成
     $list = array();
@@ -362,14 +354,14 @@ $app->post('/purchase_history/search', function () use ($app) {
     $results = $paginator->items;
     foreach ($results as $result) {
         //ChromePhp::log($result);
-        $list['line_no'] = $result->tSaleOrderHistory->line_no;//注文番号
-        $list['sale_order_date'] = $result->tSaleOrderHistory->sale_order_date;//注文日
-        $list['rntl_sect_cd'] = $result->mSection->rntl_sect_name;//拠点ID
-        $list['item_name'] = $result->tSaleOrderHistory->item_name;//商品名
-        $list['color_cd'] = $result->tSaleOrderHistory->color_cd;//カラーコード
-        $list['size_cd'] = $result->tSaleOrderHistory->size_cd;//サイズコード
-        $list['quantity'] = $result->tSaleOrderHistory->quantity;//数量
-        $list['snd_kbn'] = $result->tSaleOrderHistory->snd_kbn;//送信区分
+        $list['line_no'] = $result->as_line_no;//注文番号
+        $list['sale_order_date'] = $result->as_sale_order_date;//注文日
+        $list['rntl_sect_cd'] = $result->as_rntl_sect_name;//拠点ID
+        $list['item_name'] = $result->as_item_name;//商品名
+        $list['color_cd'] = $result->as_color_cd;//カラーコード
+        $list['size_cd'] = $result->as_size_cd;//サイズコード
+        $list['quantity'] = $result->as_quantity;//数量
+        $list['snd_kbn'] = $result->as_snd_kbn;//送信区分
         array_push($all_list, $list);//$all_listaに$listをpush
     }
     $page_list['records_per_page'] = $page['records_per_page'];
@@ -381,6 +373,3 @@ $app->post('/purchase_history/search', function () use ($app) {
 
     echo json_encode($json_list);
 });
-
-
-
