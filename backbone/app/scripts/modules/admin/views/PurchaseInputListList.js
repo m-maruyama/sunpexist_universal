@@ -33,8 +33,12 @@ define([
 
 			},
 			events: {
-				"click @ui.confBtn": function() {
-					//e.preventDefault();
+				"click @ui.confBtn": function(e) {
+					e.preventDefault();
+					if ($("#total_price").text() == 0){
+						alert('合計金額が１円以下のため、注文ができません。');
+						return;
+					}
 					$("select").attr("disabled", "disabled");
 					this.ui.updBtn.removeClass('hidden');
 					this.ui.bckBtn.removeClass('hidden');
