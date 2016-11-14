@@ -27,7 +27,15 @@ define([
 					ship_to_brnch_cd : null,
 					zip_no : null,
 					address : null,
+					m_job_type_comb_hkey : null,
+					m_section_comb_hkey : null,
 				};
+				if(this.get('m_section_comb_hkey')) {
+					result.m_section_comb_hkey = this.get('m_section_comb_hkey');
+				}
+				if(this.get('m_job_type_comb_hkey')) {
+					result.m_job_type_comb_hkey = this.get('m_job_type_comb_hkey');
+				}
 				if(this.get('rntl_cont_no')) {
 					result.rntl_cont_no = this.get('rntl_cont_no');
 				}

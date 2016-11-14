@@ -85,8 +85,12 @@ $app->post('/agreement_no_input', function () use ($app) {
                 $json_list['job_type_cd'] = $wearer_odr_post['job_type_cd'];
                 $json_list['ship_to_cd'] = $wearer_odr_post['ship_to_cd'];
                 $json_list['ship_to_brnch_cd'] = $wearer_odr_post['ship_to_brnch_cd'];
-                $json_list['appointment_ymd'] = date('Y/m/d', strtotime($wearer_odr_post['appointment_ymd']));
-                $json_list['resfl_ymd'] = date('Y/m/d', strtotime($wearer_odr_post['resfl_ymd']));
+                if($wearer_odr_post['appointment_ymd']){
+                    $json_list['appointment_ymd'] = date('Y/m/d', strtotime($wearer_odr_post['appointment_ymd']));
+                }
+                if($wearer_odr_post['resfl_ymd']){
+                    $json_list['resfl_ymd'] = date('Y/m/d', strtotime($wearer_odr_post['resfl_ymd']));
+                }
             }
         }else{
             foreach ($results as $result) {
@@ -208,8 +212,12 @@ $app->post('/wearer_input', function () use ($app) {
             $json_list['job_type_cd'] = $wearer_odr_post['job_type_cd'];
             $json_list['ship_to_cd'] = $wearer_odr_post['ship_to_cd'];
             $json_list['ship_to_brnch_cd'] = $wearer_odr_post['ship_to_brnch_cd'];
-            $json_list['appointment_ymd'] = date('Y/m/d', strtotime($wearer_odr_post['appointment_ymd']));
-            $json_list['resfl_ymd'] = date('Y/m/d', strtotime($wearer_odr_post['resfl_ymd']));
+            if($wearer_odr_post['appointment_ymd']){
+                $json_list['appointment_ymd'] = date('Y/m/d', strtotime($wearer_odr_post['appointment_ymd']));
+            }
+            if($wearer_odr_post['resfl_ymd']){
+                $json_list['resfl_ymd'] = date('Y/m/d', strtotime($wearer_odr_post['resfl_ymd']));
+            }
         }
     }else{
         foreach ($results as $result) {
@@ -219,7 +227,6 @@ $app->post('/wearer_input', function () use ($app) {
         }
         $app->session->remove("wearer_odr_post");
     }
-
     $m_section_list = $all_list;
     //--拠点ここまで
 
@@ -306,8 +313,12 @@ $app->post('/wearer_input', function () use ($app) {
         $json_list['sex_kbn'] = $wearer_odr_post['sex_kbn'];
         $json_list['rntl_sect_cd'] = $wearer_odr_post['rntl_sect_cd'];
         $json_list['job_type_cd'] = $wearer_odr_post['job_type_cd'];
-        $json_list['appointment_ymd'] = date('Y/m/d', strtotime($wearer_odr_post['appointment_ymd']));
-        $json_list['resfl_ymd'] = date('Y/m/d', strtotime($wearer_odr_post['resfl_ymd']));
+        if($wearer_odr_post['appointment_ymd']){
+            $json_list['appointment_ymd'] = date('Y/m/d', strtotime($wearer_odr_post['appointment_ymd']));
+        }
+        if($wearer_odr_post['resfl_ymd']){
+            $json_list['resfl_ymd'] = date('Y/m/d', strtotime($wearer_odr_post['resfl_ymd']));
+        }
 
         $query_list = array();
         array_push($query_list, "corporate_id = '".$auth['corporate_id']."'");
@@ -739,7 +750,7 @@ $app->post('/input_insert', function () use ($app) {
     // 出荷先マスタ．企業ID　＝　ログインしているアカウントの企業ID　AND
     array_push($query_list,"corporate_id = '".$auth['corporate_id']."'");
 
-    if($cond['ship_to_cd']){
+    if($cond['ship_to_cd']&&$cond['ship_to_brnch_cd']){
         // 出荷先マスタ．出荷先コード　＝　画面で選択されている出荷先コード
         array_push($query_list,"ship_to_cd = '".$cond['ship_to_cd']."'");
         // 出荷先マスタ．出荷先支店コード　＝　画面で選択されている出荷先支店コード
@@ -825,7 +836,7 @@ $app->post('/input_insert', function () use ($app) {
     $m_wearer_std_tran->appointment_ymd = date("Ymd", strtotime($cond['appointment_ymd']));//発令日
     $m_wearer_std_tran->resfl_ymd = date("Ymd", strtotime($cond['resfl_ymd']));//着用開始日
     $m_wearer_std_tran->ship_to_cd = $cond['ship_to_cd']; //出荷先コード
-    $m_wearer_std_tran->ship_to_brnch_cd = $cond['ship_to_brnch_cd']; //出荷先支店コード
+    $m_wearer_std_tran->ship_to_brnch_cd = $cond['std_ship_to_brnch_cd']; //出荷先支店コード
     $m_wearer_std_tran->rntl_cont_no_bef = ''; //レンタル契約No.（前）
     $m_wearer_std_tran->rntl_sect_cd_bef = '';//レンタル部門コード（前）
     $m_wearer_std_tran->job_type_cd_bef = ''; //職種コード（前）
@@ -845,7 +856,6 @@ $app->post('/input_insert', function () use ($app) {
     $m_wearer_std_tran->m_job_type_comb_hkey = $m_job_type[0]->m_job_type_comb_hkey;//職種マスタ_統合ハッシュキー
     $m_wearer_std_tran->m_section_comb_hkey = $m_section[0]->m_section_comb_hkey;//部門マスタ_統合ハッシュキー
     if($create_flg){
-        $m_wearer_std_tran->m_section_comb_hkey = $m_section[0]->m_section_comb_hkey;//部門マスタ_統合ハッシュキー
         //新規作成
         if ($m_wearer_std_tran->create() == false) {
             array_push($error_list, '着用者の登録に失敗しました。');

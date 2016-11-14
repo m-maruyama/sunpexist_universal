@@ -17,7 +17,6 @@ $app->post('/wearer_search/search', function ()use($app){
     $cond = $params['cond'];
     $page = $params['page'];
     $query_list = array();
-
     //---既存着用者基本マスタ情報リスト取得---//
     //企業ID
     array_push($query_list, "m_wearer_std_tran.corporate_id = '".$auth['corporate_id']."'");
@@ -47,8 +46,8 @@ $app->post('/wearer_search/search', function ()use($app){
     }
     // 発注情報トラン．発注状況区分 = 貸与
     array_push($query_list,"(t_order_tran.order_sts_kbn = '1' or t_order_tran.order_sts_kbn IS NULL)");
-//    // 発注情報トラン．理由区分 <> 追加貸与
-    array_push($query_list,"(t_order_tran.order_reason_kbn != '3' or t_order_tran.order_reason_kbn IS NULL)");
+    // 発注情報トラン．理由区分 <> 追加貸与
+    array_push($query_list,"(t_order_tran.order_reason_kbn != '03' or t_order_tran.order_reason_kbn IS NULL)");
 
     $query = implode(' AND ', $query_list);
 
@@ -78,12 +77,13 @@ $app->post('/wearer_search/search', function ()use($app){
     $arg_str .= "t_order_tran.order_req_no as as_order_req_no,";
     $arg_str .= "m_section.rntl_sect_name as as_rntl_sect_name,";
     $arg_str .= "m_job_type.job_type_name as as_job_type_name";
-    $arg_str .= " FROM m_wearer_std_tran LEFT JOIN t_order_tran";
-    $arg_str .= " ON m_wearer_std_tran.m_wearer_std_comb_hkey = t_order_tran.m_wearer_std_comb_hkey";
-    $arg_str .= " INNER JOIN m_section";
+    $arg_str .= " FROM m_wearer_std_tran";
+    $arg_str .= " LEFT JOIN m_section";
     $arg_str .= " ON m_wearer_std_tran.m_section_comb_hkey = m_section.m_section_comb_hkey";
-    $arg_str .= " INNER JOIN m_job_type";
+    $arg_str .= " LEFT JOIN m_job_type";
     $arg_str .= " ON m_wearer_std_tran.m_job_type_comb_hkey = m_job_type.m_job_type_comb_hkey";
+    $arg_str .= " LEFT JOIN t_order_tran";
+    $arg_str .= " ON m_wearer_std_tran.m_wearer_std_comb_hkey = t_order_tran.m_wearer_std_comb_hkey";
     $arg_str .= " WHERE ";
     $arg_str .= $query;
     $arg_str .= ") as distinct_table";
@@ -92,7 +92,6 @@ $app->post('/wearer_search/search', function ()use($app){
     $results = new Resultset(null, $m_weare_std_tran, $m_weare_std_tran->getReadConnection()->query($arg_str));
     $result_obj = (array)$results;
     $results_cnt = $result_obj["\0*\0_count"];
-
     $paginator_model = new PaginatorModel(
         array(
             "data"  => $results,
@@ -161,7 +160,7 @@ $app->post('/wearer_search/search', function ()use($app){
             // 発注、発注情報トラン有無フラグ
             if (isset($result->as_order_req_no)) {
                 $list['order_req_no'] = $result->as_order_req_no;
-                $list['order_kbn'] = "済";
+                $list['order_kbn'] = "<font color='red'>済</font>";
                 // 発注情報トラン有
                 $list['order_tran_flg'] = '1';
             }else{
@@ -229,20 +228,20 @@ $app->post('/wearer_search/search', function ()use($app){
                 $list['wearer_input_red'] = "[済]";
                 $list['disabled'] = "disabled";
             }
-//
-//            //「返却伝票ダウンロード」ボタン生成
-//            if (
-//                ($result->as_order_sts_kbn == '1'
-//                    && ($result->as_order_reason_kbn == '4' || $result->as_order_reason_kbn == '8' || $result->as_order_reason_kbn == '9' || $result->as_order_reason_kbn == '11')
-//                    && $result->as_snd_kbn == '0') ||
-//                ($result->as_order_sts_kbn == '2'
-//                    && ($result->as_order_reason_kbn == '4' || $result->as_order_reason_kbn == '8' || $result->as_order_reason_kbn == '9' || $result->as_order_reason_kbn == '11')
-//                    && $result->as_snd_kbn == '1'))
-//            {
-//                //「貸与開始」ボタン生成のパターンBかCの場合に表示
-//                $list['return_reciept_button'] = "返却伝票ダウンロード";
-//            }
-//
+
+            //「返却伝票ダウンロード」ボタン生成
+            if (
+                ($result->as_order_sts_kbn == '1'
+                    && ($result->as_order_reason_kbn == '4' || $result->as_order_reason_kbn == '8' || $result->as_order_reason_kbn == '9' || $result->as_order_reason_kbn == '11')
+                    && $result->as_snd_kbn == '0') ||
+                ($result->as_order_sts_kbn == '2'
+                    && ($result->as_order_reason_kbn == '4' || $result->as_order_reason_kbn == '8' || $result->as_order_reason_kbn == '9' || $result->as_order_reason_kbn == '11')
+                    && $result->as_snd_kbn == '1'))
+            {
+                //「貸与開始」ボタン生成のパターンBかCの場合に表示
+                $list['return_reciept_button'] = "返却伝票ダウンロード";
+            }
+
 
             // 発注入力へのパラメータ設定
             $list['param'] = '';

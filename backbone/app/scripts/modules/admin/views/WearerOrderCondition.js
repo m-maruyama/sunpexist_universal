@@ -53,6 +53,8 @@ define([
 				"inputButton": '.inputButton',
 				'datepicker': '.datepicker',
 				'timepicker': '.timepicker',
+				'm_job_type_comb_hkey': '#m_job_type_comb_hkey',
+				'm_section_comb_hkey': '#m_section_comb_hkey',
 			},
 			onRender: function() {
 				var that = this;
@@ -286,6 +288,8 @@ define([
 						'rntl_sect_cd': section,
 						'job_type': job_types[0],
 						'order_count': that.ui.order_count.val(),
+						'm_job_type_comb_hkey': that.ui.m_job_type_comb_hkey.val(),
+						'm_section_comb_hkey': that.ui.m_section_comb_hkey.val(),
 						'comment': this.ui.comment.val()
 					};
 					// 追加されるアイテム

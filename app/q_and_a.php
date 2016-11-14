@@ -270,8 +270,12 @@ $app->post('/qa/input', function ()use($app){
 				$src_query_list[] = "corporate_id = '".$cond["corporate"]."'";
 				$src_query = implode(' AND ', $src_query_list);
 
+                //入力ソースのエスケープ処理
+                $case_info_sorce = $cond["case_info"];
+                $case_info_sorce = str_replace("'","''",$case_info_sorce);
+
 				$up_query_list = array();
-				$up_query_list[] = "case_info = '".$cond["case_info"]."'";
+				$up_query_list[] = "case_info = '".$case_info_sorce."'";
 				$up_query_list[] = "upd_date = '".date("Y-m-d H:i:s", time())."'";
 				$up_query_list[] = "upd_user_id = '".$auth["accnt_no"]."'";
 				$up_query = implode(',', $up_query_list);
@@ -281,7 +285,7 @@ $app->post('/qa/input', function ()use($app){
 				$arg_str .= $up_query;
 				$arg_str .= " WHERE ";
 				$arg_str .= $src_query;
-				//ChromePhp::LOG($arg_str);
+				ChromePhp::LOG($arg_str);
 				$results = new Resultset(NULL, $q_and_a, $q_and_a->getReadConnection()->query($arg_str));
 				$result_obj = (array)$results;
 				$results_cnt = $result_obj["\0*\0_count"];

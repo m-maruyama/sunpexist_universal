@@ -99,6 +99,7 @@ define([
                         var res_list = res.attributes;
                         $('#agreement_no').prop("disabled", true);
                         that.render();
+                        $('#input_item').val(res_list['param']);
                         if(res_list['rntl_cont_no']&&(referrer > -1)){
                             if(res_list['wearer_info'][0]['cster_emply_cd']){
                                 that.ui.cster_emply_cd_chk.prop('checked',true);
@@ -154,8 +155,9 @@ define([
                     success:function(res){
                         var res_val = res.attributes;
                         if(res_val["errors"]) {
-                            var wearerInputView = new App.Admin.Views.WearerInput();
-                            that.triggerMethod('error_msg', res_val["errors"]);
+                            var er = res_val["errors"]
+                            res.attributes["errors"] = null;
+                            that.triggerMethod('error_msg', er);
                         }else{
                             alert('着用者を登録しました。');
                             location.href = './wearer_input_complete.html';
@@ -202,7 +204,9 @@ define([
                     success:function(res){
                         var res_val = res.attributes;
                         if(res_val["errors"]) {
-                            that.triggerMethod('error_msg', res_val["errors"]);
+                            var er = res_val["errors"]
+                            res.attributes["errors"] = null;
+                            that.triggerMethod('error_msg', er);
                         }else{
                             model.set('rntl_cont_no', rntl_cont_no);
                             var cond = {
@@ -210,7 +214,6 @@ define([
                                 "data": model.getReq()
                             };
                             model.url = App.api.WS0011;
-
                             model.fetchMx({
                                 data:cond,
                                 success:function(res){
@@ -249,7 +252,9 @@ define([
                                     success:function(res){
                                         var res_val = res.attributes;
                                         if(res_val["error_msg"]) {
-                                            that.triggerMethod('error_msg', res_val["error_msg"]);
+                                            var er = res_val["errors"]
+                                            res.attributes["errors"] = null;
+                                            that.triggerMethod('error_msg', er);
                                         }else{
                                             window.sessionStorage.setItem('referrer', 'wearer_input');
                                             location.href = './wearer_input.html';
