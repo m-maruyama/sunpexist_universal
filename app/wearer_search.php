@@ -17,7 +17,6 @@ $app->post('/wearer_search/search', function ()use($app){
     $cond = $params['cond'];
     $page = $params['page'];
     $query_list = array();
-
     //---既存着用者基本マスタ情報リスト取得---//
     //企業ID
     array_push($query_list, "m_wearer_std_tran.corporate_id = '".$auth['corporate_id']."'");
@@ -45,10 +44,10 @@ $app->post('/wearer_search/search', function ()use($app){
     if(!empty($cond['job_type'])){
         array_push($query_list, "m_wearer_std_tran.job_type_cd = '".$cond['job_type']."'");
     }
-    // 発注情報トラン．発注状況区分 = 貸与
-    array_push($query_list,"(t_order_tran.order_sts_kbn = '1' or t_order_tran.order_sts_kbn IS NULL)");
-//    // 発注情報トラン．理由区分 <> 追加貸与
-    array_push($query_list,"(t_order_tran.order_reason_kbn != '3' or t_order_tran.order_reason_kbn IS NULL)");
+//    // 発注情報トラン．発注状況区分 = 貸与
+//    array_push($query_list,"(t_order_tran.order_sts_kbn = '1' or t_order_tran.order_sts_kbn IS NULL)");
+////    // 発注情報トラン．理由区分 <> 追加貸与
+//    array_push($query_list,"(t_order_tran.order_reason_kbn != '03' or t_order_tran.order_reason_kbn IS NULL)");
 
     $query = implode(' AND ', $query_list);
 
