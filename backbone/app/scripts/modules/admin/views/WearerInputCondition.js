@@ -155,8 +155,9 @@ define([
                     success:function(res){
                         var res_val = res.attributes;
                         if(res_val["errors"]) {
-                            var wearerInputView = new App.Admin.Views.WearerInput();
-                            that.triggerMethod('error_msg', res_val["errors"]);
+                            var er = res_val["errors"]
+                            res.attributes["errors"] = null;
+                            that.triggerMethod('error_msg', er);
                         }else{
                             alert('着用者を登録しました。');
                             location.href = './wearer_input_complete.html';
@@ -251,7 +252,9 @@ define([
                                     success:function(res){
                                         var res_val = res.attributes;
                                         if(res_val["error_msg"]) {
-                                            that.triggerMethod('error_msg', res_val["error_msg"]);
+                                            var er = res_val["errors"]
+                                            res.attributes["errors"] = null;
+                                            that.triggerMethod('error_msg', er);
                                         }else{
                                             window.sessionStorage.setItem('referrer', 'wearer_input');
                                             location.href = './wearer_input.html';
