@@ -78,9 +78,9 @@ $app->post('/wearer_search/search', function ()use($app){
     $arg_str .= "m_section.rntl_sect_name as as_rntl_sect_name,";
     $arg_str .= "m_job_type.job_type_name as as_job_type_name";
     $arg_str .= " FROM m_wearer_std_tran";
-    $arg_str .= " INNER JOIN m_section";
+    $arg_str .= " LEFT JOIN m_section";
     $arg_str .= " ON m_wearer_std_tran.m_section_comb_hkey = m_section.m_section_comb_hkey";
-    $arg_str .= " INNER JOIN m_job_type";
+    $arg_str .= " LEFT JOIN m_job_type";
     $arg_str .= " ON m_wearer_std_tran.m_job_type_comb_hkey = m_job_type.m_job_type_comb_hkey";
     $arg_str .= " LEFT JOIN t_order_tran";
     $arg_str .= " ON m_wearer_std_tran.m_wearer_std_comb_hkey = t_order_tran.m_wearer_std_comb_hkey";
