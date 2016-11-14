@@ -143,7 +143,6 @@ define([
 							location.href = './wearer_search.html';
 						}else{
 							location.href = './home.html';
-
 						}
 					}
 				},
