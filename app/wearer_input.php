@@ -188,12 +188,13 @@ $app->post('/wearer_input', function () use ($app) {
         // 前画面セッション取得
         $wearer_odr_post = $app->session->get("wearer_odr_post");
         foreach ($results as $result) {
+            $list['rntl_sect_cd'] = $result->rntl_sect_cd;
             $list['rntl_cont_no'] = $result->rntl_cont_no;
-            $list['rntl_cont_name'] = $result->rntl_cont_name;
-            if (($list['rntl_cont_no'] == $wearer_odr_post['rntl_cont_no'])&&($referrer>-1)) {
-                $list['selected'] = 'selected';
+            $list['rntl_sect_name'] = $result->rntl_sect_name;
+            if (($list['rntl_sect_cd'] == $wearer_odr_post['rntl_sect_cd'])&&($referrer>-1)) {
+                $list['rntl_sect_cd_selected'] = 'selected';
             } else {
-                $list['selected'] = '';
+                $list['rntl_sect_cd_selected'] = '';
             }
 
             array_push($all_list, $list);
