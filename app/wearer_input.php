@@ -22,65 +22,85 @@ $app->post('/agreement_no_input', function () use ($app) {
 
     //--- 検索条件 ---//
     // 契約マスタ. 企業ID
-    array_push($query_list, "MContract.corporate_id = '".$auth['corporate_id']."'");
+    array_push($query_list, "m_contract.corporate_id = '".$auth['corporate_id']."'");
     // 契約マスタ. レンタル契約フラグ
-    array_push($query_list, "MContract.rntl_cont_flg = '1'");
+    array_push($query_list, "m_contract.rntl_cont_flg = '1'");
     // 契約リソースマスタ. 企業ID
-    array_push($query_list, "MContractResource.corporate_id = '".$auth['corporate_id']."'");
+    array_push($query_list, "m_contract_resource.corporate_id = '".$auth['corporate_id']."'");
     // アカウントマスタ.企業ID
-    array_push($query_list, "MAccount.corporate_id = '".$auth['corporate_id']."'");
+    array_push($query_list, "m_account.corporate_id = '".$auth['corporate_id']."'");
     // アカウントマスタ. ユーザーID
-    array_push($query_list, "MAccount.user_id = '".$auth['user_id']."'");
+    array_push($query_list, "m_account.user_id = '".$auth['user_id']."'");
 
     //sql文字列を' AND 'で結合
     $query = implode(' AND ', $query_list);
+    $arg_str = 'SELECT ';
+    $arg_str .= ' * ';
+    $arg_str .= ' FROM ';
+    $arg_str .= '(SELECT distinct on (m_contract.rntl_cont_no) ';
+    $arg_str .= 'm_contract.rntl_cont_no as as_rntl_cont_no,';
+    $arg_str .= 'm_contract.rntl_cont_name as as_rntl_cont_name';
+    $arg_str .= ' FROM ';
+    $arg_str .= 'm_contract';
+    $arg_str .= ' INNER JOIN m_contract_resource';
+    $arg_str .= ' ON m_contract.corporate_id = m_contract_resource.corporate_id';
+    $arg_str .= ' AND m_contract.rntl_cont_no = m_contract_resource.rntl_cont_no';
+    $arg_str .= ' INNER JOIN m_account';
+    $arg_str .= ' ON m_contract_resource.accnt_no = m_account.accnt_no';
+    $arg_str .= ' AND m_contract_resource.corporate_id = m_account.corporate_id';
+    $arg_str .= ' WHERE ';
+    $arg_str .= $query;
+    $arg_str .= ') as distinct_table';
+    $arg_str .= ' ORDER BY as_rntl_cont_no asc';
+    $m_contract = new MContract();
+    $results = new Resultset(null, $m_contract, $m_contract->getReadConnection()->query($arg_str));
+    $results_array = (array) $results;
+    $results_cnt = $results_array["\0*\0_count"];
 
-    //--- クエリー実行・取得 ---//
-    $results = MContract::query()
-        ->where($query)
-        ->columns(array('MContract.*', 'MContractResource.*', 'MAccount.*'))
-        ->innerJoin('MContractResource', 'MContract.corporate_id = MContractResource.corporate_id AND MContract.rntl_cont_no = MContractResource.rntl_cont_no')
-        ->join('MAccount', 'MAccount.accnt_no = MContractResource.accnt_no')
-        ->execute();
+    if ($results_cnt > 0) {
+        $list['rntl_cont_no'] = null;
+        $list['rntl_cont_name'] = null;
+        array_push($all_list, $list);
+        // 前画面が着用者検索画面でない場合、セッションを削除
+        if($referrer>-1){
+            // 前画面セッション取得
+            $wearer_odr_post = $app->session->get("wearer_odr_post");
+            foreach ($results as $result) {
+                $list['rntl_cont_no'] = $result->as_rntl_cont_no;
+                $list['rntl_cont_name'] = $result->as_rntl_cont_name;
+                if (($list['rntl_cont_no'] == $wearer_odr_post['rntl_cont_no'])&&($referrer>-1)) {
+                    $list['selected'] = 'selected';
+                } else {
+                    $list['selected'] = '';
+                }
 
-    // デフォルトは空を設定
-    $list['rntl_cont_no'] = null;
-    $list['rntl_cont_name'] = null;
-    array_push($all_list, $list);
-    // 前画面が着用者検索画面でない場合、セッションを削除
-    if($referrer>-1){
-        // 前画面セッション取得
-        $wearer_odr_post = $app->session->get("wearer_odr_post");
-        foreach ($results as $result) {
-            $list['rntl_cont_no'] = $result->mContract->rntl_cont_no;
-            $list['rntl_cont_name'] = $result->mContract->rntl_cont_name;
-            if (($list['rntl_cont_no'] == $wearer_odr_post['rntl_cont_no'])&&($referrer>-1)) {
-                $list['selected'] = 'selected';
-            } else {
-                $list['selected'] = '';
+                array_push($all_list, $list);
             }
-
-            array_push($all_list, $list);
+            if(isset($wearer_odr_post)){
+                $json_list['rntl_cont_no'] = $wearer_odr_post['rntl_cont_no'];
+                $json_list['werer_cd'] = $wearer_odr_post['werer_cd'];
+                $json_list['cster_emply_cd'] = $wearer_odr_post['cster_emply_cd'];
+                $json_list['sex_kbn'] = $wearer_odr_post['sex_kbn'];
+                $json_list['rntl_sect_cd'] = $wearer_odr_post['rntl_sect_cd'];
+                $json_list['job_type_cd'] = $wearer_odr_post['job_type_cd'];
+                $json_list['ship_to_cd'] = $wearer_odr_post['ship_to_cd'];
+                $json_list['ship_to_brnch_cd'] = $wearer_odr_post['ship_to_brnch_cd'];
+                $json_list['appointment_ymd'] = date('Y/m/d', strtotime($wearer_odr_post['appointment_ymd']));
+                $json_list['resfl_ymd'] = date('Y/m/d', strtotime($wearer_odr_post['resfl_ymd']));
+            }
+        }else{
+            foreach ($results as $result) {
+                $list['rntl_cont_no'] = $result->as_rntl_cont_no;
+                $list['rntl_cont_name'] = $result->as_rntl_cont_name;
+                array_push($all_list, $list);
+            }
+            $app->session->remove("wearer_odr_post");
         }
-        if(isset($wearer_odr_post)){
-            $json_list['rntl_cont_no'] = $wearer_odr_post['rntl_cont_no'];
-            $json_list['werer_cd'] = $wearer_odr_post['werer_cd'];
-            $json_list['cster_emply_cd'] = $wearer_odr_post['cster_emply_cd'];
-            $json_list['sex_kbn'] = $wearer_odr_post['sex_kbn'];
-            $json_list['rntl_sect_cd'] = $wearer_odr_post['rntl_sect_cd'];
-            $json_list['job_type_cd'] = $wearer_odr_post['job_type_cd'];
-            $json_list['ship_to_cd'] = $wearer_odr_post['ship_to_cd'];
-            $json_list['ship_to_brnch_cd'] = $wearer_odr_post['ship_to_brnch_cd'];
-            $json_list['appointment_ymd'] = date('Y/m/d', strtotime($wearer_odr_post['appointment_ymd']));
-            $json_list['resfl_ymd'] = date('Y/m/d', strtotime($wearer_odr_post['resfl_ymd']));
-        }
-    }else{
-        foreach ($results as $result) {
-            $list['rntl_cont_no'] = $result->mContract->rntl_cont_no;
-            $list['rntl_cont_name'] = $result->mContract->rntl_cont_name;
-            array_push($all_list, $list);
-        }
-        $app->session->remove("wearer_odr_post");
+    } else {
+        $list['rntl_cont_no'] = null;
+        $list['rntl_cont_name'] = '';
+        $list['selected'] = '';
+        array_push($all_list, $list);
     }
     $json_list['agreement_no_list'] = $all_list;
     echo json_encode($json_list);
@@ -130,69 +150,82 @@ $app->post('/wearer_input', function () use ($app) {
     //--性別ここまで
 
     //拠点--ここから
+    $all_list = array();
     $query_list = array();
-    //--- 検索条件 ---//
-    // 契約マスタ. 企業ID
-    array_push($query_list, "MContract.corporate_id = '".$auth['corporate_id']."'");
-    // 契約リソースマスタ. 企業ID
-    array_push($query_list, "MContractResource.corporate_id = '".$auth['corporate_id']."'");
-    // 契約リソースマスタ. レンタル契約No = 画面で選択されている契約No.
-    array_push($query_list, "MContractResource.rntl_cont_no = '".$cond['agreement_no']."'");
-    // アカウントマスタ.企業ID
-    array_push($query_list, "MAccount.corporate_id = '".$auth['corporate_id']."'");
-    // アカウントマスタ. ユーザーID
-    array_push($query_list, "MAccount.user_id = '".$auth['user_id']."'");
-
-    //sql文字列を' AND 'で結合
-    $query = implode(' AND ', $query_list);
-
-    //--- クエリー実行・取得 ---//
-    $m_contract_resources = MContract::query()
-        ->where($query)
-        ->columns(array('MContractResource.rntl_sect_cd'))
-        ->innerJoin('MContractResource', 'MContract.corporate_id = MContractResource.corporate_id')
-        ->join('MAccount', 'MAccount.accnt_no = MContractResource.accnt_no')
-        ->execute();
-    $rntl_sect_cd = null;
-    foreach ($m_contract_resources as $m_contract_resource) {
-        $rntl_sect_cd = $m_contract_resource->rntl_sect_cd;
-    }
-    $query_list = array();
-    $list = array();
-    $m_section_list = array();
-    //--- 検索条件 ---//
-    // 部門マスタ. 企業ID
-    array_push($query_list, "corporate_id = '".$auth['corporate_id']."'");
-    // 部門マスタ. レンタル契約No
-    array_push($query_list, "rntl_cont_no = '".$cond['agreement_no']."'");
-    if ($rntl_sect_cd) {
-        // 部門マスタ. レンタル部門コード
-        array_push($query_list, "rntl_sect_cd = '".$rntl_sect_cd."'");
-    }
-
-    //sql文字列を' AND 'で結合
-    $query = implode(' AND ', $query_list);
-
-    //--- クエリー実行・取得 ---//
-    $m_section_results = MSection::query()
-        ->where($query)
-        ->columns('*')
-        ->execute();
-    foreach ($m_section_results as $m_section_result) {
-        $list['rntl_sect_cd'] = $m_section_result->rntl_sect_cd;
-        $list['rntl_sect_name'] = $m_section_result->rntl_sect_name;
-        if (($list['rntl_sect_cd'] == $wearer_odr_post['rntl_sect_cd'])&&($referrer>-1)) {
-            $list['rntl_sect_cd_selected'] = 'selected';
-        } else {
-            $list['rntl_sect_cd_selected'] = '';
+    if (!empty($params["corporate_flg"])) {
+        if (!empty($params["corporate"])) {
+            array_push($query_list, "corporate_id = '".$params["corporate"]."'");
         }
-        array_push($m_section_list, $list);
+    } else {
+        array_push($query_list, "corporate_id = '".$auth["corporate_id"]."'");
     }
+    if (!empty($params['agreement_no'])) {
+        array_push($query_list, "rntl_cont_no = '".$params['agreement_no']."'");
+    } else {
+        if (empty($params["corporate_flg"])) {
+            array_push($query_list, "rntl_cont_no = '".$app->session->get('first_rntl_cont_no')."'");
+        }
+    }
+    $query = implode(' AND ', $query_list);
+
+    $arg_str = 'SELECT ';
+    $arg_str .= ' distinct on (rntl_sect_cd) *';
+    $arg_str .= ' FROM m_section';
+    if (!empty($query)) {
+        $arg_str .= ' WHERE ';
+        $arg_str .= $query;
+    }
+    $arg_str .= ' ORDER BY rntl_sect_cd asc';
+
+    $m_section = new MSection();
+    $results = new Resultset(null, $m_section, $m_section->getReadConnection()->query($arg_str));
+    $results_array = (array) $results;
+    $results_cnt = $results_array["\0*\0_count"];
+
+
+    // 前画面が着用者検索画面でない場合、セッションを削除
+    if($referrer>-1){
+        // 前画面セッション取得
+        $wearer_odr_post = $app->session->get("wearer_odr_post");
+        foreach ($results as $result) {
+            $list['rntl_cont_no'] = $result->rntl_cont_no;
+            $list['rntl_cont_name'] = $result->rntl_cont_name;
+            if (($list['rntl_cont_no'] == $wearer_odr_post['rntl_cont_no'])&&($referrer>-1)) {
+                $list['selected'] = 'selected';
+            } else {
+                $list['selected'] = '';
+            }
+
+            array_push($all_list, $list);
+        }
+        if(isset($wearer_odr_post)){
+            $json_list['rntl_cont_no'] = $wearer_odr_post['rntl_cont_no'];
+            $json_list['werer_cd'] = $wearer_odr_post['werer_cd'];
+            $json_list['cster_emply_cd'] = $wearer_odr_post['cster_emply_cd'];
+            $json_list['sex_kbn'] = $wearer_odr_post['sex_kbn'];
+            $json_list['rntl_sect_cd'] = $wearer_odr_post['rntl_sect_cd'];
+            $json_list['job_type_cd'] = $wearer_odr_post['job_type_cd'];
+            $json_list['ship_to_cd'] = $wearer_odr_post['ship_to_cd'];
+            $json_list['ship_to_brnch_cd'] = $wearer_odr_post['ship_to_brnch_cd'];
+            $json_list['appointment_ymd'] = date('Y/m/d', strtotime($wearer_odr_post['appointment_ymd']));
+            $json_list['resfl_ymd'] = date('Y/m/d', strtotime($wearer_odr_post['resfl_ymd']));
+        }
+    }else{
+        foreach ($results as $result) {
+            $list['rntl_sect_cd'] = $result->rntl_sect_cd;
+            $list['rntl_sect_name'] = $result->rntl_sect_name;
+            array_push($all_list, $list);
+        }
+        $app->session->remove("wearer_odr_post");
+    }
+
+    $m_section_list = $all_list;
     //--拠点ここまで
 
     //貸与パターン--ここから
     $query_list = array();
     $list = array();
+    $all_list = array();
     $job_type_list = array();
     //--- 検索条件 ---//
     // 職種マスタ. 企業ID
@@ -626,7 +659,6 @@ $app->post('/input_insert', function () use ($app) {
         array_push($error_list,'契約Noの値が不正です。');
     }
     // 社員コード
-    ChromePhp::LOG($cond);
     if ($cond['cster_emply_cd_chk']) {
         if (mb_strlen($cond['cster_emply_cd']) == 0) {
             $json_list["error_code"] = "1";
