@@ -85,11 +85,7 @@ define([
 						that.ui.address.val(res_list['address1']+res_list['address2']+res_list['address3']+res_list['address4']);
 						that.ui.member_name_kana.val(res_list['wearer_info'][0]['werer_name_kana']);
 						that.ui.back.val(res_list['param']);
-						var flg = false;
-						if(res_list['order_req_no']){
-							flg = true;
-							that.ui.delete.val(res_list['order_req_no']);
-						}
+
 						// 入力完了、発注送信ボタン表示/非表示制御
 						var data = {
 							'rntl_cont_no': res_list['rntl_cont_no'],
@@ -101,33 +97,29 @@ define([
 							"log_type": '3',
 							"data": data,
 						};
-						// modelForUpdate.fetchMx({
-						// 	data:cond,
-						// 	success:function(res) {
-						// 		var CM0140_res = res.attributes;
-						// 		//「入力完了」ボタン表示制御
-						// 		if (CM0140_res['order_input_ok_flg'] == "1" && CM0140_res['order_send_ok_flg'] == "1") {
-						// 			$('.inputButton').css('display', '');
-						// 			$('.orderSend').css('display', '');
-						// 		}
-						// 		if (CM0140_res['order_input_ok_flg'] == "0" && CM0140_res['order_send_ok_flg'] == "0") {
-						// 			$('.inputButton').css('display', 'none');
-						// 			$('.orderSend').css('display', 'none');
-						// 		}
-						// 		if (CM0140_res['order_input_ok_flg'] == "0" && CM0140_res['order_send_ok_flg'] == "1") {
-						// 			$('.inputButton').css('display', 'none');
-						// 			$('.orderSend').css('display', '');
-						// 		}
-						// 		if (CM0140_res['order_input_ok_flg'] == "1" && CM0140_res['order_send_ok_flg'] == "0") {
-						// 			$('.inputButton').css('display', '');
-						// 			$('.orderSend').css('display', 'none');
-						// 		}
-						// 		if(flg){
-						// 			that.ui.delete.css('display', '');
-						// 		}
-						// 	}
-						// });
-
+						modelForUpdate.fetchMx({
+							data:cond,
+							success:function(res) {
+								var CM0140_res = res.attributes;
+								//「入力完了」ボタン表示制御
+								if (CM0140_res['order_input_ok_flg'] == "1" && CM0140_res['order_send_ok_flg'] == "1") {
+									$('.inputButton').css('display', '');
+									$('.orderSend').css('display', '');
+								}
+								if (CM0140_res['order_input_ok_flg'] == "0" && CM0140_res['order_send_ok_flg'] == "0") {
+									$('.inputButton').css('display', 'none');
+									$('.orderSend').css('display', 'none');
+								}
+								if (CM0140_res['order_input_ok_flg'] == "0" && CM0140_res['order_send_ok_flg'] == "1") {
+									$('.inputButton').css('display', 'none');
+									$('.orderSend').css('display', '');
+								}
+								if (CM0140_res['order_input_ok_flg'] == "1" && CM0140_res['order_send_ok_flg'] == "0") {
+									$('.inputButton').css('display', '');
+									$('.orderSend').css('display', 'none');
+								}
+							}
+						});
 					}
 				});
 			},
@@ -221,52 +213,48 @@ define([
 					};
 
 				},
-				'change @ui.section': function(){
-					this.ui.section = $('#section');
-					var section = $("select[name='section']").val();
-					// 入力完了、発注送信ボタン表示/非表示制御
-					var data = {
-						'rntl_sect_cd': section
-					};
-					var modelForUpdate = this.model;
-					modelForUpdate.url = App.api.CM0140;
-					var cond = {
-						"scr": '貸与開始-発注入力・送信可否チェック',
-						"log_type": '3',
-						"data": data,
-					};
-					// modelForUpdate.fetchMx({
-					// 	data:cond,
-					// 	success:function(res) {
-					// 		var CM0140_res = res.attributes;
-					// 		//「入力完了」ボタン表示制御
-					// 		if (CM0140_res['order_input_ok_flg'] == "1" && CM0140_res['order_send_ok_flg'] == "1") {
-					// 			$('.inputButton').css('display', '');
-					// 			$('.orderSend').css('display', '');
-					// 		}
-					// 		if (CM0140_res['order_input_ok_flg'] == "0" && CM0140_res['order_send_ok_flg'] == "0") {
-					// 			$('.inputButton').css('display', 'none');
-					// 			$('.orderSend').css('display', 'none');
-					// 		}
-					// 		if (CM0140_res['order_input_ok_flg'] == "0" && CM0140_res['order_send_ok_flg'] == "1") {
-					// 			$('.inputButton').css('display', 'none');
-					// 			$('.orderSend').css('display', '');
-					// 		}
-					// 		if (CM0140_res['order_input_ok_flg'] == "1" && CM0140_res['order_send_ok_flg'] == "0") {
-					// 			$('.inputButton').css('display', '');
-					// 			$('.orderSend').css('display', 'none');
-					// 		}
-					// 	}
-					// });
-
-
-
-
-				},
-				'click @ui.section_btn': function (e) {
-					e.preventDefault();
-					this.triggerMethod('click:section_btn', this.model);
-				},
+				// 'change @ui.section': function(){
+				// 	this.ui.section = $('#section');
+				// 	var section = $("select[name='section']").val();
+				// 	// 入力完了、発注送信ボタン表示/非表示制御
+				// 	var data = {
+				// 		'rntl_sect_cd': section
+				// 	};
+				// 	var modelForUpdate = this.model;
+				// 	modelForUpdate.url = App.api.CM0140;
+				// 	var cond = {
+				// 		"scr": '貸与開始-発注入力・送信可否チェック',
+				// 		"log_type": '3',
+				// 		"data": data,
+				// 	};
+				// 	modelForUpdate.fetchMx({
+				// 		data:cond,
+				// 		success:function(res) {
+				// 			var CM0140_res = res.attributes;
+				// 			//「入力完了」ボタン表示制御
+				// 			if (CM0140_res['order_input_ok_flg'] == "1" && CM0140_res['order_send_ok_flg'] == "1") {
+				// 				$('.inputButton').css('display', '');
+				// 				$('.orderSend').css('display', '');
+				// 			}
+				// 			if (CM0140_res['order_input_ok_flg'] == "0" && CM0140_res['order_send_ok_flg'] == "0") {
+				// 				$('.inputButton').css('display', 'none');
+				// 				$('.orderSend').css('display', 'none');
+				// 			}
+				// 			if (CM0140_res['order_input_ok_flg'] == "0" && CM0140_res['order_send_ok_flg'] == "1") {
+				// 				$('.inputButton').css('display', 'none');
+				// 				$('.orderSend').css('display', '');
+				// 			}
+				// 			if (CM0140_res['order_input_ok_flg'] == "1" && CM0140_res['order_send_ok_flg'] == "0") {
+				// 				$('.inputButton').css('display', '');
+				// 				$('.orderSend').css('display', 'none');
+				// 			}
+				// 		}
+				// 	});
+				// },
+				// 'click @ui.section_btn': function (e) {
+				// 	e.preventDefault();
+				// 	this.triggerMethod('click:section_btn', this.model);
+				// },
 				// // 「保存」ボタン
 				'click @ui.inputButton': function(e){
 					e.preventDefault();
@@ -384,16 +372,6 @@ define([
 							}
 						});
 					};
-				},
-				'change @ui.job_type': function (e) {
-					//貸与パターン」のセレクトボックス変更時に、職種マスタ．特別職種フラグ＝ありの貸与パターンだった場合、アラートメッセージを表示する。
-					var job_types = $('#job_type').val().split(':');
-					if (job_types[1] === '1') {
-						alert('社内申請手続きを踏んでますか？');
-						return;
-					}
-					e.preventDefault();
-					this.triggerMethod('change:job_type');
 				},
 			},
 			onShow: function(val, type) {

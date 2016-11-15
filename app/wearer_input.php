@@ -179,7 +179,9 @@ $app->post('/wearer_input', function () use ($app) {
         ->execute();
     $rntl_sect_cd = null;
     $all_zero = false;
+    $sect_arr = array();
     foreach ($m_contract_resources as $m_contract_resource) {
+        array_push($sect_arr,"'".$m_contract_resource->rntl_sect_cd."'");
         if($m_contract_resource->rntl_sect_cd == '0000000000'){
             $all_zero = true;
         }
@@ -189,7 +191,7 @@ $app->post('/wearer_input', function () use ($app) {
     $query_list = array();
     //【前処理】で取得したレコードの中に、レンタル部門コード＝オール０「ゼロ」がセットされているレコードが存在しない場合、部門コードをセット
     if(!$all_zero){
-        array_push($query_list, "rntl_sect_cd = '".$auth['rntl_sect_cd']."'");
+        array_push($query_list, "rntl_sect_cd in(".implode(',',$sect_arr).")");
     }
     array_push($query_list, "corporate_id = '".$auth["corporate_id"]."'");
     array_push($query_list, "rntl_cont_no = '".$cond['agreement_no']."'");
@@ -561,20 +563,59 @@ $app->post('/change_section', function () use ($app) {
     $list = array();
     $json_list = array();
     $m_shipment_to_list = array();
-    //画面の「郵便番号」欄、「住所」欄の内容を動的に書き換える
-    //--- 検索条件 ---//
-    // 出荷先マスタ．企業ID　＝　ログインしているアカウントの企業ID　AND
-    array_push($query_list, "MShipmentTo.corporate_id = '".$auth['corporate_id']."'");
-    // 出荷先マスタ．レンタル契約No.　＝　画面で選択されている契約No.
-    array_push($query_list, "MShipmentTo.rntl_cont_no = '".$cond['agreement_no']."'");
+    if(!$cond['rntl_sect_cd']&&!$cond['m_shipment_to']){
+        $list['ship_to_cd'] = '';
+        $list['ship_to_brnch_cd'] = '';
+        $list['cust_to_brnch_name1'] = '';
+        $list['cust_to_brnch_name2'] = '';
+        $list['zip_no'] = '';
+        $list['address'] = '';
+        array_push($m_shipment_to_list, $list);
+        $json_list['change_m_shipment_to_list'] = $m_shipment_to_list;
+        echo json_encode($json_list);
+        return;
+    }elseif($cond['rntl_sect_cd']){
+        //画面の「郵便番号」欄、「住所」欄の内容を動的に書き換える
+        //--- 検索条件 ---//
+        // 出荷先マスタ．企業ID　＝　ログインしているアカウントの企業ID　AND
+        array_push($query_list, "MShipmentTo.corporate_id = '".$auth['corporate_id']."'");
+        // 出荷先マスタ．レンタル契約No.　＝　画面で選択されている契約No.
+        array_push($query_list, "MShipmentTo.rntl_cont_no = '".$cond['agreement_no']."'");
 
-    //出荷先」のセレクトボックスが「支店店舗と同じ」以外が選択状態の場合
-    if ($cond['m_shipment_to_name'] != '支店店舗と同じ') {
+        //出荷先」のセレクトボックスが「支店店舗と同じ」以外が選択状態の場合
+        if ($cond['m_shipment_to_name'] != '支店店舗と同じ') {
+            $m_shipment_to = explode(',', $cond['m_shipment_to']);
+            //出荷先マスタ．出荷先コード　＝　画面で選択されている出荷先の出荷先コード　AND
+            array_push($query_list, "MShipmentTo.ship_to_cd = '".$m_shipment_to[0]."'");
+            //出荷先マスタ．出荷先支店コード　＝　画面で選択されている出荷先の出荷先支店コード
+            array_push($query_list, "MShipmentTo.ship_to_brnch_cd = '".$m_shipment_to[1]."'");
+        }else{
+            //出荷先」のセレクトボックスが「支店店舗と同じ」が選択状態の場合
+            //部門マスタ．企業ID　＝　ログインしているアカウントの企業ID　AND
+            array_push($query_list, "MSection.corporate_id = '".$auth['corporate_id']."'");
+            //部門マスタ．レンタル契約No.　＝　画面で選択されている契約No.　AND
+            array_push($query_list, "MSection.rntl_cont_no = '".$cond['agreement_no']."'");
+            //部門マスタ．レンタル部門コード　＝　画面で選択されている拠点 AND
+            array_push($query_list, "MSection.rntl_sect_cd = '".$cond['rntl_sect_cd']."'");
+            //出荷先マスタ．企業ID　＝　ログインしているアカウントの企業ID　AND
+            array_push($query_list, "MShipmentTo.corporate_id = '".$auth['corporate_id']."'");
+            //出荷先マスタ．レンタル契約No.　＝　画面で選択されている契約No.　AND
+            array_push($query_list, "MShipmentTo.rntl_cont_no = '".$cond['agreement_no']."'");
+        }
+    }else{
+        //--- 検索条件 ---//
+        // 出荷先マスタ．企業ID　＝　ログインしているアカウントの企業ID　AND
+        array_push($query_list, "MShipmentTo.corporate_id = '".$auth['corporate_id']."'");
+        // 出荷先マスタ．レンタル契約No.　＝　画面で選択されている契約No.
+        array_push($query_list, "MShipmentTo.rntl_cont_no = '".$cond['agreement_no']."'");
+
+        //出荷先」のセレクトボックスが「支店店舗と同じ」以外が選択状態の場合
         $m_shipment_to = explode(',', $cond['m_shipment_to']);
         //出荷先マスタ．出荷先コード　＝　画面で選択されている出荷先の出荷先コード　AND
         array_push($query_list, "MShipmentTo.ship_to_cd = '".$m_shipment_to[0]."'");
         //出荷先マスタ．出荷先支店コード　＝　画面で選択されている出荷先の出荷先支店コード
         array_push($query_list, "MShipmentTo.ship_to_brnch_cd = '".$m_shipment_to[1]."'");
+
     }
     //sql文字列を' AND 'で結合
     $query = implode(' AND ', $query_list);
@@ -584,6 +625,9 @@ $app->post('/change_section', function () use ($app) {
         ->columns(array('MShipmentTo.*'));
     // 「出荷先」のセレクトボックスが「支店店舗と同じ」が選択状態の場合
     if ($cond['m_shipment_to_name'] == '支店店舗と同じ') {
+        //出荷先マスタ．出荷先コード　＝　部門マスタ．標準出荷先コード　AND
+        //出荷先マスタ．出荷先支店コード　＝　部門マスタ．標準出荷先支店コード
+        //出荷先マスタ．出荷先コード　＝　画面で選択されている出荷先の出荷先コード　AND
         $q_str->join('MSection', 'MShipmentTo.ship_to_cd = MSection.std_ship_to_cd AND MShipmentTo.ship_to_brnch_cd = MSection.std_ship_to_brnch_cd');
     }
     // 出荷先マスタ．出荷先コード　＝　部門マスタ．標準出荷先コード AND 出荷先マスタ．出荷先支店コード　＝　部門マスタ．標準出荷先支店コード
@@ -693,6 +737,7 @@ $app->post('/input_insert', function () use ($app) {
         array_push($error_list, '契約Noの値が不正です。');
     }
     // 社員コード
+    ChromePhp::LOG($cond['cster_emply_cd_chk']);
     if ($cond['cster_emply_cd_chk']) {
         if (mb_strlen($cond['cster_emply_cd']) == 0) {
             $json_list["error_code"] = "1";

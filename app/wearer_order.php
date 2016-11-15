@@ -772,23 +772,31 @@ $app->post('/wearer_order_insert', function () use ($app) {
     foreach ($add_item_input as $add_item_input_map) {
         // 発注枚数フォーマットチェック
         if (empty($add_item_input_map["add_order_num_disable"])) {
+            if (!$add_item_input_map["add_order_num"]) {
+                array_push($error_list,'発注枚数を入力してください。');
+                $json_list["error_code"] = "1";
+            }
+        }
+        if (empty($add_item_input_map["add_order_num_disable"])) {
             if (!ctype_digit(strval($add_item_input_map["add_order_num"]))) {
                 array_push($error_list,'発注枚数には半角数字を入力してください。');
-                $json_list['error_msg'] = $error_list;
                 $json_list["error_code"] = "1";
-                break;
             }
         }
         $order_count = intval($order_count) + intval($add_item_input_map["add_order_num"]);
         if (intval($cond["order_count"])<$order_count) {
             array_push($error_list,'発注可能枚数を超えています。');
-            $json_list['error_msg'] = $error_list;
             $json_list["error_code"] = "1";
-            break;
+        }
+        // サイズチェック
+        if (!$add_item_input_map["add_size_cd"]) {
+            array_push($error_list,'サイズを入力してください。');
+            $json_list["error_code"] = "1";
         }
     }
     //DB登録
     if($json_list["error_code"]=="1"){
+        $json_list['error_msg'] = $error_list;
         echo json_encode($json_list);
         return true;
     }

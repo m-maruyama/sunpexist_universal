@@ -1,7 +1,7 @@
 <label class="col-md-2 control-label" for="section">拠点</label>
 <div class="col-md-4">
-	<select class="input-sm" name="section" id="section" {{disabled}}>
+	<select class="input-sm" name="section" id="section" disabled>
 		{{#each m_section_list}}<option value="{{rntl_sect_cd}}" {{selected}}>{{rntl_sect_name}}</option>{{/each}}
 	</select>
-	<a  {{disabled}} href="" type="button" class="btn btn-primary btn-sm" id="section_btn" title="絞り込み" data-toggle="modal" data-target="#modal-example">絞り込み</a>
+	<a  disabled href="" type="button" class="btn btn-primary btn-sm" id="section_btn" title="絞り込み" data-toggle="modal" data-target="#modal-example">絞り込み</a>
 </div>

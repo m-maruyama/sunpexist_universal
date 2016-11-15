@@ -270,14 +270,7 @@ define([
             events: {
                 'change @ui.section': function (e) {
                     e.preventDefault();
-                    if (this.ui.section.val()) {
-                        change_select(this.model, $('#agreement_no').val(), this.ui.section.val(), this.ui.m_shipment_to.val(), this.ui.m_shipment_to.children(':selected').text());
-                    } else {
-                        $('#zip_no').val('');
-                        $('#address').val('');
-                        $('#m_shipment_to').val('');
-                    }
-
+                    change_select(this.model, $('#agreement_no').val(), this.ui.section.val(), this.ui.m_shipment_to.val(), this.ui.m_shipment_to.children(':selected').text());
                 },
                 'change @ui.m_shipment_to': function (e) {
                     e.preventDefault();

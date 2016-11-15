@@ -1,7 +1,7 @@
 <div class="form-group">
 	<label class="col-md-4 control-label" for="job_type">貸与パターン</label>
 	<div class="col-md-8">
-		<select class="form-control input-sm" name="job_type" id="job_type" onfocus="log(this.value)" {{disabled}}>
+		<select class="form-control input-sm" name="job_type" id="job_type" onfocus="log(this.value)" disabled>
 			{{#each job_type_list}}<option value="{{job_type_cd}}:{{sp_job_type_flg}}" {{selected}}>{{job_type_name}}</option>{{/each}}
 		</select>
 	</div>
