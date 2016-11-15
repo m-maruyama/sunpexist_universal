@@ -67,7 +67,41 @@ $app->post('/global_menu', function () use ($app) {
     if ($auth['user_type'] != '1') {
         $json_list['admin'] = $auth['user_type'];
     }
+
+    //ボタン表示非表示制御
+    if($app->session->get("auth")['button1_use_flg']==1){$json_list['button1_use_flg']=1;};
+    if($app->session->get("auth")['button2_use_flg']==1){$json_list['button2_use_flg']=1;};
+    if($app->session->get("auth")['button3_use_flg']==1){$json_list['button3_use_flg']=1;};
+    if($app->session->get("auth")['button4_use_flg']==1){$json_list['button4_use_flg']=1;};
+    if($app->session->get("auth")['button5_use_flg']==1){$json_list['button5_use_flg']=1;};
+    if($app->session->get("auth")['button6_use_flg']==1){$json_list['button6_use_flg']=1;};
+    if($app->session->get("auth")['button7_use_flg']==1){$json_list['button7_use_flg']=1;};
+    if($app->session->get("auth")['button8_use_flg']==1){$json_list['button8_use_flg']=1;};
+    if($app->session->get("auth")['button9_use_flg']==1){$json_list['button9_use_flg']=1;};
+    if($app->session->get("auth")['button10_use_flg']==1){$json_list['button10_use_flg']=1;};
+    if($app->session->get("auth")['button11_use_flg']==1){$json_list['button11_use_flg']=1;};
+    if($app->session->get("auth")['button12_use_flg']==1){$json_list['button12_use_flg']=1;};
+    if($app->session->get("auth")['button13_use_flg']==1){$json_list['button13_use_flg']=1;};
+    if($app->session->get("auth")['button14_use_flg']==1){$json_list['button14_use_flg']=1;};
+    if($app->session->get("auth")['button15_use_flg']==1){$json_list['button15_use_flg']=1;};
+    if($app->session->get("auth")['button16_use_flg']==1){$json_list['button16_use_flg']=1;};
+    if($app->session->get("auth")['button17_use_flg']==1){$json_list['button17_use_flg']=1;};
+    if($app->session->get("auth")['button18_use_flg']==1){$json_list['button18_use_flg']=1;};
+    if($app->session->get("auth")['button19_use_flg']==1){$json_list['button19_use_flg']=1;};
+    if($app->session->get("auth")['button20_use_flg']==1){$json_list['button20_use_flg']=1;};
+    if($app->session->get("auth")['button21_use_flg']==1){$json_list['button21_use_flg']=1;};
+    if($app->session->get("auth")['button22_use_flg']==1){$json_list['button22_use_flg']=1;};
+    if($app->session->get("auth")['button23_use_flg']==1){$json_list['button23_use_flg']=1;};
+    if($app->session->get("auth")['button24_use_flg']==1){$json_list['button24_use_flg']=1;};
+    if($app->session->get("auth")['button25_use_flg']==1){$json_list['button25_use_flg']=1;};
+    if($app->session->get("auth")['button26_use_flg']==1){$json_list['button26_use_flg']=1;};
+    if($app->session->get("auth")['button27_use_flg']==1){$json_list['button27_use_flg']=1;};
+    if($app->session->get("auth")['button28_use_flg']==1){$json_list['button28_use_flg']=1;};
+    if($app->session->get("auth")['button29_use_flg']==1){$json_list['button29_use_flg']=1;};
+    if($app->session->get("auth")['button30_use_flg']==1){$json_list['button30_use_flg']=1;};
+    json_encode($json_list);
     echo json_encode($json_list);
+
 });
 
 /*
