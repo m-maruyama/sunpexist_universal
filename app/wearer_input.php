@@ -154,22 +154,12 @@ $app->post('/wearer_input', function () use ($app) {
     //--性別ここまで
 
     //拠点--ここから
+    $list = array();
     $all_list = array();
     $query_list = array();
-    if (!empty($params["corporate_flg"])) {
-        if (!empty($params["corporate"])) {
-            array_push($query_list, "corporate_id = '".$params["corporate"]."'");
-        }
-    } else {
-        array_push($query_list, "corporate_id = '".$auth["corporate_id"]."'");
-    }
-    if (!empty($params['agreement_no'])) {
-        array_push($query_list, "rntl_cont_no = '".$params['agreement_no']."'");
-    } else {
-        if (empty($params["corporate_flg"])) {
-            array_push($query_list, "rntl_cont_no = '".$app->session->get('first_rntl_cont_no')."'");
-        }
-    }
+    array_push($query_list, "corporate_id = '".$auth["corporate_id"]."'");
+    array_push($query_list, "rntl_cont_no = '".$cond['agreement_no']."'");
+
     $query = implode(' AND ', $query_list);
 
     $arg_str = 'SELECT ';
@@ -193,7 +183,6 @@ $app->post('/wearer_input', function () use ($app) {
         $wearer_odr_post = $app->session->get("wearer_odr_post");
         foreach ($results as $result) {
             $list['rntl_sect_cd'] = $result->rntl_sect_cd;
-            $list['rntl_cont_no'] = $result->rntl_cont_no;
             $list['rntl_sect_name'] = $result->rntl_sect_name;
             if (($list['rntl_sect_cd'] == $wearer_odr_post['rntl_sect_cd'])&&($referrer>-1)) {
                 $list['rntl_sect_cd_selected'] = 'selected';
@@ -227,7 +216,7 @@ $app->post('/wearer_input', function () use ($app) {
         }
         $app->session->remove("wearer_odr_post");
     }
-    $m_section_list = $all_list;
+    $json_list['m_section_list'] = $all_list;
     //--拠点ここまで
 
     //貸与パターン--ここから
@@ -303,7 +292,6 @@ $app->post('/wearer_input', function () use ($app) {
     $json_list['m_shipment_to_list'] = $m_shipment_to_list;
     $json_list['job_type_list'] = $job_type_list;
     $json_list['sex_kbn_list'] = $sex_kbn_list;
-    $json_list['m_section_list'] = $m_section_list;
 
 
     if(isset($wearer_odr_post['rntl_cont_no'])){
