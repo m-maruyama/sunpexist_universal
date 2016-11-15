@@ -12,12 +12,15 @@ $app->post('/account/search', function () use ($app) {
 
     // アカウントセッション取得
     $auth = $app->session->get('auth');
+
+    //一般ユーザーは検索できない
+    /*
     if ($auth['user_type'] == '1') {
         $json_list['redirect'] = $auth['user_type'];
         echo json_encode($json_list);
-
         return;
     }
+    */
 
     $cond = $params['cond'];
     $page = $params['page'];

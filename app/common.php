@@ -67,7 +67,7 @@ $app->post('/global_menu', function () use ($app) {
     if ($auth['user_type'] != '1') {
         $json_list['admin'] = $auth['user_type'];
     }
-/*
+
     //ボタン表示非表示制御
     if($app->session->get("auth")['button1_use_flg']==1){$json_list['button1_use_flg']=1;};
     if($app->session->get("auth")['button2_use_flg']==1){$json_list['button2_use_flg']=1;};
@@ -99,8 +99,9 @@ $app->post('/global_menu', function () use ($app) {
     if($app->session->get("auth")['button28_use_flg']==1){$json_list['button28_use_flg']=1;};
     if($app->session->get("auth")['button29_use_flg']==1){$json_list['button29_use_flg']=1;};
     if($app->session->get("auth")['button30_use_flg']==1){$json_list['button30_use_flg']=1;};
+
     json_encode($json_list);
-*/
+
     echo json_encode($json_list);
 
 });
