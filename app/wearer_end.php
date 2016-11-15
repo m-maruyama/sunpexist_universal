@@ -293,16 +293,6 @@ $app->post('/wearer_end/search', function ()use($app){
                 $list['sex_kbn'] = $gencode_map->gen_name;
             }
 
-            // 発注、発注情報トラン有無フラグ
-            if (isset($result->as_order_sts_kbn)) {
-                $list['order_kbn'] = "<font color='red'>済</font>";
-                // 発注情報トラン有
-                $list['order_tran_flg'] = '1';
-            }else{
-                $list['order_kbn'] = "未";
-                // 発注情報トラン無
-                $list['order_tran_flg'] = '0';
-            }
             // 状態
             $list['snd_kbn'] = "-";
             if (!empty($result->as_snd_kbn)) {
@@ -351,6 +341,17 @@ $app->post('/wearer_end/search', function ()use($app){
             $t_order_tran_results = new Resultset(NULL, $t_order_tran, $t_order_tran->getReadConnection()->query($arg_str));
             $result_obj = (array)$t_order_tran_results;
             $t_order_tran_cnt = $result_obj["\0*\0_count"];
+
+            // 発注、発注情報トラン有無フラグ
+            if ($t_order_tran_cnt > 0) {
+                $list['order_kbn'] = "<font color='red'>済</font>";
+                // 発注情報トラン有
+                $list['order_tran_flg'] = '1';
+            }else{
+                $list['order_kbn'] = "未";
+                // 発注情報トラン無
+                $list['order_tran_flg'] = '0';
+            }
             // パターンチェックスタート
             $list['btnPattern'] = "";
             $patarn_flg = true;
@@ -482,6 +483,7 @@ $app->post('/wearer_end/search', function ()use($app){
             if ($list['btnPattern'] == "B" || $list['btnPattern'] == "C") {
                 $list['return_reciept_button'] = "返却伝票ダウンロード";
             }
+            ChromePhp::LOG($list['werer_name'].':'.$list['btnPattern']);
 
             // 発注入力へのパラメータ設定
             $list['param'] = '';
