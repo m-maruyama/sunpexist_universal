@@ -99,10 +99,13 @@ define([
                         var res_list = res.attributes;
                         $('#agreement_no').prop("disabled", true);
                         that.render();
+                        that.ui.cster_emply_cd_chk.prop('checked',false);
+                        that.ui.cster_emply_cd.prop('disabled',true);
                         $('#input_item').val(res_list['param']);
                         if(res_list['rntl_cont_no']&&(referrer > -1)){
                             if(res_list['wearer_info'][0]['cster_emply_cd']){
                                 that.ui.cster_emply_cd_chk.prop('checked',true);
+                                that.ui.cster_emply_cd.prop('disabled',false);
                                 that.ui.cster_emply_cd.val(res_list['wearer_info'][0]['cster_emply_cd']);
                             }
                             that.ui.werer_name.val(res_list['wearer_info'][0]['werer_name']);
@@ -112,6 +115,7 @@ define([
                             that.ui.zip_no.val(res_list['zip_no']);
                             that.ui.address.val(res_list['address1']+res_list['address2']+res_list['address3']+res_list['address4']);
                             $('#input_item').val(res_list['param']);
+                            that.ui.zip_no.val(res_list['zip_no']);
                             return;
                         }
                     },
@@ -268,6 +272,13 @@ define([
             },
 
             events: {
+                'change @ui.cster_emply_cd_chk': function(e){
+                    if(e.target.checked){
+                        this.ui.cster_emply_cd.prop('disabled',false);
+                    }else{
+                        this.ui.cster_emply_cd.prop('disabled',true);
+                    }
+                },
                 'change @ui.section': function (e) {
                     e.preventDefault();
                     change_select(this.model, $('#agreement_no').val(), this.ui.section.val(), this.ui.m_shipment_to.val(), this.ui.m_shipment_to.children(':selected').text());
