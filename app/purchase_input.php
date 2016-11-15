@@ -12,17 +12,9 @@ $app->post('/purchase_input', function () use ($app) {
 
     // アカウントセッション取得
     $auth = $app->session->get('auth');
-    if ($auth['user_type'] == '1') {
-        $json_list['redirect'] = $auth['user_type'];
-        echo json_encode($json_list);
-        return;
-    }
-
 
     $cond = $params['cond'];
 
-
-    //$page = $params['page'];
     $query_list = array();//追加
 
     //sql文字列を' AND 'で結合
@@ -38,10 +30,8 @@ $app->post('/purchase_input', function () use ($app) {
         }
     }
 
-
     $all_list = array();
     $json_list = array();
-
 
     $login_corporate_id = $auth['corporate_id'];
 

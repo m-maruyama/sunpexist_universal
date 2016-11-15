@@ -170,12 +170,6 @@ $app->post('/purchase_history/search', function () use ($app) {
     $params = json_decode(file_get_contents('php://input'), true);
     $json_list = array();
     // アカウントセッション取得
-    $auth = $app->session->get('auth');
-    if ($auth['user_type'] == '1') {
-        $json_list['redirect'] = $auth['user_type'];
-        echo json_encode($json_list);
-        return;
-    }
 
     //削除の場合
     if (isset($params['del'])) {
