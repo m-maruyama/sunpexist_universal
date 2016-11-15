@@ -122,7 +122,7 @@ $app->post('/wearer_search/search', function ()use($app){
             // 着用開始日
             $list['resfl_ymd'] = $result->as_resfl_ymd;
             // 理由区分
-            if (isset($result->as_order_reason_kbn)) {
+            if ($result->as_order_reason_kbn) {
                 $list['order_reason_kbn'] = $result->as_order_reason_kbn;
             } else {
                 $list['order_reason_kbn'] = '7';
@@ -130,7 +130,7 @@ $app->post('/wearer_search/search', function ()use($app){
             // 着用者コード
             $list['werer_cd'] = $result->as_werer_cd;
             // 社員番号
-            if (isset($result->as_cster_emply_cd)) {
+            if ($result->as_cster_emply_cd) {
                 $list['cster_emply_cd'] = $result->as_cster_emply_cd;
             } else {
                 $list['cster_emply_cd'] = "-";
