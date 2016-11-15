@@ -135,6 +135,7 @@ $app->post('/section_order', function ()use($app){
     $json_list = array();
 
     array_push($query_list, "corporate_id = '".$auth['corporate_id']."'");
+    array_push($query_list, "rntl_sect_cd = '".$wearer_odr_post['rntl_sect_cd']."'");
     array_push($query_list, "rntl_cont_no = '".$wearer_odr_post['rntl_cont_no']."'");
     $query = implode(' AND ', $query_list);
 

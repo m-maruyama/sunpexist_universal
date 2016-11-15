@@ -351,8 +351,10 @@ $app->post('/wearer_search/req_param', function ()use($app){
         $cond["m_wearer_std_comb_hkey"] = '';
     }elseif($wearer_odr_post['m_wearer_std_comb_hkey']){
         $cond["m_wearer_std_comb_hkey"] = $wearer_odr_post['m_wearer_std_comb_hkey'];
+    }elseif(isset($cond["m_wearer_std_comb_hkey"])){
+        $cond["m_wearer_std_comb_hkey"] = $cond["m_wearer_std_comb_hkey"];
     }else{
-//        $cond["m_wearer_std_comb_hkey"] = $cond["m_wearer_std_comb_hkey"];
+        $cond["m_wearer_std_comb_hkey"] = '';
     }
 
     if(!isset($cond["order_req_no"])){
