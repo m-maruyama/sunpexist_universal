@@ -159,6 +159,7 @@ $app->post('/wearer_input', function () use ($app) {
     $query_list = array();
     array_push($query_list, "corporate_id = '".$auth["corporate_id"]."'");
     array_push($query_list, "rntl_cont_no = '".$cond['agreement_no']."'");
+    array_push($query_list, "rntl_sect_cd = '".$auth['rntl_sect_cd']."'");
 
     $query = implode(' AND ', $query_list);
 
