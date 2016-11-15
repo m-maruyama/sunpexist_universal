@@ -140,10 +140,10 @@ define([
 				wearerChangeOrderView.condition.show(wearerChangeOrderConditionView);
 				wearerChangeOrderView.listTable.show(wearerChangeOrderListListView);
 				wearerChangeOrderConditionView.agreement_no.show(agreementNoConditionChangeView);
-				wearerChangeOrderConditionView.reason_kbn.show(reasonKbnConditionChangeView);
-				wearerChangeOrderConditionView.sex_kbn.show(sexKbnConditionChangeView);
 				wearerChangeOrderConditionView.section.show(sectionConditionChangeView);
 				wearerChangeOrderConditionView.job_type.show(jobTypeConditionChangeView);
+				wearerChangeOrderConditionView.reason_kbn.show(reasonKbnConditionChangeView);
+				wearerChangeOrderConditionView.sex_kbn.show(sexKbnConditionChangeView);
 				wearerChangeOrderConditionView.shipment.show(shipmentConditionChangeView);
 				wearerChangeOrderView.sectionModal.show(sectionModalView.render());
 				sectionModalView.page.show(paginationView);
