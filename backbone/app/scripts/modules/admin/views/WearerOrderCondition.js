@@ -101,32 +101,32 @@ define([
 							"log_type": '3',
 							"data": data,
 						};
-						modelForUpdate.fetchMx({
-							data:cond,
-							success:function(res) {
-								var CM0140_res = res.attributes;
-								//「入力完了」ボタン表示制御
-								if (CM0140_res['order_input_ok_flg'] == "1" && CM0140_res['order_send_ok_flg'] == "1") {
-									$('.inputButton').css('display', '');
-									$('.orderSend').css('display', '');
-								}
-								if (CM0140_res['order_input_ok_flg'] == "0" && CM0140_res['order_send_ok_flg'] == "0") {
-									$('.inputButton').css('display', 'none');
-									$('.orderSend').css('display', 'none');
-								}
-								if (CM0140_res['order_input_ok_flg'] == "0" && CM0140_res['order_send_ok_flg'] == "1") {
-									$('.inputButton').css('display', 'none');
-									$('.orderSend').css('display', '');
-								}
-								if (CM0140_res['order_input_ok_flg'] == "1" && CM0140_res['order_send_ok_flg'] == "0") {
-									$('.inputButton').css('display', '');
-									$('.orderSend').css('display', 'none');
-								}
-								if(flg){
-									that.ui.delete.css('display', '');
-								}
-							}
-						});
+						// modelForUpdate.fetchMx({
+						// 	data:cond,
+						// 	success:function(res) {
+						// 		var CM0140_res = res.attributes;
+						// 		//「入力完了」ボタン表示制御
+						// 		if (CM0140_res['order_input_ok_flg'] == "1" && CM0140_res['order_send_ok_flg'] == "1") {
+						// 			$('.inputButton').css('display', '');
+						// 			$('.orderSend').css('display', '');
+						// 		}
+						// 		if (CM0140_res['order_input_ok_flg'] == "0" && CM0140_res['order_send_ok_flg'] == "0") {
+						// 			$('.inputButton').css('display', 'none');
+						// 			$('.orderSend').css('display', 'none');
+						// 		}
+						// 		if (CM0140_res['order_input_ok_flg'] == "0" && CM0140_res['order_send_ok_flg'] == "1") {
+						// 			$('.inputButton').css('display', 'none');
+						// 			$('.orderSend').css('display', '');
+						// 		}
+						// 		if (CM0140_res['order_input_ok_flg'] == "1" && CM0140_res['order_send_ok_flg'] == "0") {
+						// 			$('.inputButton').css('display', '');
+						// 			$('.orderSend').css('display', 'none');
+						// 		}
+						// 		if(flg){
+						// 			that.ui.delete.css('display', '');
+						// 		}
+						// 	}
+						// });
 
 					}
 				});
@@ -235,29 +235,29 @@ define([
 						"log_type": '3',
 						"data": data,
 					};
-					modelForUpdate.fetchMx({
-						data:cond,
-						success:function(res) {
-							var CM0140_res = res.attributes;
-							//「入力完了」ボタン表示制御
-							if (CM0140_res['order_input_ok_flg'] == "1" && CM0140_res['order_send_ok_flg'] == "1") {
-								$('.inputButton').css('display', '');
-								$('.orderSend').css('display', '');
-							}
-							if (CM0140_res['order_input_ok_flg'] == "0" && CM0140_res['order_send_ok_flg'] == "0") {
-								$('.inputButton').css('display', 'none');
-								$('.orderSend').css('display', 'none');
-							}
-							if (CM0140_res['order_input_ok_flg'] == "0" && CM0140_res['order_send_ok_flg'] == "1") {
-								$('.inputButton').css('display', 'none');
-								$('.orderSend').css('display', '');
-							}
-							if (CM0140_res['order_input_ok_flg'] == "1" && CM0140_res['order_send_ok_flg'] == "0") {
-								$('.inputButton').css('display', '');
-								$('.orderSend').css('display', 'none');
-							}
-						}
-					});
+					// modelForUpdate.fetchMx({
+					// 	data:cond,
+					// 	success:function(res) {
+					// 		var CM0140_res = res.attributes;
+					// 		//「入力完了」ボタン表示制御
+					// 		if (CM0140_res['order_input_ok_flg'] == "1" && CM0140_res['order_send_ok_flg'] == "1") {
+					// 			$('.inputButton').css('display', '');
+					// 			$('.orderSend').css('display', '');
+					// 		}
+					// 		if (CM0140_res['order_input_ok_flg'] == "0" && CM0140_res['order_send_ok_flg'] == "0") {
+					// 			$('.inputButton').css('display', 'none');
+					// 			$('.orderSend').css('display', 'none');
+					// 		}
+					// 		if (CM0140_res['order_input_ok_flg'] == "0" && CM0140_res['order_send_ok_flg'] == "1") {
+					// 			$('.inputButton').css('display', 'none');
+					// 			$('.orderSend').css('display', '');
+					// 		}
+					// 		if (CM0140_res['order_input_ok_flg'] == "1" && CM0140_res['order_send_ok_flg'] == "0") {
+					// 			$('.inputButton').css('display', '');
+					// 			$('.orderSend').css('display', 'none');
+					// 		}
+					// 	}
+					// });
 
 
 
