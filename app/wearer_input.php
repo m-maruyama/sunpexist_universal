@@ -154,12 +154,45 @@ $app->post('/wearer_input', function () use ($app) {
     //--性別ここまで
 
     //拠点--ここから
+    $query_list = array();
+    //--- 検索条件 ---//
+    // 契約マスタ. 企業ID
+    array_push($query_list, "MContract.corporate_id = '".$auth['corporate_id']."'");
+    // 契約リソースマスタ. 企業ID
+    array_push($query_list, "MContractResource.corporate_id = '".$auth['corporate_id']."'");
+    // 契約リソースマスタ. レンタル契約No = 画面で選択されている契約No.
+    array_push($query_list, "MContractResource.rntl_cont_no = '".$cond['agreement_no']."'");
+    // アカウントマスタ.企業ID
+    array_push($query_list, "MAccount.corporate_id = '".$auth['corporate_id']."'");
+    // アカウントマスタ. ユーザーID
+    array_push($query_list, "MAccount.user_id = '".$auth['user_id']."'");
+
+    //sql文字列を' AND 'で結合
+    $query = implode(' AND ', $query_list);
+
+    //--- クエリー実行・取得 ---//
+    $m_contract_resources = MContract::query()
+        ->where($query)
+        ->columns(array('MContractResource.rntl_sect_cd'))
+        ->innerJoin('MContractResource', 'MContract.corporate_id = MContractResource.corporate_id')
+        ->join('MAccount', 'MAccount.accnt_no = MContractResource.accnt_no')
+        ->execute();
+    $rntl_sect_cd = null;
+    $all_zero = false;
+    foreach ($m_contract_resources as $m_contract_resource) {
+        if($m_contract_resource->rntl_sect_cd == '0000000000'){
+            $all_zero = true;
+        }
+    }
     $list = array();
     $all_list = array();
     $query_list = array();
+    //【前処理】で取得したレコードの中に、レンタル部門コード＝オール０「ゼロ」がセットされているレコードが存在しない場合、部門コードをセット
+    if(!$all_zero){
+        array_push($query_list, "rntl_sect_cd = '".$auth['rntl_sect_cd']."'");
+    }
     array_push($query_list, "corporate_id = '".$auth["corporate_id"]."'");
     array_push($query_list, "rntl_cont_no = '".$cond['agreement_no']."'");
-    array_push($query_list, "rntl_sect_cd = '".$auth['rntl_sect_cd']."'");
 
     $query = implode(' AND ', $query_list);
 
