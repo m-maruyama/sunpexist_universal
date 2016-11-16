@@ -20,34 +20,79 @@ $app->post('/wearer_size_change/search', function ()use($app){
   // フロント側パラメータ
   $cond = $params['cond'];
   $page = $params['page'];
+
+  //（前処理）契約リソースマスタ参照、拠点コード「0」埋めデータ確認
   $query_list = array();
+  $list = array();
+  $all_list = array();
+  $query_list[] = "corporate_id = '".$auth["corporate_id"]."'";
+  $query_list[] = "rntl_cont_no = '".$cond['agreement_no']."'";
+  $query_list[] = "accnt_no = '".$auth["accnt_no"]."'";
+  $query = implode(' AND ', $query_list);
+
+  $arg_str = '';
+  $arg_str .= 'SELECT ';
+  $arg_str .= ' distinct on (rntl_sect_cd) *';
+  $arg_str .= ' FROM ';
+  $arg_str .= 'm_contract_resource';
+  $arg_str .= ' WHERE ';
+  $arg_str .= $query;
+  $m_contract_resource = new MContractResource();
+  $results = new Resultset(null, $m_contract_resource, $m_contract_resource->getReadConnection()->query($arg_str));
+  $results_array = (array) $results;
+  $results_cnt = $results_array["\0*\0_count"];
+  if ($results_cnt > 0) {
+    $paginator_model = new PaginatorModel(
+      array(
+        "data"  => $results,
+        "limit" => $results_cnt,
+        "page" => 1
+      )
+    );
+    $paginator = $paginator_model->getPaginate();
+    $results = $paginator->items;
+    foreach ($results as $result) {
+      $all_list[] = $result->rntl_sect_cd;
+    }
+  }
+  if (in_array("0000000000", $all_list)) {
+    $section_all_zero_flg = true;
+  } else {
+    $section_all_zero_flg = false;
+  }
 
   //---既存着用者基本マスタ情報リスト取得---//
+  $query_list = array();
   //企業ID
-  array_push($query_list, "m_wearer_std.corporate_id = '".$auth['corporate_id']."'");
+  $query_list[] = "m_wearer_std.corporate_id = '".$auth['corporate_id']."'";
   //契約No
   if(!empty($cond['agreement_no'])){
-    array_push($query_list, "m_wearer_std.rntl_cont_no = '".$cond['agreement_no']."'");
+    $query_list[] = "m_wearer_std.rntl_cont_no = '".$cond['agreement_no']."'";
   }
   //客先社員コード
   if(!empty($cond['cster_emply_cd'])){
-    array_push($query_list,"m_wearer_std.cster_emply_cd LIKE '".$cond['cster_emply_cd']."%'");
+    $query_list[] = "m_wearer_std.cster_emply_cd LIKE '".$cond['cster_emply_cd']."%'";
   }
   //着用者名（漢字）
   if(!empty($cond['werer_name'])){
-    array_push($query_list, "m_wearer_std.werer_name LIKE '%".$cond['werer_name']."%'");
+    $query_list[] = "m_wearer_std.werer_name LIKE '%".$cond['werer_name']."%'";
   }
   //性別
   if(!empty($cond['sex_kbn'])){
-    array_push($query_list,"m_wearer_std.sex_kbn = '".$cond['sex_kbn']."'");
+    $query_list[] = "m_wearer_std.sex_kbn = '".$cond['sex_kbn']."'";
   }
   //拠点
   if(!empty($cond['section'])){
-    array_push($query_list,"m_wearer_std.rntl_sect_cd = '".$cond['section']."'");
+    $query_list[] = "m_wearer_std.rntl_sect_cd = '".$cond['section']."'";
   }
   //貸与パターン
   if(!empty($cond['job_type'])){
-    array_push($query_list, "m_wearer_std.job_type_cd = '".$cond['job_type']."'");
+    $query_list[] = "m_wearer_std.job_type_cd = '".$cond['job_type']."'";
+  }
+  if (!$section_all_zero_flg) {
+    $query_list[] = "wcr.corporate_id = '".$auth['corporate_id']."'";
+    $query_list[] = "wcr.rntl_cont_no = '".$cond['agreement_no']."'";
+    $query_list[] = "wcr.accnt_no = '".$auth['accnt_no']."'";
   }
   $query = implode(' AND ', $query_list);
 
@@ -64,7 +109,6 @@ $app->post('/wearer_size_change/search', function ()use($app){
   $arg_str .= "m_wearer_std.cster_emply_cd as as_cster_emply_cd,";
   $arg_str .= "m_wearer_std.werer_name as as_werer_name,";
   $arg_str .= "m_wearer_std.sex_kbn as as_sex_kbn,";
-//  $arg_str .= "m_wearer_std.snd_kbn as as_wearer_snd_kbn,";
   $arg_str .= "m_wearer_std.ship_to_cd as as_ship_to_cd,";
   $arg_str .= "m_wearer_std.ship_to_brnch_cd as as_ship_to_brnch_cd,";
   $arg_str .= "wst.rntl_sect_name as wst_rntl_sect_name,";
@@ -76,14 +120,29 @@ $app->post('/wearer_size_change/search', function ()use($app){
   $arg_str .= "t_order_tran.upd_date as as_order_upd_date,";
   $arg_str .= "t_returned_plan_info_tran.order_req_no as as_return_req_no";
   $arg_str .= " FROM ";
-  $arg_str .= "(m_wearer_std INNER JOIN m_section as wst";
-  $arg_str .= " ON (m_wearer_std.corporate_id = wst.corporate_id";
-  $arg_str .= " AND m_wearer_std.rntl_cont_no = wst.rntl_cont_no";
-  $arg_str .= " AND m_wearer_std.rntl_sect_cd = wst.rntl_sect_cd)";
-  $arg_str .= " INNER JOIN m_job_type as wjt";
-  $arg_str .= " ON (m_wearer_std.corporate_id = wjt.corporate_id";
-  $arg_str .= " AND m_wearer_std.rntl_cont_no = wjt.rntl_cont_no";
-  $arg_str .= " AND m_wearer_std.job_type_cd = wjt.job_type_cd))";
+  if ($section_all_zero_flg) {
+    $arg_str .= "(m_wearer_std INNER JOIN m_section as wst";
+    $arg_str .= " ON m_wearer_std.corporate_id = wst.corporate_id";
+    $arg_str .= " AND m_wearer_std.rntl_cont_no = wst.rntl_cont_no";
+    $arg_str .= " AND m_wearer_std.rntl_sect_cd = wst.rntl_sect_cd";
+    $arg_str .= " INNER JOIN m_job_type as wjt";
+    $arg_str .= " ON m_wearer_std.corporate_id = wjt.corporate_id";
+    $arg_str .= " AND m_wearer_std.rntl_cont_no = wjt.rntl_cont_no";
+    $arg_str .= " AND m_wearer_std.job_type_cd = wjt.job_type_cd)";
+  } else {
+    $arg_str .= "(m_wearer_std INNER JOIN (m_section as wst";
+    $arg_str .= " INNER JOIN m_contract_resource as wcr";
+    $arg_str .= " ON wst.corporate_id = wcr.corporate_id";
+    $arg_str .= " AND wst.rntl_cont_no = wcr.rntl_cont_no";
+    $arg_str .= " AND wst.rntl_sect_cd = wcr.rntl_sect_cd)";
+    $arg_str .= " ON m_wearer_std.corporate_id = wst.corporate_id";
+    $arg_str .= " AND m_wearer_std.rntl_cont_no = wst.rntl_cont_no";
+    $arg_str .= " AND m_wearer_std.rntl_sect_cd = wst.rntl_sect_cd";
+    $arg_str .= " INNER JOIN m_job_type as wjt";
+    $arg_str .= " ON m_wearer_std.corporate_id = wjt.corporate_id";
+    $arg_str .= " AND m_wearer_std.rntl_cont_no = wjt.rntl_cont_no";
+    $arg_str .= " AND m_wearer_std.job_type_cd = wjt.job_type_cd)";
+  }
   $arg_str .= " LEFT JOIN ";
   $arg_str .= "(t_order_tran INNER JOIN m_section as os";
   $arg_str .= " ON (t_order_tran.corporate_id = os.corporate_id";
@@ -140,11 +199,16 @@ $app->post('/wearer_size_change/search', function ()use($app){
         //---着用者基本マスタトラン情報の既存データ重複参照---//
         $query_list = array();
         // 企業ID
-        array_push($query_list, "m_wearer_std_tran.corporate_id = '".$result->as_corporate_id."'");
+        $query_list[] = "m_wearer_std_tran.corporate_id = '".$result->as_corporate_id."'";
         // レンタル契約No
-        array_push($query_list, "m_wearer_std_tran.rntl_cont_no = '".$result->as_rntl_cont_no."'");
+        $query_list[] = "m_wearer_std_tran.rntl_cont_no = '".$result->as_rntl_cont_no."'";
         // 着用者コード
-        array_push($query_list,"m_wearer_std_tran.werer_cd = '".$result->as_werer_cd."'");
+        $query_list[] = "m_wearer_std_tran.werer_cd = '".$result->as_werer_cd."'";
+        if (!$section_all_zero_flg) {
+          $query_list[] = "wcr.corporate_id = '".$result->as_corporate_id."'";
+          $query_list[] = "wcr.rntl_cont_no = '".$result->as_rntl_cont_no."'";
+          $query_list[] = "wcr.accnt_no = '".$auth['accnt_no']."'";
+        }
         $query = implode(' AND ', $query_list);
 
         $arg_str = "";
@@ -168,14 +232,29 @@ $app->post('/wearer_size_change/search', function ()use($app){
         $arg_str .= "t_order_tran.order_reason_kbn as as_order_reason_kbn,";
         $arg_str .= "t_returned_plan_info_tran.order_req_no as as_return_req_no";
         $arg_str .= " FROM ";
-        $arg_str .= "(m_wearer_std_tran INNER JOIN m_section as wst";
-        $arg_str .= " ON (m_wearer_std_tran.corporate_id = wst.corporate_id";
-        $arg_str .= " AND m_wearer_std_tran.rntl_cont_no = wst.rntl_cont_no";
-        $arg_str .= " AND m_wearer_std_tran.rntl_sect_cd = wst.rntl_sect_cd)";
-        $arg_str .= " INNER JOIN m_job_type as wjt";
-        $arg_str .= " ON (m_wearer_std_tran.corporate_id = wjt.corporate_id";
-        $arg_str .= " AND m_wearer_std_tran.rntl_cont_no = wjt.rntl_cont_no";
-        $arg_str .= " AND m_wearer_std_tran.job_type_cd = wjt.job_type_cd))";
+        if ($section_all_zero_flg) {
+          $arg_str .= "(m_wearer_std_tran INNER JOIN m_section as wst";
+          $arg_str .= " ON m_wearer_std_tran.corporate_id = wst.corporate_id";
+          $arg_str .= " AND m_wearer_std_tran.rntl_cont_no = wst.rntl_cont_no";
+          $arg_str .= " AND m_wearer_std_tran.rntl_sect_cd = wst.rntl_sect_cd";
+          $arg_str .= " INNER JOIN m_job_type as wjt";
+          $arg_str .= " ON m_wearer_std_tran.corporate_id = wjt.corporate_id";
+          $arg_str .= " AND m_wearer_std_tran.rntl_cont_no = wjt.rntl_cont_no";
+          $arg_str .= " AND m_wearer_std_tran.job_type_cd = wjt.job_type_cd)";
+        } else {
+          $arg_str .= "(m_wearer_std_tran INNER JOIN (m_section as wst";
+          $arg_str .= " INNER JOIN m_contract_resource as wcr";
+          $arg_str .= " ON wst.corporate_id = wcr.corporate_id";
+          $arg_str .= " AND wst.rntl_cont_no = wcr.rntl_cont_no";
+          $arg_str .= " AND wst.rntl_sect_cd = wcr.rntl_sect_cd)";
+          $arg_str .= " ON m_wearer_std_tran.corporate_id = wst.corporate_id";
+          $arg_str .= " AND m_wearer_std_tran.rntl_cont_no = wst.rntl_cont_no";
+          $arg_str .= " AND m_wearer_std_tran.rntl_sect_cd = wst.rntl_sect_cd";
+          $arg_str .= " INNER JOIN m_job_type as wjt";
+          $arg_str .= " ON m_wearer_std_tran.corporate_id = wjt.corporate_id";
+          $arg_str .= " AND m_wearer_std_tran.rntl_cont_no = wjt.rntl_cont_no";
+          $arg_str .= " AND m_wearer_std_tran.job_type_cd = wjt.job_type_cd)";
+        }
         $arg_str .= " LEFT JOIN ";
         $arg_str .= "(t_order_tran INNER JOIN m_section as os";
         $arg_str .= " ON (t_order_tran.corporate_id = os.corporate_id";

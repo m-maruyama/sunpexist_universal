@@ -22,6 +22,46 @@ $app->post('/order_send/search', function () use ($app) {
 
     $json_list = array();
 
+    //（前処理）契約リソースマスタ参照、拠点コード「0」埋めデータ確認
+    $query_list = array();
+    $list = array();
+    $all_list = array();
+    $query_list[] = "corporate_id = '".$auth["corporate_id"]."'";
+    $query_list[] = "rntl_cont_no = '".$cond['agreement_no']."'";
+    $query_list[] = "accnt_no = '".$auth["accnt_no"]."'";
+    $query = implode(' AND ', $query_list);
+
+    $arg_str = '';
+    $arg_str .= 'SELECT ';
+    $arg_str .= ' distinct on (rntl_sect_cd) *';
+    $arg_str .= ' FROM ';
+    $arg_str .= 'm_contract_resource';
+    $arg_str .= ' WHERE ';
+    $arg_str .= $query;
+    $m_contract_resource = new MContractResource();
+    $results = new Resultset(null, $m_contract_resource, $m_contract_resource->getReadConnection()->query($arg_str));
+    $results_array = (array) $results;
+    $results_cnt = $results_array["\0*\0_count"];
+    if ($results_cnt > 0) {
+      $paginator_model = new PaginatorModel(
+        array(
+          "data"  => $results,
+          "limit" => $results_cnt,
+          "page" => 1
+        )
+      );
+      $paginator = $paginator_model->getPaginate();
+      $results = $paginator->items;
+      foreach ($results as $result) {
+        $all_list[] = $result->rntl_sect_cd;
+      }
+    }
+    if (in_array("0000000000", $all_list)) {
+      $section_all_zero_flg = true;
+    } else {
+      $section_all_zero_flg = false;
+    }
+
     $query_list = array();
     $query_list[] = "m_wearer_std_tran.corporate_id = '".$auth['corporate_id']."'";
     if (!empty($cond['agreement_no'])) {
@@ -44,6 +84,11 @@ $app->post('/order_send/search', function () use ($app) {
     }
     if (isset($cond['snd_kbn'])) {
       $query_list[] = "m_wearer_std_tran.snd_kbn = '".$cond['snd_kbn']."'";
+    }
+    if (!$section_all_zero_flg) {
+      $query_list[] = "m_contract_resource.corporate_id = '".$auth['corporate_id']."'";
+      $query_list[] = "m_contract_resource.rntl_cont_no = '".$cond['agreement_no']."'";
+      $query_list[] = "m_contract_resource.accnt_no = '".$auth['accnt_no']."'";
     }
     $query = implode(' AND ', $query_list);
 
@@ -74,10 +119,23 @@ $app->post('/order_send/search', function () use ($app) {
     $arg_str .= "t_returned_plan_info_tran.order_req_no as as_rtn_order_req_no";
     $arg_str .= " FROM ";
     $arg_str .= "(m_wearer_std_tran";
-    $arg_str .= " INNER JOIN m_section";
-    $arg_str .= " ON (m_wearer_std_tran.corporate_id = m_section.corporate_id";
-    $arg_str .= " AND m_wearer_std_tran.rntl_cont_no = m_section.rntl_cont_no";
-    $arg_str .= " AND m_wearer_std_tran.rntl_sect_cd = m_section.rntl_sect_cd)";
+    if ($section_all_zero_flg) {
+      $arg_str .= " INNER JOIN ";
+      $arg_str .= "m_section";
+      $arg_str .= " ON (m_wearer_std_tran.corporate_id = m_section.corporate_id";
+      $arg_str .= " AND m_wearer_std_tran.rntl_cont_no = m_section.rntl_cont_no";
+      $arg_str .= " AND m_wearer_std_tran.rntl_sect_cd = m_section.rntl_sect_cd)";
+    } else {
+      $arg_str .= " INNER JOIN ";
+      $arg_str .= "(m_section";
+      $arg_str .= " INNER JOIN m_contract_resource";
+      $arg_str .= " ON m_section.corporate_id = m_contract_resource.corporate_id";
+      $arg_str .= " AND m_section.rntl_cont_no = m_contract_resource.rntl_cont_no";
+      $arg_str .= " AND m_section.rntl_sect_cd = m_contract_resource.rntl_sect_cd)";
+      $arg_str .= " ON m_wearer_std_tran.corporate_id = m_section.corporate_id";
+      $arg_str .= " AND m_wearer_std_tran.rntl_cont_no = m_section.rntl_cont_no";
+      $arg_str .= " AND m_wearer_std_tran.rntl_sect_cd = m_section.rntl_sect_cd";
+    }
     $arg_str .= " INNER JOIN m_job_type";
     $arg_str .= " ON (m_wearer_std_tran.corporate_id = m_job_type.corporate_id";
     $arg_str .= " AND m_wearer_std_tran.rntl_cont_no = m_job_type.rntl_cont_no";
