@@ -299,8 +299,8 @@ $app->post('/wearer_search/search', function ()use($app){
             if ($list['btnPattern'] == "") {
                 //上記パターンに引っかからない場合はデフォ表示
                 $list['wearer_input_button'] = "貸与開始";
-                $list['wearer_input_red'] = "";
-                $list['disabled'] = "";
+                $list['wearer_input_red'] = "[済]";
+                $list['disabled'] = "disabled";
                 $list['return_reciept_button'] = false;
                 $list['btnPattern'] = "no_pattern";
             }
