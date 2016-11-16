@@ -54,11 +54,56 @@ $app->post('/csv_download', function ()use($app){
 	//--検索条件配列生成--//
 	$query_list = array();
 
+    //---契約リソースマスター 0000000000フラグ確認処理---//
+    //ログインid
+    $login_id_session = $auth['corporate_id'];
+    //アカウントno
+    $accnt_no = $auth['accnt_no'];
+    //画面で選択された契約no
+    $agreement_no = $cond['agreement_no'];
+
+    //前処理 契約リソースマスタ参照 拠点ゼロ埋め確認
+    $arg_str = "";
+    $arg_str .= "SELECT ";
+    $arg_str .= " * ";
+    $arg_str .= " FROM ";
+    $arg_str .= "m_contract_resource";
+    $arg_str .= " WHERE ";
+    $arg_str .= "corporate_id = '$login_id_session'";
+    $arg_str .= " AND rntl_cont_no = '$agreement_no'";
+    $arg_str .= " AND accnt_no = '$accnt_no'";
+
+    $m_contract_resource = new MContractResource();
+    $results = new Resultset(null, $m_contract_resource, $m_contract_resource->getReadConnection()->query($arg_str));
+    $result_obj = (array)$results;
+    $results_cnt = $result_obj["\0*\0_count"];
+
+    if ($results_cnt > 0) {
+        $paginator_model = new PaginatorModel(
+            array(
+                "data"  => $results,
+                "limit" => $results_cnt,
+                "page" => 1
+            )
+        );
+        $paginator = $paginator_model->getPaginate();
+        $results = $paginator->items;
+        foreach ($results as $rentl_sect_cd_result) {
+            $all_list[] = $rentl_sect_cd_result->rntl_sect_cd;
+        }
+    }
+
+    if (in_array("0000000000", $all_list)) {
+        $rntl_sect_cd_zero_flg = 1;
+
+    }else{
+        $rntl_sect_cd_zero_flg = 0;
+    }
 
 
 	//--発注状況照会CSVダウンロード--//
 	if ($cond["ui_type"] === "history") {
-		$result["csv_code"] = "0001";
+        $result["csv_code"] = "0001";
 
 		//---発注状況検索処理---//
 		//企業ID
@@ -130,6 +175,11 @@ $app->post('/csv_download', function ()use($app){
 		// 着用者状況区分
 		array_push($query_list,"m_wearer_std.werer_sts_kbn = '1'");
 
+        //ゼロ埋めがない場合、ログインアカウントの条件追加
+        if($rntl_sect_cd_zero_flg == 0){
+            array_push($query_list,"m_contract_resource.accnt_no = '$accnt_no'");
+        }
+
 		$status_kbn_list = array();
 
 		//ステータス
@@ -174,16 +224,16 @@ $app->post('/csv_download', function ()use($app){
 		// 理由区分
 		$reason_kbn = array();
 		if($cond['reason_kbn0']){
-			array_push($reason_kbn,'1');
+			array_push($reason_kbn,'01');
 		}
 		if($cond['reason_kbn1']){
-			array_push($reason_kbn,'2');
+			array_push($reason_kbn,'02');
 		}
 		if($cond['reason_kbn2']){
-			array_push($reason_kbn,'3');
+			array_push($reason_kbn,'03');
 		}
 		if($cond['reason_kbn3']){
-			array_push($reason_kbn,'4');
+			array_push($reason_kbn,'04');
 		}
 		if($cond['reason_kbn4']){
 			array_push($reason_kbn,'19');
@@ -210,7 +260,7 @@ $app->post('/csv_download', function ()use($app){
 			array_push($reason_kbn,'23');
 		}
 		if($cond['reason_kbn12']){
-			array_push($reason_kbn,'9');
+			array_push($reason_kbn,'09');
 		}
 		if($cond['reason_kbn13']){
 			array_push($reason_kbn,'10');
@@ -219,16 +269,16 @@ $app->post('/csv_download', function ()use($app){
 			array_push($reason_kbn,'11');
 		}
 		if($cond['reason_kbn15']){
-			array_push($reason_kbn,'5');
+			array_push($reason_kbn,'05');
 		}
 		if($cond['reason_kbn16']){
-			array_push($reason_kbn,'6');
+			array_push($reason_kbn,'06');
 		}
 		if($cond['reason_kbn17']){
-			array_push($reason_kbn,'7');
+			array_push($reason_kbn,'07');
 		}
 		if($cond['reason_kbn18']){
-			array_push($reason_kbn,'8');
+			array_push($reason_kbn,'08');
 		}
 		if($cond['reason_kbn19']){
 			array_push($reason_kbn,'24');
@@ -344,11 +394,22 @@ $app->post('/csv_download', function ()use($app){
 		$arg_str .= " (t_order_state LEFT JOIN (t_delivery_goods_state LEFT JOIN t_delivery_goods_state_details ON t_delivery_goods_state.ship_no = t_delivery_goods_state_details.ship_no)";
 		$arg_str .= " ON t_order_state.t_order_state_comb_hkey = t_delivery_goods_state.t_order_state_comb_hkey)";
 		$arg_str .= " ON t_order.t_order_comb_hkey = t_order_state.t_order_comb_hkey";
-		$arg_str .= " INNER JOIN m_section";
-		$arg_str .= " ON t_order.m_section_comb_hkey = m_section.m_section_comb_hkey";
+		//$arg_str .= " INNER JOIN m_section";
+		//$arg_str .= " ON t_order.m_section_comb_hkey = m_section.m_section_comb_hkey";
+
+        if($rntl_sect_cd_zero_flg == 1){
+            $arg_str .= " INNER JOIN m_section";
+            $arg_str .= " ON t_order.m_section_comb_hkey = m_section.m_section_comb_hkey";
+        }elseif($rntl_sect_cd_zero_flg == 0){
+            $arg_str .= " INNER JOIN (m_section INNER JOIN m_contract_resource";
+            $arg_str .= " ON m_section.corporate_id = m_contract_resource.corporate_id";
+            $arg_str .= " AND m_section.rntl_cont_no = m_contract_resource.rntl_cont_no";
+            $arg_str .= " AND m_section.rntl_sect_cd = m_contract_resource.rntl_sect_cd";
+            $arg_str .= " ) ON t_order.m_section_comb_hkey = m_section.m_section_comb_hkey";
+        }
 		$arg_str .= " INNER JOIN (m_job_type INNER JOIN m_input_item ON m_job_type.m_job_type_comb_hkey = m_input_item.m_job_type_comb_hkey)";
 		$arg_str .= " ON t_order.m_job_type_comb_hkey = m_job_type.m_job_type_comb_hkey";
-		$arg_str .= " INNER JOIN m_wearer_std";
+        $arg_str .= " INNER JOIN m_wearer_std";
 		$arg_str .= " ON t_order.werer_cd = m_wearer_std.werer_cd";
 		$arg_str .= " INNER JOIN m_contract";
 		$arg_str .= " ON t_order.rntl_cont_no = m_contract.rntl_cont_no";
@@ -835,7 +896,7 @@ $app->post('/csv_download', function ()use($app){
 			array_push($reason_kbn,'23');
 		}
 		if($cond['reason_kbn7']){
-			array_push($reason_kbn,'9');
+			array_push($reason_kbn,'09');
 		}
 		if($cond['reason_kbn8']){
 			array_push($reason_kbn,'10');
@@ -844,16 +905,16 @@ $app->post('/csv_download', function ()use($app){
 			array_push($reason_kbn,'11');
 		}
 		if($cond['reason_kbn10']){
-			array_push($reason_kbn,'5');
+			array_push($reason_kbn,'05');
 		}
 		if($cond['reason_kbn11']){
-			array_push($reason_kbn,'6');
+			array_push($reason_kbn,'06');
 		}
 		if($cond['reason_kbn12']){
-			array_push($reason_kbn,'7');
+			array_push($reason_kbn,'07');
 		}
 		if($cond['reason_kbn13']){
-			array_push($reason_kbn,'8');
+			array_push($reason_kbn,'08');
 		}
 		if($cond['reason_kbn14']){
 			array_push($reason_kbn,'24');
@@ -1425,6 +1486,11 @@ $app->post('/csv_download', function ()use($app){
 		}
 		// 着用者状況区分(稼働)
 		array_push($query_list,"m_wearer_std.werer_sts_kbn = '1'");
+        ChromePhp::log($rntl_sect_cd_zero_flg);
+        //ゼロ埋めがない場合、ログインアカウントの条件追加
+        if($rntl_sect_cd_zero_flg == 0){
+            array_push($query_list,"m_contract_resource.accnt_no = '$accnt_no'");
+        }
 
 		$status_kbn_list = array();
 
@@ -1470,16 +1536,16 @@ $app->post('/csv_download', function ()use($app){
 		// 理由区分
 		$reason_kbn = array();
 		if($cond['reason_kbn0']){
-			array_push($reason_kbn,'1');
+			array_push($reason_kbn,'01');
 		}
 		if($cond['reason_kbn1']){
-			array_push($reason_kbn,'2');
+			array_push($reason_kbn,'02');
 		}
 		if($cond['reason_kbn2']){
-			array_push($reason_kbn,'3');
+			array_push($reason_kbn,'03');
 		}
 		if($cond['reason_kbn3']){
-			array_push($reason_kbn,'4');
+			array_push($reason_kbn,'04');
 		}
 		if($cond['reason_kbn4']){
 			array_push($reason_kbn,'19');
@@ -1506,7 +1572,7 @@ $app->post('/csv_download', function ()use($app){
 			array_push($reason_kbn,'23');
 		}
 		if($cond['reason_kbn12']){
-			array_push($reason_kbn,'9');
+			array_push($reason_kbn,'09');
 		}
 		if($cond['reason_kbn13']){
 			array_push($reason_kbn,'10');
@@ -1515,16 +1581,16 @@ $app->post('/csv_download', function ()use($app){
 			array_push($reason_kbn,'11');
 		}
 		if($cond['reason_kbn15']){
-			array_push($reason_kbn,'5');
+			array_push($reason_kbn,'05');
 		}
 		if($cond['reason_kbn16']){
-			array_push($reason_kbn,'6');
+			array_push($reason_kbn,'06');
 		}
 		if($cond['reason_kbn17']){
-			array_push($reason_kbn,'7');
+			array_push($reason_kbn,'07');
 		}
 		if($cond['reason_kbn18']){
-			array_push($reason_kbn,'8');
+			array_push($reason_kbn,'08');
 		}
 		if($cond['reason_kbn19']){
 			array_push($reason_kbn,'24');
@@ -1647,9 +1713,18 @@ $app->post('/csv_download', function ()use($app){
 		$arg_str .= "t_delivery_goods_state.ship_ymd as as_ship_ymd,";
 		$arg_str .= "t_delivery_goods_state.rec_order_no as as_rec_order_no";
 		$arg_str .= " FROM t_delivery_goods_state_details LEFT JOIN";
-		$arg_str .= " (t_delivery_goods_state LEFT JOIN";
-		$arg_str .= " (t_order_state LEFT JOIN";
-		$arg_str .= " (t_order INNER JOIN m_section ON t_order.m_section_comb_hkey = m_section.m_section_comb_hkey";
+        $arg_str .= " (t_delivery_goods_state LEFT JOIN";
+        $arg_str .= " (t_order_state LEFT JOIN (t_order";
+        if($rntl_sect_cd_zero_flg == 1){
+            $arg_str .= " INNER JOIN m_section";
+            $arg_str .= " ON t_order.m_section_comb_hkey = m_section.m_section_comb_hkey";
+        }elseif($rntl_sect_cd_zero_flg == 0){
+            $arg_str .= " INNER JOIN (m_section INNER JOIN m_contract_resource";
+            $arg_str .= " ON m_section.corporate_id = m_contract_resource.corporate_id";
+            $arg_str .= " AND m_section.rntl_cont_no = m_contract_resource.rntl_cont_no";
+            $arg_str .= " AND m_section.rntl_sect_cd = m_contract_resource.rntl_sect_cd";
+            $arg_str .= " ) ON t_order.m_section_comb_hkey = m_section.m_section_comb_hkey";
+        }
 		$arg_str .= " INNER JOIN m_wearer_std ON t_order.werer_cd = m_wearer_std.werer_cd";
 		$arg_str .= " INNER JOIN (m_job_type INNER JOIN m_input_item ON m_job_type.m_job_type_comb_hkey = m_input_item.m_job_type_comb_hkey)";
 		$arg_str .= " ON t_order.m_job_type_comb_hkey = m_job_type.m_job_type_comb_hkey)";
