@@ -737,7 +737,6 @@ $app->post('/input_insert', function () use ($app) {
         array_push($error_list, '契約Noの値が不正です。');
     }
     // 社員コード
-    ChromePhp::LOG($cond['cster_emply_cd_chk']);
     if ($cond['cster_emply_cd_chk']) {
         if (mb_strlen($cond['cster_emply_cd']) == 0) {
             $json_list["error_code"] = "1";

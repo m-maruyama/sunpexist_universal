@@ -483,6 +483,7 @@ $app->post('/wearer_end/search', function ()use($app){
             if ($list['btnPattern'] == "B" || $list['btnPattern'] == "C") {
                 $list['return_reciept_button'] = "返却伝票ダウンロード";
             }
+//            ChromePhp::LOG($list['werer_name'].':'.$list['btnPattern']);
 
             // 発注入力へのパラメータ設定
             $list['param'] = '';

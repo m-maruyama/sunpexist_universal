@@ -32,6 +32,7 @@ define([
 				this.setNav('wearerSearch');
 				var pagerModel = new App.Entities.Models.Pager();
 				var pagerModel2 = new App.Entities.Models.Pager();
+				var pagerModel3 = new App.Entities.Models.Pager();
 				var modal = false;
 				var wearerSearchModel = null;
 				var wearerSearchView = new App.Admin.Views.WearerSearch();
@@ -139,6 +140,62 @@ define([
 				// this.listenTo(csvDownloadView, 'click:download_btn', function(cond_map){
 				// 	csvDownloadView.fetch(cond_map);
 				// });
+
+
+				// 契約No変更時の絞り込み処理 --ここから
+				this.listenTo(wearerSearchConditionView, 'change:section_select', function(agreement_no){
+					var sectionConditionView2 = new App.Admin.Views.SectionCondition({
+						agreement_no:agreement_no,
+					});
+					wearerSearchConditionView.section.show(sectionConditionView2);
+
+					var sectionModalListListView2 = new App.Admin.Views.SectionModalListList({
+						collection: sectionListListCollection,
+						pagerModel: pagerModel3
+					});
+					var sectionModalListCondition2 = new App.Entities.Models.AdminSectionModalListCondition();
+					var sectionModalConditionView2 = new App.Admin.Views.SectionModalCondition({
+						model:sectionModalListCondition2
+					});
+					var sectionModalView2 = new App.Admin.Views.SectionModal({
+						model:sectionModalListCondition2
+					});
+					this.listenTo(sectionConditionView2, 'click:section_btn', function(view, model){
+						sectionModalView2.ui.modal.modal('show');
+					});
+					var fetchList_section_2 = function(pageNumber,sortKey,order){
+						if(pageNumber){
+							pagerModel3.set('page_number', pageNumber);
+						}
+						if(sortKey){
+							pagerModel3.set('sort_key', sortKey);
+							pagerModel3.set('order', order);
+						}
+						sectionModalListListView2.fetch(sectionModalListCondition2);
+						sectionModalView2.listTable.show(sectionModalListListView2);
+						sectionModalView2.page.show(paginationSectionView2);
+					};
+					var paginationSectionView2 = new App.Admin.Views.Pagination({model: pagerModel3});
+					this.listenTo(paginationSectionView2, 'selected', function(pageNumber){
+						fetchList_section_2(pageNumber);
+					});
+					this.listenTo(sectionModalConditionView2, 'click:section_search', function(sortKey, order){
+						modal = true;
+						fetchList_section_2(1,sortKey,order);
+					});
+					this.listenTo(sectionModalView2, 'fetched', function(){
+						wearerSearchView.detailModal.show(sectionModalView2.render());
+						sectionModalView2.ui.modal.modal('show');
+					});
+					var sectionModalListItemView2 = new App.Admin.Views.SectionModalListItem();
+					this.listenTo(sectionModalListListView2, 'childview:click:section_select', function(model){
+						sectionConditionView2.ui.section[0].value = model.model.attributes.rntl_sect_cd;
+						sectionModalView2.ui.modal.modal('hide');
+					});
+
+					wearerSearchView.sectionModal_2.show(sectionModalView2.render());
+					sectionModalView2.condition.show(sectionModalConditionView2);
+				});
 
 
 				App.main.show(wearerSearchView);

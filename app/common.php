@@ -1030,47 +1030,95 @@ $app->post('/section_modal', function () use ($app) {
     $query_list = array();
     $cond = $params['cond'];
     $page = $params['page'];
-    //ChromePhp::log($cond);
 
     // アカウントセッション取得
     $auth = $app->session->get('auth');
     //拠点
     //--- 検索条件 ---//
+    $query_list = array();
+    //--- 検索条件 ---//
+    // 契約マスタ. 企業ID
+    array_push($query_list, "MContract.corporate_id = '".$auth['corporate_id']."'");
+    // 契約リソースマスタ. 企業ID
+    array_push($query_list, "MContractResource.corporate_id = '".$auth['corporate_id']."'");
+    // 契約リソースマスタ. レンタル契約No = 画面で選択されている契約No.
+    array_push($query_list, "MContractResource.rntl_cont_no = '".$cond['agreement_no']."'");
+    // アカウントマスタ.企業ID
+    array_push($query_list, "MAccount.corporate_id = '".$auth['corporate_id']."'");
+    // アカウントマスタ. ユーザーID
+    array_push($query_list, "MAccount.user_id = '".$auth['user_id']."'");
+
+    //sql文字列を' AND 'で結合
+    $query = implode(' AND ', $query_list);
+
+    //--- クエリー実行・取得 ---//
+    $m_contract_resources = MContract::query()
+        ->where($query)
+        ->columns(array('MContractResource.rntl_sect_cd'))
+        ->innerJoin('MContractResource', 'MContract.corporate_id = MContractResource.corporate_id')
+        ->join('MAccount', 'MAccount.accnt_no = MContractResource.accnt_no')
+        ->execute();
+    $rntl_sect_cd = null;
+    $all_zero = false;
+    $sect_arr = array();
+    foreach ($m_contract_resources as $m_contract_resource) {
+        array_push($sect_arr,"'".$m_contract_resource->rntl_sect_cd."'");
+        if($m_contract_resource->rntl_sect_cd == '0000000000'){
+            $all_zero = true;
+        }
+    }
+    $list = array();
+    $all_list = array();
+    $query_list = array();
+    //【前処理】で取得したレコードの中に、レンタル部門コード＝オール０「ゼロ」がセットされているレコードが存在しない場合、部門コードをセット
+    if(!$all_zero){
+        array_push($query_list, "rntl_sect_cd in(".implode(',',$sect_arr).")");
+    }
     // 部門マスタ. 企業ID
     if (!empty($cond["corporate_flg"])) {
-      if (!empty($cond["corporate"])) {
-        array_push($query_list, "corporate_id = '".$cond["corporate"]."'");
-      }
+        if (!empty($cond["corporate"])) {
+            array_push($query_list, "corporate_id = '".$cond["corporate"]."'");
+        }
     } else {
-      array_push($query_list, "corporate_id = '".$auth["corporate_id"]."'");
+        array_push($query_list, "corporate_id = '".$auth["corporate_id"]."'");
     }
     // 部門マスタ. レンタル契約No
     if (!empty($cond['agreement_no'])) {
-      array_push($query_list, "rntl_cont_no = '".$cond['agreement_no']."'");
+        array_push($query_list, "rntl_cont_no = '".$cond['agreement_no']."'");
     }
-    if (isset($cond['rntl_sect_cd'])) {
+        if (isset($cond['rntl_sect_cd'])) {
         array_push($query_list, "rntl_sect_cd LIKE '%".$cond['rntl_sect_cd']."'");
     }
     if (isset($cond['rntl_sect_name'])) {
         array_push($query_list, "rntl_sect_name LIKE '%".$cond['rntl_sect_name']."%'");
     }
-    //sql文字列を' AND 'で結合
     $query = implode(' AND ', $query_list);
 
-    $builder = $app->modelsManager->createBuilder()
-        ->where($query)
-        ->from('MSection');
-    $paginator_model = new PaginatorQueryBuilder(
-        array(
-            'builder' => $builder,
-            'limit' => $page['records_per_page'],
-            'page' => $page['page_number'],
-        )
-    );
-    $results = array();
-    if ($paginator_model) {
-        $paginator = $paginator_model->getPaginate();
-        $results = $paginator->items;
+    $arg_str = 'SELECT ';
+    $arg_str .= ' distinct on (rntl_sect_cd) *';
+    $arg_str .= ' FROM m_section';
+    if (!empty($query)) {
+        $arg_str .= ' WHERE ';
+        $arg_str .= $query;
+    }
+    $arg_str .= ' ORDER BY rntl_sect_cd asc';
+
+    $m_section = new MSection();
+    $results = new Resultset(null, $m_section, $m_section->getReadConnection()->query($arg_str));
+    $result_obj = (array)$results;
+    $results_cnt = $result_obj["\0*\0_count"];
+    if (!empty($results_cnt)) {
+        $paginator_model = new PaginatorModel(
+            array(
+                "data" => $results,
+                'limit' => $page['records_per_page'],
+                'page' => $page['page_number'],
+            )
+        );
+        if ($paginator_model) {
+            $paginator = $paginator_model->getPaginate();
+            $results = $paginator->items;
+        }
     }
     $all_list = array();
     $json_list = array();
@@ -1083,7 +1131,7 @@ $app->post('/section_modal', function () use ($app) {
     $json_list['list'] = $all_list;
     $page_list['records_per_page'] = $page['records_per_page'];
     $page_list['page_number'] = $page['page_number'];
-    $page_list['total_records'] = $paginator->total_items;
+    $page_list['total_records'] = count($results);
     $json_list['page'] = $page_list;
     echo json_encode($json_list);
 });
