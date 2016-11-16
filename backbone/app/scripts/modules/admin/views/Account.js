@@ -36,48 +36,6 @@ define([
 					$("#password-group").removeClass("hidden");
 					$(".accnt_no_group").addClass("hidden");
 				},
-				// 'click @ui.updateBtn': function(e){
-					// e.preventDefault();
-					// var that = this;
-					// this.triggerMethod('hideAlerts');
-					// var m;
-					// var reqData = {
-						// add:[],
-						// delete:[]
-					// };
-					// for(var i=0;i<this.collection.length;i++){
-						// m = this.collection.models[i];
-						// if (m.get('deleteFlag')) {
-							// if (m.get('account_id')) {
-								// reqData.delete.push(m.get('account_id'));
-							// }
-						// } else {
-							// if (!m.get('account_id')) {
-								// reqData.add.push(m.getReq());
-							// }
-						// }
-					// }
-					// if(reqData.delete.length === 0 && reqData.add.length === 0) {
-						// that.triggerMethod('updated');
-						// return;
-					// }
-					// var modelForUpdate = new Backbone.Model();
-					// modelForUpdate.url = App.api.AD0100;
-					// modelForUpdate.fetchMx({
-						// data: reqData,
-						// success:function(model){
-							// var errors = model.get('errors');
-							// if(errors.length === 0) {
-								// that.triggerMethod('updated');
-							// } else {
-								// var errorMessages = errors.map(function(v){
-									// return v.error_message;
-								// });
-								// that.triggerMethod('showAlerts', errorMessages);
-							// }
-						// }
-					// });
-				// }
 			},
 		});
 	});
