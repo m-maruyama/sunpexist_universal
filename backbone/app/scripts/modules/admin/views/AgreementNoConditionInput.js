@@ -41,7 +41,6 @@ define([
                         }
                         that.render();
                         var res_list = res.attributes;
-                        console.log(res_list['disp_flg']);
                         if(res_list['disp_flg']||(res_list['rntl_cont_no']&&(referrer > -1))){
                             $('#agreement_no').prop("disabled", true);
                             that.triggerMethod('input_form', res_list['rntl_cont_no']);

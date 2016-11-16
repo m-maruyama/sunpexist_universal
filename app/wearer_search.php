@@ -274,33 +274,33 @@ $app->post('/wearer_search/search', function ()use($app){
                         $list['disabled'] = "disabled";
                         $list['btnPattern'] = "C";
                     }
-                }
-                if ($list['btnPattern'] == "") {
-                    //パターンA： 発注情報トラン．着用者基本マスタトラン．発注区分 = 貸与
-                    $patarn_flg = false;
-                    foreach ($t_order_tran_results as $t_order_tran_result) {
-                        $order_req_no = $t_order_tran_result->order_req_no;
-                        $order_sts_kbn = $t_order_tran_result->order_sts_kbn;
-                        $order_reason_kbn = $t_order_tran_result->order_reason_kbn;
-                        $snd_kbn = $t_order_tran_result->snd_kbn;
-                        if ($order_sts_kbn == '1') {
-                            $patarn_flg = true;
-                            break;
+                    if ($list['btnPattern'] == "") {
+                        //パターンD： 発注情報トラン．発注状況区分 = サイズ交換のデータがある場合、かつ、発注情報トラン．送信区分 = 処理中の場合、ボタンの文言は「サイズ交換[済]」で非活性表示する。
+                        $patarn_flg = true;
+                        foreach ($t_order_tran_results as $t_order_tran_result) {
+                            $order_req_no = $t_order_tran_result->order_req_no;
+                            $order_sts_kbn = $t_order_tran_result->order_sts_kbn;
+                            $order_reason_kbn = $t_order_tran_result->order_reason_kbn;
+                            $snd_kbn = $t_order_tran_result->snd_kbn;
+                            if ($order_sts_kbn == '1' && $snd_kbn == '1') {
+                                $patarn_flg = false;
+                                break;
+                            }
                         }
-                    }
-                    if (!$patarn_flg) {
-                        $list['wearer_input_button'] = "貸与開始";
-                        $list['wearer_input_red'] = "";
-                        $list['disabled'] = "";
-                        $list['btnPattern'] = "A";
+                        if (!$patarn_flg) {
+                            $list['wearer_input_button'] = "貸与開始";
+                            $list['wearer_input_red'] = "[済]";
+                            $list['disabled'] = "disabled";
+                            $list['btnPattern'] = "D";
+                        }
                     }
                 }
             }
             if ($list['btnPattern'] == "") {
-                //上記パターンに引っかからない場合はデフォ表示
                 $list['wearer_input_button'] = "貸与開始";
-                $list['wearer_input_red'] = "[済]";
-                $list['disabled'] = "disabled";
+                $list['wearer_input_red'] = "";
+                $list['disabled'] = "";
+                $list['btnPattern'] = "A";
                 $list['return_reciept_button'] = false;
                 $list['btnPattern'] = "no_pattern";
             }
