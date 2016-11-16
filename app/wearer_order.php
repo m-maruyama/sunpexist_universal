@@ -210,6 +210,7 @@ $app->post('/wearer_order_info', function ()use($app){
     $json_list['order_reason_kbn'] = $wearer_odr_post['order_reason_kbn'];
     $json_list['order_tran_flg'] = $wearer_odr_post['order_tran_flg'];
     $json_list['wearer_tran_flg'] = $wearer_odr_post['wearer_tran_flg'];
+    $json_list['comment'] = $wearer_odr_post['comment'];
 
     //出荷先リスト
     //--出荷先選択ボックス生成--//
@@ -1109,7 +1110,7 @@ $app->post('/wearer_order_insert', function () use ($app) {
 //            if ($wearer_odr_post['order_tran_flg'] == '1') {
             $query_list = array();
             array_push($query_list, "corporate_id = '".$auth['corporate_id']."'");
-            array_push($query_list, "m_wearer_std_comb_hkey = '".$m_wearer_std_tran->m_wearer_std_comb_hkey."'");
+            array_push($query_list, "m_wearer_std_comb_hkey = '".$m_wearer_std_comb_hkey."'");
             array_push($query_list, "werer_sts_kbn = '7'");
             array_push($query_list, "order_sts_kbn = '1'");
             $query = implode(' AND ', $query_list);
@@ -1160,6 +1161,9 @@ $app->post('/wearer_order_insert', function () use ($app) {
                 // 貸与パターン
                 array_push($calum_list, "job_type_cd");
                 array_push($values_list, "'".$cond['job_type']."'");
+                // 送信区分
+                array_push($calum_list, "snd_kbn");
+                array_push($values_list, "'" . $snd_kbn . "'");
                 // 職種アイテムコード
                 array_push($calum_list, "job_type_item_cd");
                 array_push($values_list, "'".$add_item_map['add_job_type_item_cd']."'");

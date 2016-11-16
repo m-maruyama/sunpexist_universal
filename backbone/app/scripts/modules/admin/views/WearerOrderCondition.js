@@ -85,6 +85,7 @@ define([
 						that.ui.address.val(res_list['address1']+res_list['address2']+res_list['address3']+res_list['address4']);
 						that.ui.member_name_kana.val(res_list['wearer_info'][0]['werer_name_kana']);
 						that.ui.back.val(res_list['param']);
+						that.ui.comment.val(res_list['comment']);
 
 						// 入力完了、発注送信ボタン表示/非表示制御
 						var data = {
@@ -159,6 +160,7 @@ define([
 						'resfl_ymd': we_val[12],
 						'werer_name': this.ui.member_name.val(),
 						'werer_name_kana': this.ui.member_name_kana.val(),
+						'comment': this.ui.comment.val(),
 					};
 					var modelForUpdate = this.model;
 					modelForUpdate.url = App.api.WS0011;

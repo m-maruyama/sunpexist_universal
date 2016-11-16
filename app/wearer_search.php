@@ -199,47 +199,110 @@ $app->post('/wearer_search/search', function ()use($app){
             } else {
                 $list['job_type_name'] = "-";
             }
+            //--「貸与開始」ボタン生成--//
+            // 発注情報トラン参照
+            $query_list = array();
+            array_push($query_list, "corporate_id = '".$auth['corporate_id']."'");
+            array_push($query_list, "rntl_cont_no = '".$list['rntl_cont_no']."'");
+            array_push($query_list, "werer_cd = '".$list['werer_cd']."'");
+            array_push($query_list, "rntl_sect_cd = '".$list['rntl_sect_cd']."'");
+            array_push($query_list, "job_type_cd = '".$list['job_type_cd']."'");
+            $query = implode(' AND ', $query_list);
 
-            //---「貸与開始」ボタンの生成---//
-            if ($result->as_wearer_order_sts_kbn == '1')
-            {
-                //パターンA： 発注情報トラン．着用者基本マスタトラン．発注区分 = 貸与
-                //ボタンの文言は「貸与開始」で表示する。
-                $list['wearer_input_button'] = '貸与開始';
-            } elseif (
-                ($result->as_order_sts_kbn == '1'
-                    && $result->as_order_reason_kbn != '3') && ($result->as_snd_kbn == '0'))
-            {
-                //パターンB： 発注情報トラン．発注状況区分 = 貸与 かつ、発注情報トラン．理由区分 = 追加貸与以外のデータがある場合、
-                //かつ、着用者基本マスタトラン．送信区分 = 未送信の場合、ボタンの文言は「貸与開始[済]」で表示する。
+            $arg_str = "";
+            $arg_str .= "SELECT distinct on (order_req_no) ";
+            $arg_str .= "*";
+            $arg_str .= " FROM ";
+            $arg_str .= "t_order_tran";
+            $arg_str .= " WHERE ";
+            $arg_str .= $query;
+            $t_order_tran = new TOrderTran();
+            $t_order_tran_results = new Resultset(NULL, $t_order_tran, $t_order_tran->getReadConnection()->query($arg_str));
+            $result_obj = (array)$t_order_tran_results;
+            $t_order_tran_cnt = $result_obj["\0*\0_count"];
 
-                $list['wearer_input_button'] = "貸与開始";
-                $list['wearer_input_red'] = "[済]";
-            } elseif (
-                ($result->as_order_sts_kbn == '1'
-                    && $result->as_order_reason_kbn != '3') && ($result->as_snd_kbn == '1'))
-            {
-                //パターンC： 発注情報トラン．発注状況区分 = 貸与 かつ、
-                //発注情報トラン．理由区分 = 追加貸与以外のデータがある場合、かつ、
-                //着用者基本マスタトラン．送信区分 = 送信済の場合、
-                //ボタンの文言は「貸与開始[済]」で非活性表示する。
+            // 「貸与開始」パターンチェックスタート
+            $list['btnPattern'] = "";
+            $patarn_flg = true;
+            if (!empty($t_order_tran_cnt)) {
+                $paginator_model = new PaginatorModel(
+                    array(
+                        "data"  => $t_order_tran_results,
+                        "limit" => $t_order_tran_cnt,
+                        "page" => 1
+                    )
+                );
+                $paginator = $paginator_model->getPaginate();
+                $t_order_tran_results = $paginator->items;
 
-                $list['wearer_input_button'] = "貸与開始";
-                $list['wearer_input_red'] = "[済]";
-                $list['disabled'] = "disabled";
+                if ($list['btnPattern'] == "") {
+                    //パターンB： 発注情報トラン．発注状況区分 = サイズ交換のデータがある場合、かつ、発注情報トラン．送信区分 = 未送信の場合、ボタンの文言は「サイズ交換[済]」で表示する。
+                    $patarn_flg = true;
+                    foreach ($t_order_tran_results as $t_order_tran_result) {
+                        $order_req_no = $t_order_tran_result->order_req_no;
+                        $order_sts_kbn = $t_order_tran_result->order_sts_kbn;
+                        $order_reason_kbn = $t_order_tran_result->order_reason_kbn;
+                        $snd_kbn = $t_order_tran_result->snd_kbn;
+                        if ($order_sts_kbn == '1' && $snd_kbn == '0') {
+                            $patarn_flg = false;
+                            break;
+                        }
+                    }
+                    if (!$patarn_flg) {
+                        $list['wearer_input_button'] = "貸与開始";
+                        $list['wearer_input_red'] = "[済]";
+                        $list['disabled'] = "";
+                        $list['btnPattern'] = "B";
+                    }
+                }
+                if ($list['btnPattern'] == "") {
+                    //パターンC： 発注情報トラン．発注状況区分 = サイズ交換のデータがある場合、かつ、発注情報トラン．送信区分 = 送信済の場合、ボタンの文言は「サイズ交換[済]」で非活性表示する。
+                    $patarn_flg = true;
+                    foreach ($t_order_tran_results as $t_order_tran_result) {
+                        $order_req_no = $t_order_tran_result->order_req_no;
+                        $order_sts_kbn = $t_order_tran_result->order_sts_kbn;
+                        $order_reason_kbn = $t_order_tran_result->order_reason_kbn;
+                        $snd_kbn = $t_order_tran_result->snd_kbn;
+                        if ($order_sts_kbn == '1' && $snd_kbn == '1') {
+                            $patarn_flg = false;
+                            break;
+                        }
+                    }
+                    if (!$patarn_flg) {
+                        $list['wearer_input_button'] = "貸与開始";
+                        $list['wearer_input_red'] = "[済]";
+                        $list['disabled'] = "disabled";
+                        $list['btnPattern'] = "C";
+                    }
+                }
+                if ($list['btnPattern'] == "") {
+                    //パターンA： 発注情報トラン．着用者基本マスタトラン．発注区分 = 貸与
+                    $patarn_flg = false;
+                    foreach ($t_order_tran_results as $t_order_tran_result) {
+                        $order_req_no = $t_order_tran_result->order_req_no;
+                        $order_sts_kbn = $t_order_tran_result->order_sts_kbn;
+                        $order_reason_kbn = $t_order_tran_result->order_reason_kbn;
+                        $snd_kbn = $t_order_tran_result->snd_kbn;
+                        if ($order_sts_kbn == '1') {
+                            $patarn_flg = true;
+                            break;
+                        }
+                    }
+                    if (!$patarn_flg) {
+                        $list['wearer_input_button'] = "貸与開始";
+                        $list['wearer_input_red'] = "";
+                        $list['disabled'] = "";
+                        $list['btnPattern'] = "A";
+                    }
+                }
             }
-
-            //「返却伝票ダウンロード」ボタン生成
-            if (
-                ($result->as_order_sts_kbn == '1'
-                    && ($result->as_order_reason_kbn == '4' || $result->as_order_reason_kbn == '8' || $result->as_order_reason_kbn == '9' || $result->as_order_reason_kbn == '11')
-                    && $result->as_snd_kbn == '0') ||
-                ($result->as_order_sts_kbn == '2'
-                    && ($result->as_order_reason_kbn == '4' || $result->as_order_reason_kbn == '8' || $result->as_order_reason_kbn == '9' || $result->as_order_reason_kbn == '11')
-                    && $result->as_snd_kbn == '1'))
-            {
-                //「貸与開始」ボタン生成のパターンBかCの場合に表示
-                $list['return_reciept_button'] = "返却伝票ダウンロード";
+            if ($list['btnPattern'] == "") {
+                //上記パターンに引っかからない場合はデフォ表示
+                $list['wearer_input_button'] = "貸与開始";
+                $list['wearer_input_red'] = "";
+                $list['disabled'] = "";
+                $list['return_reciept_button'] = false;
+                $list['btnPattern'] = "no_pattern";
             }
 
 
@@ -360,6 +423,13 @@ $app->post('/wearer_search/req_param', function ()use($app){
     if(!isset($cond["order_req_no"])){
         $cond["order_req_no"] = $wearer_odr_post['order_req_no'];
     }
+    if($wearer_odr_post['comment']) {
+        $cond["comment"] = $wearer_odr_post['comment'];
+    }elseif(!isset($cond["comment"])) {
+        $cond["comment"] = '';
+    }elseif($cond['comment']){
+        $cond["comment"] = $cond['comment'];
+    }
     // POSTパラメータのセッション格納
     $app->session->set("wearer_odr_post", array(
         'rntl_cont_no' => $cond["rntl_cont_no"],
@@ -379,6 +449,7 @@ $app->post('/wearer_search/req_param', function ()use($app){
         'resfl_ymd' => $cond["resfl_ymd"],
         'm_wearer_std_comb_hkey' => $cond["m_wearer_std_comb_hkey"],
         'order_req_no' => $cond["order_req_no"],
+        'comment' => $cond["comment"],
     ));
     $json_list = array();
     $json_list = $cond;

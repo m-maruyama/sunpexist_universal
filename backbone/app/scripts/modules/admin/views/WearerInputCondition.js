@@ -270,6 +270,9 @@ define([
                     }
                 });
             },
+            go_change: function () {
+                change_select(this.model, $('#agreement_no').val(), this.ui.section.val(), this.ui.m_shipment_to.val(), this.ui.m_shipment_to.children(':selected').text());
+            },
 
             events: {
                 'change @ui.cster_emply_cd_chk': function(e){
@@ -280,6 +283,10 @@ define([
                     }
                 },
                 'change @ui.section': function (e) {
+                    e.preventDefault();
+                    change_select(this.model, $('#agreement_no').val(), this.ui.section.val(), this.ui.m_shipment_to.val(), this.ui.m_shipment_to.children(':selected').text());
+                },
+                'select @ui.section': function (e) {
                     e.preventDefault();
                     change_select(this.model, $('#agreement_no').val(), this.ui.section.val(), this.ui.m_shipment_to.val(), this.ui.m_shipment_to.children(':selected').text());
                 },

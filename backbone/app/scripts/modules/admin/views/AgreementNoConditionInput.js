@@ -24,7 +24,6 @@ define([
                     var referrer = 1;
                 }else{
                     var referrer = -1;
-
                 }
                 var cond = {
                     "scr": '契約No',
@@ -42,7 +41,7 @@ define([
                         }
                         that.render();
                         var res_list = res.attributes;
-                        if(res_list['rntl_cont_no']&&(referrer > -1)){
+                        if(res_list['disp_flg']||(res_list['rntl_cont_no']&&(referrer > -1))){
                             $('#agreement_no').prop("disabled", true);
                             that.triggerMethod('input_form', res_list['rntl_cont_no']);
                         }
