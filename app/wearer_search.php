@@ -282,7 +282,7 @@ $app->post('/wearer_search/search', function ()use($app){
                             $order_sts_kbn = $t_order_tran_result->order_sts_kbn;
                             $order_reason_kbn = $t_order_tran_result->order_reason_kbn;
                             $snd_kbn = $t_order_tran_result->snd_kbn;
-                            if ($order_sts_kbn == '1' && $snd_kbn == '1') {
+                            if ($order_sts_kbn == '1' && $snd_kbn == '9') {
                                 $patarn_flg = false;
                                 break;
                             }
