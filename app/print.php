@@ -19,7 +19,7 @@ $app->post('/print/pdf', function ()use($app){
     $cond = $params["cond"];
     //個別管理番号あるなし　1:あり 0:なし
     $individual_check = $cond['individual_number'];
-    $individual_check = 1;
+    //$individual_check = 1;
     $query_list = array();
 
     //---検索条件---//
