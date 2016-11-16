@@ -57,6 +57,7 @@ $app->post('/agreement_no_input', function () use ($app) {
     $results_array = (array) $results;
     $results_cnt = $results_array["\0*\0_count"];
 
+    $json_list['disp_flg'] = false;
     if ($results_cnt > 0) {
         $list['rntl_cont_no'] = null;
         $list['rntl_cont_name'] = null;
@@ -96,6 +97,11 @@ $app->post('/agreement_no_input', function () use ($app) {
             foreach ($results as $result) {
                 $list['rntl_cont_no'] = $result->as_rntl_cont_no;
                 $list['rntl_cont_name'] = $result->as_rntl_cont_name;
+                if(count($results)==1){
+                    $json_list['disp_flg'] = true;
+                    $json_list['rntl_cont_no'] = $result->as_rntl_cont_no;
+                    $list['selected'] = 'selected';
+                }
                 array_push($all_list, $list);
             }
             $app->session->remove("wearer_odr_post");
@@ -306,7 +312,7 @@ $app->post('/wearer_input', function () use ($app) {
         ->where($query)
         ->columns('*')
         ->execute();
-    //一件目に「支店店舗と同じ:部門マスタ.標準出荷先コード:部門マスタ.標準出荷先支店コード」という選択肢とセレクトボックスを表示。
+    //一件目に「拠点と同じ:部門マスタ.標準出荷先コード:部門マスタ.標準出荷先支店コード」という選択肢とセレクトボックスを表示。
     foreach ($m_shipment_to_results as $m_shipment_to_result) {
         $list['ship_to_cd'] = $m_shipment_to_result->ship_to_cd;
         $list['ship_to_brnch_cd'] = $m_shipment_to_result->ship_to_brnch_cd;
@@ -582,15 +588,15 @@ $app->post('/change_section', function () use ($app) {
         // 出荷先マスタ．レンタル契約No.　＝　画面で選択されている契約No.
         array_push($query_list, "MShipmentTo.rntl_cont_no = '".$cond['agreement_no']."'");
 
-        //出荷先」のセレクトボックスが「支店店舗と同じ」以外が選択状態の場合
-        if ($cond['m_shipment_to_name'] != '支店店舗と同じ') {
+        //出荷先」のセレクトボックスが「拠点と同じ」以外が選択状態の場合
+        if ($cond['m_shipment_to_name'] != '拠点と同じ') {
             $m_shipment_to = explode(',', $cond['m_shipment_to']);
             //出荷先マスタ．出荷先コード　＝　画面で選択されている出荷先の出荷先コード　AND
             array_push($query_list, "MShipmentTo.ship_to_cd = '".$m_shipment_to[0]."'");
             //出荷先マスタ．出荷先支店コード　＝　画面で選択されている出荷先の出荷先支店コード
             array_push($query_list, "MShipmentTo.ship_to_brnch_cd = '".$m_shipment_to[1]."'");
         }else{
-            //出荷先」のセレクトボックスが「支店店舗と同じ」が選択状態の場合
+            //出荷先」のセレクトボックスが「拠点と同じ」が選択状態の場合
             //部門マスタ．企業ID　＝　ログインしているアカウントの企業ID　AND
             array_push($query_list, "MSection.corporate_id = '".$auth['corporate_id']."'");
             //部門マスタ．レンタル契約No.　＝　画面で選択されている契約No.　AND
@@ -609,7 +615,7 @@ $app->post('/change_section', function () use ($app) {
         // 出荷先マスタ．レンタル契約No.　＝　画面で選択されている契約No.
         array_push($query_list, "MShipmentTo.rntl_cont_no = '".$cond['agreement_no']."'");
 
-        //出荷先」のセレクトボックスが「支店店舗と同じ」以外が選択状態の場合
+        //出荷先」のセレクトボックスが「拠点と同じ」以外が選択状態の場合
         $m_shipment_to = explode(',', $cond['m_shipment_to']);
         //出荷先マスタ．出荷先コード　＝　画面で選択されている出荷先の出荷先コード　AND
         array_push($query_list, "MShipmentTo.ship_to_cd = '".$m_shipment_to[0]."'");
@@ -623,8 +629,8 @@ $app->post('/change_section', function () use ($app) {
     $q_str = MShipmentTo::query()
         ->where($query)
         ->columns(array('MShipmentTo.*'));
-    // 「出荷先」のセレクトボックスが「支店店舗と同じ」が選択状態の場合
-    if ($cond['m_shipment_to_name'] == '支店店舗と同じ') {
+    // 「出荷先」のセレクトボックスが「拠点と同じ」が選択状態の場合
+    if ($cond['m_shipment_to_name'] == '拠点と同じ') {
         //出荷先マスタ．出荷先コード　＝　部門マスタ．標準出荷先コード　AND
         //出荷先マスタ．出荷先支店コード　＝　部門マスタ．標準出荷先支店コード
         //出荷先マスタ．出荷先コード　＝　画面で選択されている出荷先の出荷先コード　AND
