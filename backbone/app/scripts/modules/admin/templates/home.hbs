@@ -9,9 +9,9 @@
                 <h2 class="col-md-2">■ 処理状況</h2>
                 <div class="col-md-9">
                     <ul class="list-unstyled red row">
-                        <li class="col-md-5 row"><span class="col-md-7">・正社員番号未登録件数</span><span class="col-md-5">{{emply_cd_no_regist_cnt}}件</span></li>
-                        <li class="col-md-4 row"><span class="col-md-6">・未受領件数</span><span class="col-md-6">{{no_recieve_cnt}}件</span></li>
-                        <li class="col-md-4 row"><span class="col-md-6">・未返却件数</span><span class="col-md-6">{{no_return_cnt}}件</span></li>
+                        <li class="col-md-5 row"><span class="col-md-7">・発注未送信件数</span><span class="col-md-5">{{#if button14_use_flg}}<a class="red" href="order_send.html">{{/if}}{{emply_cd_no_regist_cnt}}件{{#if button14_use_flg}}</a>{{/if}}</span></li>
+                        <li class="col-md-4 row"><span class="col-md-6">・未受領件数</span><span class="col-md-6">{{#if button8_use_flg}}<a class="red" href="receive.html">{{/if}}{{no_recieve_cnt}}件{{#if button8_use_flg}}</a>{{/if}}</span></li>
+                        <li class="col-md-4 row"><span class="col-md-6">・未返却件数</span><span class="col-md-6">{{#if button7_use_flg}}<a class="red" href="unreturn.html">{{/if}}{{no_return_cnt}}件{{#if button7_use_flg}}</a>{{/if}}</span></li>
                     </ul>
                 </div>
 			</div>

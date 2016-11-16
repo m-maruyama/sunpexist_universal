@@ -1,5 +1,10 @@
 <?php
-use Phalcon\Mvc\Model\Resultset;
+//use Phalcon\Mvc\Model\Resultset;
+use Phalcon\Mvc\Model;
+use Phalcon\Mvc\Model\Resultset\Simple as Resultset;
+use Phalcon\Paginator\Adapter\Model as PaginatorModel;
+use Phalcon\Paginator\Adapter\NativeArray as PaginatorArray;
+use Phalcon\Paginator\Adapter\QueryBuilder as PaginatorQueryBuilder;
 
 /**
  * ホーム
@@ -9,11 +14,60 @@ $app->post('/home', function ()use($app){
     $all_list = array();
     $json_list = array();
     $corporate_id = $app->session->get("auth")['corporate_id'];
-    //正社員番号未登録件数
-    $emply_cd_no_regist_cnt = MWearerStdTran::find(array(
-        "conditions" => "corporate_id = ?1 AND werer_sts_kbn = '7'",
-        "bind"	=> array(1 => $corporate_id)
-    ))->count();
+
+    //発注未送信件数
+
+    // 発注区分=貸与で発注情報トランのデータが存在しない場合は対象外とする
+    // パターン１ 発注区分 = 貸与 発注トランに発注番号を省いた件数 未送信
+    $arg_str = "";
+    $arg_str .= "SELECT ";
+    $arg_str .= " * ";
+    $arg_str .= " FROM ";
+    $arg_str .= "(SELECT distinct on (T2.order_req_no) ";
+    $arg_str .= "T2.order_req_no as as_wst_order_req_no,";
+    $arg_str .= "T2.order_sts_kbn as as_wst_order_sts_kbn,";
+    $arg_str .= "T2.snd_kbn as as_snd_kbn,";
+    $arg_str .= "T1.order_req_no as as_order_req_no";
+    $arg_str .= " FROM ";
+    $arg_str .= "(SELECT * FROM m_wearer_std_tran WHERE order_sts_kbn = '1') as T2";
+    $arg_str .= " INNER JOIN (SELECT * FROM t_order_tran) as T1";
+    $arg_str .= " ON T2.order_req_no = T1.order_req_no";
+    $arg_str .= " WHERE ";
+    $arg_str .= "T2.snd_kbn = '0'";
+    $arg_str .= ") as distinct_table";
+    $arg_str .= " ORDER BY as_wst_order_req_no ASC";
+
+    $m_wearer_std_tran = new MWearerStdTran();
+    $results = new Resultset(null, $m_wearer_std_tran, $m_wearer_std_tran->getReadConnection()->query($arg_str));
+    $result_obj = (array)$results;
+    $results_cnt = $result_obj["\0*\0_count"];
+
+    // パターン２　発注区分 = 貸与以外 未送信
+    $arg_str = "";
+    $arg_str .= "SELECT ";
+    $arg_str .= " * ";
+    $arg_str .= " FROM ";
+    $arg_str .= "(SELECT distinct on (T2.order_req_no) ";
+    $arg_str .= "T2.order_req_no as as_wst_order_req_no,";
+    $arg_str .= "T2.order_sts_kbn as as_wst_order_sts_kbn,";
+    $arg_str .= "T2.snd_kbn as as_snd_kbn,";
+    $arg_str .= "T1.order_req_no as as_order_req_no";
+    $arg_str .= " FROM ";
+    $arg_str .= "(SELECT * FROM m_wearer_std_tran WHERE NOT order_sts_kbn = '1') as T2";
+    $arg_str .= " LEFT JOIN (SELECT * FROM t_order_tran) as T1";
+    $arg_str .= " ON T2.order_req_no = T1.order_req_no";
+    $arg_str .= " WHERE ";
+    $arg_str .= "T2.snd_kbn = '0'";
+    $arg_str .= ") as distinct_table";
+    $arg_str .= " ORDER BY as_wst_order_req_no ASC";
+
+    $m_wearer_std_tran2 = new MWearerStdTran();
+    $results2 = new Resultset(null, $m_wearer_std_tran2, $m_wearer_std_tran2->getReadConnection()->query($arg_str));
+    $result_obj2 = (array)$results2;
+    $results_cnt2 = $result_obj2["\0*\0_count"];
+
+    //パターン１とパターン２を足した件数
+    $emply_cd_no_regist_cnt = $results_cnt + $results_cnt2;
 
     //未受領件数
     $no_recieve_cnt = TDeliveryGoodsStateDetails::find(array(
