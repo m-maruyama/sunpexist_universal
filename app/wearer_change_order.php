@@ -484,7 +484,7 @@ $app->post('/shipment_change', function ()use($app){
       // 拠点にあわせる選択肢
       $list['ship_to_cd'] = "0";
       $list['ship_to_brnch_cd'] = "0";
-      $list['cust_to_brnch_name1'] = "支店店舗と同じ";
+      $list['cust_to_brnch_name1'] = "拠点と同じ";
       $list['cust_to_brnch_name2'] = "";
       $list['selected'] = "";
       array_push($all_list, $list);
