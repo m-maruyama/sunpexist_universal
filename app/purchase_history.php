@@ -20,7 +20,6 @@ $app->post('/purchase/input_item', function () use ($app) {
     // アカウントセッション取得
     $auth = $app->session->get('auth');
 
-    //--- 検索条件 ---//
     array_push($query_list, "corporate_id = '" . $auth['corporate_id'] . "'");
     if (!empty($params['agreement_no'])) {
         array_push($query_list, "rntl_cont_no = '" . $params['agreement_no'] . "'");
@@ -170,6 +169,7 @@ $app->post('/purchase_history/search', function () use ($app) {
     $params = json_decode(file_get_contents('php://input'), true);
     $json_list = array();
     // アカウントセッション取得
+    $auth = $app->session->get('auth');
 
     //削除の場合
     if (isset($params['del'])) {
@@ -206,6 +206,7 @@ $app->post('/purchase_history/search', function () use ($app) {
     //初期表示は一番若い契約のnoを入れる
     if (isset($cond['rntl_cont_no'])) {
     } else {
+        ChromePhp::log($auth['corporate_id']);
         $login_corporate_id = $auth['corporate_id'];
 
         //sectionで一番若い契約Noを取得
