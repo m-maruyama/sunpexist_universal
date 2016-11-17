@@ -31,6 +31,7 @@ define([
 				'order_count': '#order_count',
 				'return_count': '#return_count',
 				'target_flg': '#target_flg',
+				'size_cd': '.size_cd',
 				'order_num': '.order_num',
 				'return_num': '.return_num',
 				'size_add': '.size_add',
@@ -40,6 +41,7 @@ define([
 				'#order_count': 'order_count',
 				'#return_count': 'return_count',
 				'#target_flg': 'target_flg',
+				'.size_cd': 'size_cd',
 				'.order_num': 'order_num',
 				'.return_num': 'return_num',
 				'.size_add': 'size_add',
@@ -79,6 +81,11 @@ define([
 				});
 			},
 			events: {
+				'change @ui.size_cd': function(e) {
+					e.preventDefault();
+					var that = this;
+
+ 				},
 				'click @ui.size_add': function(e) {
 					e.preventDefault();
 					var that = this;

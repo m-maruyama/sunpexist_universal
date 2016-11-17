@@ -61,7 +61,7 @@
           <td>
             {{#if size_add_flg}}
             {{else}}
-            <select class="form-control input-sm" id="size_cd{{arr_num}}" name="size_cd{{arr_num}}">
+            <select class="form-control input-sm size_cd" id="size_cd{{arr_num}}" name="size_cd{{arr_num}}">
               {{#each size_cd}}
               <option value="{{size}}" {{selected}}>{{size}}</option>
               {{/each}}
@@ -91,11 +91,9 @@
           <td>
             {{#if return_num_text_disp}}
               <input type="text" style="width:4em; font-weight:normal; text-align:center;" class="input-sm return_num" id="return_num{{arr_num}}" name="return_num{{arr_num}}" value="{{return_num}}">
-              <!--<input type="text" style="width:4em; font-weight:normal; text-align:center;" class="input-sm individual_flg" id="return_num{{arr_num}}" name="return_num{{arr_num}}" value="{{return_num}}">-->
             {{else}}
               {{return_num}}
               <input type="hidden" class="return_num" id="return_num{{arr_num}}" name="return_num{{arr_num}}" value="{{return_num}}">
-              <!--<input type="text" style="width:4em; font-weight:normal; text-align:center;" class="input-sm individual_flg" id="return_num{{arr_num}}" name="return_num{{arr_num}}" value="{{return_num}}">-->
             {{/if}}
           </td>
           <td>
