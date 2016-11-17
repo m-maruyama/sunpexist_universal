@@ -760,6 +760,10 @@ $app->post('/input_insert', function () use ($app) {
     $query_list = array();
     //社員コードのマスタチェック(社員コードありの場合のみ)
     if ($cond['cster_emply_cd']) {
+        // 契約マスタ．企業ID　＝　ログインしているアカウントの企業ID　AND
+        array_push($query_list, "corporate_id = '" . $auth['corporate_id'] . "'");
+        // 契約マスタ．レンタル契約No.　＝　画面で選択されている契約No.
+        array_push($query_list, "rntl_cont_no = '" . $cond['agreement_no'] . "'");
         // 着用者基本マスタ．客先社員コード ＝ 画面で入力された社員コード AND
         array_push($query_list, "cster_emply_cd = '" . $cond['cster_emply_cd'] . "'");
         // 着用者基本マスタ．着用者状況区分 ＝ 稼働

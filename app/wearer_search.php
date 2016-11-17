@@ -355,21 +355,34 @@ $app->post('/wearer_search/search', function ()use($app){
  * 「貸与開始」ボタンの押下時のパラメータのセッション保持
  * →発注入力（貸与開始）にてパラメータ利用
  */
-$app->post('/wearer_search/req_param', function ()use($app){
+$app->post('/wearer_search/req_param', function ()use($app) {
     $params = json_decode(file_get_contents("php://input"), true);
 
     // パラメータ取得
     $cond = $params['data'];
     $wearer_odr_post = $app->session->get("wearer_odr_post");
 
-    if(isset($wearer_odr_post['order_reason_kbn'])){
-        $order_reason_kbn = $wearer_odr_post["order_reason_kbn"];
-
-    }elseif(isset($cond["order_reason_kbn"])){
-        $order_reason_kbn = $cond["order_reason_kbn"];
-    }else{
-        $order_reason_kbn = '7';
+    //選択された商品
+    $add_item = array();
+    if (isset($params['add_item'])){
+        $add_item = $params['add_item'];
+    }elseif($wearer_odr_post['add_item']) {
+        $add_item = $wearer_odr_post['add_item'];
     }
+    if(isset($cond["job_type"])&&isset($wearer_odr_post['job_type_cd'])){
+        if($cond["job_type"]!=$wearer_odr_post['job_type_cd']){
+            $add_item = array();
+        }
+    }
+
+    if(isset($cond['order_reason_kbn'])) {
+        $cond["reason_kbn"] = $cond["order_reason_kbn"];
+    }elseif(isset($wearer_odr_post['order_reason_kbn'])){
+        $cond["reason_kbn"] = $wearer_odr_post["order_reason_kbn"];
+    }else{
+        $cond["reason_kbn"] = null;
+    }
+
     if(isset($cond["order_tran_flg"])){
         $order_tran_flg = $cond["order_tran_flg"];
     }elseif(isset($wearer_odr_post['order_tran_flg'])){
@@ -445,7 +458,7 @@ $app->post('/wearer_search/req_param', function ()use($app){
         'job_type_cd' => $cond["job_type"],
         'ship_to_cd' => $cond["ship_to_cd"],
         'ship_to_brnch_cd' => $cond["ship_to_brnch_cd"],
-        'order_reason_kbn' => $order_reason_kbn,
+        'order_reason_kbn' => $cond["reason_kbn"],
         'order_tran_flg' => $order_tran_flg,
         'wearer_tran_flg' => $wearer_tran_flg,
         'appointment_ymd' => $cond["appointment_ymd"],
@@ -453,6 +466,7 @@ $app->post('/wearer_search/req_param', function ()use($app){
         'm_wearer_std_comb_hkey' => $cond["m_wearer_std_comb_hkey"],
         'order_req_no' => $cond["order_req_no"],
         'comment' => $cond["comment"],
+        'add_item' => $add_item,
     ));
     $json_list = array();
     $json_list = $cond;

@@ -153,7 +153,7 @@ define([
 						'job_type': we_val[5],
 						'ship_to_cd': we_val[6],
 						'ship_to_brnch_cd': we_val[7],
-						'order_reason_kbn': we_val[8],
+						'order_reason_kbn': $("select[name='reason_kbn']").val(),
 						'order_tran_flg': we_val[9],
 						'wearer_tran_flg': we_val[10],
 						'appointment_ymd': we_val[11],
@@ -162,11 +162,29 @@ define([
 						'werer_name_kana': this.ui.member_name_kana.val(),
 						'comment': this.ui.comment.val(),
 					};
+
+					// 追加されるアイテム
+					var add_list_cnt = $("input[name='add_list_cnt']").val();
+					var add_item = new Object();
+					for (var i=0; i<add_list_cnt; i++) {
+						add_item[i] = new Object();
+						add_item[i]["add_rntl_sect_cd"] = $("input[name='add_rntl_sect_cd"+i+"']").val();
+						add_item[i]["add_job_type_cd"] = $("input[name='add_job_type_cd"+i+"']").val();
+						add_item[i]["add_job_type_item_cd"] = $("input[name='add_job_type_item_cd"+i+"']").val();
+						add_item[i]["add_item_cd"] = $("input[name='add_item_cd"+i+"']").val();
+						add_item[i]["add_color_cd"] = $("input[name='add_color_cd"+i+"']").val();
+						add_item[i]["add_choice_type"] = $("input[name='add_choice_type"+i+"']").val();
+						add_item[i]["add_std_input_qty"] = $("input[name='add_std_input_qty"+i+"']").val();
+						add_item[i]["add_size_cd"] = $("select[name='add_size_cd"+i+"']").val();
+						add_item[i]["add_order_num"] = $("input[name='add_order_num"+i+"']").val();
+						add_item[i]["add_order_num_disable"] = $("input[name='add_order_num_disable"+i+"']").val();
+					}
 					var modelForUpdate = this.model;
 					modelForUpdate.url = App.api.WS0011;
 					var cond = {
 						"scr": '着用開始商品詳細',
 						"data": data,
+						"add_item": add_item,
 					};
 					modelForUpdate.fetchMx({
 						data: cond,

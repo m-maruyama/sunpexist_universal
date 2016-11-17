@@ -73,40 +73,33 @@ $app->post('/reason_kbn_order', function ()use($app){
     $arg_str .= ' WHERE ';
     $arg_str .= $query;
     $arg_str .= ' ORDER BY dsp_order asc';
-
     $m_gencode = new MGencode();
     $results = new Resultset(null, $m_gencode, $m_gencode->getReadConnection()->query($arg_str));
     $results_array = (array) $results;
     $results_cnt = $results_array["\0*\0_count"];
 
     if ($results_cnt > 0) {
-      $paginator_model = new PaginatorModel(
-    		array(
-    			"data"  => $results,
-    			"limit" => $results_cnt,
-    			"page" => 1
-    		)
-    	);
-      $paginator = $paginator_model->getPaginate();
-  		$results = $paginator->items;
+        $paginator_model = new PaginatorModel(
+            array(
+                "data"  => $results,
+                "limit" => $results_cnt,
+                "page" => 1
+            )
+        );
+        $paginator = $paginator_model->getPaginate();
 
-      foreach ($results as $result) {
-        $list['reason_kbn'] = $result->gen_cd;
-        $list['reason_kbn_name'] = $result->gen_name;
+        $results = $paginator->items;
 
-        // 発注情報トランフラグ有の場合は初期選択状態版を生成
-        if ($wearer_odr_post['order_req_no']) {
-          if ($list['reason_kbn'] == $wearer_odr_post['order_reason_kbn']) {
-            $list['selected'] = 'selected';
-          } else {
+        foreach ($results as $result) {
+            $list['reason_kbn'] = $result->gen_cd;
+            $list['reason_kbn_name'] = $result->gen_name;
             $list['selected'] = '';
-          }
-        } else {
-          $list['selected'] = '';
+            // 発注情報トランフラグ有の場合は初期選択状態版を生成
+            if ($list['reason_kbn'] == $wearer_odr_post['order_reason_kbn']) {
+                $list['selected'] = 'selected';
+            }
+            array_push($all_list, $list);
         }
-
-        array_push($all_list, $list);
-      }
     } else {
       $list['reason_kbn'] = null;
       $list['reason_kbn_name'] = '';
@@ -294,7 +287,11 @@ $app->post('/wearer_order_info', function ()use($app){
 
             foreach ($results as $result) {
                 // 社員コード
-                $list['cster_emply_cd'] = $result->as_cster_emply_cd;
+                if($result->as_cster_emply_cd){
+                    $list['cster_emply_cd'] = $result->as_cster_emply_cd;
+                }else{
+                    $list['cster_emply_cd'] = '-';
+                }
                 // 着用者名
                 $list['werer_name'] = $result->as_werer_name;
                 // 着用者名（読み仮名）
@@ -350,6 +347,11 @@ $app->post('/wearer_order_info', function ()use($app){
 
             foreach ($results as $result) {
                 // 社員コード
+                if($result->as_cster_emply_cd){
+                    $list['cster_emply_cd'] = $result->as_cster_emply_cd;
+                }else{
+                    $list['cster_emply_cd'] = '-';
+                }
                 $list['cster_emply_cd'] = $result->as_cster_emply_cd;
                 // 着用者名
                 $list['werer_name'] = $result->as_werer_name;
@@ -371,7 +373,7 @@ $app->post('/wearer_order_info', function ()use($app){
     }
     if(empty( $json_list['wearer_info'])){
         if(!$wearer_odr_post['cster_emply_cd']){
-            $cster_emply_cd = '';
+            $cster_emply_cd = '-';
         }else{
             $cster_emply_cd = $wearer_odr_post['cster_emply_cd'];
         }
@@ -386,7 +388,7 @@ $app->post('/wearer_order_info', function ()use($app){
         if (!empty($list['appointment_ymd'])) {
             $list['appointment_ymd'] = date('Y/m/d', strtotime($list['appointment_ymd']));
         } else {
-            $list['appointment_ymd'] = '';
+            $list['appointment_ymd'] = '-';
         }
         array_push($all_list, $list);
         $json_list['wearer_info'] = $all_list;
@@ -548,6 +550,7 @@ $app->post('/wearer_order_list', function ()use($app){
     }
     $arr_cnt = 0;
     $list_cnt = 1;
+    $add_item = $wearer_odr_post['add_item'];
     foreach ($results as $result) {
         $list = array();
         // name属性用カウント値
@@ -620,36 +623,48 @@ $app->post('/wearer_order_list', function ()use($app){
         ));
         $size_list = array();
         $size_list_to = array();
-        foreach ($m_item_results as $m_item_result){
-            if( isset($result->as_size_cd_tran)&&$result->as_size_cd_tran == $m_item_result->size_cd){
-                $size_list['selected'] = 'selected';
-            }else{
-                $size_list['selected'] = '';
+//        ChromePhp::LOG($add_item[$arr_cnt-1]);
+//        ||$add_item[$arr_cnt-1]['add_size_cd']==$m_item_result->size_cd
+        if($add_item){
+            foreach ($m_item_results as $m_item_result){
+                if($add_item[$arr_cnt-1]['add_size_cd'] == $m_item_result->size_cd){
+                    $size_list['selected'] = 'selected';
+                }else{
+                    $size_list['selected'] = '';
+                }
+                $size_list['size_cd'] = $m_item_result->size_cd;
+                array_push($size_list_to , $size_list);
             }
-            $size_list['size_cd'] = $m_item_result->size_cd;
-            array_push($size_list_to , $size_list);
+            // 発注数(単一選択=入力不可、複数選択=入力可)
+            //「単一選択」の場合は、投入商品マスタ．標準投入数（入力不可）。
+            if ($list["choice_type"] == "1") {
+                $list["order_num"] = $add_item[$arr_cnt - 1]['add_std_input_qty'];
+                $list["order_num_disable"] = "disabled";
+            } else {
+                $list["order_num"] = $add_item[$arr_cnt - 1]['add_order_num'];
+                $list["order_num_disable"] = "";
+            }
+        }else{
+            foreach ($m_item_results as $m_item_result){
+                if((isset($result->as_size_cd_tran)&&$result->as_size_cd_tran == $m_item_result->size_cd)){
+                    $size_list['selected'] = 'selected';
+                }else{
+                    $size_list['selected'] = '';
+                }
+                $size_list['size_cd'] = $m_item_result->size_cd;
+                array_push($size_list_to , $size_list);
+            }
+            // 発注数(単一選択=入力不可、複数選択=入力可)
+            //「単一選択」の場合は、投入商品マスタ．標準投入数（入力不可）。
+            if ($list["choice_type"] == "1") {
+                $list["order_num"] = $result->as_std_input_qty;
+                $list["order_num_disable"] = "disabled";
+            } else {
+                $list["order_num_disable"] = "";
+            }
         }
         // サイズコードセレクトボックス
         $list['size_cd_list'] = $size_list_to;
-        // 発注情報トラン.サイズコード（発注情報トランにレコードが存在する場合は、発注情報トラン．サイズコードを初期選択状態で表示する。）
-        //	発注情報トランにレコードが存在する場合は、発注情報トラン．投入枚数を初期値で表示する。
-        if($t_order_tran_flg){
-            $list['size_cd_tran'] = $result->as_size_cd_tran;
-            $list['order_qty_tran'] = $result->as_order_qty_tran;
-            $list["order_num"] = $result->as_order_qty_tran;
-        }else{
-            $list['size_cd_tran'] = '';
-            $list['order_qty_tran'] = '0';
-        }
-
-        // 発注数(単一選択=入力不可、複数選択=入力可)
-        //「単一選択」の場合は、投入商品マスタ．標準投入数（入力不可）。
-        if ($list["choice_type"] == "1") {
-            $list["order_num"] = $result->as_std_input_qty;
-            $list["order_num_disable"] = "disabled";
-        } else {
-            $list["order_num_disable"] = "";
-        }
         // 商品-色
         $list["item_and_color"] = $list['item_cd']."-".$list['color_cd'];
         array_push($all_list,$list);
