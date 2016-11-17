@@ -841,7 +841,6 @@ $app->post('/input_insert', function () use ($app) {
     }
     //sql文字列を' AND 'で結合
     $query = implode(' AND ', $query_list);
-    ChromePhp::LOG($query);
     //--- クエリー実行・取得 ---//
     $m_shipment_to_cnt = MShipmentTo::find(array(
         'conditions' => $query

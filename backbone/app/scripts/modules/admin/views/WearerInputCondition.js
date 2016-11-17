@@ -140,6 +140,9 @@ define([
                     var m_shipment_to_array = this.ui.m_shipment_to.val().split(',');
                     model.set('ship_to_cd', m_shipment_to_array[0]);
                     model.set('ship_to_brnch_cd', m_shipment_to_array[1]);
+                }else{
+                    model.set('ship_to_cd', null);
+                    model.set('ship_to_brnch_cd', null);
                 }
                 model.set('zip_no', this.ui.zip_no.val());
                 model.set('address', this.ui.address.val());
@@ -189,6 +192,9 @@ define([
                     var m_shipment_to_array = this.ui.m_shipment_to.val().split(',');
                     model.set('ship_to_cd', m_shipment_to_array[0]);
                     model.set('ship_to_brnch_cd', m_shipment_to_array[1]);
+                }else{
+                    model.set('ship_to_cd', null);
+                    model.set('ship_to_brnch_cd', null);
                 }
                 model.set('zip_no', this.ui.zip_no.val());
                 model.set('address', this.ui.address.val());
