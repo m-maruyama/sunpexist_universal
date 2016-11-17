@@ -1074,6 +1074,8 @@ $app->post('/wearer_exchange/list', function ()use($app){
         $list["job_type_cd"] = $wearer_size_change_post['job_type_cd'];
         // 職種アイテムコード
         $list["job_type_item_cd"] = $item_result->as_job_type_item_cd;
+        // サイズ追加可否フラグ
+        $list["add_flg"] = $item_result->as_size_add_flg;
 
         //--サイズ追加パラメータ--//
         $list["add_param"] =
@@ -1331,10 +1333,12 @@ $app->post('/wearer_exchange/list', function ()use($app){
         $list["job_type_cd"] = $wearer_size_change_post['job_type_cd'];
         // 職種アイテムコード
         $list["job_type_item_cd"] = $result->as_job_type_item_cd;
+        // サイズ追加可否フラグ
+        $list["add_flg"] = $result->as_size_add_flg;
 
         //--サイズ追加パラメータ--//
         $list["add_param"] =
-          $list["list_no"].":".
+          $list["arr_num"].":".
           $list["item_cd"].":".
           $list["color_cd"].":".
           $list["now_size_cd"]

@@ -44,6 +44,7 @@
             <input type="hidden" name="item_cd{{arr_num}}" value="{{item_cd}}">
             <input type="hidden" name="color_cd{{arr_num}}" value="{{color_cd}}">
             <input type="hidden" name="individual_flg{{arr_num}}" value="{{individual_flg}}">
+            <input type="hidden" name="add_flg{{arr_num}}" value="{{add_flg}}">
           </td>
           <td>{{item_name}}</td>
           <td>
@@ -99,8 +100,8 @@
           </td>
           <td>
             {{#if size_add_flg}}
-            <button type="button" class="btn btn-primary size_add" title="サイズ追加" id="size_add{{list_no}}" value="{{add_param}}">サイズ追加</button>
-            <input type="hidden" name="add_cnt{{list_no}}" value="0">
+            <button type="button" class="btn btn-primary size_add" title="サイズ追加" id="size_add{{arr_num}}" value="{{add_param}}">サイズ追加</button>
+            <input type="hidden" name="add_cnt{{arr_num}}" value="0">
             {{/if}}
           </td>
         </tr>
