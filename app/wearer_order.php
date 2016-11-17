@@ -912,6 +912,7 @@ $app->post('/wearer_order_insert', function () use ($app) {
             $ship_to_brnch_cd = $wearer_odr_post['ship_to_brnch_cd']; //出荷先支店コード
             $order_req_no  = $wearer_odr_post['order_req_no'];//発注No
             $web_upd_date = $m_wearer_std_tran->web_upd_date;//WEB更新日付
+            $order_req_no  = $shin_order_req_no;//発注No
             $snd_date = $m_wearer_std_tran->snd_date;//送信日時
             $rgst_date = $m_wearer_std_tran->rgst_date;//送信日時
             $rgst_user_id = $m_wearer_std_tran->rgst_user_id;//登録ユーザーID
