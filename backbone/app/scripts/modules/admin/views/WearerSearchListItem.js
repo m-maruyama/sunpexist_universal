@@ -36,8 +36,7 @@ define([
 						'resfl_ymd': we_val[12],
 						'm_wearer_std_comb_hkey': we_val[13],
 						'order_req_no': we_val[14],
-						'm_job_type_comb_hkey': we_val[15],
-						'm_section_comb_hkey': we_val[16],
+						'comment': we_val[15],
 					};
 					var modelForUpdate = this.model;
 					modelForUpdate.url = App.api.WS0011;

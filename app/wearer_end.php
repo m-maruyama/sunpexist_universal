@@ -169,6 +169,7 @@ $app->post('/wearer_end/search', function ()use($app){
             $arg_str .= "m_wearer_std_tran.snd_kbn as as_wearer_snd_kbn,";
             $arg_str .= "m_wearer_std_tran.ship_to_cd as as_ship_to_cd,";
             $arg_str .= "m_wearer_std_tran.ship_to_brnch_cd as as_ship_to_brnch_cd,";
+            $arg_str .= "m_wearer_std_tran.order_req_no as as_wearer_order_req_no,";
             $arg_str .= "wst.rntl_sect_name as wst_rntl_sect_name,";
             $arg_str .= "wjt.job_type_name as wjt_job_type_name,";
             $arg_str .= "t_order_tran.order_req_no as as_order_req_no,";
@@ -293,8 +294,23 @@ $app->post('/wearer_end/search', function ()use($app){
                 $list['sex_kbn'] = $gencode_map->gen_name;
             }
 
+            // 発注、発注情報トラン有無フラグ
+            $list['order_kbn'] = "未";
+            // 発注情報トラン無
+            $list['order_tran_flg'] = '0';
+            if (isset($result->as_order_req_no)) {
+                $list['order_req_no'] = $result->as_order_req_no;
+                $list['order_kbn'] = "<font color='red'>済</font>";
+                // 発注情報トラン有
+                $list['order_tran_flg'] = '1';
+            }elseif(isset($result->as_wearer_order_req_no)){
+                $list['order_req_no'] = $result->as_wearer_order_req_no;
+                $list['order_kbn'] = "未";
+                // 発注情報トラン無
+                $list['order_tran_flg'] = '0';
+            }
             // 状態
-            $list['snd_kbn'] = "-";
+            $list['snd_kbn'] = "未送信";
             if (!empty($result->as_snd_kbn)) {
                 if($result->as_snd_kbn == '0'){
                     $list['snd_kbn'] = "未送信";
@@ -342,16 +358,106 @@ $app->post('/wearer_end/search', function ()use($app){
             $result_obj = (array)$t_order_tran_results;
             $t_order_tran_cnt = $result_obj["\0*\0_count"];
 
-            // 発注、発注情報トラン有無フラグ
-            if ($t_order_tran_cnt > 0) {
-                $list['order_kbn'] = "<font color='red'>済</font>";
-                // 発注情報トラン有
-                $list['order_tran_flg'] = '1';
-            }else{
-                $list['order_kbn'] = "未";
-                // 発注情報トラン無
-                $list['order_tran_flg'] = '0';
-            }
+            // 「貸与開始」パターンチェックスタート
+//            $list['btnPattern'] = "";
+//            $patarn_flg = true;
+//            if (!empty($t_order_tran_cnt)) {
+//                $paginator_model = new PaginatorModel(
+//                    array(
+//                        "data"  => $t_order_tran_results,
+//                        "limit" => $t_order_tran_cnt,
+//                        "page" => 1
+//                    )
+//                );
+//                $paginator = $paginator_model->getPaginate();
+//                $t_order_tran_results = $paginator->items;
+//
+//                if ($list['btnPattern'] == "") {
+//                    //パターンB： 発注情報トラン．発注状況区分 = サイズ交換のデータがある場合、かつ、発注情報トラン．送信区分 = 未送信の場合、ボタンの文言は「サイズ交換[済]」で表示する。
+//                    $patarn_flg = true;
+//                    foreach ($t_order_tran_results as $t_order_tran_result) {
+//                        $order_req_no = $t_order_tran_result->order_req_no;
+//                        $order_sts_kbn = $t_order_tran_result->order_sts_kbn;
+//                        $order_reason_kbn = $t_order_tran_result->order_reason_kbn;
+//                        $snd_kbn = $t_order_tran_result->snd_kbn;
+//                        if ($order_sts_kbn == '1' && $snd_kbn == '0') {
+//                            $patarn_flg = false;
+//                            break;
+//                        }
+//                    }
+//                    if (!$patarn_flg) {
+//                        $list['wearer_input_button'] = "貸与開始";
+//                        $list['wearer_input_red'] = "[済]";
+//                        $list['disabled'] = "";
+//                        $list['btnPattern'] = "B";
+//                    }
+//                }
+//                if ($list['btnPattern'] == "") {
+//                    //パターンC： 発注情報トラン．発注状況区分 = サイズ交換のデータがある場合、かつ、発注情報トラン．送信区分 = 送信済の場合、ボタンの文言は「サイズ交換[済]」で非活性表示する。
+//                    $patarn_flg = true;
+//                    foreach ($t_order_tran_results as $t_order_tran_result) {
+//                        $order_req_no = $t_order_tran_result->order_req_no;
+//                        $order_sts_kbn = $t_order_tran_result->order_sts_kbn;
+//                        $order_reason_kbn = $t_order_tran_result->order_reason_kbn;
+//                        $snd_kbn = $t_order_tran_result->snd_kbn;
+//                        if ($order_sts_kbn == '1' && $snd_kbn == '1') {
+//                            $patarn_flg = false;
+//                            break;
+//                        }
+//                    }
+//                    if (!$patarn_flg) {
+//                        $list['wearer_input_button'] = "貸与開始";
+//                        $list['wearer_input_red'] = "[済]";
+//                        $list['disabled'] = "disabled";
+//                        $list['btnPattern'] = "C";
+//                    }
+//                    if ($list['btnPattern'] == "") {
+//                        //パターンD： 発注情報トラン．発注状況区分 = サイズ交換のデータがある場合、かつ、発注情報トラン．送信区分 = 処理中の場合、ボタンの文言は「サイズ交換[済]」で非活性表示する。
+//                        $patarn_flg = true;
+//                        foreach ($t_order_tran_results as $t_order_tran_result) {
+//                            $order_req_no = $t_order_tran_result->order_req_no;
+//                            $order_sts_kbn = $t_order_tran_result->order_sts_kbn;
+//                            $order_reason_kbn = $t_order_tran_result->order_reason_kbn;
+//                            $snd_kbn = $t_order_tran_result->snd_kbn;
+//                            if ($order_sts_kbn == '1' && $snd_kbn == '9') {
+//                                $patarn_flg = false;
+//                                break;
+//                            }
+//                        }
+//                        if (!$patarn_flg) {
+//                            $list['wearer_input_button'] = "貸与開始";
+//                            $list['wearer_input_red'] = "[済]";
+//                            $list['disabled'] = "disabled";
+//                            $list['btnPattern'] = "D";
+//                        }
+//                    }
+//                }
+//            }
+//            if ($list['btnPattern'] == "") {
+//                $list['wearer_input_button'] = "貸与開始";
+//                $list['wearer_input_red'] = "";
+//                $list['disabled'] = "";
+//                $list['btnPattern'] = "A";
+//                $list['return_reciept_button'] = false;
+//                $list['btnPattern'] = "no_pattern";
+//            }
+//
+//
+//
+
+
+
+
+//            // 発注、発注情報トラン有無フラグ
+//            if ($t_order_tran_cnt > 0) {
+//                $list['order_kbn'] = "<font color='red'>済</font>";
+//                // 発注情報トラン有
+//                $list['order_tran_flg'] = '1';
+//            }else{
+//                $list['order_kbn'] = "未";
+//                // 発注情報トラン無
+//                $list['order_tran_flg'] = '0';
+//            }
             // パターンチェックスタート
             $list['btnPattern'] = "";
             $patarn_flg = true;

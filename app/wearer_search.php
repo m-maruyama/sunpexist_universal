@@ -75,6 +75,7 @@ $app->post('/wearer_search/search', function ()use($app){
     $arg_str .= "m_wearer_std_tran.order_req_no as as_wearer_order_req_no,";
     $arg_str .= "t_order_tran.order_reason_kbn as as_order_reason_kbn,";
     $arg_str .= "t_order_tran.order_req_no as as_order_req_no,";
+    $arg_str .= "t_order_tran.memo as as_memo,";
     $arg_str .= "m_section.rntl_sect_name as as_rntl_sect_name,";
     $arg_str .= "m_job_type.job_type_name as as_job_type_name";
     $arg_str .= " FROM m_wearer_std_tran";
@@ -143,7 +144,8 @@ $app->post('/wearer_search/search', function ()use($app){
             } else {
                 $list['werer_name'] = "-";
             }
-
+            //備考
+            $list['comment'] = $result->as_memo;
             //---性別名称---//
             $query_list = array();
             array_push($query_list, "cls_cd = '004'");
@@ -170,7 +172,7 @@ $app->post('/wearer_search/search', function ()use($app){
                 $list['order_tran_flg'] = '0';
             }
             // 状態、着用者マスタトラン有無フラグ
-            $list['snd_kbn'] = "-";
+            $list['snd_kbn'] = "未送信";
             if (isset($result->as_snd_kbn)) {
                 // 状態
                 if($result->as_snd_kbn == '0'){
@@ -333,7 +335,8 @@ $app->post('/wearer_search/search', function ()use($app){
             $list['param'] .= $list['appointment_ymd'].':';
             $list['param'] .= $list['resfl_ymd'].':';
             $list['param'] .= $list['m_wearer_std_comb_hkey'].':';
-            $list['param'] .= $list['order_req_no'];
+            $list['param'] .= $list['order_req_no'].':';
+            $list['param'] .= $list['comment'];
             array_push($all_list,$list);
         }
     }
