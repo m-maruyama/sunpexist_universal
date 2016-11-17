@@ -437,8 +437,8 @@ define([
 							}
 						}
 					}
-					console.log(item);
-/*
+					//console.log(item);
+
 					var modelForUpdate = this.model;
 					modelForUpdate.url = App.api.WX0013;
 					var cond = {
@@ -468,7 +468,6 @@ define([
 							}
 						}
 					});
-*/
 				}
 				if (type == "WX0014_req") {
 					var agreement_no = $("select[name='agreement_no']").val();
