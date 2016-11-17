@@ -11,7 +11,7 @@ use Phalcon\Paginator\Adapter\QueryBuilder as PaginatorQueryBuilder;
 $app->post('/wearer_search/search', function ()use($app){
 
     $params = json_decode(file_get_contents("php://input"), true);
-
+    $app->session->remove("wearer_odr_post");
     // アカウントセッション取得
     $auth = $app->session->get("auth");
     $cond = $params['cond'];
