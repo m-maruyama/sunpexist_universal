@@ -27,7 +27,7 @@ $app->post('/purchase/input_item', function () use ($app) {
         array_push($query_list, "rntl_cont_no = '" . $auth['rntl_cont_no'] . "'");
     }
     $query = implode(' AND ', $query_list);
-
+ChromePhp::log($params['agreement_no']);
     // SQLクエリー実行
     $arg_str = 'SELECT ';
     $arg_str .= ' distinct on (item_cd) *';
@@ -40,14 +40,7 @@ $app->post('/purchase/input_item', function () use ($app) {
     $results = new Resultset(null, $m_sale_order_item, $m_sale_order_item->getReadConnection()->query($arg_str));
     $results_array = (array)$results;
     $results_cnt = $results_array["\0*\0_count"];
-    /*
-        // デフォルト「全て」を設定
-        if ($results_cnt > 1) {
-            $list['item_cd'] = null;
-            $list['input_item_name'] = '全て';
-            array_push($all_list, $list);
-        }
-    */
+
     if ($results_cnt > 0) {
         if ($results_cnt > 1) {
             $list['item_cd'] = null;
@@ -80,6 +73,7 @@ $app->post('/purchase/input_item', function () use ($app) {
     $json_list['sale_item_list'] = $all_list;
     echo json_encode($json_list);
 });
+
 
 /*
 　* 検索項目：色
@@ -206,7 +200,6 @@ $app->post('/purchase_history/search', function () use ($app) {
     //初期表示は一番若い契約のnoを入れる
     if (isset($cond['rntl_cont_no'])) {
     } else {
-        ChromePhp::log($auth['corporate_id']);
         $login_corporate_id = $auth['corporate_id'];
 
         //sectionで一番若い契約Noを取得
@@ -223,7 +216,53 @@ $app->post('/purchase_history/search', function () use ($app) {
         $cond['rntl_cont_no'] = $rent['value'];//データベース上で一番若い番号の契約no
     }
 
-    //ChromePhp::log($cond);
+    //---契約リソースマスター 0000000000フラグ確認処理---//
+    //ログインid
+    $login_id_session = $auth['corporate_id'];
+    //アカウントno
+    $accnt_no = $auth['accnt_no'];
+    //画面で選択された契約no
+    $agreement_no = $cond['rntl_cont_no'];
+
+    //前処理 契約リソースマスタ参照 拠点ゼロ埋め確認
+    $arg_str = "";
+    $arg_str .= "SELECT ";
+    $arg_str .= " * ";
+    $arg_str .= " FROM ";
+    $arg_str .= "m_contract_resource";
+    $arg_str .= " WHERE ";
+    $arg_str .= "corporate_id = '$login_id_session'";
+    $arg_str .= " AND rntl_cont_no = '$agreement_no'";
+    $arg_str .= " AND accnt_no = '$accnt_no'";
+
+    $m_contract_resource = new MContractResource();
+    $results = new Resultset(null, $m_contract_resource, $m_contract_resource->getReadConnection()->query($arg_str));
+    $result_obj = (array)$results;
+    $results_cnt = $result_obj["\0*\0_count"];
+
+    if ($results_cnt > 0) {
+        $paginator_model = new PaginatorModel(
+            array(
+                "data"  => $results,
+                "limit" => $results_cnt,
+                "page" => 1
+            )
+        );
+        $paginator = $paginator_model->getPaginate();
+        $results = $paginator->items;
+        foreach ($results as $result) {
+            $all_list[] = $result->rntl_sect_cd;
+        }
+    }
+    if(isset($all_list)){
+        if (in_array("0000000000", $all_list)) {
+            $rntl_sect_cd_zero_flg = 1;
+        } else {
+            $rntl_sect_cd_zero_flg = 0;
+        }
+    }else {
+        $rntl_sect_cd_zero_flg = 0;
+    }
 
 
     //
@@ -259,6 +298,12 @@ $app->post('/purchase_history/search', function () use ($app) {
     if (isset($cond['item_size'])) {
         array_push($query_list, "t_sale_order_history.size_cd = '" . $cond['item_size'] . "'");
     }
+
+    //ゼロ埋めがない場合、ログインアカウントの条件追加
+    if($rntl_sect_cd_zero_flg == 0){
+        array_push($query_list,"m_contract_resource.accnt_no = '$accnt_no'");
+    }
+
 
     //sql文字列を' AND 'で結合
     $query = implode(' AND ', $query_list);
@@ -317,10 +362,22 @@ $app->post('/purchase_history/search', function () use ($app) {
     $arg_str .= "m_section.rntl_sect_name as as_rntl_sect_name,";
     $arg_str .= "t_sale_order_history.snd_kbn as as_snd_kbn";
     $arg_str .= " FROM t_sale_order_history";
-    $arg_str .= " INNER JOIN m_section";
-    $arg_str .= " ON (t_sale_order_history.corporate_id = m_section.corporate_id";
-    $arg_str .= " AND t_sale_order_history.rntl_cont_no = m_section.rntl_cont_no";
-    $arg_str .= " AND t_sale_order_history.rntl_sect_cd = m_section.rntl_sect_cd)";
+
+    if($rntl_sect_cd_zero_flg == 1){
+        $arg_str .= " INNER JOIN m_section";
+        $arg_str .= " ON (t_sale_order_history.corporate_id = m_section.corporate_id";
+        $arg_str .= " AND t_sale_order_history.rntl_cont_no = m_section.rntl_cont_no";
+        $arg_str .= " AND t_sale_order_history.rntl_sect_cd = m_section.rntl_sect_cd)";
+    }elseif($rntl_sect_cd_zero_flg == 0){
+        $arg_str .= " INNER JOIN (m_section INNER JOIN m_contract_resource";
+        $arg_str .= " ON m_section.corporate_id = m_contract_resource.corporate_id";
+        $arg_str .= " AND m_section.rntl_cont_no = m_contract_resource.rntl_cont_no";
+        $arg_str .= " AND m_section.rntl_sect_cd = m_contract_resource.rntl_sect_cd) ";
+        $arg_str .= " ON (t_sale_order_history.corporate_id = m_section.corporate_id";
+        $arg_str .= " AND t_sale_order_history.rntl_cont_no = m_section.rntl_cont_no";
+        $arg_str .= " AND t_sale_order_history.rntl_sect_cd = m_section.rntl_sect_cd)";
+    }
+
     $arg_str .= " WHERE ";
     $arg_str .= $query;
     $arg_str .= " ORDER BY " . $q_sort_key . " " . $order;

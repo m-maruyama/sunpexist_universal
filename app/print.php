@@ -816,6 +816,51 @@ $app->post('/print/search', function ()use($app){
 	$page = $params['page'];
 	$query_list = array();
 
+    //---契約リソースマスター 0000000000フラグ確認処理---//
+    //ログインid
+    $login_id_session = $auth['corporate_id'];
+    //アカウントno
+    $accnt_no = $auth['accnt_no'];
+    //画面で選択された契約no
+    $agreement_no = $cond['agreement_no'];
+
+    //前処理 契約リソースマスタ参照 拠点ゼロ埋め確認
+    $arg_str = "";
+    $arg_str .= "SELECT ";
+    $arg_str .= " * ";
+    $arg_str .= " FROM ";
+    $arg_str .= "m_contract_resource";
+    $arg_str .= " WHERE ";
+    $arg_str .= "corporate_id = '$login_id_session'";
+    $arg_str .= " AND rntl_cont_no = '$agreement_no'";
+    $arg_str .= " AND accnt_no = '$accnt_no'";
+
+    $m_contract_resource = new MContractResource();
+    $results = new Resultset(null, $m_contract_resource, $m_contract_resource->getReadConnection()->query($arg_str));
+    $result_obj = (array)$results;
+    $results_cnt = $result_obj["\0*\0_count"];
+
+    if ($results_cnt > 0) {
+        $paginator_model = new PaginatorModel(
+            array(
+                "data"  => $results,
+                "limit" => $results_cnt,
+                "page" => 1
+            )
+        );
+        $paginator = $paginator_model->getPaginate();
+        $results = $paginator->items;
+        foreach ($results as $result) {
+            $all_list[] = $result->rntl_sect_cd;
+        }
+    }
+
+    if (in_array("0000000000", $all_list)) {
+        $rntl_sect_cd_zero_flg = 1;
+    }else{
+        $rntl_sect_cd_zero_flg = 0;
+    }
+
 	//---検索条件---//
 	//企業ID
 	array_push($query_list,"t_returned_plan_info.corporate_id = '".$auth['corporate_id']."'");
@@ -885,6 +930,11 @@ $app->post('/print/search', function ()use($app){
 	}
 	// 着用者状況区分
 	array_push($query_list,"m_wearer_std.werer_sts_kbn = '1'");
+
+    //ゼロ埋めがない場合、ログインアカウントの条件追加
+    if($rntl_sect_cd_zero_flg == 0){
+        array_push($query_list,"m_contract_resource.accnt_no = '$accnt_no'");
+    }
 
 	$status_kbn_list = array();
 
@@ -974,7 +1024,7 @@ $app->post('/print/search', function ()use($app){
 	}
 	if(!empty($reason_kbn)){
 		$reason_kbn_str = implode("','",$reason_kbn);
-		$reason_kbn_query = "t_order.order_reason_kbn IN ('".$reason_kbn_str."')";
+		$reason_kbn_query = "t_returned_plan_info.order_reason_kbn IN ('".$reason_kbn_str."')";
 //		array_push($query_list,"order_reason_kbn IN ('".$reason_kbn_str."')");
 		array_push($status_kbn_list,$reason_kbn_query);
 	}
@@ -1086,9 +1136,16 @@ $app->post('/print/search', function ()use($app){
 	$arg_str .= " ON t_order_state.t_order_state_comb_hkey = t_delivery_goods_state.t_order_state_comb_hkey)";//納品状況発注状況情報_統合ハッシュキー = 納品状況情報.発注状況情報_統合ハッシュキー
 	$arg_str .= " ON t_returned_plan_info.order_req_no = t_order_state.order_req_no)";//返却予定情報.発注依頼No = 発注状況情報.発注依頼No
 	$arg_str .= " ON t_order.order_req_no = t_returned_plan_info.order_req_no"; //発注情報.発注依頼No = 発注状況情報.発注依頼No
-	$arg_str .= " INNER JOIN m_section";
-	$arg_str .= " ON t_order.m_section_comb_hkey = m_section.m_section_comb_hkey";//発注情報.部門マスタ_統合ハッシュキー = 部門マスタ.部門マスタ_統合ハッシュキー
-	$arg_str .= " INNER JOIN (m_job_type INNER JOIN m_input_item ON m_job_type.m_job_type_comb_hkey = m_input_item.m_job_type_comb_hkey)"; //職種マスタ.職種マスタ_統合ハッシュキー = 投入商品マスタ.職種マスタ_統合ハッシュキー
+    if($rntl_sect_cd_zero_flg == 1){
+        $arg_str .= " INNER JOIN m_section";
+        $arg_str .= " ON t_order.m_section_comb_hkey = m_section.m_section_comb_hkey";
+    }elseif($rntl_sect_cd_zero_flg == 0){
+        $arg_str .= " INNER JOIN (m_section INNER JOIN m_contract_resource";
+        $arg_str .= " ON m_section.corporate_id = m_contract_resource.corporate_id";
+        $arg_str .= " AND m_section.rntl_cont_no = m_contract_resource.rntl_cont_no";
+        $arg_str .= " AND m_section.rntl_sect_cd = m_contract_resource.rntl_sect_cd";
+        $arg_str .= " ) ON t_order.m_section_comb_hkey = m_section.m_section_comb_hkey";
+    }	$arg_str .= " INNER JOIN (m_job_type INNER JOIN m_input_item ON m_job_type.m_job_type_comb_hkey = m_input_item.m_job_type_comb_hkey)"; //職種マスタ.職種マスタ_統合ハッシュキー = 投入商品マスタ.職種マスタ_統合ハッシュキー
 	$arg_str .= " ON t_order.m_job_type_comb_hkey = m_job_type.m_job_type_comb_hkey";
 	$arg_str .= " INNER JOIN m_wearer_std";
 	$arg_str .= " ON t_order.werer_cd = m_wearer_std.werer_cd";
