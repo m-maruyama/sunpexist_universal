@@ -31,13 +31,19 @@ define([
 				'order_count': '#order_count',
 				'return_count': '#return_count',
 				'target_flg': '#target_flg',
-				'size_add': '.size_add'
+				'order_num': '.order_num',
+				'return_num': '.return_num',
+				'size_add': '.size_add',
+				'size_del': '.size_del'
 			},
 			bindings: {
 				'#order_count': 'order_count',
 				'#return_count': 'return_count',
 				'#target_flg': 'target_flg',
-				'.size_add': 'size_add'
+				'.order_num': 'order_num',
+				'.return_num': 'return_num',
+				'.size_add': 'size_add',
+				'.size_del': 'size_del'
 			},
 			onShow: function() {
 				$.blockUI({ message: '<p><img src="ajax-loader.gif" style="margin: 0 auto;" /> 読み込み中...</p>' });
@@ -78,19 +84,22 @@ define([
 					var that = this;
 
 					var table = document.getElementById("order_table");
+					var rows = parseInt(table.rows.length);
 					var target_vals = e.target.value;
 					var target_val = target_vals.split(':');
 					var line_no = target_val[0];
-					var add_cnt = $("input[name='add_cnt"+line_no+"']").val();
  					var data = {
 						"item_cd": target_val[1],
 						"color_cd": target_val[2],
 						"size_cd": target_val[3]
 					};
-					console.log(add_cnt);
-					//console.log(line_no);
-					//console.log(target_vals);
 
+					var add_cnt = $("input[name='add_cnt"+line_no+"']").val();
+					add_cnt = parseInt(add_cnt) + parseInt(1);
+					$("input[name='add_cnt"+line_no+"']").val(add_cnt);
+					if (parseInt(add_cnt) == 5) {
+						$("#size_add"+line_no).prop("disabled", true);
+					}
 
 					var modelForUpdate = this.model;
 					modelForUpdate.url = App.api.WX0015;
@@ -103,11 +112,11 @@ define([
 						data:cond,
 						success:function(res){
 							var res_list = res.attributes;
-							//console.log(res_list);
 
 							if (res_list["add_item"][0]) {
 								var row_num = parseInt(line_no) + parseInt(2);
 								var new_row = table.insertRow(row_num);
+								rows = parseInt(rows) - parseInt(3);
 								var cell1 = new_row.insertCell(0);
 								var cell2 = new_row.insertCell(1);
 								var cell3 = new_row.insertCell(2);
@@ -119,33 +128,32 @@ define([
 								var cell9 = new_row.insertCell(8);
 								var cell10 = new_row.insertCell(9);
 
+								for (var i=1; i<6; i++) {
+									if ($('input[name="add_no'+line_no+'-'+i+'"]').length == 0) {
+										var add_no = i;
+										break;
+									}
+								}
 								var cell1_html =
 									'<input type="hidden" name="rntl_sect_cd" value="'+res_list["add_item"][0]["rntl_sect_cd"]+'">'+
 									'<input type="hidden" name="job_type_cd" value="'+res_list["add_item"][0]["job_type_cd"]+'">'+
 									'<input type="hidden" name="job_type_item_cd" value="'+res_list["add_item"][0]["job_type_item_cd"]+'">'+
 									'<input type="hidden" name="item_cd" value="'+res_list["add_item"][0]["item_cd"]+'">'+
-									'<input type="hidden" name="color_cd" value="'+res_list["add_item"][0]["color_cd"]+'">'
-								;
+									'<input type="hidden" name="color_cd" value="'+res_list["add_item"][0]["color_cd"]+'">'+
+									'<input type="hidden" class="add_no" name="add_no'+line_no+'-'+add_no+'" value="'+add_no+'">';
 								var cell2_html = res_list["add_item"][0]["item_name"];
-								var cell3_html =
-									res_list["add_item"][0]["possible_num"]+
-									'<input type="hidden" name="possible_num" value="'+res_list["add_item"][0]["possible_num"]+'">'
-								;
+								var cell3_html = res_list["add_item"][0]["possible_num"]+'<input type="hidden" name="possible_num" value="'+res_list["add_item"][0]["possible_num"]+'">';
 								var cell4_html = res_list["add_item"][0]["item_and_color"]+'<br/>'+res_list["add_item"][0]["input_item_name"];
 								var cell5_html = '<input type="hidden" name="now_size_cd" value="'+res_list["add_item"][0]["now_size_cd"]+'">';
 								var option_str = "";
 								for (var i=0; i<res_list["add_item"][0]["size_cd"].length; i++) {
 									option_str += '<option value="'+res_list["add_item"][0]["size_cd"][i]["size"]+'">'+res_list["add_item"][0]["size_cd"][i]["size"]+'</option>';
 								}
-								var cell6_html =
-									'<select class="form-control input-sm" id="size_cd" name="size_cd">'+
-									option_str+
-									'</select>'
-								;
+								var cell6_html = '<select class="form-control input-sm" id="size_cd" name="size_cd">'+option_str+'</select>';
 								var cell7_html = '<input type="hidden" name="exchange_possible_num" value="'+res_list["add_item"][0]["exchange_possible_num"]+'">';
-								var cell8_html = '<input type="text" style="width:4em; font-weight:normal; text-align:center;" class="input-sm" id="order_num" name="order_num" value="">';
+								var cell8_html = '<input type="text" style="width:4em; font-weight:normal; text-align:center;" class="input-sm order_num" id="order_num'+line_no+'-'+add_no+'" name="order_num'+line_no+'" value="0">';
 								var cell9_html = '';
-								var cell10_html = '<input type="hidden" id="add_cnt" name="add_cnt">';
+								var cell10_html = '<button type="button" class="btn btn-primary size_del" title="削除" id="size_del'+line_no+'" value="'+line_no+'">削除</button>';
 
 								cell1.innerHTML = cell1_html;
 								cell2.innerHTML = cell2_html;
@@ -157,18 +165,68 @@ define([
 								cell8.innerHTML = cell8_html;
 								cell9.innerHTML = cell9_html;
 								cell10.innerHTML = cell10_html;
-
-								add_cnt = parseInt(add_cnt) + parseInt(1);
-								if (add_cnt >= 5) {
-									$("#size_add"+line_no).prop("disabled", true);
-								} else {
-									$("input[name='add_cnt"+line_no+"']").val(add_cnt);
-								}
 							}
 						}
 					});
 				},
-			},
+				'click @ui.size_del': function(e) {
+					e.preventDefault();
+					var that = this;
+					var line_no = e.target.value;
+					var add_cnt = $("input[name='add_cnt"+line_no+"']").val();
+
+					var table = document.getElementById("order_table");
+					var rowIndex = e.target.parentNode.parentNode.rowIndex
+					var rows = table.deleteRow(rowIndex);
+
+					add_cnt = parseInt(add_cnt) - parseInt(1);
+					$("#size_add"+line_no).prop("disabled", false);
+					$("input[name='add_cnt"+line_no+"']").val(add_cnt);
+
+					var order_count = parseInt(0);
+					$(".order_num").each(function () {
+						if ($(this).val()) {
+							order_count += parseInt($(this).val());
+						}
+					});
+					$("input[name='order_count']").val(order_count);
+				},
+				'change @ui.order_num': function(e) {
+					e.preventDefault();
+					var that = this;
+					var order_num = parseInt(e.target.value);
+					if(isNaN(order_num)){
+						order_num = 0;
+					}
+					$("#"+e.target.id).val(order_num);
+
+					var order_count = parseInt(0);
+					$(".order_num").each(function () {
+						if ($(this).val()) {
+							order_count += parseInt($(this).val());
+						}
+					});
+					$("input[name='order_count']").val(order_count);
+				},
+				'change @ui.return_num': function(e) {
+					e.preventDefault();
+					var that = this;
+
+					var return_num = parseInt(e.target.value);
+					if(isNaN(return_num)){
+						return_num = 0;
+					}
+					$("#"+e.target.id).val(return_num);
+
+					var return_count = parseInt(0);
+					$(".return_num").each(function () {
+						if ($(this).val()) {
+							return_count += parseInt($(this).val());
+						}
+					});
+					$("input[name='return_count']").val(return_count);
+				}
+			}
 		});
 	});
 });

@@ -1031,7 +1031,7 @@ $app->post('/wearer_exchange/list', function ()use($app){
         }
         // 発注枚数
         // ※発注情報トランに存在する場合はこちらを設定
-        $list["order_num"] = "";
+        $list["order_num"] = 0;
         foreach ($order_tran_list as $tran_map) {
           if (
             $list["item_cd"] == $tran_map["item_cd"] &&
@@ -1043,7 +1043,7 @@ $app->post('/wearer_exchange/list', function ()use($app){
         }
         // 返却枚数
         // ※返却予定情報トランに存在する場合はこちらを設定
-        $list["return_num"] = "";
+        $list["return_num"] = 0;
         foreach ($return_tran_list as $tran_map) {
           if (
             $list["item_cd"] == $tran_map["item_cd"] &&
@@ -1298,14 +1298,17 @@ $app->post('/wearer_exchange/list', function ()use($app){
           $list["exchange_possible_num"] = $results_cnt;
         }
         // 発注枚数
-        $list["order_num"] = "";
+        $list["order_num"] = 0;
         if ($result->as_size_add_flg == "0") {
           $list["order_num"] = $list["exchange_possible_num"];
+        } else {
+          $list["order_num"] = "";
         }
         // 返却枚数
-        $list["return_num"] = "";
+        $list["return_num"] = 0;
         if ($result->as_size_add_flg == "0") {
           $list["return_num"] = $list["exchange_possible_num"];
+          $list["return_num_text_disp"] = false;
         } else {
           $list["return_num_text_disp"] = true;
         }
