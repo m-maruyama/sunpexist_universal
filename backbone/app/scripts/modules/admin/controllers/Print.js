@@ -17,12 +17,12 @@ define([
 	'../views/SectionModal',
 	'../views/SectionModalListList',
 	'../views/Pagination',
-	'../views/CsvDownload',
+	//'../views/CsvDownload',
 	"entities/models/Pager",
 	"entities/models/AdminPrint",
 	"entities/models/AdminPrintListCondition",
 	"entities/models/AdminSectionModalListCondition",
-	"entities/models/AdminCsvDownloadCondition",
+	//"entities/models/AdminCsvDownloadCondition",
 	"entities/collections/AdminPrintListList",
 	"entities/collections/AdminSectionModalListList",
 	"entities/collections/AdminCsvDownload",
@@ -35,7 +35,7 @@ define([
 				var that = this;
 				this.setNav('print');
 				var pagerModel = new App.Entities.Models.Pager();
-        var pagerModel2 = new App.Entities.Models.Pager();
+        		var pagerModel2 = new App.Entities.Models.Pager();
 				var pagerModel3 = new App.Entities.Models.Pager();
 				var modal = false;
 				var printModel = null;
@@ -63,7 +63,7 @@ define([
 				var paginationView = new App.Admin.Views.Pagination({model: pagerModel});
 				var paginationView2 = new App.Admin.Views.Pagination({model: pagerModel});
 				var paginationSectionView = new App.Admin.Views.Pagination({model: pagerModel2});
-				var csvDownloadView = new App.Admin.Views.CsvDownload();
+				//var csvDownloadView = new App.Admin.Views.CsvDownload();
 
 				var fetchList = function(pageNumber,sortKey,order){
 					if(pageNumber){
@@ -158,9 +158,9 @@ define([
 				this.listenTo(printConditionView, 'click:search', function(sortKey,order){
 					fetchList(1,sortKey,order);
 				});
-				this.listenTo(csvDownloadView, 'click:download_btn', function(cond_map){
-					csvDownloadView.fetch(cond_map);
-				});
+				//this.listenTo(csvDownloadView, 'click:download_btn', function(cond_map){
+				//	csvDownloadView.fetch(cond_map);
+				//});
 
 				// 契約No変更時の絞り込み処理 --ここから
 				this.listenTo(printConditionView, 'change:section_select', function(agreement_no){

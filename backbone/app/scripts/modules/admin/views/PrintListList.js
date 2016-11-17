@@ -58,7 +58,6 @@ define([
 					data: cond,
 					success: function(res){
 						$.unblockUI();
-                        console.log(res)
 					},
 					complete:function(res){
 						$.unblockUI();

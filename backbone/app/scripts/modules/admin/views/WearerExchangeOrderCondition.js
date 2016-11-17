@@ -208,6 +208,15 @@ define([
 				});
 			},
 			events: {
+				'change @ui.emply_cd_flg': function(){
+					var that = this;
+
+					if (this.ui.emply_cd_flg.prop("checked") == true) {
+						this.ui.member_no.prop("disabled", false);
+					} else {
+						this.ui.member_no.prop("disabled", true);
+					}
+				},
 				'click @ui.back': function(){
 					var cond = window.sessionStorage.getItem("wearer_size_change_cond");
 					window.sessionStorage.setItem("back_wearer_size_change_cond", cond);
@@ -383,6 +392,7 @@ define([
 						item[i]["order_num"] = $("input[name='order_num"+i+"']").val();
 						item[i]["exchange_possible_num"] = $("input[name='exchange_possible_num"+i+"']").val();
 						item[i]["individual_flg"] = $("input[name='individual_flg"+i+"']").val();
+						item[i]["add_flg"] = $("input[name='add_flg"+i+"']").val();
 						item[i]["individual_data"] = new Object();
 						if (item[i]["individual_flg"]) {
 							item[i]["individual_cnt"] = $("input[name='individual_cnt"+i+"']").val();
@@ -404,6 +414,27 @@ define([
 							}
 						} else {
 							item[i]["return_num"] = $("input[name='return_num"+i+"']").val();
+						}
+						item[i]["size_add_data"] = new Object();
+						if (item[i]["add_flg"] == "1") {
+							var cnt = 0;
+							for (var j=1; j<6; j++) {
+								if ($('input[name="add_no'+i+'-'+j+'"]').length == 0) {
+									continue;
+								}
+								item[i]["size_add_data"][cnt] = new Object();
+								item[i]["size_add_data"][cnt]["rntl_sect_cd"] = $("input[name='rntl_sect_cd"+i+'-'+j+"']").val();
+								item[i]["size_add_data"][cnt]["job_type_cd"] = $("input[name='job_type_cd"+i+'-'+j+"']").val();
+								item[i]["size_add_data"][cnt]["job_type_item_cd"] = $("input[name='job_type_item_cd"+i+'-'+j+"']").val();
+								item[i]["size_add_data"][cnt]["item_cd"] = $("input[name='item_cd"+i+'-'+j+"']").val();
+								item[i]["size_add_data"][cnt]["color_cd"] = $("input[name='color_cd"+i+'-'+j+"']").val();
+								item[i]["size_add_data"][cnt]["now_size_cd"] = $("input[name='now_size_cd"+i+'-'+j+"']").val();
+								item[i]["size_add_data"][cnt]["size_cd"] = $("select[name='size_cd"+i+'-'+j+"']").val();
+								item[i]["size_add_data"][cnt]["possible_num"] = $("input[name='possible_num"+i+'-'+j+"']").val();
+								item[i]["size_add_data"][cnt]["order_num"] = $("input[name='order_num"+i+'-'+j+"']").val();
+								item[i]["size_add_data"][cnt]["exchange_possible_num"] = $("input[name='exchange_possible_num"+i+'-'+j+"']").val();
+								cnt++;
+							}
 						}
 					}
 					//console.log(item);
