@@ -1001,11 +1001,26 @@ $app->post('/wearer_end_order_insert', function () use ($app) {
         $m_wearer_std_tran = new MWearerStdTran();
         $now = date('Y/m/d H:i:s.sss');
         $no_flg = false;
-        if(isset($wearer_end_post['m_wearer_std_comb_hkey'])){
-            $m_wearer_std_tran = MWearerStdTran::find(array(
-                'conditions' => 'm_wearer_std_comb_hkey = '."'".$wearer_end_post['m_wearer_std_comb_hkey']."'"
-            ));
-            $m_wearer_std_tran_one = $m_wearer_std_tran[0];
+
+        $query_list = array();
+        array_push($query_list, "corporate_id = '" . $auth['corporate_id'] . "'");
+        array_push($query_list, "werer_cd = '".$wearer_end_post['werer_cd']."'");
+        array_push($query_list, "corporate_id = '".$auth['corporate_id']."'");
+        array_push($query_list, "rntl_cont_no = '".$wearer_end_post['rntl_cont_no']."'");
+        array_push($query_list, "rntl_sect_cd = '".$cond['rntl_sect_cd']."'");
+        array_push($query_list, "job_type_cd = '".$cond['job_type']."'");
+        array_push($query_list, "werer_sts_kbn = '3'");
+        array_push($query_list, "order_sts_kbn = '2'");
+        $query = implode(' AND ', $query_list);
+        $arg_str = "";
+        $arg_str = "SELECT FROM ";
+        $arg_str .= "m_wearer_std_tran";
+        $arg_str .= " WHERE ";
+        $arg_str .= $query;
+        $m_wearer_std = new MWearerStdTran();
+        $results = new Resultset(NULL, $m_wearer_std, $m_wearer_std->getReadConnection()->query($arg_str));
+        if($results){
+            $m_wearer_std_tran_one = $results[0];
             $shin_order_req_no = $m_wearer_std_tran_one->getOrderReqNo();//発注No
             if($shin_order_req_no){
                 $no_flg = true;
@@ -1320,51 +1335,6 @@ $app->post('/wearer_end_order_insert', function () use ($app) {
             $t_order_tran = new TOrderTran();
             $results = new Resultset(NULL, $t_order_tran, $t_order_tran->getReadConnection()->query($arg_str));
 //            }
-
-            // 発注依頼No.生成
-            //※シーケンス取得
-            $arg_str = "";
-            $arg_str = "SELECT NEXTVAL('t_order_seq')";
-            $t_order_tran = new TOrderTran();
-            $results = new Resultset(NULL, $t_order_tran, $t_order_tran->getReadConnection()->query($arg_str));
-            $result_obj = (array)$results;
-            $results_cnt = $result_obj["\0*\0_count"];
-            if (!empty($results_cnt)) {
-                $paginator_model = new PaginatorModel(
-                    array(
-                        "data"  => $results,
-                        "limit" => 1,
-                        "page" => 1
-                    )
-                );
-                $paginator = $paginator_model->getPaginate();
-                $results = $paginator->items;
-                foreach ($results as $result) {
-                    $order_no_seq = $result->nextval;
-                }
-                //※次シーケンスをセット
-                $arg_str = "";
-                $arg_str = "SELECT SETVAL('t_order_seq',".$order_no_seq.")";
-                $t_order_tran = new TOrderTran();
-                $results = new Resultset(NULL, $t_order_tran, $t_order_tran->getReadConnection()->query($arg_str));
-                $result_obj = (array)$results;
-                $results_cnt = $result_obj["\0*\0_count"];
-                if (!empty($results_cnt)) {
-                    $paginator_model = new PaginatorModel(
-                        array(
-                            "data"  => $results,
-                            "limit" => 1,
-                            "page" => 1
-                        )
-                    );
-                    $paginator = $paginator_model->getPaginate();
-                    $results = $paginator->items;
-                    foreach ($results as $result) {
-                        $order_no_seq = $result->setval;
-                    }
-                }
-            }
-            $shin_order_req_no = "WB".str_pad($order_no_seq, 8, '0', STR_PAD_LEFT);
             foreach ($now_item_input as $now_item_input_map) {
                 $calum_list = array();
                 $values_list = array();

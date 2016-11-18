@@ -614,7 +614,7 @@ $app->post('/wearer_end/search', function ()use($app){
             $list['param'] .= $list['rntl_cont_no'].':';
             $list['param'] .= $list['werer_cd'].':';
             $list['param'] .= $list['cster_emply_cd'].':';
-            $list['param'] .= $list['sex_kbn'].':';
+            $list['param'] .= $result->as_sex_kbn.':';
             $list['param'] .= $list['rntl_sect_cd'].':';
             $list['param'] .= $list['job_type_cd'].':';
             $list['param'] .= $list['order_reason_kbn'].':';
