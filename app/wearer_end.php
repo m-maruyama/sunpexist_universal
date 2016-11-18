@@ -319,12 +319,12 @@ $app->post('/wearer_end/search', function ()use($app){
 //            }
             // 状態
             $list['snd_kbn'] = "未送信";
-            if (!empty($result->as_snd_kbn)) {
-                if($result->as_snd_kbn == '0'){
+            if (!empty($result->as_wearer_snd_kbn)) {
+                if($result->as_wearer_snd_kbn == '0'){
                     $list['snd_kbn'] = "未送信";
-                }elseif($result->as_snd_kbn == '1'){
+                }elseif($result->as_wearer_snd_kbn == '1'){
                     $list['snd_kbn'] = "送信済";
-                }elseif($result->as_snd_kbn == '9'){
+                }elseif($result->as_wearer_snd_kbn == '9'){
                     $list['snd_kbn'] = "処理中";
                 }
             }
