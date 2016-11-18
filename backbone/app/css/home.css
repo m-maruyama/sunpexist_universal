@@ -620,3 +620,6 @@ label.allCheck {
 .list-unstyled a{
     color: #c00;
 }
+.document a{
+    cursor: pointer;
+}

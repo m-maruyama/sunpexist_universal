@@ -185,6 +185,7 @@ define([
 			"QA0020": host + "/qa/search",
 			"QA0030": host + "/qa/input",
 			"HM0010": host + "/home",
+			"HM0011": host + "/home_manual",
 			"LO0010": host + "/login",
 			"OU0010": host + "/logout",
 			"LP0010": host + "/login_password",

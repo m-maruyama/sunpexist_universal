@@ -130,6 +130,60 @@ $app->post('/home', function ()use($app){
     if($app->session->get("auth")['button28_use_flg']==1){$json_list['button28_use_flg']=1;};
     if($app->session->get("auth")['button29_use_flg']==1){$json_list['button29_use_flg']=1;};
     if($app->session->get("auth")['button30_use_flg']==1){$json_list['button30_use_flg']=1;};
+
+    //document処理
+
+    if(file_exists(APP_PATH.COMMON_PASS.$corporate_id.'/meta.txt')){
+        //企業idディレクトリ内のメタ.txtを取得
+        $fileName = APP_PATH.COMMON_PASS.$corporate_id.'/meta.txt';
+
+        $file = file($fileName);
+        mb_convert_variables("UTF-8", "SJIS-win", $file);
+
+        //$chk_file = $file;
+        //unset($chk_file[0]); //チェック時はヘッダーを無視する
+        $tmp_manual_list = array();
+        $manual_list = array();
+
+        if(count($file) > 0){
+        foreach($file as $item){
+            $tmp_manual_list[] = explode(',',$item);
+        }
+        foreach($tmp_manual_list as $list){
+            $manual_list[] = array(
+                'name' => $list[0],
+                'file' => preg_replace('/\r\n/', '', $list[1]),
+                'corporate' => $corporate_id
+            );
+        }
+        $json_list['manual_list'] = $manual_list;
+        }
+    }
+
     json_encode($json_list);
     echo json_encode($json_list);
+});
+
+
+$app->post('/home_manual', function ()use($app){
+
+    $params = json_decode($_POST['data'], true);
+
+    // アカウントセッション取得
+    $auth = $app->session->get("auth");
+    $cond = $params['cond'];
+
+    //ファイルの存在を確認し処理を実行
+    header("Content-Type: application/octet-stream");
+    if(file_exists(APP_PATH.COMMON_PASS.$cond['corporate']."/".$cond['file'])){
+        $ext = substr(strrchr($cond['file'], '.'), 0);
+        $fileName = APP_PATH.COMMON_PASS.$cond['corporate']."/".$cond['file'];
+        header("Content-Disposition: attachment; filename=".$cond['name'].$ext);
+    }else{
+        $fileName = APP_PATH.COMMON_PASS."/file_no.pdf";
+        header("Content-Disposition: attachment; filename=nofile.pdf");
+    }
+    //ファイルのダウンロード
+    readfile($fileName);
+
 });
