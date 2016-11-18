@@ -766,29 +766,29 @@ $app->post('/input_insert', function () use ($app) {
         array_push($query_list, "rntl_cont_no = '" . $cond['agreement_no'] . "'");
         // 着用者基本マスタ．客先社員コード ＝ 画面で入力された社員コード AND
         array_push($query_list, "cster_emply_cd = '" . $cond['cster_emply_cd'] . "'");
-        // 着用者基本マスタ．着用者状況区分 ＝ 稼働
-        array_push($query_list, "werer_sts_kbn = '1' or werer_sts_kbn = '7' ");
 
         //sql文字列を' AND 'で結合
         $query = implode(' AND ', $query_list);
         //--- クエリー実行・取得 ---//
-        $m_wearer_std_count = MWearerStd::find(array(
+        $m_wearer_std_count = MWearerStdTran::find(array(
             'conditions' => $query
         ))->count();
         $cster_emply_cd_chk = true;
         //存在する場合NG
         if ($m_wearer_std_count > 0) {
-            array_push($error_list, '社員コードの値が不正です。');
+            array_push($error_list, '既に社員コードが使用されています。');
             $cster_emply_cd_chk = false;
         }
         if($cster_emply_cd_chk){
+            // 着用者基本マスタ．着用者状況区分 ＝ 稼働
+            array_push($query_list, "werer_sts_kbn = '1'");
             //--- クエリー実行・取得 ---//
-            $m_wearer_std_count = MWearerStdTran::find(array(
+            $m_wearer_std_count = MWearerStd::find(array(
                 'conditions' => $query
             ))->count();
             //存在する場合NG
             if ($m_wearer_std_count > 0) {
-                array_push($error_list, '社員コードの値が不正です。');
+                array_push($error_list, '既に社員コードが使用されています。');
             }
         }
     }
