@@ -465,6 +465,8 @@ $app->post('/wearer_end/search', function ()use($app){
                 $list['btnPattern'] = "A";
                 $list['return_reciept_button'] = false;
                 $list['btnPattern'] = "no_pattern";
+                $list['order_req_no'] = '';
+                $list['order_reason_kbn'] = '';
             }
             // 発注、発注情報トラン有無フラグ
             if ($t_order_tran_cnt > 0) {
