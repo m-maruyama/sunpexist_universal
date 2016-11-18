@@ -329,49 +329,11 @@ $app->post('/wearer_end_order_info', function ()use($app){
         $json_list['wearer_info'] = $all_list;
     } elseif ($wearer_end_post['wearer_tran_flg'] == '0') {
         //--着用者基本マスタトラン無の場合--//
-        array_push($query_list, "m_wearer_std.corporate_id = '".$auth['corporate_id']."'");
-        array_push($query_list, "m_wearer_std.rntl_cont_no = '".$wearer_end_post['rntl_cont_no']."'");
-        array_push($query_list,"m_wearer_std.werer_cd = '".$wearer_end_post['werer_cd']."'");
-        array_push($query_list, "m_wearer_std.job_type_cd = '".$wearer_end_post['job_type_cd']."'");
-        array_push($query_list, "m_wearer_std.rntl_sect_cd = '".$wearer_end_post['rntl_sect_cd']."'");
-        $query = implode(' AND ', $query_list);
-
-        $arg_str = "";
-        $arg_str = "SELECT ";
-        $arg_str .= "m_wearer_std.resfl_ymd as as_resfl_ymd,";
-        $arg_str .= "t_order_tran.memo as as_memo";
-        $arg_str .= " FROM ";
-        $arg_str .= "m_wearer_std LEFT JOIN t_order_tran";
-        $arg_str .= " ON m_wearer_std.m_wearer_std_comb_hkey = t_order_tran.m_wearer_std_comb_hkey";
-        $arg_str .= " WHERE ";
-        $arg_str .= $query;
-        $arg_str .= " ORDER BY m_wearer_std.upd_date DESC";
-
-        $m_weare_std = new MWearerStd();
-        $results = new Resultset(null, $m_weare_std, $m_weare_std->getReadConnection()->query($arg_str));
-        $result_obj = (array)$results;
-        $results_cnt = $result_obj["\0*\0_count"];
-
-        if (!empty($results_cnt)) {
-            $paginator_model = new PaginatorModel(
-                array(
-                    "data"  => $results,
-                    "limit" => 1,
-                    "page" => 1
-                )
-            );
-            $paginator = $paginator_model->getPaginate();
-            $results = $paginator->items;
-
-            foreach ($results as $result) {
-                // 移動日
-                $list['resfl_ymd'] = date("Y/m/d",$result->as_resfl_ymd);
-                // 備考欄
-                $list['memo'] = $result->as_memo;
-            }
-
-            array_push($all_list, $list);
-        }
+        // 移動日
+        $list['resfl_ymd'] = null;
+        // 備考欄
+        $list['memo'] = null;
+        array_push($all_list, $list);
 
         $json_list['wearer_info'] = $all_list;
     }
