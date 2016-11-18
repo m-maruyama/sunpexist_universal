@@ -1978,6 +1978,7 @@ $app->post('/wearer_end_order_delete', function ()use($app){
         echo json_encode($json_list);
         return;
     }
+    $app->session->remove("wearer_end_post");
     echo json_encode($json_list);
 });
 /**
