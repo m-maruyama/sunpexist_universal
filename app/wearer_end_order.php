@@ -1022,6 +1022,7 @@ $app->post('/wearer_end_order_insert', function () use ($app) {
         if($results){
             $m_wearer_std_tran_one = $results[0];
             $shin_order_req_no = $m_wearer_std_tran_one->getOrderReqNo();//発注No
+            $m_wearer_std_comb_hkey = $m_wearer_std_tran_one->m_wearer_std_comb_hkey;//ハッシュ
             if($shin_order_req_no){
                 $no_flg = true;
             }
@@ -1071,6 +1072,10 @@ $app->post('/wearer_end_order_insert', function () use ($app) {
                 }
             }
             $shin_order_req_no = "WB".str_pad($order_no_seq, 8, '0', STR_PAD_LEFT);
+            $m_wearer_std_tran = new MWearerStdTran();
+            $results = new Resultset(null, $m_wearer_std_tran, $m_wearer_std_tran->getReadConnection()->query("select nextval('werer_cd_seq')"));
+            $m_wearer_std_comb_hkey = md5($auth['corporate_id'].str_pad($results[0]->nextval, 10, '0', STR_PAD_LEFT).$wearer_end_post['rntl_cont_no'].$cond['rntl_sect_cd'].$cond['job_type']);
+
         }
         //貸与パターン
         $query_list = array();
@@ -1134,9 +1139,7 @@ $app->post('/wearer_end_order_insert', function () use ($app) {
         //--- クエリー実行・取得 ---//
         //着用者基本マスタの項目を引き継ぎながら貸与終了を登録
         $werer_cd = $wearer_end_post['werer_cd'];
-        $m_wearer_std_tran = new MWearerStdTran();
-        $results = new Resultset(null, $m_wearer_std_tran, $m_wearer_std_tran->getReadConnection()->query("select nextval('werer_cd_seq')"));
-        $m_wearer_std_comb_hkey = md5($auth['corporate_id'].str_pad($results[0]->nextval, 10, '0', STR_PAD_LEFT).$wearer_end_post['rntl_cont_no'].$cond['rntl_sect_cd'].$cond['job_type']);
+        $m_wearer_std_comb_hkey = $m_wearer_std_comb_hkey;
         $corporate_id = $auth['corporate_id']; //企業ID
         $rntl_sect_cd = $cond['rntl_sect_cd']; //レンタル部門コード
         $cster_emply_cd = $wearer_end_post['cster_emply_cd'];//客先社員コード
@@ -1317,12 +1320,10 @@ $app->post('/wearer_end_order_insert', function () use ($app) {
 
         //--発注情報トラン登録--//
         $cnt = 1;
-//        $now_item_input = $params["now_item"];
 
         // 着用アイテム内容登録
         if (!empty($now_item_input)) {
             // 現発注Noの発注情報トランをクリーン
-//            if ($wearer_end_post['order_tran_flg'] == '1') {
             $query_list = array();
             array_push($query_list, "corporate_id = '".$auth['corporate_id']."'");
             array_push($query_list, "order_req_no = '".$wearer_end_post["order_req_no"]."'");
@@ -1334,7 +1335,6 @@ $app->post('/wearer_end_order_insert', function () use ($app) {
             $arg_str .= $query;
             $t_order_tran = new TOrderTran();
             $results = new Resultset(NULL, $t_order_tran, $t_order_tran->getReadConnection()->query($arg_str));
-//            }
             foreach ($now_item_input as $now_item_input_map) {
                 $calum_list = array();
                 $values_list = array();
@@ -1379,7 +1379,7 @@ $app->post('/wearer_end_order_insert', function () use ($app) {
                 array_push($values_list, "''");
                 // 着用者コード
                 array_push($calum_list, "werer_cd");
-                array_push($values_list, "'".$m_wearer_std_tran->werer_cd."'");
+                array_push($values_list, "'".$werer_cd."'");
                 // 商品コード
                 array_push($calum_list, "item_cd");
                 array_push($values_list, "''");
@@ -1470,7 +1470,6 @@ $app->post('/wearer_end_order_insert', function () use ($app) {
                 array_push($calum_list, "m_section_comb_hkey");
                 array_push($values_list, "'".$m_section_comb_hkey."'");
                 // 着用者基本マスタ_統合ハッシュキー(企業ID、着用者コード、レンタル契約No.、レンタル部門コード、職種コード)
-                $m_wearer_std_comb_hkey = $m_wearer_std_tran->m_wearer_std_comb_hkey;
                 array_push($calum_list, "m_wearer_std_comb_hkey");
                 array_push($values_list, "'".$m_wearer_std_comb_hkey."'");
                 // 着用者商品マスタ_統合ハッシュキー(企業ID、着用者コード、レンタル契約No.、レンタル部門コード、職種コード、職種アイテムコード、商品コード、色コード、サイズコード)
