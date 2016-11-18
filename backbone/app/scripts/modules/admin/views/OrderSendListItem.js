@@ -129,7 +129,7 @@ define([
 							}
 							// 種別：サイズ交換
 							if (data["order_sts_kbn"] == '3') {
-								//transition = "WC0020_req";
+								transition = "WX0012_req";
 							}
 							// 種別：その他交換
 							if (data["order_sts_kbn"] == '4') {
@@ -310,6 +310,41 @@ define([
 						modelForUpdate.url = App.api.WC0020;
 						var cond = {
 							"scr": '職種変更または異動-発注取消',
+							"log_type": '2',
+							"data": data
+						};
+						modelForUpdate.fetchMx({
+							data:cond,
+							success:function(res){
+								var res_list = res.attributes;
+								if (res_list["error_code"] == "0") {
+									that.triggerMethod('reload');
+									$.unblockUI();
+								} else {
+									$.unblockUI();
+									alert('発注取消中にエラーが発生しました。');
+								}
+							}
+						});
+					}
+				}
+				// サイズ交換-発注取消
+				if (type == "WX0012_req") {
+					if(window.confirm('発注No.' + data["wst_order_req_no"] + 'の発注取消を実行します。\nよろしいですか？')) {
+						$.blockUI({ message: '<p><img src="ajax-loader.gif" style="margin: 0 auto;" /> 発注取消中...</p>' });
+						var data = {
+							"rntl_cont_no": data["rntl_cont_no"],
+							"werer_cd": data["werer_cd"],
+							"rntl_sect_cd": data["rntl_sect_cd"],
+							"job_type_cd": data["job_type_cd"],
+							"order_req_no": data["order_req_no"],
+							"return_req_no": data["rtn_order_req_no"]
+						};
+
+						var modelForUpdate = this.model;
+						modelForUpdate.url = App.api.WX0012;
+						var cond = {
+							"scr": 'サイズ交換-発注取消',
 							"log_type": '2',
 							"data": data
 						};
