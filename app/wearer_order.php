@@ -249,7 +249,29 @@ $app->post('/wearer_order_info', function ()use($app){
     $query_list = array();
     $list = array();
     $all_list = array();
-    if ($wearer_odr_post['wearer_tran_flg'] == '1') {
+    if($wearer_odr_post){
+        if(!$wearer_odr_post['cster_emply_cd']){
+            $cster_emply_cd = '-';
+        }else{
+            $cster_emply_cd = $wearer_odr_post['cster_emply_cd'];
+        }
+        // 社員コード
+        $list['cster_emply_cd'] = $cster_emply_cd;
+        // 着用者名
+        $list['werer_name'] = $wearer_odr_post['werer_name'];
+        // 着用者名（読み仮名）
+        $list['werer_name_kana'] = $wearer_odr_post['werer_name_kana'];
+        // 発令日
+        $list['appointment_ymd'] = $wearer_odr_post['appointment_ymd'];
+        if (!empty($list['appointment_ymd'])) {
+            $list['appointment_ymd'] = date('Y/m/d', strtotime($list['appointment_ymd']));
+        } else {
+            $list['appointment_ymd'] = '-';
+        }
+        array_push($all_list, $list);
+        $json_list['wearer_info'] = $all_list;
+
+    } elseif ($wearer_odr_post['wearer_tran_flg'] == '1') {
         //--着用者基本マスタトラン有の場合--//
         array_push($query_list, "m_wearer_std_tran.corporate_id = '".$auth['corporate_id']."'");
         array_push($query_list, "m_wearer_std_tran.rntl_cont_no = '".$wearer_odr_post['rntl_cont_no']."'");
@@ -369,28 +391,6 @@ $app->post('/wearer_order_info', function ()use($app){
             array_push($all_list, $list);
         }
 
-        $json_list['wearer_info'] = $all_list;
-    }
-    if(empty( $json_list['wearer_info'])){
-        if(!$wearer_odr_post['cster_emply_cd']){
-            $cster_emply_cd = '-';
-        }else{
-            $cster_emply_cd = $wearer_odr_post['cster_emply_cd'];
-        }
-        // 社員コード
-        $list['cster_emply_cd'] = $cster_emply_cd;
-        // 着用者名
-        $list['werer_name'] = $wearer_odr_post['werer_name'];
-        // 着用者名（読み仮名）
-        $list['werer_name_kana'] = $wearer_odr_post['werer_name_kana'];
-        // 発令日
-        $list['appointment_ymd'] = $wearer_odr_post['appointment_ymd'];
-        if (!empty($list['appointment_ymd'])) {
-            $list['appointment_ymd'] = date('Y/m/d', strtotime($list['appointment_ymd']));
-        } else {
-            $list['appointment_ymd'] = '-';
-        }
-        array_push($all_list, $list);
         $json_list['wearer_info'] = $all_list;
     }
     $param_list = '';
