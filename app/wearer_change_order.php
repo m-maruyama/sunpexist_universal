@@ -2323,6 +2323,7 @@ $app->post('/wearer_change/complete', function ()use($app){
        $error_msg = "拠点、又は貸与パターンを変更してください。";
        array_push($json_list["error_msg"], $error_msg);
      }
+/*
      // 社員コード
      if ($wearer_data_input['emply_cd_flg']) {
        if (mb_strlen($wearer_data_input['member_no']) == 0) {
@@ -2338,6 +2339,7 @@ $app->post('/wearer_change/complete', function ()use($app){
          array_push($json_list["error_msg"], $error_msg);
        }
      }
+*/
      // 着用者名
      if (empty($wearer_data_input["member_name"])) {
        $json_list["error_code"] = "1";
@@ -3625,6 +3627,7 @@ $app->post('/wearer_change/send', function ()use($app){
       $error_msg = "拠点、又は貸与パターンを変更してください。";
       array_push($json_list["error_msg"], $error_msg);
     }
+/*
     // 社員コード
     if ($wearer_data_input['emply_cd_flg']) {
       if (mb_strlen($wearer_data_input['member_no']) == 0) {
@@ -3640,6 +3643,7 @@ $app->post('/wearer_change/send', function ()use($app){
         array_push($json_list["error_msg"], $error_msg);
       }
     }
+*/
     // 着用者名
     if (empty($wearer_data_input["member_name"])) {
       $json_list["error_code"] = "1";

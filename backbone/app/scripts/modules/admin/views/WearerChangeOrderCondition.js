@@ -35,7 +35,7 @@ define([
 				'agreement_no': '#agreement_no',
 				'reason_kbn': '#reason_kbn',
 				'sex_kbn': '#sex_kbn',
-				'emply_cd_flg': '#emply_cd_flg',
+				//'emply_cd_flg': '#emply_cd_flg',
 				'member_no': '#member_no',
 				'member_name': '#member_name',
 				'member_name_kana': '#member_name_kana',
@@ -59,7 +59,7 @@ define([
 				'#agreement_no': 'agreement_no',
 				'#reason_kbn': 'reason_kbn',
 				'#sex_kbn': 'sex_kbn',
-				'#emply_cd_flg': 'emply_cd_flg',
+				//'#emply_cd_flg': 'emply_cd_flg',
 				'#member_no': 'member_no',
 				'#member_name': 'member_name',
 				'#member_name_kana': 'member_name_kana',
@@ -476,7 +476,7 @@ define([
 					// 着用者情報
 					var agreement_no = $("select[name='agreement_no']").val();
 					var reason_kbn = $("select[name='reason_kbn']").val();
-					var emply_cd_flg = $("#emply_cd_flg").prop("checked");
+					//var emply_cd_flg = $("#emply_cd_flg").prop("checked");
 					var member_no = $("input[name='member_no']").val();
 					var member_name = $("input[name='member_name']").val();
 					var member_name_kana = $("input[name='member_name_kana']").val();
@@ -490,7 +490,7 @@ define([
 					var wearer_data = {
 						'agreement_no': agreement_no,
 						'reason_kbn': reason_kbn,
-						'emply_cd_flg': emply_cd_flg,
+						//'emply_cd_flg': emply_cd_flg,
 						'member_no': member_no,
 						'member_name': member_name,
 						'member_name_kana': member_name_kana,
@@ -546,8 +546,6 @@ define([
 							//個体管理番号表示フラグがOFFの場合、商品単位の返却数
 							now_item[i]["return_num"] = $("input[name='return_num"+i+"']").val();
 						}
-//						now_item[i]["now_order_num"] = $("input[name='now_order_num"+i+"']").val();
-//						now_item[i]["now_order_num_disable"] = $("input[name='now_order_num_disable"+i+"']").val();
 						now_item[i]["now_return_num"] = $("input[name='now_return_num"+i+"']").val();
 						now_item[i]["now_return_num_disable"] = $("input[name='now_return_num_disable"+i+"']").val();
 					}
@@ -610,7 +608,7 @@ define([
 					// 着用者情報
 					var agreement_no = $("select[name='agreement_no']").val();
 					var reason_kbn = $("select[name='reason_kbn']").val();
-					var emply_cd_flg = $("#emply_cd_flg").prop("checked");
+					//var emply_cd_flg = $("#emply_cd_flg").prop("checked");
 					var member_no = $("input[name='member_no']").val();
 					var member_name = $("input[name='member_name']").val();
 					var member_name_kana = $("input[name='member_name_kana']").val();
@@ -620,13 +618,11 @@ define([
 					var section = $("select[name='section']").val();
 					var job_type = $("select[name='job_type']").val();
 					var shipment = $("select[name='shipment']").val();
-					//var post_number = $("input[name='post_number']").val();
-					//var address = $("input[name='address']").val();
 					var comment = $("#comment").val();
 					var wearer_data = {
 						'agreement_no': agreement_no,
 						'reason_kbn': reason_kbn,
-						'emply_cd_flg': emply_cd_flg,
+						//'emply_cd_flg': emply_cd_flg,
 						'member_no': member_no,
 						'member_name': member_name,
 						'member_name_kana': member_name_kana,
@@ -636,8 +632,6 @@ define([
 						'section': section,
 						'job_type': job_type,
 						'shipment': shipment,
-						//'post_number': post_number,
-						//'address': address,
 						'comment': comment,
 					}
 
@@ -684,8 +678,6 @@ define([
 							//個体管理番号表示フラグがOFFの場合、商品単位の返却数
 							now_item[i]["return_num"] = $("input[name='return_num"+i+"']").val();
 						}
-//						now_item[i]["now_order_num"] = $("input[name='now_order_num"+i+"']").val();
-//						now_item[i]["now_order_num_disable"] = $("input[name='now_order_num_disable"+i+"']").val();
 						now_item[i]["now_return_num"] = $("input[name='now_return_num"+i+"']").val();
 						now_item[i]["now_return_num_disable"] = $("input[name='now_return_num_disable"+i+"']").val();
 					}
