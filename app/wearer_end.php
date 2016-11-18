@@ -65,6 +65,7 @@ $app->post('/wearer_end/search', function ()use($app){
     $arg_str .= "m_wearer_std.job_type_cd as as_job_type_cd,";
     $arg_str .= "m_wearer_std.cster_emply_cd as as_cster_emply_cd,";
     $arg_str .= "m_wearer_std.werer_name as as_werer_name,";
+    $arg_str .= "m_wearer_std.werer_name_kana as as_werer_name_kana,";
     $arg_str .= "m_wearer_std.sex_kbn as as_sex_kbn,";
     $arg_str .= "m_wearer_std.snd_kbn as as_wearer_snd_kbn,";
     $arg_str .= "m_wearer_std.ship_to_cd as as_ship_to_cd,";
@@ -165,6 +166,7 @@ $app->post('/wearer_end/search', function ()use($app){
             $arg_str .= "m_wearer_std_tran.job_type_cd as as_job_type_cd,";
             $arg_str .= "m_wearer_std_tran.cster_emply_cd as as_cster_emply_cd,";
             $arg_str .= "m_wearer_std_tran.werer_name as as_werer_name,";
+            $arg_str .= "m_wearer_std_tran.werer_name_kana as as_werer_name_kana,";
             $arg_str .= "m_wearer_std_tran.sex_kbn as as_sex_kbn,";
             $arg_str .= "m_wearer_std_tran.snd_kbn as as_wearer_snd_kbn,";
             $arg_str .= "m_wearer_std_tran.ship_to_cd as as_ship_to_cd,";
@@ -242,6 +244,7 @@ $app->post('/wearer_end/search', function ()use($app){
                     $result->as_werer_cd = $tran_result->as_werer_cd;
                     $result->as_cster_emply_cd = $tran_result->as_cster_emply_cd;
                     $result->as_werer_name = $tran_result->as_werer_name;
+                    $result->as_werer_name_kana = $tran_result->as_werer_name_kana;
                     $result->as_sex_kbn = $tran_result->as_sex_kbn;
                     $result->as_wearer_snd_kbn = $tran_result->as_wearer_snd_kbn;
                     $result->as_ship_to_cd = $tran_result->as_ship_to_cd;
@@ -280,6 +283,11 @@ $app->post('/wearer_end/search', function ()use($app){
                 $list['werer_name'] = $result->as_werer_name;
             } else {
                 $list['werer_name'] = "-";
+            }
+            $list['werer_name_kana'] = null;
+            // 着用者名カナ
+            if (!empty($result->as_werer_name_kana)) {
+                $list['werer_name_kana'] = $result->as_werer_name_kana;
             }
             //---性別名称---//
             $query_list = array();
@@ -374,6 +382,7 @@ $app->post('/wearer_end/search', function ()use($app){
                 $t_order_tran_results = $paginator->items;
                 if(isset($result->as_wearer_snd_kbn)&&$result->as_wearer_snd_kbn=='9'){
                     foreach ($t_order_tran_results as $t_order_tran_result) {
+                        $order_req_no = $t_order_tran_result->order_req_no;
                         $order_reason_kbn = $t_order_tran_result->order_reason_kbn;
                     }
                     $list['wearer_end_button'] = "貸与終了";
@@ -381,6 +390,7 @@ $app->post('/wearer_end/search', function ()use($app){
                     $list['disabled'] = "disabled";
                     $list['btnPattern'] = "D";
                     $list['order_reason_kbn'] = $order_reason_kbn;
+                    $list['order_req_no'] = $order_req_no;
                 }
                 if ($list['btnPattern'] == "") {
                     //パターンB： 発注情報トラン．発注状況区分 = 貸与終了 かつ、発注情報トラン．理由区分 = 不要品返却以外のデータがある場合、かつ、発注情報トラン．送信区分 = 未送信の場合、ボタンの文言は「貸与終了[済]」で表示する。
@@ -400,6 +410,7 @@ $app->post('/wearer_end/search', function ()use($app){
                         $list['wearer_end_red'] = "[済]";
                         $list['disabled'] = "";
                         $list['order_reason_kbn'] = $order_reason_kbn;
+                        $list['order_req_no'] = $order_req_no;
                         $list['btnPattern'] = "B";
                     }
                 }
@@ -420,6 +431,7 @@ $app->post('/wearer_end/search', function ()use($app){
                         $list['wearer_end_button'] = "貸与終了";
                         $list['wearer_end_red'] = "[済]";
                         $list['disabled'] = "disabled";
+                        $list['order_req_no'] = $order_req_no;
                         $list['btnPattern'] = "C";
                     }
                 }
@@ -441,6 +453,7 @@ $app->post('/wearer_end/search', function ()use($app){
                         $list['wearer_end_red'] = "";
                         $list['disabled'] = "";
                         $list['btnPattern'] = "A";
+                        $list['order_req_no'] = $order_req_no;
                         $list['order_reason_kbn'] = $order_reason_kbn;
                     }
                 }
@@ -610,7 +623,8 @@ $app->post('/wearer_end/search', function ()use($app){
             $list['param'] .= $list['order_tran_flg'].':';
             $list['param'] .= $list['wearer_tran_flg'].':';
             $list['param'] .= $list['order_req_no'].':';
-            $list['param'] .= $list['return_req_no'];
+            $list['param'] .= $list['return_req_no'].':';
+            $list['param'] .= $list['werer_name_kana'];
             array_push($all_list,$list);
         }
     }
@@ -749,6 +763,7 @@ $app->post('/wearer_end/order_check', function ()use($app){
         'order_req_no' => $cond["order_req_no"],
         'return_req_no' => $cond["return_req_no"],
         'werer_name' => $cond["werer_name"],
+        'werer_name_kana' => $cond["werer_name_kana"],
     ));
 
     echo json_encode($json_list);

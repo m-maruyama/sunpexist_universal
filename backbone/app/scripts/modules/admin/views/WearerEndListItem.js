@@ -35,6 +35,7 @@ define([
 						'wearer_tran_flg': we_val[10],
 						'order_req_no': we_val[11],
 						'return_req_no': we_val[12],
+						'werer_name_kana': we_val[13],
 						'werer_name': this.ui.werer_name.val(),
 					};
 
