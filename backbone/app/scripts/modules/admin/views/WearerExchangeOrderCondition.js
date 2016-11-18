@@ -93,6 +93,8 @@ define([
 							+ res_list['return_req_no']
 						;
 						that.ui.delete.val(delete_param);
+						that.ui.complete.val(res_list['order_req_no']);
+						that.ui.orderSend.val(res_list['order_req_no']);
 
 						if (res_list['order_tran_flg'] == '1' && res_list['return_tran_flg'] == '1') {
 							$('.delete').css('display', '');
@@ -352,6 +354,7 @@ define([
 					}
 				}
 				if (type == "WX0013_req") {
+					var tran_req_no = $("button[name='complete_param']").val();
 					var agreement_no = $("select[name='agreement_no']").val();
 					var reason_kbn = $("select[name='reason_kbn']").val();
 					var emply_cd_flg = $("#emply_cd_flg").prop("checked");
@@ -364,6 +367,7 @@ define([
 					var shipment = $("input[name='shipment']").val();
 					var comment = $("#comment").val();
 					var wearer_data = {
+						'tran_req_no': tran_req_no,
 						'agreement_no': agreement_no,
 						'reason_kbn': reason_kbn,
 						//'emply_cd_flg': emply_cd_flg,
@@ -438,7 +442,6 @@ define([
 						}
 					}
 					//console.log(item);
-
 					var modelForUpdate = this.model;
 					modelForUpdate.url = App.api.WX0013;
 					var cond = {
@@ -470,6 +473,7 @@ define([
 					});
 				}
 				if (type == "WX0014_req") {
+					var tran_req_no = $("button[name='send_param']").val();
 					var agreement_no = $("select[name='agreement_no']").val();
 					var reason_kbn = $("select[name='reason_kbn']").val();
 					var emply_cd_flg = $("#emply_cd_flg").prop("checked");
@@ -482,9 +486,10 @@ define([
 					var shipment = $("input[name='shipment']").val();
 					var comment = $("#comment").val();
 					var wearer_data = {
+						'tran_req_no': tran_req_no,
 						'agreement_no': agreement_no,
 						'reason_kbn': reason_kbn,
-						'emply_cd_flg': emply_cd_flg,
+						//'emply_cd_flg': emply_cd_flg,
 						'member_no': member_no,
 						'member_name': member_name,
 						'member_name_kana': member_name_kana,
@@ -510,6 +515,7 @@ define([
 						item[i]["order_num"] = $("input[name='order_num"+i+"']").val();
 						item[i]["exchange_possible_num"] = $("input[name='exchange_possible_num"+i+"']").val();
 						item[i]["individual_flg"] = $("input[name='individual_flg"+i+"']").val();
+						item[i]["add_flg"] = $("input[name='add_flg"+i+"']").val();
 						item[i]["individual_data"] = new Object();
 						if (item[i]["individual_flg"]) {
 							item[i]["individual_cnt"] = $("input[name='individual_cnt"+i+"']").val();
@@ -531,6 +537,27 @@ define([
 							}
 						} else {
 							item[i]["return_num"] = $("input[name='return_num"+i+"']").val();
+						}
+						item[i]["size_add_data"] = new Object();
+						if (item[i]["add_flg"] == "1") {
+							var cnt = 0;
+							for (var j=1; j<6; j++) {
+								if ($('input[name="add_no'+i+'-'+j+'"]').length == 0) {
+									continue;
+								}
+								item[i]["size_add_data"][cnt] = new Object();
+								item[i]["size_add_data"][cnt]["rntl_sect_cd"] = $("input[name='rntl_sect_cd"+i+'-'+j+"']").val();
+								item[i]["size_add_data"][cnt]["job_type_cd"] = $("input[name='job_type_cd"+i+'-'+j+"']").val();
+								item[i]["size_add_data"][cnt]["job_type_item_cd"] = $("input[name='job_type_item_cd"+i+'-'+j+"']").val();
+								item[i]["size_add_data"][cnt]["item_cd"] = $("input[name='item_cd"+i+'-'+j+"']").val();
+								item[i]["size_add_data"][cnt]["color_cd"] = $("input[name='color_cd"+i+'-'+j+"']").val();
+								item[i]["size_add_data"][cnt]["now_size_cd"] = $("input[name='now_size_cd"+i+'-'+j+"']").val();
+								item[i]["size_add_data"][cnt]["size_cd"] = $("select[name='size_cd"+i+'-'+j+"']").val();
+								item[i]["size_add_data"][cnt]["possible_num"] = $("input[name='possible_num"+i+'-'+j+"']").val();
+								item[i]["size_add_data"][cnt]["order_num"] = $("input[name='order_num"+i+'-'+j+"']").val();
+								item[i]["size_add_data"][cnt]["exchange_possible_num"] = $("input[name='exchange_possible_num"+i+'-'+j+"']").val();
+								cnt++;
+							}
 						}
 					}
 
