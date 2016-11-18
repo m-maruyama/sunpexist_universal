@@ -150,9 +150,18 @@ define([
                 if(errors) {
                     return errors;
                 }
+                if(window.sessionStorage.getItem('referrer')=='wearer_search'||
+                    window.sessionStorage.getItem('referrer')=='wearer_order'||
+                    window.sessionStorage.getItem('referrer')=='wearer_order_search'){
+                    var referrer = 1;
+                }else{
+                    var referrer = -1;
+
+                }
                 var cond = {
                     "scr": '着用者登録',
                     "mode": 'insert',
+                    "referrer" : referrer,
                     "cond": model.getReq()
                 };
                 model.url = App.api.WI0012;

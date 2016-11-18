@@ -758,38 +758,45 @@ $app->post('/input_insert', function () use ($app) {
         }
     }
     $query_list = array();
-    //社員コードのマスタチェック(社員コードありの場合のみ)
     if ($cond['cster_emply_cd']) {
-        // 契約マスタ．企業ID　＝　ログインしているアカウントの企業ID　AND
-        array_push($query_list, "corporate_id = '" . $auth['corporate_id'] . "'");
-        // 契約マスタ．レンタル契約No.　＝　画面で選択されている契約No.
-        array_push($query_list, "rntl_cont_no = '" . $cond['agreement_no'] . "'");
-        // 着用者基本マスタ．客先社員コード ＝ 画面で入力された社員コード AND
-        array_push($query_list, "cster_emply_cd = '" . $cond['cster_emply_cd'] . "'");
+        //前画面からデータを引き継いでいる場合
+        $wearer_odr_post = $app->session->get("wearer_odr_post");
+        //社員コードのマスタチェック(社員コードありの場合のみ)
+        if(isset($wearer_odr_post['cster_emply_cd'])&&$wearer_odr_post['cster_emply_cd']==$cond['cster_emply_cd']){
+            //入力値と一緒なら
+        }else{
+            // 契約マスタ．企業ID　＝　ログインしているアカウントの企業ID　AND
+            array_push($query_list, "corporate_id = '" . $auth['corporate_id'] . "'");
+            // 契約マスタ．レンタル契約No.　＝　画面で選択されている契約No.
+            array_push($query_list, "rntl_cont_no = '" . $cond['agreement_no'] . "'");
+            // 着用者基本マスタ．客先社員コード ＝ 画面で入力された社員コード AND
+            array_push($query_list, "cster_emply_cd = '" . $cond['cster_emply_cd'] . "'");
 
-        //sql文字列を' AND 'で結合
-        $query = implode(' AND ', $query_list);
-        //--- クエリー実行・取得 ---//
-        $m_wearer_std_count = MWearerStdTran::find(array(
-            'conditions' => $query
-        ))->count();
-        $cster_emply_cd_chk = true;
-        //存在する場合NG
-        if ($m_wearer_std_count > 0) {
-            array_push($error_list, '既に社員コードが使用されています。');
-            $cster_emply_cd_chk = false;
-        }
-        if($cster_emply_cd_chk){
-            // 着用者基本マスタ．着用者状況区分 ＝ 稼働
-            array_push($query_list, "werer_sts_kbn = '1'");
+            //sql文字列を' AND 'で結合
+            $query = implode(' AND ', $query_list);
             //--- クエリー実行・取得 ---//
-            $m_wearer_std_count = MWearerStd::find(array(
+            $m_wearer_std_count = MWearerStdTran::find(array(
                 'conditions' => $query
             ))->count();
+            $cster_emply_cd_chk = true;
             //存在する場合NG
             if ($m_wearer_std_count > 0) {
                 array_push($error_list, '既に社員コードが使用されています。');
+                $cster_emply_cd_chk = false;
             }
+            if($cster_emply_cd_chk){
+                // 着用者基本マスタ．着用者状況区分 ＝ 稼働
+                array_push($query_list, "werer_sts_kbn = '1'");
+                //--- クエリー実行・取得 ---//
+                $m_wearer_std_count = MWearerStd::find(array(
+                    'conditions' => $query
+                ))->count();
+                //存在する場合NG
+                if ($m_wearer_std_count > 0) {
+                    array_push($error_list, '既に社員コードが使用されています。');
+                }
+            }
+
         }
     }
     //拠点のマスタチェック
@@ -896,19 +903,28 @@ $app->post('/input_insert', function () use ($app) {
         //着用者基本マスタ_統合ハッシュキー(企業ID、着用者コード、レンタル契約No.、レンタル部門コード、職種コード)
         $wearer_odr_post = $app->session->get("wearer_odr_post");
 
+        //着用者基本情報トラン
+        $m_wearer_std_tran = new MWearerStdTran();
+        $now = date('Y/m/d H:i:s.sss');
         $m_wearer_std_tran = new MWearerStdTran();
         $results = new Resultset(null, $m_wearer_std_tran, $m_wearer_std_tran->getReadConnection()->query("select nextval('werer_cd_seq')"));
         if(!$wearer_odr_post){
             $werer_cd = str_pad($results[0]->nextval, 6, '0', STR_PAD_LEFT); //着用者コード
             $m_wearer_std_comb_hkey = md5($auth['corporate_id'] . str_pad($results[0]->nextval, 10, '0', STR_PAD_LEFT) . $cond['agreement_no'] . $cond['rntl_sect_cd'] . $deli_job[0]);
+            $order_req_no = ''; //発注No
         }else{
             $werer_cd = $wearer_odr_post['werer_cd'];
             $m_wearer_std_comb_hkey = $wearer_odr_post['m_wearer_std_comb_hkey'];
+            if(isset($wearer_odr_post['m_wearer_std_comb_hkey'])){
+                $m_wearer_std_tran = MWearerStdTran::find(array(
+                    'conditions' => 'm_wearer_std_comb_hkey = '."'".$m_wearer_std_comb_hkey."'"
+                ));
+                $m_wearer_std_tran = $m_wearer_std_tran[0];
+                $order_req_no = $m_wearer_std_tran->getOrderReqNo();//発注No
+            }
         }
         $corporate_id = $auth['corporate_id']; //企業ID
-
         $rntl_cont_no = $cond['agreement_no']; //レンタル契約No.
-        $order_req_no = '1'; //発注No
         $rntl_cont_no_bef = ''; //レンタル契約No.（前）
         $rntl_sect_cd_bef = '';//レンタル部門コード（前）
         $job_type_cd_bef = ''; //職種コード（前）

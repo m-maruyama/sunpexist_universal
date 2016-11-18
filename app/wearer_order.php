@@ -825,30 +825,26 @@ $app->post('/wearer_order_insert', function () use ($app) {
     $results = new Resultset(NULL, $t_order_tran, $t_order_tran->getReadConnection()->query('begin'));
 
     try {
-        // 発注依頼No.生成
-        //※シーケンス取得
-        $arg_str = "";
-        $arg_str = "SELECT NEXTVAL('t_order_seq')";
-        $t_order_tran = new TOrderTran();
-        $results = new Resultset(NULL, $t_order_tran, $t_order_tran->getReadConnection()->query($arg_str));
-        $result_obj = (array)$results;
-        $results_cnt = $result_obj["\0*\0_count"];
-        if (!empty($results_cnt)) {
-            $paginator_model = new PaginatorModel(
-                array(
-                    "data"  => $results,
-                    "limit" => 1,
-                    "page" => 1
-                )
-            );
-            $paginator = $paginator_model->getPaginate();
-            $results = $paginator->items;
-            foreach ($results as $result) {
-                $order_no_seq = $result->nextval;
+
+        //着用者基本情報トラン
+        $m_wearer_std_tran = new MWearerStdTran();
+        $now = date('Y/m/d H:i:s.sss');
+        $no_flg = false;
+        if(isset($wearer_odr_post['m_wearer_std_comb_hkey'])){
+            $m_wearer_std_tran = MWearerStdTran::find(array(
+                'conditions' => 'm_wearer_std_comb_hkey = '."'".$wearer_odr_post['m_wearer_std_comb_hkey']."'"
+            ));
+            $m_wearer_std_tran_one = $m_wearer_std_tran[0];
+            $shin_order_req_no = $m_wearer_std_tran_one->getOrderReqNo();//発注No
+            if($shin_order_req_no){
+                $no_flg = true;
             }
-            //※次シーケンスをセット
+        }
+        if(!$no_flg){
+            // 発注依頼No.生成
+            //※シーケンス取得
             $arg_str = "";
-            $arg_str = "SELECT SETVAL('t_order_seq',".$order_no_seq.")";
+            $arg_str = "SELECT NEXTVAL('t_order_seq')";
             $t_order_tran = new TOrderTran();
             $results = new Resultset(NULL, $t_order_tran, $t_order_tran->getReadConnection()->query($arg_str));
             $result_obj = (array)$results;
@@ -856,7 +852,7 @@ $app->post('/wearer_order_insert', function () use ($app) {
             if (!empty($results_cnt)) {
                 $paginator_model = new PaginatorModel(
                     array(
-                        "data"  => $results,
+                        "data" => $results,
                         "limit" => 1,
                         "page" => 1
                     )
@@ -864,11 +860,32 @@ $app->post('/wearer_order_insert', function () use ($app) {
                 $paginator = $paginator_model->getPaginate();
                 $results = $paginator->items;
                 foreach ($results as $result) {
-                    $order_no_seq = $result->setval;
+                    $order_no_seq = $result->nextval;
+                }
+                //※次シーケンスをセット
+                $arg_str = "";
+                $arg_str = "SELECT SETVAL('t_order_seq'," . $order_no_seq . ")";
+                $t_order_tran = new TOrderTran();
+                $results = new Resultset(NULL, $t_order_tran, $t_order_tran->getReadConnection()->query($arg_str));
+                $result_obj = (array)$results;
+                $results_cnt = $result_obj["\0*\0_count"];
+                if (!empty($results_cnt)) {
+                    $paginator_model = new PaginatorModel(
+                        array(
+                            "data" => $results,
+                            "limit" => 1,
+                            "page" => 1
+                        )
+                    );
+                    $paginator = $paginator_model->getPaginate();
+                    $results = $paginator->items;
+                    foreach ($results as $result) {
+                        $order_no_seq = $result->setval;
+                    }
                 }
             }
+            $shin_order_req_no = "WB".str_pad($order_no_seq, 8, '0', STR_PAD_LEFT);
         }
-        $shin_order_req_no = "WB".str_pad($order_no_seq, 8, '0', STR_PAD_LEFT);
         //貸与パターン
         $query_list = array();
         // 職種マスタ．企業ID　＝　ログインしているアカウントの企業ID　AND
@@ -900,14 +917,6 @@ $app->post('/wearer_order_insert', function () use ($app) {
         $m_section = MSection::find(array(
             'conditions' => $query
         ));
-        //着用者基本情報トラン
-        $m_wearer_std_tran = new MWearerStdTran();
-        $now = date('Y/m/d H:i:s.sss');
-        if(isset($wearer_odr_post['m_wearer_std_comb_hkey'])){
-            $m_wearer_std_tran = MWearerStdTran::find(array(
-                'conditions' => 'm_wearer_std_comb_hkey = '."'".$wearer_odr_post['m_wearer_std_comb_hkey']."'"
-            ));
-        }
         $create_flg = false;
         //--- クエリー実行・取得 ---//
         if(isset($wearer_odr_post['m_wearer_std_comb_hkey'])&&count($m_wearer_std_tran)>0){
@@ -925,7 +934,6 @@ $app->post('/wearer_order_insert', function () use ($app) {
             $resfl_ymd = date("Ymd", strtotime($wearer_odr_post['resfl_ymd']));//着用開始日
             $ship_to_cd = $wearer_odr_post['ship_to_cd']; //出荷先コード
             $ship_to_brnch_cd = $wearer_odr_post['ship_to_brnch_cd']; //出荷先支店コード
-            $order_req_no  = $wearer_odr_post['order_req_no'];//発注No
             $web_upd_date = $m_wearer_std_tran->web_upd_date;//WEB更新日付
             $order_req_no  = $shin_order_req_no;//発注No
             $snd_date = $m_wearer_std_tran->snd_date;//送信日時
@@ -943,7 +951,6 @@ $app->post('/wearer_order_insert', function () use ($app) {
             $werer_name = $wearer_odr_post['werer_name'];//着用者名（漢字）
             $werer_name_kana = $wearer_odr_post['werer_name_kana']; //着用者名（カナ）
             $sex_kbn = $wearer_odr_post['sex_kbn'];//性別区分
-            $werer_sts_kbn  = '7';//着用者状況区分
             $appointment_ymd = date("Ymd", strtotime($wearer_odr_post['appointment_ymd']));//発令日
             $resfl_ymd = date("Ymd", strtotime($wearer_odr_post['resfl_ymd']));//着用開始日
             $ship_to_cd = $wearer_odr_post['ship_to_cd']; //出荷先コード

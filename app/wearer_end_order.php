@@ -1503,6 +1503,17 @@ $app->post('/wearer_end_order_insert', function () use ($app) {
                     $results_cnt = $result_obj["\0*\0_count"];
                 }
             }
+        }else{
+            // トランザクションロールバック
+            $m_wearer_std_tran = new MWearerStdTran();
+            $results = new Resultset(NULL, $m_wearer_std_tran, $m_wearer_std_tran->getReadConnection()->query('rollback'));
+            $json_list["error_code"] = "1";
+            $error_msg = "返却商品が選択されていません。";
+            array_push($json_list["error_msg"], $error_msg);
+
+            echo json_encode($json_list);
+            return;
+
         }
 
         // トランザクションコミット
