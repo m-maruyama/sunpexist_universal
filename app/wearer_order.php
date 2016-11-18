@@ -936,7 +936,7 @@ $app->post('/wearer_order_insert', function () use ($app) {
             //新規登録の場合
             $m_wearer_std_tran = new MWearerStdTran();
             $results = new Resultset(null, $m_wearer_std_tran, $m_wearer_std_tran->getReadConnection()->query("select nextval('werer_cd_seq')"));
-            $werer_cd = str_pad($results[0]->nextval, 10, '0', STR_PAD_LEFT); //着用者コード
+            $werer_cd = str_pad($results[0]->nextval, 6, '0', STR_PAD_LEFT); //着用者コード
             $corporate_id = $auth['corporate_id']; //企業ID
             $m_wearer_std_comb_hkey = md5($auth['corporate_id'].str_pad($results[0]->nextval, 10, '0', STR_PAD_LEFT).$wearer_odr_post['rntl_cont_no'].$cond['rntl_sect_cd'].$cond['job_type']);
             $cster_emply_cd = $wearer_odr_post['cster_emply_cd'];//客先社員コード
