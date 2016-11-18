@@ -781,20 +781,16 @@ $app->post('/input_insert', function () use ($app) {
             array_push($error_list, '社員コードの値が不正です。');
             $cster_emply_cd_chk = false;
         }
-        ChromePhp::LOG($cster_emply_cd_chk);
         if($cster_emply_cd_chk){
             //--- クエリー実行・取得 ---//
             $m_wearer_std_count = MWearerStdTran::find(array(
                 'conditions' => $query
             ))->count();
-            ChromePhp::LOG($query);
-            ChromePhp::LOG($m_wearer_std_count);
             //存在する場合NG
             if ($m_wearer_std_count > 0) {
                 array_push($error_list, '社員コードの値が不正です。');
             }
         }
-        die();
     }
     //拠点のマスタチェック
     $query_list = array();
