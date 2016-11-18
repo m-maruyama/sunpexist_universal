@@ -93,7 +93,7 @@ define([
 						var res_list = res.attributes;
 						if (res_list['wearer_info'][0]) {
 							that.ui.resfl_ymd.val(res_list['wearer_info'][0]['resfl_ymd']);
-							that.ui.resfl_ymd.val(res_list['wearer_info'][0]['memo']);
+							that.ui.comment.val(res_list['wearer_info'][0]['memo']);
 						}
 						that.ui.shipment_to.append($("<option>")
 							.val(res_list['ship_to_cd']).text(res_list['cust_to_brnch_name']));

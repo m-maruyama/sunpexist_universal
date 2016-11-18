@@ -1013,16 +1013,17 @@ $app->post('/wearer_end_order_insert', function () use ($app) {
         array_push($query_list, "order_sts_kbn = '2'");
         $query = implode(' AND ', $query_list);
         $arg_str = "";
-        $arg_str = "SELECT FROM ";
+        $arg_str = "SELECT * FROM ";
         $arg_str .= "m_wearer_std_tran";
         $arg_str .= " WHERE ";
         $arg_str .= $query;
         $m_wearer_std = new MWearerStdTran();
         $results = new Resultset(NULL, $m_wearer_std, $m_wearer_std->getReadConnection()->query($arg_str));
         if($results){
-            $m_wearer_std_tran_one = $results[0];
-            $shin_order_req_no = $m_wearer_std_tran_one->getOrderReqNo();//発注No
-            $m_wearer_std_comb_hkey = $m_wearer_std_tran_one->m_wearer_std_comb_hkey;//ハッシュ
+            foreach ($results as $result) {
+                $shin_order_req_no = $result->order_req_no;//発注No
+                $m_wearer_std_comb_hkey = $result->m_wearer_std_comb_hkey;//ハッシュ
+            }
             if($shin_order_req_no){
                 $no_flg = true;
             }
@@ -1386,6 +1387,11 @@ $app->post('/wearer_end_order_insert', function () use ($app) {
                 // 色コード
                 array_push($calum_list, "color_cd");
                 array_push($values_list, "''");
+                array_push($calum_list, "resfl_ymd");
+                array_push($values_list, "'" . $resfl_ymd . "'");
+                // 送信日時
+                array_push($calum_list, "snd_date");
+                array_push($values_list, "'" . $snd_date . "'");
                 // サイズコード
                 array_push($calum_list, "size_cd");
                 array_push($values_list, "''");
