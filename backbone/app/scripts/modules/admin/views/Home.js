@@ -37,14 +37,11 @@ define([
 						 }
 
 						 that.render();
-
+						 //マニュアルのファイルが存在する場合に、ホーム画面に表示
 						 if(res.get('manual_list')){
 							 var manual_list = res.get('manual_list');
 							 for (var i = 0; i < manual_list.length; i++){
-								 console.log(manual_list[i]);
-								 //$(".document").append("<li>" + "<a href='"+ manual_list[i].file +"'>" + manual_list[i].name + "</a>" + "</li>");
 								 $(".document").append("<li>" + "<a id='"+manual_list[i].name +"-"+manual_list[i].file+"-"+manual_list[i].corporate+"'>"+manual_list[i].name+"</a>"+"</li>");
-
 							 }
 						 }
 					 }

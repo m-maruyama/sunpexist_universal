@@ -159,7 +159,6 @@ $app->post('/home', function ()use($app){
         $json_list['manual_list'] = $manual_list;
         }
     }
-
     json_encode($json_list);
     echo json_encode($json_list);
 });
@@ -173,17 +172,47 @@ $app->post('/home_manual', function ()use($app){
     $auth = $app->session->get("auth");
     $cond = $params['cond'];
 
+    $filename = attachmentFileName($cond['name']);
+
     //ファイルの存在を確認し処理を実行
     header("Content-Type: application/octet-stream");
     if(file_exists(APP_PATH.COMMON_PASS.$cond['corporate']."/".$cond['file'])){
+        //拡張子取り出し
         $ext = substr(strrchr($cond['file'], '.'), 0);
+        //実体ファイルセット
         $fileName = APP_PATH.COMMON_PASS.$cond['corporate']."/".$cond['file'];
-        header("Content-Disposition: attachment; filename=".$cond['name'].$ext);
+        //ファイル名セット
+        header("Content-Disposition: attachment; filename=".$filename.$ext);
     }else{
+        //実体ファイルがない場合はこちらの処理
         $fileName = APP_PATH.COMMON_PASS."/file_no.pdf";
         header("Content-Disposition: attachment; filename=nofile.pdf");
     }
     //ファイルのダウンロード
     readfile($fileName);
-
 });
+
+
+function attachmentFileName($fileName)
+{
+    $outputFilename = $fileName;
+    $outputFilename = str_replace([' ', '\\', '/', ':', '*', '?', '"', '<', '>', '|'], '_', $outputFilename);
+    if(mb_convert_encoding($outputFilename, "US-ASCII", "UTF-8") == $outputFilename) {
+        $outputFilename = rawurlencode($outputFilename);
+    }else{
+        $ua = $_SERVER['HTTP_USER_AGENT'];
+
+        if (strpos($ua, 'MSIE') !== false && strpos($ua, 'Opera') === false) {
+            $outputFilename = mb_convert_encoding($outputFilename, "SJIS-win", "UTF-8");
+        } elseif (strpos($ua, 'Firefox') !== false ||
+            strpos($ua, "Chrome") !== false ||
+            strpos($ua, 'Opera') !== false
+        ) {
+            //$outputFilename = '=?UTF-8?B?' . base64_encode($outputFilename) . '?=';
+        } elseif (strpos($ua, "Safari") !== false ) {
+        } else {
+            $outputFilename = mb_convert_encoding($outputFilename, "SJIS-win", "UTF-8");
+        }
+    }
+    return $outputFilename;
+}
