@@ -981,7 +981,9 @@ $app->post('/wearer_end_order_insert', function () use ($app) {
         $arg_str .= $query;
         $m_wearer_std = new MWearerStdTran();
         $results = new Resultset(NULL, $m_wearer_std, $m_wearer_std->getReadConnection()->query($arg_str));
-        if($results){
+        $result_obj = (array)$results;
+        $results_cnt = $result_obj["\0*\0_count"];
+        if($results_cnt>0){
             foreach ($results as $result) {
                 $shin_order_req_no = $result->order_req_no;//発注No
                 $m_wearer_std_comb_hkey = $result->m_wearer_std_comb_hkey;//ハッシュ
