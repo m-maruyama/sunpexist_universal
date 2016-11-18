@@ -1520,8 +1520,8 @@ $app->post('/wearer_exchange/list', function ()use($app){
   }
 
   echo json_encode($json_list);
-  ChromePhp::LOG('JSON_LIST');
-  ChromePhp::LOG($json_list);
+  //ChromePhp::LOG('JSON_LIST');
+  //ChromePhp::LOG($json_list);
 });
 
 /**
