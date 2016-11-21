@@ -465,8 +465,6 @@ $app->post('/wearer_end/search', function ()use($app){
                 $list['wearer_end_red'] = "";
                 $list['disabled'] = "";
                 $list['btnPattern'] = "A";
-                $list['return_reciept_button'] = false;
-                $list['btnPattern'] = "no_pattern";
                 $list['order_req_no'] = '';
                 $list['order_reason_kbn'] = '';
             }
