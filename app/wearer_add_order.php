@@ -1060,11 +1060,26 @@ $app->post('/wearer_add/complete', function ()use($app){
        $error_msg = "着用者名を入力してください。";
        array_push($json_list["error_msg"], $error_msg);
      }
+     if (mb_strlen($wearer_data_input['member_name']) > 0) {
+        if (strlen($wearer_data_input['member_name']) > 22) {
+          $json_list["error_code"] = "1";
+          $error_msg = "着用者名の規定文字数をオーバーしています。";
+          array_push($json_list["error_msg"], $error_msg);
+        }
+     }
+     // 着用者名（読み仮名）
+     if (mb_strlen($wearer_data_input['member_name_kana']) > 0) {
+        if (strlen($wearer_data_input['member_name_kana']) > 25) {
+          $json_list["error_code"] = "1";
+          $error_msg = "着用者名(読み仮名)の規定文字数をオーバーしています。";
+          array_push($json_list["error_msg"], $error_msg);
+        }
+     }
      // コメント欄
-     if (!empty($wearer_data_input["comment"])) {
-       if (mb_strlen($wearer_data_input["comment"]) > 50) {
+     if (mb_strlen($wearer_data_input['comment']) > 0) {
+       if (strlen($wearer_data_input["comment"]) > 100) {
          $json_list["error_code"] = "1";
-         $error_msg = "コメント欄は50文字以内で入力してください。";
+         $error_msg = "コメント欄の規定文字数がオーバーしています。";
          array_push($json_list["error_msg"], $error_msg);
        }
      }
@@ -1929,11 +1944,26 @@ $app->post('/wearer_add/send', function ()use($app){
       $error_msg = "着用者名を入力してください。";
       array_push($json_list["error_msg"], $error_msg);
     }
+    if (mb_strlen($wearer_data_input['member_name']) > 0) {
+       if (strlen($wearer_data_input['member_name']) > 22) {
+         $json_list["error_code"] = "1";
+         $error_msg = "着用者名の規定文字数をオーバーしています。";
+         array_push($json_list["error_msg"], $error_msg);
+       }
+    }
+    // 着用者名（読み仮名）
+    if (mb_strlen($wearer_data_input['member_name_kana']) > 0) {
+       if (strlen($wearer_data_input['member_name_kana']) > 25) {
+         $json_list["error_code"] = "1";
+         $error_msg = "着用者名(読み仮名)の規定文字数をオーバーしています。";
+         array_push($json_list["error_msg"], $error_msg);
+       }
+    }
     // コメント欄
-    if (!empty($wearer_data_input["comment"])) {
-      if (mb_strlen($wearer_data_input["comment"]) > 50) {
+    if (mb_strlen($wearer_data_input['comment']) > 0) {
+      if (strlen($wearer_data_input["comment"]) > 100) {
         $json_list["error_code"] = "1";
-        $error_msg = "コメント欄は50文字以内で入力してください。";
+        $error_msg = "コメント欄の規定文字数がオーバーしています。";
         array_push($json_list["error_msg"], $error_msg);
       }
     }
