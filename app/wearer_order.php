@@ -832,7 +832,7 @@ $app->post('/wearer_order_insert', function () use ($app) {
         $m_wearer_std_tran = new MWearerStdTran();
         $now = date('Y/m/d H:i:s.sss');
         $no_flg = false;
-        if(isset($wearer_odr_post['m_wearer_std_comb_hkey'])){
+        if($wearer_odr_post['m_wearer_std_comb_hkey']){
             $m_wearer_std_tran = MWearerStdTran::find(array(
                 'conditions' => 'm_wearer_std_comb_hkey = '."'".$wearer_odr_post['m_wearer_std_comb_hkey']."'"
             ));
@@ -921,7 +921,7 @@ $app->post('/wearer_order_insert', function () use ($app) {
         ));
         $create_flg = false;
         //--- クエリー実行・取得 ---//
-        if(isset($wearer_odr_post['m_wearer_std_comb_hkey'])&&count($m_wearer_std_tran)>0){
+        if($wearer_odr_post['m_wearer_std_comb_hkey']&&count($m_wearer_std_tran)>0){
             $m_wearer_std_tran = $m_wearer_std_tran[0];
             //データを引き継いでいる場合
             $werer_cd = $wearer_odr_post['werer_cd'];
@@ -1317,7 +1317,6 @@ $app->post('/wearer_order_insert', function () use ($app) {
         // トランザクションロールバック
         $m_wearer_std_tran = new MWearerStdTran();
         $results = new Resultset(NULL, $m_wearer_std_tran, $m_wearer_std_tran->getReadConnection()->query('rollback'));
-        $transaction->commit();
         $json_list["error_code"] = "1";
         $error_msg = "入力登録処理において、データ更新エラーが発生しました。";
         array_push($json_list["error_msg"], $error_msg);
