@@ -352,6 +352,8 @@ $app->post('/wearer_end/search', function ()use($app){
             array_push($query_list, "werer_cd = '".$list['werer_cd']."'");
             array_push($query_list, "rntl_sect_cd = '".$list['rntl_sect_cd']."'");
             array_push($query_list, "job_type_cd = '".$list['job_type_cd']."'");
+            //	発注情報トラン．発注状況区分 ＝ 貸与終了
+            array_push($query_list,"order_sts_kbn = '2' AND order_reason_kbn != '07'");
             $query = implode(' AND ', $query_list);
 
             $arg_str = "";
