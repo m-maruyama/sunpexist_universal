@@ -380,6 +380,7 @@ $app->post('/wearer_end/search', function ()use($app){
                 $paginator = $paginator_model->getPaginate();
                 $t_order_tran_results = $paginator->items;
                 if(isset($result->as_wearer_snd_kbn)&&$result->as_wearer_snd_kbn=='9'){
+                    //パターンD：着用者基本マスタトラン．送信区分 = 処理中のデータがある場合、ボタンの文言は「貸与終了」で非活性表示する。
                     foreach ($t_order_tran_results as $t_order_tran_result) {
                         $order_req_no = $t_order_tran_result->order_req_no;
                         $order_reason_kbn = $t_order_tran_result->order_reason_kbn;
@@ -399,7 +400,7 @@ $app->post('/wearer_end/search', function ()use($app){
                         $order_sts_kbn = $t_order_tran_result->order_sts_kbn;
                         $order_reason_kbn = $t_order_tran_result->order_reason_kbn;
                         $snd_kbn = $t_order_tran_result->snd_kbn;
-                        if ($order_sts_kbn == '2' && $snd_kbn == '0') {
+                        if ($order_sts_kbn == '2' && $snd_kbn == '0' && $order_reason_kbn != '07') {
                             $patarn_flg = false;
                             break;
                         }
@@ -421,7 +422,7 @@ $app->post('/wearer_end/search', function ()use($app){
                         $order_sts_kbn = $t_order_tran_result->order_sts_kbn;
                         $order_reason_kbn = $t_order_tran_result->order_reason_kbn;
                         $snd_kbn = $t_order_tran_result->snd_kbn;
-                        if ($order_sts_kbn == '2' && $snd_kbn == '1') {
+                        if ($order_sts_kbn == '2' && $snd_kbn == '1' && $order_reason_kbn != '07') {
                             $patarn_flg = false;
                             break;
                         }
@@ -443,7 +444,7 @@ $app->post('/wearer_end/search', function ()use($app){
                         $order_sts_kbn = $t_order_tran_result->order_sts_kbn;
                         $order_reason_kbn = $t_order_tran_result->order_reason_kbn;
                         $snd_kbn = $t_order_tran_result->snd_kbn;
-                        if ($order_sts_kbn == '2') {
+                        if ($order_sts_kbn == '2' && $order_reason_kbn == '07') {
                             $patarn_flg = false;
                             break;
                         }
