@@ -268,7 +268,7 @@ define([
 							"rntl_sect_cd": data["rntl_sect_cd"],
 							"job_type_cd": data["job_type_cd"],
 							"order_req_no": data["order_req_no"],
-							"return_req_no_req_no": data["rtn_order_req_no"]
+							"return_req_no": data["rtn_order_req_no"]
 						};
 
 						var modelForUpdate = this.model;
