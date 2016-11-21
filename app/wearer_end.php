@@ -346,6 +346,8 @@ $app->post('/wearer_end/search', function ()use($app){
             $list['order_req_no']='';
             //---「貸与終了」ボタンの生成---//
             $t_order_tran_cnt = 0;
+            $list['btnPattern'] = "";
+            $patarn_flg = true;
             if($list['wearer_tran_flg'] == '1'){
 
                 // 発注情報トラン参照
@@ -370,8 +372,6 @@ $app->post('/wearer_end/search', function ()use($app){
                 $t_order_tran_cnt = $result_obj["\0*\0_count"];
 
                 // 「貸与終了」パターンチェックスタート
-                $list['btnPattern'] = "";
-                $patarn_flg = true;
                 if (!empty($t_order_tran_cnt)) {
                     $paginator_model = new PaginatorModel(
                         array(
