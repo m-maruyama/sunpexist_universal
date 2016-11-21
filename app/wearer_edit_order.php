@@ -647,11 +647,33 @@ $app->post('/wearer_edit_complete', function ()use($app){
          array_push($json_list["error_msg"], $error_msg);
        }
      }
+     if (mb_strlen($wearer_data_input['member_no']) > 0) {
+        if (strlen($wearer_data_input['member_no']) > 10) {
+          $json_list["error_code"] = "1";
+          $error_msg = "社員コードが規定の文字数をオーバーしています。";
+          array_push($json_list["error_msg"], $error_msg);
+        }
+     }
      // 着用者名
      if (empty($wearer_data_input["member_name"])) {
        $json_list["error_code"] = "1";
        $error_msg = "着用者名を入力してください。";
        array_push($json_list["error_msg"], $error_msg);
+     }
+     if (mb_strlen($wearer_data_input['member_name']) > 0) {
+        if (strlen($wearer_data_input['member_name']) > 22) {
+          $json_list["error_code"] = "1";
+          $error_msg = "着用者名が規定の文字数をオーバーしています。";
+          array_push($json_list["error_msg"], $error_msg);
+        }
+     }
+     // 着用者名（読み仮名）
+     if (mb_strlen($wearer_data_input['member_name_kana']) > 0) {
+        if (strlen($wearer_data_input['member_name_kana']) > 25) {
+          $json_list["error_code"] = "1";
+          $error_msg = "着用者名(読み仮名)が規定の文字数をオーバーしています。";
+          array_push($json_list["error_msg"], $error_msg);
+        }
      }
 
      echo json_encode($json_list);
