@@ -389,12 +389,12 @@ $app->post('/wearer_search/req_param', function ()use($app) {
         $order_tran_flg = $wearer_odr_post["order_tran_flg"];
     }else{
         $order_tran_flg = '0';
-    }
-    if(isset($wearer_odr_post['wearer_tran_flg'])){
-        $wearer_tran_flg = $wearer_odr_post["wearer_tran_flg"];
-
-    }elseif(isset($cond["wearer_tran_flg"])){
+    }if(isset($cond["wearer_tran_flg"])){
         $wearer_tran_flg = $cond["wearer_tran_flg"];
+
+    }else
+        if(isset($wearer_odr_post['wearer_tran_flg'])){
+            $wearer_tran_flg = $wearer_odr_post["wearer_tran_flg"];
     }else{
         $wearer_tran_flg = '0';
     }
@@ -428,10 +428,10 @@ $app->post('/wearer_search/req_param', function ()use($app) {
     }
     if(!isset($cond["m_wearer_std_comb_hkey"])&&!isset($wearer_odr_post['m_wearer_std_comb_hkey'])){
         $cond["m_wearer_std_comb_hkey"] = '';
-    }elseif($wearer_odr_post['m_wearer_std_comb_hkey']){
-        $cond["m_wearer_std_comb_hkey"] = $wearer_odr_post['m_wearer_std_comb_hkey'];
     }elseif(isset($cond["m_wearer_std_comb_hkey"])){
         $cond["m_wearer_std_comb_hkey"] = $cond["m_wearer_std_comb_hkey"];
+    }elseif($wearer_odr_post['m_wearer_std_comb_hkey']){
+        $cond["m_wearer_std_comb_hkey"] = $wearer_odr_post['m_wearer_std_comb_hkey'];
     }else{
         $cond["m_wearer_std_comb_hkey"] = '';
     }
@@ -439,12 +439,12 @@ $app->post('/wearer_search/req_param', function ()use($app) {
     if(!isset($cond["order_req_no"])){
         $cond["order_req_no"] = $wearer_odr_post['order_req_no'];
     }
-    if($wearer_odr_post['comment']) {
-        $cond["comment"] = $wearer_odr_post['comment'];
-    }elseif(!isset($cond["comment"])) {
-        $cond["comment"] = '';
-    }elseif($cond['comment']){
+    if(isset($cond['comment'])) {
         $cond["comment"] = $cond['comment'];
+    }elseif($wearer_odr_post['comment']) {
+        $cond["comment"] = $wearer_odr_post['comment'];
+    }else{
+        $cond["comment"] = '';
     }
     // POSTパラメータのセッション格納
     $app->session->set("wearer_odr_post", array(

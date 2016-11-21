@@ -136,7 +136,6 @@ $app->post('/wearer_end/search', function ()use($app){
     $list = array();
     if(!empty($results_cnt)){
 
-
         $paginator = $paginator_model->getPaginate();
         $results = $paginator->items;
 
@@ -153,7 +152,7 @@ $app->post('/wearer_end/search', function ()use($app){
 
             //  ※着用者基本マスタトランを参照する場合は、＜検索条件＞に下記を追加する。
             //	発注情報トラン．発注状況区分 ＝ 貸与終了
-            array_push($query_list,"t_order_tran.order_sts_kbn = '2'");
+            array_push($query_list,"t_order_tran.order_sts_kbn = '2' AND t_order_tran.order_reason_kbn != '07'");
 
             $query = implode(' AND ', $query_list);
 
