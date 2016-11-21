@@ -1,6 +1,5 @@
 <div class="row">
 	<h1>発注入力（着用者編集）</h1>
-	<!-- start フォーム -->
 	<div class="row">
 		<div class="col-md-1">
 			<button class="btn btn-primary back" title="戻る">戻る</button>
@@ -9,19 +8,14 @@
 			<button class="btn btn-primary delete" style="display:none;" name="delete_param" value="{{delete_param}}" title="発注取消">発注取消</button>
 		</div>
 		<div class="col-md-1">
-			<button class="btn btn-primary complete" style="display:none;" title="入力完了">入力完了</button>
+			<button class="btn btn-primary complete" style="display:none;" name="complete_param" title="入力完了">入力完了</button>
 		</div>
 		<div class="col-md-1">
-			<button class="btn btn-primary orderSend" style="display:none;" title="発注送信">発注送信</button>
+			<button class="btn btn-primary orderSend" style="display:none;" name="send_param" title="発注送信">発注送信</button>
 		</div>
 	</div>
-	<!--エラーメッセージ-->
-	<!--div style="padding-top:20px;">
-		<div class="errors"></div>
-	<div-->
 	<form class="form-horizontal">
 		<div class="col-md-10 box_purple">
-			<!--エラーメッセージ-->
 			<div class="errors"></div>
 			<div class="form-group">
 				<label class="col-md-3 control-label" for="">契約No</label>
@@ -108,4 +102,3 @@
 			</div>
 		</div>
 	</form>
-	<!-- end フォーム -->

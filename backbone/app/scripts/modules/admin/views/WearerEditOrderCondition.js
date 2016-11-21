@@ -60,7 +60,6 @@ define([
 			onRender: function() {
 				var that = this;
 
-				// 着用者情報
 				var modelForUpdate = this.model;
 				modelForUpdate.url = App.api.WU0012;
 				var cond = {
@@ -79,7 +78,6 @@ define([
 						var res_list = res.attributes;
 						//console.log(res_list);
 
-						// 発注取消ボタンvalue値設定
 						var delete_param =
 							res_list['rntl_cont_no'] + ":"
 							+ res_list['rntl_sect_cd'] + ":"
@@ -88,12 +86,10 @@ define([
 						;
 						that.ui.delete.val(delete_param);
 
-						// 着用者基本マスタトラン(着用者編集)がある場合は発注取消ボタンを表示
 						if (res_list['tran_flg'] == '1') {
 							$('.delete').css('display', '');
 						}
 
-						// 入力完了、発注送信ボタン表示/非表示制御
 						var data = {
 							'rntl_cont_no': res_list['rntl_cont_no'],
 							'rntl_sect_cd': res_list['rntl_sect_cd']
@@ -110,7 +106,7 @@ define([
 							success:function(res){
 								var CM0140_res = res.attributes;
 								//console.log(CM0140_res);
-								//「入力完了」ボタン表示制御
+
 								if (CM0140_res['order_input_ok_flg'] == "1" || CM0140_res['order_send_ok_flg'] == "1") {
 									$('.complete').css('display', '');
 								}
@@ -119,14 +115,14 @@ define([
 								}
 							}
 						});
-						// 社員コード、着用者名、読みかな、異動日
 						if (res_list['wearer_info'][0]) {
+							that.ui.complete.val(res_list['wearer_info'][0]['order_req_no']);
+							that.ui.orderSend.val(res_list['wearer_info'][0]['order_req_no']);
 							that.ui.member_no.val(res_list['wearer_info'][0]['cster_emply_cd']);
 							that.ui.member_name.val(res_list['wearer_info'][0]['werer_name']);
 							that.ui.member_name_kana.val(res_list['wearer_info'][0]['werer_name_kana']);
 							that.ui.resfl_ymd.val(res_list['wearer_info'][0]['resfl_ymd']);
 						}
-						// 性別
 						if (res_list['sex_kbn_list']) {
 							for (var i=0; i<res_list['sex_kbn_list'].length; i++) {
 								var option = document.createElement('option');
@@ -139,7 +135,6 @@ define([
 								document.getElementById('sex_kbn').appendChild(option);
 							}
 						}
-						// 契約No(固定)
 						if (res_list['agreement_no_list'][0]) {
 							var option1 = document.createElement('option');
 							var str = res_list['agreement_no_list'][0]['rntl_cont_no'] + " " + res_list['agreement_no_list'][0]['rntl_cont_name'];
@@ -148,7 +143,6 @@ define([
 							option1.appendChild(text1);
 							document.getElementById('agreement_no').appendChild(option1);
 						}
-						// 拠点セレクト(固定)
 						if (res_list['section_list'][0]) {
 							var option2 = document.createElement('option');
 							var text2 = document.createTextNode(res_list['section_list'][0]['rntl_sect_name']);
@@ -156,7 +150,6 @@ define([
 							option2.appendChild(text2);
 							document.getElementById('section').appendChild(option2);
 						}
-						// 貸与パターンセレクト(固定)
 						if (res_list['job_type_list'][0]) {
 							var option3 = document.createElement('option');
 							var text3 = document.createTextNode(res_list['job_type_list'][0]['job_type_name']);
@@ -164,7 +157,6 @@ define([
 							option3.appendChild(text3);
 							document.getElementById('job_type').appendChild(option3);
 						}
-						// 出荷先セレクト(固定)、郵便番号、住所
 						if (res_list['shipment_list'][0]) {
 							var shipment = res_list['shipment_list'][0]['ship_to_cd'] + ":" + res_list['shipment_list'][0]['ship_to_brnch_cd'];
 							var shipment_name = res_list['shipment_list'][0]['cust_to_brnch_name1'] + res_list['shipment_list'][0]['cust_to_brnch_name2'];
@@ -180,19 +172,14 @@ define([
 				});
 			},
 			events: {
-				// 「戻る」ボタン
 				'click @ui.back': function(){
-					// 検索画面の条件項目を取得
 					var cond = window.sessionStorage.getItem("wearer_edit_cond");
 					window.sessionStorage.setItem("back_wearer_edit_cond", cond);
-					// 検索一覧画面へ遷移
 					location.href="wearer_edit.html";
 				},
-				// 「発注取消」ボタン
 				'click @ui.delete': function(){
 					var that = this;
 
-					// 発注取消パラメータ取得
 					var delete_vals = $("button[name='delete_param']").val();
 					var val = delete_vals.split(':');
 					var rntl_cont_no = val[0];
@@ -224,7 +211,6 @@ define([
 						}
 					});
 				},
-				// 「入力完了」ボタン
 				'click @ui.complete': function(){
 					var that = this;
 
@@ -245,7 +231,6 @@ define([
 						}
 					});
 				},
-				// 「発注送信」ボタン
 				'click @ui.orderSend': function(){
 					var that = this;
 
@@ -270,29 +255,22 @@ define([
 			onShow: function(val, type, transition, data) {
 				var that = this;
 
-				// 更新可否チェック結果処理
 				if (type == "cm0130_res") {
 					if (!val["chk_flg"]) {
-						// 更新可否フラグ=更新不可の場合はアラートメッセージ表示
 						alert(val["error_msg"]);
 					} else {
-						// エラーがない場合は各対応処理へ移行
 						if (transition == "WU0013_req") {
-							// 発注取消処理
 							var type = transition;
 							var res_val = "";
 						} else if (transition == "WU0014_req") {
-							// 入力完了処理
 							var type = transition;
 							var res_val = "";
 						} else if (transition == "WU0015_req") {
-							// 発注送信処理
 							var type = transition;
 							var res_val = "";
 						}
 					}
 				}
-				// 発注取消処理
 				if (type == "WU0013_req") {
 					var msg = "削除しますが、よろしいですか？";
 					if (window.confirm(msg)) {
@@ -310,14 +288,11 @@ define([
 								var res_val = res.attributes;
 
 								if (res_val["error_code"] == "0") {
-									// 発注取消完了後、検索一覧へ遷移
 									$.unblockUI();
 									alert('発注取消が完了しました。');
 
-									// 検索画面の条件項目を取得
 									var cond = window.sessionStorage.getItem("wearer_edit_cond");
 									window.sessionStorage.setItem("back_wearer_edit_cond", cond);
-									// 検索一覧画面へ遷移
 									location.href="wearer_edit.html";
 								} else {
 									$.unblockUI();
@@ -327,10 +302,8 @@ define([
 						});
 					}
 				}
-				// 入力完了処理
 				if (type == "WU0014_req") {
-					//--画面入力項目--//
-					// 着用者情報
+					var tran_req_no = $("button[name='complete_param']").val();
 					var agreement_no = $("select[name='agreement_no']").val();
 					var reason_kbn = $("select[name='reason_kbn']").val();
 					var emply_cd_flg = $("#emply_cd_flg").prop("checked");
@@ -343,6 +316,7 @@ define([
 					var job_type = $("select[name='job_type']").val();
 					var shipment = $("select[name='shipment']").val();
 					var wearer_data = {
+						'tran_req_no': tran_req_no,
 						'agreement_no': agreement_no,
 						'reason_kbn': reason_kbn,
 						'emply_cd_flg': emply_cd_flg,
@@ -356,7 +330,6 @@ define([
 						'shipment': shipment
 					}
 
-					// 入力項目チェック処理
 					var modelForUpdate = this.model;
 					modelForUpdate.url = App.api.WU0014;
 					var cond = {
@@ -377,7 +350,6 @@ define([
 										"wearer_data": wearer_data
 									};
 									//console.log(data);
-									// 入力完了画面処理へ移行
 									that.triggerMethod('inputComplete', data);
 								}
 							} else {
@@ -387,10 +359,8 @@ define([
 						}
 					});
 				}
-				// 発注送信処理
 				if (type == "WU0015_req") {
-					//--画面入力項目--//
-					// 着用者情報
+					var tran_req_no = $("button[name='send_param']").val();
 					var agreement_no = $("select[name='agreement_no']").val();
 					var reason_kbn = $("select[name='reason_kbn']").val();
 					var emply_cd_flg = $("#emply_cd_flg").prop("checked");
@@ -403,6 +373,7 @@ define([
 					var job_type = $("select[name='job_type']").val();
 					var shipment = $("select[name='shipment']").val();
 					var wearer_data = {
+						'tran_req_no': tran_req_no,
 						'agreement_no': agreement_no,
 						'reason_kbn': reason_kbn,
 						'emply_cd_flg': emply_cd_flg,
@@ -436,7 +407,6 @@ define([
 										"wearer_data": wearer_data
 									};
 									//console.log(data);
-									// 発注送信画面処理へ移行
 									that.triggerMethod('sendComplete', data);
 								}
 							} else {

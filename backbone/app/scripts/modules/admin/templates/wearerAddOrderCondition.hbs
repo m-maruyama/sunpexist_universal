@@ -1,6 +1,5 @@
 <div class="row">
 	<h1>発注入力（追加貸与）</h1>
-	<!-- start フォーム -->
 	<div class="row">
 		<div class="col-md-1">
 			<button class="btn btn-primary back" title="戻る">戻る</button>
@@ -9,19 +8,17 @@
 			<button class="btn btn-primary delete" style="display:none;" name="delete_param" value="{{delete_param}}" title="発注取消">発注取消</button>
 		</div>
 		<div class="col-md-1">
-			<button class="btn btn-primary complete" style="display:none;" title="入力完了">入力完了</button>
+			<button class="btn btn-primary complete" style="display:none;" name="complete_param" title="入力完了">入力完了</button>
 		</div>
 		<div class="col-md-1">
-			<button class="btn btn-primary orderSend" style="display:none;" title="発注送信">発注送信</button>
+			<button class="btn btn-primary orderSend" style="display:none;" name="send_param" title="発注送信">発注送信</button>
 		</div>
 	</div>
-	<!--エラーメッセージ-->
 	<div style="padding-top:20px;">
 		<div class="errors"></div>
 	<div>
 	<form class="form-horizontal">
 		<div class="col-md-10 box_purple">
-			<!--エラーメッセージ-->
 			<div class="form-group">
 				<label class="col-md-3 control-label" for="">契約No</label>
 				<div class="col-md-5">
@@ -40,8 +37,8 @@
 			<div class="form-group">
 				<label class="col-md-3 control-label" for="">社員コード</label>
 				<div class="col-md-6">
-					<label class="checkbox-inline"><input type="checkbox" id="emply_cd_flg" name="emply_cd_flg[]" value="1" checked>社員コードあり</label>&nbsp;&nbsp;
-					<input type="text" class="input-sm" id="member_no" name="member_no" value="">
+					<!--<label class="checkbox-inline"><input type="checkbox" id="emply_cd_flg" name="emply_cd_flg[]" value="1" checked>社員コードあり</label>&nbsp;&nbsp;-->
+					<input type="text" class="input-sm" id="member_no" name="member_no" value="" disabled="disabled">
 				</div>
 			</div>
 			<div class="form-group">
@@ -89,4 +86,3 @@
 			</div>
 		</div>
 	</form>
-	<!-- end フォーム -->

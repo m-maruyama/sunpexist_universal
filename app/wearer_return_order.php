@@ -1185,6 +1185,7 @@ $app->post('/wearer_return/complete', function ()use($app){
        echo json_encode($json_list);
        return;
      }
+/*
      // 社員コード
      if ($wearer_data_input['emply_cd_flg']) {
        if (mb_strlen($wearer_data_input['member_no']) == 0) {
@@ -1200,6 +1201,7 @@ $app->post('/wearer_return/complete', function ()use($app){
          array_push($json_list["error_msg"], $error_msg);
        }
      }
+*/
      // 着用者名
      if (empty($wearer_data_input["member_name"])) {
        $json_list["error_code"] = "1";
@@ -1445,36 +1447,15 @@ $app->post('/wearer_return/complete', function ()use($app){
      $m_wearer_std_tran = new MWearerStdTran();
      $results = new Resultset(NULL, $m_wearer_std_tran, $m_wearer_std_tran->getReadConnection()->query('begin'));
      try {
-       // 発注依頼No.生成
-       //※シーケンス取得
-       $arg_str = "";
-       $arg_str = "SELECT NEXTVAL('t_order_seq')";
-       $t_order_tran = new TOrderTran();
-       $results = new Resultset(NULL, $t_order_tran, $t_order_tran->getReadConnection()->query($arg_str));
-       $result_obj = (array)$results;
-       $results_cnt = $result_obj["\0*\0_count"];
-       if (!empty($results_cnt)) {
-         $paginator_model = new PaginatorModel(
-             array(
-                 "data"  => $results,
-                 "limit" => 1,
-                 "page" => 1
-             )
-         );
-         $paginator = $paginator_model->getPaginate();
-         $results = $paginator->items;
-         //ChromePhp::LOG($results);
-         foreach ($results as $result) {
-           $order_no_seq = $result->nextval;
-         }
-         //※次シーケンスをセット
+       if (empty($wearer_data_input['tran_req_no'])) {
+         // 発注情報トランのデータがない場合、新規入力として発注依頼No.生成
+         //※シーケンス取得
          $arg_str = "";
-         $arg_str = "SELECT SETVAL('t_order_seq',".$order_no_seq.")";
+         $arg_str = "SELECT NEXTVAL('t_order_seq')";
          $t_order_tran = new TOrderTran();
          $results = new Resultset(NULL, $t_order_tran, $t_order_tran->getReadConnection()->query($arg_str));
          $result_obj = (array)$results;
          $results_cnt = $result_obj["\0*\0_count"];
-         //ChromePhp::LOG($result_obj);
          if (!empty($results_cnt)) {
            $paginator_model = new PaginatorModel(
                array(
@@ -1487,11 +1468,37 @@ $app->post('/wearer_return/complete', function ()use($app){
            $results = $paginator->items;
            //ChromePhp::LOG($results);
            foreach ($results as $result) {
-             $order_no_seq = $result->setval;
+             $order_no_seq = $result->nextval;
+           }
+           //※次シーケンスをセット
+           $arg_str = "";
+           $arg_str = "SELECT SETVAL('t_order_seq',".$order_no_seq.")";
+           $t_order_tran = new TOrderTran();
+           $results = new Resultset(NULL, $t_order_tran, $t_order_tran->getReadConnection()->query($arg_str));
+           $result_obj = (array)$results;
+           $results_cnt = $result_obj["\0*\0_count"];
+           //ChromePhp::LOG($result_obj);
+           if (!empty($results_cnt)) {
+             $paginator_model = new PaginatorModel(
+                 array(
+                     "data"  => $results,
+                     "limit" => 1,
+                     "page" => 1
+                 )
+             );
+             $paginator = $paginator_model->getPaginate();
+             $results = $paginator->items;
+             //ChromePhp::LOG($results);
+             foreach ($results as $result) {
+               $order_no_seq = $result->setval;
+             }
            }
          }
+         $shin_order_req_no = "WB".str_pad($order_no_seq, 8, '0', STR_PAD_LEFT);
+       } else {
+         // 発注情報トランのデータがある場合、編集入力として既存の発注依頼No.をそのまま使用する
+         $shin_order_req_no = $wearer_data_input['tran_req_no'];
        }
-       $shin_order_req_no = "WB".str_pad($order_no_seq, 8, '0', STR_PAD_LEFT);
        //ChromePhp::LOG("発注依頼No採番");
        //ChromePhp::LOG($shin_order_req_no);
 
@@ -2382,6 +2389,7 @@ $app->post('/wearer_return/send', function ()use($app){
       echo json_encode($json_list);
       return;
     }
+/*
     // 社員コード
     if ($wearer_data_input['emply_cd_flg']) {
       if (mb_strlen($wearer_data_input['member_no']) == 0) {
@@ -2397,6 +2405,7 @@ $app->post('/wearer_return/send', function ()use($app){
         array_push($json_list["error_msg"], $error_msg);
       }
     }
+*/
     // 着用者名
     if (empty($wearer_data_input["member_name"])) {
       $json_list["error_code"] = "1";
@@ -2642,36 +2651,15 @@ $app->post('/wearer_return/send', function ()use($app){
     $m_wearer_std_tran = new MWearerStdTran();
     $results = new Resultset(NULL, $m_wearer_std_tran, $m_wearer_std_tran->getReadConnection()->query('begin'));
     try {
-      // 発注依頼No.生成
-      //※シーケンス取得
-      $arg_str = "";
-      $arg_str = "SELECT NEXTVAL('t_order_seq')";
-      $t_order_tran = new TOrderTran();
-      $results = new Resultset(NULL, $t_order_tran, $t_order_tran->getReadConnection()->query($arg_str));
-      $result_obj = (array)$results;
-      $results_cnt = $result_obj["\0*\0_count"];
-      if (!empty($results_cnt)) {
-        $paginator_model = new PaginatorModel(
-            array(
-                "data"  => $results,
-                "limit" => 1,
-                "page" => 1
-            )
-        );
-        $paginator = $paginator_model->getPaginate();
-        $results = $paginator->items;
-        //ChromePhp::LOG($results);
-        foreach ($results as $result) {
-          $order_no_seq = $result->nextval;
-        }
-        //※次シーケンスをセット
+      if (empty($wearer_data_input['tran_req_no'])) {
+        // 発注情報トランのデータがない場合、新規入力として発注依頼No.生成
+        //※シーケンス取得
         $arg_str = "";
-        $arg_str = "SELECT SETVAL('t_order_seq',".$order_no_seq.")";
+        $arg_str = "SELECT NEXTVAL('t_order_seq')";
         $t_order_tran = new TOrderTran();
         $results = new Resultset(NULL, $t_order_tran, $t_order_tran->getReadConnection()->query($arg_str));
         $result_obj = (array)$results;
         $results_cnt = $result_obj["\0*\0_count"];
-        //ChromePhp::LOG($result_obj);
         if (!empty($results_cnt)) {
           $paginator_model = new PaginatorModel(
               array(
@@ -2684,11 +2672,37 @@ $app->post('/wearer_return/send', function ()use($app){
           $results = $paginator->items;
           //ChromePhp::LOG($results);
           foreach ($results as $result) {
-            $order_no_seq = $result->setval;
+            $order_no_seq = $result->nextval;
+          }
+          //※次シーケンスをセット
+          $arg_str = "";
+          $arg_str = "SELECT SETVAL('t_order_seq',".$order_no_seq.")";
+          $t_order_tran = new TOrderTran();
+          $results = new Resultset(NULL, $t_order_tran, $t_order_tran->getReadConnection()->query($arg_str));
+          $result_obj = (array)$results;
+          $results_cnt = $result_obj["\0*\0_count"];
+          //ChromePhp::LOG($result_obj);
+          if (!empty($results_cnt)) {
+            $paginator_model = new PaginatorModel(
+                array(
+                    "data"  => $results,
+                    "limit" => 1,
+                    "page" => 1
+                )
+            );
+            $paginator = $paginator_model->getPaginate();
+            $results = $paginator->items;
+            //ChromePhp::LOG($results);
+            foreach ($results as $result) {
+              $order_no_seq = $result->setval;
+            }
           }
         }
+        $shin_order_req_no = "WB".str_pad($order_no_seq, 8, '0', STR_PAD_LEFT);
+      } else {
+        // 発注情報トランのデータがある場合、編集入力として既存の発注依頼No.をそのまま使用する
+        $shin_order_req_no = $wearer_data_input['tran_req_no'];
       }
-      $shin_order_req_no = "WB".str_pad($order_no_seq, 8, '0', STR_PAD_LEFT);
       //ChromePhp::LOG("発注依頼No採番");
       //ChromePhp::LOG($shin_order_req_no);
 

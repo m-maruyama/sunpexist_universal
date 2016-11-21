@@ -81,7 +81,6 @@ define([
 			onRender: function() {
 				var that = this;
 
-				// 着用者情報(着用者名、(読み仮名)、社員コード、発令日、セッションパラメータ)
 				var modelForUpdate = this.model;
 				modelForUpdate.url = App.api.WC0018;
 				var cond = {
@@ -100,7 +99,6 @@ define([
 						var res_list = res.attributes;
 						//console.log(res_list);
 
-						// 発注取消ボタンvalue値設定
 						var delete_param =
 							res_list['rntl_cont_no'] + ":"
 							+ res_list['rntl_sect_cd'] + ":"
@@ -110,13 +108,13 @@ define([
 							+ res_list['return_req_no']
 						;
 						that.ui.delete.val(delete_param);
+						that.ui.complete.val(res_list['order_req_no']);
+						that.ui.orderSend.val(res_list['order_req_no']);
 
-						// 発注情報トランがある場合は発注取消ボタンを表示
 						if (res_list['order_tran_flg'] == '1') {
 							$('.delete').css('display', '');
 						}
 
-						// 入力完了、発注送信ボタン表示/非表示制御
 						var data = {
 							'rntl_cont_no': res_list['rntl_cont_no'],
 							'rntl_sect_cd': res_list['rntl_sect_cd']
@@ -132,9 +130,7 @@ define([
 							data:cond,
 							success:function(res){
 								var CM0140_res = res.attributes;
-								//console.log(CM0140_res);
 
-								//「入力完了」ボタン表示制御
 								if (CM0140_res['order_input_ok_flg'] == "1" || CM0140_res['order_send_ok_flg'] == "1") {
 									$('.complete').css('display', '');
 								}
@@ -144,7 +140,6 @@ define([
 							}
 						});
 
-						// 社員コード、着用者名、読みかな、コメント欄
 						if (res_list['wearer_info'][0]) {
 							that.ui.member_no.val(res_list['wearer_info'][0]['cster_emply_cd']);
 							that.ui.member_name.val(res_list['wearer_info'][0]['werer_name']);
@@ -158,7 +153,6 @@ define([
 						var minTime = new Date();
 						minTime.setHours(9);
 						minTime.setMinutes(0);
-						// 発令日
 						var appointment_ymd = "";
 						if (res_list['wearer_info'][0]) {
 							var appointment_ymd = res_list['wearer_info'][0]['appointment_ymd'];
@@ -176,9 +170,7 @@ define([
 						});
 						that.ui.datepicker1.on('dp.change', function(){
 							$(this).data('DateTimePicker').hide();
-							//$(this).find('input').trigger('input');
 						});
-						// 着用開始日
 						var resfl_ymd = "";
 						if (res_list['wearer_info'][0]) {
 							var resfl_ymd = res_list['wearer_info'][0]['resfl_ymd'];
@@ -201,19 +193,14 @@ define([
 				});
 			},
 			events: {
-				// 「戻る」ボタン
 				'click @ui.back': function(){
-					// 検索画面の条件項目を取得
 					var cond = window.sessionStorage.getItem("wearer_change_cond");
 					window.sessionStorage.setItem("back_wearer_change_cond", cond);
-					// 検索一覧画面へ遷移
 					location.href="wearer_change.html";
 				},
-				// 「発注取消」ボタン
 				'click @ui.delete': function(){
 					var that = this;
 
-					// 発注取消パラメータ取得
 					var delete_vals = $("button[name='delete_param']").val();
 					var val = delete_vals.split(':');
 					var rntl_cont_no = val[0];
@@ -249,7 +236,6 @@ define([
 						}
 					});
 				},
-				// 「入力完了」ボタン
 				'click @ui.complete': function(){
 					var that = this;
 
@@ -270,7 +256,6 @@ define([
 						}
 					});
 				},
-				// 「発注送信」ボタン
 				'click @ui.orderSend': function(){
 					var that = this;
 
@@ -291,13 +276,11 @@ define([
 						}
 					});
 				},
-				// 拠点
 				'change @ui.section': function(){
 					this.ui.section = $('#section');
 					var agreement_no = $("select[name='agreement_no']").val();
 					var section = $("select[name='section']").val();
 
-					// 出荷先以降の内容変更
 					var shipment_vals = $("select[name='shipment']").val();
 					var val = shipment_vals.split(':');
 					var ship_to_cd = val[0];
@@ -310,7 +293,6 @@ define([
 					});
 					this.shipment.show(shipmentConditionChangeView);
 
-					// 入力完了、発注送信ボタン表示/非表示制御
 					var data = {
 						'rntl_cont_no': agreement_no,
 						'rntl_sect_cd': section
@@ -326,7 +308,7 @@ define([
 						data:cond,
 						success:function(res) {
 							var CM0140_res = res.attributes;
-							//「入力完了」ボタン表示制御
+
 							if (CM0140_res['order_input_ok_flg'] == "1" && CM0140_res['order_send_ok_flg'] == "1") {
 								$('.complete').css('display', '');
 								$('.orderSend').css('display', '');
@@ -346,14 +328,11 @@ define([
 						}
 					});
 				},
-				// 貸与パターン
 				'change @ui.job_type': function(){
 					var that = this;
 					this.ui.job_type = $('#job_type');
 					var section = $("select[name='section']").val();
-					// 選択前のvalue値
 					var before_vals = window.sessionStorage.getItem("job_type_sec");
-					// 選択後のvalue値
 					var after_vals = $("select[name='job_type']").val();
 					var val = after_vals.split(':');
 					var job_type = val[0];
@@ -364,36 +343,26 @@ define([
 					}
 
 					if (sp_job_type_flg == "1") {
-						//--特別職種フラグ有りの場合--//
 						var msg = "社内申請手続きを踏んでいますか？";
 						if (window.confirm(msg)) {
-							// 理由区分表示切り替え
 							var reasonKbnConditionChangeView = new App.Admin.Views.ReasonKbnConditionChange({
 								job_type: job_type
 							});
 							this.reason_kbn.show(reasonKbnConditionChangeView);
-
-							// 現在貸与中のアイテム、新たに追加されるアイテム表示切り替え
 							that.triggerMethod('change:job_type', data);
 						} else {
-							// キャンセルの場合は選択前の状態に戻す
 							document.getElementById('job_type').value = before_vals;
 						}
 					} else {
-						//--特別職種フラグ無しの場合--//
 						window.sessionStorage.setItem("job_type_sec", after_vals);
 
-						// 理由区分表示切り替え
 						var reasonKbnConditionChangeView = new App.Admin.Views.ReasonKbnConditionChange({
 							job_type: job_type
 						});
 						this.reason_kbn.show(reasonKbnConditionChangeView);
-
-						// 現在貸与中のアイテム、新たに追加されるアイテム表示切り替え
 						that.triggerMethod('change:job_type', data);
 					}
 				},
-				// 出荷先
 				'change @ui.shipment': function(){
 					this.ui.shipment = $('#shipment');
 					var section = $("select[name='section']").val();
@@ -413,29 +382,22 @@ define([
 			onShow: function(val, type, transition, data) {
 				var that = this;
 
-				// 更新可否チェック結果処理
 				if (type == "cm0130_res") {
 					if (!val["chk_flg"]) {
-						// 更新可否フラグ=更新不可の場合はアラートメッセージ表示
 						alert(val["error_msg"]);
 					} else {
-						// エラーがない場合は各対応処理へ移行
 						if (transition == "WC0020_req") {
-							// 発注取消処理
 							var type = transition;
 							var res_val = "";
 						} else if (transition == "WC0021_req") {
-							// 入力完了処理
 							var type = transition;
 							var res_val = "";
 						} else if (transition == "WC0022_req") {
-							// 発注送信処理
 							var type = transition;
 							var res_val = "";
 						}
 					}
 				}
-				// 発注取消処理
 				if (type == "WC0020_req") {
 					var msg = "削除しますが、よろしいですか？";
 					if (window.confirm(msg)) {
@@ -453,14 +415,11 @@ define([
 								var res_val = res.attributes;
 
 								if (res_val["error_code"] == "0") {
-									// 発注取消完了後、検索一覧へ遷移
 									$.unblockUI();
 									alert('発注取消が完了しました。このまま検索画面へ移行します。');
 
-									// 検索画面の条件項目を取得
 									var cond = window.sessionStorage.getItem("wearer_change_cond");
 									window.sessionStorage.setItem("back_wearer_change_cond", cond);
-									// 検索一覧画面へ遷移
 									location.href="wearer_change.html";
 								} else {
 									$.unblockUI();
@@ -470,10 +429,8 @@ define([
 						});
 					}
 				}
-				// 入力完了処理
 				if (type == "WC0021_req") {
-					//--画面入力項目--//
-					// 着用者情報
+					var tran_req_no = $("button[name='complete_param']").val();
 					var agreement_no = $("select[name='agreement_no']").val();
 					var reason_kbn = $("select[name='reason_kbn']").val();
 					//var emply_cd_flg = $("#emply_cd_flg").prop("checked");
@@ -488,6 +445,7 @@ define([
 					var shipment = $("select[name='shipment']").val();
 					var comment = $("#comment").val();
 					var wearer_data = {
+						'tran_req_no': tran_req_no,
 						'agreement_no': agreement_no,
 						'reason_kbn': reason_kbn,
 						//'emply_cd_flg': emply_cd_flg,
@@ -503,7 +461,6 @@ define([
 						'comment': comment,
 					}
 
-					// 現在貸与中のアイテム
 					var now_target_flg = 'now_target_flg[]';
 					var now_list_cnt = $("input[name='now_list_cnt']").val();
 					var now_item = new Object();
@@ -520,10 +477,8 @@ define([
 						now_item[i]["individual_cnt"] = $("input[name='individual_cnt"+i+"']").val();
 						now_item[i]["possible_num"] = $("input[name='possible_num"+i+"']").val();
 						now_item[i]["individual_flg"] = $("input[name='individual_flg']").val();
-						// 商品毎の「対象」チェック状態、「個体管理番号」を取得
 						now_item[i]["individual_data"] = new Object();
 						if (now_item[i]["individual_flg"]) {
-							//個体管理番号表示フラグがONの場合、対象、個体管理番号単位
 							now_item[i]["individual_cnt"] = $("input[name='individual_cnt"+i+"']").val();
 							var Name = 'now_target_flg'+i;
 							var chk_num = 0;
@@ -539,18 +494,15 @@ define([
 									now_item[i]["individual_data"][j]["now_target_flg"] = '0';
 									now_item[i]["individual_data"][j]["individual_ctrl_no"] = chk_val;
 								}
-								// 対象=trueの数（商品単位返却数）
 								now_item[i]["individual_data"][j]["return_num"] = chk_num;
 							}
 						} else {
-							//個体管理番号表示フラグがOFFの場合、商品単位の返却数
 							now_item[i]["return_num"] = $("input[name='return_num"+i+"']").val();
 						}
 						now_item[i]["now_return_num"] = $("input[name='now_return_num"+i+"']").val();
 						now_item[i]["now_return_num_disable"] = $("input[name='now_return_num_disable"+i+"']").val();
 					}
 
-					// 追加されるアイテム
 					var add_list_cnt = $("input[name='add_list_cnt']").val();
 					var add_item = new Object();
 					for (var i=0; i<add_list_cnt; i++) {
@@ -567,7 +519,6 @@ define([
 						add_item[i]["add_order_num_disable"] = $("input[name='add_order_num_disable"+i+"']").val();
 					}
 
-					// 入力項目チェック処理
 					var modelForUpdate = this.model;
 					modelForUpdate.url = App.api.WC0021;
 					var cond = {
@@ -592,7 +543,6 @@ define([
 										"add_item": add_item,
 									};
 									//console.log(data);
-									// 入力完了画面処理へ移行
 									that.triggerMethod('inputComplete', data);
 								}
 							} else {
@@ -602,10 +552,8 @@ define([
 						}
 					});
 				}
-				// 発注送信処理
 				if (type == "WC0022_req") {
-					//--画面入力項目--//
-					// 着用者情報
+					var tran_req_no = $("button[name='send_param']").val();
 					var agreement_no = $("select[name='agreement_no']").val();
 					var reason_kbn = $("select[name='reason_kbn']").val();
 					//var emply_cd_flg = $("#emply_cd_flg").prop("checked");
@@ -620,6 +568,7 @@ define([
 					var shipment = $("select[name='shipment']").val();
 					var comment = $("#comment").val();
 					var wearer_data = {
+						'tran_req_no': tran_req_no,
 						'agreement_no': agreement_no,
 						'reason_kbn': reason_kbn,
 						//'emply_cd_flg': emply_cd_flg,
@@ -635,7 +584,6 @@ define([
 						'comment': comment,
 					}
 
-					// 現在貸与中のアイテム
 					var now_target_flg = 'now_target_flg[]';
 					var now_list_cnt = $("input[name='now_list_cnt']").val();
 					var now_item = new Object();
@@ -652,10 +600,8 @@ define([
 						now_item[i]["individual_cnt"] = $("input[name='individual_cnt"+i+"']").val();
 						now_item[i]["possible_num"] = $("input[name='possible_num"+i+"']").val();
 						now_item[i]["individual_flg"] = $("input[name='individual_flg']").val();
-						// 商品毎の「対象」チェック状態、「個体管理番号」を取得
 						now_item[i]["individual_data"] = new Object();
 						if (now_item[i]["individual_flg"]) {
-							//個体管理番号表示フラグがONの場合、対象、個体管理番号単位
 							now_item[i]["individual_cnt"] = $("input[name='individual_cnt"+i+"']").val();
 							var Name = 'now_target_flg'+i;
 							var chk_num = 0;
@@ -671,18 +617,15 @@ define([
 									now_item[i]["individual_data"][j]["now_target_flg"] = '0';
 									now_item[i]["individual_data"][j]["individual_ctrl_no"] = chk_val;
 								}
-								// 対象=trueの数（商品単位返却数）
 								now_item[i]["individual_data"][j]["return_num"] = chk_num;
 							}
 						} else {
-							//個体管理番号表示フラグがOFFの場合、商品単位の返却数
 							now_item[i]["return_num"] = $("input[name='return_num"+i+"']").val();
 						}
 						now_item[i]["now_return_num"] = $("input[name='now_return_num"+i+"']").val();
 						now_item[i]["now_return_num_disable"] = $("input[name='now_return_num_disable"+i+"']").val();
 					}
 
-					// 追加されるアイテム
 					var add_list_cnt = $("input[name='add_list_cnt']").val();
 					var add_item = new Object();
 					for (var i=0; i<add_list_cnt; i++) {
@@ -724,7 +667,6 @@ define([
 									};
 									//console.log(data);
 
-									// 入力完了画面処理へ移行
 									that.triggerMethod('sendComplete', data);
 								}
 							} else {
