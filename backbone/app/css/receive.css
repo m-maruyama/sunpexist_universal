@@ -74,7 +74,7 @@ td{
 }
 
 .form-horizontal{
-    margin:20px auto 30px;
+    margin:20px auto 0;
 }
 
 .form-horizontal .control-label {
@@ -616,4 +616,14 @@ label.allCheck {
 }
 .table span {
     color: #c00;
+}
+.form-group {
+    margin-bottom: 5px;
+}
+hr{
+    margin-top: 0;
+    margin-bottom: 0;
+}
+.pagination {
+    margin: 3px 0;
 }

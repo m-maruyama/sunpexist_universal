@@ -156,6 +156,16 @@ define([
 				this.listenTo(historyConditionView, 'click:search', function(sortKey,order){
 					modal = false;
 					fetchList(1,sortKey,order);
+
+					// スクロールの速度
+					var speed = 800; // ミリ秒
+					// 移動先を取得
+					var target = $(".page");
+					// 移動先を数値で取得
+					var position = target.offset().top;
+					// スムーススクロール
+					$('body,html').animate({scrollTop:position}, speed, 'swing');
+
 				});
 				this.listenTo(csvDownloadView, 'click:download_btn', function(cond_map){
 					csvDownloadView.fetch(cond_map);
