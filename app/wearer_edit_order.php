@@ -628,7 +628,7 @@ $app->post('/wearer_edit_complete', function ()use($app){
    $json_list = array();
    // DB更新エラーコード 0:正常 その他:要因エラー
    $json_list["error_code"] = "0";
-   //$json_list["error_msg"] = array();
+   $json_list["error_msg"] = array();
 
    if ($mode == "check") {
      //--入力内容確認--//
