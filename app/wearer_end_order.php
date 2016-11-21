@@ -1286,8 +1286,6 @@ $app->post('/wearer_end_order_insert', function () use ($app) {
         $results = new Resultset(NULL, $m_wearer_std_tran, $m_wearer_std_tran->getReadConnection()->query($arg_str));
 
         //--発注情報トラン登録--//
-        $cnt = 1;
-
         // 着用アイテム内容登録
         if (!empty($now_item_input)) {
             // 現発注Noの発注情報トランをクリーン
@@ -1302,6 +1300,25 @@ $app->post('/wearer_end_order_insert', function () use ($app) {
             $arg_str .= $query;
             $t_order_tran = new TOrderTran();
             $results = new Resultset(NULL, $t_order_tran, $t_order_tran->getReadConnection()->query($arg_str));
+
+            // 現発注Noの返却予定情報トランをクリーン
+            $query_list = array();
+            array_push($query_list, "corporate_id = '".$auth['corporate_id']."'");
+            array_push($query_list, "order_req_no = '".$wearer_end_post['return_req_no']."'");
+            // 発注区分「異動」
+            //array_push($query_list, "order_sts_kbn = '5'");
+            $query = implode(' AND ', $query_list);
+
+            $arg_str = "";
+            $arg_str = "DELETE FROM ";
+            $arg_str .= "t_returned_plan_info_tran";
+            $arg_str .= " WHERE ";
+            $arg_str .= $query;
+            //ChromePhp::LOG($arg_str);
+            $t_returned_plan_info_tran = new TReturnedPlanInfoTran();
+            $results = new Resultset(NULL, $t_returned_plan_info_tran, $t_returned_plan_info_tran->getReadConnection()->query($arg_str));
+            $results_cnt = $result_obj["\0*\0_count"];
+            $cnt = 1;
             foreach ($now_item_input as $now_item_input_map) {
                 $calum_list = array();
                 $values_list = array();
@@ -1459,26 +1476,6 @@ $app->post('/wearer_end_order_insert', function () use ($app) {
                 $t_order_tran = new TOrderTran();
                 $results = new Resultset(NULL, $t_order_tran, $t_order_tran->getReadConnection()->query($arg_str));
 
-                // 現発注Noの返却予定情報トランをクリーン
-                if (!empty($wearer_end_post['return_req_no'])) {
-                    $query_list = array();
-                    array_push($query_list, "corporate_id = '".$auth['corporate_id']."'");
-                    array_push($query_list, "order_req_no = '".$wearer_end_post['return_req_no']."'");
-                    // 発注区分「異動」
-                    //array_push($query_list, "order_sts_kbn = '5'");
-                    $query = implode(' AND ', $query_list);
-
-                    $arg_str = "";
-                    $arg_str = "DELETE FROM ";
-                    $arg_str .= "t_returned_plan_info_tran";
-                    $arg_str .= " WHERE ";
-                    $arg_str .= $query;
-                    //ChromePhp::LOG($arg_str);
-                    $t_returned_plan_info_tran = new TReturnedPlanInfoTran();
-                    $results = new Resultset(NULL, $t_returned_plan_info_tran, $t_returned_plan_info_tran->getReadConnection()->query($arg_str));
-                    $results_cnt = $result_obj["\0*\0_count"];
-                    //ChromePhp::LOG($results_cnt);
-                }
                 if ($now_item_input_map["individual_flg"] == true && !empty($now_item_input_map["individual_data"])) {
                     // ※個体管理番号単位での登録の場合
                     foreach ($now_item_input_map["individual_data"] as $individual_data) {
@@ -1488,9 +1485,6 @@ $app->post('/wearer_end_order_insert', function () use ($app) {
                         }
                         $calum_list = array();
                         $values_list = array();
-
-                        // 発注依頼行No.生成
-                        $order_req_line_no = $cnt++;
 
                         // 企業ID
                         array_push($calum_list, "corporate_id");
@@ -1595,9 +1589,6 @@ $app->post('/wearer_end_order_insert', function () use ($app) {
                     // ※商品単位での登録の場合
                     $calum_list = array();
                     $values_list = array();
-
-                    // 発注依頼行No.生成
-                    $order_req_line_no = $cnt++;
 
                     // 企業ID
                     array_push($calum_list, "corporate_id");
