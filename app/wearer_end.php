@@ -432,6 +432,7 @@ $app->post('/wearer_end/search', function ()use($app){
                         $list['wearer_end_red'] = "[済]";
                         $list['disabled'] = "disabled";
                         $list['order_req_no'] = $order_req_no;
+                        $list['order_reason_kbn'] = $order_reason_kbn;
                         $list['btnPattern'] = "C";
                     }
                 }
@@ -458,6 +459,7 @@ $app->post('/wearer_end/search', function ()use($app){
                     }
                 }
             }
+            //新規発注
             if ($list['btnPattern'] == "") {
                 $list['wearer_end_button'] = "貸与終了";
                 $list['wearer_end_red'] = "";
@@ -703,12 +705,10 @@ $app->post('/wearer_end/order_check', function ()use($app){
     }
 
     $wearer_end_post = $app->session->get("wearer_end_post");
-
-    if(isset($wearer_end_post['order_reason_kbn'])){
-        $order_reason_kbn = $wearer_end_post["order_reason_kbn"];
-
-    }elseif(isset($cond["order_reason_kbn"])){
+    if(isset($cond["order_reason_kbn"])){
         $order_reason_kbn = $cond["order_reason_kbn"];
+    }elseif(isset($wearer_end_post["order_reason_kbn"])){
+        $order_reason_kbn = $wearer_end_post["order_reason_kbn"];
     }else{
         $order_reason_kbn = '05';
     }
@@ -719,11 +719,10 @@ $app->post('/wearer_end/order_check', function ()use($app){
     }else{
         $order_tran_flg = '0';
     }
-    if(isset($wearer_end_post['wearer_tran_flg'])){
-        $wearer_tran_flg = $wearer_end_post["wearer_tran_flg"];
-
-    }elseif(isset($cond["wearer_tran_flg"])){
+    if(isset($cond["wearer_tran_flg"])) {
         $wearer_tran_flg = $cond["wearer_tran_flg"];
+    }elseif(isset($wearer_end_post['wearer_tran_flg'])){
+        $wearer_tran_flg = $wearer_end_post["wearer_tran_flg"];
     }else{
         $wearer_tran_flg = '0';
     }

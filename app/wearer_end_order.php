@@ -90,14 +90,16 @@ $app->post('/wearer_end/reason_kbn', function ()use($app){
         $results = $paginator->items;
 
         foreach ($results as $result) {
-            $list['reason_kbn'] = $result->gen_cd;
-            $list['reason_kbn_name'] = $result->gen_name;
-            $list['selected'] = '';
-            // 発注情報トランフラグ有の場合は初期選択状態版を生成
-            if ($list['reason_kbn'] == $wearer_end_post['order_reason_kbn']) {
-                $list['selected'] = 'selected';
+            if($result->gen_cd!='07'){
+                $list['reason_kbn'] = $result->gen_cd;
+                $list['reason_kbn_name'] = $result->gen_name;
+                $list['selected'] = '';
+                // 発注情報トランフラグ有の場合は初期選択状態版を生成
+                if ($list['reason_kbn'] == $wearer_end_post['order_reason_kbn']) {
+                    $list['selected'] = 'selected';
+                }
+                array_push($all_list, $list);
             }
-            array_push($all_list, $list);
         }
 
     } else {
