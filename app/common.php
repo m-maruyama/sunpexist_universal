@@ -665,7 +665,7 @@ $app->post('/input_item', function () use ($app) {
   $query = implode(' AND ', $query_list);
 
   $arg_str = 'SELECT ';
-  $arg_str .= ' distinct on (item_cd, job_type_item_cd) *';
+  $arg_str .= ' distinct on (item_cd) *';
   $arg_str .= ' FROM m_input_item';
   $arg_str .= ' WHERE ';
   $arg_str .= $query;

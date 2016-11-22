@@ -42,21 +42,25 @@ define([
 			onShow: function(val, type) {
 				var that = this;
 
-				// 更新可否チェック結果処理
 				if (type == "cm0130_res") {
 					if (!val["chk_flg"]) {
-						// 更新可否フラグ=更新不可の場合はアラートメッセージ表示
 						alert(val["error_msg"]);
 					} else {
-						// エラーがない場合は受領更新処理へ移行
 						var msg = "受領ステータスを更新してよろしいですか？";
 						if (window.confirm(msg)) {
 							var that = this;
 							var receive_chk_box = 'receive_check[]';
 							var receive_chk_arr = new Array();
 
-							// 個体管理番号毎のチェック(受領済み)、未チェック(未受領)
-							for (var i=0; i<document.receive_list.elements[receive_chk_box].length; i++ ){
+							$(".update_check").each(function () {
+								if ($(this).prop("checked")) {
+									receive_chk_arr.push($(this).val() + ',2');
+								} else {
+									receive_chk_arr.push($(this).val() + ',1');
+								}
+							});
+/*
+							for (var i=0; i<document.receive_list.elements[receive_chk_box].length; i++){
 							    if(document.receive_list.elements[receive_chk_box][i].checked == false){
 							        receive_chk_arr.push(document.receive_list.elements[receive_chk_box][i].value + ',1');
 							    }
@@ -64,6 +68,7 @@ define([
 							        receive_chk_arr.push(document.receive_list.elements[receive_chk_box][i].value + ',2');
 							    }
 							}
+*/
 							var cond = {
 								"scr": '受領更新',
 								"page":that.options.pagerModel.getPageRequest(),
