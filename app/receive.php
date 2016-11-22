@@ -378,7 +378,9 @@ $app->post('/receive/search', function ()use($app){
 	$arg_str .= " AND m_job_type.job_type_cd = m_input_item.job_type_cd)";
 	$arg_str .= " ON t_order.corporate_id = m_job_type.corporate_id";
 	$arg_str .= " AND t_order.rntl_cont_no = m_job_type.rntl_cont_no";
-	$arg_str .= " AND t_order.job_type_cd = m_job_type.job_type_cd)";
+	$arg_str .= " AND t_order.job_type_cd = m_job_type.job_type_cd";
+	$arg_str .= " AND t_order.item_cd = m_input_item.item_cd";
+	$arg_str .= " AND t_order.color_cd = m_input_item.color_cd)";
 	$arg_str .= " ON t_order_state.corporate_id = t_order.corporate_id";
 	$arg_str .= " AND t_order_state.order_req_no = t_order.order_req_no";
 	$arg_str .= " AND t_order_state.order_req_line_no = t_order.order_req_line_no)";
