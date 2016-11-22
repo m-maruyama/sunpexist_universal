@@ -18,7 +18,7 @@ define([
 					var cond_map = new Object();
 					cond_map["ui_type"] = $("input[name='ui_type']").val();
 					cond_map["agreement_no"] = $("select[name='agreement_no']").val();
-					cond_map["order_no"] = $("input[name='no']").val();
+					cond_map["no"] = $("input[name='no']").val();
 					cond_map["emply_order_no"] = $("input[name='emply_order_no']").val();
 					cond_map["member_no"] = $("input[name='member_no']").val();
 					cond_map["member_name"] = $("input[name='member_name']").val();
