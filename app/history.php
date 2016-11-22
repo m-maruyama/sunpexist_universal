@@ -499,7 +499,11 @@ $app->post('/history/search', function ()use($app){
 			}
 			// 出荷日
 			if($list['ship_ymd']){
-				$list['ship_ymd'] =  date('Y/m/d',strtotime($list['ship_ymd']));
+				if ($list['ship_ymd'] !== "00000000") {
+					$list['ship_ymd'] = date('Y/m/d',strtotime($list['ship_ymd']));
+				} else {
+					$list['ship_ymd'] = "-";
+				}
 			}else{
 				$list['ship_ymd'] = '-';
 			}
