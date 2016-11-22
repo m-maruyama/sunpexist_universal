@@ -190,7 +190,7 @@ $app->post('/lend/search', function ()use($app){
 	$arg_str .= " FROM t_order LEFT JOIN";
 	$arg_str .= " (t_order_state LEFT JOIN";
 	$arg_str .= " (t_delivery_goods_state LEFT JOIN";
-	$arg_str .= " (LEFT JOIN t_delivery_goods_state_details";
+	$arg_str .= " t_delivery_goods_state_details";
 	$arg_str .= " ON t_delivery_goods_state.corporate_id = t_delivery_goods_state_details.corporate_id";
     $arg_str .= " AND t_delivery_goods_state.ship_no = t_delivery_goods_state_details.ship_no";
     $arg_str .= " AND t_delivery_goods_state.ship_line_no = t_delivery_goods_state_details.ship_line_no)";
