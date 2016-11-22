@@ -150,30 +150,32 @@ $app->post('/wearer_end/search', function ()use($app){
     }
     $arg_str .= " LEFT JOIN ";
     $arg_str .= "(t_order_tran INNER JOIN m_section as os";
-    $arg_str .= " ON (t_order_tran.corporate_id = os.corporate_id";
+    $arg_str .= " ON t_order_tran.corporate_id = os.corporate_id";
     $arg_str .= " AND t_order_tran.rntl_cont_no = os.rntl_cont_no";
-    $arg_str .= " AND t_order_tran.rntl_sect_cd = os.rntl_sect_cd)";
+    $arg_str .= " AND t_order_tran.rntl_sect_cd = os.rntl_sect_cd";
     $arg_str .= " INNER JOIN m_job_type as ojt";
-    $arg_str .= " ON (t_order_tran.corporate_id = ojt.corporate_id";
+    $arg_str .= " ON t_order_tran.corporate_id = ojt.corporate_id";
     $arg_str .= " AND t_order_tran.rntl_cont_no = ojt.rntl_cont_no";
-    $arg_str .= " AND t_order_tran.job_type_cd = ojt.job_type_cd))";
-    $arg_str .= " ON (m_wearer_std.corporate_id = t_order_tran.corporate_id";
+    $arg_str .= " AND t_order_tran.job_type_cd = ojt.job_type_cd)";
+    $arg_str .= " ON m_wearer_std.corporate_id = t_order_tran.corporate_id";
     $arg_str .= " AND m_wearer_std.rntl_cont_no = t_order_tran.rntl_cont_no";
+    $arg_str .= " AND m_wearer_std.werer_cd = t_order_tran.werer_cd";
     $arg_str .= " AND m_wearer_std.rntl_sect_cd = t_order_tran.rntl_sect_cd";
-    $arg_str .= " AND m_wearer_std.job_type_cd = t_order_tran.job_type_cd)";
+    $arg_str .= " AND m_wearer_std.job_type_cd = t_order_tran.job_type_cd";
     $arg_str .= " LEFT JOIN ";
     $arg_str .= "(t_returned_plan_info_tran INNER JOIN m_section as rs";
-    $arg_str .= " ON (t_returned_plan_info_tran.corporate_id = rs.corporate_id";
+    $arg_str .= " ON t_returned_plan_info_tran.corporate_id = rs.corporate_id";
     $arg_str .= " AND t_returned_plan_info_tran.rntl_cont_no = rs.rntl_cont_no";
-    $arg_str .= " AND t_returned_plan_info_tran.rntl_sect_cd = rs.rntl_sect_cd)";
+    $arg_str .= " AND t_returned_plan_info_tran.rntl_sect_cd = rs.rntl_sect_cd";
     $arg_str .= " INNER JOIN m_job_type as rjt";
-    $arg_str .= " ON (t_returned_plan_info_tran.corporate_id = rjt.corporate_id";
+    $arg_str .= " ON t_returned_plan_info_tran.corporate_id = rjt.corporate_id";
     $arg_str .= " AND t_returned_plan_info_tran.rntl_cont_no = rjt.rntl_cont_no";
-    $arg_str .= " AND t_returned_plan_info_tran.job_type_cd = rjt.job_type_cd))";
-    $arg_str .= " ON (m_wearer_std.corporate_id = t_returned_plan_info_tran.corporate_id";
+    $arg_str .= " AND t_returned_plan_info_tran.job_type_cd = rjt.job_type_cd)";
+    $arg_str .= " ON m_wearer_std.corporate_id = t_returned_plan_info_tran.corporate_id";
     $arg_str .= " AND m_wearer_std.rntl_cont_no = t_returned_plan_info_tran.rntl_cont_no";
+    $arg_str .= " AND m_wearer_std.werer_cd = t_returned_plan_info_tran.werer_cd";
     $arg_str .= " AND m_wearer_std.rntl_sect_cd = t_returned_plan_info_tran.rntl_sect_cd";
-    $arg_str .= " AND m_wearer_std.job_type_cd = t_returned_plan_info_tran.job_type_cd)";
+    $arg_str .= " AND m_wearer_std.job_type_cd = t_returned_plan_info_tran.job_type_cd";
     $arg_str .= " WHERE ";
     $arg_str .= $query;
     $arg_str .= ") as distinct_table";
@@ -265,30 +267,32 @@ $app->post('/wearer_end/search', function ()use($app){
             }
             $arg_str .= " LEFT JOIN ";
             $arg_str .= "(t_order_tran INNER JOIN m_section as os";
-            $arg_str .= " ON (t_order_tran.corporate_id = os.corporate_id";
+            $arg_str .= " ON t_order_tran.corporate_id = os.corporate_id";
             $arg_str .= " AND t_order_tran.rntl_cont_no = os.rntl_cont_no";
-            $arg_str .= " AND t_order_tran.rntl_sect_cd = os.rntl_sect_cd)";
+            $arg_str .= " AND t_order_tran.rntl_sect_cd = os.rntl_sect_cd";
             $arg_str .= " INNER JOIN m_job_type as ojt";
-            $arg_str .= " ON (t_order_tran.corporate_id = ojt.corporate_id";
+            $arg_str .= " ON t_order_tran.corporate_id = ojt.corporate_id";
             $arg_str .= " AND t_order_tran.rntl_cont_no = ojt.rntl_cont_no";
-            $arg_str .= " AND t_order_tran.job_type_cd = ojt.job_type_cd))";
-            $arg_str .= " ON (m_wearer_std_tran.corporate_id = t_order_tran.corporate_id";
+            $arg_str .= " AND t_order_tran.job_type_cd = ojt.job_type_cd)";
+            $arg_str .= " ON m_wearer_std_tran.corporate_id = t_order_tran.corporate_id";
             $arg_str .= " AND m_wearer_std_tran.rntl_cont_no = t_order_tran.rntl_cont_no";
+            $arg_str .= " AND m_wearer_std_tran.werer_cd = t_order_tran.werer_cd";
             $arg_str .= " AND m_wearer_std_tran.rntl_sect_cd = t_order_tran.rntl_sect_cd";
-            $arg_str .= " AND m_wearer_std_tran.job_type_cd = t_order_tran.job_type_cd)";
+            $arg_str .= " AND m_wearer_std_tran.job_type_cd = t_order_tran.job_type_cd";
             $arg_str .= " LEFT JOIN ";
             $arg_str .= "(t_returned_plan_info_tran INNER JOIN m_section as rs";
-            $arg_str .= " ON (t_returned_plan_info_tran.corporate_id = rs.corporate_id";
+            $arg_str .= " ON t_returned_plan_info_tran.corporate_id = rs.corporate_id";
             $arg_str .= " AND t_returned_plan_info_tran.rntl_cont_no = rs.rntl_cont_no";
-            $arg_str .= " AND t_returned_plan_info_tran.rntl_sect_cd = rs.rntl_sect_cd)";
+            $arg_str .= " AND t_returned_plan_info_tran.rntl_sect_cd = rs.rntl_sect_cd";
             $arg_str .= " INNER JOIN m_job_type as rjt";
-            $arg_str .= " ON (t_returned_plan_info_tran.corporate_id = rjt.corporate_id";
+            $arg_str .= " ON t_returned_plan_info_tran.corporate_id = rjt.corporate_id";
             $arg_str .= " AND t_returned_plan_info_tran.rntl_cont_no = rjt.rntl_cont_no";
-            $arg_str .= " AND t_returned_plan_info_tran.job_type_cd = rjt.job_type_cd))";
-            $arg_str .= " ON (m_wearer_std_tran.corporate_id = t_returned_plan_info_tran.corporate_id";
+            $arg_str .= " AND t_returned_plan_info_tran.job_type_cd = rjt.job_type_cd)";
+            $arg_str .= " ON m_wearer_std_tran.corporate_id = t_returned_plan_info_tran.corporate_id";
             $arg_str .= " AND m_wearer_std_tran.rntl_cont_no = t_returned_plan_info_tran.rntl_cont_no";
+            $arg_str .= " AND m_wearer_std_tran.werer_cd = t_returned_plan_info_tran.werer_cd";
             $arg_str .= " AND m_wearer_std_tran.rntl_sect_cd = t_returned_plan_info_tran.rntl_sect_cd";
-            $arg_str .= " AND m_wearer_std_tran.job_type_cd = t_returned_plan_info_tran.job_type_cd)";
+            $arg_str .= " AND m_wearer_std_tran.job_type_cd = t_returned_plan_info_tran.job_type_cd";
             $arg_str .= " WHERE ";
             $arg_str .= $query;
             $arg_str .= " ORDER BY m_wearer_std_tran.upd_date DESC";
@@ -376,22 +380,22 @@ $app->post('/wearer_end/search', function ()use($app){
             foreach ($gencode as $gencode_map) {
                 $list['sex_kbn'] = $gencode_map->gen_name;
             }
-//
-//            // 発注、発注情報トラン有無フラグ
-//            $list['order_kbn'] = "未";
-//            // 発注情報トラン無
-//            $list['order_tran_flg'] = '0';
-//            if (isset($result->as_order_req_no)) {
-//                $list['order_req_no'] = $result->as_order_req_no;
-//                $list['order_kbn'] = "<font color='red'>済</font>";
-//                // 発注情報トラン有
-//                $list['order_tran_flg'] = '1';
-//            }elseif(isset($result->as_wearer_order_req_no)){
-//                $list['order_req_no'] = $result->as_wearer_order_req_no;
-//                $list['order_kbn'] = "未";
-//                // 発注情報トラン無
-//                $list['order_tran_flg'] = '0';
-//            }
+
+            // 発注、発注情報トラン有無フラグ
+            $list['order_kbn'] = "未";
+            // 発注情報トラン無
+            $list['order_tran_flg'] = '0';
+            if (isset($result->as_order_req_no)) {
+                $list['order_req_no'] = $result->as_order_req_no;
+                $list['order_kbn'] = "<font color='red'>済</font>";
+                // 発注情報トラン有
+                $list['order_tran_flg'] = '1';
+            }else{
+                $list['order_req_no'] = '';
+                $list['order_kbn'] = "未";
+                // 発注情報トラン無
+                $list['order_tran_flg'] = '0';
+            }
             // 状態
             $list['snd_kbn'] = "未送信";
             if (!empty($result->as_wearer_snd_kbn)) {
@@ -543,16 +547,6 @@ $app->post('/wearer_end/search', function ()use($app){
                 $list['btnPattern'] = "A";
                 $list['order_req_no'] = '';
                 $list['order_reason_kbn'] = '';
-            }
-            // 発注、発注情報トラン有無フラグ
-            if ($list['btnPattern']!='A') {
-                $list['order_kbn'] = "<font color='red'>済</font>";
-                // 発注情報トラン有
-                $list['order_tran_flg'] = '1';
-            }else{
-                $list['order_kbn'] = "未";
-                // 発注情報トラン無
-                $list['order_tran_flg'] = '0';
             }
             // パターンチェックスタート
 //            $list['btnPattern'] = "";

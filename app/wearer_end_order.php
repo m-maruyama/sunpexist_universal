@@ -885,6 +885,8 @@ $app->post('/wearer_end_order_insert', function () use ($app) {
     array_push($query_list, "MAccount.user_id = '".$auth['user_id']."'");
     //　契約マスタ．企業ID　＝　ログインしているアカウントの企業ID　AND
     array_push($query_list, "MContract.corporate_id = '".$auth['corporate_id']."'");
+    // 契約マスタ．レンタル契約No.　＝　更新しようとしている発注の契約No. AND
+    array_push($query_list, "MContract.rntl_cont_no = '".$wearer_end_post['rntl_cont_no']."'");
     //　契約マスタ．レンタル契約フラグ　＝　契約対象 AND
     array_push($query_list, "MContract.rntl_cont_flg = '1'");
     //  契約リソースマスタ．企業ID　＝　ログインしているアカウントの企業ID　AND
@@ -1752,6 +1754,8 @@ $app->post('/wearer_end_order_delete', function ()use($app){
     array_push($query_list, "MAccount.user_id = '".$auth['user_id']."'");
     //　契約マスタ．企業ID　＝　ログインしているアカウントの企業ID　AND
     array_push($query_list, "MContract.corporate_id = '".$auth['corporate_id']."'");
+    // 契約マスタ．レンタル契約No.　＝　更新しようとしている発注の契約No. AND
+    array_push($query_list, "MContract.rntl_cont_no = '".$wearer_end_post['rntl_cont_no']."'");
     //　契約マスタ．レンタル契約フラグ　＝　契約対象 AND
     array_push($query_list, "MContract.rntl_cont_flg = '1'");
     //  契約リソースマスタ．企業ID　＝　ログインしているアカウントの企業ID　AND
