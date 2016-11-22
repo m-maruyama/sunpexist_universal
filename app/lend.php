@@ -164,10 +164,10 @@ $app->post('/lend/search', function ()use($app){
 
 	//---SQLクエリー実行---//
 	$arg_str = "SELECT ";
-	$arg_str .= " * ";
-	$arg_str .= " FROM ";
+//	$arg_str .= " * ";
+//	$arg_str .= " FROM ";
 //	$arg_str .= "(SELECT ";
-	$arg_str .= "(SELECT distinct on (t_delivery_goods_state_details.individual_ctrl_no) ";
+//	$arg_str .= "(SELECT distinct on (t_delivery_goods_state_details.individual_ctrl_no) ";
 	$arg_str .= "m_wearer_std.cster_emply_cd as as_cster_emply_cd,";
 	$arg_str .= "m_wearer_std.werer_name as as_werer_name,";
 	$arg_str .= "m_wearer_std.rntl_sect_cd as as_now_rntl_sect_cd,";
@@ -186,13 +186,20 @@ $app->post('/lend/search', function ()use($app){
 	$arg_str .= "t_returned_plan_info.order_req_no as as_order_req_no,";
 	$arg_str .= "t_delivery_goods_state.rec_order_no as as_rec_order_no,";
 	$arg_str .= "t_delivery_goods_state.ship_no as as_ship_no";
+
 	$arg_str .= " FROM t_order LEFT JOIN";
-	$arg_str .= " (t_returned_plan_info LEFT JOIN";
 	$arg_str .= " (t_order_state LEFT JOIN";
-	$arg_str .= " (t_delivery_goods_state LEFT JOIN t_delivery_goods_state_details ON t_delivery_goods_state.ship_no = t_delivery_goods_state_details.ship_no)";
+	$arg_str .= " (t_delivery_goods_state LEFT JOIN";
+	$arg_str .= " t_delivery_goods_state_details";
+	$arg_str .= " ON t_delivery_goods_state.corporate_id = t_delivery_goods_state_details.corporate_id";
+    $arg_str .= " AND t_delivery_goods_state.ship_no = t_delivery_goods_state_details.ship_no";
+    $arg_str .= " AND t_delivery_goods_state.ship_line_no = t_delivery_goods_state_details.ship_line_no)";
 	$arg_str .= " ON t_order_state.t_order_state_comb_hkey = t_delivery_goods_state.t_order_state_comb_hkey)";
-	$arg_str .= " ON t_returned_plan_info.order_req_no = t_order_state.order_req_no)";
-	$arg_str .= " ON t_order.order_req_no = t_returned_plan_info.order_req_no";
+	$arg_str .= " ON t_order.t_order_comb_hkey = t_order_state.t_order_comb_hkey";
+    $arg_str .= " LEFT JOIN t_returned_plan_info";
+    $arg_str .= " ON t_order.corporate_id = t_returned_plan_info.corporate_id";
+    $arg_str .= " AND t_order.order_req_no = t_returned_plan_info.order_req_no";
+    $arg_str .= " AND t_order.order_req_line_no = t_returned_plan_info.order_req_line_no";
     if($rntl_sect_cd_zero_flg == 1){
         $arg_str .= " INNER JOIN m_section";
         $arg_str .= " ON t_order.m_section_comb_hkey = m_section.m_section_comb_hkey";
@@ -209,12 +216,12 @@ $app->post('/lend/search', function ()use($app){
 	$arg_str .= " ON t_order.m_wearer_item_comb_hkey = m_wearer_item.m_wearer_item_comb_hkey";
 	$arg_str .= " WHERE ";
 	$arg_str .= $query;
-	$arg_str .= ") as distinct_table";
+//	$arg_str .= ") as distinct_table";
 	if (!empty($q_sort_key)) {
 		$arg_str .= " ORDER BY ";
 		$arg_str .= $q_sort_key." ".$order;
 	}
-    ChromePhp::log($arg_str);
+//	ChromePhp::log($arg_str);
 	$t_order = new TOrder();
 	$results = new Resultset(null, $t_order, $t_order->getReadConnection()->query($arg_str));
 	$result_obj = (array)$results;
