@@ -19,50 +19,50 @@ $app->post('/history/search', function ()use($app){
 	$page = $params['page'];
 	$query_list = array();
 
-    //---契約リソースマスター 0000000000フラグ確認処理---//
-    //ログインid
-    $login_id_session = $auth['corporate_id'];
-    //アカウントno
-    $accnt_no = $auth['accnt_no'];
-    //画面で選択された契約no
-    $agreement_no = $cond['agreement_no'];
+	//---契約リソースマスター 0000000000フラグ確認処理---//
+	//ログインid
+	$login_id_session = $auth['corporate_id'];
+	//アカウントno
+	$accnt_no = $auth['accnt_no'];
+	//画面で選択された契約no
+	$agreement_no = $cond['agreement_no'];
 
-    //前処理 契約リソースマスタ参照 拠点ゼロ埋め確認
-    $arg_str = "";
-    $arg_str .= "SELECT ";
-    $arg_str .= " * ";
-    $arg_str .= " FROM ";
-    $arg_str .= "m_contract_resource";
-    $arg_str .= " WHERE ";
-    $arg_str .= "corporate_id = '$login_id_session'";
-    $arg_str .= " AND rntl_cont_no = '$agreement_no'";
-    $arg_str .= " AND accnt_no = '$accnt_no'";
+	//前処理 契約リソースマスタ参照 拠点ゼロ埋め確認
+	$arg_str = "";
+	$arg_str .= "SELECT ";
+	$arg_str .= " * ";
+	$arg_str .= " FROM ";
+	$arg_str .= "m_contract_resource";
+	$arg_str .= " WHERE ";
+	$arg_str .= "corporate_id = '$login_id_session'";
+	$arg_str .= " AND rntl_cont_no = '$agreement_no'";
+	$arg_str .= " AND accnt_no = '$accnt_no'";
 
-    $m_contract_resource = new MContractResource();
-    $results = new Resultset(null, $m_contract_resource, $m_contract_resource->getReadConnection()->query($arg_str));
-    $result_obj = (array)$results;
-    $results_cnt = $result_obj["\0*\0_count"];
+	$m_contract_resource = new MContractResource();
+	$results = new Resultset(null, $m_contract_resource, $m_contract_resource->getReadConnection()->query($arg_str));
+	$result_obj = (array)$results;
+	$results_cnt = $result_obj["\0*\0_count"];
 
-    if ($results_cnt > 0) {
-        $paginator_model = new PaginatorModel(
-            array(
-                "data"  => $results,
-                "limit" => $results_cnt,
-                "page" => 1
-            )
-        );
-        $paginator = $paginator_model->getPaginate();
-        $results = $paginator->items;
-        foreach ($results as $result) {
-            $all_list[] = $result->rntl_sect_cd;
-        }
-    }
+	if ($results_cnt > 0) {
+			$paginator_model = new PaginatorModel(
+					array(
+							"data"  => $results,
+							"limit" => $results_cnt,
+							"page" => 1
+					)
+			);
+			$paginator = $paginator_model->getPaginate();
+			$results = $paginator->items;
+			foreach ($results as $result) {
+					$all_list[] = $result->rntl_sect_cd;
+			}
+	}
 
-    if (in_array("0000000000", $all_list)) {
-        $rntl_sect_cd_zero_flg = 1;
-    }else{
-        $rntl_sect_cd_zero_flg = 0;
-    }
+	if (in_array("0000000000", $all_list)) {
+			$rntl_sect_cd_zero_flg = 1;
+	}else{
+			$rntl_sect_cd_zero_flg = 0;
+	}
 
 	//---検索条件---//
 	//企業ID
@@ -329,6 +329,7 @@ $app->post('/history/search', function ()use($app){
 	$arg_str .= "t_order.order_req_no as as_order_req_no,";
 	$arg_str .= "t_order.order_req_ymd as as_order_req_ymd,";
 	$arg_str .= "t_order.order_sts_kbn as as_order_sts_kbn,";
+	$arg_str .= "t_order.werer_cd as as_werer_cd,";
 	$arg_str .= "t_order.order_reason_kbn as as_order_reason_kbn,";
 	$arg_str .= "m_section.rntl_sect_name as as_rntl_sect_name,";
 	$arg_str .= "m_job_type.job_type_name as as_job_type_name,";
@@ -349,20 +350,20 @@ $app->post('/history/search', function ()use($app){
 	$arg_str .= "t_delivery_goods_state_details.receipt_date as as_receipt_date,";
 	$arg_str .= "t_order.rntl_cont_no as as_rntl_cont_no,";
 	$arg_str .= "m_contract.rntl_cont_name as as_rntl_cont_name";
-    $arg_str .= " FROM t_order LEFT JOIN";
+	$arg_str .= " FROM t_order LEFT JOIN";
 	$arg_str .= " (t_order_state LEFT JOIN (t_delivery_goods_state LEFT JOIN t_delivery_goods_state_details ON t_delivery_goods_state.ship_no = t_delivery_goods_state_details.ship_no)";
 	$arg_str .= " ON t_order_state.t_order_state_comb_hkey = t_delivery_goods_state.t_order_state_comb_hkey)";
 	$arg_str .= " ON t_order.t_order_comb_hkey = t_order_state.t_order_comb_hkey";
-    if($rntl_sect_cd_zero_flg == 1){
-        $arg_str .= " INNER JOIN m_section";
-        $arg_str .= " ON t_order.m_section_comb_hkey = m_section.m_section_comb_hkey";
-    }elseif($rntl_sect_cd_zero_flg == 0){
-        $arg_str .= " INNER JOIN (m_section INNER JOIN m_contract_resource";
-        $arg_str .= " ON m_section.corporate_id = m_contract_resource.corporate_id";
-        $arg_str .= " AND m_section.rntl_cont_no = m_contract_resource.rntl_cont_no";
-        $arg_str .= " AND m_section.rntl_sect_cd = m_contract_resource.rntl_sect_cd";
-        $arg_str .= " ) ON t_order.m_section_comb_hkey = m_section.m_section_comb_hkey";
-    }
+	if($rntl_sect_cd_zero_flg == 1){
+		$arg_str .= " INNER JOIN m_section";
+		$arg_str .= " ON t_order.m_section_comb_hkey = m_section.m_section_comb_hkey";
+	}elseif($rntl_sect_cd_zero_flg == 0){
+		$arg_str .= " INNER JOIN (m_section INNER JOIN m_contract_resource";
+		$arg_str .= " ON m_section.corporate_id = m_contract_resource.corporate_id";
+		$arg_str .= " AND m_section.rntl_cont_no = m_contract_resource.rntl_cont_no";
+		$arg_str .= " AND m_section.rntl_sect_cd = m_contract_resource.rntl_sect_cd";
+		$arg_str .= " ) ON t_order.m_section_comb_hkey = m_section.m_section_comb_hkey";
+	}
 	$arg_str .= " INNER JOIN (m_job_type INNER JOIN m_input_item ON m_job_type.m_job_type_comb_hkey = m_input_item.m_job_type_comb_hkey)";
 	$arg_str .= " ON t_order.m_job_type_comb_hkey = m_job_type.m_job_type_comb_hkey";
 	$arg_str .= " INNER JOIN m_wearer_std";
@@ -427,6 +428,12 @@ $app->post('/history/search', function ()use($app){
 				$list['cster_emply_cd'] = $result->as_cster_emply_cd;
 			} else {
 				$list['cster_emply_cd'] = "-";
+			}
+			// 着用者コード
+			if (!empty($result->as_werer_name)) {
+				$list['werer_name'] = $result->as_werer_name;
+			} else {
+				$list['werer_name'] = "-";
 			}
 			// 着用者名
 			if (!empty($result->as_werer_name)) {
@@ -540,20 +547,47 @@ $app->post('/history/search', function ()use($app){
 			}
 
 			//---個体管理番号・受領日時の取得---//
+			$list['individual_num'] = "-";
+			$list['order_res_ymd'] = "-";
 			$query_list = array();
 			array_push($query_list, "corporate_id = '".$auth['corporate_id']."'");
 			array_push($query_list, "ship_no = '".$list['ship_no']."'");
+			array_push($query_list, "item_cd = '".$list['item_cd']."'");
+			array_push($query_list, "color_cd = '".$list['color_cd']."'");
+			array_push($query_list, "size_cd = '".$list['size_cd']."'");
 			$query = implode(' AND ', $query_list);
-			$del_gd_std = TDeliveryGoodsStateDetails::query()
-				->where($query)
-				->columns('*')
-				->execute();
-			if ($del_gd_std) {
+			$arg_str = "";
+			$arg_str .= "SELECT ";
+			$arg_str .= "individual_ctrl_no,";
+			$arg_str .= "receipt_date";
+			$arg_str .= " FROM ";
+			$arg_str .= "t_delivery_goods_state_details";
+			$arg_str .= " WHERE ";
+			$arg_str .= $query;
+			$t_delivery_goods_state_details = new TDeliveryGoodsStateDetails();
+			$del_gd_results = new Resultset(null, $t_delivery_goods_state_details, $t_delivery_goods_state_details->getReadConnection()->query($arg_str));
+			$result_obj = (array)$del_gd_results;
+			$results_cnt = $result_obj["\0*\0_count"];
+			if ($results_cnt > 0) {
+				$paginator_model = new PaginatorModel(
+						array(
+								"data"  => $del_gd_results,
+								"limit" => $results_cnt,
+								"page" => 1
+						)
+				);
+				$paginator = $paginator_model->getPaginate();
+				$del_gd_results = $paginator->items;
+
 				$num_list = array();
 				$day_list = array();
-				foreach ($del_gd_std as $del_gd_std_map) {
-					array_push($num_list, $del_gd_std_map->individual_ctrl_no);
-					array_push($day_list, date('Y/m/d',strtotime($del_gd_std_map->receipt_date)));
+				foreach ($del_gd_results as $del_gd_result) {
+					array_push($num_list, $del_gd_result->individual_ctrl_no);
+					if (!empty($del_gd_result->receipt_date)) {
+						array_push($day_list, date('Y/m/d',strtotime($del_gd_result->receipt_date)));
+					} else {
+						array_push($day_list, "-");
+					}
 				}
 				// 個体管理番号
 				$individual_ctrl_no = implode("<br>", $num_list);
@@ -561,9 +595,6 @@ $app->post('/history/search', function ()use($app){
 				// 受領日
 				$receipt_date = implode("<br>", $day_list);
 				$list['order_res_ymd'] = $receipt_date;
-			} else {
-				$list['individual_num'] = "-";
-				$list['order_res_ymd'] = "-";
 			}
 
 			array_push($all_list,$list);
