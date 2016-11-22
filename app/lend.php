@@ -196,6 +196,10 @@ $app->post('/lend/search', function ()use($app){
     $arg_str .= " AND t_delivery_goods_state.ship_line_no = t_delivery_goods_state_details.ship_line_no)";
 	$arg_str .= " ON t_order_state.t_order_state_comb_hkey = t_delivery_goods_state.t_order_state_comb_hkey)";
 	$arg_str .= " ON t_order.t_order_comb_hkey = t_order_state.t_order_comb_hkey";
+    $arg_str .= " LEFT JOIN t_returned_plan_info";
+    $arg_str .= " ON t_order.corporate_id = t_returned_plan_info.corporate_id";
+    $arg_str .= " AND t_order.order_req_no = t_returned_plan_info.order_req_no";
+    $arg_str .= " AND t_order.order_req_line_no = t_returned_plan_info.order_req_line_no";
     if($rntl_sect_cd_zero_flg == 1){
         $arg_str .= " INNER JOIN m_section";
         $arg_str .= " ON t_order.m_section_comb_hkey = m_section.m_section_comb_hkey";
