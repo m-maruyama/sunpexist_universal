@@ -58,9 +58,13 @@ define([
 							that.triggerMethod('showAlerts', errorMessages);
 						}
 						var res_list = res.attributes;
+						//console.log(res_list);
+
 						that.templateHelpers(res_list);
 						that.triggerMethod('fetched');
-//						that.render();
+						if (res_list["individual_flg"] == true) {
+							$('.individual_flg').css('display', '');
+						}
 						$.unblockUI();
 					}
 				});

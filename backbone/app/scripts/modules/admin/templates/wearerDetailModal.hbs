@@ -89,7 +89,6 @@
 						<div class="form-group">
 							<label class="col-md-3 control-label" for="">貸与情報</label>
 							<div class="col-md-9">
-								<!-- start scrollTable -->
 								<div id="scrollTable2" style="border-bottom: none">
 									<table class="table table-modal table-bordered">
 										<thead class="grad_head">
@@ -97,27 +96,23 @@
 												<th>No.</th>
 												<th>商品-色(サイズ-サイズ2)</th>
 												<th>商品名</th>
-												<th>バーコード</th>
+												<th class="individual_flg" style="display:none;">バーコード</th>
 											</tr>
 										</thead>
-										<tbody>
-											{{#each taiyo_list}}
-											<tr>
-												<td>{{list_no}}</td>
-												<td>{{shin_item_code}}</td>
-												<td>{{item_name}}</td>
-												<td>{{individual_ctrl_no}}</td>
-											</tr>
-											{{/each}}
-										</tbody>
+										{{#each taiyo_list}}
+										<tr>
+											<td>{{list_no}}</td>
+											<td>{{shin_item_code}}</td>
+											<td>{{item_name}}</td>
+											<td class="individual_flg" style="display:none;">{{individual_ctrl_no}}</td>
+										</tr>
+										{{/each}}
 									</table>
 								</div>
-								<!-- end scrollTable -->
 							</div>
 						</div>
 					</div>
 				</form>
-				<!-- end フォーム -->
 			</div>
 		</div>
 	</div>
