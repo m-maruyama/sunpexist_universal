@@ -2158,6 +2158,11 @@ $app->post('/csv_download', function ()use($app){
 		// 着用者状況区分(稼働)
 		array_push($query_list,"m_wearer_std.werer_sts_kbn = '1'");
 
+        //ゼロ埋めがない場合、ログインアカウントの条件追加
+        if($rntl_sect_cd_zero_flg == 0){
+            array_push($query_list,"m_contract_resource.accnt_no = '$accnt_no'");
+        }
+
 		//sql文字列を' AND 'で結合
 		$query = implode(' AND ', $query_list);
 		$sort_key ='';
@@ -2209,49 +2214,66 @@ $app->post('/csv_download', function ()use($app){
 			$order = 'asc';
 		}
 
-		//---SQLクエリー実行---//
-		$arg_str = "SELECT ";
-		$arg_str .= " * ";
-		$arg_str .= " FROM ";
-	//	$arg_str .= "(SELECT ";
-		$arg_str .= "(SELECT distinct on (t_delivery_goods_state_details.individual_ctrl_no) ";
-		$arg_str .= "m_wearer_std.cster_emply_cd as as_cster_emply_cd,";
-		$arg_str .= "m_wearer_std.werer_name as as_werer_name,";
-		$arg_str .= "m_wearer_std.rntl_sect_cd as as_now_rntl_sect_cd,";
-		$arg_str .= "m_wearer_std.job_type_cd as as_now_job_type_cd,";
-		$arg_str .= "t_order.rntl_sect_cd as as_old_rntl_sect_cd,";
-		$arg_str .= "t_order.job_type_cd as as_old_job_type_cd,";
-		$arg_str .= "m_wearer_item.item_cd as as_item_cd,";
-		$arg_str .= "m_wearer_item.color_cd as as_color_cd,";
-		$arg_str .= "m_wearer_item.size_cd as as_size_cd,";
-		$arg_str .= "m_wearer_item.size_two_cd as as_size_two_cd,";
-		$arg_str .= "m_wearer_item.job_type_item_cd as as_job_type_item_cd,";
-		$arg_str .= "t_delivery_goods_state_details.individual_ctrl_no as as_individual_ctrl_no,";
-		$arg_str .= "t_delivery_goods_state.ship_qty as as_ship_qty,";
-		$arg_str .= "t_delivery_goods_state.ship_ymd as as_ship_ymd,";
-		$arg_str .= "t_returned_plan_info.order_date as as_re_order_date,";
-		$arg_str .= "t_returned_plan_info.order_req_no as as_order_req_no,";
-		$arg_str .= "t_delivery_goods_state.rec_order_no as as_rec_order_no,";
-		$arg_str .= "t_delivery_goods_state.ship_no as as_ship_no";
-		$arg_str .= " FROM t_order LEFT JOIN";
-		$arg_str .= " (t_returned_plan_info LEFT JOIN";
-		$arg_str .= " (t_order_state LEFT JOIN";
-		$arg_str .= " (t_delivery_goods_state LEFT JOIN t_delivery_goods_state_details ON t_delivery_goods_state.ship_no = t_delivery_goods_state_details.ship_no)";
-		$arg_str .= " ON t_order_state.t_order_state_comb_hkey = t_delivery_goods_state.t_order_state_comb_hkey)";
-		$arg_str .= " ON t_returned_plan_info.order_req_no = t_order_state.order_req_no)";
-		$arg_str .= " ON t_order.order_req_no = t_returned_plan_info.order_req_no";
-		$arg_str .= " INNER JOIN m_wearer_std";
-		$arg_str .= " ON t_order.m_wearer_std_comb_hkey = m_wearer_std.m_wearer_std_comb_hkey";
-		$arg_str .= " INNER JOIN m_wearer_item";
-		$arg_str .= " ON t_order.m_wearer_item_comb_hkey = m_wearer_item.m_wearer_item_comb_hkey";
-		$arg_str .= " WHERE ";
-		$arg_str .= $query;
-		$arg_str .= ") as distinct_table";
-		if (!empty($q_sort_key)) {
-			$arg_str .= " ORDER BY ";
-			$arg_str .= $q_sort_key." ".$order;
-		}
+        //---SQLクエリー実行---//
+        $arg_str = "SELECT ";
+//	$arg_str .= " * ";
+//	$arg_str .= " FROM ";
+//	$arg_str .= "(SELECT ";
+//	$arg_str .= "(SELECT distinct on (t_delivery_goods_state_details.individual_ctrl_no) ";
+        $arg_str .= "m_wearer_std.cster_emply_cd as as_cster_emply_cd,";
+        $arg_str .= "m_wearer_std.werer_name as as_werer_name,";
+        $arg_str .= "m_wearer_std.rntl_sect_cd as as_now_rntl_sect_cd,";
+        $arg_str .= "m_wearer_std.job_type_cd as as_now_job_type_cd,";
+        $arg_str .= "t_order.rntl_sect_cd as as_old_rntl_sect_cd,";
+        $arg_str .= "t_order.job_type_cd as as_old_job_type_cd,";
+        $arg_str .= "m_wearer_item.item_cd as as_item_cd,";
+        $arg_str .= "m_wearer_item.color_cd as as_color_cd,";
+        $arg_str .= "m_wearer_item.size_cd as as_size_cd,";
+        $arg_str .= "m_wearer_item.size_two_cd as as_size_two_cd,";
+        $arg_str .= "m_wearer_item.job_type_item_cd as as_job_type_item_cd,";
+        $arg_str .= "t_delivery_goods_state_details.individual_ctrl_no as as_individual_ctrl_no,";
+        $arg_str .= "t_delivery_goods_state.ship_qty as as_ship_qty,";
+        $arg_str .= "t_delivery_goods_state.ship_ymd as as_ship_ymd,";
+        $arg_str .= "t_returned_plan_info.order_date as as_re_order_date,";
+        $arg_str .= "t_returned_plan_info.order_req_no as as_order_req_no,";
+        $arg_str .= "t_delivery_goods_state.rec_order_no as as_rec_order_no,";
+        $arg_str .= "t_delivery_goods_state.ship_no as as_ship_no";
 
+        $arg_str .= " FROM t_order LEFT JOIN";
+        $arg_str .= " (t_order_state LEFT JOIN";
+        $arg_str .= " (t_delivery_goods_state LEFT JOIN";
+        $arg_str .= " t_delivery_goods_state_details";
+        $arg_str .= " ON t_delivery_goods_state.corporate_id = t_delivery_goods_state_details.corporate_id";
+        $arg_str .= " AND t_delivery_goods_state.ship_no = t_delivery_goods_state_details.ship_no";
+        $arg_str .= " AND t_delivery_goods_state.ship_line_no = t_delivery_goods_state_details.ship_line_no)";
+        $arg_str .= " ON t_order_state.t_order_state_comb_hkey = t_delivery_goods_state.t_order_state_comb_hkey)";
+        $arg_str .= " ON t_order.t_order_comb_hkey = t_order_state.t_order_comb_hkey";
+        $arg_str .= " LEFT JOIN t_returned_plan_info";
+        $arg_str .= " ON t_order.corporate_id = t_returned_plan_info.corporate_id";
+        $arg_str .= " AND t_order.order_req_no = t_returned_plan_info.order_req_no";
+        $arg_str .= " AND t_order.order_req_line_no = t_returned_plan_info.order_req_line_no";
+        if($rntl_sect_cd_zero_flg == 1){
+            $arg_str .= " INNER JOIN m_section";
+            $arg_str .= " ON t_order.m_section_comb_hkey = m_section.m_section_comb_hkey";
+        }elseif($rntl_sect_cd_zero_flg == 0){
+            $arg_str .= " INNER JOIN (m_section INNER JOIN m_contract_resource";
+            $arg_str .= " ON m_section.corporate_id = m_contract_resource.corporate_id";
+            $arg_str .= " AND m_section.rntl_cont_no = m_contract_resource.rntl_cont_no";
+            $arg_str .= " AND m_section.rntl_sect_cd = m_contract_resource.rntl_sect_cd";
+            $arg_str .= " ) ON t_order.m_section_comb_hkey = m_section.m_section_comb_hkey";
+        }
+        $arg_str .= " INNER JOIN m_wearer_std";
+        $arg_str .= " ON t_order.m_wearer_std_comb_hkey = m_wearer_std.m_wearer_std_comb_hkey";
+        $arg_str .= " INNER JOIN m_wearer_item";
+        $arg_str .= " ON t_order.m_wearer_item_comb_hkey = m_wearer_item.m_wearer_item_comb_hkey";
+        $arg_str .= " WHERE ";
+        $arg_str .= $query;
+//	$arg_str .= ") as distinct_table";
+        if (!empty($q_sort_key)) {
+            $arg_str .= " ORDER BY ";
+            $arg_str .= $q_sort_key." ".$order;
+        }
+        ChromePhp::log($arg_str);
 		$t_order = new TOrder();
 		$results = new Resultset(null, $t_order, $t_order->getReadConnection()->query($arg_str));
 		// 取得オブジェクトを配列化→クラス内propety：protected値を取得する→リストカウント
