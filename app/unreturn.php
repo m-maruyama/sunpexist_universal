@@ -19,50 +19,50 @@ $app->post('/unreturn/search', function ()use($app){
 	$page = $params['page'];
 	$query_list = array();
 
-    //---契約リソースマスター 0000000000フラグ確認処理---//
-    //ログインid
-    $login_id_session = $auth['corporate_id'];
-    //アカウントno
-    $accnt_no = $auth['accnt_no'];
-    //画面で選択された契約no
-    $agreement_no = $cond['agreement_no'];
+	//---契約リソースマスター 0000000000フラグ確認処理---//
+	//ログインid
+	$login_id_session = $auth['corporate_id'];
+	//アカウントno
+	$accnt_no = $auth['accnt_no'];
+	//画面で選択された契約no
+	$agreement_no = $cond['agreement_no'];
 
-    //前処理 契約リソースマスタ参照 拠点ゼロ埋め確認
-    $arg_str = "";
-    $arg_str .= "SELECT ";
-    $arg_str .= " * ";
-    $arg_str .= " FROM ";
-    $arg_str .= "m_contract_resource";
-    $arg_str .= " WHERE ";
-    $arg_str .= "corporate_id = '$login_id_session'";
-    $arg_str .= " AND rntl_cont_no = '$agreement_no'";
-    $arg_str .= " AND accnt_no = '$accnt_no'";
+	//前処理 契約リソースマスタ参照 拠点ゼロ埋め確認
+	$arg_str = "";
+	$arg_str .= "SELECT ";
+	$arg_str .= " * ";
+	$arg_str .= " FROM ";
+	$arg_str .= "m_contract_resource";
+	$arg_str .= " WHERE ";
+	$arg_str .= "corporate_id = '$login_id_session'";
+	$arg_str .= " AND rntl_cont_no = '$agreement_no'";
+	$arg_str .= " AND accnt_no = '$accnt_no'";
 
-    $m_contract_resource = new MContractResource();
-    $results = new Resultset(null, $m_contract_resource, $m_contract_resource->getReadConnection()->query($arg_str));
-    $result_obj = (array)$results;
-    $results_cnt = $result_obj["\0*\0_count"];
+	$m_contract_resource = new MContractResource();
+	$results = new Resultset(null, $m_contract_resource, $m_contract_resource->getReadConnection()->query($arg_str));
+	$result_obj = (array)$results;
+	$results_cnt = $result_obj["\0*\0_count"];
 
-    if ($results_cnt > 0) {
-        $paginator_model = new PaginatorModel(
-            array(
-                "data"  => $results,
-                "limit" => $results_cnt,
-                "page" => 1
-            )
-        );
-        $paginator = $paginator_model->getPaginate();
-        $results = $paginator->items;
-        foreach ($results as $result) {
-            $all_list[] = $result->rntl_sect_cd;
-        }
-    }
+	if ($results_cnt > 0) {
+			$paginator_model = new PaginatorModel(
+					array(
+							"data"  => $results,
+							"limit" => $results_cnt,
+							"page" => 1
+					)
+			);
+			$paginator = $paginator_model->getPaginate();
+			$results = $paginator->items;
+			foreach ($results as $result) {
+					$all_list[] = $result->rntl_sect_cd;
+			}
+	}
 
-    if (in_array("0000000000", $all_list)) {
-        $rntl_sect_cd_zero_flg = 1;
-    }else{
-        $rntl_sect_cd_zero_flg = 0;
-    }
+	if (in_array("0000000000", $all_list)) {
+			$rntl_sect_cd_zero_flg = 1;
+	}else{
+			$rntl_sect_cd_zero_flg = 0;
+	}
 
 	//---検索条件---//
 	//企業ID
@@ -231,14 +231,10 @@ $app->post('/unreturn/search', function ()use($app){
 //		array_push($query_list,"order_reason_kbn IN ('".$reason_kbn_str."')");
 		array_push($status_kbn_list,$reason_kbn_query);
 	}
-
-	//各区分を' OR 'で結合
 	if (!empty($status_kbn_list)) {
 		$status_kbn_map = implode(' OR ', $status_kbn_list);
 		array_push($query_list,"(".$status_kbn_map.")");
 	}
-
-	//sql文字列を' AND 'で結合
 	$query = implode(' AND ', $query_list);
 	$sort_key ='';
 	$order ='';
@@ -298,7 +294,6 @@ $app->post('/unreturn/search', function ()use($app){
 		$order = 'asc';
 	}
 
-	//---SQLクエリー実行---//
 	$arg_str = "SELECT ";
 	$arg_str .= " * ";
 	$arg_str .= " FROM ";
@@ -315,8 +310,8 @@ $app->post('/unreturn/search', function ()use($app){
 	$arg_str .= "t_returned_plan_info.item_cd as as_item_cd,";
 	$arg_str .= "t_returned_plan_info.color_cd as as_color_cd,";
 	$arg_str .= "t_returned_plan_info.size_cd as as_size_cd,";
+	$arg_str .= "t_order.job_type_cd as as_job_type_cd,";
 	$arg_str .= "t_order.size_two_cd as as_size_two_cd,";
-	$arg_str .= "m_input_item.input_item_name as as_input_item_name,";
 	$arg_str .= "t_order.order_qty as as_order_qty,";
 	$arg_str .= "t_returned_plan_info.order_date as as_re_order_date,";
 	$arg_str .= "t_returned_plan_info.return_status as as_return_status,";
@@ -337,17 +332,17 @@ $app->post('/unreturn/search', function ()use($app){
 	$arg_str .= " ON t_order_state.t_order_state_comb_hkey = t_delivery_goods_state.t_order_state_comb_hkey)";
 	$arg_str .= " ON t_returned_plan_info.order_req_no = t_order_state.order_req_no)";
 	$arg_str .= " ON t_order.order_req_no = t_returned_plan_info.order_req_no";
-    if($rntl_sect_cd_zero_flg == 1){
-        $arg_str .= " INNER JOIN m_section";
-        $arg_str .= " ON t_order.m_section_comb_hkey = m_section.m_section_comb_hkey";
-    }elseif($rntl_sect_cd_zero_flg == 0){
-        $arg_str .= " INNER JOIN (m_section INNER JOIN m_contract_resource";
-        $arg_str .= " ON m_section.corporate_id = m_contract_resource.corporate_id";
-        $arg_str .= " AND m_section.rntl_cont_no = m_contract_resource.rntl_cont_no";
-        $arg_str .= " AND m_section.rntl_sect_cd = m_contract_resource.rntl_sect_cd";
-        $arg_str .= " ) ON t_order.m_section_comb_hkey = m_section.m_section_comb_hkey";
-    }
-	$arg_str .= " INNER JOIN (m_job_type INNER JOIN m_input_item ON m_job_type.m_job_type_comb_hkey = m_input_item.m_job_type_comb_hkey)";
+	if($rntl_sect_cd_zero_flg == 1){
+		$arg_str .= " INNER JOIN m_section";
+		$arg_str .= " ON t_order.m_section_comb_hkey = m_section.m_section_comb_hkey";
+	}elseif($rntl_sect_cd_zero_flg == 0){
+		$arg_str .= " INNER JOIN (m_section INNER JOIN m_contract_resource";
+		$arg_str .= " ON m_section.corporate_id = m_contract_resource.corporate_id";
+		$arg_str .= " AND m_section.rntl_cont_no = m_contract_resource.rntl_cont_no";
+		$arg_str .= " AND m_section.rntl_sect_cd = m_contract_resource.rntl_sect_cd";
+		$arg_str .= " ) ON t_order.m_section_comb_hkey = m_section.m_section_comb_hkey";
+	}
+	$arg_str .= " INNER JOIN m_job_type";
 	$arg_str .= " ON t_order.m_job_type_comb_hkey = m_job_type.m_job_type_comb_hkey";
 	$arg_str .= " INNER JOIN m_wearer_std";
 	$arg_str .= " ON t_order.werer_cd = m_wearer_std.werer_cd";
@@ -395,6 +390,12 @@ $app->post('/unreturn/search', function ()use($app){
 			$list['order_sts_kbn'] = $result->as_order_sts_kbn;
 			// 理由区分
 			$list['order_reason_kbn'] = $result->as_order_reason_kbn;
+			// 契約No
+			if (!empty($result->as_rntl_cont_no)) {
+				$list['rntl_cont_no'] = $result->as_rntl_cont_no;
+			} else {
+				$list['rntl_cont_no'] = "-";
+			}
 			// 拠点
 			if (!empty($result->as_rntl_sect_name)) {
 				$list['rntl_sect_name'] = $result->as_rntl_sect_name;
@@ -402,6 +403,7 @@ $app->post('/unreturn/search', function ()use($app){
 				$list['rntl_sect_name'] = "-";
 			}
 			// 貸与パターン
+			$list['job_type_cd'] = $result->as_job_type_cd;
 			if (!empty($result->as_job_type_name)) {
 				$list['job_type_name'] = $result->as_job_type_name;
 			} else {
@@ -428,10 +430,45 @@ $app->post('/unreturn/search', function ()use($app){
 			// サイズ2コード
 			$list['size_two_cd'] = $result->as_size_two_cd;
 			// 投入商品名
-			if (!empty($result->as_input_item_name)) {
-				$list['input_item_name'] = $result->as_input_item_name;
+			$list['input_item_name'] = "-";
+			$query_list = array();
+		  $query_list[] = "corporate_id = '".$auth['corporate_id']."'";
+		  $query_list[] = "rntl_cont_no = '".$list['rntl_cont_no']."'";
+		  $query_list[] = "job_type_cd = '".$list['job_type_cd']."'";
+		  $query_list[] = "item_cd = '".$list['item_cd']."'";
+		  $query_list[] = "color_cd = '".$list['color_cd']."'";
+		  $query = implode(' AND ', $query_list);
+			$arg_str = "";
+		  $arg_str = "SELECT ";
+		  $arg_str .= "input_item_name";
+		  $arg_str .= " FROM ";
+		  $arg_str .= "m_input_item";
+		  $arg_str .= " WHERE ";
+		  $arg_str .= $query;
+		  //ChromePhp::LOG($arg_str);
+		  $m_input_item = new MInputItem();
+		  $m_input_item_results = new Resultset(NULL, $m_input_item, $m_input_item->getReadConnection()->query($arg_str));
+		  $result_obj = (array)$m_input_item_results;
+		  $m_input_item_results_cnt = $result_obj["\0*\0_count"];
+			if ($m_input_item_results_cnt > 0) {
+				$paginator_model = new PaginatorModel(
+		        array(
+		            "data"  => $m_input_item_results,
+		            "limit" => 1,
+		            "page" => 1
+		        )
+		    );
+		    $paginator = $paginator_model->getPaginate();
+		    $m_input_item_results = $paginator->items;
+				foreach ($m_input_item_results as $m_input_item_result) {
+					$list['input_item_name'] = $m_input_item_result->input_item_name;
+				}
+			}
+			// 商品-色(サイズ-サイズ2)表示変換
+			if (!empty($list['item_cd']) && !empty($list['color_cd'])) {
+				$list['shin_item_code'] = $list['item_cd']."-".$list['color_cd']."(".$list['size_cd']."-".$list['size_two_cd'].")";
 			} else {
-				$list['input_item_name'] = "-";
+				$list['shin_item_code'] = "-";
 			}
 			// 発注数
 			$list['order_qty'] = $result->as_order_qty;
@@ -458,12 +495,6 @@ $app->post('/unreturn/search', function ()use($app){
 			// 出荷数
 			$list['ship_qty'] = $result->as_ship_qty;
 			// 契約No
-			if (!empty($result->as_rntl_cont_no)) {
-				$list['rntl_cont_no'] = $result->as_rntl_cont_no;
-			} else {
-				$list['rntl_cont_no'] = "-";
-			}
-			// 契約No
 			if (!empty($result->as_rntl_cont_name)) {
 				$list['rntl_cont_name'] = $result->as_rntl_cont_name;
 			} else {
@@ -489,10 +520,6 @@ $app->post('/unreturn/search', function ()use($app){
 			}else{
 				$list['ship_ymd'] = '-';
 			}
-
-			// 商品-色(サイズ-サイズ2)表示変換
-			$list['shin_item_code'] = $list['item_cd']."-".$list['color_cd']."(".$list['size_cd']."-".$list['size_two_cd'].")";
-
 			//---発注区分名称---//
 			$query_list = array();
 			// 汎用コードマスタ.分類コード

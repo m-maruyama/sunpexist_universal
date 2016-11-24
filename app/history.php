@@ -335,11 +335,11 @@ $app->post('/history/search', function ()use($app){
 	$arg_str .= "m_job_type.job_type_name as as_job_type_name,";
 	$arg_str .= "m_wearer_std.cster_emply_cd as as_cster_emply_cd,";
 	$arg_str .= "m_wearer_std.werer_name as as_werer_name,";
+	$arg_str .= "t_order.job_type_cd as as_job_type_cd,";
 	$arg_str .= "t_order.item_cd as as_item_cd,";
 	$arg_str .= "t_order.color_cd as as_color_cd,";
 	$arg_str .= "t_order.size_cd as as_size_cd,";
 	$arg_str .= "t_order.size_two_cd as as_size_two_cd,";
-	$arg_str .= "m_input_item.input_item_name as as_input_item_name,";
 	$arg_str .= "t_order.order_qty as as_order_qty,";
 	$arg_str .= "t_order_state.rec_order_no as as_rec_order_no,";
 	$arg_str .= "t_order.order_status as as_order_status,";
@@ -364,7 +364,7 @@ $app->post('/history/search', function ()use($app){
 		$arg_str .= " AND m_section.rntl_sect_cd = m_contract_resource.rntl_sect_cd";
 		$arg_str .= " ) ON t_order.m_section_comb_hkey = m_section.m_section_comb_hkey";
 	}
-	$arg_str .= " INNER JOIN (m_job_type INNER JOIN m_input_item ON m_job_type.m_job_type_comb_hkey = m_input_item.m_job_type_comb_hkey)";
+	$arg_str .= " INNER JOIN m_job_type";
 	$arg_str .= " ON t_order.m_job_type_comb_hkey = m_job_type.m_job_type_comb_hkey";
 	$arg_str .= " INNER JOIN m_wearer_std";
 	$arg_str .= " ON t_order.werer_cd = m_wearer_std.werer_cd";
@@ -411,6 +411,12 @@ $app->post('/history/search', function ()use($app){
 			$list['order_sts_kbn'] = $result->as_order_sts_kbn;
 			// 理由区分
 			$list['order_reason_kbn'] = $result->as_order_reason_kbn;
+			// 契約No
+			if (!empty($result->as_rntl_cont_no)) {
+				$list['rntl_cont_no'] = $result->as_rntl_cont_no;
+			} else {
+				$list['rntl_cont_no'] = "-";
+			}
 			// 拠点
 			if (!empty($result->as_rntl_sect_name)) {
 				$list['rntl_sect_name'] = $result->as_rntl_sect_name;
@@ -418,6 +424,7 @@ $app->post('/history/search', function ()use($app){
 				$list['rntl_sect_name'] = "-";
 			}
 			// 貸与パターン
+			$list['job_type_cd'] = $result->as_job_type_cd;
 			if (!empty($result->as_job_type_name)) {
 				$list['job_type_name'] = $result->as_job_type_name;
 			} else {
@@ -450,10 +457,45 @@ $app->post('/history/search', function ()use($app){
 			// サイズ2コード
 			$list['size_two_cd'] = $result->as_size_two_cd;
 			// 投入商品名
-			if (!empty($result->as_input_item_name)) {
-				$list['input_item_name'] = $result->as_input_item_name;
+			$list['input_item_name'] = "-";
+			$query_list = array();
+		  $query_list[] = "corporate_id = '".$auth['corporate_id']."'";
+		  $query_list[] = "rntl_cont_no = '".$list['rntl_cont_no']."'";
+		  $query_list[] = "job_type_cd = '".$list['job_type_cd']."'";
+		  $query_list[] = "item_cd = '".$list['item_cd']."'";
+		  $query_list[] = "color_cd = '".$list['color_cd']."'";
+		  $query = implode(' AND ', $query_list);
+			$arg_str = "";
+		  $arg_str = "SELECT ";
+		  $arg_str .= "input_item_name";
+		  $arg_str .= " FROM ";
+		  $arg_str .= "m_input_item";
+		  $arg_str .= " WHERE ";
+		  $arg_str .= $query;
+		  //ChromePhp::LOG($arg_str);
+		  $m_input_item = new MInputItem();
+		  $m_input_item_results = new Resultset(NULL, $m_input_item, $m_input_item->getReadConnection()->query($arg_str));
+		  $result_obj = (array)$m_input_item_results;
+		  $m_input_item_results_cnt = $result_obj["\0*\0_count"];
+			if ($m_input_item_results_cnt > 0) {
+				$paginator_model = new PaginatorModel(
+		        array(
+		            "data"  => $m_input_item_results,
+		            "limit" => 1,
+		            "page" => 1
+		        )
+		    );
+		    $paginator = $paginator_model->getPaginate();
+		    $m_input_item_results = $paginator->items;
+				foreach ($m_input_item_results as $m_input_item_result) {
+					$list['input_item_name'] = $m_input_item_result->input_item_name;
+				}
+			}
+			// 商品-色(サイズ-サイズ2)表示変換
+			if (!empty($list['item_cd']) && !empty($list['color_cd'])) {
+				$list['shin_item_code'] = $list['item_cd']."-".$list['color_cd']."(".$list['size_cd']."-".$list['size_two_cd'].")";
 			} else {
-				$list['input_item_name'] = "-";
+				$list['shin_item_code'] = "-";
 			}
 			// 発注数
 			$list['order_qty'] = $result->as_order_qty;
@@ -475,12 +517,6 @@ $app->post('/history/search', function ()use($app){
 			$list['ship_ymd'] = $result->as_ship_ymd;
 			// 出荷数
 			$list['ship_qty'] = $result->as_ship_qty;
-			// 契約No
-			if (!empty($result->as_rntl_cont_no)) {
-				$list['rntl_cont_no'] = $result->as_rntl_cont_no;
-			} else {
-				$list['rntl_cont_no'] = "-";
-			}
 			// 契約No
 			if (!empty($result->as_rntl_cont_name)) {
 				$list['rntl_cont_name'] = $result->as_rntl_cont_name;
@@ -507,9 +543,6 @@ $app->post('/history/search', function ()use($app){
 			}else{
 				$list['ship_ymd'] = '-';
 			}
-
-			// 商品-色(サイズ-サイズ2)表示変換
-			$list['shin_item_code'] = $list['item_cd']."-".$list['color_cd']."(".$list['size_cd']."-".$list['size_two_cd'].")";
 
 			//---発注区分名称---//
 			$query_list = array();
@@ -621,6 +654,7 @@ $app->post('/history/search', function ()use($app){
 	} else {
 		$individual_flg = false;
 	}
+
 /*
 	$query_list = array();
 	array_push($query_list, "corporate_id = '".$auth['corporate_id']."'");

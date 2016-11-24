@@ -19,50 +19,50 @@ $app->post('/receive/search', function ()use($app){
 	$page = $params['page'];
 	$query_list = array();
 
-    //---契約リソースマスター 0000000000フラグ確認処理---//
-    //ログインid
-    $login_id_session = $auth['corporate_id'];
-    //アカウントno
-    $accnt_no = $auth['accnt_no'];
-    //画面で選択された契約no
-    $agreement_no = $cond['agreement_no'];
+	//---契約リソースマスター 0000000000フラグ確認処理---//
+	//ログインid
+	$login_id_session = $auth['corporate_id'];
+	//アカウントno
+	$accnt_no = $auth['accnt_no'];
+	//画面で選択された契約no
+	$agreement_no = $cond['agreement_no'];
 
-    //前処理 契約リソースマスタ参照 拠点ゼロ埋め確認
-    $arg_str = "";
-    $arg_str .= "SELECT ";
-    $arg_str .= " * ";
-    $arg_str .= " FROM ";
-    $arg_str .= "m_contract_resource";
-    $arg_str .= " WHERE ";
-    $arg_str .= "corporate_id = '$login_id_session'";
-    $arg_str .= " AND rntl_cont_no = '$agreement_no'";
-    $arg_str .= " AND accnt_no = '$accnt_no'";
+	//前処理 契約リソースマスタ参照 拠点ゼロ埋め確認
+	$arg_str = "";
+	$arg_str .= "SELECT ";
+	$arg_str .= " * ";
+	$arg_str .= " FROM ";
+	$arg_str .= "m_contract_resource";
+	$arg_str .= " WHERE ";
+	$arg_str .= "corporate_id = '$login_id_session'";
+	$arg_str .= " AND rntl_cont_no = '$agreement_no'";
+	$arg_str .= " AND accnt_no = '$accnt_no'";
 
-    $m_contract_resource = new MContractResource();
-    $results = new Resultset(null, $m_contract_resource, $m_contract_resource->getReadConnection()->query($arg_str));
-    $result_obj = (array)$results;
-    $results_cnt = $result_obj["\0*\0_count"];
+	$m_contract_resource = new MContractResource();
+	$results = new Resultset(null, $m_contract_resource, $m_contract_resource->getReadConnection()->query($arg_str));
+	$result_obj = (array)$results;
+	$results_cnt = $result_obj["\0*\0_count"];
 
-    if ($results_cnt > 0) {
-        $paginator_model = new PaginatorModel(
-            array(
-                "data"  => $results,
-                "limit" => $results_cnt,
-                "page" => 1
-            )
-        );
-        $paginator = $paginator_model->getPaginate();
-        $results = $paginator->items;
-        foreach ($results as $result) {
-            $all_list[] = $result->rntl_sect_cd;
-        }
-    }
+	if ($results_cnt > 0) {
+			$paginator_model = new PaginatorModel(
+					array(
+							"data"  => $results,
+							"limit" => $results_cnt,
+							"page" => 1
+					)
+			);
+			$paginator = $paginator_model->getPaginate();
+			$results = $paginator->items;
+			foreach ($results as $result) {
+					$all_list[] = $result->rntl_sect_cd;
+			}
+	}
 
-    if (in_array("0000000000", $all_list)) {
-        $rntl_sect_cd_zero_flg = 1;
-    }else{
-        $rntl_sect_cd_zero_flg = 0;
-    }
+	if (in_array("0000000000", $all_list)) {
+			$rntl_sect_cd_zero_flg = 1;
+	}else{
+			$rntl_sect_cd_zero_flg = 0;
+	}
 
 	//---検索条件---//
 	//企業ID

@@ -294,8 +294,6 @@ $app->post('/csv_download', function ()use($app){
 			$status_kbn_map = implode(' OR ', $status_kbn_list);
 			array_push($query_list,"(".$status_kbn_map.")");
 		}
-
-		//sql文字列を' AND 'で結合
 		$query = implode(' AND ', $query_list);
 
 		if(!empty($page['sort_key'])){
@@ -361,7 +359,6 @@ $app->post('/csv_download', function ()use($app){
 			$order = 'asc';
 		}
 
-		// SQLクエリー実行
 		$arg_str = "SELECT ";
 		$arg_str .= " * ";
 		$arg_str .= " FROM ";
@@ -374,11 +371,11 @@ $app->post('/csv_download', function ()use($app){
 		$arg_str .= "m_job_type.job_type_name as as_job_type_name,";
 		$arg_str .= "m_wearer_std.cster_emply_cd as as_cster_emply_cd,";
 		$arg_str .= "m_wearer_std.werer_name as as_werer_name,";
+		$arg_str .= "t_order.job_type_cd as as_job_type_cd,";
 		$arg_str .= "t_order.item_cd as as_item_cd,";
 		$arg_str .= "t_order.color_cd as as_color_cd,";
 		$arg_str .= "t_order.size_cd as as_size_cd,";
 		$arg_str .= "t_order.size_two_cd as as_size_two_cd,";
-		$arg_str .= "m_input_item.input_item_name as as_input_item_name,";
 		$arg_str .= "t_order.order_qty as as_order_qty,";
 		$arg_str .= "t_order_state.rec_order_no as as_rec_order_no,";
 		$arg_str .= "t_order.order_status as as_order_status,";
@@ -393,8 +390,6 @@ $app->post('/csv_download', function ()use($app){
 		$arg_str .= " (t_order_state LEFT JOIN (t_delivery_goods_state LEFT JOIN t_delivery_goods_state_details ON t_delivery_goods_state.ship_no = t_delivery_goods_state_details.ship_no)";
 		$arg_str .= " ON t_order_state.t_order_state_comb_hkey = t_delivery_goods_state.t_order_state_comb_hkey)";
 		$arg_str .= " ON t_order.t_order_comb_hkey = t_order_state.t_order_comb_hkey";
-		//$arg_str .= " INNER JOIN m_section";
-		//$arg_str .= " ON t_order.m_section_comb_hkey = m_section.m_section_comb_hkey";
 		if($rntl_sect_cd_zero_flg == 1){
 			$arg_str .= " INNER JOIN m_section";
 			$arg_str .= " ON t_order.m_section_comb_hkey = m_section.m_section_comb_hkey";
@@ -405,7 +400,7 @@ $app->post('/csv_download', function ()use($app){
 			$arg_str .= " AND m_section.rntl_sect_cd = m_contract_resource.rntl_sect_cd";
 			$arg_str .= " ) ON t_order.m_section_comb_hkey = m_section.m_section_comb_hkey";
 		}
-		$arg_str .= " INNER JOIN (m_job_type INNER JOIN m_input_item ON m_job_type.m_job_type_comb_hkey = m_input_item.m_job_type_comb_hkey)";
+		$arg_str .= " INNER JOIN m_job_type";
 		$arg_str .= " ON t_order.m_job_type_comb_hkey = m_job_type.m_job_type_comb_hkey";
 		$arg_str .= " INNER JOIN m_wearer_std";
 		$arg_str .= " ON t_order.werer_cd = m_wearer_std.werer_cd";
@@ -449,6 +444,12 @@ $app->post('/csv_download', function ()use($app){
 				$list['order_sts_kbn'] = $result->as_order_sts_kbn;
 				// 理由区分
 				$list['order_reason_kbn'] = $result->as_order_reason_kbn;
+				// 契約No
+				if (!empty($result->as_rntl_cont_no)) {
+					$list['rntl_cont_no'] = $result->as_rntl_cont_no;
+				} else {
+					$list['rntl_cont_no'] = "-";
+				}
 				// 拠点
 				if (!empty($result->as_rntl_sect_name)) {
 					$list['rntl_sect_name'] = $result->as_rntl_sect_name;
@@ -456,6 +457,7 @@ $app->post('/csv_download', function ()use($app){
 					$list['rntl_sect_name'] = "-";
 				}
 				// 貸与パターン
+				$list['job_type_cd'] = $result->as_job_type_cd;
 				if (!empty($result->as_job_type_name)) {
 					$list['job_type_name'] = $result->as_job_type_name;
 				} else {
@@ -481,11 +483,45 @@ $app->post('/csv_download', function ()use($app){
 				$list['size_cd'] = $result->as_size_cd;
 				// サイズ2コード
 				$list['size_two_cd'] = $result->as_size_two_cd;
-				// 投入商品名
-				if (!empty($result->as_input_item_name)) {
-					$list['input_item_name'] = $result->as_input_item_name;
+				$list['input_item_name'] = "-";
+				$query_list = array();
+			  $query_list[] = "corporate_id = '".$auth['corporate_id']."'";
+			  $query_list[] = "rntl_cont_no = '".$list['rntl_cont_no']."'";
+			  $query_list[] = "job_type_cd = '".$list['job_type_cd']."'";
+			  $query_list[] = "item_cd = '".$list['item_cd']."'";
+			  $query_list[] = "color_cd = '".$list['color_cd']."'";
+			  $query = implode(' AND ', $query_list);
+				$arg_str = "";
+			  $arg_str = "SELECT ";
+			  $arg_str .= "input_item_name";
+			  $arg_str .= " FROM ";
+			  $arg_str .= "m_input_item";
+			  $arg_str .= " WHERE ";
+			  $arg_str .= $query;
+			  //ChromePhp::LOG($arg_str);
+			  $m_input_item = new MInputItem();
+			  $m_input_item_results = new Resultset(NULL, $m_input_item, $m_input_item->getReadConnection()->query($arg_str));
+			  $result_obj = (array)$m_input_item_results;
+			  $m_input_item_results_cnt = $result_obj["\0*\0_count"];
+				if ($m_input_item_results_cnt > 0) {
+					$paginator_model = new PaginatorModel(
+			        array(
+			            "data"  => $m_input_item_results,
+			            "limit" => 1,
+			            "page" => 1
+			        )
+			    );
+			    $paginator = $paginator_model->getPaginate();
+			    $m_input_item_results = $paginator->items;
+					foreach ($m_input_item_results as $m_input_item_result) {
+						$list['input_item_name'] = $m_input_item_result->input_item_name;
+					}
+				}
+				// 商品-色(サイズ-サイズ2)表示変換
+				if (!empty($list['item_cd']) && !empty($list['color_cd'])) {
+					$list['shin_item_code'] = $list['item_cd']."-".$list['color_cd']."(".$list['size_cd']."-".$list['size_two_cd'].")";
 				} else {
-					$list['input_item_name'] = "-";
+					$list['shin_item_code'] = "-";
 				}
 				// 発注数
 				$list['order_qty'] = $result->as_order_qty;
@@ -508,18 +544,11 @@ $app->post('/csv_download', function ()use($app){
 				// 出荷数
 				$list['ship_qty'] = $result->as_ship_qty;
 				// 契約No
-				if (!empty($result->as_rntl_cont_no)) {
-					$list['rntl_cont_no'] = $result->as_rntl_cont_no;
-				} else {
-					$list['rntl_cont_no'] = "-";
-				}
-				// 契約No
 				if (!empty($result->as_rntl_cont_name)) {
 					$list['rntl_cont_name'] = $result->as_rntl_cont_name;
 				} else {
 					$list['rntl_cont_name'] = "-";
 				}
-
 				// 日付設定
 				if($list['order_req_ymd']){
 					$list['order_req_ymd'] = date('Y/m/d',strtotime($list['order_req_ymd']));
@@ -538,10 +567,6 @@ $app->post('/csv_download', function ()use($app){
 				}else{
 					$list['ship_ymd'] = '-';
 				}
-
-				// 商品-色(サイズ-サイズ2)表示変換
-				$list['shin_item_code'] = $list['item_cd']."-".$list['color_cd']."(".$list['size_cd']."-".$list['size_two_cd'].")";
-
 				//---発注区分名称---//
 				$query_list = array();
 				// 汎用コードマスタ.分類コード
@@ -856,10 +881,10 @@ $app->post('/csv_download', function ()use($app){
 		// 着用者状況区分(稼働)
 		array_push($query_list,"m_wearer_std.werer_sts_kbn = '1'");
 
-        //ゼロ埋めがない場合、ログインアカウントの条件追加
-        if($rntl_sect_cd_zero_flg == 0){
-            array_push($query_list,"m_contract_resource.accnt_no = '$accnt_no'");
-        }
+		//ゼロ埋めがない場合、ログインアカウントの条件追加
+		if($rntl_sect_cd_zero_flg == 0){
+				array_push($query_list,"m_contract_resource.accnt_no = '$accnt_no'");
+		}
 
 		$status_kbn_list = array();
 
@@ -1043,8 +1068,8 @@ $app->post('/csv_download', function ()use($app){
         $arg_str .= "t_returned_plan_info.item_cd as as_item_cd,";
         $arg_str .= "t_returned_plan_info.color_cd as as_color_cd,";
         $arg_str .= "t_returned_plan_info.size_cd as as_size_cd,";
+				$arg_str .= "t_order.job_type_cd as as_job_type_cd,";
         $arg_str .= "t_order.size_two_cd as as_size_two_cd,";
-        $arg_str .= "m_input_item.input_item_name as as_input_item_name,";
         $arg_str .= "t_order.order_qty as as_order_qty,";
         $arg_str .= "t_returned_plan_info.order_date as as_re_order_date,";
         $arg_str .= "t_returned_plan_info.return_status as as_return_status,";
@@ -1066,16 +1091,16 @@ $app->post('/csv_download', function ()use($app){
         $arg_str .= " ON t_returned_plan_info.order_req_no = t_order_state.order_req_no)";
         $arg_str .= " ON t_order.order_req_no = t_returned_plan_info.order_req_no";
         if($rntl_sect_cd_zero_flg == 1){
-            $arg_str .= " INNER JOIN m_section";
-            $arg_str .= " ON t_order.m_section_comb_hkey = m_section.m_section_comb_hkey";
+					$arg_str .= " INNER JOIN m_section";
+					$arg_str .= " ON t_order.m_section_comb_hkey = m_section.m_section_comb_hkey";
         }elseif($rntl_sect_cd_zero_flg == 0){
-            $arg_str .= " INNER JOIN (m_section INNER JOIN m_contract_resource";
-            $arg_str .= " ON m_section.corporate_id = m_contract_resource.corporate_id";
-            $arg_str .= " AND m_section.rntl_cont_no = m_contract_resource.rntl_cont_no";
-            $arg_str .= " AND m_section.rntl_sect_cd = m_contract_resource.rntl_sect_cd";
-            $arg_str .= " ) ON t_order.m_section_comb_hkey = m_section.m_section_comb_hkey";
+					$arg_str .= " INNER JOIN (m_section INNER JOIN m_contract_resource";
+					$arg_str .= " ON m_section.corporate_id = m_contract_resource.corporate_id";
+					$arg_str .= " AND m_section.rntl_cont_no = m_contract_resource.rntl_cont_no";
+					$arg_str .= " AND m_section.rntl_sect_cd = m_contract_resource.rntl_sect_cd";
+					$arg_str .= " ) ON t_order.m_section_comb_hkey = m_section.m_section_comb_hkey";
         }
-        $arg_str .= " INNER JOIN (m_job_type INNER JOIN m_input_item ON m_job_type.m_job_type_comb_hkey = m_input_item.m_job_type_comb_hkey)";
+        $arg_str .= " INNER JOIN m_job_type";
         $arg_str .= " ON t_order.m_job_type_comb_hkey = m_job_type.m_job_type_comb_hkey";
         $arg_str .= " INNER JOIN m_wearer_std";
         $arg_str .= " ON t_order.werer_cd = m_wearer_std.werer_cd";
@@ -1121,6 +1146,12 @@ $app->post('/csv_download', function ()use($app){
 				$list['order_sts_kbn'] = $result->as_order_sts_kbn;
 				// 理由区分
 				$list['order_reason_kbn'] = $result->as_order_reason_kbn;
+				// 契約No
+				if (!empty($result->as_rntl_cont_no)) {
+					$list['rntl_cont_no'] = $result->as_rntl_cont_no;
+				} else {
+					$list['rntl_cont_no'] = "-";
+				}
 				// 拠点
 				if (!empty($result->as_rntl_sect_name)) {
 					$list['rntl_sect_name'] = $result->as_rntl_sect_name;
@@ -1128,6 +1159,7 @@ $app->post('/csv_download', function ()use($app){
 					$list['rntl_sect_name'] = "-";
 				}
 				// 貸与パターン
+				$list['job_type_cd'] = $result->as_job_type_cd;
 				if (!empty($result->as_job_type_name)) {
 					$list['job_type_name'] = $result->as_job_type_name;
 				} else {
@@ -1154,10 +1186,45 @@ $app->post('/csv_download', function ()use($app){
 				// サイズ2コード
 				$list['size_two_cd'] = $result->as_size_two_cd;
 				// 投入商品名
-				if (!empty($result->as_input_item_name)) {
-					$list['input_item_name'] = $result->as_input_item_name;
+				$list['input_item_name'] = "-";
+				$query_list = array();
+			  $query_list[] = "corporate_id = '".$auth['corporate_id']."'";
+			  $query_list[] = "rntl_cont_no = '".$list['rntl_cont_no']."'";
+			  $query_list[] = "job_type_cd = '".$list['job_type_cd']."'";
+			  $query_list[] = "item_cd = '".$list['item_cd']."'";
+			  $query_list[] = "color_cd = '".$list['color_cd']."'";
+			  $query = implode(' AND ', $query_list);
+				$arg_str = "";
+			  $arg_str = "SELECT ";
+			  $arg_str .= "input_item_name";
+			  $arg_str .= " FROM ";
+			  $arg_str .= "m_input_item";
+			  $arg_str .= " WHERE ";
+			  $arg_str .= $query;
+			  //ChromePhp::LOG($arg_str);
+			  $m_input_item = new MInputItem();
+			  $m_input_item_results = new Resultset(NULL, $m_input_item, $m_input_item->getReadConnection()->query($arg_str));
+			  $result_obj = (array)$m_input_item_results;
+			  $m_input_item_results_cnt = $result_obj["\0*\0_count"];
+				if ($m_input_item_results_cnt > 0) {
+					$paginator_model = new PaginatorModel(
+			        array(
+			            "data"  => $m_input_item_results,
+			            "limit" => 1,
+			            "page" => 1
+			        )
+			    );
+			    $paginator = $paginator_model->getPaginate();
+			    $m_input_item_results = $paginator->items;
+					foreach ($m_input_item_results as $m_input_item_result) {
+						$list['input_item_name'] = $m_input_item_result->input_item_name;
+					}
+				}
+				// 商品-色(サイズ-サイズ2)表示変換
+				if (!empty($list['item_cd']) && !empty($list['color_cd'])) {
+					$list['shin_item_code'] = $list['item_cd']."-".$list['color_cd']."(".$list['size_cd']."-".$list['size_two_cd'].")";
 				} else {
-					$list['input_item_name'] = "-";
+					$list['shin_item_code'] = "-";
 				}
 				// 発注数
 				$list['order_qty'] = $result->as_order_qty;
@@ -1184,12 +1251,6 @@ $app->post('/csv_download', function ()use($app){
 				// 出荷数
 				$list['ship_qty'] = $result->as_ship_qty;
 				// 契約No
-				if (!empty($result->as_rntl_cont_no)) {
-					$list['rntl_cont_no'] = $result->as_rntl_cont_no;
-				} else {
-					$list['rntl_cont_no'] = "-";
-				}
-				// 契約No
 				if (!empty($result->as_rntl_cont_name)) {
 					$list['rntl_cont_name'] = $result->as_rntl_cont_name;
 				} else {
@@ -1215,10 +1276,6 @@ $app->post('/csv_download', function ()use($app){
 				}else{
 					$list['ship_ymd'] = '-';
 				}
-
-				// 商品-色(サイズ-サイズ2)表示変換
-				$list['shin_item_code'] = $list['item_cd']."-".$list['color_cd']."(".$list['size_cd']."-".$list['size_two_cd'].")";
-
 				//---発注区分名称---//
 				$query_list = array();
 				// 汎用コードマスタ.分類コード

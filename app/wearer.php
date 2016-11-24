@@ -182,17 +182,16 @@ $app->post('/wearer/search', function ()use($app){
 	$arg_str .= "m_job_type.job_type_name as as_job_type_name";
 	$arg_str .= " FROM m_wearer_std LEFT JOIN";
 	$arg_str .= " ((t_order";
-    if($rntl_sect_cd_zero_flg == 1){
-        $arg_str .= " INNER JOIN m_section";
-        $arg_str .= " ON t_order.m_section_comb_hkey = m_section.m_section_comb_hkey";
-    }elseif($rntl_sect_cd_zero_flg == 0){
-        $arg_str .= " INNER JOIN (m_section INNER JOIN m_contract_resource";
-        $arg_str .= " ON m_section.corporate_id = m_contract_resource.corporate_id";
-        $arg_str .= " AND m_section.rntl_cont_no = m_contract_resource.rntl_cont_no";
-        $arg_str .= " AND m_section.rntl_sect_cd = m_contract_resource.rntl_sect_cd";
-        $arg_str .= " ) ON t_order.m_section_comb_hkey = m_section.m_section_comb_hkey";
-    }
-
+	if($rntl_sect_cd_zero_flg == 1){
+		$arg_str .= " INNER JOIN m_section";
+		$arg_str .= " ON t_order.m_section_comb_hkey = m_section.m_section_comb_hkey";
+	}elseif($rntl_sect_cd_zero_flg == 0){
+		$arg_str .= " INNER JOIN (m_section INNER JOIN m_contract_resource";
+		$arg_str .= " ON m_section.corporate_id = m_contract_resource.corporate_id";
+		$arg_str .= " AND m_section.rntl_cont_no = m_contract_resource.rntl_cont_no";
+		$arg_str .= " AND m_section.rntl_sect_cd = m_contract_resource.rntl_sect_cd";
+		$arg_str .= " ) ON t_order.m_section_comb_hkey = m_section.m_section_comb_hkey";
+	}
 	$arg_str .= " INNER JOIN m_job_type ON t_order.m_job_type_comb_hkey = m_job_type.m_job_type_comb_hkey)";
 	$arg_str .= " LEFT JOIN (t_order_state LEFT JOIN (t_delivery_goods_state LEFT JOIN t_delivery_goods_state_details ON t_delivery_goods_state.ship_no = t_delivery_goods_state_details.ship_no)";
 	$arg_str .= " ON t_order_state.t_order_state_comb_hkey = t_delivery_goods_state.t_order_state_comb_hkey)";
