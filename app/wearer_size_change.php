@@ -541,14 +541,16 @@ $app->post('/wearer_size_change/search', function ()use($app){
           $list['wearer_add_button'] = 'サイズ交換';
           $list['wearer_add_red'] = "";
           $list['add_disabled'] = "";
-          $list['return_reciept_button'] = false;
           $list['btnPattern'] = "A";
         }
         //「返却伝票ダウンロード」ボタン生成
         if ($list['btnPattern'] == "B" || $list['btnPattern'] == "C") {
-          $list['add_reciept_button'] = true;
+          $list['exchange_reciept_button'] = true;
+          $list['exchange_reciept_param'] = "";
+          $list['exchange_reciept_param'] .= $list['rntl_cont_no'].":";
+          $list['exchange_reciept_param'] .= $list['order_req_no'];
         } else {
-          $list['add_reciept_button'] = false;
+          $list['exchange_reciept_button'] = false;
         }
 
         //「その他交換」パターンチェックスタート
@@ -642,14 +644,16 @@ $app->post('/wearer_size_change/search', function ()use($app){
           $list['wearer_return_button'] = 'その他交換';
           $list['wearer_return_red'] = "";
           $list['return_disabled'] = "";
-          $list['return_reciept_button'] = false;
           $list['btnPattern'] = "A";
         }
         //「返却伝票ダウンロード」ボタン生成
         if ($list['btnPattern'] == "B" || $list['btnPattern'] == "C") {
-          $list['return_reciept_button'] = true;
+          $list['other_change_reciept_button'] = true;
+          $list['other_change_reciept_param'] = "";
+          $list['other_change_reciept_param'] .= $list['rntl_cont_no'].":";
+          $list['other_change_reciept_param'] .= $list['order_req_no'];
         } else {
-          $list['return_reciept_button'] = false;
+          $list['other_change_reciept_button'] = false;
         }
 
         // 発注入力へのパラメータ設定
@@ -677,7 +681,7 @@ $app->post('/wearer_size_change/search', function ()use($app){
   $page_list['total_records'] = $results_cnt;
   $json_list['page'] = $page_list;
   $json_list['list'] = $all_list;
-
+  //ChromePhp::LOG($all_list);
   echo json_encode($json_list);
 });
 

@@ -416,9 +416,8 @@ define([
 								}
 								item[i]["individual_data"][j]["return_num"] = chk_num;
 							}
-						} else {
-							item[i]["return_num"] = $("input[name='return_num"+i+"']").val();
 						}
+						item[i]["return_num"] = $("input[name='return_num"+i+"']").val();
 						item[i]["size_add_data"] = new Object();
 						if (item[i]["add_flg"] == "1") {
 							var cnt = 0;
@@ -535,9 +534,8 @@ define([
 								}
 								item[i]["individual_data"][j]["return_num"] = chk_num;
 							}
-						} else {
-							item[i]["return_num"] = $("input[name='return_num"+i+"']").val();
 						}
+						item[i]["return_num"] = $("input[name='return_num"+i+"']").val();
 						item[i]["size_add_data"] = new Object();
 						if (item[i]["add_flg"] == "1") {
 							var cnt = 0;

@@ -916,7 +916,7 @@ $app->post('/wearer_exchange/list', function ()use($app){
           $query_list[] = "t_returned_plan_info_tran.werer_cd = '".$wearer_size_change_post['werer_cd']."'";
           $query_list[] = "t_returned_plan_info_tran.item_cd = '".$list["item_cd"]."'";
           $query_list[] = "t_returned_plan_info_tran.color_cd = '".$list["color_cd"]."'";
-          $query_list[] = "t_returned_plan_info_tran.size_cd = '".$list["size_cd"]."'";
+          $query_list[] = "t_returned_plan_info_tran.size_cd = '".$list["now_size_cd"]."'";
           // 発注状況区分(サイズ交換)
           $query_list[] = "t_returned_plan_info_tran.order_sts_kbn = '3'";
           $query = implode(' AND ', $query_list);
@@ -957,7 +957,7 @@ $app->post('/wearer_exchange/list', function ()use($app){
           $query_list[] = "t_delivery_goods_state_details.werer_cd = '".$wearer_size_change_post['werer_cd']."'";
           $query_list[] = "t_delivery_goods_state_details.item_cd = '".$list["item_cd"]."'";
           $query_list[] = "t_delivery_goods_state_details.color_cd = '".$list["color_cd"]."'";
-          $query_list[] = "t_delivery_goods_state_details.size_cd = '".$list["size_cd"]."'";
+          $query_list[] = "t_delivery_goods_state_details.size_cd = '".$list["now_size_cd"]."'";
           $query_list[] = "t_delivery_goods_state_details.rtn_ok_flg = '1'";
           $query = implode(' AND ', $query_list);
 
@@ -986,12 +986,22 @@ $app->post('/wearer_exchange/list', function ()use($app){
           $t_delivery_goods_state_details_results = $paginator->items;
           $i = 0;
           foreach ($t_delivery_goods_state_details_results as $t_delivery_goods_state_details_result) {
+            // サイズ追加フラグ有/無で表示制限
+            if ($item_result->as_size_add_flg == "1") {
+              $element["checked"] = "";
+              $element["disabled"] = "";
+            } else {
+              $element["checked"] = "checked";
+              $element["disabled"] = "disabled";
+            }
             // 返却予定情報トランの個体管理番号があるか確認
-            $element["checked"] = "";
             if (!empty($individual_list)) {
+              // ※返却トランの個体管理番号単位の返却数カウント
+              $individual_return_num = 0;
               foreach ($individual_list as $tran_individual_ctrl_no) {
                 if ($t_delivery_goods_state_details_result->individual_ctrl_no == $tran_individual_ctrl_no) {
                   $element["checked"] = "checked";
+                  $individual_return_num += 1;
                 }
               }
             }
@@ -1038,31 +1048,39 @@ $app->post('/wearer_exchange/list', function ()use($app){
         }
         // 発注枚数
         // ※発注情報トランに存在する場合はこちらを設定
+        $list["order_num"] = 0;
         if ($item_result->as_size_add_flg == "0") {
-          $list["order_num"] = 0;
-          foreach ($order_tran_list as $tran_map) {
-            if (
-              $list["item_cd"] == $tran_map["item_cd"] &&
-              $list["color_cd"] == $tran_map["color_cd"]
-            )
-            {
-              $list["order_num"] = $tran_map["order_qty"];
-            }
-          }
+          $list["order_num"] = $list["exchange_possible_num"];
+          $list["order_num_text_disp"] = true;
         } else {
-          $list["order_num"] = "";
+          $list["order_num_text_disp"] = false;
         }
         // 返却枚数
         // ※返却予定情報トランに存在する場合はこちらを設定
         $list["return_num"] = 0;
-        foreach ($return_tran_list as $tran_map) {
-          if (
-            $list["item_cd"] == $tran_map["item_cd"] &&
-            $list["color_cd"] == $tran_map["color_cd"] &&
-            $list["now_size_cd"] == $tran_map["size_cd"]
-          )
-          {
-            $list["return_num"] = $tran_map["return_plan_qty"];
+        if ($auth["individual_flg"] == "0") {
+          foreach ($return_tran_list as $tran_map) {
+            if (
+              $list["item_cd"] == $tran_map["item_cd"] &&
+              $list["color_cd"] == $tran_map["color_cd"] &&
+              $list["now_size_cd"] == $tran_map["size_cd"]
+            )
+            {
+              $list["return_num"] = $tran_map["return_plan_qty"];
+              $list["return_num_text_disp"] = true;
+            }
+          }
+        } else {
+          if (!empty($individual_return_num)) {
+            $list["return_num"] = $individual_return_num;
+            $list["return_num_text_disp"] = false;
+          } else {
+            if ($item_result->as_size_add_flg == "0") {
+              $list["return_num"] = $list["exchange_possible_num"];
+              $list["return_num_text_disp"] = false;
+            } else {
+              $list["return_num_text_disp"] = false;
+            }
           }
         }
         // サイズ追加分データ作成
@@ -1205,8 +1223,8 @@ $app->post('/wearer_exchange/list', function ()use($app){
           $list["arr_num"].":".
           $list["item_cd"].":".
           $list["color_cd"].":".
-          $list["now_size_cd"]
-        ;
+          $list["now_size_cd"].":".
+          $list["individual_flg"];
 
         $all_list[] = $list;
       }
@@ -1219,7 +1237,7 @@ $app->post('/wearer_exchange/list', function ()use($app){
     $query_list[] = "t_delivery_goods_state_details.corporate_id = '".$auth['corporate_id']."'";
     $query_list[] = "t_delivery_goods_state_details.rntl_cont_no = '".$wearer_size_change_post['rntl_cont_no']."'";
     $query_list[] = "t_delivery_goods_state_details.werer_cd = '".$wearer_size_change_post['werer_cd']."'";
-    //$query_list[] = "t_delivery_goods_state_details.rtn_ok_flg = '1'";
+    $query_list[] = "t_delivery_goods_state_details.rtn_ok_flg = '1'";
     $query = implode(' AND ', $query_list);
 
     $arg_str = "";
@@ -1320,7 +1338,6 @@ $app->post('/wearer_exchange/list', function ()use($app){
         $results_cnt = $result_obj["\0*\0_count"];
         $results_rows = $result_obj["\0*\0_rows"];
         //ChromePhp::LOG($results_rows);
-        //ChromePhp::LOG($list["order_size_cd"]);
         if (!empty($results_cnt)) {
           $paginator_model = new PaginatorModel(
               array(
@@ -1356,7 +1373,7 @@ $app->post('/wearer_exchange/list', function ()use($app){
           $query_list[] = "t_delivery_goods_state_details.werer_cd = '".$wearer_size_change_post['werer_cd']."'";
           $query_list[] = "t_delivery_goods_state_details.item_cd = '".$list["item_cd"]."'";
           $query_list[] = "t_delivery_goods_state_details.color_cd = '".$list["color_cd"]."'";
-          $query_list[] = "t_delivery_goods_state_details.size_cd = '".$list["size_cd"]."'";
+          $query_list[] = "t_delivery_goods_state_details.size_cd = '".$list["now_size_cd"]."'";
           $query_list[] = "t_delivery_goods_state_details.rtn_ok_flg = '1'";
           $query = implode(' AND ', $query_list);
 
@@ -1373,7 +1390,6 @@ $app->post('/wearer_exchange/list', function ()use($app){
           $t_delivery_goods_state_details_results = new Resultset(null, $t_delivery_goods_state_details, $t_delivery_goods_state_details->getReadConnection()->query($arg_str));
           $result_obj = (array)$t_delivery_goods_state_details_results;
           $results_cnt = $result_obj["\0*\0_count"];
-          //ChromePhp::LOG($results_cnt);
           $paginator_model = new PaginatorModel(
               array(
                   "data"  => $t_delivery_goods_state_details_results,
@@ -1388,6 +1404,13 @@ $app->post('/wearer_exchange/list', function ()use($app){
             array_push($list["individual_ctrl_no"], $t_delivery_goods_state_details_result->individual_ctrl_no);
             $element["name_no"] = $list["arr_num"];
             $element["individual_ctrl_no"] = $t_delivery_goods_state_details_result->individual_ctrl_no;
+            if ($result->as_size_add_flg == "1") {
+              $element["checked"] = "";
+              $element["disabled"] = "";
+            } else {
+              $element["checked"] = "checked";
+              $element["disabled"] = "disabled";
+            }
             if ($results_cnt - 1 !== $i) {
               $element["br"] = "<br/>";
             } else {
@@ -1431,8 +1454,10 @@ $app->post('/wearer_exchange/list', function ()use($app){
         $list["order_num"] = 0;
         if ($result->as_size_add_flg == "0") {
           $list["order_num"] = $list["exchange_possible_num"];
+          $list["order_num_text_disp"] = true;
         } else {
           $list["order_num"] = "";
+          $list["order_num_text_disp"] = false;
         }
         // 返却枚数
         $list["return_num"] = 0;
@@ -1440,7 +1465,11 @@ $app->post('/wearer_exchange/list', function ()use($app){
           $list["return_num"] = $list["exchange_possible_num"];
           $list["return_num_text_disp"] = false;
         } else {
-          $list["return_num_text_disp"] = true;
+          if ($auth["individual_flg"] == "1") {
+            $list["return_num_text_disp"] = false;
+          } else {
+            $list["return_num_text_disp"] = true;
+          }
         }
         // サイズ追加リンク表示
         if ($result->as_size_add_flg == "1") {
@@ -1469,8 +1498,8 @@ $app->post('/wearer_exchange/list', function ()use($app){
           $list["arr_num"].":".
           $list["item_cd"].":".
           $list["color_cd"].":".
-          $list["now_size_cd"]
-        ;
+          $list["now_size_cd"].":".
+          $list["individual_flg"];
 
         $all_list[] = $list;
       }
@@ -1945,11 +1974,26 @@ $app->post('/wearer_exchange/complete', function ()use($app){
        $error_msg = "着用者名を入力してください。";
        array_push($json_list["error_msg"], $error_msg);
      }
+     if (mb_strlen($wearer_data_input['member_name']) > 0) {
+        if (strlen(mb_convert_encoding($wearer_data_input['member_name'], "SJIS")) > 22) {
+          $json_list["error_code"] = "1";
+          $error_msg = "着用者名が規定の文字数をオーバーしています。";
+          array_push($json_list["error_msg"], $error_msg);
+        }
+     }
+     // 着用者名（読み仮名）
+     if (mb_strlen($wearer_data_input['member_name_kana']) > 0) {
+        if (strlen(mb_convert_encoding($wearer_data_input['member_name_kana'], "SJIS")) > 25) {
+          $json_list["error_code"] = "1";
+          $error_msg = "着用者名(読み仮名)が規定の文字数をオーバーしています。";
+          array_push($json_list["error_msg"], $error_msg);
+        }
+     }
      // コメント欄
-     if (!empty($wearer_data_input["comment"])) {
-       if (mb_strlen($wearer_data_input["comment"]) > 50) {
+     if (mb_strlen($wearer_data_input['comment']) > 0) {
+       if (strlen(mb_convert_encoding($wearer_data_input['comment'], "SJIS")) > 100) {
          $json_list["error_code"] = "1";
-         $error_msg = "コメント欄は50文字以内で入力してください。";
+         $error_msg = "コメント欄の規定文字数がオーバーしています。";
          array_push($json_list["error_msg"], $error_msg);
        }
      }
@@ -1986,11 +2030,13 @@ $app->post('/wearer_exchange/complete', function ()use($app){
              }
              if (!empty($size_add_data["size_cd"])) {
                if ($size_add_data["order_num"] == 0) {
-                 $order_num_format_err = "err";
-                 $json_list["error_code"] = "1";
-                 $error_msg = "発注商品一覧にてサイズが選択されている商品の発注枚数は1つ以上を入力してください。";
-                 array_push($json_list["error_msg"], $error_msg);
-                 break;
+                 if (empty($order_num_format_err)) {
+                   $order_num_format_err = "err";
+                   $json_list["error_code"] = "1";
+                   $error_msg = "発注商品一覧にてサイズが選択されている商品の発注枚数は1つ以上を入力してください。";
+                   array_push($json_list["error_msg"], $error_msg);
+                   break;
+                 }
                }
              }
            }
@@ -3162,6 +3208,14 @@ $app->post('/wearer_exchange/complete', function ()use($app){
         //ChromePhp::LOG($results_cnt);
         //ChromePhp::LOG("返却予定情報トラン登録");
         foreach ($item_list as $item_map) {
+          // サイズ追加対象商品で発注がない場合は以降の処理しない
+          if ($item_map["add_flg"] == "1" && empty($size_add_data)) {
+            continue;
+          }
+          // 交換対象(サイズが選択されている商品)のみ登録する。それ以外は登録対象外
+          if ($item_map["add_flg"] == "0" && empty($item_map["size_cd"])) {
+            continue;
+          }
           if ($item_map["individual_flg"] == true && !empty($item_map["individual_data"])) {
             // ※個体管理番号単位での登録の場合
             foreach ($item_map["individual_data"] as $individual_data) {
@@ -3174,7 +3228,6 @@ $app->post('/wearer_exchange/complete', function ()use($app){
 
               // 発注依頼行No.生成
               $order_req_line_no = $cnt++;
-
               // 企業ID
               array_push($calum_list, "corporate_id");
               array_push($values_list, "'".$auth['corporate_id']."'");
@@ -3277,7 +3330,6 @@ $app->post('/wearer_exchange/complete', function ()use($app){
 
             // 発注依頼行No.生成
             $order_req_line_no = $cnt++;
-
             // 企業ID
             array_push($calum_list, "corporate_id");
             array_push($values_list, "'".$auth['corporate_id']."'");
@@ -3380,7 +3432,7 @@ $app->post('/wearer_exchange/complete', function ()use($app){
       // トランザクションロールバック
       $m_wearer_std_tran = new MWearerStdTran();
       $results = new Resultset(NULL, $m_wearer_std_tran, $m_wearer_std_tran->getReadConnection()->query('rollback'));
-      ChromePhp::LOG($e);
+      //ChromePhp::LOG($e);
 
       $json_list["error_code"] = "1";
       $error_msg = "入力登録処理において、データ更新エラーが発生しました。";
@@ -3389,6 +3441,11 @@ $app->post('/wearer_exchange/complete', function ()use($app){
       echo json_encode($json_list);
       return;
     }
+
+    // 返却伝票用パラメータ
+    $json_list['param'] = '';
+    $json_list['param'] .= $wearer_data_input['agreement_no'].':';
+    $json_list['param'] .= $shin_order_req_no;
 
     echo json_encode($json_list);
   }
@@ -3479,11 +3536,26 @@ $app->post('/wearer_exchange/send', function ()use($app){
       $error_msg = "着用者名を入力してください。";
       array_push($json_list["error_msg"], $error_msg);
     }
+    if (mb_strlen($wearer_data_input['member_name']) > 0) {
+       if (strlen(mb_convert_encoding($wearer_data_input['member_name'], "SJIS")) > 22) {
+         $json_list["error_code"] = "1";
+         $error_msg = "着用者名が規定の文字数をオーバーしています。";
+         array_push($json_list["error_msg"], $error_msg);
+       }
+    }
+    // 着用者名（読み仮名）
+    if (mb_strlen($wearer_data_input['member_name_kana']) > 0) {
+       if (strlen(mb_convert_encoding($wearer_data_input['member_name_kana'], "SJIS")) > 25) {
+         $json_list["error_code"] = "1";
+         $error_msg = "着用者名(読み仮名)が規定の文字数をオーバーしています。";
+         array_push($json_list["error_msg"], $error_msg);
+       }
+    }
     // コメント欄
-    if (!empty($wearer_data_input["comment"])) {
-      if (mb_strlen($wearer_data_input["comment"]) > 50) {
+    if (mb_strlen($wearer_data_input['comment']) > 0) {
+      if (strlen(mb_convert_encoding($wearer_data_input['comment'], "SJIS")) > 100) {
         $json_list["error_code"] = "1";
-        $error_msg = "コメント欄は50文字以内で入力してください。";
+        $error_msg = "コメント欄の規定文字数がオーバーしています。";
         array_push($json_list["error_msg"], $error_msg);
       }
     }
@@ -4683,6 +4755,14 @@ $app->post('/wearer_exchange/send', function ()use($app){
 
        //ChromePhp::LOG("返却予定情報トラン登録");
        foreach ($item_list as $item_map) {
+         // サイズ追加対象商品で発注がない場合は以降の処理しない
+         if ($item_map["add_flg"] == "1" && empty($size_add_data)) {
+           continue;
+         }
+         // 交換対象(サイズが選択されている商品)のみ登録する。それ以外は登録対象外
+         if ($item_map["add_flg"] == "0" && empty($item_map["size_cd"])) {
+           continue;
+         }
          if ($item_map["individual_flg"] == true && !empty($item_map["individual_data"])) {
            // ※個体管理番号単位での登録の場合
            foreach ($item_map["individual_data"] as $individual_data) {
@@ -4910,6 +4990,11 @@ $app->post('/wearer_exchange/send', function ()use($app){
      echo json_encode($json_list);
      return;
    }
+
+   // 返却伝票用パラメータ
+   $json_list['param'] = '';
+   $json_list['param'] .= $wearer_data_input['agreement_no'].':';
+   $json_list['param'] .= $shin_order_req_no;
 
    echo json_encode($json_list);
  }

@@ -42,7 +42,6 @@ define([
 				var wearer_data = data["wearer_data"];
 				var item = data["item"];
 
-				// 入力内容登録処理
 				var modelForUpdate = this.model;
 				modelForUpdate.url = App.api.WX0014;
 				var cond = {
@@ -58,10 +57,9 @@ define([
 					success:function(res){
 						var res_val = res.attributes;
 						if (res_val["error_code"] == "0") {
-							//「返却伝票ダウンロード」ボタン表示
 							$('.returnSlipDownload').css('display', '');
+							$('#return_slip_dl').val(res_val["param"]);
 						} else {
-							// 登録処理にエラーがある場合
 							$("#h").text('');
 							$(".explanation").text('');
 							that.triggerMethod('showAlerts', res_val["error_msg"]);
@@ -70,20 +68,14 @@ define([
 				});
 			},
 			events: {
-				// 「続けて入力する」ボタン
 				'click @ui.continueInput': function(){
-					// 検索画面の条件項目を取得
 					var cond = window.sessionStorage.getItem("wearer_size_change_cond");
 					window.sessionStorage.setItem("back_wearer_size_change_cond", cond);
-					// 検索画面へ遷移
 					location.href="wearer_size_change.html";
 				},
-				// 「ホーム画面へ戻る」ボタン
 				'click @ui.backHome': function(){
-					// ホーム画面へ遷移
 					location.href="home.html";
 				},
-				// 「返却伝票ダウンロード」ボタン
 				'click @ui.returnSlipDownload': function(){
 					alert("てっちゃん、機能の実装よろしくお願いします。");
 				},

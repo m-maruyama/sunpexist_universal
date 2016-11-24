@@ -75,7 +75,7 @@
           <td class="individual_flg" style="display:none;">
             {{#each individual_chk}}
               <label>
-                <input type="checkbox" id="target_flg{{name_no}}" name="target_flg{{name_no}}" value="{{individual_ctrl_no}}" {{checked}}>
+                <input type="checkbox" class="target_flg {{name_no}}" id="target_flg{{name_no}}" name="target_flg{{name_no}}" value="{{individual_ctrl_no}}" {{checked}} {{disabled}}>
               </label>
               {{{br}}}
             {{/each}}
@@ -85,15 +85,15 @@
             <input type="hidden" name="individual_cnt{{arr_num}}" value="{{individual_cnt}}">
           </td>
           <td>
-            {{order_num}}
-            <input type="hidden" class="order_num" id="order_num{{arr_num}}" name="order_num{{arr_num}}" value="{{order_num}}">
+            {{#if order_num_text_disp}}
+            <input type="text" style="width:4em; font-weight:normal; text-align:center;" class="input-sm order_num" id="order_num{{arr_num}}" name="order_num{{arr_num}}" value="{{order_num}}" disabled="disabled">
+            {{/if}}
           </td>
           <td>
             {{#if return_num_text_disp}}
               <input type="text" style="width:4em; font-weight:normal; text-align:center;" class="input-sm return_num" id="return_num{{arr_num}}" name="return_num{{arr_num}}" value="{{return_num}}">
             {{else}}
-              {{return_num}}
-              <input type="hidden" class="return_num" id="return_num{{arr_num}}" name="return_num{{arr_num}}" value="{{return_num}}">
+              <input type="text" style="width:4em; font-weight:normal; text-align:center;" class="input-sm return_num" id="return_num{{arr_num}}" name="return_num{{arr_num}}" value="{{return_num}}" disabled="disabled">
             {{/if}}
           </td>
           <td>

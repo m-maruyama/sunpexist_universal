@@ -30,7 +30,7 @@ define([
 			ui: {
 				'order_count': '#order_count',
 				'return_count': '#return_count',
-				'target_flg': '#target_flg',
+				'target_flg': '.target_flg',
 				'size_cd': '.size_cd',
 				'order_num': '.order_num',
 				'return_num': '.return_num',
@@ -40,7 +40,7 @@ define([
 			bindings: {
 				'#order_count': 'order_count',
 				'#return_count': 'return_count',
-				'#target_flg': 'target_flg',
+				'.target_flg': 'target_flg',
 				'.size_cd': 'size_cd',
 				'.order_num': 'order_num',
 				'.return_num': 'return_num',
@@ -100,6 +100,7 @@ define([
 						"color_cd": target_val[2],
 						"size_cd": target_val[3]
 					};
+					var individual_flg = target_val[4];
 					var add_cnt = $("input[name='add_cnt"+line_no+"']").val();
 					add_cnt = parseInt(add_cnt) + parseInt(1);
 					$("input[name='add_cnt"+line_no+"']").val(add_cnt);
@@ -131,6 +132,9 @@ define([
 								var cell8 = new_row.insertCell(7);
 								var cell9 = new_row.insertCell(8);
 								var cell10 = new_row.insertCell(9);
+								if (individual_flg) {
+									var cell11 = new_row.insertCell(10);
+								}
 
 								var color = "#F2F5A9";
 								cell1.style.backgroundColor = color;
@@ -143,6 +147,9 @@ define([
 								cell8.style.backgroundColor = color;
 								cell9.style.backgroundColor = color;
 								cell10.style.backgroundColor = color;
+								if (individual_flg) {
+									cell11.style.backgroundColor = color;
+								}
 
 								for (var i=1; i<6; i++) {
 									if ($('input[name="add_no'+line_no+'-'+i+'"]').length == 0) {
@@ -162,15 +169,22 @@ define([
 								var cell3_html = res_list["add_item"][0]["possible_num"]+'<input type="hidden" name="possible_num'+line_no+'-'+add_no+'" value="'+res_list["add_item"][0]["possible_num"]+'">';
 								var cell4_html = res_list["add_item"][0]["item_and_color"]+'<br/>'+res_list["add_item"][0]["input_item_name"];
 								var cell5_html = '<input type="hidden" name="now_size_cd'+line_no+'-'+add_no+'" value="'+res_list["add_item"][0]["now_size_cd"]+'">';
-								var option_str = "";
+								var option_str = '';
 								for (var i=0; i<res_list["add_item"][0]["size_cd"].length; i++) {
 									option_str += '<option value="'+res_list["add_item"][0]["size_cd"][i]["size"]+'">'+res_list["add_item"][0]["size_cd"][i]["size"]+'</option>';
 								}
 								var cell6_html = '<select class="form-control input-sm" id="size_cd" name="size_cd'+line_no+'-'+add_no+'">'+option_str+'</select>';
 								var cell7_html = '<input type="hidden" name="exchange_possible_num'+line_no+'-'+add_no+'" value="'+res_list["add_item"][0]["exchange_possible_num"]+'">';
-								var cell8_html = '<input type="text" style="width:4em; font-weight:normal; text-align:center;" class="input-sm order_num" id="order_num'+line_no+'-'+add_no+'" name="order_num'+line_no+'-'+add_no+'" value="0">';
-								var cell9_html = '';
-								var cell10_html = '<button type="button" class="btn btn-primary size_del" title="削除" id="size_del'+line_no+'" value="'+line_no+'">削除</button>';
+								if (individual_flg) {
+									var cell8_html = '';
+									var cell9_html = '<input type="text" style="width:4em; font-weight:normal; text-align:center;" class="input-sm order_num" id="order_num'+line_no+'-'+add_no+'" name="order_num'+line_no+'-'+add_no+'" value="0">';
+									var cell10_html = '';
+									var cell11_html = '<button type="button" class="btn btn-primary size_del" title="削除" id="size_del'+line_no+'" value="'+line_no+'">削除</button>';
+								} else {
+									var cell8_html = '<input type="text" style="width:4em; font-weight:normal; text-align:center;" class="input-sm order_num" id="order_num'+line_no+'-'+add_no+'" name="order_num'+line_no+'-'+add_no+'" value="0">';
+									var cell9_html = '';
+									var cell10_html = '<button type="button" class="btn btn-primary size_del" title="削除" id="size_del'+line_no+'" value="'+line_no+'">削除</button>';
+								}
 
 								cell1.innerHTML = cell1_html;
 								cell2.innerHTML = cell2_html;
@@ -182,6 +196,9 @@ define([
 								cell8.innerHTML = cell8_html;
 								cell9.innerHTML = cell9_html;
 								cell10.innerHTML = cell10_html;
+								if (individual_flg) {
+									cell11.innerHTML = cell11_html;
+								}
 							}
 						}
 					});
@@ -234,6 +251,27 @@ define([
 						return_num = 0;
 					}
 					$("#"+e.target.id).val(return_num);
+
+					var return_count = parseInt(0);
+					$(".return_num").each(function () {
+						if ($(this).val()) {
+							return_count += parseInt($(this).val());
+						}
+					});
+					$("input[name='return_count']").val(return_count);
+				},
+				'change @ui.target_flg': function(e) {
+					e.preventDefault();
+					var that = this;
+
+					var no = e.target.classList[1];
+					var cnt = parseInt(0);
+					$("#"+e.target.id).each(function () {
+						if ($(this).prop("checked")) {
+							cnt += parseInt(1);
+						}
+					});
+					$("#return_num"+no).val(cnt);
 
 					var return_count = parseInt(0);
 					$(".return_num").each(function () {
