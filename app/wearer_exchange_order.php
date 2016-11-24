@@ -887,24 +887,18 @@ $app->post('/wearer_exchange/list', function ()use($app){
           $list["size_cd"][] = $element;
           foreach ($m_item_results as $m_item_result) {
             if ($list["now_size_cd"] !== $m_item_result->size_cd) {
+              $element["size"] = $m_item_result->size_cd;
+              $element["selected"] = "";
               // 初期選択表示
               foreach ($order_tran_list as $order_tran_map) {
                 if ($list["item_cd"] == $order_tran_map["item_cd"] && $list["color_cd"] == $order_tran_map["color_cd"]) {
                   if ($m_item_result->size_cd == $order_tran_map["size_cd"]) {
                     $element["size"] = $m_item_result->size_cd;
                     $element["selected"] = "selected";
-                    $list["size_cd"][] = $element;
-                  } else {
-                    $element["size"] = $m_item_result->size_cd;
-                    $element["selected"] = "";
-                    $list["size_cd"][] = $element;
                   }
-                } else {
-                  $element["size"] = $m_item_result->size_cd;
-                  $element["selected"] = "";
-                  $list["size_cd"][] = $element;
                 }
               }
+              $list["size_cd"][] = $element;
             }
           }
         }
