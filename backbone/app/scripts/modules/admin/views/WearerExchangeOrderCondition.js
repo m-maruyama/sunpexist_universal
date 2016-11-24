@@ -357,6 +357,7 @@ define([
 					var tran_req_no = $("button[name='complete_param']").val();
 					var agreement_no = $("select[name='agreement_no']").val();
 					var reason_kbn = $("select[name='reason_kbn']").val();
+					var return_date = $("input[name='return_date']").val();
 					var emply_cd_flg = $("#emply_cd_flg").prop("checked");
 					var member_no = $("input[name='member_no']").val();
 					var member_name = $("input[name='member_name']").val();
@@ -370,6 +371,7 @@ define([
 						'tran_req_no': tran_req_no,
 						'agreement_no': agreement_no,
 						'reason_kbn': reason_kbn,
+						'return_date': return_date,
 						//'emply_cd_flg': emply_cd_flg,
 						'member_no': member_no,
 						'member_name': member_name,
@@ -475,6 +477,7 @@ define([
 					var tran_req_no = $("button[name='send_param']").val();
 					var agreement_no = $("select[name='agreement_no']").val();
 					var reason_kbn = $("select[name='reason_kbn']").val();
+					var return_date = $("input[name='return_date']").val();
 					var emply_cd_flg = $("#emply_cd_flg").prop("checked");
 					var member_no = $("input[name='member_no']").val();
 					var member_name = $("input[name='member_name']").val();
@@ -488,6 +491,7 @@ define([
 						'tran_req_no': tran_req_no,
 						'agreement_no': agreement_no,
 						'reason_kbn': reason_kbn,
+						'return_date': return_date,
 						//'emply_cd_flg': emply_cd_flg,
 						'member_no': member_no,
 						'member_name': member_name,

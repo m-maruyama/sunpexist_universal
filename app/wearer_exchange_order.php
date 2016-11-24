@@ -1953,6 +1953,12 @@ $app->post('/wearer_exchange/complete', function ()use($app){
        return;
      }
      //--着用者情報--//
+     // 返却予定日
+     if (empty($wearer_data_input["return_date"])) {
+       $json_list["error_code"] = "1";
+       $error_msg = "返却予定日を入力してください。";
+       array_push($json_list["error_msg"], $error_msg);
+     }
 /*
      // 社員コード
      if ($wearer_data_input['emply_cd_flg']) {
@@ -1984,6 +1990,11 @@ $app->post('/wearer_exchange/complete', function ()use($app){
         }
      }
      // 着用者名（読み仮名）
+     if (empty($wearer_data_input["member_name_kana"])) {
+       $json_list["error_code"] = "1";
+       $error_msg = "着用者名(読み仮名)を入力してください。";
+       array_push($json_list["error_msg"], $error_msg);
+     }
      if (mb_strlen($wearer_data_input['member_name_kana']) > 0) {
         if (strlen(mb_convert_encoding($wearer_data_input['member_name_kana'], "SJIS")) > 25) {
           $json_list["error_code"] = "1";
@@ -3515,6 +3526,12 @@ $app->post('/wearer_exchange/send', function ()use($app){
       return;
     }
     //--着用者情報--//
+    // 返却予定日
+    if (empty($wearer_data_input["return_date"])) {
+      $json_list["error_code"] = "1";
+      $error_msg = "返却予定日を入力してください。";
+      array_push($json_list["error_msg"], $error_msg);
+    }
 /*
     // 社員コード
     if ($wearer_data_input['emply_cd_flg']) {
@@ -3546,6 +3563,11 @@ $app->post('/wearer_exchange/send', function ()use($app){
        }
     }
     // 着用者名（読み仮名）
+    if (empty($wearer_data_input["member_name_kana"])) {
+      $json_list["error_code"] = "1";
+      $error_msg = "着用者名(読み仮名)を入力してください。";
+      array_push($json_list["error_msg"], $error_msg);
+    }
     if (mb_strlen($wearer_data_input['member_name_kana']) > 0) {
        if (strlen(mb_convert_encoding($wearer_data_input['member_name_kana'], "SJIS")) > 25) {
          $json_list["error_code"] = "1";
