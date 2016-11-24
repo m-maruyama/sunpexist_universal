@@ -850,57 +850,59 @@ $app->post('/wearer_exchange/list', function ()use($app){
         $list["now_size_cd"] = $item_result->as_size_cd;
         // サイズ
         $list["size_cd"] = array();
-        if ($item_result->as_size_add_flg == "0") {
-          $element = array();
-          $query_list = array();
-          $query_list[] = "item_cd = '".$list["item_cd"]."'";
-          $query_list[] = "color_cd = '".$list["color_cd"]."'";
-          $query = implode(' AND ', $query_list);
-          $arg_str = "";
-          $arg_str = "SELECT ";
-          $arg_str .= "size_cd";
-          $arg_str .= " FROM ";
-          $arg_str .= "m_item";
-          $arg_str .= " WHERE ";
-          $arg_str .= $query;
-          $arg_str .= " ORDER BY item_cd ASC, color_cd ASC";
-          $m_item = new MItem();
-          $m_item_results = new Resultset(NULL, $m_item, $m_item->getReadConnection()->query($arg_str));
-          $result_obj = (array)$m_item_results;
-          $results_cnt = $result_obj["\0*\0_count"];
-          $results_rows = $result_obj["\0*\0_rows"];
-          //ChromePhp::LOG($results_rows);
-          //ChromePhp::LOG($list["order_size_cd"]);
-          if (!empty($results_cnt)) {
-            $paginator_model = new PaginatorModel(
-                array(
-                    "data"  => $m_item_results,
-                    "limit" => $results_cnt,
-                    "page" => 1
-                )
-            );
-            $paginator = $paginator_model->getPaginate();
-            $m_item_results = $paginator->items;
+        $element = array();
+        $query_list = array();
+        $query_list[] = "item_cd = '".$list["item_cd"]."'";
+        $query_list[] = "color_cd = '".$list["color_cd"]."'";
+        $query = implode(' AND ', $query_list);
+        $arg_str = "";
+        $arg_str = "SELECT ";
+        $arg_str .= "size_cd";
+        $arg_str .= " FROM ";
+        $arg_str .= "m_item";
+        $arg_str .= " WHERE ";
+        $arg_str .= $query;
+        $arg_str .= " ORDER BY item_cd ASC, color_cd ASC";
+        $m_item = new MItem();
+        $m_item_results = new Resultset(NULL, $m_item, $m_item->getReadConnection()->query($arg_str));
+        $result_obj = (array)$m_item_results;
+        $results_cnt = $result_obj["\0*\0_count"];
+        $results_rows = $result_obj["\0*\0_rows"];
+        //ChromePhp::LOG($results_rows);
+        //ChromePhp::LOG($list["order_size_cd"]);
+        if (!empty($results_cnt)) {
+          $paginator_model = new PaginatorModel(
+              array(
+                  "data"  => $m_item_results,
+                  "limit" => $results_cnt,
+                  "page" => 1
+              )
+          );
+          $paginator = $paginator_model->getPaginate();
+          $m_item_results = $paginator->items;
 
-            // 未選択
-            $element["size"] = "";
-            $element["selected"] = "";
-            $list["size_cd"][] = $element;
-            foreach ($m_item_results as $m_item_result) {
-              if ($list["now_size_cd"] !== $m_item_result->size_cd) {
-                // 初期選択表示
-                foreach ($order_tran_list as $order_tran_map) {
-                  if ($list["item_cd"] == $order_tran_map["item_cd"] && $list["color_cd"] == $order_tran_map["color_cd"]) {
-                    if ($m_item_result->size_cd == $order_tran_map["size_cd"]) {
-                      $element["size"] = $m_item_result->size_cd;
-                      $element["selected"] = "selected";
-                      $list["size_cd"][] = $element;
-                    } else {
-                      $element["size"] = $m_item_result->size_cd;
-                      $element["selected"] = "";
-                      $list["size_cd"][] = $element;
-                    }
+          // 未選択
+          $element["size"] = "";
+          $element["selected"] = "";
+          $list["size_cd"][] = $element;
+          foreach ($m_item_results as $m_item_result) {
+            if ($list["now_size_cd"] !== $m_item_result->size_cd) {
+              // 初期選択表示
+              foreach ($order_tran_list as $order_tran_map) {
+                if ($list["item_cd"] == $order_tran_map["item_cd"] && $list["color_cd"] == $order_tran_map["color_cd"]) {
+                  if ($m_item_result->size_cd == $order_tran_map["size_cd"]) {
+                    $element["size"] = $m_item_result->size_cd;
+                    $element["selected"] = "selected";
+                    $list["size_cd"][] = $element;
+                  } else {
+                    $element["size"] = $m_item_result->size_cd;
+                    $element["selected"] = "";
+                    $list["size_cd"][] = $element;
                   }
+                } else {
+                  $element["size"] = $m_item_result->size_cd;
+                  $element["selected"] = "";
+                  $list["size_cd"][] = $element;
                 }
               }
             }
@@ -1059,6 +1061,13 @@ $app->post('/wearer_exchange/list', function ()use($app){
         // ※返却予定情報トランに存在する場合はこちらを設定
         $list["return_num"] = 0;
         if ($auth["individual_flg"] == "0") {
+          if ($item_result->as_size_add_flg == "0") {
+            $list["return_num"] = $list["exchange_possible_num"];
+            $list["return_num_text_disp"] = false;
+          } else {
+            $list["return_num"] = 0;
+            $list["return_num_text_disp"] = true;
+          }
           foreach ($return_tran_list as $tran_map) {
             if (
               $list["item_cd"] == $tran_map["item_cd"] &&
@@ -1067,7 +1076,6 @@ $app->post('/wearer_exchange/list', function ()use($app){
             )
             {
               $list["return_num"] = $tran_map["return_plan_qty"];
-              $list["return_num_text_disp"] = true;
             }
           }
         } else {
@@ -1079,7 +1087,7 @@ $app->post('/wearer_exchange/list', function ()use($app){
               $list["return_num"] = $list["exchange_possible_num"];
               $list["return_num_text_disp"] = false;
             } else {
-              $list["return_num_text_disp"] = false;
+              $list["return_num_text_disp"] = true;
             }
           }
         }
