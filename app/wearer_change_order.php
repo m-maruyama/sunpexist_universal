@@ -27,17 +27,11 @@ $app->post('/agreement_no_change', function ()use($app){
     $all_list = array();
     $json_list = array();
 
-    // 契約マスタ. 企業ID
     array_push($query_list, "m_contract.corporate_id = '".$auth['corporate_id']."'");
-    // 契約マスタ. レンタル契約フラグ
     array_push($query_list, "m_contract.rntl_cont_flg = '1'");
-    // 契約リソースマスタ. 企業ID
     array_push($query_list, "m_contract_resource.corporate_id = '".$auth['corporate_id']."'");
-    // アカウントマスタ.企業ID
     array_push($query_list, "m_account.corporate_id = '".$auth['corporate_id']."'");
-    // アカウントマスタ. ユーザーID
     array_push($query_list, "m_account.user_id = '".$auth['user_id']."'");
-
     $query = implode(' AND ', $query_list);
 
     $arg_str = 'SELECT ';
@@ -643,9 +637,7 @@ $app->post('/wearer_change/info', function ()use($app){
     array_push($query_list, "t_order_tran.werer_cd = '".$wearer_chg_post['werer_cd']."'");
     array_push($query_list, "t_order_tran.rntl_sect_cd = '".$wearer_chg_post['rntl_sect_cd']."'");
     array_push($query_list, "t_order_tran.job_type_cd = '".$wearer_chg_post['job_type_cd']."'");
-    // 発注状況区分(異動)
-    array_push($query_list,"t_order_tran.order_sts_kbn = '5'");
-    // 理由区分(職種変更または異動)
+    array_push($query_list, "t_order_tran.order_sts_kbn = '5'");
     $reason_kbns = array();
     array_push($reason_kbns, "t_order_tran.order_reason_kbn = '09'");
     array_push($reason_kbns, "t_order_tran.order_reason_kbn = '10'");
@@ -745,7 +737,7 @@ $app->post('/wearer_change/info', function ()use($app){
       $query_list = array();
       array_push($query_list, "m_wearer_std.corporate_id = '".$auth['corporate_id']."'");
       array_push($query_list, "m_wearer_std.rntl_cont_no = '".$wearer_chg_post['rntl_cont_no']."'");
-      array_push($query_list,"m_wearer_std.werer_cd = '".$wearer_chg_post['werer_cd']."'");
+      array_push($query_list, "m_wearer_std.werer_cd = '".$wearer_chg_post['werer_cd']."'");
       $query = implode(' AND ', $query_list);
 
       $arg_str = "";
@@ -815,9 +807,7 @@ $app->post('/wearer_change/info', function ()use($app){
     array_push($query_list, "t_order_tran.werer_cd = '".$wearer_chg_post['werer_cd']."'");
     array_push($query_list, "t_order_tran.rntl_sect_cd = '".$wearer_chg_post['rntl_sect_cd']."'");
     array_push($query_list, "t_order_tran.job_type_cd = '".$wearer_chg_post['job_type_cd']."'");
-    // 発注状況区分(異動)
-    array_push($query_list,"t_order_tran.order_sts_kbn = '5'");
-    // 理由区分(職種変更または異動)
+    array_push($query_list, "t_order_tran.order_sts_kbn = '5'");
     $reason_kbns = array();
     array_push($reason_kbns, "t_order_tran.order_reason_kbn = '09'");
     array_push($reason_kbns, "t_order_tran.order_reason_kbn = '10'");
@@ -872,9 +862,7 @@ $app->post('/wearer_change/info', function ()use($app){
     array_push($query_list, "t_returned_plan_info_tran.werer_cd = '".$wearer_chg_post['werer_cd']."'");
     array_push($query_list, "t_returned_plan_info_tran.rntl_sect_cd = '".$wearer_chg_post['rntl_sect_cd']."'");
     array_push($query_list, "t_returned_plan_info_tran.job_type_cd = '".$wearer_chg_post['job_type_cd']."'");
-    // 発注状況区分(異動)
-    array_push($query_list,"t_returned_plan_info_tran.order_sts_kbn = '5'");
-    // 理由区分(職種変更または異動)
+    array_push($query_list, "t_returned_plan_info_tran.order_sts_kbn = '5'");
     $reason_kbns = array();
     array_push($reason_kbns, "t_returned_plan_info_tran.order_reason_kbn = '09'");
     array_push($reason_kbns, "t_returned_plan_info_tran.order_reason_kbn = '10'");
@@ -1638,8 +1626,6 @@ $app->post('/wearer_change/info', function ()use($app){
        array_push($query_list, "m_job_type.job_type_cd = '".$chk_map['job_type_cd']."'");
        array_push($query_list, "m_input_item.job_type_cd = '".$chk_map['job_type_cd']."'");
        array_push($query_list, "m_input_item.item_cd = '".$chk_map['item_cd']."'");
-//       array_push($query_list, "m_input_item.color_cd = '".$chk_map['color_cd']."'");
-//       array_push($query_list, "m_input_item.size_two_cd = '".$chk_map['size_two_cd']."'");
        $query = implode(' AND ', $query_list);
 
        $arg_str = "";
@@ -1673,11 +1659,11 @@ $app->post('/wearer_change/info', function ()use($app){
        $list["input_item_name"] = $chk_map['input_item_name'];
        // サイズ
        $list["size_cd"] = array();
+       $element = array();
        $query_list = array();
-       array_push($query_list, "m_item.item_cd = '".$chk_map['item_cd']."'");
-       array_push($query_list, "m_item.color_cd = '".$chk_map['color_cd']."'");
+       $query_list[] = "m_item.item_cd = '".$chk_map['item_cd']."'";
+       $query_list[] = "m_item.color_cd = '".$chk_map['color_cd']."'";
        $query = implode(' AND ', $query_list);
-
        $arg_str = "";
        $arg_str = "SELECT ";
        $arg_str .= "size_cd";
@@ -1685,7 +1671,7 @@ $app->post('/wearer_change/info', function ()use($app){
        $arg_str .= "m_item";
        $arg_str .= " WHERE ";
        $arg_str .= $query;
-
+       $arg_str .= " ORDER BY size_cd ASC";
        $m_item = new MItem();
        $results = new Resultset(NULL, $m_item, $m_item->getReadConnection()->query($arg_str));
        $result_obj = (array)$results;
@@ -1702,7 +1688,34 @@ $app->post('/wearer_change/info', function ()use($app){
          $results = $paginator->items;
          //ChromePhp::LOG($results);
          foreach ($results as $result) {
-           array_push($list["size_cd"], $result->size_cd);
+           $element["size"] = $result->size_cd;
+
+           $query_list = array();
+           $query_list[] = "corporate_id = '".$auth['corporate_id']."'";
+           $query_list[] = "job_type_cd = '".$chk_map['job_type_cd']."'";
+           $query_list[] = "order_req_no = '".$wearer_chg_post['order_req_no']."'";
+           $query_list[] = "item_cd = '".$chk_map['item_cd']."'";
+           $query_list[] = "color_cd = '".$chk_map['color_cd']."'";
+           $query_list[] = "job_type_item_cd = '".$chk_map['job_type_item_cd']."'";
+           $query_list[] = "size_cd = '".$result->size_cd."'";
+           $query = implode(' AND ', $query_list);
+           $arg_str = "";
+           $arg_str .= "SELECT ";
+           $arg_str .= "*";
+           $arg_str .= " FROM ";
+           $arg_str .= "t_order_tran";
+           $arg_str .= " WHERE ";
+           $arg_str .= $query;
+           $t_order_tran = new TOrderTran();
+           $results = new Resultset(NULL, $t_order_tran, $t_order_tran->getReadConnection()->query($arg_str));
+           $result_obj = (array)$results;
+           $results_cnt = $result_obj["\0*\0_count"];
+           if ($results_cnt > 0) {
+             $element["selected"] = "selected";
+           } else {
+             $element["selected"] = "";
+           }
+           $list["size_cd"][] = $element;
          }
        }
        // 発注数(単一選択=入力不可、複数選択=入力可)
@@ -1719,9 +1732,7 @@ $app->post('/wearer_change/info', function ()use($app){
          array_push($query_list, "t_order_tran.job_type_cd = '".$chk_map["job_type_cd"]."'");
          array_push($query_list, "t_order_tran.item_cd = '".$chk_map["item_cd"]."'");
          array_push($query_list, "t_order_tran.color_cd = '".$chk_map["color_cd"]."'");
-         // 発注状況区分(異動)
          array_push($query_list,"t_order_tran.order_sts_kbn = '5'");
-         // 理由区分(職種変更または異動)
          $reason_kbns = array();
          array_push($reason_kbns, "t_order_tran.order_reason_kbn = '09'");
          array_push($reason_kbns, "t_order_tran.order_reason_kbn = '10'");
@@ -1832,8 +1843,6 @@ $app->post('/wearer_change/info', function ()use($app){
        array_push($query_list, "m_job_type.job_type_cd = '".$now_wearer_map['job_type_cd']."'");
        array_push($query_list, "m_input_item.job_type_cd = '".$now_wearer_map['job_type_cd']."'");
        array_push($query_list, "m_input_item.item_cd = '".$now_wearer_map['item_cd']."'");
-//       array_push($query_list, "m_input_item.color_cd = '".$now_wearer_map['color_cd']."'");
-//       array_push($query_list, "m_input_item.size_two_cd = '".$now_wearer_map['size_two_cd']."'");
        $query = implode(' AND ', $query_list);
 
        $arg_str = "";

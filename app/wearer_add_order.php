@@ -35,8 +35,6 @@ $app->post('/wearer_add/info', function ()use($app){
   array_push($query_list, "t_order_tran.corporate_id = '".$auth['corporate_id']."'");
   array_push($query_list, "t_order_tran.rntl_cont_no = '".$wearer_other_post['rntl_cont_no']."'");
   array_push($query_list, "t_order_tran.werer_cd = '".$wearer_other_post['werer_cd']."'");
-  array_push($query_list, "t_order_tran.rntl_sect_cd = '".$wearer_other_post['rntl_sect_cd']."'");
-  array_push($query_list, "t_order_tran.job_type_cd = '".$wearer_other_post['job_type_cd']."'");
   // 発注状況区分(貸与)
   array_push($query_list,"t_order_tran.order_sts_kbn = '1'");
   // 理由区分(追加貸与)
@@ -68,10 +66,8 @@ $app->post('/wearer_add/info', function ()use($app){
   array_push($query_list, "m_wearer_std_tran.corporate_id = '".$auth['corporate_id']."'");
   array_push($query_list, "m_wearer_std_tran.rntl_cont_no = '".$wearer_other_post['rntl_cont_no']."'");
   array_push($query_list, "m_wearer_std_tran.werer_cd = '".$wearer_other_post['werer_cd']."'");
-  array_push($query_list, "m_wearer_std_tran.rntl_sect_cd = '".$wearer_other_post['rntl_sect_cd']."'");
-  array_push($query_list, "m_wearer_std_tran.job_type_cd = '".$wearer_other_post['job_type_cd']."'");
-  // 発注状況区分(貸与)
-  array_push($query_list,"m_wearer_std_tran.order_sts_kbn = '1'");
+  array_push($query_list, "m_wearer_std_tran.order_sts_kbn = '1'");
+  array_push($query_list, "t_order_tran.order_reason_kbn = '03'");
   $query = implode(' AND ', $query_list);
 
   $arg_str = "";
@@ -83,6 +79,8 @@ $app->post('/wearer_add/info', function ()use($app){
   $arg_str .= "m_wearer_std_tran.resfl_ymd as as_resfl_ymd";
   $arg_str .= " FROM ";
   $arg_str .= "m_wearer_std_tran";
+  $arg_str .= " INNER JOIN t_order_tran";
+  $arg_str .= " ON m_wearer_std_tran.order_req_no = t_order_tran.order_req_no";
   $arg_str .= " WHERE ";
   $arg_str .= $query;
   $arg_str .= " ORDER BY m_wearer_std_tran.upd_date DESC";
@@ -808,7 +806,6 @@ $app->post('/wearer_add/info', function ()use($app){
          array_push($query_list, "m_item.item_cd = '".$list["item_cd"]."'");
          array_push($query_list, "m_item.color_cd = '".$list["color_cd"]."'");
          $query = implode(' AND ', $query_list);
-
          $arg_str = "";
          $arg_str = "SELECT ";
          $arg_str .= "size_cd";

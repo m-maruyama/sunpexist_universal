@@ -1322,370 +1322,233 @@ $app->post('/wearer_end_order_insert', function () use ($app) {
             $results_cnt = $result_obj["\0*\0_count"];
             $cnt = 1;
             foreach ($now_item_input as $now_item_input_map) {
-                $calum_list = array();
-                $values_list = array();
-
-                // 発注依頼行No.生成
-                $order_req_line_no = $cnt++;
-
-                // 発注情報_統合ハッシュキー(企業ID、発注依頼No、発注依頼行No)
-                $t_order_comb_hkey = md5(
-                    $auth['corporate_id']
-                    .$shin_order_req_no
-                    .$order_req_line_no
-                );
-                array_push($calum_list, "t_order_comb_hkey");
-                array_push($values_list, "'".$t_order_comb_hkey."'");
-                // 企業ID
-                array_push($calum_list, "corporate_id");
-                array_push($values_list, "'".$auth['corporate_id']."'");
-                // 発注依頼No.
-                array_push($calum_list, "order_req_no");
-                array_push($values_list, "'".$shin_order_req_no."'");
-                // 発注依頼行No.
-                array_push($calum_list, "order_req_line_no");
-                array_push($values_list, "'".$order_req_line_no."'");
-                // 発注依頼日
-                array_push($calum_list, "order_req_ymd");
-                array_push($values_list, "'".date('Ymd', time())."'");
-                // 発注状況区分(終了)
-                array_push($calum_list, "order_sts_kbn");
-                array_push($values_list, "'2'");
-                // レンタル契約No
-                array_push($calum_list, "rntl_cont_no");
-                array_push($values_list, "'".$wearer_end_post['rntl_cont_no']."'");
-                // レンタル部門コード
-                array_push($calum_list, "rntl_sect_cd");
-                array_push($values_list, "'".$cond['rntl_sect_cd']."'");
-                // 貸与パターン
-                array_push($calum_list, "job_type_cd");
-                array_push($values_list, "'".$cond['job_type']."'");
-                // 職種アイテムコード
-                array_push($calum_list, "job_type_item_cd");
-                array_push($values_list, "''");
-                // 着用者コード
-                array_push($calum_list, "werer_cd");
-                array_push($values_list, "'".$werer_cd."'");
-                // 商品コード
-                array_push($calum_list, "item_cd");
-                array_push($values_list, "''");
-                // 色コード
-                array_push($calum_list, "color_cd");
-                array_push($values_list, "''");
-                array_push($calum_list, "resfl_ymd");
-                array_push($values_list, "'" . $resfl_ymd . "'");
-                // 送信日時
-                array_push($calum_list, "snd_date");
-                array_push($values_list, "'" . $snd_date . "'");
-                // サイズコード
-                array_push($calum_list, "size_cd");
-                array_push($values_list, "''");
-                // サイズコード2
-                array_push($calum_list, "size_two_cd");
-                array_push($values_list, "' '");
-                // 出荷先、出荷先支店コード
-                array_push($calum_list, "ship_to_cd");
-                array_push($values_list, "''");
-                array_push($calum_list, "ship_to_brnch_cd");
-                array_push($values_list, "''");
-                // 発注枚数
-                array_push($calum_list, "order_qty");
-                array_push($values_list, "'0'");
-                // 備考欄
-                array_push($calum_list, "memo");
-                array_push($values_list, "'".$cond['comment']."'");
-                // 着用者名
-                array_push($calum_list, "werer_name");
-                array_push($values_list, "'".$wearer_end_post['werer_name']."'");
-                // 客先社員コード
-                if (!empty($wearer_end_post['cster_emply_cd'])) {
-                    array_push($calum_list, "cster_emply_cd");
-                    array_push($values_list, "'".$wearer_end_post['cster_emply_cd']."'");
-                }
-                // 着用者状況区分(終了)
-                array_push($calum_list, "werer_sts_kbn");
-                array_push($values_list, "'3'");
-                // 発令日
-                if (!empty($wearer_end_post['appointment_ymd'])) {
-                    $appointment_ymd = date('Ymd', strtotime($wearer_end_post['appointment_ymd']));
-                    array_push($calum_list, "appointment_ymd");
-                    array_push($values_list, "'".$appointment_ymd."'");
-                } else {
-                    array_push($calum_list, "appointment_ymd");
-                    array_push($values_list, "NULL");
-                }
-                // 送信区分
-                if($params['snd_kbn']=='0'){
-                    //未送信
-                    array_push($calum_list, "snd_kbn");
-                    array_push($values_list, "'0'");
-                }else{
-                    //送信
-                    array_push($calum_list, "snd_kbn");
-                    array_push($values_list, "'1'");
-                }
-                // 削除区分
-                array_push($calum_list, "del_kbn");
-                array_push($values_list, "'0'");
-                // 登録日時
-                array_push($calum_list, "rgst_date");
-                array_push($values_list, "'".date("Y/m/d H:i:s", time())."'");
-                // 登録ユーザーID
-                array_push($calum_list, "rgst_user_id");
-                array_push($values_list, "'".$auth['accnt_no']."'");
-                // 更新日時
-                array_push($calum_list, "upd_date");
-                array_push($values_list, "'".date("Y/m/d H:i:s", time())."'");
-                // 更新ユーザーID
-                array_push($calum_list, "upd_user_id");
-                array_push($values_list, "'".$auth['accnt_no']."'");
-                // 更新PGID
-                array_push($calum_list, "upd_pg_id");
-                array_push($values_list, "'".$auth['accnt_no']."'");
-                // 発注ステータス(未出荷)
-                array_push($calum_list, "order_status");
-                array_push($values_list, "'1'");
-                // 理由区分
-                array_push($calum_list, "order_reason_kbn");
-                array_push($values_list, "'".$cond['reason_kbn']."'");
-                // 商品マスタ_統合ハッシュキー(企業ID、商品コード、色コード、サイズコード)
-                $m_item_comb_hkey = '1';
-                array_push($calum_list, "m_item_comb_hkey");
-                array_push($values_list, "'".$m_item_comb_hkey."'");
-                // 職種マスタ_統合ハッシュキー(企業ID、レンタル契約No.、職種コード)
-                $m_job_type_comb_hkey = '1';
-                array_push($calum_list, "m_job_type_comb_hkey");
-                array_push($values_list, "'".$m_job_type_comb_hkey."'");
-                // 部門マスタ_統合ハッシュキー(企業ID、レンタル契約No.、レンタル部門コード)
-                $m_section_comb_hkey = '1';
-                array_push($calum_list, "m_section_comb_hkey");
-                array_push($values_list, "'".$m_section_comb_hkey."'");
-                // 着用者基本マスタ_統合ハッシュキー(企業ID、着用者コード、レンタル契約No.、レンタル部門コード、職種コード)
-                array_push($calum_list, "m_wearer_std_comb_hkey");
-                array_push($values_list, "'".$m_wearer_std_comb_hkey."'");
-                // 着用者商品マスタ_統合ハッシュキー(企業ID、着用者コード、レンタル契約No.、レンタル部門コード、職種コード、職種アイテムコード、商品コード、色コード、サイズコード)
-                $m_wearer_item_comb_hkey = '1';
-                array_push($calum_list, "m_wearer_item_comb_hkey");
-                array_push($values_list, "'".$m_wearer_item_comb_hkey."'");
-                $calum_query = implode(',', $calum_list);
-                $values_query = implode(',', $values_list);
-
-                $arg_str = "";
-                $arg_str = "INSERT INTO t_order_tran";
-                $arg_str .= "(".$calum_query.")";
-                $arg_str .= " VALUES ";
-                $arg_str .= "(".$values_query.")";
-                $t_order_tran = new TOrderTran();
-                $results = new Resultset(NULL, $t_order_tran, $t_order_tran->getReadConnection()->query($arg_str));
-
                 if ($now_item_input_map["individual_flg"] == true && !empty($now_item_input_map["individual_data"])) {
                     // ※個体管理番号単位での登録の場合
                     foreach ($now_item_input_map["individual_data"] as $individual_data) {
-                        // 対象にチェックされている商品のみが登録対象、それ以外は以降処理しない
-                        if ($individual_data["now_target_flg"] == "0") {
-                            continue;
-                        }
+                        $calum_list = array();
+                        $values_list = array();
+
+                        // 発注依頼行No.生成
+                        $order_req_line_no = $cnt++;
+
+                        // 発注情報_統合ハッシュキー(企業ID、発注依頼No、発注依頼行No)
+                        $t_order_comb_hkey = md5(
+                            $auth['corporate_id']
+                            . $shin_order_req_no
+                            . $order_req_line_no
+                        );
+                        //発注情報トラン
+                        // 企業ID
+                        array_push($calum_list, "t_order_comb_hkey");
+                        array_push($values_list, "'" . $t_order_comb_hkey . "'");
+                        // 企業ID
+                        array_push($calum_list, "corporate_id");
+                        array_push($values_list, "'" . $corporate_id . "'");
+                        // 発注依頼No.
+                        array_push($calum_list, "order_req_no");
+                        array_push($values_list, "'" . $order_req_no . "'");
+                        // 発注依頼行No.
+                        array_push($calum_list, "order_req_line_no");
+                        array_push($values_list, "'" . $order_req_line_no . "'");
+                        // レンタル契約No
+                        array_push($calum_list, "rntl_cont_no");
+                        array_push($values_list, "'" . $rntl_cont_no . "'");
+                        // 着用者コード
+                        array_push($calum_list, "werer_cd");
+                        array_push($values_list, "'" . $werer_cd . "'");
+                        // 発注依頼日
+                        array_push($calum_list, "order_req_ymd");
+                        array_push($values_list, "'".date('Ymd', time())."'");
+
+                        // 削除区分
+                        array_push($calum_list, "del_kbn");
+                        array_push($values_list, "'" . $del_kbn . "'");
+                        // 登録日時
+                        array_push($calum_list, "rgst_date");
+                        array_push($values_list, "'" . $rgst_date . "'");
+                        // 登録ユーザーID
+                        array_push($calum_list, "rgst_user_id");
+                        array_push($values_list, "'" . $rgst_user_id . "'");
+                        // レンタル部門コード
+                        array_push($calum_list, "rntl_sect_cd");
+                        array_push($values_list, "'" . $rntl_sect_cd . "'");
+                        // 職種コード
+                        array_push($calum_list, "job_type_cd");
+                        array_push($values_list, "'" . $job_type_cd . "'");
+                        // 客先社員コード
+                        array_push($calum_list, "cster_emply_cd");
+                        array_push($values_list, "'" . $cster_emply_cd . "'");
+                        // 着用者名（漢字）
+                        array_push($calum_list, "werer_name");
+                        array_push($values_list, "'" . $werer_name . "'");
+                        // 備考欄
+                        array_push($calum_list, "memo");
+                        array_push($values_list, "'".$cond['comment']."'");
+                        // 商品コード
+                        array_push($calum_list, "item_cd");
+                        array_push($values_list, "'" . $now_item_input_map['now_item_cd'] . "'");
+                        // 色コード
+                        array_push($calum_list, "color_cd");
+                        array_push($values_list, "'" . $now_item_input_map['now_color_cd'] . "'");
+                        // サイズコード
+                        array_push($calum_list, "size_cd");
+                        array_push($values_list, "'" . $now_item_input_map['now_size_cd'] . "'");
+                        // サイズコード2
+                        array_push($calum_list, "size_two_cd");
+                        array_push($values_list, "''");
+                        // 職種アイテムコード
+                        array_push($calum_list, "job_type_item_cd");
+                        array_push($values_list, "'".$now_item_input_map['now_job_type_item_cd']."'");
+                        // 発注状況区分(貸与終了)
+                        array_push($calum_list, "order_sts_kbn");
+                        array_push($values_list, "'" . $order_sts_kbn . "'");
+                        // 送信区分
+                        array_push($calum_list, "snd_kbn");
+                        array_push($values_list, "'" . $snd_kbn . "'");
+                        // 送信日時
+                        array_push($calum_list, "snd_date");
+                        array_push($values_list, "'" . $snd_date . "'");
+                        // 着用者状況区分
+                        array_push($calum_list, "werer_sts_kbn");
+                        array_push($values_list, "'" . $werer_sts_kbn . "'");
+                        // 理由区分
+                        array_push($calum_list, "order_reason_kbn");
+                        array_push($values_list, "'" . $cond['reason_kbn'] . "'");
+                        // 異動日
+                        array_push($calum_list, "resfl_ymd");
+                        array_push($values_list, "'" . $resfl_ymd . "'");
+                        // 更新日時
+                        array_push($calum_list, "upd_date");
+                        array_push($values_list, "'" . $upd_date . "'");
+                        // 更新ユーザーID
+                        array_push($calum_list, "upd_user_id");
+                        array_push($values_list, "'" . $upd_user_id . "'");
+                        // 更新プログラムID
+                        array_push($calum_list, "upd_pg_id");
+                        array_push($values_list, "'" . $upd_pg_id . "'");
+                        // 発注ステータス(未出荷)
+                        array_push($calum_list, "order_status");
+                        array_push($values_list, "'1'");
+                        // 発注枚数
+                        array_push($calum_list, "order_qty");
+                        array_push($values_list, "'0'");
+
+                        // 商品マスタ_統合ハッシュキー(企業ID、商品コード、色コード、サイズコード)
+                        $m_item_comb_hkey = md5(
+                            $auth['corporate_id']
+                            . $now_item_input_map['now_item_cd']
+                            . $now_item_input_map['now_color_cd']
+                            . $now_item_input_map['now_size_cd']
+                        );
+                        array_push($calum_list, "m_item_comb_hkey");
+                        array_push($values_list, "'".$m_item_comb_hkey."'");
+                        // 職種マスタ_統合ハッシュキー(企業ID、レンタル契約No.、職種コード)
+                        array_push($calum_list, "m_job_type_comb_hkey");
+                        array_push($values_list, "'".$m_job_type[0]->m_job_type_comb_hkey."'");
+                        // 部門マスタ_統合ハッシュキー(企業ID、レンタル契約No.、レンタル部門コード)
+                        array_push($calum_list, "m_section_comb_hkey");
+                        array_push($values_list, "'".$m_section[0]->m_section_comb_hkey."'");
+
+                        // 着用者基本マスタ_統合ハッシュキー(企業ID、着用者コード、レンタル契約No.、レンタル部門コード、職種コード)
+                        array_push($calum_list, "m_wearer_std_comb_hkey");
+                        array_push($values_list, "'" . $m_wearer_std_comb_hkey . "'");
+                        // 着用者商品マスタ_統合ハッシュキー(企業ID、着用者コード、レンタル契約No.、レンタル部門コード、職種コード、職種アイテムコード、商品コード、色コード、サイズコード)
+                        $m_wearer_item_comb_hkey = '1';
+                        array_push($calum_list, "m_wearer_item_comb_hkey");
+                        array_push($values_list, "'" . $m_wearer_item_comb_hkey . "'");
+                        $calum_query = implode(',', $calum_list);
+                        $values_query = implode(',', $values_list);
+
+                        $arg_str = "";
+                        $arg_str = "INSERT INTO t_order_tran";
+                        $arg_str .= "(" . $calum_query . ")";
+                        $arg_str .= " VALUES ";
+                        $arg_str .= "(" . $values_query . ")";
+                        $t_order_tran = new TOrderTran();
+                        $results = new Resultset(NULL, $t_order_tran, $t_order_tran->getReadConnection()->query($arg_str));
+
+                        //返却予定情報トラン
                         $calum_list = array();
                         $values_list = array();
 
                         // 企業ID
                         array_push($calum_list, "corporate_id");
-                        array_push($values_list, "'".$auth['corporate_id']."'");
+                        array_push($values_list, "'" . $corporate_id . "'");
                         // 発注依頼No.
                         array_push($calum_list, "order_req_no");
-                        array_push($values_list, "'".$shin_order_req_no."'");
+                        array_push($values_list, "'" . $shin_order_req_no . "'");
                         // 発注依頼行No.
                         array_push($calum_list, "order_req_line_no");
-                        array_push($values_list, "'".$order_req_line_no."'");
+                        array_push($values_list, "'" . $order_req_line_no . "'");
                         // レンタル契約No
                         array_push($calum_list, "rntl_cont_no");
-                        array_push($values_list, "'".$wearer_end_post['rntl_cont_no']."'");
+                        array_push($values_list, "'" . $rntl_cont_no . "'");
                         // 商品コード
                         array_push($calum_list, "item_cd");
-                        array_push($values_list, "'".$now_item_input_map['now_item_cd']."'");
+                        array_push($values_list, "'" . $now_item_input_map['now_item_cd'] . "'");
                         // 色コード
                         array_push($calum_list, "color_cd");
-                        array_push($values_list, "'".$now_item_input_map['now_color_cd']."'");
+                        array_push($values_list, "'" . $now_item_input_map['now_color_cd'] . "'");
                         // サイズコード
                         array_push($calum_list, "size_cd");
-                        array_push($values_list, "'".$now_item_input_map['now_size_cd']."'");
+                        array_push($values_list, "'" . $now_item_input_map['now_size_cd'] . "'");
                         // 個体管理番号
                         array_push($calum_list, "individual_ctrl_no");
-                        array_push($values_list, "'".$individual_data['individual_ctrl_no']."'");
+                        array_push($values_list, "'" . $individual_data['individual_ctrl_no'] . "'");
                         // 着用者コード
                         array_push($calum_list, "werer_cd");
-                        array_push($values_list, "'".$wearer_end_post['werer_cd']."'");
+                        array_push($values_list, "'" . $werer_cd . "'");
                         // 客先社員コード
-                        if (isset($wearer_end_post['cster_emply_cd'])) {
-                            array_push($calum_list, "cster_emply_cd");
-                            array_push($values_list, "'".$wearer_end_post['cster_emply_cd']."'");
-                        }
+                        array_push($calum_list, "cster_emply_cd");
+                        array_push($values_list, "'" . $cster_emply_cd . "'");
                         // レンタル部門コード
                         array_push($calum_list, "rntl_sect_cd");
-                        array_push($values_list, "'".$cond['rntl_sect_cd']."'");
+                        array_push($values_list, "'" . $rntl_sect_cd . "'");
                         // 貸与パターン
                         array_push($calum_list, "job_type_cd");
-                        array_push($values_list, "'".$cond['job_type']."'");
+                        array_push($values_list, "'" . $job_type_cd . "'");
                         // 発注依頼日
                         array_push($calum_list, "order_date");
-                        array_push($values_list, "'".date('Y-m-d H:i:s', time())."'");
+                        array_push($values_list, "'".date('Ymd', time())."'");
                         // 返却日
                         array_push($calum_list, "return_date");
-                        array_push($values_list, "'".date('Y-m-d H:i:s', time())."'");
+                        array_push($values_list, "'".date('Ymd', time())."'");
                         // 返却ステータス(未返却)
                         array_push($calum_list, "return_status");
                         array_push($values_list, "'1'");
                         // 発注状況区分(貸与終了)
                         array_push($calum_list, "order_sts_kbn");
-                        array_push($values_list, "'2'");
+                        array_push($values_list, "'" . $order_sts_kbn . "'");
                         // 返却予定数
                         array_push($calum_list, "return_plan_qty");
-                        array_push($values_list, "'".$individual_data['return_num']."'");
+                        array_push($values_list, "'" . $now_item_input_map['now_return_num'] . "'");
                         // 返却数
                         array_push($calum_list, "return_qty");
                         array_push($values_list, "'0'");
                         // 送信区分
-                        if($params['snd_kbn']=='0'){
-                            //未送信
-                            array_push($calum_list, "snd_kbn");
-                            array_push($values_list, "'0'");
-                        }else{
-                            //送信
-                            array_push($calum_list, "snd_kbn");
-                            array_push($values_list, "'1'");
-                        }
+                        array_push($calum_list, "snd_kbn");
+                        array_push($values_list, "'" . $snd_kbn . "'");
                         // 理由区分
                         array_push($calum_list, "order_reason_kbn");
-                        array_push($values_list, "'".$cond['reason_kbn']."'");
+                        array_push($values_list, "'" . $cond['reason_kbn'] . "'");
                         // 部門マスタ_統合ハッシュキー(企業ID、レンタル契約No.、レンタル部門コード)
-                        $m_section_comb_hkey = md5(
-                            $auth['corporate_id']
-                            .$wearer_end_post['rntl_cont_no']
-                            .$cond['rntl_sect_cd']
-                        );
                         array_push($calum_list, "m_section_comb_hkey");
-                        array_push($values_list, "'".$m_section_comb_hkey."'");
-                        // 商品マスタ_統合ハッシュキー(企業ID、商品コード、色コード、サイズコード)
-                        $m_item_comb_hkey = md5(
-                            $auth['corporate_id']
-                            .$now_item_input_map['now_item_cd']
-                            .$now_item_input_map['now_color_cd']
-                            .$now_item_input_map['now_size_cd']
-                        );
+                        array_push($values_list, "'" . $m_section_comb_hkey . "'");
+
                         array_push($calum_list, "m_item_comb_hkey");
-                        array_push($values_list, "'".$m_item_comb_hkey."'");
+                        array_push($values_list, "'" . $m_item_comb_hkey . "'");
                         $calum_query = implode(',', $calum_list);
                         $values_query = implode(',', $values_list);
 
                         $arg_str = "";
                         $arg_str = "INSERT INTO t_returned_plan_info_tran";
-                        $arg_str .= "(".$calum_query.")";
+                        $arg_str .= "(" . $calum_query . ")";
                         $arg_str .= " VALUES ";
-                        $arg_str .= "(".$values_query.")";
+                        $arg_str .= "(" . $values_query . ")";
                         $t_returned_plan_info_tran = new TReturnedPlanInfoTran();
                         $results = new Resultset(NULL, $t_returned_plan_info_tran, $t_returned_plan_info_tran->getReadConnection()->query($arg_str));
                         $results_cnt = $result_obj["\0*\0_count"];
                     }
-                } else if ($now_item_input_map["individual_flg"] == false && !empty($now_item_input_map["return_num"])) {arams["now_item"];
-
-                    // ※商品単位での登録の場合
-                    $calum_list = array();
-                    $values_list = array();
-
-                    // 企業ID
-                    array_push($calum_list, "corporate_id");
-                    array_push($values_list, "'".$auth['corporate_id']."'");
-                    // 発注依頼No.
-                    array_push($calum_list, "order_req_no");
-                    array_push($values_list, "'".$shin_order_req_no."'");
-                    // 発注依頼行No.
-                    array_push($calum_list, "order_req_line_no");
-                    array_push($values_list, "'".$order_req_line_no."'");
-                    // レンタル契約No
-                    array_push($calum_list, "rntl_cont_no");
-                    array_push($values_list, "'".$wearer_end_post['rntl_cont_no']."'");
-                    // 商品コード
-                    array_push($calum_list, "item_cd");
-                    array_push($values_list, "'".$now_item_input_map['now_item_cd']."'");
-                    // 色コード
-                    array_push($calum_list, "color_cd");
-                    array_push($values_list, "'".$now_item_input_map['now_color_cd']."'");
-                    // サイズコード
-                    array_push($calum_list, "size_cd");
-                    array_push($values_list, "'".$now_item_input_map['now_size_cd']."'");
-                    // 着用者コード
-                    array_push($calum_list, "werer_cd");
-                    array_push($values_list, "'".$wearer_end_post['werer_cd']."'");
-                    // 客先社員コード
-                    if (isset($wearer_end_post['cster_emply_cd'])) {
-                        array_push($calum_list, "cster_emply_cd");
-                        array_push($values_list, "'".$wearer_end_post['cster_emply_cd']."'");
-                    }
-                    // レンタル部門コード
-                    array_push($calum_list, "rntl_sect_cd");
-                    array_push($values_list, "'".$cond['rntl_sect_cd']."'");
-                    // 貸与パターン
-                    array_push($calum_list, "job_type_cd");
-                    array_push($values_list, "'".$cond['job_type']."'");
-                    // 発注依頼日
-                    array_push($calum_list, "order_date");
-                    array_push($values_list, "'".date('Y-m-d H:i:s', time())."'");
-                    // 返却日
-                    array_push($calum_list, "return_date");
-                    array_push($values_list, "'".date('Y-m-d H:i:s', time())."'");
-                    // 返却ステータス(未返却)
-                    array_push($calum_list, "return_status");
-                    array_push($values_list, "'1'");
-                    // 発注状況区分(貸与終了)
-                    array_push($calum_list, "order_sts_kbn");
-                    array_push($values_list, "'2'");
-                    // 返却予定数
-                    array_push($calum_list, "return_plan_qty");
-                    array_push($values_list, "'".$now_item_input_map['return_num']."'");
-                    // 返却数
-                    array_push($calum_list, "return_qty");
-                    array_push($values_list, "'0'");
-                    // 送信区分
-                    if($params['snd_kbn']=='0'){
-                        //未送信
-                        array_push($calum_list, "snd_kbn");
-                        array_push($values_list, "'0'");
-                    }else{
-                        //送信
-                        array_push($calum_list, "snd_kbn");
-                        array_push($values_list, "'1'");
-                    }
-                    // 理由区分
-                    array_push($calum_list, "order_reason_kbn");
-                    array_push($values_list, "'".$cond['reason_kbn']."'");
-                    // 部門マスタ_統合ハッシュキー(企業ID、レンタル契約No.、レンタル部門コード)
-                    $m_section_comb_hkey = md5(
-                        $auth['corporate_id']
-                        .$wearer_end_post['rntl_cont_no']
-                        .$cond['rntl_sect_cd']
-                    );
-                    array_push($calum_list, "m_section_comb_hkey");
-                    array_push($values_list, "'".$m_section_comb_hkey."'");
-                    // 商品マスタ_統合ハッシュキー(企業ID、商品コード、色コード、サイズコード)
-                    $m_item_comb_hkey = md5(
-                        $auth['corporate_id']
-                        .$now_item_input_map['now_item_cd']
-                        .$now_item_input_map['now_color_cd']
-                        .$now_item_input_map['now_size_cd']
-                    );
-                    array_push($calum_list, "m_item_comb_hkey");
-                    array_push($values_list, "'".$m_item_comb_hkey."'");
-                    $calum_query = implode(',', $calum_list);
-                    $values_query = implode(',', $values_list);
-
-                    $arg_str = "";
-                    $arg_str = "INSERT INTO t_returned_plan_info_tran";
-                    $arg_str .= "(".$calum_query.")";
-                    $arg_str .= " VALUES ";
-                    $arg_str .= "(".$values_query.")";
-                    $t_returned_plan_info_tran = new TReturnedPlanInfoTran();
-                    $results = new Resultset(NULL, $t_returned_plan_info_tran, $t_returned_plan_info_tran->getReadConnection()->query($arg_str));
-                    $results_cnt = $result_obj["\0*\0_count"];
                 }
             }
         }else{
@@ -1710,6 +1573,7 @@ $app->post('/wearer_end_order_insert', function () use ($app) {
         $results = new Resultset(NULL, $m_wearer_std_tran, $m_wearer_std_tran->getReadConnection()->query('rollback'));
         $transaction->commit();
         $json_list["error_code"] = "1";
+        ChromePhp::LOG($e);
         $error_msg = "入力登録処理において、データ更新エラーが発生しました。";
         array_push($json_list["error_msg"], $error_msg);
 
