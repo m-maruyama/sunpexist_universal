@@ -261,6 +261,7 @@ define([
 						data: cond,
 						success: function (res) {
 							var res_val = res.attributes;
+							//console.log(res_val["param"]);
 							if(res_val["error_code"]=='1') {
 								that.triggerMethod('error_msg', res_val["error_msg"]);
 							}else if(res_val["error_code"]=='2') {
@@ -269,6 +270,7 @@ define([
 								location.href="wearer_order_complete.html";
 							}else{
 								window.sessionStorage.setItem('referrer', 'wearer_end_order');
+								window.sessionStorage.setItem('param', res_val["param"]);
 								location.href="wearer_order_complete.html";
 							}
 						}

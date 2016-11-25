@@ -1717,6 +1717,12 @@ $app->post('/wearer_end_order_insert', function () use ($app) {
         return;
     }
     $app->session->remove("wearer_end_post");
+
+    // 返却伝票用パラメータ
+    $json_list['param'] = '';
+    $json_list['param'] .= $wearer_end_post['rntl_cont_no'].':';
+    $json_list['param'] .= $shin_order_req_no;
+
     echo json_encode($json_list);
     return;
 });
