@@ -34,10 +34,7 @@ $app->post('/wearer_edit_info', function ()use($app){
   array_push($query_list, "m_wearer_std_tran.corporate_id = '".$auth['corporate_id']."'");
   array_push($query_list, "m_wearer_std_tran.rntl_cont_no = '".$wearer_edit_post['rntl_cont_no']."'");
   array_push($query_list, "m_wearer_std_tran.werer_cd = '".$wearer_edit_post['werer_cd']."'");
-  array_push($query_list, "m_wearer_std_tran.rntl_sect_cd = '".$wearer_edit_post['rntl_sect_cd']."'");
-  array_push($query_list, "m_wearer_std_tran.job_type_cd = '".$wearer_edit_post['job_type_cd']."'");
-  // 発注状況区分(着用者編集)
-  array_push($query_list,"m_wearer_std_tran.order_sts_kbn = '6'");
+  array_push($query_list, "m_wearer_std_tran.order_sts_kbn = '6'");
   $query = implode(' AND ', $query_list);
 
   $arg_str = "";

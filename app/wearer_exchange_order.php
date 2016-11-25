@@ -35,8 +35,6 @@ $app->post('/wearer_exchange/info', function ()use($app){
   $query_list[] = "t_order_tran.corporate_id = '".$auth['corporate_id']."'";
   $query_list[] = "t_order_tran.rntl_cont_no = '".$wearer_size_change_post['rntl_cont_no']."'";
   $query_list[] = "t_order_tran.werer_cd = '".$wearer_size_change_post['werer_cd']."'";
-  $query_list[] = "t_order_tran.rntl_sect_cd = '".$wearer_size_change_post['rntl_sect_cd']."'";
-  $query_list[] = "t_order_tran.job_type_cd = '".$wearer_size_change_post['job_type_cd']."'";
   // 発注状況区分(サイズ交換)
   $query_list[] = "t_order_tran.order_sts_kbn = '3'";
   $query = implode(' AND ', $query_list);
@@ -64,8 +62,6 @@ $app->post('/wearer_exchange/info', function ()use($app){
   $query_list[] = "t_returned_plan_info_tran.corporate_id = '".$auth['corporate_id']."'";
   $query_list[] = "t_returned_plan_info_tran.rntl_cont_no = '".$wearer_size_change_post['rntl_cont_no']."'";
   $query_list[] = "t_returned_plan_info_tran.werer_cd = '".$wearer_size_change_post['werer_cd']."'";
-  $query_list[] = "t_returned_plan_info_tran.rntl_sect_cd = '".$wearer_size_change_post['rntl_sect_cd']."'";
-  $query_list[] = "t_returned_plan_info_tran.job_type_cd = '".$wearer_size_change_post['job_type_cd']."'";
   // 発注状況区分(サイズ交換)
   $query_list[] = "t_returned_plan_info_tran.order_sts_kbn = '3'";
   $query = implode(' AND ', $query_list);
@@ -93,8 +89,6 @@ $app->post('/wearer_exchange/info', function ()use($app){
   $query_list[] = "m_wearer_std_tran.corporate_id = '".$auth['corporate_id']."'";
   $query_list[] = "m_wearer_std_tran.rntl_cont_no = '".$wearer_size_change_post['rntl_cont_no']."'";
   $query_list[] = "m_wearer_std_tran.werer_cd = '".$wearer_size_change_post['werer_cd']."'";
-  $query_list[] = "m_wearer_std_tran.rntl_sect_cd = '".$wearer_size_change_post['rntl_sect_cd']."'";
-  $query_list[] = "m_wearer_std_tran.job_type_cd = '".$wearer_size_change_post['job_type_cd']."'";
   // 発注状況区分(サイズ交換)
   $query_list[] = "m_wearer_std_tran.order_sts_kbn = '3'";
   $query = implode(' AND ', $query_list);
@@ -3285,8 +3279,9 @@ $app->post('/wearer_exchange/complete', function ()use($app){
               array_push($calum_list, "order_date");
               array_push($values_list, "'".date('Y-m-d H:i:s', time())."'");
               // 返却日
+              $return_date = date("Y-m-d 00:00:00", strtotime($wearer_data_input['return_date']));
               array_push($calum_list, "return_date");
-              array_push($values_list, "'".date('Y-m-d H:i:s', time())."'");
+              array_push($values_list, "'".$return_date."'");
               // 返却ステータス(未返却)
               array_push($calum_list, "return_status");
               array_push($values_list, "'1'");
@@ -3384,8 +3379,9 @@ $app->post('/wearer_exchange/complete', function ()use($app){
             array_push($calum_list, "order_date");
             array_push($values_list, "'".date('Y-m-d H:i:s', time())."'");
             // 返却日
+            $return_date = date("Y-m-d 00:00:00", strtotime($wearer_data_input['return_date']));
             array_push($calum_list, "return_date");
-            array_push($values_list, "'".date('Y-m-d H:i:s', time())."'");
+            array_push($values_list, "'".$return_date."'");
             // 返却ステータス(未返却)
             array_push($calum_list, "return_status");
             array_push($values_list, "'1'");
@@ -4844,8 +4840,9 @@ $app->post('/wearer_exchange/send', function ()use($app){
              array_push($calum_list, "order_date");
              array_push($values_list, "'".date('Y-m-d H:i:s', time())."'");
              // 返却日
+             $return_date = date("Y-m-d 00:00:00", strtotime($wearer_data_input['return_date']));
              array_push($calum_list, "return_date");
-             array_push($values_list, "'".date('Y-m-d H:i:s', time())."'");
+             array_push($values_list, "'".$return_date."'");
              // 返却ステータス(未返却)
              array_push($calum_list, "return_status");
              array_push($values_list, "'1'");
@@ -4944,8 +4941,9 @@ $app->post('/wearer_exchange/send', function ()use($app){
            array_push($calum_list, "order_date");
            array_push($values_list, "'".date('Y-m-d H:i:s', time())."'");
            // 返却日
+           $return_date = date("Y-m-d 00:00:00", strtotime($wearer_data_input['return_date']));
            array_push($calum_list, "return_date");
-           array_push($values_list, "'".date('Y-m-d H:i:s', time())."'");
+           array_push($values_list, "'".$return_date."'");
            // 返却ステータス(未返却)
            array_push($calum_list, "return_status");
            array_push($values_list, "'1'");

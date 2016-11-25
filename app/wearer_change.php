@@ -277,6 +277,9 @@ $app->post('/wearer_change/search', function ()use($app){
           //ChromePhp::LOG($tran_results);
 
           foreach($tran_results as $tran_result) {
+            $result->as_rntl_sect_cd = $tran_result->as_rntl_sect_cd;
+            $result->as_job_type_cd = $tran_result->as_job_type_cd;
+            $result->as_sex_kbn = $tran_result->as_sex_kbn;
             $result->as_wearer_snd_kbn = $tran_result->as_wearer_snd_kbn;
             $result->as_ship_to_cd = $tran_result->as_ship_to_cd;
             $result->as_ship_to_brnch_cd = $tran_result->as_ship_to_brnch_cd;
