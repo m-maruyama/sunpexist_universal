@@ -137,7 +137,6 @@ $app->post('/wearer_edit/search', function ()use($app){
   $arg_str .= $query;
   $arg_str .= ") as distinct_table";
   $arg_str .= " ORDER BY as_cster_emply_cd ASC,as_upd_date DESC";
-
   $m_weare_std = new MWearerStd();
   $results = new Resultset(null, $m_weare_std, $m_weare_std->getReadConnection()->query($arg_str));
   $result_obj = (array)$results;
@@ -168,6 +167,7 @@ $app->post('/wearer_edit/search', function ()use($app){
         $query_list[] = "m_wearer_std_tran.corporate_id = '".$result->as_corporate_id."'";
         $query_list[] = "m_wearer_std_tran.rntl_cont_no = '".$result->as_rntl_cont_no."'";
         $query_list[] = "m_wearer_std_tran.werer_cd = '".$result->as_werer_cd."'";
+        $query_list[] = "m_wearer_std_tran.order_sts_kbn = '6'";
         if (!$section_all_zero_flg) {
           $query_list[] = "m_contract_resource.corporate_id = '".$result->as_corporate_id."'";
           $query_list[] = "m_contract_resource.rntl_cont_no = '".$result->as_rntl_cont_no."'";
@@ -176,7 +176,8 @@ $app->post('/wearer_edit/search', function ()use($app){
         $query = implode(' AND ', $query_list);
 
         $arg_str = "";
-        $arg_str = "SELECT ";
+        $arg_str .= "SELECT ";
+        $arg_str .= "m_wearer_std_tran.order_req_no as as_order_req_no,";
         $arg_str .= "m_wearer_std_tran.corporate_id as as_corporate_id,";
         $arg_str .= "m_wearer_std_tran.werer_cd as as_werer_cd,";
         $arg_str .= "m_wearer_std_tran.rntl_cont_no as as_rntl_cont_no,";
@@ -242,20 +243,13 @@ $app->post('/wearer_edit/search', function ()use($app){
           //ChromePhp::LOG($tran_results);
 
           foreach($tran_results as $tran_result) {
-            $result->as_rntl_cont_no = $tran_result->as_rntl_cont_no;
-            $result->as_rntl_sect_cd = $tran_result->as_rntl_sect_cd;
-            $result->as_job_type_cd = $tran_result->as_job_type_cd;
+            $result->as_order_req_no = $tran_result->as_order_req_no;
             $result->as_werer_cd = $tran_result->as_werer_cd;
-            $result->as_cster_emply_cd = $tran_result->as_cster_emply_cd;
-            $result->as_werer_name = $tran_result->as_werer_name;
-            $result->as_sex_kbn = $tran_result->as_sex_kbn;
             $result->as_snd_kbn = $tran_result->as_snd_kbn;
             $result->as_werer_sts_kbn = $tran_result->as_werer_sts_kbn;
             $result->as_order_sts_kbn = $tran_result->as_order_sts_kbn;
             $result->as_ship_to_cd = $tran_result->as_ship_to_cd;
             $result->as_ship_to_brnch_cd = $tran_result->as_ship_to_brnch_cd;
-            $result->as_rntl_sect_name = $tran_result->as_rntl_sect_name;
-            $result->as_job_type_name = $tran_result->as_job_type_name;
           }
         } else {
           // 着用者マスタトラン無フラグ
@@ -263,6 +257,12 @@ $app->post('/wearer_edit/search', function ()use($app){
         }
         //ChromePhp::LOG("チェック後の着用者リスト情報");
         //ChromePhp::LOG($result);
+        // 発注No
+        if (!empty($result->as_order_req_no)) {
+          $list['order_req_no'] = $result->as_order_req_no;
+        } else {
+          $list['order_req_no'] = "";
+        }
         // レンタル契約No
         $list['rntl_cont_no'] = $result->as_rntl_cont_no;
         // レンタル部門コード
@@ -382,6 +382,7 @@ $app->post('/wearer_edit/search', function ()use($app){
         $list['param'] .= $list['ship_to_cd'].':';
         $list['param'] .= $list['ship_to_brnch_cd'].':';
         $list['param'] .= $list['wearer_tran_flg'].':';
+        $list['param'] .= $list['order_req_no'];
 
         array_push($all_list,$list);
       }
@@ -422,6 +423,7 @@ $app->post('/wearer_edit/req_param', function ()use($app){
     'ship_to_cd' => $cond["ship_to_cd"],
     'ship_to_brnch_cd' => $cond["ship_to_brnch_cd"],
     'wearer_tran_flg' => $cond["wearer_tran_flg"],
+    'order_req_no' => $cond["order_req_no"]
   ));
 
   $json_list = array();
@@ -457,8 +459,6 @@ $app->post('/wearer_edit/order_check', function ()use($app){
   array_push($query_list, "corporate_id = '".$auth['corporate_id']."'");
   array_push($query_list, "rntl_cont_no = '".$cond['rntl_cont_no']."'");
   array_push($query_list, "werer_cd = '".$cond['werer_cd']."'");
-  array_push($query_list, "rntl_sect_cd = '".$cond['rntl_sect_cd']."'");
-  array_push($query_list, "job_type_cd = '".$cond['job_type_cd']."'");
   $query = implode(' AND ', $query_list);
 
   $arg_str = "";

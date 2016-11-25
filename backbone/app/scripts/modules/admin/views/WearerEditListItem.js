@@ -30,6 +30,7 @@ define([
 						'ship_to_cd': we_val[6],
 						'ship_to_brnch_cd': we_val[7],
 						'wearer_tran_flg': we_val[8],
+						'order_req_no': we_val[9]
 					};
 
 					// 発注入力遷移前に発注NGパターンチェック実施
