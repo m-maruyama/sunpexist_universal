@@ -1727,7 +1727,6 @@ $app->post('/wearer_end_order_insert', function () use ($app) {
 $app->post('/wearer_end_order_delete', function ()use($app){
 
     $params = json_decode(file_get_contents("php://input"), true);
-
     $json_list = array();
     // アカウントセッション
     $auth = $app->session->get('auth');
@@ -1735,9 +1734,15 @@ $app->post('/wearer_end_order_delete', function ()use($app){
     $wearer_end_post = $app->session->get("wearer_end_post");
     // フロントパラメータ
     if (!empty($params['data'])) {
-      $cond = $params['data'];
+        $cond = $params['data'];
+        $wearer_end_post = array();
+        $wearer_end_post['order_req_no'] = $cond['order_req_no'];
+        $wearer_end_post['werer_cd'] = $cond['werer_cd'];
+        $wearer_end_post['rntl_cont_no'] = $cond['rntl_cont_no'];
+        $wearer_end_post['rntl_sect_cd'] = $cond['rntl_sect_cd'];
+        $wearer_end_post['job_type_cd'] = $cond['job_type_cd'];
+        $wearer_end_post['return_req_no'] = $cond['order_req_no'];
     }
-
     $query_list = array();
     $list = array();
     $json_list = array();
