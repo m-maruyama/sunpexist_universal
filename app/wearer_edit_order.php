@@ -650,6 +650,49 @@ $app->post('/wearer_edit_complete', function ()use($app){
           $error_msg = "社員コードが規定の文字数をオーバーしています。";
           array_push($json_list["error_msg"], $error_msg);
         }
+        // 社員コード重複チェック
+        $member_no_overlap_err = "";
+        $query_list = array();
+        array_push($query_list, "corporate_id = '".$auth['corporate_id']."'");
+        array_push($query_list, "rntl_cont_no = '".$wearer_edit_post['rntl_cont_no']."'");
+        array_push($query_list, "cster_emply_cd = '".$wearer_data_input['member_no']."'");
+        array_push($query_list, "werer_cd <> '".$wearer_edit_post['werer_cd']."'");
+        $query = implode(' AND ', $query_list);
+        $arg_str = '';
+        $arg_str .= 'SELECT ';
+        $arg_str .= '*';
+        $arg_str .= ' FROM ';
+        $arg_str .= 'm_wearer_std';
+        $arg_str .= ' WHERE ';
+        $arg_str .= $query;
+        $m_wearer_std = new MWearerStd();
+        $results = new Resultset(NULL, $m_wearer_std, $m_wearer_std->getReadConnection()->query($arg_str));
+        $results_array = (array) $results;
+        $results_cnt = $results_array["\0*\0_count"];
+        if ($results_cnt > 0) {
+          $member_no_overlap_err = "err";
+          $json_list["error_code"] = "1";
+          $error_msg = "既に社員コードが使用されています。";
+          array_push($json_list["error_msg"], $error_msg);
+        }
+        if (empty($member_no_overlap_err)) {
+          $arg_str = '';
+          $arg_str .= 'SELECT ';
+          $arg_str .= '*';
+          $arg_str .= ' FROM ';
+          $arg_str .= 'm_wearer_std_tran';
+          $arg_str .= ' WHERE ';
+          $arg_str .= $query;
+          $m_wearer_std_tran = new MWearerStdTran();
+          $results = new Resultset(NULL, $m_wearer_std_tran, $m_wearer_std_tran->getReadConnection()->query($arg_str));
+          $results_array = (array) $results;
+          $results_cnt = $results_array["\0*\0_count"];
+          if ($results_cnt > 0) {
+            $json_list["error_code"] = "1";
+            $error_msg = "既に社員コードが使用されています。";
+            array_push($json_list["error_msg"], $error_msg);
+          }
+        }
      }
      // 着用者名
      if (empty($wearer_data_input["member_name"])) {
@@ -1180,6 +1223,49 @@ $app->post('/wearer_edit_send', function ()use($app){
          $json_list["error_code"] = "1";
          $error_msg = "社員コードが規定の文字数をオーバーしています。";
          array_push($json_list["error_msg"], $error_msg);
+       }
+       // 社員コード重複チェック
+       $member_no_overlap_err = "";
+       $query_list = array();
+       array_push($query_list, "corporate_id = '".$auth['corporate_id']."'");
+       array_push($query_list, "rntl_cont_no = '".$wearer_edit_post['rntl_cont_no']."'");
+       array_push($query_list, "cster_emply_cd = '".$wearer_data_input['member_no']."'");
+       array_push($query_list, "werer_cd <> '".$wearer_edit_post['werer_cd']."'");
+       $query = implode(' AND ', $query_list);
+       $arg_str = '';
+       $arg_str .= 'SELECT ';
+       $arg_str .= '*';
+       $arg_str .= ' FROM ';
+       $arg_str .= 'm_wearer_std';
+       $arg_str .= ' WHERE ';
+       $arg_str .= $query;
+       $m_wearer_std = new MWearerStd();
+       $results = new Resultset(NULL, $m_wearer_std, $m_wearer_std->getReadConnection()->query($arg_str));
+       $results_array = (array) $results;
+       $results_cnt = $results_array["\0*\0_count"];
+       if ($results_cnt > 0) {
+         $member_no_overlap_err = "err";
+         $json_list["error_code"] = "1";
+         $error_msg = "既に社員コードが使用されています。";
+         array_push($json_list["error_msg"], $error_msg);
+       }
+       if (empty($member_no_overlap_err)) {
+         $arg_str = '';
+         $arg_str .= 'SELECT ';
+         $arg_str .= '*';
+         $arg_str .= ' FROM ';
+         $arg_str .= 'm_wearer_std_tran';
+         $arg_str .= ' WHERE ';
+         $arg_str .= $query;
+         $m_wearer_std_tran = new MWearerStdTran();
+         $results = new Resultset(NULL, $m_wearer_std_tran, $m_wearer_std_tran->getReadConnection()->query($arg_str));
+         $results_array = (array) $results;
+         $results_cnt = $results_array["\0*\0_count"];
+         if ($results_cnt > 0) {
+           $json_list["error_code"] = "1";
+           $error_msg = "既に社員コードが使用されています。";
+           array_push($json_list["error_msg"], $error_msg);
+         }
        }
     }
     // 着用者名
