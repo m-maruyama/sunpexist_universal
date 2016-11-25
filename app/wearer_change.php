@@ -128,7 +128,7 @@ $app->post('/wearer_change/search', function ()use($app){
     $arg_str .= " INNER JOIN m_job_type as wjt";
     $arg_str .= " ON m_wearer_std.corporate_id = wjt.corporate_id";
     $arg_str .= " AND m_wearer_std.rntl_cont_no = wjt.rntl_cont_no";
-    $arg_str .= " AND m_wearer_std.job_type_cd = wjt.job_type_cd)";
+    $arg_str .= " AND m_wearer_std.job_type_cd = wjt.job_type_cd";
   }
   $arg_str .= " WHERE ";
   $arg_str .= $query;

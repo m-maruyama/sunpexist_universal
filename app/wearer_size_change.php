@@ -116,16 +116,16 @@ $app->post('/wearer_size_change/search', function ()use($app){
   $arg_str .= "wjt.job_type_name as wjt_job_type_name";
   $arg_str .= " FROM ";
   if ($section_all_zero_flg) {
-    $arg_str .= "(m_wearer_std INNER JOIN m_section as wst";
+    $arg_str .= "m_wearer_std INNER JOIN m_section as wst";
     $arg_str .= " ON m_wearer_std.corporate_id = wst.corporate_id";
     $arg_str .= " AND m_wearer_std.rntl_cont_no = wst.rntl_cont_no";
     $arg_str .= " AND m_wearer_std.rntl_sect_cd = wst.rntl_sect_cd";
     $arg_str .= " INNER JOIN m_job_type as wjt";
     $arg_str .= " ON m_wearer_std.corporate_id = wjt.corporate_id";
     $arg_str .= " AND m_wearer_std.rntl_cont_no = wjt.rntl_cont_no";
-    $arg_str .= " AND m_wearer_std.job_type_cd = wjt.job_type_cd)";
+    $arg_str .= " AND m_wearer_std.job_type_cd = wjt.job_type_cd";
   } else {
-    $arg_str .= "(m_wearer_std INNER JOIN (m_section as wst";
+    $arg_str .= "m_wearer_std INNER JOIN (m_section as wst";
     $arg_str .= " INNER JOIN m_contract_resource as wcr";
     $arg_str .= " ON wst.corporate_id = wcr.corporate_id";
     $arg_str .= " AND wst.rntl_cont_no = wcr.rntl_cont_no";
@@ -136,7 +136,7 @@ $app->post('/wearer_size_change/search', function ()use($app){
     $arg_str .= " INNER JOIN m_job_type as wjt";
     $arg_str .= " ON m_wearer_std.corporate_id = wjt.corporate_id";
     $arg_str .= " AND m_wearer_std.rntl_cont_no = wjt.rntl_cont_no";
-    $arg_str .= " AND m_wearer_std.job_type_cd = wjt.job_type_cd)";
+    $arg_str .= " AND m_wearer_std.job_type_cd = wjt.job_type_cd";
   }
   $arg_str .= " WHERE ";
   $arg_str .= $query;
