@@ -497,7 +497,7 @@ define([
 								now_item[i]["individual_data"][j]["return_num"] = chk_num;
 							}
 						} else {
-							now_item[i]["return_num"] = $("input[name='return_num"+i+"']").val();
+							now_item[i]["now_return_num"] = $("input[name='now_return_num"+i+"']").val();
 						}
 						now_item[i]["now_return_num"] = $("input[name='now_return_num"+i+"']").val();
 						now_item[i]["now_return_num_disable"] = $("input[name='now_return_num_disable"+i+"']").val();
@@ -518,6 +518,8 @@ define([
 						add_item[i]["add_order_num"] = $("input[name='add_order_num"+i+"']").val();
 						add_item[i]["add_order_num_disable"] = $("input[name='add_order_num_disable"+i+"']").val();
 					}
+					//console.log(now_item);
+					//console.log(add_item);
 
 					var modelForUpdate = this.model;
 					modelForUpdate.url = App.api.WC0021;
@@ -620,7 +622,7 @@ define([
 								now_item[i]["individual_data"][j]["return_num"] = chk_num;
 							}
 						} else {
-							now_item[i]["return_num"] = $("input[name='return_num"+i+"']").val();
+							now_item[i]["now_return_num"] = $("input[name='now_return_num"+i+"']").val();
 						}
 						now_item[i]["now_return_num"] = $("input[name='now_return_num"+i+"']").val();
 						now_item[i]["now_return_num_disable"] = $("input[name='now_return_num_disable"+i+"']").val();
