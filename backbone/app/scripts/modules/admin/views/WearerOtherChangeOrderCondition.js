@@ -587,10 +587,7 @@ define([
 							// 発注取消処理
 							type = transition;
 						} else if (transition == "WOC0050_req") {
-							// 入力完了処理
-							type = transition;
-						} else if (transition == "WR0023_req") {
-							// 発注送信処理
+							// 入力完了処理,発注送信処理
 							type = transition;
 						}
 					}
@@ -648,7 +645,7 @@ define([
 					var comment = $("#comment").val();
 					var return_date = $("#return_date").val();
 					var order_count = $("#order_count").val();
-					var data = {
+					var wearer_data = {
 						'agreement_no': agreement_no,
 						'reason_kbn': reason_kbn,
 						'cster_emply_cd_chk': cster_emply_cd_chk,
@@ -709,13 +706,15 @@ define([
 					}
 					var modelForUpdate = this.model;
 					modelForUpdate.url = App.api.WOC0050;
-					modelForUpdate.fetchMx({
-						data: {
+					var data = {
 							"scr": 'その他交換-入力完了',
-							"wearer_data": data,
+							"wearer_data": wearer_data,
 							"snd_kbn": '0',
+							"mode": 'check',
 							"item": item
-						},
+						};
+					modelForUpdate.fetchMx({
+						data: data,
 						success: function (res) {
 							var res_val = res.attributes;
 							if(res_val["error_code"]=='1') {
@@ -728,6 +727,13 @@ define([
 							}else{
 								window.sessionStorage.setItem('referrer', 'wearer_other_change_order');
 								// 入力完了画面処理へ移行
+								var data = {
+									"scr": 'その他交換-入力完了',
+									"wearer_data": wearer_data,
+									"snd_kbn": '0',
+									"mode": 'input',
+									"item": item
+								};
 								that.triggerMethod('inputComplete', data);
 							}
 						}

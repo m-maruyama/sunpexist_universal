@@ -41,49 +41,34 @@ define([
 				var mode = data["mode"];
 				var wearer_data = data["wearer_data"];
 				var item = data["item"];
+				var snd_kbn = data["snd_kbn"];
+				console.log(data);
 
-				// 入力内容登録処理
-				//ここから！WR0022は別画面のAPI！
-				// var modelForUpdate = this.model;
-				// modelForUpdate.url = App.api.WOC0050;
-				// modelForUpdate.fetchMx({
-				// 	cond: {
-				// 		"scr": 'その他交換-入力完了',
-				// 		"wearer_data": data,
-				// 		"snd_kbn": '0',
-				// 		"item": item
-				// 	},
-				// var cond = {
-				// "scr": 'その他交換-発注送信',
-				// 	"wearer_data": wearer_data,
-				// 	"snd_kbn": '1',
-				// 	"item": item
-				// };
-				// var modelForUpdate = this.model;
-				// modelForUpdate.url = App.api.WR0022;
-				// var cond = {
-				// 	"scr": scr,
-				// 	"mode": mode,
-				// 	"wearer_data": wearer_data,
-				// 	"item": item
-				// };
-				//console.log(cond);
+				var modelForUpdate = this.model;
+				modelForUpdate.url = App.api.WOC0050;
+				var cond = {
+					"scr": scr,
+					"mode": mode,
+					"wearer_data": wearer_data,
+					"snd_kbn": snd_kbn,
+					"item": item
+				};
 
-				// modelForUpdate.fetchMx({
-				// 	data:cond,
-				// 	success:function(res){
-				// 		var res_val = res.attributes;
-				// 		if (res_val["error_code"] == "1") {
-				// 			// 登録処理にエラーがある場合
-				// 			$("#h").text('');
-				// 			$(".explanation").text('');
-				// 			that.triggerMethod('showAlerts', res_val["error_msg"]);
-				// 		} else {
-				// 			// 正常完了の場合、「返却伝票印刷」ボタンを表示
-				// 			$('.returnSlipDownload').css('display', '');
-				// 		}
-				// 	}
-				// });
+				modelForUpdate.fetchMx({
+					data:cond,
+					success:function(res){
+						var res_val = res.attributes;
+						if (res_val["error_code"] == "1") {
+							// 登録処理にエラーがある場合
+							$("#h").text('');
+							$(".explanation").text('');
+							that.triggerMethod('showAlerts', res_val["error_msg"]);
+						} else {
+							// 正常完了の場合、「返却伝票印刷」ボタンを表示
+							$('.returnSlipDownload').css('display', '');
+						}
+					}
+				});
 			},
 			events: {
 				// 「続けて入力する」ボタン
