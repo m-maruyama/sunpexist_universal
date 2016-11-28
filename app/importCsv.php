@@ -795,7 +795,7 @@ $app->post('/import_csv', function () use ($app) {
     }
 
     $arg_str = "";
-    //着用者基本マスタートラン 社員番号 重複チェック
+    //着用者基本マスター＆着用者基本マスタートラン 社員番号 重複チェック
     $arg_str = "SELECT ";
     $arg_str .= "DISTINCT ON (t_import_job.cster_emply_cd) ";
     $arg_str .= "t_import_job.line_no, ";
@@ -807,8 +807,20 @@ $app->post('/import_csv', function () use ($app) {
     $arg_str .= "INNER JOIN m_wearer_std_tran ON ";
     $arg_str .= "t_import_job.cster_emply_cd = m_wearer_std_tran.cster_emply_cd ";
     $arg_str .= "WHERE ";
-    $arg_str .= "m_wearer_std_tran.corporate_id = '$corporate_id' AND m_wearer_std_tran.rntl_cont_no = '$agreement_no'";
-
+    $arg_str .= "m_wearer_std_tran.corporate_id = '$corporate_id' AND m_wearer_std_tran.rntl_cont_no = '$agreement_no' ";
+    $arg_str .= "UNION ";
+    $arg_str .= "SELECT ";
+    $arg_str .= "DISTINCT ON (t_import_job.cster_emply_cd) ";
+    $arg_str .= "t_import_job.line_no, ";
+    $arg_str .= "t_import_job.cster_emply_cd, ";
+    $arg_str .= "t_import_job.werer_name, ";
+    $arg_str .= "m_wearer_std.corporate_id, ";
+    $arg_str .= "m_wearer_std.rntl_cont_no ";
+    $arg_str .= "FROM t_import_job ";
+    $arg_str .= "INNER JOIN m_wearer_std ON ";
+    $arg_str .= "t_import_job.cster_emply_cd = m_wearer_std.cster_emply_cd ";
+    $arg_str .= "WHERE ";
+    $arg_str .= "m_wearer_std.corporate_id = '$corporate_id' AND m_wearer_std.rntl_cont_no = '$agreement_no' ";
     $results = new Resultset(null, $t_import_job, $t_import_job->getReadConnection()->query($arg_str));
     $result_obj = (array)$results;
     $results_cnt = $result_obj["\0*\0_count"];
