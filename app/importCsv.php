@@ -794,8 +794,57 @@ $app->post('/import_csv', function () use ($app) {
         }
     }
 
-    //社員番号マスターチェック  発注区分：着用者登録のみ、貸与の場合　条件：着用者基本マスタトランに同じ客先社員コードがある場合、稼働である事。
+
+    $arg_str = "";
+    //社員番号 重複チェック
     $arg_str = "SELECT ";
+    $arg_str .= "DISTINCT ON (t_import_job.cster_emply_cd) ";
+    $arg_str .= "t_import_job.line_no, ";
+    $arg_str .= "t_import_job.cster_emply_cd, ";
+    $arg_str .= "t_import_job.werer_name, ";
+    $arg_str .= "m_wearer_std_tran.corporate_id, ";
+    $arg_str .= "m_wearer_std_tran.rntl_cont_no ";
+    $arg_str .= "FROM t_import_job ";
+    $arg_str .= "INNER JOIN m_wearer_std_tran ON ";
+    $arg_str .= "t_import_job.cster_emply_cd = m_wearer_std_tran.cster_emply_cd ";
+    $arg_str .= "WHERE ";
+    $arg_str .= "m_wearer_std_tran.corporate_id = '$corporate_id' AND m_wearer_std_tran.rntl_cont_no = '$agreement_no'";
+
+    $results = new Resultset(null, $t_import_job, $t_import_job->getReadConnection()->query($arg_str));
+
+    $result_obj = (array)$results;
+    $results_cnt = $result_obj["\0*\0_count"];
+    if (!empty($results_cnt)) {
+        $results_count = (count($results));
+        $paginator_model = new PaginatorModel(
+            array(
+                'data' => $results,
+                'limit' => $results_count,
+                "page" => 1
+            )
+        );
+        $paginator = $paginator_model->getPaginate();
+        $results = $paginator->items;
+        foreach ($results as $result) {
+            if (count($error_list) < 20) {
+                $error_list[] = $result->line_no . '行目の社員番号が重複しています。';
+            } else {
+                $json_list['errors'] = $error_list;
+                $json_list["error_code"] = "1";
+                echo json_encode($json_list);
+                return;
+            }
+        }
+    }
+
+
+
+
+
+
+
+
+
 
 
 
