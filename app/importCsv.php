@@ -794,9 +794,8 @@ $app->post('/import_csv', function () use ($app) {
         }
     }
 
-
     $arg_str = "";
-    //社員番号 重複チェック
+    //着用者基本マスタートラン 社員番号 重複チェック
     $arg_str = "SELECT ";
     $arg_str .= "DISTINCT ON (t_import_job.cster_emply_cd) ";
     $arg_str .= "t_import_job.line_no, ";
@@ -811,7 +810,6 @@ $app->post('/import_csv', function () use ($app) {
     $arg_str .= "m_wearer_std_tran.corporate_id = '$corporate_id' AND m_wearer_std_tran.rntl_cont_no = '$agreement_no'";
 
     $results = new Resultset(null, $t_import_job, $t_import_job->getReadConnection()->query($arg_str));
-
     $result_obj = (array)$results;
     $results_cnt = $result_obj["\0*\0_count"];
     if (!empty($results_cnt)) {
@@ -836,18 +834,6 @@ $app->post('/import_csv', function () use ($app) {
             }
         }
     }
-
-
-
-
-
-
-
-
-
-
-
-
 
     //マスターチェック2 部門マスタの検索条件
     $arg_str2 = "SELECT ";
