@@ -29,8 +29,8 @@ define([
 				'reason_kbn': '#reason_kbn',
 				'sex_kbn': '#sex_kbn',
 				'return_date': '#return_date',
-				'emply_cd_flg': '#emply_cd_flg',
-				'member_no': '#member_no',
+				'cster_emply_cd_chk': '#cster_emply_cd_chk',
+				'cster_emply_cd': '#cster_emply_cd',
 				'member_name': '#member_name',
 				'member_name_kana': '#member_name_kana',
 				'section': '#section',
@@ -49,8 +49,8 @@ define([
 				'#reason_kbn': 'reason_kbn',
 				'#sex_kbn': 'sex_kbn',
 				'#return_date': 'return_date',
-				'#emply_cd_flg': 'emply_cd_flg',
-				'#member_no': 'member_no',
+				'#cster_emply_cd_chk': 'cster_emply_cd_chk',
+				'#cster_emply_cd': 'cster_emply_cd',
 				'#member_name': 'member_name',
 				'#member_name_kana': 'member_name_kana',
 				'#section': 'section',
@@ -148,10 +148,12 @@ define([
 							}
 						});
 						// 社員コード、着用者名、読みかな、コメント欄
+						that.ui.cster_emply_cd.prop('disabled',true);
 						if (res_list['wearer_info'][0]) {
 							if(res_list['wearer_info'][0]['cster_emply_cd']){
-								that.ui.emply_cd_flg.prop("checked", true);
-								that.ui.member_no.val(res_list['wearer_info'][0]['cster_emply_cd']);
+								that.ui.cster_emply_cd_chk.prop("checked", true);
+								that.ui.cster_emply_cd.val(res_list['wearer_info'][0]['cster_emply_cd']);
+								that.ui.cster_emply_cd.prop('disabled',false);
 							}
 							that.ui.member_name.val(res_list['wearer_info'][0]['werer_name']);
 							that.ui.member_name_kana.val(res_list['wearer_info'][0]['werer_name_kana']);
@@ -218,6 +220,13 @@ define([
 				});
 			},
 			events: {
+				'change @ui.cster_emply_cd_chk': function(e){
+					if(e.target.checked){
+						this.ui.cster_emply_cd.prop('disabled',false);
+					}else{
+						this.ui.cster_emply_cd.prop('disabled',true);
+					}
+				},
 				// 「戻る」ボタン
 				'click @ui.back': function(){
 					// 検索画面の条件項目を取得
@@ -268,6 +277,46 @@ define([
 				},
 				// 「入力完了」ボタン
 				'click @ui.complete': function(e){
+
+					var that = this;
+					// 発注取消パラメータ取得
+					var delete_vals = $("button[name='delete_param']").val();
+					var val = delete_vals.split(':');
+					var rntl_cont_no = val[0];
+					var rntl_sect_cd = val[1];
+					var job_type_cd = val[2];
+					var werer_cd = val[3];
+					var order_req_no = val[4];
+					var return_req_no = val[5];
+					var data = {
+						"werer_cd": werer_cd,
+						"order_req_no": order_req_no,
+						"return_req_no": return_req_no,
+						"rntl_cont_no": rntl_cont_no,
+						"rntl_sect_cd": rntl_sect_cd,
+						"job_type_cd": job_type_cd
+					};
+
+					var modelForUpdate = this.model;
+					modelForUpdate.url = App.api.CM0130;
+					var cond = {
+						"scr": 'その他交換-入力完了-更新可否チェック',
+						"log_type": '1',
+						"cond": data,
+					};
+					modelForUpdate.fetchMx({
+						data:cond,
+						success:function(res){
+							var type = "cm0130_res";
+							var res_val = res.attributes;
+							var transition = "WOC0050_req";
+							var data = "";
+							that.onShow(res_val, type, transition, data);
+						}
+					});
+				},
+				// 「発注送信」ボタン
+				'click @ui.orderSend': function(e){
 					e.preventDefault();
 					var that = this;
 
@@ -275,8 +324,8 @@ define([
 					// 着用者情報
 					var agreement_no = $("select[name='agreement_no']").val();
 					var reason_kbn = $("select[name='reason_kbn']").val();
-					var emply_cd_flg = $("#emply_cd_flg").prop("checked");
-					var member_no = $("input[name='member_no']").val();
+					var cster_emply_cd_chk = $("#cster_emply_cd_chk").prop("checked");
+					var cster_emply_cd = $("input[name='cster_emply_cd']").val();
 					var member_name = $("input[name='member_name']").val();
 					var member_name_kana = $("input[name='member_name_kana']").val();
 					var sex_kbn = $("select[name='sex_kbn']").val();
@@ -288,8 +337,8 @@ define([
 					var data = {
 						'agreement_no': agreement_no,
 						'reason_kbn': reason_kbn,
-						'emply_cd_flg': emply_cd_flg,
-						'member_no': member_no,
+						'cster_emply_cd_chk': cster_emply_cd_chk,
+						'cster_emply_cd': cster_emply_cd,
 						'member_name': member_name,
 						'member_name_kana': member_name_kana,
 						'sex_kbn': sex_kbn,
@@ -344,12 +393,42 @@ define([
 							item[i]["return_num"] = $("input[name='return_num"+i+"']").val();
 						}
 					}
+					// 入力項目チェック処理
+					var modelForUpdate = this.model;
+					modelForUpdate.url = App.api.WOC0050;
 					var cond = {
-						"scr": 'その他交換-入力完了',
-						"cond": data,
-						"snd_kbn": '0',
+						"scr": 'その他交換-発注送信',
+						"mode": "check",
+						"snd_kbn": '1',
+						"wearer_data": data,
 						"item": item
 					};
+					modelForUpdate.fetchMx({
+						data:cond,
+						success:function(res){
+							var res_val = res.attributes;
+							if (res_val["error_code"] == "0") {
+								var msg = "発注送信を行いますが、よろしいですか？";
+								if (window.confirm(msg)) {
+									var data = {
+										"scr": 'その他交換-発注送信-update',
+										"mode": "update",
+										"wearer_data": data,
+										"item": item
+									};
+
+									// 入力完了画面処理へ移行
+									that.triggerMethod('sendComplete', data);
+								}
+							} else {
+								that.triggerMethod('showAlerts', res_val["error_msg"]);
+								return;
+							}
+						}
+					});
+
+
+
 					var modelForUpdate = this.model;
 					modelForUpdate.url = App.api.WOC0050;
 					modelForUpdate.fetchMx({
@@ -360,17 +439,16 @@ define([
 								that.triggerMethod('error_msg', res_val["error_msg"]);
 							}else if(res_val["error_code"]=='2') {
 								window.sessionStorage.setItem('error_msg', res_val["error_msg"]);
-								window.sessionStorage.setItem('referrer', 'wearer_end_order_err');
-								location.href="wearer_order_complete.html";
+								window.sessionStorage.setItem('referrer', 'wearer_other_change_order_err');
+								// 発注送信画面処理へ移行
+								that.triggerMethod('sendComplete', data);
 							}else{
-								window.sessionStorage.setItem('referrer', 'wearer_end_order');
-								location.href="wearer_order_complete.html";
+								window.sessionStorage.setItem('referrer', 'wearer_other_change_order');
+								// 発注送信画面処理へ移行
+								that.triggerMethod('sendComplete', data);
 							}
 						}
 					});
-				},
-				// 「発注送信」ボタン
-				'click @ui.orderSend': function(){
 					var that = this;
 
 					var modelForUpdate = this.model;
@@ -497,7 +575,7 @@ define([
 			},
 			onShow: function(val, type, transition, data) {
 				var that = this;
-
+				var res_val = "";
 				// 更新可否チェック結果処理
 				if (type == "cm0130_res") {
 					if (!val["chk_flg"]) {
@@ -507,16 +585,13 @@ define([
 						// エラーがない場合は各対応処理へ移行
 						if (transition == "WR0021_req") {
 							// 発注取消処理
-							var type = transition;
-							var res_val = "";
-						} else if (transition == "WR0022_req") {
+							type = transition;
+						} else if (transition == "WOC0050_req") {
 							// 入力完了処理
-							var type = transition;
-							var res_val = "";
+							type = transition;
 						} else if (transition == "WR0023_req") {
 							// 発注送信処理
-							var type = transition;
-							var res_val = "";
+							type = transition;
 						}
 					}
 				}
@@ -556,33 +631,38 @@ define([
 					}
 				}
 				// 入力完了処理
-				if (type == "WR0022_req") {
+				if (type == "WOC0050_req") {
+					var that = this;
+
 					//--画面入力項目--//
 					// 着用者情報
 					var agreement_no = $("select[name='agreement_no']").val();
 					var reason_kbn = $("select[name='reason_kbn']").val();
-					var emply_cd_flg = $("#emply_cd_flg").prop("checked");
-					var member_no = $("input[name='member_no']").val();
+					var cster_emply_cd_chk = $("#cster_emply_cd_chk").prop("checked");
+					var cster_emply_cd = $("input[name='cster_emply_cd']").val();
 					var member_name = $("input[name='member_name']").val();
 					var member_name_kana = $("input[name='member_name_kana']").val();
 					var sex_kbn = $("select[name='sex_kbn']").val();
 					var section = $("select[name='section']").val();
 					var job_type = $("select[name='job_type']").val();
-					var shipment = $("input[name='shipment']").val();
 					var comment = $("#comment").val();
-					var wearer_data = {
+					var return_date = $("#return_date").val();
+					var order_count = $("#order_count").val();
+					var data = {
 						'agreement_no': agreement_no,
 						'reason_kbn': reason_kbn,
-						'emply_cd_flg': emply_cd_flg,
-						'member_no': member_no,
+						'cster_emply_cd_chk': cster_emply_cd_chk,
+						'cster_emply_cd': cster_emply_cd,
 						'member_name': member_name,
 						'member_name_kana': member_name_kana,
 						'sex_kbn': sex_kbn,
 						'section': section,
 						'job_type': job_type,
-						'shipment': shipment,
+						'return_date': return_date,
+						'order_count': order_count,
 						'comment': comment
 					}
+
 
 					// 発注商品一覧
 					var list_cnt = $("input[name='list_cnt']").val();
@@ -602,6 +682,8 @@ define([
 							//個体管理番号表示フラグがONの場合、対象、個体管理番号単位
 							item[i]["individual_cnt"] = $("input[name='individual_cnt"+i+"']").val();
 							var Name = 'target_flg'+i;
+							var individual_ctrl_no = $("input[name='individual_val"+i+"']").val();
+							var individual_ctrl_no_list = individual_ctrl_no.split(",");
 							var chk_num = 0;
 							for (var j=0; j<item[i]["individual_cnt"]; j++) {
 								var chk_val = document.getElementsByName(Name)[j].value;
@@ -609,11 +691,13 @@ define([
 								var checked = document.getElementsByName(Name)[j].checked;
 								if(checked == true){
 									item[i]["individual_data"][j]["target_flg"] = '1';
-									item[i]["individual_data"][j]["individual_ctrl_no"] = chk_val;
+									//個体管理番号
+									item[i]["individual_data"][j]["individual_ctrl_no"] = individual_ctrl_no_list[j];
 									chk_num = chk_num + 1;
 								} else {
 									item[i]["individual_data"][j]["target_flg"] = '0';
-									item[i]["individual_data"][j]["individual_ctrl_no"] = chk_val;
+									//個体管理番号
+									item[i]["individual_data"][j]["individual_ctrl_no"] = individual_ctrl_no_list[j];
 								}
 								// 対象=trueの数（商品単位返却数）
 								item[i]["individual_data"][j]["return_num"] = chk_num;
@@ -623,39 +707,64 @@ define([
 							item[i]["return_num"] = $("input[name='return_num"+i+"']").val();
 						}
 					}
-
-					// 入力項目チェック処理
 					var modelForUpdate = this.model;
-					modelForUpdate.url = App.api.WR0022;
-					var cond = {
-						"scr": 'その他交換-入力完了-check',
-						"mode": "check",
-						"wearer_data": wearer_data,
-						"item": item
-					};
+					modelForUpdate.url = App.api.WOC0050;
 					modelForUpdate.fetchMx({
-						data:cond,
-						success:function(res){
+						data: {
+							"scr": 'その他交換-入力完了',
+							"wearer_data": data,
+							"snd_kbn": '0',
+							"item": item
+						},
+						success: function (res) {
 							var res_val = res.attributes;
-							if (res_val["error_code"] == "0") {
-								var msg = "入力を完了しますが、よろしいですか？";
-								if (window.confirm(msg)) {
-									var data = {
-										"scr": 'その他交換-入力完了-update',
-										"mode": "update",
-										"wearer_data": wearer_data,
-										"item": item
-									};
-
-									// 入力完了画面処理へ移行
-									that.triggerMethod('inputComplete', data);
-								}
-							} else {
-								that.triggerMethod('showAlerts', res_val["error_msg"]);
-								return;
+							if(res_val["error_code"]=='1') {
+								that.triggerMethod('error_msg', res_val["error_msg"]);
+							}else if(res_val["error_code"]=='2') {
+								window.sessionStorage.setItem('error_msg', res_val["error_msg"]);
+								window.sessionStorage.setItem('referrer', 'wearer_other_change_order_err');
+								// 入力完了画面処理へ移行
+								that.triggerMethod('inputComplete', data);
+							}else{
+								window.sessionStorage.setItem('referrer', 'wearer_other_change_order');
+								// 入力完了画面処理へ移行
+								that.triggerMethod('inputComplete', data);
 							}
 						}
 					});
+                    //
+					// // 入力項目チェック処理
+					// var modelForUpdate = this.model;
+					// modelForUpdate.url = App.api.WSC0013;
+					// var cond = {
+					// 	"scr": 'その他交換-入力完了-check',
+					// 	"mode": "check",
+					// 	"wearer_data": data,
+					// 	"item": item
+					// };
+					// modelForUpdate.fetchMx({
+					// 	data:cond,
+					// 	success:function(res){
+					// 		var res_val = res.attributes;
+					// 		if (res_val["error_code"] == "0") {
+					// 			var msg = "入力を完了しますが、よろしいですか？";
+					// 			if (window.confirm(msg)) {
+					// 				var data = {
+					// 					"scr": 'その他交換-入力完了-update',
+					// 					"mode": "update",
+					// 					"wearer_data": wearer_data,
+					// 					"item": item
+					// 				};
+                    //
+					// 				// 入力完了画面処理へ移行
+					// 				that.triggerMethod('inputComplete', data);
+					// 			}
+					// 		} else {
+					// 			that.triggerMethod('showAlerts', res_val["error_msg"]);
+					// 			return;
+					// 		}
+					// 	}
+					// });
 				}
 				// 発注送信処理
 				if (type == "WR0023_req") {
@@ -663,8 +772,8 @@ define([
 					// 着用者情報
 					var agreement_no = $("select[name='agreement_no']").val();
 					var reason_kbn = $("select[name='reason_kbn']").val();
-					var emply_cd_flg = $("#emply_cd_flg").prop("checked");
-					var member_no = $("input[name='member_no']").val();
+					var cster_emply_cd_chk = $("#cster_emply_cd_chk").prop("checked");
+					var cster_emply_cd = $("input[name='cster_emply_cd']").val();
 					var member_name = $("input[name='member_name']").val();
 					var member_name_kana = $("input[name='member_name_kana']").val();
 					var sex_kbn = $("select[name='sex_kbn']").val();
@@ -675,8 +784,8 @@ define([
 					var wearer_data = {
 						'agreement_no': agreement_no,
 						'reason_kbn': reason_kbn,
-						'emply_cd_flg': emply_cd_flg,
-						'member_no': member_no,
+						'cster_emply_cd_chk': cster_emply_cd_chk,
+						'cster_emply_cd': cster_emply_cd,
 						'member_name': member_name,
 						'member_name_kana': member_name_kana,
 						'sex_kbn': sex_kbn,
