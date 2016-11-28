@@ -1709,3 +1709,44 @@ $app->post('/common_download', function ()use($app) {
   readfile($filepath);
   exit;
 });
+
+/*
+ * 個体管理番号表示フラグ取得
+ *
+ * @param $corporate_id 企業ID
+ * @param $rntl_cont_no レンタル契約No
+ *
+ */
+function individual_flg($corporate_id, $rntl_cont_no){
+    $query_list = array();
+    array_push($query_list, "m_contract.corporate_id = '" . $corporate_id . "'");
+    array_push($query_list, "m_contract.rntl_cont_no = '" . $rntl_cont_no . "'");
+    $query = implode(' AND ', $query_list);
+    $arg_str = "";
+    $arg_str = "SELECT ";
+    $arg_str .= " * ";
+    $arg_str .= " FROM ";
+    $arg_str .= "m_contract";
+    $arg_str .= " WHERE ";
+    $arg_str .= $query;
+    $m_contract = new MContract();
+    $m_cont_results = new Resultset(null, $m_contract, $m_contract->getReadConnection()->query($arg_str));
+    $individual_flg = '0';
+    foreach ($m_cont_results as $m_cont_result) {
+
+        $individual_flg = $m_cont_result->individual_flg;
+    }
+    return $individual_flg;
+}
+/*
+ * 文字数チェック
+ */
+function byte_cnt($data)
+{
+    //変換前文字コード
+    $bf = 'UTF-8';
+    //変換後文字コード
+    $af = 'Shift-JIS';
+
+    return strlen(bin2hex(mb_convert_encoding($data, $af, $bf))) / 2;
+}

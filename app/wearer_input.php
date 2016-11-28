@@ -1199,12 +1199,3 @@ $app->post('/input_delete', function () use ($app) {
     }
     return;
 });
-function byte_cnt($data)
-{
-    //変換前文字コード
-    $bf = 'UTF-8';
-    //変換後文字コード
-    $af = 'Shift-JIS';
-
-    return strlen(bin2hex(mb_convert_encoding($data, $af, $bf))) / 2;
-}
