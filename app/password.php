@@ -47,7 +47,7 @@ $app->post('/password', function () use ($app) {
             echo json_encode($json_list);
             return true;
         }
-        if (strlen($params['password']) < 8) {
+        if ((strlen($params['password']) < 8) || (strlen($params['password']) > 16)){
             //パスワード桁数は8文字以上であるか
             // エラーメッセージを表示して処理を終了する。
             $json_list['status'] = 2;
