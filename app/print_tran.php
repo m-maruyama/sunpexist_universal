@@ -17,10 +17,11 @@ $app->post('/print/pdf_tran', function ()use($app){
     // アカウントセッション取得
     $auth = $app->session->get("auth");
     $cond = $params["cond"];
-    //個別管理番号あるなし　1:あり 0:なし
-    $individual_check = $cond['individual_number'];
-    $query_list = array();
 
+    //個別管理番号あるなし　1:あり 0:なし
+    $individual_check = individual_flg($auth['corporate_id'], $cond['rntl_cont_no']);
+
+    $query_list = array();
     //---検索条件---//
     //企業ID
     array_push($query_list,"t_returned_plan_info_tran.corporate_id = '".$auth['corporate_id']."'");
@@ -40,7 +41,6 @@ $app->post('/print/pdf_tran', function ()use($app){
 
     $q_sort_key = 'as_item_cd, as_color_cd, as_size_cd, as_individual_ctrl_no';
     $order = 'asc';
-
     //---SQLクエリー実行---//
     $arg_str = "SELECT ";
     $arg_str .= " * ";
@@ -73,12 +73,12 @@ $app->post('/print/pdf_tran', function ()use($app){
     $arg_str .= "t_returned_plan_info_tran.return_plan_qty as as_return_plan_qty,";
     $arg_str .= "t_returned_plan_info_tran.individual_ctrl_no as as_individual_ctrl_no,";
     $arg_str .= "m_contract.rntl_cont_name as as_rntl_cont_name";
-    $arg_str .= " FROM t_order_tran LEFT JOIN";
-    $arg_str .= " (t_returned_plan_info_tran LEFT JOIN";
-    $arg_str .= " (t_order_state LEFT JOIN ";
-    $arg_str .= " (t_delivery_goods_state LEFT JOIN t_delivery_goods_state_details ON t_delivery_goods_state.ship_no = t_delivery_goods_state_details.ship_no)"; //納品状況情報.出荷行No =  納品状況明細情報.出荷行No.
-    $arg_str .= " ON t_order_state.t_order_state_comb_hkey = t_delivery_goods_state.t_order_state_comb_hkey)";//納品状況発注状況情報_統合ハッシュキー = 納品状況情報.発注状況情報_統合ハッシュキー
-    $arg_str .= " ON t_returned_plan_info_tran.order_req_no = t_order_state.order_req_no)";//返却予定情報.発注依頼No = 発注状況情報.発注依頼No
+    $arg_str .= " FROM t_order_tran LEFT JOIN t_returned_plan_info_tran";
+    //$arg_str .= " (t_returned_plan_info_tran LEFT JOIN";
+    //$arg_str .= " (t_order_state LEFT JOIN ";
+    //$arg_str .= " (t_delivery_goods_state LEFT JOIN t_delivery_goods_state_details ON t_delivery_goods_state.ship_no = t_delivery_goods_state_details.ship_no)"; //納品状況情報.出荷行No =  納品状況明細情報.出荷行No.
+    //$arg_str .= " ON t_order_state.t_order_state_comb_hkey = t_delivery_goods_state.t_order_state_comb_hkey)";//納品状況発注状況情報_統合ハッシュキー = 納品状況情報.発注状況情報_統合ハッシュキー
+    //$arg_str .= " ON t_returned_plan_info_tran.order_req_no = t_order_state.order_req_no)";//返却予定情報.発注依頼No = 発注状況情報.発注依頼No
     $arg_str .= " ON t_order_tran.order_req_no = t_returned_plan_info_tran.order_req_no"; //発注情報.発注依頼No = 発注状況情報.発注依頼No
     $arg_str .= " INNER JOIN m_section";
     $arg_str .= " ON t_order_tran.m_section_comb_hkey = m_section.m_section_comb_hkey";//発注情報.部門マスタ_統合ハッシュキー = 部門マスタ.部門マスタ_統合ハッシュキー
@@ -90,10 +90,10 @@ $app->post('/print/pdf_tran', function ()use($app){
     $arg_str .= " ON t_order_tran.rntl_cont_no = m_contract.rntl_cont_no";
     $arg_str .= " INNER JOIN m_corporate";
     $arg_str .= " ON t_returned_plan_info_tran.corporate_id = m_corporate.corporate_id";
-
     $arg_str .= " WHERE ";
     $arg_str .= $query;
     $arg_str .= ") as distinct_table";
+
     if (!empty($q_sort_key)) {
         $arg_str .= " ORDER BY ";
         $arg_str .= $q_sort_key." ".$order;
@@ -140,7 +140,7 @@ $app->post('/print/pdf_tran', function ()use($app){
 
         //作成したPDFをダウンロードする I:ブラウザ D:ダウンロード
         ob_end_clean();
-        $pdf -> Output('sample.pdf' , 'D');
+        $pdf -> Output('no_data.pdf' , 'D');
 
         echo json_encode($json_list);
         return true;
