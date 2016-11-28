@@ -18,8 +18,7 @@ $app->post('/print/pdf_tran', function ()use($app){
     $auth = $app->session->get("auth");
     $cond = $params["cond"];
     //個別管理番号あるなし　1:あり 0:なし
-    //$individual_check = $cond['individual_number'];
-    $individual_check = 1;
+    $individual_check = $cond['individual_number'];
     $query_list = array();
 
     //---検索条件---//

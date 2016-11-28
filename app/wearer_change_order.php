@@ -2550,8 +2550,6 @@ $app->post('/wearer_change/complete', function ()use($app){
      array_push($query_list, "corporate_id = '".$auth['corporate_id']."'");
      array_push($query_list, "rntl_cont_no = '".$wearer_chg_post['rntl_cont_no']."'");
      array_push($query_list, "werer_cd = '".$wearer_chg_post['werer_cd']."'");
-     array_push($query_list, "rntl_sect_cd = '".$wearer_chg_post['rntl_sect_cd']."'");
-     array_push($query_list, "job_type_cd = '".$wearer_chg_post['job_type_cd']."'");
      $query = implode(' AND ', $query_list);
 
      $arg_str = "";
@@ -3558,7 +3556,7 @@ $app->post('/wearer_change/complete', function ()use($app){
         }
         //ChromePhp::LOG("返却予定情報トラン登録");
         foreach ($now_item_input as $now_item_input_map) {
-          if ($now_item_input_map["individual_flg"] == true && !empty($now_item_input_map["individual_data"])) {
+          if ($now_item_input_map["individual_flg"] == 1 && !empty($now_item_input_map["individual_data"])) {
             // ※個体管理番号単位での登録の場合
             foreach ($now_item_input_map["individual_data"] as $individual_data) {
               // 対象にチェックされている商品のみが登録対象、それ以外は以降処理しない
@@ -3666,7 +3664,7 @@ $app->post('/wearer_change/complete', function ()use($app){
               $results_cnt = $result_obj["\0*\0_count"];
               //ChromePhp::LOG($results_cnt);
             }
-          } else if ($now_item_input_map["individual_flg"] == false && !empty($now_item_input_map["return_num"])) {
+          } else if ($now_item_input_map["individual_flg"] == "0" && !empty($now_item_input_map["now_return_num"])) {
             // ※商品単位での登録の場合
             $calum_list = array();
             $values_list = array();
@@ -3725,7 +3723,7 @@ $app->post('/wearer_change/complete', function ()use($app){
             array_push($values_list, "'5'");
             // 返却予定数
             array_push($calum_list, "return_plan_qty");
-            array_push($values_list, "'".$now_item_input_map['return_num']."'");
+            array_push($values_list, "'".$now_item_input_map['now_return_num']."'");
             // 返却数
             array_push($calum_list, "return_qty");
             array_push($values_list, "'0'");
@@ -3815,6 +3813,9 @@ $app->post('/wearer_change/send', function ()use($app){
   $wearer_data_input = $params["wearer_data"];
   $now_item_input = $params["now_item"];
   $add_item_input = $params["add_item"];
+  //ChromePhp::LOG($wearer_data_input);
+  //ChromePhp::LOG($now_item_input);
+  //ChromePhp::LOG($add_item_input);
 
   $json_list = array();
   // DB更新エラーコード 0:正常 その他:要因エラー
@@ -5083,7 +5084,7 @@ $app->post('/wearer_change/send', function ()use($app){
 
        //ChromePhp::LOG("返却予定情報トラン登録");
        foreach ($now_item_input as $now_item_input_map) {
-         if ($now_item_input_map["individual_flg"] == true && !empty($now_item_input_map["individual_data"])) {
+         if ($now_item_input_map["individual_flg"] == "1" && !empty($now_item_input_map["individual_data"])) {
            // ※個体管理番号単位での登録の場合
            foreach ($now_item_input_map["individual_data"] as $individual_data) {
              // 対象にチェックされている商品のみが登録対象、それ以外は以降処理しない
@@ -5191,7 +5192,7 @@ $app->post('/wearer_change/send', function ()use($app){
              $results_cnt = $result_obj["\0*\0_count"];
              //ChromePhp::LOG($results_cnt);
            }
-         } else if ($now_item_input_map["individual_flg"] == false && !empty($now_item_input_map["return_num"])) {
+         } else if ($now_item_input_map["individual_flg"] == "0" && !empty($now_item_input_map["now_return_num"])) {
            // ※商品単位での登録の場合
            $calum_list = array();
            $values_list = array();
@@ -5250,7 +5251,7 @@ $app->post('/wearer_change/send', function ()use($app){
            array_push($values_list, "'5'");
            // 返却予定数
            array_push($calum_list, "return_plan_qty");
-           array_push($values_list, "'".$now_item_input_map['return_num']."'");
+           array_push($values_list, "'".$now_item_input_map['now_return_num']."'");
            // 返却数
            array_push($calum_list, "return_qty");
            array_push($values_list, "'0'");

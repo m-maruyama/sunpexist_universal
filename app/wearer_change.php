@@ -653,8 +653,6 @@ $app->post('/wearer_change/order_check', function ()use($app){
   array_push($query_list, "corporate_id = '".$auth['corporate_id']."'");
   array_push($query_list, "rntl_cont_no = '".$cond['rntl_cont_no']."'");
   array_push($query_list, "werer_cd = '".$cond['werer_cd']."'");
-//  array_push($query_list, "rntl_sect_cd = '".$cond['rntl_sect_cd']."'");
-//  array_push($query_list, "job_type_cd = '".$cond['job_type_cd']."'");
   $query = implode(' AND ', $query_list);
 
   $arg_str = "";

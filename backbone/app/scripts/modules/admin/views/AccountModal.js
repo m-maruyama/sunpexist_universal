@@ -118,6 +118,7 @@ define([
 								alert('アカウントロックを解除しました。');
 							}else {
 								alert('アカウントを登録しました。');
+								$(".listTable").css('display', 'block');
 							}
 							that.reset();
 							that.triggerMethod('reload');

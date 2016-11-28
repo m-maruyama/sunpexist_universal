@@ -169,7 +169,7 @@ define([
 								that.triggerMethod('showAlerts', ['新規パスワード入力欄、新規パスワード確認入力欄の値が不一致です。']);
 								that.triggerMethod('failed');
 							} else if(model.get('status') === 2){
-								that.triggerMethod('showAlerts', ['パスワード桁数は8文字以上で入力してください。']);
+								that.triggerMethod('showAlerts', ['パスワード桁数は8文字以上16文字以下で入力してください。']);
 								that.triggerMethod('failed');
 							} else if(model.get('status') === 3){
 								that.triggerMethod('showAlerts', ['パスワードは半角英数字、半角記号(!#$%&*+@?)3種以上混合で入力してください。']);
