@@ -795,7 +795,7 @@ $app->post('/import_csv', function () use ($app) {
     }
 
     $arg_str = "";
-    //着用者基本マスター＆着用者基本マスタートラン 社員番号 重複チェック
+    //着用者基本マスター着用者基本マスタートラン 社員番号 重複チェック
     $arg_str = "SELECT ";
     $arg_str .= "DISTINCT ON (t_import_job.cster_emply_cd) ";
     $arg_str .= "t_import_job.line_no, ";
