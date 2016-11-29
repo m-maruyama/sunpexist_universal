@@ -2348,14 +2348,10 @@ $app->post('/wearer_other_change_delete', function ()use($app){
 
     // アカウントセッション取得
     $auth = $app->session->get("auth");
-    //ChromePhp::LOG($auth);
     // 前画面セッション取得
     $wearer_size_change_post = $app->session->get("wearer_size_change_post");
-    //ChromePhp::LOG($wearer_size_change_post);
     // フロントパラメータ取得
     $cond = $params['data'];
-    //ChromePhp::LOG("フロント側パラメータ");
-    //ChromePhp::LOG($cond);
 
     $json_list = array();
     // DB更新エラーコード 0:正常 1:更新エラー
@@ -2367,7 +2363,6 @@ $app->post('/wearer_other_change_delete', function ()use($app){
     try {
         //--着用者基本マスタトラン削除--//
         // 発注情報トランを参照
-        //ChromePhp::LOG("発注情報トラン参照");
         $query_list = array();
         array_push($query_list, "t_order_tran.corporate_id = '".$auth['corporate_id']."'");
         array_push($query_list, "t_order_tran.order_req_no <> '".$cond['order_req_no']."'");

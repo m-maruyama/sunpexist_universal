@@ -223,6 +223,7 @@ define([
 				});
 			},
 			events: {
+				//社員番号の活性化制御
 				'change @ui.cster_emply_cd_chk': function(e){
 					if(e.target.checked){
 						this.ui.cster_emply_cd.prop('disabled',false);
@@ -272,7 +273,7 @@ define([
 						success:function(res){
 							var res_val = res.attributes;
 							var type = "cm0130_res";
-							var transition = "WR0021_req";
+							var transition = "WOC0030_req";
 							var data = cond["data"];
 							that.onShow(res_val, type, transition, data);
 						}
@@ -388,12 +389,12 @@ define([
 					}
 				}
 				// 発注取消処理
-				if (type == "WR0021_req") {
+				if (type == "WOC0030_req") {
 					var msg = "削除しますが、よろしいですか？";
 					if (window.confirm(msg)) {
 						$.blockUI({ message: '<p><img src="ajax-loader.gif" style="margin: 0 auto;" /> 発注取消中...</p>' });
 						var modelForUpdate = this.model;
-						modelForUpdate.url = App.api.WR0021;
+						modelForUpdate.url = App.api.WOC0030;
 						var cond = {
 							"scr": 'その他交換-発注取消',
 							"data": data,
@@ -401,7 +402,7 @@ define([
 						modelForUpdate.fetchMx({
 							data:cond,
 							success:function(res){
-								var type = "WR0021_res";
+								var type = "WOC0030_req";
 								var res_val = res.attributes;
 
 								if (res_val["error_code"] == "0") {
@@ -413,7 +414,7 @@ define([
 									var cond = window.sessionStorage.getItem("wearer_size_change_cond");
 									window.sessionStorage.setItem("back_wearer_size_change_cond", cond);
 									// 検索一覧画面へ遷移
-									location.href="wearer_other.html";
+									location.href="wearer_size_change.html";
 								} else {
 									$.unblockUI();
 									alert('発注取消中にエラーが発生しました');
