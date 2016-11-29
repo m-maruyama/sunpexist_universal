@@ -276,7 +276,6 @@ define([
 			"WOC0010": host + "/wearer_other_change_info",
 			"WOC0020": host + "/wearer_other_change_list",
 			"WOC0030": host + "/wearer_other_change_delete",
-			"WOC0040": host + "/wearer_other_change_complete",
 			"WOC0050": host + "/wearer_other_change_insert",
 
 			"CM9010": host + "/api/CM9010"
