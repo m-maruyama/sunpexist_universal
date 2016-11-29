@@ -23,7 +23,6 @@ $app->post('/import_csv', function () use ($app) {
     $query_list = array();
 
     // エラーコード 0:正常 1:何かしらの異常
-    $json_list["error_code"] = "0";
 
     // 前回使用のセッションを削除
     $app->session->remove("chk_cster_emply_cd_1");
@@ -248,8 +247,11 @@ $app->post('/import_csv', function () use ($app) {
                     exit;
                 }
             }
+            //ChromePhp::log($error_list);
             //フォーマットチェック: 行単位の各項目のフォーマット形式が、それぞれ仕様通りのフォーマットであるかチェックする。
             $error_list = chk_format($error_list, $line_list, $line_cnt);
+            //ChromePhp::log($error_list);
+
             $line_cnt++;
 
             $line_list[] = $line_no++;
@@ -1292,7 +1294,7 @@ $app->post('/import_csv', function () use ($app) {
                     . $result->rntl_sect_cd
                 );
                 $values_list[] = "'" . $m_section_comb_hkey . "'";
-                $values_list[] = "'" . date("Y-m-d H:i:s", time()) . "'";
+                $values_list[] = "'" . date("Ymd", time()) . "'";
                 $values_list[] = "'" . $result->order_req_no . "'";
                 $values = implode(",", $values_list);
                 $values = "(" . $values . ")";
@@ -1538,7 +1540,7 @@ $app->post('/import_csv', function () use ($app) {
                     . $result->size_cd
                 );
                 $values_list[] = "'" . $m_wearer_item_comb_hkey . "'";
-                $values_list[] = "'" . date("Y-m-d H:i:s", time()) . "'";
+                $values_list[] = "'" . date("Ymd", time()) . "'";
                 $values = implode(",", $values_list);
                 $values = "(" . $values . ")";
                 $values_querys[] = $values;
@@ -1552,7 +1554,6 @@ $app->post('/import_csv', function () use ($app) {
             echo json_encode($json_list);
             return;
         }
-
         // 発注情報トラン登録
         // CALUME設定
         $calum_list = array(
@@ -1676,93 +1677,91 @@ function error_msg_master($line_cnt, $item_name)
  */
 function chk_format($error_list, $line_list, $line_cnt)
 {
-    if ($line_list[0]) {
+    if (isset($line_list[0])) {
         //社員番号
         if (!chk_pattern($line_list[0], 1)) {
             array_push($error_list, error_msg_format($line_cnt, '社員番号'));
         }
     }
-    /*
-      if ($line_list[1]) {
-        //着用者名（漢字）
-        if (!chk_pattern($line_list[1], 1)) {
+      if (isset($line_list[1])) {
+          //着用者名（漢字）
+        if (!chk_pattern($line_list[1], 13)) {
           array_push($error_list, error_msg_format($line_cnt, '着用者名（漢字）'));
         }
       }
-      if ($line_list[2]) {
+      if (isset($line_list[2])) {
         //着用者名（カナ）
-        if (!chk_pattern($line_list[2], 1)) {
+        if (!chk_pattern($line_list[2], 14)) {
           array_push($error_list, error_msg_format($line_cnt, '着用者名（カナ）'));
         }
       }
-    */
-    if ($line_list[3]) {
+    if (isset($line_list[3])) {
         //性別区分
         if (!chk_pattern($line_list[3], 2)) {
             array_push($error_list, error_msg_format($line_cnt, '性別区分'));
         }
     }
-    if ($line_list[4]) {
+    if (isset($line_list[4])) {
         //支店コード
         if (!chk_pattern($line_list[4], 1)) {
             array_push($error_list, error_msg_format($line_cnt, '支店コード'));
         }
     }
-    if ($line_list[5]) {
+    if (isset($line_list[5])) {
         //貸与パターン
         if (!chk_pattern($line_list[5], 4)) {
             array_push($error_list, error_msg_format($line_cnt, '貸与パターン'));
         }
     }
-    if ($line_list[6]) {
+    if (isset($line_list[6])) {
         //着用開始日
         if (!chk_pattern($line_list[6], 3)) {
             array_push($error_list, error_msg_format($line_cnt, '着用開始日'));
         }
     }
-    if ($line_list[7]) {
+    if (isset($line_list[7])) {
         //発注区分
         if (!chk_pattern($line_list[7], 5)) {
             array_push($error_list, error_msg_format($line_cnt, '発注区分'));
         }
     }
-    if ($line_list[8]) {
+    if (isset($line_list[8])) {
         //商品コード
         if (!chk_pattern($line_list[8], 6)) {
             array_push($error_list, error_msg_format($line_cnt, '商品コード'));
         }
     }
-    if ($line_list[9]) {
+    if (isset($line_list[9])) {
         //サイズコード
         if (!chk_pattern($line_list[9], 7)) {
             array_push($error_list, error_msg_format($line_cnt, 'サイズコード'));
         }
     }
-    if ($line_list[10]) {
+    if (isset($line_list[10])) {
         //色コード
         if (!chk_pattern($line_list[10], 8)) {
             array_push($error_list, error_msg_format($line_cnt, '色コード'));
         }
     }
-    if ($line_list[11]) {
+    if (isset($line_list[11])) {
         //数量
         if (!chk_pattern($line_list[11], 9)) {
             array_push($error_list, error_msg_format($line_cnt, '数量'));
         }
     }
-    if ($line_list[12]) {
+    if (isset($line_list[12])) {
         //伝言欄
         if (!chk_pattern($line_list[12], 10)) {
             array_push($error_list, error_msg_format($line_cnt, 'お客様発注No'));
         }
     }
-    if ($line_list[13]) {
+    if (isset($line_list[13])) {
         //伝言欄
         if (!chk_pattern($line_list[13], 11)) {
             array_push($error_list, error_msg_format($line_cnt, '理由区分'));
         }
     }
-    if ($line_list[14]) {
+    if (isset($line_list[14])) {
         //伝言欄
         if (!chk_pattern($line_list[14], 12)) {
             array_push($error_list, error_msg_format($line_cnt, '伝言欄'));
@@ -1866,7 +1865,7 @@ function chk_pattern($val, $pattaern)
             }
             break;
         case 11:
-            //パターン11(半数2桁)1か2  //理由区分
+            //パターン11(半数2桁)  //理由区分
             if (!preg_match("/^[0-9]|1[0-9]|2[0-6]{1,2}$/", $val)) {
                 return false;
             } else {
@@ -1881,6 +1880,25 @@ function chk_pattern($val, $pattaern)
                 return true;
             }
             break;
+        case 13:
+            //パターン13(22byte) //着用者名（漢字）
+            if (strlen( mb_convert_encoding($val, 'SJIS', 'UTF-8')) > 22) {
+                return false;
+            } else {
+                return true;
+            }
+            break;
+        case 14:
+            //パターン14(25byte)1か2  //着用者名（カナ）
+            if (strlen( mb_convert_encoding($val, 'SJIS', 'UTF-8')) > 25) {
+                return false;
+            } else {
+                return true;
+            }
+            break;
+
+
+
         default:
             break;
     }
