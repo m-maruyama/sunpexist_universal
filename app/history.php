@@ -337,7 +337,8 @@ $app->post('/history/search', function ()use($app){
 	$arg_str .= "m_wearer_std.werer_name as as_werer_name,";
 	$arg_str .= "t_order.job_type_cd as as_job_type_cd,";
 	$arg_str .= "t_order.item_cd as as_item_cd,";
-	$arg_str .= "t_order.color_cd as as_color_cd,";
+    $arg_str .= "m_input_item.input_item_name as as_input_item_name,";
+    $arg_str .= "t_order.color_cd as as_color_cd,";
 	$arg_str .= "t_order.size_cd as as_size_cd,";
 	$arg_str .= "t_order.size_two_cd as as_size_two_cd,";
 	$arg_str .= "t_order.order_qty as as_order_qty,";
@@ -364,8 +365,18 @@ $app->post('/history/search', function ()use($app){
 		$arg_str .= " AND m_section.rntl_sect_cd = m_contract_resource.rntl_sect_cd";
 		$arg_str .= " ) ON t_order.m_section_comb_hkey = m_section.m_section_comb_hkey";
 	}
-	$arg_str .= " INNER JOIN m_job_type";
-	$arg_str .= " ON t_order.m_job_type_comb_hkey = m_job_type.m_job_type_comb_hkey";
+	//$arg_str .= " INNER JOIN m_job_type";
+	//$arg_str .= " ON t_order.m_job_type_comb_hkey = m_job_type.m_job_type_comb_hkey";
+    $arg_str .= " INNER JOIN (m_job_type INNER JOIN m_input_item";
+    $arg_str .= " ON m_job_type.corporate_id = m_input_item.corporate_id";
+    $arg_str .= " AND m_job_type.rntl_cont_no = m_input_item.rntl_cont_no";
+    $arg_str .= " AND m_job_type.job_type_cd = m_input_item.job_type_cd)";
+    $arg_str .= " ON t_order.corporate_id = m_job_type.corporate_id";
+    $arg_str .= " AND t_order.rntl_cont_no = m_job_type.rntl_cont_no";
+    $arg_str .= " AND t_order.job_type_cd = m_job_type.job_type_cd";
+    $arg_str .= " AND t_order.corporate_id = m_input_item.corporate_id";
+    $arg_str .= " AND t_order.item_cd = m_input_item.item_cd";
+    $arg_str .= " AND t_order.color_cd = m_input_item.color_cd";
 	$arg_str .= " INNER JOIN m_wearer_std";
 	$arg_str .= " ON t_order.werer_cd = m_wearer_std.werer_cd";
 	$arg_str .= " INNER JOIN m_contract";
@@ -377,7 +388,8 @@ $app->post('/history/search', function ()use($app){
 		$arg_str .= " ORDER BY ";
 		$arg_str .= $q_sort_key." ".$order;
 	}
-	$t_order = new TOrder();
+
+    $t_order = new TOrder();
 	$results = new Resultset(null, $t_order, $t_order->getReadConnection()->query($arg_str));
 	$result_obj = (array)$results;
 	$results_cnt = $result_obj["\0*\0_count"];
@@ -394,17 +406,49 @@ $app->post('/history/search', function ()use($app){
 	$all_list = array();
 	$json_list = array();
 
+    //色づけ処理用変数
+    $order_req_no_check = "";
+    $list['color'] = "blue";
+
 	if(!empty($results_cnt)){
 		$paginator = $paginator_model->getPaginate();
 		$results = $paginator->items;
 
 		foreach($results as $result) {
-			// 発注依頼No.
+
+            //色づけ処理分岐
+            if($list['color'] == 'blue'){
+                if ($order_req_no_check == $result->as_order_req_no){
+                    $list['diff'] = 'same';
+                    $list['color'] = 'blue';
+                }elseif($order_req_no_check == ""){
+                    $list['diff'] = 'same';
+                    $list['color'] = 'blue';
+                }elseif($order_req_no_check !== $result->as_order_req_no){
+                    $list['diff'] = 'differ';
+                    $list['color'] = 'white';
+                }
+            }elseif($list['color'] == 'white'){
+                if ($order_req_no_check == $result->as_order_req_no){
+                    $list['diff'] = 'same';
+                    $list['color'] = 'white';
+                }elseif($order_req_no_check == ""){
+                    $list['diff'] = 'same';
+                    $list['color'] = 'white';
+                }elseif($order_req_no_check !== $result->as_order_req_no){
+                    $list['diff'] = 'differ';
+                    $list['color'] = 'blue';
+                }
+            }
+
+            // 発注依頼No.
 			if (!empty($result->as_order_req_no)) {
 				$list['order_req_no'] = $result->as_order_req_no;
+                $order_req_no_check = $result->as_order_req_no;
 			} else {
 				$list['order_req_no'] = "-";
 			}
+
 			// 発注依頼日
 			$list['order_req_ymd'] = $result->as_order_req_ymd;
 			// 発注区分

@@ -11,9 +11,9 @@ define([
 		Views.HistoryListList = Marionette.CompositeView.extend({
 			template: App.Admin.Templates.historyListList,
 			emptyView: Backbone.Marionette.ItemView.extend({
-                tagName: "tr",
-								template: App.Admin.Templates.historyEmpty,
-      }),
+            	tagName: "tr",
+				template: App.Admin.Templates.historyEmpty,
+      	}),
 			childView: Views.HistoryListItem,
 			childViewContainer: "tbody",
 			ui: {
@@ -22,7 +22,15 @@ define([
 				this.listenTo(this.collection, 'parsed', function(res){
 					this.options.pagerModel.set(res.page);
 				});
+
 			},
+			onShow: function(e) {
+
+
+			},
+
+
+
 			events: {
 				"click .sort": function(e) {
 					e.preventDefault();
@@ -52,6 +60,7 @@ define([
 				this.collection.fetchMx({
 					data: cond,
 					success: function(model){
+						console.log(model.models);
 						$.unblockUI();
 					},
 					complete:function(res){
