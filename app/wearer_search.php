@@ -238,7 +238,7 @@ $app->post('/wearer_search/search', function ()use($app){
                 $list['order_tran_flg'] = '0';
             }
             // 状態、着用者マスタトラン有無フラグ
-            $list['snd_kbn'] = "未送信";
+            $list['snd_kbn'] = "-";
             if (isset($result->as_snd_kbn)) {
                 // 状態
                 if($result->as_snd_kbn == '0'){
