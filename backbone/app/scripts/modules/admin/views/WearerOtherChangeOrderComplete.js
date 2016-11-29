@@ -42,7 +42,6 @@ define([
 				var wearer_data = data["wearer_data"];
 				var item = data["item"];
 				var snd_kbn = data["snd_kbn"];
-				console.log(data);
 
 				var modelForUpdate = this.model;
 				modelForUpdate.url = App.api.WOC0050;
@@ -74,10 +73,10 @@ define([
 				// 「続けて入力する」ボタン
 				'click @ui.continueInput': function(){
 					// 検索画面の条件項目を取得
-					var cond = window.sessionStorage.getItem("wearer_other_cond");
-					window.sessionStorage.setItem("back_wearer_other_cond", cond);
+					var cond = window.sessionStorage.getItem("wearer_size_change_cond");
+					window.sessionStorage.setItem("back_wearer_size_change_cond", cond);
 					// 検索画面へ遷移
-					location.href="wearer_other.html";
+					location.href="wearer_size_change.html";
 				},
 				// 「ホーム画面へ戻る」ボタン
 				'click @ui.backHome': function(){
