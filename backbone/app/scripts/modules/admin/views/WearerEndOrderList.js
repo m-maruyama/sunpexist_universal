@@ -48,7 +48,6 @@ define([
 				var data = {
 					'job_type':job_type
 				}
-				// 返却商品一覧、
 				var modelForUpdate = this.model;
 				modelForUpdate.url = App.api.WN0015;
 				var cond = {
@@ -67,7 +66,6 @@ define([
 						}
 						var res_list = res.attributes;
 
-						// 検索画面から遷移してきた場合、かつ発注トランにデータがある場合は「発注取消」ボタンを表示
 						if (res_list['tran_flg']) {
 							$(".delete").hide();
 						}

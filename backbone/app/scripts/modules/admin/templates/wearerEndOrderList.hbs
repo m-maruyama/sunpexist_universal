@@ -7,7 +7,7 @@
     <div style="padding-bottom:10px;">
       <table>
         <th>返却商品一覧</th>
-          <input type="hidden" name="now_list_cnt" value="{{now_list_cnt}}">
+          <input type="hidden" name="list_cnt" value="{{list_cnt}}">
           <input type="hidden" name="individual_flg" value="{{individual_flg}}">
       </table>
     </div>
@@ -33,17 +33,17 @@
         <tr>
           <td>
             {{list_no}}
-            <input type="hidden" name="now_rntl_sect_cd{{arr_num}}" value="{{rntl_sect_cd}}">
-            <input type="hidden" name="now_job_type_cd{{arr_num}}" value="{{job_type_cd}}">
-            <input type="hidden" name="now_job_type_item_cd{{arr_num}}" value="{{job_type_item_cd}}">
-            <input type="hidden" name="now_item_cd{{arr_num}}" value="{{item_cd}}">
-            <input type="hidden" name="now_color_cd{{arr_num}}" value="{{color_cd}}">
-            <input type="hidden" name="now_size_cd{{arr_num}}" value="{{size_cd}}">
+            <input type="hidden" name="rntl_sect_cd{{arr_num}}" value="{{rntl_sect_cd}}">
+            <input type="hidden" name="job_type_cd{{arr_num}}" value="{{job_type_cd}}">
+            <input type="hidden" name="job_type_item_cd{{arr_num}}" value="{{job_type_item_cd}}">
+            <input type="hidden" name="item_cd{{arr_num}}" value="{{item_cd}}">
+            <input type="hidden" name="color_cd{{arr_num}}" value="{{color_cd}}">
+            <input type="hidden" name="size_cd{{arr_num}}" value="{{size_cd}}">
           </td>
           <td>{{item_name}}</td>
           <td>
             {{std_input_qty}}
-            <input type="hidden" name="now_std_input_qty{{arr_num}}" value="{{std_input_qty}}">
+            <input type="hidden" name="std_input_qty{{arr_num}}" value="{{std_input_qty}}">
           </td>
           <td>
             {{item_and_color}}<br>{{input_item_name}}
@@ -57,18 +57,18 @@
           <td class="individual_flg" style="display:none;">
             {{#each individual_chk}}
             <label>
-              <input type="checkbox" id="now_target_flg{{name_no}}" name="now_target_flg{{name_no}}" value="{{individual_ctrl_no}}" checked disabled>
+              <input type="checkbox" id="target_flg{{name_no}}" name="target_flg{{name_no}}" value="{{individual_ctrl_no}}" checked disabled>
             </label>
             {{{br}}}
             {{/each}}
-            <input type="hidden" id="now_target_flg{{arr_num}}" name="now_target_flg{{arr_num}}" value="empty">
+            <input type="hidden" id="target_flg{{arr_num}}" name="target_flg{{arr_num}}" value="empty">
           </td>
           <td class="individual_flg" style="display:none;">
             {{{individual_ctrl_no}}}
           </td>
           <td>
-            <input disabled type="text" style="width:4em; font-weight:normal; text-align:center;" class="input-sm" id="now_return_num{{arr_num}}" name="now_return_num{{arr_num}}" value="{{return_num}}" {{return_num_disable}}>
-            <input type="hidden" name="now_return_num_disable{{arr_num}}" value="{{return_num_disable}}">
+            <input disabled type="text" style="width:4em; font-weight:normal; text-align:center;" class="input-sm" id="return_num{{arr_num}}" name="return_num{{arr_num}}" value="{{return_num}}" {{return_num_disable}}>
+            <input type="hidden" name="return_num_disable{{arr_num}}" value="{{return_num_disable}}">
           </td>
         </tr>
         {{/each}}

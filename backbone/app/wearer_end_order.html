@@ -21,6 +21,10 @@
   })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
   ga('create', 'UA-76339364-1', 'auto');
   ga('send', 'pageview');
+
+  if (document.referrer.length == 0){
+    location.href = "wearer_end.html";
+  }
 </script>
 <div id="nav"></div>
 <div id="main" style=""></div>

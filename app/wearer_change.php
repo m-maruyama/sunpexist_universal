@@ -735,20 +735,23 @@ $app->post('/wearer_change/order_check', function ()use($app){
 
     // 発注情報トラン.発注状況区分 = 「異動」以外の情報がある際は発注NG
     if ($order_sts_kbn !== "5") {
-      $json_list["err_cd"] = "1";
       if ($order_sts_kbn == "1" && $order_reason_kbn == "03") {
+        $json_list["err_cd"] = "1";
         $error_msg = "追加貸与の発注が入力されています。".PHP_EOL."職種変更または異動を行う場合は追加貸与の発注をキャンセルしてください。";
         $json_list["err_msg"] = $error_msg;
       }
       if ($order_sts_kbn == "2" && ($order_reason_kbn == "05" || $order_reason_kbn == "06" || $order_reason_kbn == "08" || $order_reason_kbn == "20")) {
+        $json_list["err_cd"] = "1";
         $error_msg = "貸与終了の発注が入力されています。".PHP_EOL."職種変更または異動を行う場合は貸与終了の発注をキャンセルしてください。";
         $json_list["err_msg"] = $error_msg;
       }
       if ($order_sts_kbn == "2" && $order_reason_kbn == "07") {
+        $json_list["err_cd"] = "1";
         $error_msg = "不要品返却の発注が入力されています。".PHP_EOL."職種変更または異動を行う場合は不要品返却の発注をキャンセルしてください。";
         $json_list["err_msg"] = $error_msg;
       }
       if ($order_sts_kbn == "3" || $order_sts_kbn == "4") {
+        $json_list["err_cd"] = "1";
         $error_msg = "交換の発注が入力されています。".PHP_EOL."職種変更または異動を行う場合は交換の発注をキャンセルしてください。";
         $json_list["err_msg"] = $error_msg;
       }

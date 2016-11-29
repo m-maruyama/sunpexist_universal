@@ -10,7 +10,7 @@ define([
 	'blockUI',
 	'../controllers/WearerReturnOrder',
 	'./ReasonKbnConditionChange',
-	'./ShipmentConditionChange',
+	'./ShipmentConditionChange'
 ], function(App) {
 	'use strict';
 	App.module('Admin.Views', function(Views, App, Backbone, Marionette, $, _){
@@ -311,7 +311,7 @@ define([
 					var tran_req_no = $("button[name='complete_param']").val();
 					var agreement_no = $("select[name='agreement_no']").val();
 					var reason_kbn = $("select[name='reason_kbn']").val();
-					var emply_cd_flg = $("#emply_cd_flg").prop("checked");
+					//var emply_cd_flg = $("#emply_cd_flg").prop("checked");
 					var member_no = $("input[name='member_no']").val();
 					var member_name = $("input[name='member_name']").val();
 					var member_name_kana = $("input[name='member_name_kana']").val();
@@ -324,7 +324,7 @@ define([
 						'tran_req_no': tran_req_no,
 						'agreement_no': agreement_no,
 						'reason_kbn': reason_kbn,
-						'emply_cd_flg': emply_cd_flg,
+						//'emply_cd_flg': emply_cd_flg,
 						'member_no': member_no,
 						'member_name': member_name,
 						'member_name_kana': member_name_kana,
@@ -395,9 +395,11 @@ define([
 
 									that.triggerMethod('inputComplete', data);
 								}
-							} else {
+							} else if (res_val["error_code"] == "1") {
 								that.triggerMethod('showAlerts', res_val["error_msg"]);
 								return;
+							} else {
+								alert("予期せぬエラーが発生しました。");
 							}
 						}
 					});
@@ -406,7 +408,7 @@ define([
 					var tran_req_no = $("button[name='send_param']").val();
 					var agreement_no = $("select[name='agreement_no']").val();
 					var reason_kbn = $("select[name='reason_kbn']").val();
-					var emply_cd_flg = $("#emply_cd_flg").prop("checked");
+					//var emply_cd_flg = $("#emply_cd_flg").prop("checked");
 					var member_no = $("input[name='member_no']").val();
 					var member_name = $("input[name='member_name']").val();
 					var member_name_kana = $("input[name='member_name_kana']").val();
@@ -419,7 +421,7 @@ define([
 						'tran_req_no': tran_req_no,
 						'agreement_no': agreement_no,
 						'reason_kbn': reason_kbn,
-						'emply_cd_flg': emply_cd_flg,
+						//'emply_cd_flg': emply_cd_flg,
 						'member_no': member_no,
 						'member_name': member_name,
 						'member_name_kana': member_name_kana,

@@ -40,7 +40,6 @@ define([
 						'werer_name': this.ui.werer_name.val(),
 					};
 
-					// 発注入力遷移前に発注NGパターンチェック実施
 					var modelForUpdate = this.model;
 					modelForUpdate.url = App.api.WN0016;
 					var cond = {
@@ -59,14 +58,12 @@ define([
 								that.onShow(res_val, type, transition, data);
 
 							} else {
-								// エラーアラート表示
 								alert(res_val["err_msg"]);
 								return;
 							}
 						}
 					});
 				},
-				// 返却伝票ダウンロードボタン
 				'click @ui.download': function(e){
 					e.preventDefault();
 					//var printData = [];
@@ -77,7 +74,7 @@ define([
 					var printData = new Object();
 					printData["rntl_cont_no"] = pdf_val[0];
 					printData["order_req_no"] = pdf_val[1];
-					console.log(printData);
+					//console.log(printData);
 					var msg = "データ量により、ダウンロード処理に時間がかかる可能性があります。ダウンロードを実施してよろしいですか？";
 					if (window.confirm(msg)) {
 						var cond = {
@@ -101,7 +98,6 @@ define([
 				var that = this;
 
 				if (type == "WN0016_req") {
-					// 遷移時のPOSTパラメータ代行処理
 					var modelForUpdate = this.model;
 					modelForUpdate.url = App.api.WC0011;
 					var cond = {
@@ -111,7 +107,6 @@ define([
 					modelForUpdate.fetchMx({
 						data:cond,
 						success:function(res){
-							// 検索項目値、ページ数のセッション保持
 							var cond = new Array(
 								$("select[name='agreement_no']").val(),
 								$("input[name='cster_emply_cd']").val(),
@@ -125,7 +120,6 @@ define([
 							window.sessionStorage.setItem("wearer_end_cond", arr_str);
 							window.sessionStorage.setItem('referrer', 'wearer_end');
 
-							// 発注入力画面へ遷移
 							var $form = $('<form/>', {'action': '/universal/wearer_end_order.html', 'method': 'post'});
 							$form.appendTo(document.body);
 							$form.submit();
@@ -134,46 +128,6 @@ define([
 				}
 
 			}
-
-	// 		'click @ui.wearer_end': function(e){
-	// 			e.preventDefault();
-	// 			var data = this.ui.wearer_end.val();
-	// 			var modelForUpdate = this.model;
-	// 			modelForUpdate.url = App.api.WN0020;
-	// 			var cond = {
-	// 				"scr": '貸与終了ボタン',
-	// 				"cond": data,
-	// 			};
-	// 			modelForUpdate.fetchMx({
-	// 				data:cond,
-	// 				success:function(res){
-	// 					var errors = res.get('errors');
-	// 					if(errors) {
-	// 						var errorMessages = errors.map(function(v){
-	// 							return v.error_message;
-	// 						});
-	// 						that.triggerMethod('showAlerts', errorMessages);
-	// 					}
-	// 					location.href = './wearer_end_order.html';
-	// 					return;
-	// 				}
-	// 			});
-	// 			postForm('/universal/wearer_end_order.html', data);
-	// 			this.triggerMethod('click:wearer_end', this.model);
-	// 		}
-	// 	},
-    //
-    //
-	// });
-	// var postForm = function(url, data) {
-	// 	var $form = $('<form/>', {'action': url, 'method': 'post'});
-	// 	for(var key in data) {
-	// 		$form.append($('<input/>', {'type': 'hidden', 'name': key, 'value': data[key]}));
-	// 	}
-	// 	$form.appendTo(document.body);
-	// 	$form.submit();
-	// };
-
 		});
 	});
 });

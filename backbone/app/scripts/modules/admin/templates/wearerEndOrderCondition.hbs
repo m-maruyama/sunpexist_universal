@@ -1,36 +1,33 @@
 <div class="row">
 	<h1>発注入力（貸与終了）</h1>
-	<!-- start フォーム -->
 	<div class="row">
 		<div class="col-md-1">
-			<button class="btn btn-primary btn-sm btn-block back" title="戻る">戻る</button>
+			<button class="btn btn-primary back" title="戻る">戻る</button>
 		</div>
-		<div class="col-md-2">
-			<button class="btn btn-primary btn-sm btn-block delete" style="display:none;" name="delete_param" value="{{delete_param}}" title="発注取消">発注取消</button>
+		<div class="col-md-1">
+			<button class="btn btn-primary delete" style="display:none;" name="delete_param" value="{{delete_param}}" title="発注取消">発注取消</button>
 		</div>
-		<div class="col-md-2">
-			<button class="btn btn-primary btn-sm btn-block inputButton" style="display:none;" title="入力完了">入力完了</button>
+		<div class="col-md-1">
+			<button class="btn btn-primary complete" style="display:none;" name="complete_param" title="入力完了">入力完了</button>
 		</div>
-		<div class="col-md-2">
-			<button class="btn btn-primary btn-sm btn-block orderSend" style="display:none;" title="発注送信">発注送信</button>
+		<div class="col-md-1">
+			<button class="btn btn-primary orderSend" style="display:none;" name="send_param" title="発注送信">発注送信</button>
 		</div>
 	</div>
-
-	<!--エラーメッセージ-->
 	<div style="padding-top:20px;">
 		<div class="errors"></div>
 	<div>
-
 	<form class="form-horizontal">
-		<div class="col-md-13 box_purple">
-			<div class="form-group row">
-				<div class="agreement_no"></div>
-			</div>
-			<div class="form-group row">
-				<div class="reason_kbn"></div>
-			</div>
+		<div class="col-md-10 box_purple">
 			<div class="form-group">
-				<label class="col-md-2 control-label" for="resfl_ymd">異動日<span style="color:red">＊</span></label>
+				<label class="col-md-2 control-label" for="">契約No</label>
+				<div class="col-md-5">
+					<select class="form-control input-sm" id="agreement_no" name="agreement_no" disabled="disabled">
+					</select>
+				</div>
+			</div>
+			<div class="form-group">				<div class="reason_kbn"></div>			</div>			<div class="form-group">
+				<label class="col-md-2 control-label" for="resfl_ymd">異動日</label>
 				<div class="col-md-3">
 					<div class='input-group date datepicker'>
 						<input type="text" class="form-control  input-sm datepicker" id="resfl_ymd" name="resfl_ymd" value="">
@@ -40,20 +37,33 @@
 					</div>
 				</div>
 			</div>
-			<div class="form-group row">
-				<div class="section"></div>
-			</div>
 			<div class="form-group">
-				<div class="col-md-6">
-					<div class="job_type"></div>
+				<label class="col-md-2 control-label" for="">拠点</label>
+				<div class="col-md-5 dspilb">
+					<select class="form-control input-sm" id="section" name="section" disabled="disabled">
+					</select>
+				</div>
+				<div class="col-md-2 dspilb">
+					<a href="" type="button" id="section_btn" class="btn btn-primary btn-sm btn-block" title="絞り込み" data-toggle="modal" data-target="#modal-example" disabled>絞り込み</a>
 				</div>
 			</div>
+			<div class="form-group">
+				<label class="col-md-2 control-label" for="">貸与パターン</label>
+				<div class="col-md-5">
+					<select class="form-control input-sm" id="job_type" name="job_type" disabled="disabled">
+					</select>
+				</div>
+			</div>
+			<input type="hidden" id="sex_kbn" name="sex_kbn" value="">
+			<input type="hidden" id="member_no" name="member_no" value="">
+			<input type="hidden" id="member_name" name="member_name" value="">
+			<input type="hidden" id="member_name_kana" name="member_name_kana" value="">
+			<input type="hidden" id="shipment" name="shipment" value="">
 			<div class="form-group row">
-				<label class="col-md-2 control-label" for="comment">コメント欄</label>
-				<div class="col-md-6">
-					<textarea rows="5" class="form-control input-sm" id="comment"></textarea>
+				<label class="col-md-2 control-label" for="">コメント欄</label>
+				<div class="col-md-9">
+					<textarea rows="5" class="form-control input-sm" id="comment" name="comment"></textarea>
 				</div>
 			</div>
 		</div>
 	</form>
-	<!-- end フォーム -->

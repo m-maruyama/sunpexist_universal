@@ -1774,9 +1774,9 @@ $app->post('/wearer_return/complete', function ()use($app){
          // 発注状況区分(終了)
          array_push($calum_list, "order_sts_kbn");
          array_push($values_list, "'2'");
-         // 更新区分(WEB発注システム(新規登録))
+         // 更新区分(WEB発注システム(終了))
          array_push($calum_list, "upd_kbn");
-         array_push($values_list, "'1'");
+         array_push($values_list, "'2'");
          // Web更新日時
          array_push($calum_list, "web_upd_date");
          array_push($values_list, "'".date("Y-m-d H:i:s", time())."'");

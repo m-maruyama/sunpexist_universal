@@ -6,9 +6,7 @@ define([
 	'../behaviors/Alerts',
 	'typeahead',
 	'bloodhound',
-	'../controllers/WearerEnd',
-	'./SectionCondition',
-	'./JobTypeCondition',
+	'../controllers/WearerEnd'
 ], function(App) {
 	'use strict';
 	App.module('Admin.Views', function(Views, App, Backbone, Marionette, $, _){
@@ -20,44 +18,31 @@ define([
 				}
 			},
 			regions: {
-				'agreement_no': '.agreement_no',
-				'reason_kbn': '.reason_kbn',
-				'sex_kbn': '.sex_kbn',
-				"section": ".section",
-				"job_type": ".job_type",
-				"shipment": ".shipment",
-				"wearer_info": ".wearer_info",
-				"section_btn" : "#section_btn",
-				"section_modal": ".section_modal",
+				'reason_kbn': '.reason_kbn'
 			},
 			ui: {
 				'agreement_no': '#agreement_no',
 				'reason_kbn': '#reason_kbn',
-				'sex_kbn': '#sex_kbn',
 				'member_no': '#member_no',
 				'member_name': '#member_name',
 				'member_name_kana': '#member_name_kana',
-				'appointment_ymd': '#appointment_ymd',
-				'shipment_to': '#shipment_to',
+				'sex_kbn': '#sex_kbn',
+				'shipment': '#shipment',
 				'section': '#section',
 				"job_type": "#job_type",
-				'post_number': '#post_number',
 				'resfl_ymd' : '#resfl_ymd',
 				'comment': '#comment',
-				'zip_no': '#zip_no',
-				'address': '#address',
 				"back": '.back',
 				"cancel": '.cancel',
 				"delete": '.delete',
 				"complete": '.complete',
 				"orderSend": '.orderSend',
-				"order_count": '#order_count',
-				"inputButton": '.inputButton',
 				'datepicker': '.datepicker',
 				'timepicker': '.timepicker',
 			},
 			onRender: function() {
 				var that = this;
+
 				var maxTime = new Date();
 				maxTime.setHours(15);
 				maxTime.setMinutes(59);
@@ -74,41 +59,65 @@ define([
 				this.ui.datepicker.on('dp.change', function () {
 					$(this).data('DateTimePicker').hide();
 				});
-				// 着用者情報（異動日、備考欄)
 				var modelForUpdate = this.model;
 				modelForUpdate.url = App.api.WN0014;
 				var cond = {
-					"scr": '着用者情報',
+					"scr": '貸与終了-着用者情報',
 				};
 				modelForUpdate.fetchMx({
 					data:cond,
 					success:function(res){
-						var errors = res.get('errors');
-						if(errors) {
-							var errorMessages = errors.map(function(v){
-								return v.error_message;
-							});
-							that.triggerMethod('showAlerts', errorMessages);
-						}
 						var res_list = res.attributes;
+						//console.log(res_list);
+						var delete_param =
+							res_list['rntl_cont_no'] + ":"
+							+ res_list['rntl_sect_cd'] + ":"
+							+ res_list['job_type_cd'] + ":"
+							+ res_list['werer_cd'] + ":"
+							+ res_list['order_req_no'] + ":"
+							+ res_list['return_req_no']
+						;
+						that.ui.delete.val(delete_param);
+						that.ui.complete.val(res_list['order_req_no']);
+						that.ui.orderSend.val(res_list['order_req_no']);
+						if (res_list['order_tran_flg'] == '1' && res_list['return_tran_flg'] == '1') {
+							$('.delete').css('display', '');
+						}
 						if (res_list['wearer_info'][0]) {
+							that.ui.member_no.val(res_list['wearer_info'][0]['cster_emply_cd']);
+							that.ui.member_name.val(res_list['wearer_info'][0]['werer_name']);
+							that.ui.member_name_kana.val(res_list['wearer_info'][0]['werer_name_kana']);
+							that.ui.sex_kbn.val(res_list['wearer_info'][0]['sex_kbn']);
 							that.ui.resfl_ymd.val(res_list['wearer_info'][0]['resfl_ymd']);
-							that.ui.comment.val(res_list['wearer_info'][0]['memo']);
+							that.ui.comment.val(res_list['wearer_info'][0]['comment']);
 						}
-						that.ui.shipment_to.append($("<option>")
-							.val(res_list['ship_to_cd']).text(res_list['cust_to_brnch_name']));
-
-						that.ui.zip_no.val(res_list['zip_no']);
-						that.ui.address.val(res_list['address1']+res_list['address2']+res_list['address3']+res_list['address4']);
-
-						that.ui.order_count.val(res_list['order_count']);
-						that.ui.back.val(res_list['param']);
-						var flg = false;
-						if(res_list['order_req_no']){
-							flg = true;
-							that.ui.delete.val(res_list['order_req_no']);
+						if (res_list['agreement_no_list'][0]) {
+							var option1 = document.createElement('option');
+							var str = res_list['agreement_no_list'][0]['rntl_cont_no'] + " " + res_list['agreement_no_list'][0]['rntl_cont_name'];
+							var text1 = document.createTextNode(str);
+							option1.setAttribute('value', res_list['agreement_no_list'][0]['rntl_cont_no']);
+							option1.appendChild(text1);
+							document.getElementById('agreement_no').appendChild(option1);
 						}
-						// 入力完了、発注送信ボタン表示/非表示制御
+						if (res_list['section_list'][0]) {
+							var option2 = document.createElement('option');
+							var text2 = document.createTextNode(res_list['section_list'][0]['rntl_sect_name']);
+							option2.setAttribute('value', res_list['section_list'][0]['rntl_sect_cd']);
+							option2.appendChild(text2);
+							document.getElementById('section').appendChild(option2);
+						}
+						if (res_list['job_type_list'][0]) {
+							var option3 = document.createElement('option');
+							var text3 = document.createTextNode(res_list['job_type_list'][0]['job_type_name']);
+							option3.setAttribute('value', res_list['job_type_list'][0]['job_type_cd']);
+							option3.appendChild(text3);
+							document.getElementById('job_type').appendChild(option3);
+						}
+						if (res_list['shipment_list'][0]) {
+							var shipment = res_list['shipment_list'][0]['ship_to_cd'] + ":" + res_list['shipment_list'][0]['ship_to_brnch_cd'];
+							that.ui.shipment.val(shipment);
+						}
+
 						var data = {
 							'rntl_cont_no': res_list['rntl_cont_no'],
 							'rntl_sect_cd': res_list['rntl_sect_cd']
@@ -123,271 +132,362 @@ define([
 							data:cond,
 							success:function(res) {
 								var CM0140_res = res.attributes;
-								//「入力完了」ボタン表示制御
 								if (CM0140_res['order_input_ok_flg'] == "1" && CM0140_res['order_send_ok_flg'] == "1") {
-									$('.inputButton').css('display', '');
+									$('.complete').css('display', '');
 									$('.orderSend').css('display', '');
 								}
 								if (CM0140_res['order_input_ok_flg'] == "0" && CM0140_res['order_send_ok_flg'] == "0") {
-									$('.inputButton').css('display', 'none');
+									$('.complete').css('display', 'none');
 									$('.orderSend').css('display', 'none');
 								}
 								if (CM0140_res['order_input_ok_flg'] == "0" && CM0140_res['order_send_ok_flg'] == "1") {
-									$('.inputButton').css('display', 'none');
+									$('.complete').css('display', 'none');
 									$('.orderSend').css('display', '');
 								}
 								if (CM0140_res['order_input_ok_flg'] == "1" && CM0140_res['order_send_ok_flg'] == "0") {
-									$('.inputButton').css('display', '');
+									$('.complete').css('display', '');
 									$('.orderSend').css('display', 'none');
-								}
-								if(flg){
-									that.ui.delete.css('display', '');
 								}
 							}
 						});
-
 					}
 				});
 			},
 			events: {
-				// 「戻る」ボタン
 				'click @ui.back': function(){
-					// 検索画面の条件項目を取得
 					var cond = window.sessionStorage.getItem("wearer_end_cond");
 					window.sessionStorage.setItem("back_wearer_end_cond", cond);
-					// 検索一覧画面へ遷移
 					location.href="wearer_end.html";
 				},
-				// 「発注取消」ボタン
 				'click @ui.delete': function(){
 					var that = this;
-					var model = this.model;
-					if(confirm("発注を削除しますが、よろしいですか？")){
-						var cond = {
-							"scr": '発注取消',
-						};
-						model.url = App.api.WN0018;
 
-						model.fetchMx({
-							data:cond,
-							success:function(res){
-								var res_val = res.attributes;
-								if(res_val["error_cd"]=='1') {
-									that.triggerMethod('error_msg', res_val["error_msg"]);
-								}else{
-									window.sessionStorage.setItem('referrer', 'wearer_end_order');
-									location.href = 'wearer_end.html';
-								}
-							}
-						});
+					var delete_vals = $("button[name='delete_param']").val();
+					var val = delete_vals.split(':');
+					var rntl_cont_no = val[0];
+					var rntl_sect_cd = val[1];
+					var job_type_cd = val[2];
+					var werer_cd = val[3];
+					var order_req_no = val[4];
+					var return_req_no = val[5];
+					var data = {
+						"werer_cd": werer_cd,
+						"order_req_no": order_req_no,
+						"return_req_no": return_req_no,
+						"rntl_cont_no": rntl_cont_no,
+						"rntl_sect_cd": rntl_sect_cd,
+						"job_type_cd": job_type_cd
 					};
 
+					var modelForUpdate = this.model;
+					modelForUpdate.url = App.api.CM0130;
+					var cond = {
+						"scr": '貸与終了-発注取消-更新可否チェック',
+						"log_type": '3',
+						"data": data,
+					};
+					modelForUpdate.fetchMx({
+						data:cond,
+						success:function(res){
+							var res_val = res.attributes;
+							var type = "cm0130_res";
+							var transition = "WN0018_req";
+							var data = cond["data"];
+							that.onShow(res_val, type, transition, data);
+						}
+					});
 				},
-				// 「入力完了」ボタン
-				'click @ui.inputButton': function(e){
-					e.preventDefault();
+				'click @ui.complete': function(){
 					var that = this;
 
 					var modelForUpdate = this.model;
-					modelForUpdate.url = App.api.WN0017;
-					if(this.ui.shipment_to.val()){
-						var m_shipment_to_array = this.ui.shipment_to.val().split(',');
-					}
-					this.ui.section = $('#section');
-					var section = $("select[name='section']").val();
-					var job_types = $('#job_type').val().split(':');
-					this.ui.comment = $('#comment');
-
-					var data = {
-						'reason_kbn': $("select[name='reason_kbn']").val(),
-						'rntl_sect_cd': section,
-						'job_type': job_types[0],
-						'order_count': that.ui.order_count.val(),
-						'resfl_ymd' : that.ui.resfl_ymd.val(),
-						'comment': this.ui.comment.val()
+					modelForUpdate.url = App.api.CM0130;
+					var cond = {
+						"scr": '貸与終了-入力完了-更新可否チェック',
+						"log_type": '1'
 					};
-					// 追加されるアイテム
-					var now_list_cnt = $("input[name='now_list_cnt']").val();
-					var now_item = new Object();
-					for (var i=0; i<now_list_cnt; i++) {
-						now_item[i] = new Object();
-						now_item[i]["now_rntl_sect_cd"] = $("input[name='now_rntl_sect_cd"+i+"']").val();
-						now_item[i]["now_job_type_cd"] = $("input[name='now_job_type_cd"+i+"']").val();
-						now_item[i]["now_job_type_item_cd"] = $("input[name='now_job_type_item_cd"+i+"']").val();
-						now_item[i]["now_item_cd"] = $("input[name='now_item_cd"+i+"']").val();
-						now_item[i]["now_color_cd"] = $("input[name='now_color_cd"+i+"']").val();
-						now_item[i]["now_choice_type"] = $("input[name='now_choice_type"+i+"']").val();
-						now_item[i]["now_std_input_qty"] = $("input[name='now_std_input_qty"+i+"']").val();
-						now_item[i]["now_size_cd"] = $("input[name='now_size_cd"+i+"']").val();
-						now_item[i]["individual_cnt"] = $("input[name='individual_cnt"+i+"']").val();
-						now_item[i]["possible_num"] = $("input[name='possible_num"+i+"']").val();
-						now_item[i]["individual_flg"] = $("input[name='individual_flg']").val();
-						// 商品毎の「対象」チェック状態、「個体管理番号」を取得
-						now_item[i]["individual_data"] = new Object();
-						if (now_item[i]["individual_flg"]){
-							//個体管理番号表示フラグがONの場合、対象、個体管理番号単位
-							now_item[i]["individual_cnt"] = $("input[name='individual_cnt"+i+"']").val();
-							var Name = 'now_target_flg'+i;
+					modelForUpdate.fetchMx({
+						data:cond,
+						success:function(res){
+							var type = "cm0130_res";
+							var res_val = res.attributes;
+							var transition = "WN0017_input_req";
+							var data = "";
+							that.onShow(res_val, type, transition, data);
+						}
+					});
+				},
+				'click @ui.orderSend': function() {
+					var that = this;
+
+					var modelForUpdate = this.model;
+					modelForUpdate.url = App.api.CM0130;
+					var cond = {
+						"scr": '貸与終了-発注送信-更新可否チェック',
+						"log_type": '1'
+					};
+					modelForUpdate.fetchMx({
+						data:cond,
+						success:function(res){
+							var type = "cm0130_res";
+							var res_val = res.attributes;
+							var transition = "WN0017_send_req";
+							var data = "";
+							that.onShow(res_val, type, transition, data);
+						}
+					});
+				}
+			},
+			onShow: function(val, type, transition, data) {
+				var that = this;
+
+				if (type == "cm0130_res") {
+					if (!val["chk_flg"]) {
+						alert(val["error_msg"]);
+					} else {
+						if (transition == "WN0017_input_req") {
+							var type = transition;
+							var res_val = "";
+						} else if (transition == "WN0017_send_req") {
+							var type = transition;
+							var res_val = "";
+						} else if (transition == "WN0018_req") {
+							var type = transition;
+							var res_val = "";
+						}
+					}
+				}
+				if (type == "WN0017_input_req") {
+					var tran_req_no = $("button[name='complete_param']").val();
+					var agreement_no = $("select[name='agreement_no']").val();
+					var reason_kbn = $("select[name='reason_kbn']").val();
+					//var emply_cd_flg = $("#emply_cd_flg").prop("checked");
+					var resfl_ymd = $("input[name='resfl_ymd']").val();
+					var section = $("select[name='section']").val();
+					var job_type = $("select[name='job_type']").val();
+					var comment = $("#comment").val();
+					var member_no = $("input[name='member_no']").val();
+					var member_name = $("input[name='member_name']").val();
+					var member_name_kana = $("input[name='member_name_kana']").val();
+					var sex_kbn = $("input[name='sex_kbn']").val();
+					var shipment = $("input[name='shipment']").val();
+					var wearer_data = {
+						'tran_req_no': tran_req_no,
+						'agreement_no': agreement_no,
+						'reason_kbn': reason_kbn,
+						//'emply_cd_flg': emply_cd_flg,
+						'resfl_ymd': resfl_ymd,
+						'member_no': member_no,
+						'member_name': member_name,
+						'member_name_kana': member_name_kana,
+						'sex_kbn': sex_kbn,
+						'section': section,
+						'job_type': job_type,
+						'shipment': shipment,
+						'comment': comment,
+						'snd_kbn': "0"
+					}
+
+					var list_cnt = $("input[name='list_cnt']").val();
+					var item = new Object();
+					for (var i=0; i<list_cnt; i++) {
+						item[i] = new Object();
+						item[i]["rntl_sect_cd"] = $("input[name='rntl_sect_cd"+i+"']").val();
+						item[i]["job_type_cd"] = $("input[name='job_type_cd"+i+"']").val();
+						item[i]["job_type_item_cd"] = $("input[name='job_type_item_cd"+i+"']").val();
+						item[i]["item_cd"] = $("input[name='item_cd"+i+"']").val();
+						item[i]["color_cd"] = $("input[name='color_cd"+i+"']").val();
+						item[i]["choice_type"] = $("input[name='choice_type"+i+"']").val();
+						item[i]["std_input_qty"] = $("input[name='std_input_qty"+i+"']").val();
+						item[i]["size_cd"] = $("input[name='size_cd"+i+"']").val();
+						item[i]["individual_cnt"] = $("input[name='individual_cnt"+i+"']").val();
+						item[i]["possible_num"] = $("input[name='possible_num"+i+"']").val();
+						item[i]["individual_flg"] = $("input[name='individual_flg']").val();
+						item[i]["individual_data"] = new Object();
+						if (item[i]["individual_flg"]){
+							item[i]["individual_cnt"] = $("input[name='individual_cnt"+i+"']").val();
+							var Name = 'target_flg'+i;
 							var chk_num = 0;
-							for (var j=0; j<now_item[i]["individual_cnt"]; j++) {
+							for (var j=0; j<item[i]["individual_cnt"]; j++) {
 								var chk_val = document.getElementsByName(Name)[j].value;
-								now_item[i]["individual_data"][j] = new Object();
+								item[i]["individual_data"][j] = new Object();
 								var checked = document.getElementsByName(Name)[j].checked;
 								if(checked == true){
-									now_item[i]["individual_data"][j]["now_target_flg"] = '1';
-									now_item[i]["individual_data"][j]["individual_ctrl_no"] = chk_val;
+									item[i]["individual_data"][j]["target_flg"] = '1';
+									item[i]["individual_data"][j]["individual_ctrl_no"] = chk_val;
 									chk_num = chk_num + 1;
 								} else {
-									now_item[i]["individual_data"][j]["now_target_flg"] = '0';
-									now_item[i]["individual_data"][j]["individual_ctrl_no"] = chk_val;
+									item[i]["individual_data"][j]["target_flg"] = '0';
+									item[i]["individual_data"][j]["individual_ctrl_no"] = chk_val;
 								}
-								// 対象=trueの数（商品単位返却数）
-								now_item[i]["individual_data"][j]["return_num"] = chk_num;
+								item[i]["individual_data"][j]["return_num"] = chk_num;
 							}
 						} else {
-							//個体管理番号表示フラグがOFFの場合、商品単位の返却数
-							now_item[i]["return_num"] = $("input[name='return_num"+i+"']").val();
+							item[i]["return_num"] = $("input[name='return_num"+i+"']").val();
 						}
-						now_item[i]["now_return_num"] = $("input[name='now_return_num"+i+"']").val();
-						now_item[i]["now_return_num_disable"] = $("input[name='now_return_num_disable"+i+"']").val();
+						item[i]["return_num"] = $("input[name='return_num"+i+"']").val();
+						item[i]["return_num_disable"] = $("input[name='return_num_disable"+i+"']").val();
 					}
+
+					var modelForUpdate = this.model;
+					modelForUpdate.url = App.api.WN0017;
 					var cond = {
-						"scr": '貸与終了入力完了',
-						"cond": data,
-						"snd_kbn": '0',
-						"now_item": now_item
+						"scr": '貸与終了-入力完了-check',
+						"log_type": '3',
+						"mode": "check",
+						"wearer_data": wearer_data,
+						"item": item
+					};
+					modelForUpdate.fetchMx({
+						data: cond,
+						success: function (res) {
+							var res_val = res.attributes;
+
+							if(res_val["error_code"] == '0') {
+								var msg = "入力を完了しますが、よろしいですか？";
+								if (window.confirm(msg)) {
+									that.triggerMethod('inputComplete', cond);
+								}
+							}else if(res_val["error_code"] == '1') {
+								that.triggerMethod('showAlerts', res_val["error_msg"]);
+								return;
+							}else{
+								alert("予期せぬエラーが発生しました。");
+							}
+						}
+					});
+				}
+				if (type == "WN0017_send_req") {
+					var tran_req_no = $("button[name='complete_param']").val();
+					var agreement_no = $("select[name='agreement_no']").val();
+					var reason_kbn = $("select[name='reason_kbn']").val();
+					//var emply_cd_flg = $("#emply_cd_flg").prop("checked");
+					var resfl_ymd = $("input[name='resfl_ymd']").val();
+					var section = $("select[name='section']").val();
+					var job_type = $("select[name='job_type']").val();
+					var comment = $("#comment").val();
+					var member_no = $("input[name='member_no']").val();
+					var member_name = $("input[name='member_name']").val();
+					var member_name_kana = $("input[name='member_name_kana']").val();
+					var sex_kbn = $("input[name='sex_kbn']").val();
+					var shipment = $("input[name='shipment']").val();
+					var wearer_data = {
+						'tran_req_no': tran_req_no,
+						'agreement_no': agreement_no,
+						'reason_kbn': reason_kbn,
+						//'emply_cd_flg': emply_cd_flg,
+						'resfl_ymd': resfl_ymd,
+						'member_no': member_no,
+						'member_name': member_name,
+						'member_name_kana': member_name_kana,
+						'sex_kbn': sex_kbn,
+						'section': section,
+						'job_type': job_type,
+						'shipment': shipment,
+						'comment': comment,
+						'snd_kbn': "1"
+					}
+
+					var list_cnt = $("input[name='list_cnt']").val();
+					var item = new Object();
+					for (var i=0; i<list_cnt; i++) {
+						item[i] = new Object();
+						item[i]["rntl_sect_cd"] = $("input[name='rntl_sect_cd"+i+"']").val();
+						item[i]["job_type_cd"] = $("input[name='job_type_cd"+i+"']").val();
+						item[i]["job_type_item_cd"] = $("input[name='job_type_item_cd"+i+"']").val();
+						item[i]["item_cd"] = $("input[name='item_cd"+i+"']").val();
+						item[i]["color_cd"] = $("input[name='color_cd"+i+"']").val();
+						item[i]["choice_type"] = $("input[name='choice_type"+i+"']").val();
+						item[i]["std_input_qty"] = $("input[name='std_input_qty"+i+"']").val();
+						item[i]["size_cd"] = $("input[name='size_cd"+i+"']").val();
+						item[i]["individual_cnt"] = $("input[name='individual_cnt"+i+"']").val();
+						item[i]["possible_num"] = $("input[name='possible_num"+i+"']").val();
+						item[i]["individual_flg"] = $("input[name='individual_flg']").val();
+						item[i]["individual_data"] = new Object();
+						if (item[i]["individual_flg"]){
+							item[i]["individual_cnt"] = $("input[name='individual_cnt"+i+"']").val();
+							var Name = 'target_flg'+i;
+							var chk_num = 0;
+							for (var j=0; j<item[i]["individual_cnt"]; j++) {
+								var chk_val = document.getElementsByName(Name)[j].value;
+								item[i]["individual_data"][j] = new Object();
+								var checked = document.getElementsByName(Name)[j].checked;
+								if(checked == true){
+									item[i]["individual_data"][j]["target_flg"] = '1';
+									item[i]["individual_data"][j]["individual_ctrl_no"] = chk_val;
+									chk_num = chk_num + 1;
+								} else {
+									item[i]["individual_data"][j]["target_flg"] = '0';
+									item[i]["individual_data"][j]["individual_ctrl_no"] = chk_val;
+								}
+								item[i]["individual_data"][j]["return_num"] = chk_num;
+							}
+						} else {
+							item[i]["return_num"] = $("input[name='return_num"+i+"']").val();
+						}
+						item[i]["return_num"] = $("input[name='return_num"+i+"']").val();
+						item[i]["return_num_disable"] = $("input[name='return_num_disable"+i+"']").val();
+					}
+
+					var modelForUpdate = this.model;
+					modelForUpdate.url = App.api.WN0017;
+					var cond = {
+						"scr": '貸与終了-発注送信-check',
+						"mode": "check",
+						"log_type": '3',
+						"wearer_data": wearer_data,
+						"item": item
 					};
 					modelForUpdate.fetchMx({
 						data: cond,
 						success: function (res) {
 							var res_val = res.attributes;
 							//console.log(res_val["param"]);
-							if(res_val["error_code"]=='1') {
-								that.triggerMethod('error_msg', res_val["error_msg"]);
-							}else if(res_val["error_code"]=='2') {
-								window.sessionStorage.setItem('error_msg', res_val["error_msg"]);
-								window.sessionStorage.setItem('referrer', 'wearer_end_order_err');
-								location.href="wearer_order_complete.html";
-							}else{
-								window.sessionStorage.setItem('referrer', 'wearer_end_order');
-								window.sessionStorage.setItem('param', res_val["param"]);
-								location.href="wearer_order_complete.html";
-							}
-						}
-					});
-				},
-				// 「発注送信」ボタン
-				'click @ui.orderSend': function(e) {
-					e.preventDefault();
-					var that = this;
-					// 入力項目チェック処理
-					var modelForUpdate = this.model;
-					modelForUpdate.url = App.api.WN0019;
-					var cond = {
-						"scr": '貸与終了NGパターンチェック'
-					};
-					modelForUpdate.fetchMx({
-						data: cond,
-						success: function (res) {
-							var res_val = res.attributes;
-							if (res_val["error_code"] == "1") {
-								that.triggerMethod('error_msg', res_val["error_msg"]);
-							}else{
-								if(confirm('発注内容を送信します。よろしいですか？')){
 
-									var modelForUpdate = that.model;
-									modelForUpdate.url = App.api.WN0017;
-									if(that.ui.shipment_to.val()){
-										var m_shipment_to_array = that.ui.shipment_to.val().split(',');
-									}
-									that.ui.section = $('#section');
-									var section = $("select[name='section']").val();
-									var job_types = $('#job_type').val().split(':');
-									that.ui.comment = $('#comment');
-									var data = {
-										'reason_kbn': $("select[name='reason_kbn']").val(),
-										'rntl_sect_cd': section,
-										'job_type': job_types[0],
-										'resfl_ymd': that.ui.resfl_ymd.val(),
-										'order_count': that.ui.order_count.val(),
-										'comment': that.ui.comment.val()
-									};
-									// 追加されるアイテム
-									var now_list_cnt = $("input[name='now_list_cnt']").val();
-									var now_item = new Object();
-									for (var i=0; i<now_list_cnt; i++) {
-										now_item[i] = new Object();
-										now_item[i]["now_rntl_sect_cd"] = $("input[name='now_rntl_sect_cd"+i+"']").val();
-										now_item[i]["now_job_type_cd"] = $("input[name='now_job_type_cd"+i+"']").val();
-										now_item[i]["now_job_type_item_cd"] = $("input[name='now_job_type_item_cd"+i+"']").val();
-										now_item[i]["now_item_cd"] = $("input[name='now_item_cd"+i+"']").val();
-										now_item[i]["now_color_cd"] = $("input[name='now_color_cd"+i+"']").val();
-										now_item[i]["now_choice_type"] = $("input[name='now_choice_type"+i+"']").val();
-										now_item[i]["now_std_input_qty"] = $("input[name='now_std_input_qty"+i+"']").val();
-										now_item[i]["now_size_cd"] = $("input[name='now_size_cd"+i+"']").val();
-										now_item[i]["individual_cnt"] = $("input[name='individual_cnt"+i+"']").val();
-										now_item[i]["possible_num"] = $("input[name='possible_num"+i+"']").val();
-										now_item[i]["individual_flg"] = $("input[name='individual_flg']").val();
-										// 商品毎の「対象」チェック状態、「個体管理番号」を取得
-										now_item[i]["individual_data"] = new Object();
-										if (now_item[i]["individual_flg"]) {
-											//個体管理番号表示フラグがONの場合、対象、個体管理番号単位
-											now_item[i]["individual_cnt"] = $("input[name='individual_cnt"+i+"']").val();
-											var Name = 'now_target_flg'+i;
-											var chk_num = 0;
-											for (var j=0; j<now_item[i]["individual_cnt"]; j++) {
-												var chk_val = document.getElementsByName(Name)[j].value;
-												now_item[i]["individual_data"][j] = new Object();
-												var checked = document.getElementsByName(Name)[j].checked;
-												if(checked == true){
-													now_item[i]["individual_data"][j]["now_target_flg"] = '1';
-													now_item[i]["individual_data"][j]["individual_ctrl_no"] = chk_val;
-													chk_num = chk_num + 1;
-												} else {
-													now_item[i]["individual_data"][j]["now_target_flg"] = '0';
-													now_item[i]["individual_data"][j]["individual_ctrl_no"] = chk_val;
-												}
-												// 対象=trueの数（商品単位返却数）
-												now_item[i]["individual_data"][j]["return_num"] = chk_num;
-											}
-										} else {
-											//個体管理番号表示フラグがOFFの場合、商品単位の返却数
-											now_item[i]["return_num"] = $("input[name='return_num"+i+"']").val();
-										}
-										now_item[i]["now_return_num"] = $("input[name='now_return_num"+i+"']").val();
-										now_item[i]["now_return_num_disable"] = $("input[name='now_return_num_disable"+i+"']").val();
-									}
-									var cond = {
-										"scr": '貸与終了発注送信',
-										"cond": data,
-										"snd_kbn": '1',
-										"now_item": now_item
-									};
-									modelForUpdate.fetchMx({
-										data: cond,
-										success: function (res) {
-											var res_val = res.attributes;
-											if(res_val["error_code"]=='1') {
-												that.triggerMethod('error_msg', res_val["error_msg"]);
-											}else if(res_val["error_code"]=='2') {
-												window.sessionStorage.setItem('error_msg', res_val["error_msg"]);
-												window.sessionStorage.setItem('referrer', 'wearer_end_order_err');
-												location.href="wearer_order_complete.html";
-											}else{
-												window.sessionStorage.setItem('referrer', 'wearer_end_order');
-												location.href="wearer_order_complete.html";
-											}
-										}
-									});
-								};
+							if(res_val["error_code"] == '0') {
+								var msg = "発注送信を行いますが、よろしいですか？";
+								if (window.confirm(msg)) {
+									that.triggerMethod('sendComplete', cond);
+								}
+							}else if(res_val["error_code"] == '1') {
+								that.triggerMethod('showAlerts', res_val["error_msg"]);
+								return;
+							}else{
+								alert("予期せぬエラーが発生しました。");
 							}
 						}
 					});
 				}
-			},
-			onShow: function() {
-				$('#section_btn').addClass("disabled");
+				if (type == "WN0018_req") {
+					var msg = "削除しますが、よろしいですか？";
+					if (window.confirm(msg)) {
+						$.blockUI({ message: '<p><img src="ajax-loader.gif" style="margin: 0 auto;" /> 発注取消中...</p>' });
+						var modelForUpdate = this.model;
+						modelForUpdate.url = App.api.WN0018;
+						var cond = {
+							"scr": '貸与終了-発注取消',
+							"log_type": '3',
+							"data": data,
+						};
+						modelForUpdate.fetchMx({
+							data:cond,
+							success:function(res){
+								var res_val = res.attributes;
 
+								if (res_val["error_code"] == "0") {
+									$.unblockUI();
+									alert('発注取消が完了しました。このまま検索画面へ移行します。');
+									var cond = window.sessionStorage.getItem("wearer_end_cond");
+									window.sessionStorage.setItem("back_wearer_end_cond", cond);
+									location.href="wearer_end.html";
+								} else {
+									$.unblockUI();
+									alert('発注取消中にエラーが発生しました');
+								}
+							}
+						});
+					}
+				}
 			}
 		});
 	});

@@ -43,7 +43,6 @@ define([
 						fetchList_section(pageNumber);
 				});
 
-				// 入力完了
 				this.listenTo(wearerReturnOrderConditionView, 'inputComplete', function(data){
 					wearerReturnOrderView.condition.reset();
 					wearerReturnOrderView.listTable.reset();
@@ -53,7 +52,7 @@ define([
 					});
 					wearerReturnOrderView.complete.show(wearerReturnOrderComplete);
 				});
-				// 発注送信完了
+
 				this.listenTo(wearerReturnOrderConditionView, 'sendComplete', function(data){
 					wearerReturnOrderView.condition.reset();
 					wearerReturnOrderView.listTable.reset();
