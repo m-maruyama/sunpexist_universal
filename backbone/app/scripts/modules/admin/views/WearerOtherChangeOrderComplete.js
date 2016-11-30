@@ -59,7 +59,7 @@ define([
 						var res_val = res.attributes;
 						if (res_val["error_code"] == "0") {
 							$('.returnSlipDownload').css('display', '');
-							$('#return_slip_dl').val(res_val["param"]);
+							that.ui.returnSlipDownload.val(res_val["param"]);
 						} else {
 							$("#h").text('');
 							$(".explanation").text('');
@@ -91,7 +91,6 @@ define([
 					var printData = new Object();
 					printData["rntl_cont_no"] = pdf_val[0];
 					printData["order_req_no"] = pdf_val[1];
-
 					var msg = "データ量により、ダウンロード処理に時間がかかる可能性があります。ダウンロードを実施してよろしいですか？";
 					if (window.confirm(msg)) {
 						var cond = {

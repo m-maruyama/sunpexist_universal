@@ -652,7 +652,7 @@ $app->post('/wearer_size_change/search', function ()use($app){
             $list['param2'] .= $list['order_tran_flg'].':';
             $list['param2'] .= $list['wearer_tran_flg'].':';
             $list['param2'] .= $list['order_req_no'].':';
-            $list['param2'] .= $list['return_req_no'];
+            $list['param2'] .= $list['order_req_no'];
 
             array_push($all_list,$list);
         }
