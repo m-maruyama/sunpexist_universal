@@ -440,6 +440,7 @@ $app->post('/wearer_size_change/search', function ()use($app){
                         }
                     }
                     if (!$patarn_flg) {
+                        ChromePhp::log($order_reason_kbn);
                         $list['order_req_no'] = $order_req_no;
                         $list['order_reason_kbn'] = $order_reason_kbn;
                         $list['wearer_add_button'] = "サイズ交換";
@@ -518,6 +519,22 @@ $app->post('/wearer_size_change/search', function ()use($app){
             } else {
                 $list['exchange_reciept_button'] = false;
             }
+
+            // 発注入力へのパラメータ設定
+            $list['param'] = '';
+            $list['param'] .= $list['rntl_cont_no'].':';
+            $list['param'] .= $list['werer_cd'].':';
+            $list['param'] .= $list['cster_emply_cd'].':';
+            $list['param'] .= $list['sex_kbn'].':';
+            $list['param'] .= $list['rntl_sect_cd'].':';
+            $list['param'] .= $list['job_type_cd'].':';
+            $list['param'] .= $list['order_reason_kbn'].':';
+            $list['param'] .= $list['ship_to_cd'].':';
+            $list['param'] .= $list['ship_to_brnch_cd'].':';
+            $list['param'] .= $list['order_tran_flg'].':';
+            $list['param'] .= $list['wearer_tran_flg'].':';
+            $list['param'] .= $list['order_req_no'].':';
+            $list['param'] .= $list['return_req_no'];
 
             //「その他交換」パターンチェックスタート
             $list['btnPattern'] = "";
@@ -614,29 +631,29 @@ $app->post('/wearer_size_change/search', function ()use($app){
             }
             //「返却伝票ダウンロード」ボタン生成
             if ($list['btnPattern'] == "B" || $list['btnPattern'] == "C") {
-                $list['other_change_reciept_button'] = true;
-                $list['other_change_reciept_param'] = "";
-                $list['other_change_reciept_param'] .= $list['rntl_cont_no'].":";
-                $list['other_change_reciept_param'] .= $list['order_req_no'];
+                $list['other_change_reciept_button2'] = true;
+                $list['other_change_reciept_param2'] = "";
+                $list['other_change_reciept_param2'] .= $list['rntl_cont_no'].":";
+                $list['other_change_reciept_param2'] .= $list['order_req_no'];
             } else {
-                $list['other_change_reciept_button'] = false;
+                $list['other_change_reciept_button2'] = false;
             }
 
             // 発注入力へのパラメータ設定
-            $list['param'] = '';
-            $list['param'] .= $list['rntl_cont_no'].':';
-            $list['param'] .= $list['werer_cd'].':';
-            $list['param'] .= $list['cster_emply_cd'].':';
-            $list['param'] .= $list['sex_kbn'].':';
-            $list['param'] .= $list['rntl_sect_cd'].':';
-            $list['param'] .= $list['job_type_cd'].':';
-            $list['param'] .= $list['order_reason_kbn'].':';
-            $list['param'] .= $list['ship_to_cd'].':';
-            $list['param'] .= $list['ship_to_brnch_cd'].':';
-            $list['param'] .= $list['order_tran_flg'].':';
-            $list['param'] .= $list['wearer_tran_flg'].':';
-            $list['param'] .= $list['order_req_no'].':';
-            $list['param'] .= $list['return_req_no'];
+            $list['param2'] = '';
+            $list['param2'] .= $list['rntl_cont_no'].':';
+            $list['param2'] .= $list['werer_cd'].':';
+            $list['param2'] .= $list['cster_emply_cd'].':';
+            $list['param2'] .= $list['sex_kbn'].':';
+            $list['param2'] .= $list['rntl_sect_cd'].':';
+            $list['param2'] .= $list['job_type_cd'].':';
+            $list['param2'] .= $list['order_reason_kbn'].':';
+            $list['param2'] .= $list['ship_to_cd'].':';
+            $list['param2'] .= $list['ship_to_brnch_cd'].':';
+            $list['param2'] .= $list['order_tran_flg'].':';
+            $list['param2'] .= $list['wearer_tran_flg'].':';
+            $list['param2'] .= $list['order_req_no'].':';
+            $list['param2'] .= $list['return_req_no'];
 
             array_push($all_list,$list);
         }

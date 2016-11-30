@@ -13,7 +13,8 @@ define([
 			ui: {
 				"wearer_size_change": "#wearer_size_change",
 				"wearer_other_change": "#wearer_other_change",
-				"download": "#download"
+				"download": "#download",
+				"download2": "#download2"
 			},
 			events: {
 				// サイズ交換ボタン
@@ -139,8 +140,38 @@ define([
 						form=null;
 						return;
 					}
+				},
+				// 返却伝票ダウンロードボタン
+				'click @ui.download2': function(e){
+					e.preventDefault();
+					//var printData = [];
+					var pdf_vals = e.target.value;
+
+					var pdf_val = pdf_vals.split(':');
+					//console.log(pdf_val);
+					var printData = new Object();
+					printData["rntl_cont_no"] = pdf_val[0];
+					printData["order_req_no"] = pdf_val[1];
+					var msg = "データ量により、ダウンロード処理に時間がかかる可能性があります。ダウンロードを実施してよろしいですか？";
+					if (window.confirm(msg)) {
+						var cond = {
+							"scr": 'PDFダウンロード',
+							"cond": printData
+						};
+						var form = $('<form action="' + App.api.PR0012 + '" method="post"></form>');
+						var data = $('<input type="hidden" name="data" />');
+						data.val(JSON.stringify(cond));
+						form.append(data);
+						$('body').append(form);
+						form.submit();
+						data.remove();
+						form.remove();
+						form=null;
+						return;
+					}
 				}
 			},
+
 			onShow: function(val, type, transition, data) {
 				var that = this;
 				// 交換発注入力遷移

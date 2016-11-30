@@ -187,7 +187,6 @@ define([
 								option.appendChild(text);
 								document.getElementById('sex_kbn').appendChild(option);
 							}
-							that.ui.sex_kbn.val(res_list['wearer_info'][0]['sex_kbn']);
 						}
 						// 契約No(固定)
 						if (res_list['agreement_no_list'][0]) {
@@ -372,7 +371,7 @@ define([
 						alert(val["error_msg"]);
 					} else {
 						// エラーがない場合は各対応処理へ移行
-						if (transition == "WR0021_req") {
+						if (transition == "WOC0030_req") {
 							// 発注取消処理
 							type = transition;
 						} else if (transition == "WOC0050_req_input") {

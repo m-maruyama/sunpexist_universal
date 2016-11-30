@@ -84,6 +84,7 @@ $app->post('/wearer_exchange/info', function ()use($app){
       $list["return_date"] = $result->return_date;
     }
   }
+  $sex_kbn = '';
   // 着用者基本マスタトラン参照
   $query_list = array();
   $query_list[] = "m_wearer_std_tran.corporate_id = '".$auth['corporate_id']."'";
@@ -97,7 +98,8 @@ $app->post('/wearer_exchange/info', function ()use($app){
   $arg_str = "SELECT ";
   $arg_str .= "m_wearer_std_tran.cster_emply_cd as as_cster_emply_cd,";
   $arg_str .= "m_wearer_std_tran.werer_name as as_werer_name,";
-  $arg_str .= "m_wearer_std_tran.werer_name_kana as as_werer_name_kana";
+  $arg_str .= "m_wearer_std_tran.werer_name_kana as as_werer_name_kana,";
+  $arg_str .= "m_wearer_std_tran.sex_kbn as as_sex_kbn";
   $arg_str .= " FROM ";
   $arg_str .= "m_wearer_std_tran";
   $arg_str .= " WHERE ";
@@ -130,63 +132,121 @@ $app->post('/wearer_exchange/info', function ()use($app){
       $list['werer_name'] = $result->as_werer_name;
       // 着用者名（読み仮名）
       $list['werer_name_kana'] = $result->as_werer_name_kana;
+      // 性別
+      $sex_kbn = $result->as_sex_kbn;
     }
 
     $all_list[] = $list;
   }
 
-  // 上記参照のトラン情報がない場合、着用者基本マスタ情報を参照する
-  if (empty($all_list)) {
-    // 着用者基本マスタトラン（着用者編集）無し
-    $json_list['tran_flg'] = "0";
+    // 上記参照のトラン情報がない場合、着用者基本マスタ情報（着用者編集）を参照する
+    if (empty($all_list)) {
 
-    $query_list = array();
-    $query_list[] = "m_wearer_std.corporate_id = '".$auth['corporate_id']."'";
-    $query_list[] = "m_wearer_std.rntl_cont_no = '".$wearer_size_change_post['rntl_cont_no']."'";
-    $query_list[] = "m_wearer_std.werer_cd = '".$wearer_size_change_post['werer_cd']."'";
-    $query = implode(' AND ', $query_list);
+        $query_list = array();
+        array_push($query_list, "m_wearer_std_tran.corporate_id = '".$auth['corporate_id']."'");
+        array_push($query_list, "m_wearer_std_tran.rntl_cont_no = '".$wearer_size_change_post['rntl_cont_no']."'");
+        array_push($query_list, "m_wearer_std_tran.werer_cd = '".$wearer_size_change_post['werer_cd']."'");
+        //発注状況区分　着用者編集
+        array_push($query_list, "m_wearer_std_tran.order_sts_kbn = '6'");
 
-    $arg_str = "";
-    $arg_str = "SELECT ";
-    $arg_str .= "m_wearer_std.cster_emply_cd as as_cster_emply_cd,";
-    $arg_str .= "m_wearer_std.werer_name as as_werer_name,";
-    $arg_str .= "m_wearer_std.werer_name_kana as as_werer_name_kana";
-    $arg_str .= " FROM ";
-    $arg_str .= "m_wearer_std";
-    $arg_str .= " WHERE ";
-    $arg_str .= $query;
-    $arg_str .= " ORDER BY m_wearer_std.upd_date DESC";
-    //ChromePhp::LOG($arg_str);
-    $m_weare_std = new MWearerStd();
-    $results = new Resultset(NULL, $m_weare_std, $m_weare_std->getReadConnection()->query($arg_str));
-    $result_obj = (array)$results;
-    $results_cnt = $result_obj["\0*\0_count"];
-    //ChromePhp::LOG($results_cnt);
 
-    if (!empty($results_cnt)) {
-      $list = array();
-      $paginator_model = new PaginatorModel(
-          array(
-              "data"  => $results,
-              "limit" => 1,
-              "page" => 1
-          )
-      );
-      $paginator = $paginator_model->getPaginate();
-      $results = $paginator->items;
-      //ChromePhp::LOG($results);
+        $query = implode(' AND ', $query_list);
 
-      foreach ($results as $result) {
-        // 社員コード
-        $list['cster_emply_cd'] = $result->as_cster_emply_cd;
-        // 着用者名
-        $list['werer_name'] = $result->as_werer_name;
-        // 着用者名（読み仮名）
-        $list['werer_name_kana'] = $result->as_werer_name_kana;
-      }
+        $arg_str = "";
+        $arg_str = "SELECT ";
+        $arg_str .= "m_wearer_std_tran.cster_emply_cd as as_cster_emply_cd,";
+        $arg_str .= "m_wearer_std_tran.werer_name as as_werer_name,";
+        $arg_str .= "m_wearer_std_tran.werer_name_kana as as_werer_name_kana,";
+        $arg_str .= "m_wearer_std_tran.sex_kbn as as_sex_kbn";
+        $arg_str .= " FROM ";
+        $arg_str .= "m_wearer_std_tran";
+        $arg_str .= " WHERE ";
+        $arg_str .= $query;
+        $arg_str .= " ORDER BY m_wearer_std_tran.upd_date DESC";
+        $m_weare_std_tran = new MWearerStdTran();
+        $results = new Resultset(NULL, $m_weare_std_tran, $m_weare_std_tran->getReadConnection()->query($arg_str));
+        $result_obj = (array)$results;
+        $results_cnt = $result_obj["\0*\0_count"];
+        if (!empty($results_cnt)) {
+            // 着用者基本マスタトラン（着用者編集）有り
+            $json_list['tran_flg'] = "1";
 
-      $all_list[] = $list;
-    }
+            $paginator_model = new PaginatorModel(
+                array(
+                    "data" => $results,
+                    "limit" => 1,
+                    "page" => 1
+                )
+            );
+            $paginator = $paginator_model->getPaginate();
+            $results = $paginator->items;
+            foreach ($results as $result) {
+                // 社員コード
+                $list['cster_emply_cd'] = $result->as_cster_emply_cd;
+                // 着用者名
+                $list['werer_name'] = $result->as_werer_name;
+                // 着用者名（読み仮名）
+                $list['werer_name_kana'] = $result->as_werer_name_kana;
+                // 性別
+                $sex_kbn = $result->as_sex_kbn;
+            }
+            array_push($all_list, $list);
+        }else{
+            // 着用者基本マスタトラン（着用者編集）無し
+            $json_list['tran_flg'] = "0";
+
+            $query_list = array();
+            $query_list[] = "m_wearer_std.corporate_id = '".$auth['corporate_id']."'";
+            $query_list[] = "m_wearer_std.rntl_cont_no = '".$wearer_size_change_post['rntl_cont_no']."'";
+            $query_list[] = "m_wearer_std.werer_cd = '".$wearer_size_change_post['werer_cd']."'";
+            $query = implode(' AND ', $query_list);
+
+            $arg_str = "";
+            $arg_str = "SELECT ";
+            $arg_str .= "m_wearer_std.cster_emply_cd as as_cster_emply_cd,";
+            $arg_str .= "m_wearer_std.werer_name as as_werer_name,";
+            $arg_str .= "m_wearer_std.werer_name_kana as as_werer_name_kana,";
+            $arg_str .= "m_wearer_std.sex_kbn as as_sex_kbn";
+            $arg_str .= " FROM ";
+            $arg_str .= "m_wearer_std";
+            $arg_str .= " WHERE ";
+            $arg_str .= $query;
+            $arg_str .= " ORDER BY m_wearer_std.upd_date DESC";
+            //ChromePhp::LOG($arg_str);
+            $m_weare_std = new MWearerStd();
+            $results = new Resultset(NULL, $m_weare_std, $m_weare_std->getReadConnection()->query($arg_str));
+            $result_obj = (array)$results;
+            $results_cnt = $result_obj["\0*\0_count"];
+            //ChromePhp::LOG($results_cnt);
+
+            if (!empty($results_cnt)) {
+                $list = array();
+                $paginator_model = new PaginatorModel(
+                    array(
+                        "data"  => $results,
+                        "limit" => 1,
+                        "page" => 1
+                    )
+                );
+                $paginator = $paginator_model->getPaginate();
+                $results = $paginator->items;
+                //ChromePhp::LOG($results);
+
+                foreach ($results as $result) {
+                    // 社員コード
+                    $list['cster_emply_cd'] = $result->as_cster_emply_cd;
+                    // 着用者名
+                    $list['werer_name'] = $result->as_werer_name;
+                    // 着用者名（読み仮名）
+                    $list['werer_name_kana'] = $result->as_werer_name_kana;
+                    // 性別
+                    $sex_kbn = $result->as_sex_kbn;
+                }
+
+                $all_list[] = $list;
+            }
+
+        }
   }
   $json_list['wearer_info'] = $all_list;
   //ChromePhp::LOG($json_list['wearer_info']);
@@ -273,65 +333,57 @@ $app->post('/wearer_exchange/info', function ()use($app){
   }
   //ChromePhp::LOG($order_control_unit);
 
-  //--理由区分リスト取得--//
-  $query_list = array();
-  $list = array();
-  $all_list = array();
+    //--理由区分リスト取得--//
+    $query_list = array();
+    $all_list = array();
+    $query_list[] =  "cls_cd = '002'";
+    $query_list[] =  "relation_cls_cd = '001'";
+    $query_list[] =  "relation_gen_cd = '3'";
+    $query_list[] =  "relation_cls_cd_2 = '003'";
+    $query_list[] =  "relation_gen_cd_2 = '".$order_control_unit."'";
+    $query = implode(' AND ', $query_list);
 
-  $query_list[] =  "cls_cd = '002'";
-  $query_list[] =  "relation_cls_cd = '001'";
-  $query_list[] =  "relation_gen_cd = '3'";
-  $query_list[] =  "relation_cls_cd_2 = '003'";
-  $query_list[] =  "relation_gen_cd_2 = '".$order_control_unit."'";
-  $query = implode(' AND ', $query_list);
+    $arg_str = '';
+    $arg_str = 'SELECT ';
+    $arg_str .= ' * ';
+    $arg_str .= ' FROM ';
+    $arg_str .= 'm_gencode';
+    $arg_str .= ' WHERE ';
+    $arg_str .= $query;
+    $arg_str .= ' ORDER BY dsp_order asc';
 
-  $arg_str = '';
-  $arg_str .= 'SELECT ';
-  $arg_str .= ' * ';
-  $arg_str .= ' FROM ';
-  $arg_str .= 'm_gencode';
-  $arg_str .= ' WHERE ';
-  $arg_str .= $query;
-  $arg_str .= ' ORDER BY dsp_order ASC';
-  $m_gencode = new MGencode();
-  $results = new Resultset(NULL, $m_gencode, $m_gencode->getReadConnection()->query($arg_str));
-  $results_array = (array) $results;
-  $results_cnt = $results_array["\0*\0_count"];
+    $m_gencode = new MGencode();
+    $results = new Resultset(null, $m_gencode, $m_gencode->getReadConnection()->query($arg_str));
+    $results_array = (array) $results;
+    $results_cnt = $results_array["\0*\0_count"];
 
-  if ($results_cnt > 0) {
-    $paginator_model = new PaginatorModel(
-      array(
-        "data"  => $results,
-        "limit" => $results_cnt,
-        "page" => 1
-      )
-    );
-    $paginator = $paginator_model->getPaginate();
-    $results = $paginator->items;
+    if ($results_cnt > 0) {
 
-    foreach ($results as $result) {
-      $list['reason_kbn'] = $result->gen_cd;
-      $list['reason_kbn_name'] = $result->gen_name;
+        foreach ($results as $result) {
+            $list['reason_kbn'] = $result->gen_cd;
+            $list['reason_kbn_name'] = $result->gen_name;
 
-      // 発注情報トランフラグ有の場合は初期選択状態版を生成
-      if ($wearer_size_change_post['order_tran_flg'] == '1') {
-        if ($list['reason_kbn'] == $wearer_size_change_post['order_reason_kbn']) {
-          $list['selected'] = 'selected';
-        } else {
-          $list['selected'] = '';
+            // 発注情報トランフラグ有の場合は初期選択状態版を生成
+            if ($wearer_size_change_post['order_req_no']) {
+                if ($list['reason_kbn'] == $wearer_size_change_post['order_reason_kbn']) {
+                    $list['selected'] = 'selected';
+                    $json_list['disabled'] = 'disabled';
+                } else {
+                    $list['selected'] = '';
+                }
+            } else {
+                $list['selected'] = '';
+            }
+
+            array_push($all_list, $list);
         }
-      } else {
+    } else {
+        $list['reason_kbn'] = null;
+        $list['reason_kbn_name'] = '';
         $list['selected'] = '';
-      }
-      $all_list[] = $list;
+        array_push($all_list, $list);
     }
-  } else {
-    $list['reason_kbn'] = NULL;
-    $list['reason_kbn_name'] = '';
-    $list['selected'] = '';
-    $all_list[] = $list;
-  }
-  $json_list['reason_kbn_list'] = $all_list;
+    $json_list['reason_kbn_list'] = $all_list;
   //ChromePhp::LOG($json_list['reason_kbn_list']);
 
   //--性別区分--//
@@ -349,43 +401,41 @@ $app->post('/wearer_exchange/info', function ()use($app){
   $arg_str .= ' WHERE ';
   $arg_str .= $query;
 
-  $m_gencode = new MGencode();
-  $results = new Resultset(NULL, $m_gencode, $m_gencode->getReadConnection()->query($arg_str));
-  $results_array = (array) $results;
-  $results_cnt = $results_array["\0*\0_count"];
+    $m_gencode = new MGencode();
+    $results = new Resultset(NULL, $m_gencode, $m_gencode->getReadConnection()->query($arg_str));
+    $results_array = (array) $results;
+    $results_cnt = $results_array["\0*\0_count"];
 
-  if ($results_cnt > 0) {
-    $paginator_model = new PaginatorModel(
-      array(
-        "data"  => $results,
-        "limit" => $results_cnt,
-        "page" => 1
-      )
-    );
-    $paginator = $paginator_model->getPaginate();
-    $results = $paginator->items;
+    if ($results_cnt > 0) {
+        $paginator_model = new PaginatorModel(
+            array(
+                "data"  => $results,
+                "limit" => $results_cnt,
+                "page" => 1
+            )
+        );
+        $paginator = $paginator_model->getPaginate();
+        $results = $paginator->items;
 
-    foreach ($results as $result) {
-      $list['sex_kbn'] = $result->gen_cd;
-      $list['sex_kbn_name'] = $result->gen_name;
+        foreach ($results as $result) {
+            $list['sex_kbn'] = $result->gen_cd;
+            $list['sex_kbn_name'] = $result->gen_name;
+            // 初期選択状態版を生成
+            if ($list['sex_kbn'] == $sex_kbn) {
+                $list['selected'] = 'selected';
+            } else {
+                $list['selected'] = '';
+            }
 
-      // 初期選択状態版を生成
-      if ($list['sex_kbn'] == $wearer_size_change_post['sex_kbn']) {
-        $list['selected'] = 'selected';
-      } else {
+            array_push($all_list, $list);
+        }
+    } else {
+        $list['sex_kbn'] = NULL;
+        $list['sex_kbn_name'] = '';
         $list['selected'] = '';
-      }
-
-      $all_list[] = $list;
+        array_push($all_list, $list);
     }
-  } else {
-    $list['sex_kbn'] = NULL;
-    $list['sex_kbn_name'] = '';
-    $list['selected'] = '';
-    $all_list[] = $list;
-  }
-  $json_list['sex_kbn_list'] = $all_list;
-  //ChromePhp::LOG($json_list['sex_kbn_list']);
+    $json_list['sex_kbn_list'] = $all_list;
 
   //--拠点--//
   $all_list = array();
@@ -772,6 +822,7 @@ $app->post('/wearer_exchange/list', function ()use($app){
     $query_list[] = "t_delivery_goods_state_details.rntl_cont_no = '".$wearer_size_change_post['rntl_cont_no']."'";
     $query_list[] = "t_delivery_goods_state_details.werer_cd = '".$wearer_size_change_post['werer_cd']."'";
     $query_list[] = "t_delivery_goods_state_details.rtn_ok_flg = '1'";
+    $query_list[] = "t_delivery_goods_state_details.receipt_status = '2'";
     $query = implode(' AND ', $query_list);
 
     $arg_str = "";
@@ -1020,7 +1071,6 @@ $app->post('/wearer_exchange/list', function ()use($app){
         $query_list[] = "t_delivery_goods_state_details.color_cd = '".$list["color_cd"]."'";
         $query_list[] = "t_delivery_goods_state_details.size_cd = '".$list["now_size_cd"]."'";
         $query_list[] = "t_delivery_goods_state_details.rtn_ok_flg = '1'";
-        $query_list[] = "t_delivery_goods_state_details.receipt_status = '2'";
         $query = implode(' AND ', $query_list);
         $arg_str = "";
         $arg_str .= "SELECT ";
@@ -1235,6 +1285,7 @@ $app->post('/wearer_exchange/list', function ()use($app){
     $query_list[] = "t_delivery_goods_state_details.rntl_cont_no = '".$wearer_size_change_post['rntl_cont_no']."'";
     $query_list[] = "t_delivery_goods_state_details.werer_cd = '".$wearer_size_change_post['werer_cd']."'";
     $query_list[] = "t_delivery_goods_state_details.rtn_ok_flg = '1'";
+    $query_list[] = "t_delivery_goods_state_details.receipt_status = '2'";
     $query = implode(' AND ', $query_list);
 
     $arg_str = "";
@@ -2283,6 +2334,7 @@ $app->post('/wearer_exchange/complete', function ()use($app){
      array_push($query_list, "werer_cd = '".$wearer_size_change_post['werer_cd']."'");
      array_push($query_list, "rntl_sect_cd = '".$wearer_size_change_post['rntl_sect_cd']."'");
      array_push($query_list, "job_type_cd = '".$wearer_size_change_post['job_type_cd']."'");
+     array_push($query_list, "order_sts_kbn = '3'");//サイズ交換
      $query = implode(' AND ', $query_list);
 
      $arg_str = "";
@@ -2296,14 +2348,14 @@ $app->post('/wearer_exchange/complete', function ()use($app){
      $m_wearer_std_tran = new MWearerStdTran();
      $results = new Resultset(NULL, $m_wearer_std_tran, $m_wearer_std_tran->getReadConnection()->query($arg_str));
      $result_obj = (array)$results;
-     $results_cnt = $result_obj["\0*\0_count"];
+     $tran_results_cnt = $result_obj["\0*\0_count"];
      //ChromePhp::LOG($results_cnt);
      $order_sts_kbn = "";
-     if (!empty($results_cnt)) {
+     if (!empty($tran_results_cnt)) {
        $paginator_model = new PaginatorModel(
            array(
                "data"  => $results,
-               "limit" => $results_cnt,
+               "limit" => $tran_results_cnt,
                "page" => 1
            )
        );
@@ -2374,7 +2426,7 @@ $app->post('/wearer_exchange/complete', function ()use($app){
        //ChromePhp::LOG("発注依頼No採番");
        //ChromePhp::LOG($shin_order_req_no);
 
-       if ($wearer_size_change_post['wearer_tran_flg'] == "1") {
+       if ($tran_results_cnt > 0) {
          //--着用者基本マスタトランに情報がある場合、更新処理--//
          //ChromePhp::LOG("着用者基本マスタトラン更新");
          $src_query_list = array();
@@ -2383,33 +2435,13 @@ $app->post('/wearer_exchange/complete', function ()use($app){
          array_push($src_query_list, "rntl_sect_cd = '".$wearer_size_change_post['rntl_sect_cd']."'");
          array_push($src_query_list, "job_type_cd = '".$wearer_size_change_post['job_type_cd']."'");
          // 発注状況区分(サイズ交換)
-         array_push($query_list,"order_sts_kbn = '3'");
+         array_push($src_query_list,"order_sts_kbn = '3'");
          $src_query = implode(' AND ', $src_query_list);
 
          $up_query_list = array();
          // 貸与パターン
          $job_type_cd = explode(':', $wearer_data_input['job_type']);
          $job_type_cd = $job_type_cd[0];
-         array_push($up_query_list, "job_type_cd = '".$job_type_cd."'");
-         // 着用者基本マスタ_統合ハッシュキー(企業ID、着用者コード、レンタル契約No.、レンタル部門コード、職種コード)
-         $m_wearer_std_comb_hkey = md5(
-           $auth['corporate_id']."-".
-           $wearer_size_change_post["werer_cd"]."-".
-           $wearer_data_input['agreement_no']."-".
-           $wearer_data_input['section']."-".
-           $job_type_cd
-         );
-         array_push($up_query_list, "m_wearer_std_comb_hkey = '".$m_wearer_std_comb_hkey."'");
-         // 発注No
-         array_push($up_query_list, "order_req_no = '".$shin_order_req_no."'");
-         // 企業ID
-         array_push($up_query_list, "corporate_id = '".$auth['corporate_id']."'");
-         // 着用者コード
-         array_push($up_query_list, "werer_cd = '".$wearer_size_change_post['werer_cd']."'");
-         // 契約No
-         array_push($up_query_list, "rntl_cont_no = '".$wearer_data_input['agreement_no']."'");
-         // 部門コード
-         array_push($up_query_list, "rntl_sect_cd = '".$wearer_data_input['section']."'");
          // 客先社員コード
          if (isset($wearer_data_input['member_no'])) {
            array_push($up_query_list, "cster_emply_cd = '".$wearer_data_input['member_no']."'");
@@ -3442,7 +3474,7 @@ $app->post('/wearer_exchange/complete', function ()use($app){
       // トランザクションロールバック
       $m_wearer_std_tran = new MWearerStdTran();
       $results = new Resultset(NULL, $m_wearer_std_tran, $m_wearer_std_tran->getReadConnection()->query('rollback'));
-      //ChromePhp::LOG($e);
+      ChromePhp::LOG($e);
 
       $json_list["error_code"] = "1";
       $error_msg = "入力登録処理において、データ更新エラーが発生しました。";
@@ -3842,6 +3874,7 @@ $app->post('/wearer_exchange/send', function ()use($app){
     array_push($query_list, "werer_cd = '".$wearer_size_change_post['werer_cd']."'");
     array_push($query_list, "rntl_sect_cd = '".$wearer_size_change_post['rntl_sect_cd']."'");
     array_push($query_list, "job_type_cd = '".$wearer_size_change_post['job_type_cd']."'");
+    array_push($query_list, "order_sts_kbn = '3'");//サイズ交換
     $query = implode(' AND ', $query_list);
 
     $arg_str = "";
@@ -3855,7 +3888,7 @@ $app->post('/wearer_exchange/send', function ()use($app){
     $m_wearer_std_tran = new MWearerStdTran();
     $results = new Resultset(NULL, $m_wearer_std_tran, $m_wearer_std_tran->getReadConnection()->query($arg_str));
     $result_obj = (array)$results;
-    $results_cnt = $result_obj["\0*\0_count"];
+    $tran_results_cnt = $result_obj["\0*\0_count"];
     //ChromePhp::LOG($results_cnt);
     $order_sts_kbn = "";
     if (!empty($results_cnt)) {
@@ -3933,7 +3966,7 @@ $app->post('/wearer_exchange/send', function ()use($app){
       //ChromePhp::LOG("発注依頼No採番");
       //ChromePhp::LOG($shin_order_req_no);
 
-      if ($wearer_size_change_post['wearer_tran_flg'] == "1") {
+      if ($tran_results_cnt > 0) {
         //--着用者基本マスタトランに情報がある場合、更新処理--//
         //ChromePhp::LOG("着用者基本マスタトラン更新");
         $src_query_list = array();
@@ -3949,26 +3982,6 @@ $app->post('/wearer_exchange/send', function ()use($app){
         // 貸与パターン
         $job_type_cd = explode(':', $wearer_data_input['job_type']);
         $job_type_cd = $job_type_cd[0];
-        array_push($up_query_list, "job_type_cd = '".$job_type_cd."'");
-        // 着用者基本マスタ_統合ハッシュキー(企業ID、着用者コード、レンタル契約No.、レンタル部門コード、職種コード)
-        $m_wearer_std_comb_hkey = md5(
-          $auth['corporate_id']."-".
-          $wearer_size_change_post["werer_cd"]."-".
-          $wearer_data_input['agreement_no']."-".
-          $wearer_data_input['section']."-".
-          $job_type_cd
-        );
-        array_push($up_query_list, "m_wearer_std_comb_hkey = '".$m_wearer_std_comb_hkey."'");
-        // 発注No
-        array_push($up_query_list, "order_req_no = '".$shin_order_req_no."'");
-        // 企業ID
-        array_push($up_query_list, "corporate_id = '".$auth['corporate_id']."'");
-        // 着用者コード
-        array_push($up_query_list, "werer_cd = '".$wearer_size_change_post['werer_cd']."'");
-        // 契約No
-        array_push($up_query_list, "rntl_cont_no = '".$wearer_data_input['agreement_no']."'");
-        // 部門コード
-        array_push($up_query_list, "rntl_sect_cd = '".$wearer_data_input['section']."'");
         // 客先社員コード
         if (isset($wearer_data_input['member_no'])) {
           array_push($up_query_list, "cster_emply_cd = '".$wearer_data_input['member_no']."'");

@@ -22,7 +22,7 @@
 </td>
 <td>
   {{#if wearer_return_button}}
-    <button type="button" class="btn btn-primary" title="その他交換" id="wearer_other_change" value="{{param}}" {{return_disabled}}>
+    <button type="button" class="btn btn-primary" title="その他交換" id="wearer_other_change" value="{{param2}}" {{return_disabled}}>
       {{wearer_return_button}}
       {{#if wearer_return_red}}
       <span style='color:red'>
@@ -31,7 +31,7 @@
       {{/if}}
     </button>
   {{/if}}
-  {{#if other_change_reciept_button}}
-  <button type="button" class="btn btn-primary" title="返却伝票ダウンロード" id="download" value="{{exchange_reciept_param}}">返却伝票ダウンロード</button>
+  {{#if other_change_reciept_button2}}
+  <button type="button" class="btn btn-primary" title="返却伝票ダウンロード" id="download2" value="{{other_change_reciept_param2}}">返却伝票ダウンロード</button>
   {{/if}}
 </td>
