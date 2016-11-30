@@ -282,6 +282,9 @@ $app->post('/history/search', function ()use($app){
 		if($sort_key == 'werer_name'){
 			$q_sort_key = 'as_werer_name';
 		}
+        if($sort_key == 'item_code'){
+            $q_sort_key = 'as_item_cd,as_size_cd';
+        }
 		if($sort_key == 'item_name'){
 			$q_sort_key = 'as_input_item_name';
 		}
@@ -684,13 +687,15 @@ $app->post('/history/search', function ()use($app){
 
 	//ソート設定(配列ソート)
 	// 商品-色(サイズ-サイズ2)
-	if($sort_key == 'item_code'){
+	/*
+    if($sort_key == 'item_code'){
 		if ($order == 'asc') {
 			array_multisort(array_column($all_list, 'shin_item_code'), SORT_DESC, $all_list);
 		} else {
 			array_multisort(array_column($all_list, 'shin_item_code'), SORT_ASC, $all_list);
 		}
 	}
+	*/
 
 	// 個体管理番号表示/非表示フラグ設定
 	if ($auth["individual_flg"] == 1) {
