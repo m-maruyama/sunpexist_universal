@@ -22,15 +22,9 @@ define([
 				this.listenTo(this.collection, 'parsed', function(res){
 					this.options.pagerModel.set(res.page);
 				});
-
 			},
 			onShow: function(e) {
-
-
 			},
-
-
-
 			events: {
 				"click .sort": function(e) {
 					e.preventDefault();
@@ -60,7 +54,6 @@ define([
 				this.collection.fetchMx({
 					data: cond,
 					success: function(model){
-						console.log(model.models);
 						$.unblockUI();
 					},
 					complete:function(res){
