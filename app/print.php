@@ -1059,6 +1059,9 @@ $app->post('/print/search', function ()use($app){
 		if($sort_key == 'werer_name'){
 			$q_sort_key = 'as_werer_name';
 		}
+        if($sort_key == 'item_code'){
+            $q_sort_key = 'as_item_cd,as_size_cd';
+        }
 		if($sort_key == 'item_name'){
 			$q_sort_key = 'as_input_item_name';
 		}
@@ -1145,7 +1148,8 @@ $app->post('/print/search', function ()use($app){
         $arg_str .= " AND m_section.rntl_cont_no = m_contract_resource.rntl_cont_no";
         $arg_str .= " AND m_section.rntl_sect_cd = m_contract_resource.rntl_sect_cd";
         $arg_str .= " ) ON t_order.m_section_comb_hkey = m_section.m_section_comb_hkey";
-    }	$arg_str .= " INNER JOIN (m_job_type INNER JOIN m_input_item ON m_job_type.m_job_type_comb_hkey = m_input_item.m_job_type_comb_hkey)"; //職種マスタ.職種マスタ_統合ハッシュキー = 投入商品マスタ.職種マスタ_統合ハッシュキー
+    }
+    $arg_str .= " INNER JOIN (m_job_type INNER JOIN m_input_item ON m_job_type.m_job_type_comb_hkey = m_input_item.m_job_type_comb_hkey)"; //職種マスタ.職種マスタ_統合ハッシュキー = 投入商品マスタ.職種マスタ_統合ハッシュキー
 	$arg_str .= " ON t_order.m_job_type_comb_hkey = m_job_type.m_job_type_comb_hkey";
 	$arg_str .= " INNER JOIN m_wearer_std";
 	$arg_str .= " ON t_order.werer_cd = m_wearer_std.werer_cd";
@@ -1175,17 +1179,48 @@ $app->post('/print/search', function ()use($app){
 	$all_list = array();
 	$json_list = array();
 
+    //色づけ処理用変数
+    $order_req_no_check = "";
+    $list['color'] = "blue";
+
 	if(!empty($results_cnt)) {
 		$paginator = $paginator_model->getPaginate();
 		$results = $paginator->items;
 
 		foreach($results as $result){
-			// 発注依頼No.
-			if (!empty($result->as_order_req_no)) {
-				$list['order_req_no'] = $result->as_order_req_no;
-			} else {
-				$list['order_req_no'] = "-";
-			}
+
+            //色づけ処理分岐
+            if($list['color'] == 'blue'){
+                if ($order_req_no_check == $result->as_order_req_no){
+                    $list['diff'] = 'same';
+                    $list['color'] = 'blue';
+                }elseif($order_req_no_check == ""){
+                    $list['diff'] = 'same';
+                    $list['color'] = 'blue';
+                }elseif($order_req_no_check !== $result->as_order_req_no){
+                    $list['diff'] = 'differ';
+                    $list['color'] = 'white';
+                }
+            }elseif($list['color'] == 'white'){
+                if ($order_req_no_check == $result->as_order_req_no){
+                    $list['diff'] = 'same';
+                    $list['color'] = 'white';
+                }elseif($order_req_no_check == ""){
+                    $list['diff'] = 'same';
+                    $list['color'] = 'white';
+                }elseif($order_req_no_check !== $result->as_order_req_no){
+                    $list['diff'] = 'differ';
+                    $list['color'] = 'blue';
+                }
+            }
+
+            // 発注依頼No.
+            if (!empty($result->as_order_req_no)) {
+                $list['order_req_no'] = $result->as_order_req_no;
+                $order_req_no_check = $result->as_order_req_no;
+            } else {
+                $list['order_req_no'] = "-";
+            }
 			// 発注依頼日
 			$list['order_req_ymd'] = $result->as_order_req_ymd;
 			// 発注区分
@@ -1386,6 +1421,7 @@ $app->post('/print/search', function ()use($app){
 
 	//ソート設定(配列ソート)
 	// 商品-色(サイズ-サイズ2)
+    /*
 	if($sort_key == 'item_code'){
 		if ($order == 'asc') {
 			array_multisort(array_column($all_list, 'shin_item_code'), SORT_DESC, $all_list);
@@ -1393,6 +1429,7 @@ $app->post('/print/search', function ()use($app){
 			array_multisort(array_column($all_list, 'shin_item_code'), SORT_ASC, $all_list);
 		}
 	}
+    */
 
 	// 個体管理番号表示/非表示フラグ設定
 	if ($auth["individual_flg"] == 1) {
