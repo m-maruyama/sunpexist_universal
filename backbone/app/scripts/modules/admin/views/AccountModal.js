@@ -51,6 +51,10 @@ define([
 			onRender: function() {
 				var that = this;
 			},
+			onShow: function() {
+
+			},
+
 			events: {
 				"click @ui.close": function(e){
 					var model = new this.collection.model();
@@ -68,6 +72,7 @@ define([
 				},
 				"click @ui.upBtn": function(e){
 					e.preventDefault();
+					this.triggerMethod('hideAlerts');
 					var model = new this.collection.model();
 					var corporate_id = $("select[name='corporate_id_modal']").val();//モーダル用のコーポレートid
 					model.set('corporate_id', corporate_id);
@@ -80,7 +85,7 @@ define([
 					model.set('password', this.ui.password.val());
 					model.set('password_confirm', this.ui.password_confirm.val());
 					$("#corporate_id_modal").attr('disabled',true);
-
+					$(".errors").css("display", "block");
 					//if(this.ui.password.val() == this.ui.password_confirm.val()){
 					//	console.log('same');
 					//}else{
@@ -129,6 +134,7 @@ define([
 				}
 			},
 			reset: function(){
+				console.log(this);
 				this.triggerMethod('hideAlerts');
 				$('#corporate_id_modal').val('1');
 				this.ui.accnt_no.val('');

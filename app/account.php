@@ -229,22 +229,24 @@ $app->post('/account/modal', function () use ($app) {
         if (!preg_match("/(?=.*\d+.*)(?=.*[a-zA-Z]+.*).*+.*/", $cond['user_id'])) {
             $error_list['user_id_preg'] = 'ログインIDは半角英数字混合で入力してください。';
         }
+        //user_id_preg
+        if((strlen($cond['user_id']) > 20) || (strlen($cond['user_id']) < 8)){
+            $error_list['user_id_strlen'] = 'ログインIDは8文字以上20文字以下で入力してください。';
+        }
+
         if (!preg_match("/(?=.*\d+.*)(?=.*[a-zA-Z]+.*).*[!#$%&*+@?]+.*/", $cond['password'])) {
             $error_list['password_preg'] = 'パスワードは半角英数字、半角記号(!#$%&*+@?)混合で入力してください。';
         }
+        //user_id_preg
+        if((strlen($cond['password']) > 16) || (strlen($cond['password']) < 8)){
+            $error_list['password_strlen'] = 'パスワードは8文字以上16文字以下で入力してください。';
+        }
+
 
         if (!$error_list) {
             $m_account->rgst_user_id = $auth['user_id']; //更新ユーザー
             $m_account->rgst_date = date('Y/m/d H:i:s.sss', time()); //更新日時
         }
-    }
-    //user_id_preg
-    if((strlen($cond['user_id']) > 20) || (strlen($cond['user_id']) < 8)){
-        $error_list['user_id_strlen'] = 'ログインIDは8文字以上20文字以下で入力してください。';
-    }
-    //user_id_preg
-    if((strlen($cond['password']) > 16) || (strlen($cond['password']) < 8)){
-        $error_list['password_strlen'] = 'パスワードは8文字以上16文字以下で入力してください。';
     }
 
     //メールアドレスパターン

@@ -3,6 +3,7 @@ define([
 	'handlebars',
 	'../Templates',
 	'./AccountListItem',
+	'./AccountModal',
 	"entities/models/AccountAbstract"
 ], function(App) {
 	'use strict';
@@ -28,7 +29,10 @@ define([
 				//編集ボタンがクリックされた時の動作
 				'click @ui.editBtn': function(e){
 					e.preventDefault();
+					var accountModalView = new App.Admin.Views.AccountModal();
+					//accountModalView.triggerMethod('hideAlerts'));
 					this.triggerMethod('click:a', this.model, '1');
+					$(".errors").css("display", "none");
 					$(".accnt_no_group").removeClass("hidden");
 				},
 				//削除ボタンがクリックされた時の動作
