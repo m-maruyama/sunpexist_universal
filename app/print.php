@@ -18,7 +18,8 @@ $app->post('/print/pdf', function ()use($app){
     $auth = $app->session->get("auth");
     $cond = $params["cond"];
     //個別管理番号あるなし　1:あり 0:なし
-    $individual_check = individual_flg($auth['corporate_id'], $cond['rntl_cont_no']);
+    $individual_check = $cond['individual_number'];
+    //$individual_check = 1;
     $query_list = array();
 
     //---検索条件---//
@@ -632,10 +633,10 @@ $app->post('/print/pdf', function ()use($app){
                 //tableHeader
             }
 
-                $pdf->SetX($item_startX);
+            $pdf->SetX($item_startX);
 
             //サイズコード2がある場合は連結
-            if(isset($results[$i]->as_size_two_cd)){
+            if(mb_strlen(trim($results[$i]->as_size_two_cd)) !== 0){
                 $size_cd = $results[$i]->as_size_cd . "-" . $results[$i]->as_size_two_cd;
             }else{
                 $size_cd = $results[$i]->as_size_cd;

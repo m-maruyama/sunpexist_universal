@@ -679,7 +679,7 @@ $app->post('/print/pdf_tran', function ()use($app){
             $pdf->SetX($item_startX);
 
             //サイズコード2がある場合は連結
-            if(isset($results[$i]->as_size_two_cd)){
+            if(mb_strlen(trim($results[$i]->as_size_two_cd)) !== 0){
                 $size_cd = $results[$i]->as_size_cd . "-" . $results[$i]->as_size_two_cd;
             }else{
                 $size_cd = $results[$i]->as_size_cd;
