@@ -258,6 +258,9 @@ $app->post('/unreturn/search', function ()use($app){
 		if($sort_key == 'werer_name'){
 			$q_sort_key = 'as_werer_name';
 		}
+        if($sort_key == 'item_code'){
+            $q_sort_key = 'as_item_cd,as_size_cd';
+        }
 		if($sort_key == 'item_name'){
 			$q_sort_key = 'as_input_item_name';
 		}
@@ -293,6 +296,8 @@ $app->post('/unreturn/search', function ()use($app){
 		$q_sort_key = "as_order_req_no";
 		$order = 'asc';
 	}
+    ChromePhp::log($sort_key);
+    ChromePhp::log($q_sort_key);
 
 	$arg_str = "SELECT ";
 	$arg_str .= " * ";
@@ -313,7 +318,8 @@ $app->post('/unreturn/search', function ()use($app){
 	$arg_str .= "t_order.job_type_cd as as_job_type_cd,";
 	$arg_str .= "t_order.size_two_cd as as_size_two_cd,";
 	$arg_str .= "t_order.order_qty as as_order_qty,";
-	$arg_str .= "t_returned_plan_info.order_date as as_re_order_date,";
+    $arg_str .= "m_input_item.input_item_name as as_input_item_name,";
+    $arg_str .= "t_returned_plan_info.order_date as as_re_order_date,";
 	$arg_str .= "t_returned_plan_info.return_status as as_return_status,";
 	$arg_str .= "t_returned_plan_info.return_date as as_return_date,";
 	$arg_str .= "t_delivery_goods_state.rec_order_no as as_rec_order_no,";
@@ -342,9 +348,19 @@ $app->post('/unreturn/search', function ()use($app){
 		$arg_str .= " AND m_section.rntl_sect_cd = m_contract_resource.rntl_sect_cd";
 		$arg_str .= " ) ON t_order.m_section_comb_hkey = m_section.m_section_comb_hkey";
 	}
-	$arg_str .= " INNER JOIN m_job_type";
-	$arg_str .= " ON t_order.m_job_type_comb_hkey = m_job_type.m_job_type_comb_hkey";
-	$arg_str .= " INNER JOIN m_wearer_std";
+	//$arg_str .= " INNER JOIN m_job_type";
+	//$arg_str .= " ON t_order.m_job_type_comb_hkey = m_job_type.m_job_type_comb_hkey";
+    $arg_str .= " INNER JOIN (m_job_type INNER JOIN m_input_item";
+    $arg_str .= " ON m_job_type.corporate_id = m_input_item.corporate_id";
+    $arg_str .= " AND m_job_type.rntl_cont_no = m_input_item.rntl_cont_no";
+    $arg_str .= " AND m_job_type.job_type_cd = m_input_item.job_type_cd)";
+    $arg_str .= " ON t_order.corporate_id = m_job_type.corporate_id";
+    $arg_str .= " AND t_order.rntl_cont_no = m_job_type.rntl_cont_no";
+    $arg_str .= " AND t_order.job_type_cd = m_job_type.job_type_cd";
+    $arg_str .= " AND t_order.corporate_id = m_input_item.corporate_id";
+    $arg_str .= " AND t_order.item_cd = m_input_item.item_cd";
+    $arg_str .= " AND t_order.color_cd = m_input_item.color_cd";
+    $arg_str .= " INNER JOIN m_wearer_std";
 	$arg_str .= " ON t_order.werer_cd = m_wearer_std.werer_cd";
 	$arg_str .= " INNER JOIN m_contract";
 	$arg_str .= " ON t_order.rntl_cont_no = m_contract.rntl_cont_no";
@@ -355,6 +371,7 @@ $app->post('/unreturn/search', function ()use($app){
 		$arg_str .= " ORDER BY ";
 		$arg_str .= $q_sort_key." ".$order;
 	}
+	ChromePhp::log($arg_str);
 
 	$t_order = new TOrder();
 	$results = new Resultset(null, $t_order, $t_order->getReadConnection()->query($arg_str));
@@ -373,17 +390,48 @@ $app->post('/unreturn/search', function ()use($app){
 	$all_list = array();
 	$json_list = array();
 
+    //色づけ処理用変数
+    $order_req_no_check = "";
+    $list['color'] = "blue";
+
 	if(!empty($results_cnt)) {
 		$paginator = $paginator_model->getPaginate();
 		$results = $paginator->items;
 
 		foreach($results as $result){
-			// 発注依頼No.
-			if (!empty($result->as_order_req_no)) {
-				$list['order_req_no'] = $result->as_order_req_no;
-			} else {
-				$list['order_req_no'] = "-";
-			}
+
+            //色づけ処理分岐
+            if($list['color'] == 'blue'){
+                if ($order_req_no_check == $result->as_order_req_no){
+                    $list['diff'] = 'same';
+                    $list['color'] = 'blue';
+                }elseif($order_req_no_check == ""){
+                    $list['diff'] = 'same';
+                    $list['color'] = 'blue';
+                }elseif($order_req_no_check !== $result->as_order_req_no){
+                    $list['diff'] = 'differ';
+                    $list['color'] = 'white';
+                }
+            }elseif($list['color'] == 'white'){
+                if ($order_req_no_check == $result->as_order_req_no){
+                    $list['diff'] = 'same';
+                    $list['color'] = 'white';
+                }elseif($order_req_no_check == ""){
+                    $list['diff'] = 'same';
+                    $list['color'] = 'white';
+                }elseif($order_req_no_check !== $result->as_order_req_no){
+                    $list['diff'] = 'differ';
+                    $list['color'] = 'blue';
+                }
+            }
+
+            // 発注依頼No.
+            if (!empty($result->as_order_req_no)) {
+                $list['order_req_no'] = $result->as_order_req_no;
+                $order_req_no_check = $result->as_order_req_no;
+            } else {
+                $list['order_req_no'] = "-";
+            }
 			// 発注依頼日
 			$list['order_req_ymd'] = $result->as_order_req_ymd;
 			// 発注区分
@@ -604,6 +652,7 @@ $app->post('/unreturn/search', function ()use($app){
 
 	//ソート設定(配列ソート)
 	// 商品-色(サイズ-サイズ2)
+    /*
 	if($sort_key == 'item_code'){
 		if ($order == 'asc') {
 			array_multisort(array_column($all_list, 'shin_item_code'), SORT_DESC, $all_list);
@@ -611,6 +660,7 @@ $app->post('/unreturn/search', function ()use($app){
 			array_multisort(array_column($all_list, 'shin_item_code'), SORT_ASC, $all_list);
 		}
 	}
+    */
 
 	// 個体管理番号表示/非表示フラグ設定
 	if ($auth["individual_flg"] == 1) {
