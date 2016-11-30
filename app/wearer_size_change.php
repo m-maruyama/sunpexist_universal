@@ -440,7 +440,6 @@ $app->post('/wearer_size_change/search', function ()use($app){
                         }
                     }
                     if (!$patarn_flg) {
-                        ChromePhp::log($order_reason_kbn);
                         $list['order_req_no'] = $order_req_no;
                         $list['order_reason_kbn'] = $order_reason_kbn;
                         $list['wearer_add_button'] = "サイズ交換";

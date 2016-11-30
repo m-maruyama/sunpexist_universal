@@ -57,7 +57,6 @@ define([
 					data:cond,
 					success:function(res){
 						var res_val = res.attributes;
-						console.log();
 						if (res_val["error_code"] == "0") {
 							$('.returnSlipDownload').css('display', '');
 							$('#return_slip_dl').val(res_val["param"]);

@@ -1671,9 +1671,7 @@ $app->post('/wearer_other_change_insert', function () use ($app) {
             $arg_str .= $src_query;
             //ChromePhp::LOG($arg_str);
             $m_wearer_std_tran = new MWearerStdTran();
-            ChromePhp::LOG($arg_str);
             $results = new Resultset(NULL, $m_wearer_std_tran, $m_wearer_std_tran->getReadConnection()->query($arg_str));
-            ChromePhp::LOG($results);
             $result_obj = (array)$results;
             $results_cnt = $result_obj["\0*\0_count"];
             //--着用者基本マスタトラン更新処理 ここまで--//
@@ -2369,7 +2367,6 @@ $app->post('/wearer_other_change_insert', function () use ($app) {
         $results = new Resultset(NULL, $m_wearer_std_tran, $m_wearer_std_tran->getReadConnection()->query('rollback'));
 
         $json_list["error_code"] = "1";
-        ChromePhp::LOG($e);
         $error_msg = "入力登録処理において、データ更新エラーが発生しました。";
         array_push($json_list["error_msg"], $error_msg);
 

@@ -3474,7 +3474,6 @@ $app->post('/wearer_exchange/complete', function ()use($app){
       // トランザクションロールバック
       $m_wearer_std_tran = new MWearerStdTran();
       $results = new Resultset(NULL, $m_wearer_std_tran, $m_wearer_std_tran->getReadConnection()->query('rollback'));
-      ChromePhp::LOG($e);
 
       $json_list["error_code"] = "1";
       $error_msg = "入力登録処理において、データ更新エラーが発生しました。";
