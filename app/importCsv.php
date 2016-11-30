@@ -1257,6 +1257,15 @@ $app->post('/import_csv', function () use ($app) {
                     . $result->rntl_sect_cd
                     . $result->rent_pattern_code
                 );
+                //発注区分前処理
+                if($result->order_kbn == '0') {
+                    $order_sts_kbn = '1';
+                    $order_req_no = '';
+                } else{
+                    $order_sts_kbn = $result->order_kbn;
+                    $order_req_no = $result->order_req_no;
+                }
+
                 $values_list[] = "'" . $m_wearer_std_comb_hkey . "'";
                 $values_list[] = "'" . $auth['corporate_id'] . "'";
                 $values_list[] = "'" . $result->werer_cd . "'";
@@ -1271,7 +1280,7 @@ $app->post('/import_csv', function () use ($app) {
                 $values_list[] = "'" . $result->wear_start . "'";
                 $values_list[] = "'" . $result->ship_to_cd . "'";
                 $values_list[] = "'" . $result->ship_to_brnch_cd . "'";
-                $values_list[] = "'" . $result->order_kbn . "'";
+                $values_list[] = "'" . $order_sts_kbn . "'";
                 $values_list[] = "'7'";
                 $values_list[] = "'" . date("Y-m-d H:i:s", time()) . "'";
                 $values_list[] = "'0'";
@@ -1295,7 +1304,7 @@ $app->post('/import_csv', function () use ($app) {
                 );
                 $values_list[] = "'" . $m_section_comb_hkey . "'";
                 $values_list[] = "'" . date("Ymd", time()) . "'";
-                $values_list[] = "'" . $result->order_req_no . "'";
+                $values_list[] = "'" . $order_req_no . "'";
                 $values = implode(",", $values_list);
                 $values = "(" . $values . ")";
                 $values_querys[] = $values;
@@ -1463,6 +1472,7 @@ $app->post('/import_csv', function () use ($app) {
                     . $result->order_req_no
                     . $result->order_req_line_no
                 );
+
                 $values_list[] = "'" . $t_order_comb_hkey . "'";
                 $values_list[] = "'" . $auth['corporate_id'] . "'";
                 $values_list[] = "'" . $result->order_req_no . "'";
