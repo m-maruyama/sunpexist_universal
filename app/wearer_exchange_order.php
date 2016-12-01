@@ -2339,7 +2339,8 @@ $app->post('/wearer_exchange/complete', function ()use($app){
 
      $arg_str = "";
      $arg_str = "SELECT ";
-     $arg_str .= "order_sts_kbn";
+     $arg_str .= "order_sts_kbn,";
+     $arg_str .= "order_req_no";
      $arg_str .= " FROM ";
      $arg_str .= "m_wearer_std_tran";
      $arg_str .= " WHERE ";
@@ -2364,6 +2365,7 @@ $app->post('/wearer_exchange/complete', function ()use($app){
        //ChromePhp::LOG($results);
        foreach ($results as $result) {
          $order_sts_kbn = $result->order_sts_kbn;
+           $order_req_no = $result->order_req_no;
        }
      }
 
@@ -2427,6 +2429,7 @@ $app->post('/wearer_exchange/complete', function ()use($app){
        //ChromePhp::LOG($shin_order_req_no);
 
        if ($tran_results_cnt > 0) {
+         $shin_order_req_no = $order_req_no;
          //--着用者基本マスタトランに情報がある場合、更新処理--//
          //ChromePhp::LOG("着用者基本マスタトラン更新");
          $src_query_list = array();
@@ -3878,7 +3881,8 @@ $app->post('/wearer_exchange/send', function ()use($app){
 
     $arg_str = "";
     $arg_str = "SELECT ";
-    $arg_str .= "order_sts_kbn";
+    $arg_str .= "order_sts_kbn,";
+    $arg_str .= "order_req_no";
     $arg_str .= " FROM ";
     $arg_str .= "m_wearer_std_tran";
     $arg_str .= " WHERE ";
@@ -3903,6 +3907,7 @@ $app->post('/wearer_exchange/send', function ()use($app){
       //ChromePhp::LOG($results);
       foreach ($results as $result) {
         $order_sts_kbn = $result->order_sts_kbn;
+        $order_req_no = $result->order_req_no;
       }
     }
 
@@ -3966,6 +3971,7 @@ $app->post('/wearer_exchange/send', function ()use($app){
       //ChromePhp::LOG($shin_order_req_no);
 
       if ($tran_results_cnt > 0) {
+        $shin_order_req_no = $order_req_no;
         //--着用者基本マスタトランに情報がある場合、更新処理--//
         //ChromePhp::LOG("着用者基本マスタトラン更新");
         $src_query_list = array();

@@ -1470,7 +1470,8 @@ $app->post('/wearer_other_change_insert', function () use ($app) {
 
     $arg_str = "";
     $arg_str = "SELECT ";
-    $arg_str .= "order_sts_kbn";
+    $arg_str .= "order_sts_kbn,";
+    $arg_str .= "order_req_no";
     $arg_str .= " FROM ";
     $arg_str .= "m_wearer_std_tran";
     $arg_str .= " WHERE ";
@@ -1492,6 +1493,7 @@ $app->post('/wearer_other_change_insert', function () use ($app) {
         $results = $paginator->items;
         foreach ($results as $result) {
             $order_sts_kbn = $result->order_sts_kbn;
+            $order_req_no = $result->order_req_no;
         }
     }
 
@@ -1544,6 +1546,7 @@ $app->post('/wearer_other_change_insert', function () use ($app) {
         }
         $shin_order_req_no = "WB".str_pad($order_no_seq, 8, '0', STR_PAD_LEFT);
         if ($tran_results_cnt > 0) {
+            $shin_order_req_no = $order_req_no;
             //--着用者基本マスタトランに情報がある場合、更新処理--//
             $src_query_list = array();
             array_push($src_query_list, "corporate_id = '".$auth['corporate_id']."'");
