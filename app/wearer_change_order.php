@@ -1136,10 +1136,12 @@ $app->post('/wearer_change/info', function ()use($app){
    $query_list = array();
    $list = array();
    $now_wearer_list = array();
+     ChromePhp::log($wearer_chg_post);
    array_push($query_list, "t_delivery_goods_state_details.corporate_id = '".$auth['corporate_id']."'");
    array_push($query_list, "t_delivery_goods_state_details.rntl_cont_no = '".$wearer_chg_post['rntl_cont_no']."'");
    array_push($query_list, "t_delivery_goods_state_details.werer_cd = '".$wearer_chg_post['werer_cd']."'");
-   array_push($query_list, "t_delivery_goods_state_details.rtn_ok_flg = '1'");
+     array_push($query_list, "m_input_item.job_type_cd = '".$wearer_chg_post['job_type_cd']."'");
+     array_push($query_list, "t_delivery_goods_state_details.rtn_ok_flg = '1'");
    $query = implode(' AND ', $query_list);
 
    $arg_str = "";
@@ -1569,26 +1571,32 @@ $app->post('/wearer_change/info', function ()use($app){
      //ChromePhp::LOG($chg_wearer_list);
    }
 
+   //ChromePhp::LOG($chg_wearer_list);
+     //ChromePhp::log($now_wearer_list);
+
    //--新たに追加されるアイテム一覧リストの生成--//
    $chk_list = array();
    $add_list = array();
+
 
    // 発注前後リストの商品比較処理
    for ($i=0; $i<count($chg_wearer_list); $i++) {
      $list = array();
      $chg_wearer_list[$i]["overlap_flg"] = true;
      for ($j=0; $j<count($now_wearer_list); $j++) {
+
        if (
         $chg_wearer_list[$i]["item_cd"] == $now_wearer_list[$j]["item_cd"]
         && $chg_wearer_list[$i]["color_cd"] == $now_wearer_list[$j]["color_cd"]
-        && ($chg_wearer_list[$i]["std_input_qty"] == $now_wearer_list[$j]["std_input_qty"]
-        || $chg_wearer_list[$i]["std_input_qty"] < $now_wearer_list[$j]["std_input_qty"])
+        && ($chg_wearer_list[$i]["std_input_qty"] == $now_wearer_list[$j]["quantity"]
+        || $chg_wearer_list[$i]["std_input_qty"] < $now_wearer_list[$j]["quantity"])
        )
        {
-         $chg_wearer_list[$i]["overlap_flg"] = false;
+           $chg_wearer_list[$i]["overlap_flg"] = false;
        }
      }
      if ($chg_wearer_list[$i]["overlap_flg"]) {
+
        $list["item_cd"] = $chg_wearer_list[$i]["item_cd"];
        $list["color_cd"] = $chg_wearer_list[$i]["color_cd"];
        $list["size_cd"] = $chg_wearer_list[$i]["size_cd"];
@@ -1799,7 +1807,6 @@ $app->post('/wearer_change/info', function ()use($app){
    $json_list["add_list"] = $add_list;
    //ChromePhp::LOG('新たに追加するアイテム一覧リスト');
    //ChromePhp::LOG(count($add_list));
-   //ChromePhp::LOG($json_list["add_list"]);
 
    //--現在貸与中アイテム一覧リストの生成--//
    $chk_list = array();
