@@ -30,7 +30,6 @@ define([
 				'dynam_msg': '#dynam_msg',
 				'sex_kbn': '#sex_kbn',
 				'return_date': '#return_date',
-				'cster_emply_cd_chk': '#cster_emply_cd_chk',
 				'cster_emply_cd': '#cster_emply_cd',
 				'member_name': '#member_name',
 				'member_name_kana': '#member_name_kana',
@@ -50,7 +49,6 @@ define([
 				'#reason_kbn': 'reason_kbn',
 				'#sex_kbn': 'sex_kbn',
 				'#return_date': 'return_date',
-				'#cster_emply_cd_chk': 'cster_emply_cd_chk',
 				'#cster_emply_cd': 'cster_emply_cd',
 				'#member_name': 'member_name',
 				'#member_name_kana': 'member_name_kana',
@@ -105,6 +103,14 @@ define([
 							that.triggerMethod('showAlerts', errorMessages);
 						}
 						var res_list = res.attributes;
+						//セッションが破棄されていたら検索画面へ
+						if(res_list['no_session_flg'] == '1'){
+							// 検索画面の条件項目を取得
+							var cond = window.sessionStorage.getItem("wearer_size_change_cond");
+							window.sessionStorage.setItem("back_wearer_size_change_cond", cond);
+							// 検索一覧画面へ遷移
+							location.href="wearer_size_change.html";
+						}
 
 						// 発注取消ボタンvalue値設定
 						var delete_param =
@@ -152,7 +158,6 @@ define([
 						that.ui.cster_emply_cd.prop('disabled',true);
 						if (res_list['wearer_info'][0]) {
 							if(res_list['wearer_info'][0]['cster_emply_cd']){
-								that.ui.cster_emply_cd_chk.prop("checked", true);
 								that.ui.cster_emply_cd.val(res_list['wearer_info'][0]['cster_emply_cd']);
 								that.ui.cster_emply_cd.prop('disabled',false);
 							}
@@ -222,14 +227,6 @@ define([
 				});
 			},
 			events: {
-				//社員番号の活性化制御
-				'change @ui.cster_emply_cd_chk': function(e){
-					if(e.target.checked){
-						this.ui.cster_emply_cd.prop('disabled',false);
-					}else{
-						this.ui.cster_emply_cd.prop('disabled',true);
-					}
-				},
 				// 「戻る」ボタン
 				'click @ui.back': function(){
 					// 検索画面の条件項目を取得
@@ -430,7 +427,6 @@ define([
 					// 着用者情報
 					var agreement_no = $("select[name='agreement_no']").val();
 					var reason_kbn = $("select[name='reason_kbn']").val();
-					var cster_emply_cd_chk = $("#cster_emply_cd_chk").prop("checked");
 					var cster_emply_cd = $("input[name='cster_emply_cd']").val();
 					var member_name = $("input[name='member_name']").val();
 					var member_name_kana = $("input[name='member_name_kana']").val();
@@ -443,7 +439,6 @@ define([
 					var wearer_data = {
 						'agreement_no': agreement_no,
 						'reason_kbn': reason_kbn,
-						'cster_emply_cd_chk': cster_emply_cd_chk,
 						'cster_emply_cd': cster_emply_cd,
 						'member_name': member_name,
 						'member_name_kana': member_name_kana,
@@ -530,7 +525,12 @@ define([
 									"mode": 'input',
 									"item": item
 								};
-								that.triggerMethod('inputComplete', data);
+								if(send=='0'){
+									that.triggerMethod('inputComplete', data);
+								}else{
+									that.triggerMethod('sendComplete', data);
+
+								}
 							}
 						}
 					});

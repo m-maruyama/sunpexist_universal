@@ -24,8 +24,13 @@ $app->post('/wearer_exchange/info', function ()use($app){
   //ChromePhp::LOG($wearer_size_change_post);
 
   $json_list = array();
+  if(empty($wearer_size_change_post)){
+      $json_list['no_session_flg'] = '1';
+      echo json_encode($json_list);
+      return;
+  }
 
-  //--着用者入力項目情報--//
+    //--着用者入力項目情報--//
   $all_list = array();
   $list = array();
   $json_list['wearer_info'] = "";
@@ -881,6 +886,8 @@ $app->post('/wearer_exchange/list', function ()use($app){
         $list["item_name"] = $item_result->as_item_name;
         // 数量
         $list["quantity"] = $item_result->as_quantity;
+        // 交換可能枚数
+        $list["exchange_possible_num"] = $list["quantity"];
         // 標準枚数
         $list["possible_num"] = $item_result->as_std_input_qty;
         // 商品コード
@@ -1060,32 +1067,6 @@ $app->post('/wearer_exchange/list', function ()use($app){
           $list["individual_cnt"] = count($list["individual_ctrl_no"]);
           // 個体管理番号(表示用)
           $list["individual_ctrl_no"] = implode("<br/>", $list["individual_ctrl_no"]);
-        }
-        // 交換可能枚数
-        $list["exchange_possible_num"] = 0;
-        $query_list = array();
-        $query_list[] = "t_delivery_goods_state_details.corporate_id = '".$auth['corporate_id']."'";
-        $query_list[] = "t_delivery_goods_state_details.rntl_cont_no = '".$wearer_size_change_post['rntl_cont_no']."'";
-        $query_list[] = "t_delivery_goods_state_details.werer_cd = '".$wearer_size_change_post['werer_cd']."'";
-        $query_list[] = "t_delivery_goods_state_details.item_cd = '".$list["item_cd"]."'";
-        $query_list[] = "t_delivery_goods_state_details.color_cd = '".$list["color_cd"]."'";
-        $query_list[] = "t_delivery_goods_state_details.size_cd = '".$list["now_size_cd"]."'";
-        $query_list[] = "t_delivery_goods_state_details.rtn_ok_flg = '1'";
-        $query = implode(' AND ', $query_list);
-        $arg_str = "";
-        $arg_str .= "SELECT ";
-        $arg_str .= " * ";
-        $arg_str .= " FROM ";
-        $arg_str .= "t_delivery_goods_state_details";
-        $arg_str .= " WHERE ";
-        $arg_str .= $query;
-        //ChromePhp::LOG($arg_str);
-        $t_delivery_goods_state_details = new TDeliveryGoodsStateDetails();
-        $t_delivery_goods_state_details_results = new Resultset(null, $t_delivery_goods_state_details, $t_delivery_goods_state_details->getReadConnection()->query($arg_str));
-        $result_obj = (array)$t_delivery_goods_state_details_results;
-        $results_cnt = $result_obj["\0*\0_count"];
-        if ($results_cnt > 0) {
-          $list["exchange_possible_num"] = $results_cnt;
         }
         // 発注枚数
         // ※発注情報トランに存在する場合はこちらを設定
@@ -1351,6 +1332,8 @@ $app->post('/wearer_exchange/list', function ()use($app){
         $list["possible_num"] = $result->as_std_input_qty;
         // 数量
         $list["quantity"] = $result->as_quantity;
+        // 交換可能枚数
+        $list["exchange_possible_num"] = $list["quantity"];
         // 返却予定数
         $list["return_plan_qty"] = $result->as_return_plan_qty;
         // 返却済数
@@ -1470,33 +1453,6 @@ $app->post('/wearer_exchange/list', function ()use($app){
           $list["individual_cnt"] = count($list["individual_ctrl_no"]);
           // 個体管理番号(表示用)
           $list["individual_ctrl_no"] = implode("<br/>", $list["individual_ctrl_no"]);
-        }
-        // 交換可能枚数
-        $list["exchange_possible_num"] = 0;
-        $query_list = array();
-        $query_list[] = "t_delivery_goods_state_details.corporate_id = '".$auth['corporate_id']."'";
-        $query_list[] = "t_delivery_goods_state_details.rntl_cont_no = '".$wearer_size_change_post['rntl_cont_no']."'";
-        $query_list[] = "t_delivery_goods_state_details.werer_cd = '".$wearer_size_change_post['werer_cd']."'";
-        $query_list[] = "t_delivery_goods_state_details.item_cd = '".$list["item_cd"]."'";
-        $query_list[] = "t_delivery_goods_state_details.color_cd = '".$list["color_cd"]."'";
-        $query_list[] = "t_delivery_goods_state_details.size_cd = '".$list["now_size_cd"]."'";
-        $query_list[] = "t_delivery_goods_state_details.rtn_ok_flg = '1'";
-        $query = implode(' AND ', $query_list);
-
-        $arg_str = "";
-        $arg_str .= "SELECT ";
-        $arg_str .= " * ";
-        $arg_str .= " FROM ";
-        $arg_str .= "t_delivery_goods_state_details";
-        $arg_str .= " WHERE ";
-        $arg_str .= $query;
-        //ChromePhp::LOG($arg_str);
-        $t_delivery_goods_state_details = new TDeliveryGoodsStateDetails();
-        $t_delivery_goods_state_details_results = new Resultset(null, $t_delivery_goods_state_details, $t_delivery_goods_state_details->getReadConnection()->query($arg_str));
-        $result_obj = (array)$t_delivery_goods_state_details_results;
-        $results_cnt = $result_obj["\0*\0_count"];
-        if ($results_cnt > 0) {
-          $list["exchange_possible_num"] = $results_cnt;
         }
         // 発注枚数
         $list["order_num"] = 0;
@@ -1932,6 +1888,7 @@ $app->post('/wearer_exchange/delete', function ()use($app){
     return;
   }
 
+    $app->session->remove("wearer_size_change_post");
   //ChromePhp::LOG("発注取消処理コード");
   //ChromePhp::LOG($json_list["error_code"]);
   echo json_encode($json_list);
@@ -2206,6 +2163,32 @@ $app->post('/wearer_exchange/complete', function ()use($app){
            }
          }
        }
+         //発注NGパターン：同一商品を交換で発注かけようとした場合にエラーで戻す
+         //発注情報トランに同じ着用者＋商品情報で検索
+         if($item_map["return_num"]>0){
+             $query_list=array();
+             array_push($query_list, "corporate_id = '" . $auth['corporate_id'] . "'");
+             array_push($query_list, "rntl_cont_no = '" . $wearer_size_change_post['rntl_cont_no'] . "'");
+             array_push($query_list, "werer_cd = '" . $wearer_size_change_post['werer_cd'] . "'");
+             //商品情報
+             array_push($query_list, "item_cd = '" . $item_map['item_cd'] . "'");
+             array_push($query_list, "color_cd = '" . $item_map['color_cd'] . "'");
+             //発注状況区分
+             array_push($query_list, "order_sts_kbn = '4'");//サイズ交換のトラン
+
+             //sql文字列を' AND 'で結合
+             $query = implode(' AND ', $query_list);
+             //--- クエリー実行・取得 ---//
+             $t_order_tran_count = TOrderTran::find(array(
+                 'conditions' => $query
+             ))->count();
+             if($t_order_tran_count > 0){
+                 $json_list["error_code"] = "1";
+                 $error_msg = $item_map['item_cd']."-".$item_map['color_cd']."は既にその他交換の発注がされています。";
+                 array_push($json_list["error_msg"], $error_msg);
+             }
+
+         }
      }
      echo json_encode($json_list);
 
@@ -2249,15 +2232,15 @@ $app->post('/wearer_exchange/complete', function ()use($app){
        }
 
        // 着用者基本マスタトラン.発注状況区分 = 「着用者編集」の情報がある際は発注NG
-       if ($order_sts_kbn == "6") {
-         $json_list["error_code"] = "1";
-         $error_msg = "着用者編集の発注が登録されていた為、操作を完了できませんでした。着用者編集の発注を削除してから再度登録して下さい。";
-         $json_list["error_msg"] = $error_msg;
-
-         //ChromePhp::LOG($json_list);
-         echo json_encode($json_list);
-         return;
-       }
+//       if ($order_sts_kbn == "6") {
+//         $json_list["error_code"] = "1";
+//         $error_msg = "着用者編集の発注が登録されていた為、操作を完了できませんでした。着用者編集の発注を削除してから再度登録して下さい。";
+//         $json_list["error_msg"] = $error_msg;
+//
+//         //ChromePhp::LOG($json_list);
+//         echo json_encode($json_list);
+//         return;
+//       }
      }
      //※発注情報トラン参照
      $query_list = array();
@@ -2325,6 +2308,34 @@ $app->post('/wearer_exchange/complete', function ()use($app){
            return;
          }
        }
+     }
+     //--発注商品一覧--//
+     foreach ($item_list as $item_map) {
+         //発注NGパターン：同一商品を交換で発注かけようとした場合にエラーで戻す
+         //発注情報トランに同じ着用者＋商品情報で検索
+         if($item_map["return_num"]>0){
+             $query_list=array();
+             array_push($query_list, "corporate_id = '" . $auth['corporate_id'] . "'");
+             array_push($query_list, "rntl_cont_no = '" . $wearer_size_change_post['rntl_cont_no'] . "'");
+             array_push($query_list, "werer_cd = '" . $wearer_size_change_post['werer_cd'] . "'");
+             //商品情報
+             array_push($query_list, "item_cd = '" . $item_map['item_cd'] . "'");
+             array_push($query_list, "color_cd = '" . $item_map['color_cd'] . "'");
+             //発注状況区分
+             array_push($query_list, "order_sts_kbn = '4'");//サイズ交換のトラン
+
+             //sql文字列を' AND 'で結合
+             $query = implode(' AND ', $query_list);
+             //--- クエリー実行・取得 ---//
+             $t_order_tran_count = TOrderTran::find(array(
+                 'conditions' => $query
+             ))->count();
+             if($t_order_tran_count > 0){
+                 $json_list["error_code"] = "1";
+                 $error_msg = $item_map['item_cd']."-".$item_map['color_cd']."は既にその他交換の発注がされています。";
+                 array_push($json_list["error_msg"], $error_msg);
+             }
+         }
      }
      //--発注NGパターンチェック-- ここまで//
 
@@ -2570,7 +2581,8 @@ $app->post('/wearer_exchange/complete', function ()use($app){
            $wearer_size_change_post["werer_cd"]."-".
            $wearer_data_input['agreement_no']."-".
            $wearer_data_input['section']."-".
-           $job_type_cd
+           $job_type_cd."-"
+           .$shin_order_req_no
          );
          array_push($calum_list, "m_wearer_std_comb_hkey");
          array_push($values_list, "'".$m_wearer_std_comb_hkey."'");
@@ -2960,7 +2972,8 @@ $app->post('/wearer_exchange/complete', function ()use($app){
                  $wearer_size_change_post["werer_cd"]."-".
                  $wearer_data_input['agreement_no']."-".
                  $wearer_data_input['section']."-".
-                 $job_type_cd
+                 $job_type_cd."-"
+                 .$shin_order_req_no
                );
                array_push($calum_list, "m_wearer_std_comb_hkey");
                array_push($values_list, "'".$m_wearer_std_comb_hkey."'");
@@ -3188,7 +3201,8 @@ $app->post('/wearer_exchange/complete', function ()use($app){
                       $wearer_size_change_post["werer_cd"]."-".
                       $wearer_data_input['agreement_no']."-".
                       $wearer_data_input['section']."-".
-                      $job_type_cd
+                      $job_type_cd."-"
+                      .$shin_order_req_no
                     );
                     array_push($calum_list, "m_wearer_std_comb_hkey");
                     array_push($values_list, "'".$m_wearer_std_comb_hkey."'");
@@ -3491,6 +3505,7 @@ $app->post('/wearer_exchange/complete', function ()use($app){
     $json_list['param'] .= $wearer_data_input['agreement_no'].':';
     $json_list['param'] .= $shin_order_req_no;
 
+    $app->session->remove("wearer_size_change_post");
     echo json_encode($json_list);
   }
 });
@@ -3762,6 +3777,31 @@ $app->post('/wearer_exchange/send', function ()use($app){
           }
         }
       }
+      //発注NGパターン：同一商品を交換で発注かけようとした場合にエラーで戻す
+      //発注情報トランに同じ着用者＋商品情報で検索
+      if($item_map["return_num"]>0){
+          $query_list=array();
+          array_push($query_list, "corporate_id = '" . $auth['corporate_id'] . "'");
+          array_push($query_list, "rntl_cont_no = '" . $wearer_size_change_post['rntl_cont_no'] . "'");
+          array_push($query_list, "werer_cd = '" . $wearer_size_change_post['werer_cd'] . "'");
+          //商品情報
+          array_push($query_list, "item_cd = '" . $item_map['item_cd'] . "'");
+          array_push($query_list, "color_cd = '" . $item_map['color_cd'] . "'");
+          //発注状況区分
+          array_push($query_list, "order_sts_kbn = '4'");//サイズ交換のトラン
+
+          //sql文字列を' AND 'で結合
+          $query = implode(' AND ', $query_list);
+          //--- クエリー実行・取得 ---//
+          $t_order_tran_count = TOrderTran::find(array(
+              'conditions' => $query
+          ))->count();
+          if($t_order_tran_count > 0){
+              $json_list["error_code"] = "1";
+              $error_msg = $item_map['item_cd']."-".$item_map['color_cd']."は既にその他交換の発注がされています。";
+              array_push($json_list["error_msg"], $error_msg);
+          }
+      }
     }
     echo json_encode($json_list);
 
@@ -3866,6 +3906,34 @@ $app->post('/wearer_exchange/send', function ()use($app){
           echo json_encode($json_list);
           return;
         }
+      }
+      //--発注商品一覧--//
+      foreach ($item_list as $item_map) {
+          //発注NGパターン：同一商品を交換で発注かけようとした場合にエラーで戻す
+          //発注情報トランに同じ着用者＋商品情報で検索
+          if($item_map["return_num"]>0){
+              $query_list=array();
+              array_push($query_list, "corporate_id = '" . $auth['corporate_id'] . "'");
+              array_push($query_list, "rntl_cont_no = '" . $wearer_size_change_post['rntl_cont_no'] . "'");
+              array_push($query_list, "werer_cd = '" . $wearer_size_change_post['werer_cd'] . "'");
+              //商品情報
+              array_push($query_list, "item_cd = '" . $item_map['item_cd'] . "'");
+              array_push($query_list, "color_cd = '" . $item_map['color_cd'] . "'");
+              //発注状況区分
+              array_push($query_list, "order_sts_kbn = '4'");//サイズ交換のトラン
+
+              //sql文字列を' AND 'で結合
+              $query = implode(' AND ', $query_list);
+              //--- クエリー実行・取得 ---//
+              $t_order_tran_count = TOrderTran::find(array(
+                  'conditions' => $query
+              ))->count();
+              if($t_order_tran_count > 0){
+                  $json_list["error_code"] = "1";
+                  $error_msg = $item_map['item_cd']."-".$item_map['color_cd']."は既にその他交換の発注がされています。";
+                  array_push($json_list["error_msg"], $error_msg);
+              }
+          }
       }
     }
     //--発注NGパターンチェック-- ここまで//
@@ -4112,7 +4180,8 @@ $app->post('/wearer_exchange/send', function ()use($app){
           $wearer_size_change_post["werer_cd"]."-".
           $wearer_data_input['agreement_no']."-".
           $wearer_data_input['section']."-".
-          $job_type_cd
+          $job_type_cd."-"
+          .$shin_order_req_no
         );
         array_push($calum_list, "m_wearer_std_comb_hkey");
         array_push($values_list, "'".$m_wearer_std_comb_hkey."'");
@@ -4502,7 +4571,8 @@ $app->post('/wearer_exchange/send', function ()use($app){
                 $wearer_size_change_post["werer_cd"]."-".
                 $wearer_data_input['agreement_no']."-".
                 $wearer_data_input['section']."-".
-                $job_type_cd
+                $job_type_cd."-"
+                .$shin_order_req_no
               );
               array_push($calum_list, "m_wearer_std_comb_hkey");
               array_push($values_list, "'".$m_wearer_std_comb_hkey."'");
@@ -4730,7 +4800,8 @@ $app->post('/wearer_exchange/send', function ()use($app){
                      $wearer_size_change_post["werer_cd"]."-".
                      $wearer_data_input['agreement_no']."-".
                      $wearer_data_input['section']."-".
-                     $job_type_cd
+                     $job_type_cd."-"
+                     .$shin_order_req_no
                    );
                    array_push($calum_list, "m_wearer_std_comb_hkey");
                    array_push($values_list, "'".$m_wearer_std_comb_hkey."'");
@@ -5037,6 +5108,7 @@ $app->post('/wearer_exchange/send', function ()use($app){
    $json_list['param'] .= $wearer_data_input['agreement_no'].':';
    $json_list['param'] .= $shin_order_req_no;
 
+   $app->session->remove("wearer_size_change_post");
    echo json_encode($json_list);
  }
 });
