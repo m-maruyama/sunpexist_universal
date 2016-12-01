@@ -18,9 +18,12 @@ define([
                 var that = this;
                 var modelForUpdate = this.model;
                 modelForUpdate.url = App.api.CM0061;
-                if(window.sessionStorage.getItem('referrer')=='wearer_search'||
-                    window.sessionStorage.getItem('referrer')=='wearer_order'||
-                    window.sessionStorage.getItem('referrer')=='wearer_order_search'){
+                if(window.sessionStorage.getItem('referrer') == "wearer_search" ||
+                  window.sessionStorage.getItem('referrer') == "wearer_input"||
+                  window.sessionStorage.getItem('referrer') == "wearer_order" ||
+                  window.sessionStorage.getItem('referrer') == "wearer_order_search"
+                )
+                {
                     var referrer = 1;
                 }else{
                     var referrer = -1;
@@ -29,6 +32,7 @@ define([
                     "scr": '契約No',
                     "referrer" : referrer
                 };
+                //console.log(cond);
                 modelForUpdate.fetchMx({
                     data:cond,
                     success:function(res){

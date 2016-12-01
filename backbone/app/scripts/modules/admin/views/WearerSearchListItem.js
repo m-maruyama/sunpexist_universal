@@ -21,7 +21,7 @@ define([
 					var we_vals = this.ui.wearer_order.val();
 					var we_val = we_vals.split(':');
 					var data = {
-						'rntl_cont_no': we_val[0],
+						'agreement_no': we_val[0],
 						'werer_cd': we_val[1],
 						'cster_emply_cd': we_val[2],
 						'sex_kbn': we_val[3],
@@ -31,12 +31,9 @@ define([
 						'ship_to_brnch_cd': we_val[7],
 						'order_reason_kbn': we_val[8],
 						'order_tran_flg': we_val[9],
-						'wearer_tran_flg': we_val[10],
-						'appointment_ymd': we_val[11],
-						'resfl_ymd': we_val[12],
-						'm_wearer_std_comb_hkey': we_val[13],
-						'order_req_no': we_val[14],
-						'comment': we_val[15],
+						'wst_order_req_no': we_val[10],
+						'order_req_no': we_val[11],
+						'm_wearer_std_comb_hkey': we_val[12]
 					};
 					var modelForUpdate = this.model;
 					modelForUpdate.url = App.api.WS0011;
@@ -54,8 +51,9 @@ define([
 								});
 								that.triggerMethod('showAlerts', errorMessages);
 							}
-							var $form = $('<form/>', {'action': '/universal/wearer_input.html', 'method': 'post'});
 
+							var $form = $('<form/>', {'action': '/universal/wearer_input.html', 'method': 'post'});
+							window.sessionStorage.setItem('wearer_input_ref', 'wearer_search');
 							window.sessionStorage.setItem('referrer', 'wearer_search');
 							$form.appendTo(document.body);
 							$form.submit();
