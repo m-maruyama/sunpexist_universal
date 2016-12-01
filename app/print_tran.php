@@ -36,9 +36,6 @@ $app->post('/print/pdf_tran', function ()use($app){
     }
     //sql文字列を' AND 'で結合
     $query = implode(' AND ', $query_list);
-
-ChromePhp::log(bold_font);
-
     $q_sort_key = 'as_item_cd, as_color_cd, as_size_cd, as_individual_ctrl_no';
     $order = 'asc';
     //---SQLクエリー実行---//
