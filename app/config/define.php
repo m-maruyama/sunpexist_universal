@@ -16,3 +16,15 @@ define("IMPORT_SAMPLE_FILE", "import_sample.zip");
 //ダイナム様レンタル契約No
 //TODO:後で値を変更
 define("CORPORATE_ID_DYNAM", "10006598S010000");
+
+
+
+//返却伝票印刷設定
+//$boldFont = $font->addTTFfont('../app/library/tcpdf/fonts/migmix-1p-bold.ttf');
+
+//返却伝票フォント設定
+define("regular_font", "../app/library/tcpdf/fonts/migmix-1p-regular.ttf");
+define("bold_font", "../app/library/tcpdf/fonts/migmix-1p-bold.ttf");
+
+//返却伝票テンプレート
+define("pdf_template", "template_none.pdf");

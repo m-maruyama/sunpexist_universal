@@ -37,7 +37,7 @@ $app->post('/print/pdf_tran', function ()use($app){
     //sql文字列を' AND 'で結合
     $query = implode(' AND ', $query_list);
 
-
+ChromePhp::log(bold_font);
 
     $q_sort_key = 'as_item_cd, as_color_cd, as_size_cd, as_individual_ctrl_no';
     $order = 'asc';
@@ -112,9 +112,8 @@ $app->post('/print/pdf_tran', function ()use($app){
         //フォント設定
         // フォントを登録
         //ttfフォントをTCPDF用に変換
-        $regularFont = $font->addTTFfont('../app/library/tcpdf/fonts/migmix-1p-regular.ttf');
-        $boldFont = $font->addTTFfont('../app/library/tcpdf/fonts/migmix-1p-bold.ttf');
-        //$boldFont = $font->addTTFfont('/library/tcpdf/fonts/migmix-1p-bold.ttf');
+        $regularFont = $font->addTTFfont(regular_font);
+        $boldFont = $font->addTTFfont(bold_font);
 
         $pdf -> SetFont($regularFont, '', 8);
 
@@ -131,7 +130,7 @@ $app->post('/print/pdf_tran', function ()use($app){
         $pdf -> AddPage();
 
         //既存のテンプレート用PDFを読み込む
-        $pdf -> setSourceFile('template_none.pdf');
+        $pdf -> setSourceFile(pdf_template);
 
         //既存のテンプレートの１枚目をテンプレートに設定する。
         $page = $pdf -> importPage(1);
@@ -195,8 +194,8 @@ $app->post('/print/pdf_tran', function ()use($app){
     //フォント設定
     // フォントを登録
     //ttfフォントをTCPDF用に変換
-    $regularFont = $font->addTTFfont('../app/library/tcpdf/fonts/migmix-1p-regular.ttf');
-    $boldFont = $font->addTTFfont('../app/library/tcpdf/fonts/migmix-1p-bold.ttf');
+    $regularFont = $font->addTTFfont(regular_font);
+    $boldFont = $font->addTTFfont(bold_font);
     //$boldFont = $font->addTTFfont('/library/tcpdf/fonts/migmix-1p-bold.ttf');
 
     $pdf -> SetFont($regularFont, '', 8);
@@ -214,7 +213,7 @@ $app->post('/print/pdf_tran', function ()use($app){
     $pdf -> AddPage();
 
     //既存のテンプレート用PDFを読み込む
-    $pdf -> setSourceFile('template_none.pdf');
+    $pdf -> setSourceFile(pdf_template);
 
     //既存のテンプレートの１枚目をテンプレートに設定する。
     $page = $pdf -> importPage(1);
@@ -502,7 +501,7 @@ $app->post('/print/pdf_tran', function ()use($app){
                     //2ページ目を作成
                     $pdf->AddPage();
                     //既存のテンプレート用PDFを読み込む
-                    $pdf->setSourceFile('template_none.pdf');
+                    $pdf->setSourceFile(pdf_template);
                     //既存のテンプレートの１枚目をテンプレートに設定する。
                     $page = $pdf->importPage(1);
                     $pdf->useTemplate($page);
@@ -708,7 +707,7 @@ $app->post('/print/pdf_tran', function ()use($app){
                     //2ページ目を作成
                     $pdf->AddPage();
                     //既存のテンプレート用PDFを読み込む
-                    $pdf->setSourceFile('template_none.pdf');
+                    $pdf->setSourceFile(pdf_template);
                     //既存のテンプレートの１枚目をテンプレートに設定する。
                     $page = $pdf->importPage(1);
                     $pdf->useTemplate($page);
