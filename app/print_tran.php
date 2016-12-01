@@ -28,11 +28,11 @@ $app->post('/print/pdf_tran', function ()use($app){
 
     //発注No
     if(!empty($cond['order_req_no'])){
-        array_push($query_list,"t_returned_plan_info_tran.order_req_no LIKE '".$cond['order_req_no']."%'");
+        array_push($query_list,"t_returned_plan_info_tran.order_req_no = '".$cond['order_req_no']."'");
     }
     //契約No
     if(!empty($cond['rntl_cont_no'])){
-        array_push($query_list,"t_returned_plan_info_tran.rntl_cont_no LIKE '".$cond['rntl_cont_no']."%'");
+        array_push($query_list,"t_returned_plan_info_tran.rntl_cont_no = '".$cond['rntl_cont_no']."'");
     }
     //sql文字列を' AND 'で結合
     $query = implode(' AND ', $query_list);
@@ -98,7 +98,6 @@ $app->post('/print/pdf_tran', function ()use($app){
         $arg_str .= " ORDER BY ";
         $arg_str .= $q_sort_key." ".$order;
     }
-
     $t_returned_plan_info_tran = new TReturnedPlanInfoTran();
     $results = new Resultset(null, $t_returned_plan_info_tran, $t_returned_plan_info_tran->getReadConnection()->query($arg_str));
     $result_obj = (array)$results;

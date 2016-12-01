@@ -28,11 +28,11 @@ $app->post('/print/pdf', function ()use($app){
 
     //発注No
     if(!empty($cond['order_req_no'])){
-        array_push($query_list,"t_returned_plan_info.order_req_no LIKE '".$cond['order_req_no']."%'");
+        array_push($query_list,"t_returned_plan_info.order_req_no = '".$cond['order_req_no']."'");
     }
     //契約No
     if(!empty($cond['rntl_cont_no'])){
-        array_push($query_list,"t_returned_plan_info.rntl_cont_no LIKE '".$cond['rntl_cont_no']."%'");
+        array_push($query_list,"t_returned_plan_info.rntl_cont_no = '".$cond['rntl_cont_no']."'");
     }
     //sql文字列を' AND 'で結合
     $query = implode(' AND ', $query_list);
