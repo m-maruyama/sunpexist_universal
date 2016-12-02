@@ -633,7 +633,7 @@ $app->post('/import_csv', function () use ($app) {
                         $m_wearer_std,
                         $m_wearer_std->getReadConnection()->query("select nextval('werer_cd_seq')")
                     );
-                    $werer_cd = str_pad($results[0]->nextval, 10, '0', STR_PAD_LEFT);
+                    $werer_cd = str_pad($results[0]->nextval, 6, '0', STR_PAD_LEFT);
                     $app->session->set("chk_werer_cd", $werer_cd);
                     $values_list[] = "'" . $werer_cd . "'";
                 }
