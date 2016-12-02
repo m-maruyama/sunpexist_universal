@@ -41,30 +41,29 @@ define([
 				var mode = data["mode"];
 				var wearer_data = data["wearer_data"];
 				var item = data["item"];
+				var snd_kbn = data["snd_kbn"];
 
-				// 入力内容登録処理
 				var modelForUpdate = this.model;
-				modelForUpdate.url = App.api.WR0023;
+				modelForUpdate.url = App.api.WOC0050;
 				var cond = {
 					"scr": scr,
 					"mode": mode,
 					"wearer_data": wearer_data,
+					"snd_kbn": snd_kbn,
 					"item": item
 				};
-				//console.log(cond);
 
 				modelForUpdate.fetchMx({
 					data:cond,
 					success:function(res){
 						var res_val = res.attributes;
-						if (res_val["error_code"] == "1") {
-							// 登録処理にエラーがある場合
+						if (res_val["error_code"] == "0") {
+							$('.returnSlipDownload').css('display', '');
+							that.ui.returnSlipDownload.val(res_val["param"]);
+						} else {
 							$("#h").text('');
 							$(".explanation").text('');
 							that.triggerMethod('showAlerts', res_val["error_msg"]);
-						} else {
-							// 正常完了の場合、「返却伝票印刷」ボタンを表示
-							$('.returnSlipDownload').css('display', '');
 						}
 					}
 				});
@@ -73,16 +72,17 @@ define([
 				// 「続けて入力する」ボタン
 				'click @ui.continueInput': function(){
 					// 検索画面の条件項目を取得
-					var cond = window.sessionStorage.getItem("wearer_other_cond");
-					window.sessionStorage.setItem("back_wearer_other_cond", cond);
+					var cond = window.sessionStorage.getItem("wearer_size_change_cond");
+					window.sessionStorage.setItem("back_wearer_size_change_cond", cond);
 					// 検索画面へ遷移
-					location.href="wearer_other.html";
+					location.href="wearer_size_change.html";
 				},
 				// 「ホーム画面へ戻る」ボタン
 				'click @ui.backHome': function(){
 					// ホーム画面へ遷移
 					location.href="home.html";
 				},
+				// 「返却伝票ダウンロード」ボタン
 				'click @ui.returnSlipDownload': function(e){
 					e.preventDefault();
 					var pdf_vals = e.target.value;
@@ -91,7 +91,6 @@ define([
 					var printData = new Object();
 					printData["rntl_cont_no"] = pdf_val[0];
 					printData["order_req_no"] = pdf_val[1];
-
 					var msg = "データ量により、ダウンロード処理に時間がかかる可能性があります。ダウンロードを実施してよろしいですか？";
 					if (window.confirm(msg)) {
 						var cond = {

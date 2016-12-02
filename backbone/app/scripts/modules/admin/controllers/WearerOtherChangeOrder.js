@@ -43,7 +43,7 @@ define([
 						fetchList_section(pageNumber);
 				});
 
-				// 入力完了,発注送信
+				// 入力完了
 				this.listenTo(wearerOtherChangeOrderConditionView, 'inputComplete', function(data){
 					wearerOtherChangeOrderView.condition.reset();
 					wearerOtherChangeOrderView.listTable.reset();
@@ -52,6 +52,16 @@ define([
 						data: data,
 					});
 					wearerOtherChangeOrderView.complete.show(wearerOtherChangeOrderComplete);
+				});
+				//発注送信
+				this.listenTo(wearerOtherChangeOrderConditionView, 'sendComplete', function(data){
+					wearerOtherChangeOrderView.condition.reset();
+					wearerOtherChangeOrderView.listTable.reset();
+
+					var wearerOtherChangeOrderSendComplete = new App.Admin.Views.WearerOtherChangeOrderSendComplete({
+						data: data,
+					});
+					wearerOtherChangeOrderView.complete.show(wearerOtherChangeOrderSendComplete);
 				});
 				//エラーメッセージ
 				this.listenTo(wearerOtherChangeOrderConditionView, 'error_msg', function(errors){

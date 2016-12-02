@@ -31,7 +31,7 @@
 				<div class="row btn_group border_radius">
 					<h2 class="col-md-2">■ 入力</h2>
 					<ul class="col-md-10">
-						{{#if button1_use_flg}}<li class="col-md-3 col-pl-0 col-pb-5"><a class="btn btn-primary" id='wearer_input' title="貸与開始">貸与開始</a><br>入社、復職、制服非着用部門からの異動等</li>{{/if}}
+						{{#if button1_use_flg}}<li class="col-md-3 col-pl-0 col-pb-5"><a class="btn btn-primary" id='wearer_input' title="貸与開始" onclick="window.sessionStorage.setItem('wearer_input_ref', 'home');">貸与開始</a><br>入社、復職、制服非着用部門からの異動等</li>{{/if}}
 						{{#if button2_use_flg}}<li class="col-md-3 col-pl-0 col-pb-5"><a href="wearer_size_change.html" class="btn btn-primary" title="交換">交換</a><br>サイズ交換、消耗交換、不良品交換等</li>{{/if}}
 						{{#if button3_use_flg}}<li class="col-md-3 col-pl-0 col-pb-5"><a href="wearer_change.html" class="btn btn-primary" title="職種変更または異動">職種変更または異動</a><br>貸与パターンの変更、異動（拠点変更）等</li>{{/if}}
 						{{#if button4_use_flg}}<li class="col-md-3 col-pl-0 col-pb-5"><a class="btn btn-primary" id='wearer_end' title="貸与終了">貸与終了</a><br>退職、休職、制服非着用部門への異動</li>{{/if}}
@@ -81,7 +81,7 @@
 				</div>
 
 			</div>
-            
+
 			<div class="row block">
 				<h2 class="col-md-2">■ ドキュメント</h2>
 				<div class="col-md-9">

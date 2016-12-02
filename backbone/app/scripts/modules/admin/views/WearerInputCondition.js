@@ -13,37 +13,38 @@ define([
         Views.WearerInputCondition = Marionette.LayoutView.extend({
             template: App.Admin.Templates.wearerInputCondition,
             behaviors: {
-                "Alerts": {
-                    behaviorClass: App.Admin.Behaviors.Alerts
-                }
+              "Alerts": {
+                  behaviorClass: App.Admin.Behaviors.Alerts
+              }
             },
             regions: {
-                "agreement_no": ".agreement_no",
-                "section_modal": ".section_modal",
-                "individual_number": ".individual_number",
+              "agreement_no": ".agreement_no",
+              "section_modal": ".section_modal",
+              "individual_number": ".individual_number"
             },
             ui: {
-                "agreement_no": ".agreement_no",
-                "cster_emply_cd": "#cster_emply_cd",
-                "cster_emply_cd_chk": "#cster_emply_cd_chk",
-                "werer_cd": "#werer_cd",
-                "werer_name": "#werer_name",
-                "werer_name_kana": "#werer_name_kana",
-                "section_modal": ".section_modal",
-                "sex_kbn": "#sex_kbn",
-                "appointment_ymd": "#appointment_ymd",
-                "resfl_ymd": "#resfl_ymd",
-                'section_btn': '#section_btn',
-                'section': '#section',
-                'job_type': '#job_type',
-                "m_shipment_to": "#m_shipment_to",
-                'zip_no': '#zip_no',
-                "address": "#address",
-                'datepicker': '.datepicker',
-                'timepicker': '.timepicker'
+              "agreement_no": ".agreement_no",
+              "cster_emply_cd": "#cster_emply_cd",
+              "cster_emply_cd_chk": "#cster_emply_cd_chk",
+              "werer_cd": "#werer_cd",
+              "werer_name": "#werer_name",
+              "werer_name_kana": "#werer_name_kana",
+              "section_modal": ".section_modal",
+              "sex_kbn": "#sex_kbn",
+              "appointment_ymd": "#appointment_ymd",
+              "resfl_ymd": "#resfl_ymd",
+              'section_btn': '#section_btn',
+              'section': '#section',
+              'job_type': '#job_type',
+              "m_shipment_to": "#m_shipment_to",
+              'zip_no': '#zip_no',
+              "address": "#address",
+              'datepicker': '.datepicker',
+              'timepicker': '.timepicker'
             },
             onRender: function () {
                 var that = this;
+
                 var maxTime = new Date();
                 maxTime.setHours(15);
                 maxTime.setMinutes(59);
@@ -66,58 +67,77 @@ define([
                     //$(this).find('input').trigger('input');
                 });
             },
-
             fetch: function (agreement_no) {
-                if(window.sessionStorage.getItem('referrer')=='wearer_search'||
-                    window.sessionStorage.getItem('referrer')=='wearer_order'||
-                    window.sessionStorage.getItem('referrer')=='wearer_order_search'){
-                    var referrer = 1;
-                }else{
-                    var referrer = -1;
+                var that = this;
 
+                if(window.sessionStorage.getItem('referrer') == "wearer_search" ||
+                  window.sessionStorage.getItem('referrer') == "wearer_input"||
+                  window.sessionStorage.getItem('referrer') == "wearer_order" ||
+                  window.sessionStorage.getItem('referrer') == "wearer_order_search"
+                )
+                {
+/*
+                  if (window.sessionStorage.getItem('wearer_search')) {
+                    var disp_type = window.sessionStorage.getItem('wearer_search');
+                  }
+                  if (window.sessionStorage.getItem('wearer_input')) {
+                    var disp_type = window.sessionStorage.getItem('wearer_input');
+                  }
+                  if (window.sessionStorage.getItem('wearer_order_search')) {
+                    var disp_type = window.sessionStorage.getItem('wearer_order_search');
+                    window.sessionStorage.removeItem('wearer_search');
+                    window.sessionStorage.removeItem('wearer_order');
+                  }
+*/
+                  //console.log(disp_type);
+
+                  var disp_type = window.sessionStorage.getItem('referrer');
+                  var referrer = 1;
+                }else{
+                  var disp_type = "";
+                  var referrer = -1;
                 }
                 var cond = {
                     "scr": '着用者入力',
-                    "cond": {"agreement_no": agreement_no,
-                        "referrer" : referrer
+                    "cond": {
+                      "agreement_no": agreement_no,
+                      "referrer" : referrer,
+                      "disp_type" : disp_type
                     }
                 };
-                var that = this;
+                //console.log(cond);
                 var modelForUpdate = this.model;
                 modelForUpdate.url = App.api.WI0010;
                 modelForUpdate.fetchMx({
                     data: cond,
                     success: function (res) {
-                        $.unblockUI();
-                        var errors = res.get('errors');
-                        if (errors) {
-                            var errorMessages = errors.map(function (v) {
-                                return v.error_message;
-                            });
-                            that.triggerMethod('showAlerts', errorMessages);
-                        }
-                        var res_list = res.attributes;
-                        $('#agreement_no').prop("disabled", true);
-                        that.render();
-                        that.ui.cster_emply_cd_chk.prop('checked',false);
-                        that.ui.cster_emply_cd.prop('disabled',true);
-                        $('#input_item').val(res_list['param']);
-                        if(res_list['rntl_cont_no']&&(referrer > -1)){
-                            if(res_list['wearer_info'][0]['cster_emply_cd']){
-                                that.ui.cster_emply_cd_chk.prop('checked',true);
-                                that.ui.cster_emply_cd.prop('disabled',false);
-                                that.ui.cster_emply_cd.val(res_list['wearer_info'][0]['cster_emply_cd']);
-                            }
-                            that.ui.werer_name.val(res_list['wearer_info'][0]['werer_name']);
-                            that.ui.werer_name_kana.val(res_list['wearer_info'][0]['werer_name_kana']);
-                            that.ui.appointment_ymd.val(res_list['appointment_ymd']);
-                            that.ui.resfl_ymd.val(res_list['resfl_ymd']);
-                            that.ui.zip_no.val(res_list['zip_no']);
-                            that.ui.address.val(res_list['address1']+res_list['address2']+res_list['address3']+res_list['address4']);
-                            $('#input_item').val(res_list['param']);
-                            that.ui.zip_no.val(res_list['zip_no']);
-                            return;
-                        }
+                      $.unblockUI();
+                      var errors = res.get('errors');
+                      if (errors) {
+                          var errorMessages = errors.map(function (v) {
+                              return v.error_message;
+                          });
+                          that.triggerMethod('showAlerts', errorMessages);
+                      }
+                      var res_list = res.attributes;
+
+                      $('#agreement_no').prop("disabled", true);
+                      that.render();
+                      if (res_list['cster_emply_cd']) {
+                        that.ui.cster_emply_cd_chk.prop('checked', true);
+                      } else {
+                        that.ui.cster_emply_cd_chk.prop('checked', false);
+                        that.ui.cster_emply_cd.prop('disabled', true);
+                      }
+                      that.ui.cster_emply_cd.val(res_list['cster_emply_cd']);
+                      that.ui.werer_name.val(res_list['werer_name']);
+                      that.ui.werer_name_kana.val(res_list['werer_name_kana']);
+                      that.ui.appointment_ymd.val(res_list['appointment_ymd']);
+                      that.ui.resfl_ymd.val(res_list['resfl_ymd']);
+                      that.ui.zip_no.val(res_list['zip_no']);
+                      that.ui.address.val(res_list['address']);
+                      $('#input_item').val(res_list['param']);
+                      return;
                     },
                     complete: function (res) {
                     }
@@ -183,8 +203,8 @@ define([
                 return errors;
             },
             input_item: function (rntl_cont_no) {
-
                 var that = this;
+
                 var model = this.model;
                 model.set('agreement_no', rntl_cont_no);
                 model.set('cster_emply_cd_chk', this.ui.cster_emply_cd_chk.prop('checked'));
@@ -199,25 +219,28 @@ define([
                 model.set('job_type', job_type[0]);
                 if(this.ui.m_shipment_to.val()){
                     var m_shipment_to_array = this.ui.m_shipment_to.val().split(',');
-                    model.set('ship_to_cd', m_shipment_to_array[0]);
-                    model.set('ship_to_brnch_cd', m_shipment_to_array[1]);
+                    var ship_to_cd = m_shipment_to_array[0];
+                    var ship_to_brnch_cd = m_shipment_to_array[1];
                 }else{
-                    model.set('ship_to_cd', null);
-                    model.set('ship_to_brnch_cd', null);
+                    var ship_to_cd = "";
+                    var ship_to_brnch_cd = "";
                 }
+                model.set('ship_to_cd', ship_to_cd);
+                model.set('ship_to_brnch_cd', ship_to_brnch_cd);
                 model.set('zip_no', this.ui.zip_no.val());
                 model.set('address', this.ui.address.val());
                 var errors = model.validator(model);
                 if(errors) {
                     return errors;
                 }
+                //console.log(model.getReq());
+
                 var cond = {
                     "scr": '着用者登録',
                     "mode": 'check',
                     "cond": model.getReq()
                 };
                 model.url = App.api.WI0012;
-
                 model.fetchMx({
                     data:cond,
                     success:function(res){
@@ -236,7 +259,6 @@ define([
                             model.fetchMx({
                                 data:cond,
                                 success:function(res){
-                                    window.sessionStorage.setItem('referrer', 'wearer_input');
                                     location.href = './wearer_order.html';
                                 }
                             });

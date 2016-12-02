@@ -30,6 +30,7 @@ define([
 					m_job_type_comb_hkey : null,
 					m_section_comb_hkey : null,
 				};
+
 				if(this.get('m_section_comb_hkey')) {
 					result.m_section_comb_hkey = this.get('m_section_comb_hkey');
 				}
@@ -84,6 +85,8 @@ define([
 				if(this.get('address')) {
 					result.address = this.get('address');
 				}
+				//console.log(result);
+
 				return result;
 			},
             validator: function(model){
@@ -118,9 +121,9 @@ define([
                 if (!this.get('sex_kbn')) {
 					errors['sex_kbn'] = '性別が未選択です。';
                 }
-                if (!this.get('appointment_ymd')) {
-					errors['appointment_ymd'] = '発令日が未入力です。';
-                }
+//                if (!this.get('appointment_ymd')) {
+//					errors['appointment_ymd'] = '発令日が未入力です。';
+//                }
 				if (!this.get('resfl_ymd')) {
 					errors['resfl_ymd'] = '着用開始日が未入力です。';
 				}

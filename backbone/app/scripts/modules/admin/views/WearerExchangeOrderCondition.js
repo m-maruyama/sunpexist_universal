@@ -82,8 +82,14 @@ define([
 							that.triggerMethod('showAlerts', errorMessages);
 						}
 						var res_list = res.attributes;
-						//console.log(res_list);
-
+						//セッションが破棄されていたら検索画面へ
+						if(res_list['no_session_flg'] == '1'){
+							// 検索画面の条件項目を取得
+							var cond = window.sessionStorage.getItem("wearer_size_change_cond");
+							window.sessionStorage.setItem("back_wearer_size_change_cond", cond);
+							// 検索一覧画面へ遷移
+							location.href="wearer_size_change.html";
+						}
 						var delete_param =
 							res_list['rntl_cont_no'] + ":"
 							+ res_list['rntl_sect_cd'] + ":"
@@ -210,15 +216,6 @@ define([
 				});
 			},
 			events: {
-				'change @ui.emply_cd_flg': function(){
-					var that = this;
-
-					if (this.ui.emply_cd_flg.prop("checked") == true) {
-						this.ui.member_no.prop("disabled", false);
-					} else {
-						this.ui.member_no.prop("disabled", true);
-					}
-				},
 				'click @ui.back': function(){
 					var cond = window.sessionStorage.getItem("wearer_size_change_cond");
 					window.sessionStorage.setItem("back_wearer_size_change_cond", cond);

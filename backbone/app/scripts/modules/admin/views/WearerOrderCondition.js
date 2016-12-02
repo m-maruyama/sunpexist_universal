@@ -142,25 +142,10 @@ define([
 				// 「戻る」ボタン
 				'click @ui.back': function(e) {
 					e.preventDefault();
-					var we_vals = this.ui.back.val();
-					var we_val = we_vals.split(':');
+
 					var data = {
-						'rntl_cont_no': we_val[0],
-						'werer_cd': we_val[1],
-						'cster_emply_cd': we_val[2],
-						'sex_kbn': we_val[3],
-						'rntl_sect_cd': we_val[4],
-						'job_type': we_val[5],
-						'ship_to_cd': we_val[6],
-						'ship_to_brnch_cd': we_val[7],
 						'order_reason_kbn': $("select[name='reason_kbn']").val(),
-						'order_tran_flg': we_val[9],
-						'wearer_tran_flg': we_val[10],
-						'appointment_ymd': we_val[11],
-						'resfl_ymd': we_val[12],
-						'werer_name': this.ui.member_name.val(),
-						'werer_name_kana': this.ui.member_name_kana.val(),
-						'comment': this.ui.comment.val(),
+						'comment': this.ui.comment.val()
 					};
 
 					// 追加されるアイテム
@@ -196,13 +181,16 @@ define([
 								});
 								that.triggerMethod('showAlerts', errorMessages);
 							}
+							window.sessionStorage.setItem('referrer', 'wearer_input');
 							var res_list = res.attributes;
 							var $form = $('<form/>', {'action': '/universal/wearer_input.html', 'method': 'post'});
+/*
 							if(res_list['m_wearer_std_comb_hkey']){
 								window.sessionStorage.setItem('referrer', 'wearer_order_search');
 							}else{
 								window.sessionStorage.setItem('referrer', 'wearer_order');
 							}
+*/
 							$form.appendTo(document.body);
 							$form.submit();
 						}

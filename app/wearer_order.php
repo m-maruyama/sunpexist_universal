@@ -38,18 +38,19 @@ $app->post('/reason_kbn_order', function ()use($app){
     $results = new Resultset(null, $m_job_type, $m_job_type->getReadConnection()->query($arg_str));
     $results_array = (array) $results;
     $results_cnt = $results_array["\0*\0_count"];
-
-    $paginator_model = new PaginatorModel(
-      array(
-        "data"  => $results,
-        "limit" => $results_cnt,
-        "page" => 1
-      )
-    );
-    $paginator = $paginator_model->getPaginate();
-    $results = $paginator->items;
-    foreach ($results as $result) {
-      $order_control_unit = $result->order_control_unit;
+    if ($results_cnt > 0) {
+      $paginator_model = new PaginatorModel(
+        array(
+          "data"  => $results,
+          "limit" => $results_cnt,
+          "page" => 1
+        )
+      );
+      $paginator = $paginator_model->getPaginate();
+      $results = $paginator->items;
+      foreach ($results as $result) {
+        $order_control_unit = $result->order_control_unit;
+      }
     }
 
     //--理由区分リスト取得--//
@@ -196,6 +197,8 @@ $app->post('/wearer_order_info', function ()use($app){
 
     // 前画面セッション取得
     $wearer_odr_post = $app->session->get("wearer_odr_post");
+    //ChromePhp::LOG($wearer_odr_post);
+
     $json_list['rntl_cont_no'] = $wearer_odr_post['rntl_cont_no'];
     $json_list['werer_cd'] = $wearer_odr_post['werer_cd'];
     $json_list['cster_emply_cd'] = $wearer_odr_post['cster_emply_cd'];
@@ -396,6 +399,7 @@ $app->post('/wearer_order_info', function ()use($app){
         $json_list['wearer_info'] = $all_list;
     }
     $param_list = '';
+/*
     $param_list .= $wearer_odr_post['rntl_cont_no'].':';
     $param_list .= $wearer_odr_post['werer_cd'].':';
     $param_list .= $wearer_odr_post['cster_emply_cd'].':';
@@ -412,6 +416,7 @@ $app->post('/wearer_order_info', function ()use($app){
     $json_list['param'] = $param_list;
     $json_list['selected_job'] = $wearer_odr_post['job_type_cd'];
     $json_list['order_req_no'] = $wearer_odr_post['order_req_no'];
+*/
     echo json_encode($json_list);
 });
 
@@ -539,16 +544,18 @@ $app->post('/wearer_order_list', function ()use($app){
         $results = new Resultset(null, $m_job_type, $m_job_type->getReadConnection()->query($arg_str));
         $result_obj = (array)$results;
         $results_cnt = $result_obj["\0*\0_count"];
-        $paginator_model = new PaginatorModel(
-            array(
-                "data" => $results,
-                "limit" => $results_cnt,
-                "page" => 1
-            )
-        );
+        if ($results_cnt > 0) {
+          $paginator_model = new PaginatorModel(
+              array(
+                  "data" => $results,
+                  "limit" => $results_cnt,
+                  "page" => 1
+              )
+          );
 
-        $paginator = $paginator_model->getPaginate();
-        $results = $paginator->items;
+          $paginator = $paginator_model->getPaginate();
+          $results = $paginator->items;
+        }
     }
     $arr_cnt = 0;
     $list_cnt = 1;
