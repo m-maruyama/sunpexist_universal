@@ -767,16 +767,16 @@ $app->post('/wearer_size_change/order_check', function ()use($app){
         foreach ($gencode as $gencode_map) {
             $order_sts_kbn_name = $gencode_map->gen_name;
         }
-
-        // 着用者基本マスタトラン.発注状況区分 = 「着用者編集」の情報がある際は発注NG
-        if ($order_sts_kbn == "6") {
-            $json_list["err_cd"] = "1";
-            $error_msg = "着用者編集の発注が入力されています。".PHP_EOL."追加貸与を行う場合は着用者編集の発注をキャンセルしてください。";
-            $json_list["err_msg"] = $error_msg;
-
-            echo json_encode($json_list);
-            return;
-        }
+//
+//        // 着用者基本マスタトラン.発注状況区分 = 「着用者編集」の情報がある際は発注NG
+//        if ($order_sts_kbn == "6") {
+//            $json_list["err_cd"] = "1";
+//            $error_msg = "着用者編集の発注が入力されています。".PHP_EOL."追加貸与を行う場合は着用者編集の発注をキャンセルしてください。";
+//            $json_list["err_msg"] = $error_msg;
+//
+//            echo json_encode($json_list);
+//            return;
+//        }
     }
 
     //※発注情報トラン参照
@@ -893,15 +893,15 @@ $app->post('/wearer_other_change/order_check', function ()use($app){
             $order_sts_kbn_name = $gencode_map->gen_name;
         }
 
-        // 着用者基本マスタトラン.発注状況区分 = 「着用者編集」の情報がある際は発注NG
-        if ($order_sts_kbn == "6") {
-            $json_list["err_cd"] = "1";
-            $error_msg = "着用者編集の発注が入力されています".PHP_EOL."追加貸与を行う場合は着用者編集の発注をキャンセルしてください。";
-            $json_list["err_msg"] = $error_msg;
-
-            echo json_encode($json_list);
-            return;
-        }
+//        // 着用者基本マスタトラン.発注状況区分 = 「着用者編集」の情報がある際は発注NG
+//        if ($order_sts_kbn == "6") {
+//            $json_list["err_cd"] = "1";
+//            $error_msg = "着用者編集の発注が入力されています".PHP_EOL."追加貸与を行う場合は着用者編集の発注をキャンセルしてください。";
+//            $json_list["err_msg"] = $error_msg;
+//
+//            echo json_encode($json_list);
+//            return;
+//        }
     }
 
     //※発注情報トラン参照

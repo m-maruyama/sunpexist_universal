@@ -558,6 +558,21 @@ $app->post('/wearer_other/search', function ()use($app){
           $list['add_reciept_button'] = false;
         }
 
+        // 発注入力へのパラメータ設定
+        $list['param'] = '';
+        $list['param'] .= $list['rntl_cont_no'].':';
+        $list['param'] .= $list['werer_cd'].':';
+        $list['param'] .= $list['cster_emply_cd'].':';
+        $list['param'] .= $list['sex_kbn'].':';
+        $list['param'] .= $list['rntl_sect_cd'].':';
+        $list['param'] .= $list['job_type_cd'].':';
+        $list['param'] .= $list['order_reason_kbn'].':';
+        $list['param'] .= $list['ship_to_cd'].':';
+        $list['param'] .= $list['ship_to_brnch_cd'].':';
+        $list['param'] .= $list['order_tran_flg'].':';
+        $list['param'] .= $list['wearer_tran_flg'].':';
+        $list['param'] .= $list['order_req_no'].':';
+        $list['param'] .= $list['return_req_no'];
         //「不要品返却」パターンチェックスタート
         $list['btnPattern'] = "";
         $patarn_flg = true;
@@ -688,20 +703,20 @@ $app->post('/wearer_other/search', function ()use($app){
         }
 
         // 発注入力へのパラメータ設定
-        $list['param'] = '';
-        $list['param'] .= $list['rntl_cont_no'].':';
-        $list['param'] .= $list['werer_cd'].':';
-        $list['param'] .= $list['cster_emply_cd'].':';
-        $list['param'] .= $list['sex_kbn'].':';
-        $list['param'] .= $list['rntl_sect_cd'].':';
-        $list['param'] .= $list['job_type_cd'].':';
-        $list['param'] .= $list['order_reason_kbn'].':';
-        $list['param'] .= $list['ship_to_cd'].':';
-        $list['param'] .= $list['ship_to_brnch_cd'].':';
-        $list['param'] .= $list['order_tran_flg'].':';
-        $list['param'] .= $list['wearer_tran_flg'].':';
-        $list['param'] .= $list['order_req_no'].':';
-        $list['param'] .= $list['return_req_no'];
+        $list['param2'] = '';
+        $list['param2'] .= $list['rntl_cont_no'].':';
+        $list['param2'] .= $list['werer_cd'].':';
+        $list['param2'] .= $list['cster_emply_cd'].':';
+        $list['param2'] .= $list['sex_kbn'].':';
+        $list['param2'] .= $list['rntl_sect_cd'].':';
+        $list['param2'] .= $list['job_type_cd'].':';
+        $list['param2'] .= $list['order_reason_kbn'].':';
+        $list['param2'] .= $list['ship_to_cd'].':';
+        $list['param2'] .= $list['ship_to_brnch_cd'].':';
+        $list['param2'] .= $list['order_tran_flg'].':';
+        $list['param2'] .= $list['wearer_tran_flg'].':';
+        $list['param2'] .= $list['order_req_no'].':';
+        $list['param2'] .= $list['return_req_no'];
 
         array_push($all_list,$list);
       }
