@@ -39,29 +39,50 @@ define([
 						"order_req_no": osc_val[8],
 						"rtn_order_req_no": osc_val[9]
 					};
-
-					if(window.confirm('発注No.' + data["wst_order_req_no"] + 'の発注送信キャンセルを実行します。\nよろしいですか？')) {
-						var modelForUpdate = this.model;
-						modelForUpdate.url = App.api.OS0012;
-						var cond = {
-							"scr": '発注送信処理-発注送信キャンセル',
-							"log_type": '2',
-							"data": data
-						};
-						modelForUpdate.fetchMx({
+					var modelForUpdate = this.model;
+					modelForUpdate.url = App.api.CM0130;
+					var cond = {
+						"scr": '発注送信処理-発注取消-更新可否チェック',
+						"log_type": '1',
+						"rntl_sect_cd": osc_val[3],
+					};
+					modelForUpdate.fetchMx({
 							data:cond,
 							success:function(res){
-								var res_list = res.attributes;
-								if (res_list["error_code"] == "0") {
-									that.triggerMethod('reload');
-									$.unblockUI();
-								} else {
-									$.unblockUI();
-									alert("更新処理中にエラーが発生しました。");
+								var type = "cm0130_res";
+								var res_val = res.attributes;
+								if(res_val.chk_flg == false){
+									alert(res_val["error_msg"]);
+									return true;
+								}else{
+									if(window.confirm('発注No.' + data["wst_order_req_no"] + 'の発注送信キャンセルを実行します。\nよろしいですか？')) {
+										var modelForUpdate = that.model;
+										modelForUpdate.url = App.api.OS0012;
+										var cond = {
+											"scr": '発注送信処理-発注送信キャンセル',
+											"log_type": '2',
+											"data": data
+										};
+										modelForUpdate.fetchMx({
+											data:cond,
+											success:function(res){
+												var res_list = res.attributes;
+												if (res_list["error_code"] == "0") {
+													that.triggerMethod('reload');
+													$.unblockUI();
+												} else if (res_list["error_code"] == "1") {
+													$.unblockUI();
+													alert("ご契約に関する権限により更新に関する操作が出来ません。");
+												} else {
+													$.unblockUI();
+													alert("更新処理中にエラーが発生しました。");
+												}
+											}
+										});
+									}
 								}
 							}
-						});
-					}
+					});
 				},
 				'click @ui.order_cancel': function(e){
 					e.preventDefault();
@@ -80,12 +101,12 @@ define([
 						"order_req_no": osc_val[8],
 						"rtn_order_req_no": osc_val[9]
 					};
-
 					var modelForUpdate = this.model;
 					modelForUpdate.url = App.api.CM0130;
 					var cond = {
 						"scr": '発注送信処理-発注取消-更新可否チェック',
 						"log_type": '1',
+						"rntl_sect_cd": osc_val[3],
 					};
 					modelForUpdate.fetchMx({
 						data:cond,

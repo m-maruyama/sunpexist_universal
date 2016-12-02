@@ -633,7 +633,7 @@ $app->post('/import_csv', function () use ($app) {
                         $m_wearer_std,
                         $m_wearer_std->getReadConnection()->query("select nextval('werer_cd_seq')")
                     );
-                    $werer_cd = str_pad($results[0]->nextval, 10, '0', STR_PAD_LEFT);
+                    $werer_cd = str_pad($results[0]->nextval, 6, '0', STR_PAD_LEFT);
                     $app->session->set("chk_werer_cd", $werer_cd);
                     $values_list[] = "'" . $werer_cd . "'";
                 }
@@ -1251,11 +1251,11 @@ $app->post('/import_csv', function () use ($app) {
                 }
 
                 $m_wearer_std_comb_hkey = md5(
-                    $auth['corporate_id']
-                    . $result->werer_cd
-                    . $agreement_no
-                    . $result->rntl_sect_cd
-                    . $result->rent_pattern_code
+                    $auth['corporate_id']."-".
+                    $result->werer_cd."-".
+                    $agreement_no."-".
+                    $result->rntl_sect_cd."-".
+                    $result->rent_pattern_code
                 );
                 //発注区分前処理
                 if($result->order_kbn == '0') {
@@ -1292,15 +1292,15 @@ $app->post('/import_csv', function () use ($app) {
                 $values_list[] = "'" . $result->user_id . "'";
                 $values_list[] = "'" . $result->user_id . "'";
                 $m_job_type_comb_hkey = md5(
-                    $auth['corporate_id']
-                    . $agreement_no
-                    . $result->rent_pattern_code
+                    $auth['corporate_id']."-".
+                    $agreement_no."-".
+                    $result->rent_pattern_code
                 );
                 $values_list[] = "'" . $m_job_type_comb_hkey . "'";
                 $m_section_comb_hkey = md5(
-                    $auth['corporate_id']
-                    . $agreement_no
-                    . $result->rntl_sect_cd
+                    $auth['corporate_id']."-".
+                    $agreement_no."-".
+                    $result->rntl_sect_cd
                 );
                 $values_list[] = "'" . $m_section_comb_hkey . "'";
                 $values_list[] = "'" . date("Ymd", time()) . "'";
@@ -1512,42 +1512,42 @@ $app->post('/import_csv', function () use ($app) {
                 $values_list[] = "'" . $result->emply_order_req_no . "'";
                 $values_list[] = "'" . $result->order_reason_kbn . "'";
                 $m_item_comb_hkey = md5(
-                    $auth['corporate_id']
-                    . $result->item_cd
-                    . $result->color_cd
-                    . $result->size_cd
+                    $auth['corporate_id']."-".
+                    $result->item_cd."-".
+                    $result->color_cd."-".
+                    $result->size_cd
                 );
                 $values_list[] = "'" . $m_item_comb_hkey . "'";
                 $m_job_type_comb_hkey = md5(
-                    $auth['corporate_id']
-                    . $agreement_no
-                    . $result->rent_pattern_code
+                    $auth['corporate_id']."-".
+                    $agreement_no."-".
+                    $result->rent_pattern_code
                 );
                 $values_list[] = "'" . $m_job_type_comb_hkey . "'";
                 $m_section_comb_hkey = md5(
-                    $auth['corporate_id']
-                    . $agreement_no
-                    . $result->rntl_sect_cd
+                    $auth['corporate_id']."-".
+                    $agreement_no."-".
+                    $result->rntl_sect_cd
                 );
                 $values_list[] = "'" . $m_section_comb_hkey . "'";
                 $m_wearer_std_comb_hkey = md5(
-                    $auth['corporate_id']
-                    . $result->werer_cd
-                    . $agreement_no
-                    . $result->rntl_sect_cd
-                    . $result->rent_pattern_code
+                    $auth['corporate_id']."-".
+                    $result->werer_cd."-".
+                    $agreement_no."-".
+                    $result->rntl_sect_cd."-".
+                    $result->rent_pattern_code
                 );
                 $values_list[] = "'" . $m_wearer_std_comb_hkey . "'";
                 $m_wearer_item_comb_hkey = md5(
-                    $auth['corporate_id']
-                    . $result->werer_cd
-                    . $agreement_no
-                    . $result->rntl_sect_cd
-                    . $result->rent_pattern_code
-                    . $result->job_type_item_cd
-                    . $result->item_cd
-                    . $result->color_cd
-                    . $result->size_cd
+                    $auth['corporate_id']."-".
+                    $result->werer_cd."-".
+                    $agreement_no."-".
+                    $result->rntl_sect_cd."-".
+                    $result->rent_pattern_code."-".
+                    $result->job_type_item_cd."-".
+                    $result->item_cd."-".
+                    $result->color_cd."-".
+                    $result->size_cd
                 );
                 $values_list[] = "'" . $m_wearer_item_comb_hkey . "'";
                 $values_list[] = "'" . date("Ymd", time()) . "'";
