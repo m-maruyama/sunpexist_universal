@@ -2165,7 +2165,7 @@ $app->post('/wearer_exchange/complete', function ()use($app){
        }
          //発注NGパターン：同一商品を交換で発注かけようとした場合にエラーで戻す
          //発注情報トランに同じ着用者＋商品情報で検索
-         if($item_map["return_num"]>0){
+         if($item_map["size_cd"]){
              $query_list=array();
              array_push($query_list, "corporate_id = '" . $auth['corporate_id'] . "'");
              array_push($query_list, "rntl_cont_no = '" . $wearer_size_change_post['rntl_cont_no'] . "'");
@@ -2313,7 +2313,7 @@ $app->post('/wearer_exchange/complete', function ()use($app){
      foreach ($item_list as $item_map) {
          //発注NGパターン：同一商品を交換で発注かけようとした場合にエラーで戻す
          //発注情報トランに同じ着用者＋商品情報で検索
-         if($item_map["return_num"]>0){
+         if($item_map["size_cd"]){
              $query_list=array();
              array_push($query_list, "corporate_id = '" . $auth['corporate_id'] . "'");
              array_push($query_list, "rntl_cont_no = '" . $wearer_size_change_post['rntl_cont_no'] . "'");
@@ -3779,7 +3779,7 @@ $app->post('/wearer_exchange/send', function ()use($app){
       }
       //発注NGパターン：同一商品を交換で発注かけようとした場合にエラーで戻す
       //発注情報トランに同じ着用者＋商品情報で検索
-      if($item_map["return_num"]>0){
+      if($item_map["size_cd"]){
           $query_list=array();
           array_push($query_list, "corporate_id = '" . $auth['corporate_id'] . "'");
           array_push($query_list, "rntl_cont_no = '" . $wearer_size_change_post['rntl_cont_no'] . "'");
@@ -3911,7 +3911,7 @@ $app->post('/wearer_exchange/send', function ()use($app){
       foreach ($item_list as $item_map) {
           //発注NGパターン：同一商品を交換で発注かけようとした場合にエラーで戻す
           //発注情報トランに同じ着用者＋商品情報で検索
-          if($item_map["return_num"]>0){
+          if($item_map["size_cd"]){
               $query_list=array();
               array_push($query_list, "corporate_id = '" . $auth['corporate_id'] . "'");
               array_push($query_list, "rntl_cont_no = '" . $wearer_size_change_post['rntl_cont_no'] . "'");
@@ -4048,7 +4048,7 @@ $app->post('/wearer_exchange/send', function ()use($app){
         array_push($src_query_list, "rntl_sect_cd = '".$wearer_size_change_post['rntl_sect_cd']."'");
         array_push($src_query_list, "job_type_cd = '".$wearer_size_change_post['job_type_cd']."'");
         // 発注状況区分(サイズ交換)
-        array_push($query_list,"order_sts_kbn = '3'");
+        array_push($src_query_list,"order_sts_kbn = '3'");
         $src_query = implode(' AND ', $src_query_list);
 
         $up_query_list = array();

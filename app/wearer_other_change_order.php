@@ -2373,7 +2373,6 @@ $app->post('/wearer_other_change_insert', function () use ($app) {
         $results = new Resultset(NULL, $m_wearer_std_tran, $m_wearer_std_tran->getReadConnection()->query('rollback'));
 
         $json_list["error_code"] = "1";
-        ChromePhp::LOG($e);
         $error_msg = "入力登録処理において、データ更新エラーが発生しました。";
         array_push($json_list["error_msg"], $error_msg);
 
