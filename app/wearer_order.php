@@ -197,7 +197,6 @@ $app->post('/wearer_order_info', function ()use($app){
 
     // 前画面セッション取得
     $wearer_odr_post = $app->session->get("wearer_odr_post");
-    //ChromePhp::LOG($wearer_odr_post);
 
     $json_list['rntl_cont_no'] = $wearer_odr_post['rntl_cont_no'];
     $json_list['werer_cd'] = $wearer_odr_post['werer_cd'];
@@ -955,7 +954,7 @@ $app->post('/wearer_order_insert', function () use ($app) {
             $results = new Resultset(null, $m_wearer_std_tran, $m_wearer_std_tran->getReadConnection()->query("select nextval('werer_cd_seq')"));
             $werer_cd = str_pad($results[0]->nextval, 6, '0', STR_PAD_LEFT); //着用者コード
             $corporate_id = $auth['corporate_id']; //企業ID
-            $m_wearer_std_comb_hkey = md5($auth['corporate_id'].str_pad($results[0]->nextval, 10, '0', STR_PAD_LEFT).$wearer_odr_post['rntl_cont_no'].$cond['rntl_sect_cd'].$cond['job_type']);
+            $m_wearer_std_comb_hkey = md5($auth['corporate_id']. '-' . str_pad($results[0]->nextval, 10, '0', STR_PAD_LEFT). '-' . $wearer_odr_post['rntl_cont_no']. '-' . $cond['rntl_sect_cd']. '-' . $cond['job_type']);
             $cster_emply_cd = $wearer_odr_post['cster_emply_cd'];//客先社員コード
             $werer_name = $wearer_odr_post['werer_name'];//着用者名（漢字）
             $werer_name_kana = $wearer_odr_post['werer_name_kana']; //着用者名（カナ）
@@ -1164,8 +1163,8 @@ $app->post('/wearer_order_insert', function () use ($app) {
                 // 発注情報_統合ハッシュキー(企業ID、発注依頼No、発注依頼行No)
                 $t_order_comb_hkey = md5(
                     $auth['corporate_id']
-                    .$shin_order_req_no
-                    .$order_req_line_no
+                    . '-' . $shin_order_req_no
+                    . '-' . $order_req_line_no
                 );
                 array_push($calum_list, "t_order_comb_hkey");
                 array_push($values_list, "'".$t_order_comb_hkey."'");

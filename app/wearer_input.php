@@ -434,156 +434,6 @@ $app->post('/wearer_input', function () use ($app) {
       $json_list['address'] = "";
     }
     // 郵便番号、住所--ここまで
-/*
-    $query_list = array();
-    $list = array();
-    $all_list = array();
-    $param_list = '';
-    if ($wearer_odr_post['wearer_tran_flg'] == '1') {
-        //--着用者基本マスタトラン有の場合--//
-        array_push($query_list,"m_wearer_std_tran.m_wearer_std_comb_hkey = '".$wearer_odr_post['m_wearer_std_comb_hkey']."'");
-        $query = implode(' AND ', $query_list);
-
-        $arg_str = "";
-        $arg_str = "SELECT ";
-        $arg_str .= "m_wearer_std_tran.cster_emply_cd as as_cster_emply_cd,";
-        $arg_str .= "m_wearer_std_tran.werer_name as as_werer_name,";
-        $arg_str .= "m_wearer_std_tran.werer_name_kana as as_werer_name_kana,";
-        $arg_str .= "m_wearer_std_tran.appointment_ymd as as_appointment_ymd,";
-        $arg_str .= "m_wearer_std_tran.resfl_ymd as as_resfl_ymd";
-        $arg_str .= " FROM ";
-        $arg_str .= "m_wearer_std_tran";
-        $arg_str .= " WHERE ";
-        $arg_str .= $query;
-        $arg_str .= " ORDER BY m_wearer_std_tran.upd_date DESC";
-
-        $m_weare_std_tran = new MWearerStdTran();
-        $results = new Resultset(null, $m_weare_std_tran, $m_weare_std_tran->getReadConnection()->query($arg_str));
-        $result_obj = (array)$results;
-        $results_cnt = $result_obj["\0*\0_count"];
-
-        if (!empty($results_cnt)) {
-            $paginator_model = new PaginatorModel(
-                array(
-                    "data"  => $results,
-                    "limit" => 1,
-                    "page" => 1
-                )
-            );
-            $paginator = $paginator_model->getPaginate();
-            $results = $paginator->items;
-            foreach ($results as $result) {
-                // 社員コード
-                $list['cster_emply_cd'] = $result->as_cster_emply_cd;
-                // 着用者名
-                $list['werer_name'] = $result->as_werer_name;
-                // 着用者名（読み仮名）
-                $list['werer_name_kana'] = $result->as_werer_name_kana;
-                // 発令日
-                $list['appointment_ymd'] = $result->as_appointment_ymd;
-                if (!empty($list['appointment_ymd'])) {
-                    $list['appointment_ymd'] = date('Y/m/d', strtotime($list['appointment_ymd']));
-                } else {
-                    $list['appointment_ymd'] = '';
-                }
-                // 着用開始日
-                $list['resfl_ymd'] = $result->as_resfl_ymd;
-                if (!empty($list['resfl_ymd'])) {
-                    $list['resfl_ymd'] = date('Y/m/d', strtotime($list['resfl_ymd']));
-                } else {
-                    $list['resfl_ymd'] = '';
-                }
-            }
-            array_push($all_list, $list);
-        }
-
-        $json_list['wearer_info'] = $all_list;
-    } elseif ($wearer_odr_post['wearer_tran_flg'] == '0') {
-        //--着用者基本マスタトラン無の場合--//
-        array_push($query_list, "m_wearer_std.corporate_id = '".$auth['corporate_id']."'");
-        array_push($query_list, "m_wearer_std.rntl_cont_no = '".$wearer_odr_post['rntl_cont_no']."'");
-        array_push($query_list,"m_wearer_std.werer_cd = '".$wearer_odr_post['werer_cd']."'");
-        array_push($query_list,"m_wearer_std.cster_emply_cd = '".$wearer_odr_post['cster_emply_cd']."'");
-        $query = implode(' AND ', $query_list);
-
-        $arg_str = "";
-        $arg_str = "SELECT ";
-        $arg_str .= "m_wearer_std.cster_emply_cd as as_cster_emply_cd,";
-        $arg_str .= "m_wearer_std.werer_name as as_werer_name,";
-        $arg_str .= "m_wearer_std.werer_name_kana as as_werer_name_kana,";
-        $arg_str .= "m_wearer_std.appointment_ymd as as_appointment_ymd";
-        $arg_str .= " FROM ";
-        $arg_str .= "m_wearer_std";
-        $arg_str .= " WHERE ";
-        $arg_str .= $query;
-        $arg_str .= " ORDER BY m_wearer_std.upd_date DESC";
-
-        $m_weare_std = new MWearerStd();
-        $results = new Resultset(null, $m_weare_std, $m_weare_std->getReadConnection()->query($arg_str));
-        $result_obj = (array)$results;
-        $results_cnt = $result_obj["\0*\0_count"];
-
-        if (!empty($results_cnt)) {
-            $paginator_model = new PaginatorModel(
-                array(
-                    "data"  => $results,
-                    "limit" => 1,
-                    "page" => 1
-                )
-            );
-            $paginator = $paginator_model->getPaginate();
-            $results = $paginator->items;
-            foreach ($results as $result) {
-                // 社員コード
-                $list['cster_emply_cd'] = $result->as_cster_emply_cd;
-                // 着用者名
-                $list['werer_name'] = $result->as_werer_name;
-                // 着用者名（読み仮名）
-                $list['werer_name_kana'] = $result->as_werer_name_kana;
-                // 発令日
-                $list['appointment_ymd'] = $result->as_appointment_ymd;
-                if (!empty($list['appointment_ymd'])) {
-                    $list['appointment_ymd'] = date('Y/m/d', strtotime($list['appointment_ymd']));
-                } else {
-                    $list['appointment_ymd'] = '';
-                }
-                // 着用開始日
-                $list['resfl_ymd'] = $result->as_resfl_ymd;
-                if (!empty($list['resfl_ymd'])) {
-                    $list['resfl_ymd'] = date('Y/m/d', strtotime($list['resfl_ymd']));
-                } else {
-                    $list['resfl_ymd'] = '';
-                }
-            }
-
-            array_push($all_list, $list);
-        }
-
-        $json_list['wearer_info'] = $all_list;
-    }
-    if(empty($json_list['wearer_info'])){
-        if(!$wearer_odr_post['cster_emply_cd']){
-            $cster_emply_cd = '';
-        }else{
-            $cster_emply_cd = $wearer_odr_post['cster_emply_cd'];
-        }
-        // 社員コード
-        $list['cster_emply_cd'] = $cster_emply_cd;
-        // 着用者名
-        $list['werer_name'] = $wearer_odr_post['werer_name'];
-        // 着用者名（読み仮名）
-        $list['werer_name_kana'] = $wearer_odr_post['werer_name_kana'];
-        // 発令日
-        $list['appointment_ymd'] = $wearer_odr_post['appointment_ymd'];
-        if (!empty($list['appointment_ymd'])) {
-            $list['appointment_ymd'] = date('Y/m/d', strtotime($list['appointment_ymd']));
-        } else {
-            $list['appointment_ymd'] = '';
-        }
-        array_push($all_list, $list);
-        $json_list['wearer_info'] = $all_list;
-    }
-*/
 
     $param_list = "";
     $param_list .= $wearer_odr_post['rntl_cont_no'].':';
@@ -598,9 +448,6 @@ $app->post('/wearer_input', function () use ($app) {
     $param_list .= $wearer_odr_post['order_tran_flg'].':';
     $param_list .= $wearer_odr_post['wst_order_req_no'].':';
     $param_list .= $wearer_odr_post['order_req_no'];
-//    $param_list .= $wearer_odr_post['wearer_tran_flg'].':';
-//    $param_list .= $wearer_odr_post['appointment_ymd'].':';
-//    $param_list .= $wearer_odr_post['resfl_ymd'];
     $json_list['param'] = $param_list;
 
     echo json_encode($json_list);
@@ -963,7 +810,7 @@ $app->post('/input_insert', function () use ($app) {
         $results = new Resultset(null, $m_wearer_std_tran, $m_wearer_std_tran->getReadConnection()->query("select nextval('werer_cd_seq')"));
         if(!$wearer_odr_post){
             $werer_cd = str_pad($results[0]->nextval, 6, '0', STR_PAD_LEFT); //着用者コード
-            $m_wearer_std_comb_hkey = md5($auth['corporate_id'] . str_pad($results[0]->nextval, 10, '0', STR_PAD_LEFT) . $cond['agreement_no'] . $cond['rntl_sect_cd'] . $deli_job[0]);
+            $m_wearer_std_comb_hkey = md5($auth['corporate_id'] .  '-' . str_pad($results[0]->nextval, 10, '0', STR_PAD_LEFT) .  '-' . $cond['agreement_no'] . '-' . $cond['rntl_sect_cd'] .  '-' . $deli_job[0]);
             $order_req_no = ''; //発注No
         }else{
             $werer_cd = $wearer_odr_post['werer_cd'];
