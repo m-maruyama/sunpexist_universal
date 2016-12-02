@@ -89,13 +89,59 @@ define([
 					return;
 				},
 				'click @ui.input_insert': function(){
+					var that = this;
 					this.ui.agreement_no = $('#agreement_no');
-					this.triggerMethod('click:input_insert',this.ui.agreement_no.val());
+					var agreement_no_val = this.ui.agreement_no.val();
+					var rntl_sect_cd = $("select[name='section']").val();
+					var modelForUpdate = this.model;
+					modelForUpdate.url = App.api.CM0130;
+					var cond = {
+						"scr": '貸与開始-着用者を登録して終了-更新可否チェック',
+						"log_type": '1',
+						"rntl_sect_cd": rntl_sect_cd,
+					};
+					modelForUpdate.fetchMx({
+						data:cond,
+						success:function(res){
+							var type = "cm0130_res";
+							var res_val = res.attributes;
+							if(res_val.chk_flg == false){
+								alert(res_val["error_msg"]);
+								return true;
+							}else{
+								that.triggerMethod('click:input_insert',agreement_no_val);
+							}
+						}
+					});
 				},
 				'click @ui.input_item': function(e) {
 					e.preventDefault();
+					var that = this;
 					this.ui.agreement_no = $('#agreement_no');
-					this.triggerMethod('click:input_item', this.ui.agreement_no.val());
+					var agreement_no_val = this.ui.agreement_no.val();
+					var rntl_sect_cd = $("select[name='section']").val();
+					var modelForUpdate = this.model;
+					modelForUpdate.url = App.api.CM0130;
+					var cond = {
+						"scr": '貸与開始-商品明細入力へ-更新可否チェック',
+						"log_type": '1',
+						"rntl_sect_cd": rntl_sect_cd,
+					};
+					modelForUpdate.fetchMx({
+						data:cond,
+						success:function(res){
+							var type = "cm0130_res";
+							var res_val = res.attributes;
+							if(res_val.chk_flg == false){
+								alert(res_val["error_msg"]);
+								return true;
+							}else{
+								that.triggerMethod('click:input_item',agreement_no_val);
+							}
+						}
+					});
+					//this.ui.agreement_no = $('#agreement_no');
+					//this.triggerMethod('click:input_item', this.ui.agreement_no.val());
 				},
 				'click @ui.input_delete': function(e) {
 					e.preventDefault();

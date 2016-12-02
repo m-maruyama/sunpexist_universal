@@ -1,7 +1,9 @@
 <!--tr class="blue"-->
   <td>
     {{#if chk_disp}}
-    <input type="checkbox" id="receive_check" name="receive_check[]" class="checkbox-inline update_check" value="{{ship_no}}:{{ship_line_no}}" {{disabled}}>
+        {{#if update_ok_flg}}
+    <input type="checkbox" id="receive_check" name="receive_check[]" class="checkbox-inline update_check" value="{{ship_no}}:{{ship_line_no}}:{{rntl_sect_cd}}" {{disabled}}>
+        {{/if}}
     {{/if}}
   </td>
   <td>{{receipt_date}}</td>

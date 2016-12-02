@@ -23,11 +23,11 @@ define([
 			events: {
 				'click @ui.receive_button': function(){
 					var that = this;
-
 					var modelForUpdate = this.model;
 					modelForUpdate.url = App.api.CM0130;
 					var cond = {
 						"scr": '更新可否チェック',
+						"update_skip_flg": 'receive',//更新可否フラグをrecieve.phpでチェックしているためskip
 					};
 					modelForUpdate.fetchMx({
 						data:cond,

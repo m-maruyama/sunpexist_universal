@@ -1403,75 +1403,130 @@ $app->post('/update_possible_chk', function ()use($app) {
 
   // アカウントセッション取得
   $auth = $app->session->get('auth');
-  //ChromePhp::LOG($auth);
+
+    //各画面からの契約noを取得
+    $cond = $params;
 
   $json_list = array();
   $json_list["chk_flg"] = true;
   $json_list["error_msg"] = "";
 
-  //--契約上の更新可否フラグチェック--//
-  $query_list = array();
-  array_push($query_list, "m_account.corporate_id = '".$auth['corporate_id']."'");
-  array_push($query_list, "m_account.user_id = '".$auth['user_id']."'");
-  array_push($query_list, "m_contract.corporate_id = '".$auth['corporate_id']."'");
-  array_push($query_list, "m_contract.rntl_cont_no = '".$auth['rntl_cont_no']."'");
-  array_push($query_list, "m_contract.rntl_cont_flg = '1'");
-  array_push($query_list, "m_contract_resource.corporate_id = '".$auth['corporate_id']."'");
-  array_push($query_list, "m_contract_resource.accnt_no = '".$auth['accnt_no']."'");
-  $query = implode(' AND ', $query_list);
+  //--受領確認の共通更新可否チェック処理 スキップ--//
+    if(empty($cond['update_skip_flg'])){
 
-  $arg_str = '';
-  $arg_str = 'SELECT ';
-  $arg_str .= 'm_contract_resource.update_ok_flg as as_update_ok_flg';
-  $arg_str .= ' FROM ';
-  $arg_str .= 'm_contract_resource';
-  $arg_str .= ' INNER JOIN m_account';
-  $arg_str .= ' ON (m_contract_resource.corporate_id=m_account.corporate_id';
-  $arg_str .= ' AND m_contract_resource.accnt_no=m_account.accnt_no)';
-  $arg_str .= ' INNER JOIN m_contract';
-  $arg_str .= ' ON (m_contract_resource.corporate_id=m_contract.corporate_id';
-  $arg_str .= ' AND m_contract_resource.rntl_cont_no=m_contract.rntl_cont_no)';
-  $arg_str .= ' WHERE ';
-  $arg_str .= $query;
+        //---契約リソースマスター 0000000000フラグ確認処理---//
+        //ログインid
+        $login_id_session = $auth['corporate_id'];
+        //アカウントno
+        $accnt_no = $auth['accnt_no'];
+        //画面で選択された契約no
+        $agreement_no = $auth['rntl_cont_no'];
+        //前処理 契約リソースマスタ参照 拠点ゼロ埋め確認
+        $arg_str = "";
+        $arg_str .= "SELECT ";
+        $arg_str .= " * ";
+        $arg_str .= " FROM ";
+        $arg_str .= "m_contract_resource";
+        $arg_str .= " WHERE ";
+        $arg_str .= "corporate_id = '$login_id_session'";
+        $arg_str .= " AND rntl_cont_no = '$agreement_no'";
+        $arg_str .= " AND accnt_no = '$accnt_no'";
 
-  $m_contract_resource = new MContractResource();
-  $results = new Resultset(null, $m_contract_resource, $m_contract_resource->getReadConnection()->query($arg_str));
-  $results_array = (array) $results;
-  $results_cnt = $results_array["\0*\0_count"];
-  //ChromePhp::LOG($m_contract_resource->getReadConnection()->query($arg_str));
-  //ChromePhp::LOG($results_cnt);
+        $m_contract_resource = new MContractResource();
+        $results = new Resultset(null, $m_contract_resource, $m_contract_resource->getReadConnection()->query($arg_str));
+        $result_obj = (array)$results;
+        $results_cnt = $result_obj["\0*\0_count"];
 
-  if ($results_cnt > 0) {
-    $paginator_model = new PaginatorModel(
-      array(
-        "data"  => $results,
-        "limit" => $results_cnt,
-        "page" => 1
-      )
-    );
-    $paginator = $paginator_model->getPaginate();
-    $results = $paginator->items;
+        if ($results_cnt > 0) {
+            $paginator_model = new PaginatorModel(
+                array(
+                    "data"  => $results,
+                    "limit" => $results_cnt,
+                    "page" => 1
+                )
+            );
+            $paginator = $paginator_model->getPaginate();
+            $results = $paginator->items;
+            foreach ($results as $result) {
+                $all_list[] = $result->rntl_sect_cd;
+            }
+        }
 
-    foreach ($results as $result) {
-      $update_ok_flg = $result->as_update_ok_flg;
+        if (in_array("0000000000", $all_list)) {
+            $rntl_sect_cd_zero_flg = 1;
+        }else{
+            $rntl_sect_cd_zero_flg = 0;
+        }
+
+
+        //ゼロ埋めの場合の処理が必要
+
+      //--契約上の更新可否フラグチェック--//
+      $query_list = array();
+      array_push($query_list, "m_account.corporate_id = '".$auth['corporate_id']."'");
+      array_push($query_list, "m_account.user_id = '".$auth['user_id']."'");
+      array_push($query_list, "m_contract.corporate_id = '".$auth['corporate_id']."'");
+      array_push($query_list, "m_contract.rntl_cont_no = '".$auth['rntl_cont_no']."'");
+      array_push($query_list, "m_contract.rntl_cont_flg = '1'");
+      array_push($query_list, "m_contract_resource.corporate_id = '".$auth['corporate_id']."'");
+      array_push($query_list, "m_contract_resource.accnt_no = '".$auth['accnt_no']."'");
+        if(isset($cond['rntl_sect_cd'])) {
+            array_push($query_list, "m_contract_resource.rntl_sect_cd = '" . $cond['rntl_sect_cd'] . "'");
+        }
+        $query = implode(' AND ', $query_list);
+
+      $arg_str = '';
+      $arg_str = 'SELECT ';
+      $arg_str .= 'm_contract_resource.update_ok_flg as as_update_ok_flg';
+      $arg_str .= ' FROM ';
+      $arg_str .= 'm_contract_resource';
+      $arg_str .= ' INNER JOIN m_account';
+      $arg_str .= ' ON (m_contract_resource.corporate_id=m_account.corporate_id';
+      $arg_str .= ' AND m_contract_resource.accnt_no=m_account.accnt_no)';
+      $arg_str .= ' INNER JOIN m_contract';
+      $arg_str .= ' ON (m_contract_resource.corporate_id=m_contract.corporate_id';
+      $arg_str .= ' AND m_contract_resource.rntl_cont_no=m_contract.rntl_cont_no)';
+      $arg_str .= ' WHERE ';
+      $arg_str .= $query;
+
+      $m_contract_resource = new MContractResource();
+      $results = new Resultset(null, $m_contract_resource, $m_contract_resource->getReadConnection()->query($arg_str));
+      $results_array = (array) $results;
+      $results_cnt = $results_array["\0*\0_count"];
+      //ChromePhp::LOG($m_contract_resource->getReadConnection()->query($arg_str));
+      //
+
+      if ($results_cnt > 0) {
+        $paginator_model = new PaginatorModel(
+          array(
+            "data"  => $results,
+            "limit" => $results_cnt,
+            "page" => 1
+          )
+        );
+        $paginator = $paginator_model->getPaginate();
+        $results = $paginator->items;
+
+        foreach ($results as $result) {
+          $update_ok_flg = $result->as_update_ok_flg;
+        }
+      } else {
+        // データ自体存在しない場合は更新不可対象とする
+        $json_list["chk_flg"] = false;
+        $json_list["error_msg"] = "ご契約上の権限により、更新に関する操作ができません。";
+
+        echo json_encode($json_list);
+        return;
+      }
+      // 上記参照の結果が更新不可フラグの場合
+      if ($update_ok_flg == "0") {
+        $json_list["chk_flg"] = false;
+        $json_list["error_msg"] = "ご契約上の権限により、更新に関する操作ができません。";
+
+        echo json_encode($json_list);
+        return;
+      }
     }
-  } else {
-    // データ自体存在しない場合は更新不可対象とする
-    $json_list["chk_flg"] = false;
-    $json_list["error_msg"] = "ご契約上の権限により、更新に関する操作ができません。";
-
-    echo json_encode($json_list);
-    return;
-  }
-  // 上記参照の結果が更新不可フラグの場合
-  //ChromePhp::LOG($update_ok_flg);
-  if ($update_ok_flg == "0") {
-    $json_list["chk_flg"] = false;
-    $json_list["error_msg"] = "ご契約上の権限により、更新に関する操作ができません。";
-
-    echo json_encode($json_list);
-    return;
-  }
 
   //--更新可否時間帯チェック--//
   // 更新不可開始時刻

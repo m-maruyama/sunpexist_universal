@@ -70,10 +70,7 @@ define([
 												if (res_list["error_code"] == "0") {
 													that.triggerMethod('reload');
 													$.unblockUI();
-												} else if (res_list["error_code"] == "1") {
-													$.unblockUI();
-													alert("ご契約に関する権限により更新に関する操作が出来ません。");
-												} else {
+												}else {
 													$.unblockUI();
 													alert("更新処理中にエラーが発生しました。");
 												}

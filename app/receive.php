@@ -352,10 +352,12 @@ $app->post('/receive/search', function ()use($app){
 	$arg_str .= "m_wearer_std.cster_emply_cd as as_cster_emply_cd,";
 	$arg_str .= "m_wearer_std.werer_name as as_werer_name,";
 	$arg_str .= "m_section.rntl_sect_name as as_rntl_sect_name,";
-	$arg_str .= "m_job_type.job_type_name as as_job_type_name,";
+    $arg_str .= "m_section.rntl_sect_cd as as_rntl_sect_cd,";
+    $arg_str .= "m_job_type.job_type_name as as_job_type_name,";
 	$arg_str .= "t_order.order_sts_kbn as as_order_sts_kbn,";
 	$arg_str .= "t_order.order_req_ymd as as_order_req_ymd,";
-	$arg_str .= "t_delivery_goods_state.ship_ymd as as_ship_ymd,";
+    $arg_str .= "m_contract_resource.update_ok_flg as as_update_ok_flg,";
+    $arg_str .= "t_delivery_goods_state.ship_ymd as as_ship_ymd,";
 	$arg_str .= "t_delivery_goods_state.rec_order_no as as_rec_order_no";
 	$arg_str .= " FROM t_delivery_goods_state_details INNER JOIN";
 	$arg_str .= " (t_delivery_goods_state INNER JOIN";
@@ -397,7 +399,6 @@ $app->post('/receive/search', function ()use($app){
 		$arg_str .= " ORDER BY ";
 		$arg_str .= $q_sort_key." ".$order;
 	}
-	//ChromePhp::LOG($arg_str);
 	$t_delivery_goods_state_details = new TDeliveryGoodsStateDetails();
 	$results = new Resultset(null, $t_delivery_goods_state_details, $t_delivery_goods_state_details->getReadConnection()->query($arg_str));
 	$result_obj = (array)$results;
@@ -479,12 +480,28 @@ $app->post('/receive/search', function ()use($app){
 			} else {
 				$list['werer_name'] = "-";
 			}
-			// 拠点
+			// 拠点名
 			if (!empty($result->as_rntl_sect_name)) {
 				$list['rntl_sect_name'] = $result->as_rntl_sect_name;
 			} else {
 				$list['rntl_sect_name'] = "-";
 			}
+            // 拠点cd
+            if (!empty($result->as_rntl_sect_cd)) {
+                $list['rntl_sect_cd'] = $result->as_rntl_sect_cd;
+            } else {
+                $list['rntl_sect_cd'] = "-";
+            }
+            // 更新可否フラグ 受領状況照会のチェックボックス 表示 非表示
+            if (!empty($result->as_update_ok_flg)) {
+                if($result->as_update_ok_flg == '1'){
+                    $list['update_ok_flg'] = true;
+                }else{
+                    $list['update_ok_flg'] = false;
+                }
+            } else{
+                $list['update_ok_flg'] = false;
+            }
 			// 貸与パターン
 			if (!empty($result->as_job_type_name)) {
 				$list['job_type_name'] = $result->as_job_type_name;
