@@ -483,7 +483,6 @@ $app->post('/order_send/cancel', function () use ($app) {
 
   // アカウントセッション
   $auth = $app->session->get("auth");
-  //ChromePhp::LOG($auth);
 
   // フロントパラメータ
   $order_data = $params['data'];
