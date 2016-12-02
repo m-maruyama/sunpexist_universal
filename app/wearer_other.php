@@ -139,6 +139,7 @@ $app->post('/wearer_other/search', function ()use($app){
   $arg_str .= $query;
   $arg_str .= ") as distinct_table";
   $arg_str .= " ORDER BY as_cster_emply_cd ASC";
+  //ChromePhp::LOG($arg_str);
   $m_weare_std = new MWearerStd();
   $results = new Resultset(null, $m_weare_std, $m_weare_std->getReadConnection()->query($arg_str));
   $result_obj = (array)$results;
@@ -821,7 +822,7 @@ $app->post('/wearer_add/order_check', function ()use($app){
     foreach ($gencode as $gencode_map) {
       $order_sts_kbn_name = $gencode_map->gen_name;
     }
-
+/*
     // 着用者基本マスタトラン.発注状況区分 = 「着用者編集」の情報がある際は発注NG
     if ($order_sts_kbn == "6") {
       $json_list["err_cd"] = "1";
@@ -832,6 +833,7 @@ $app->post('/wearer_add/order_check', function ()use($app){
       echo json_encode($json_list);
       return;
     }
+*/
   }
 
   //※発注情報トラン参照
@@ -955,7 +957,7 @@ $app->post('/wearer_return/order_check', function ()use($app){
     foreach ($gencode as $gencode_map) {
       $order_sts_kbn_name = $gencode_map->gen_name;
     }
-
+/*
     // 着用者基本マスタトラン.発注状況区分 = 「着用者編集」の情報がある際は発注NG
     if ($order_sts_kbn == "6") {
       $json_list["err_cd"] = "1";
@@ -966,6 +968,7 @@ $app->post('/wearer_return/order_check', function ()use($app){
       echo json_encode($json_list);
       return;
     }
+*/
   }
 
   //※発注情報トラン参照
