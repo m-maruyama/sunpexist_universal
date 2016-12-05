@@ -1896,6 +1896,7 @@ $app->post('/wearer_change/info', function ()use($app){
          array_push($query_list, "t_delivery_goods_state_details.item_cd = '".$now_wearer_map['item_cd']."'");
          array_push($query_list, "t_delivery_goods_state_details.color_cd = '".$now_wearer_map['color_cd']."'");
          array_push($query_list, "t_delivery_goods_state_details.size_cd = '".$list["size_cd"]."'");
+         array_push($query_list, "t_delivery_goods_state_details.receipt_status = '2'");
          $query = implode(' AND ', $query_list);
 
          $arg_str = "";
