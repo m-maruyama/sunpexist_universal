@@ -42,7 +42,6 @@ $app->post('/receive/search', function ()use($app){
 	$results = new Resultset(null, $m_contract_resource, $m_contract_resource->getReadConnection()->query($arg_str));
 	$result_obj = (array)$results;
 	$results_cnt = $result_obj["\0*\0_count"];
-
 	if ($results_cnt > 0) {
 			$paginator_model = new PaginatorModel(
 					array(
@@ -57,11 +56,11 @@ $app->post('/receive/search', function ()use($app){
 					$all_list[] = $result->rntl_sect_cd;
 			}
 	}
-	if (in_array("0000000000", $all_list)) {
-			$rntl_sect_cd_zero_flg = 1;
-	}else{
-			$rntl_sect_cd_zero_flg = 0;
-	}
+    if (in_array("0000000000", $all_list)) {
+        $rntl_sect_cd_zero_flg = 1;
+    }else{
+        $rntl_sect_cd_zero_flg = 0;
+    }
 
 	//---検索条件---//
 	//企業ID
@@ -412,7 +411,6 @@ $app->post('/receive/search', function ()use($app){
 			"page" => $page['page_number']
 		)
 	);
-
 	$list = array();
 	$all_list = array();
 	$json_list = array();
@@ -495,58 +493,7 @@ $app->post('/receive/search', function ()use($app){
                 $list['rntl_sect_cd'] = "-";
             }
 
-            //契約リソースマスターにゼロ埋めの拠点があれば、そのゼロ埋めのupdate_okフラグを適用する。
-            //ゼロ埋めが複数あり、それらのupdate_okフラグが異なることは想定しない。
-            if($rntl_sect_cd_zero_flg == '1'){
 
-                $arg_str = "";
-                $arg_str .= "SELECT ";
-                $arg_str .= " * ";
-                $arg_str .= " FROM ";
-                $arg_str .= "m_contract_resource";
-                $arg_str .= " WHERE ";
-                $arg_str .= "corporate_id = '$login_id_session'";
-                $arg_str .= " AND rntl_cont_no = '$agreement_no'";
-                $arg_str .= " AND accnt_no = '$accnt_no'";
-                $arg_str .= " AND rntl_sect_cd = '0000000000'";
-
-                $m_contract_resource = new MContractResource();
-                $zero_results = new Resultset(null, $m_contract_resource, $m_contract_resource->getReadConnection()->query($arg_str));
-                $result_obj = (array)$zero_results;
-                $results_cnt = $result_obj["\0*\0_count"];
-                if ($results_cnt > 0) {
-                    $paginator_model = new PaginatorModel(
-                        array(
-                            "data" => $zero_results,
-                            "limit" => $results_cnt,
-                            "page" => 1
-                        )
-                    );
-                }
-                $paginator = $paginator_model->getPaginate();
-                $zero_results = $paginator->items;
-                $i = 0;
-                foreach ($zero_results as $zero_result) {
-                    $all_list[$i]['rntl_sect_cd'] = $zero_result->rntl_sect_cd;
-                    $all_list[$i]['update_ok_flg'] = $zero_result->update_ok_flg;
-                    $i++;
-                }
-                if (count($all_list) > 0) {
-                    $update_ok_flg = $all_list[0]['update_ok_flg'];
-                }
-                if($update_ok_flg == '1'){
-                    $list['update_ok_flg'] = true;
-                }else{
-                    $list['update_ok_flg'] = false;
-                }
-            }elseif($rntl_sect_cd_zero_flg == '0'){
-                //ゼロ埋め拠点がない場合は、それぞれのレコードのupdate_okフラグを確認する
-                if($result->as_update_ok_flg == '1'){
-                    $list['update_ok_flg'] = true;
-                }else{
-                    $list['update_ok_flg'] = false;
-                }
-            }
 
 			// 貸与パターン
 			if (!empty($result->as_job_type_name)) {
@@ -625,6 +572,58 @@ $app->post('/receive/search', function ()use($app){
 			foreach ($gencode as $gencode_map) {
 				$list['receipt_status_name'] = $gencode_map->gen_name;
 			}
+
+            //契約リソースマスターにゼロ埋めの拠点があれば、そのゼロ埋めのupdate_okフラグを適用する。
+            //ゼロ埋めが複数あり、それらのupdate_okフラグが異なることは想定しない。
+            if($rntl_sect_cd_zero_flg == '1'){
+                $arg_str = "";
+                $arg_str .= "SELECT ";
+                $arg_str .= " * ";
+                $arg_str .= " FROM ";
+                $arg_str .= "m_contract_resource";
+                $arg_str .= " WHERE ";
+                $arg_str .= "corporate_id = '$login_id_session'";
+                $arg_str .= " AND rntl_cont_no = '$agreement_no'";
+                $arg_str .= " AND accnt_no = '$accnt_no'";
+                $arg_str .= " AND rntl_sect_cd = '0000000000'";
+
+                $m_contract_resource = new MContractResource();
+                $zero_results = new Resultset(null, $m_contract_resource, $m_contract_resource->getReadConnection()->query($arg_str));
+                $zero_result_obj = (array)$zero_results;
+                $zero_results_cnt = $zero_result_obj["\0*\0_count"];
+                if ($results_cnt > 0) {
+                    $paginator_model = new PaginatorModel(
+                        array(
+                            "data" => $zero_results,
+                            "limit" => $zero_results_cnt,
+                            "page" => 1
+                        )
+                    );
+                }
+                $zero_paginator = $paginator_model->getPaginate();
+                $zero_results = $zero_paginator->items;
+                $i = 0;
+                foreach ($zero_results as $zero_result) {
+                    $zero_all_list[$i]['rntl_sect_cd'] = $zero_result->rntl_sect_cd;
+                    $zero_all_list[$i]['update_ok_flg'] = $zero_result->update_ok_flg;
+                    $i++;
+                }
+                if (count($zero_all_list) > 0) {
+                    $update_ok_flg = $zero_all_list[0]['update_ok_flg'];
+                }
+                if($update_ok_flg == '1'){
+                    $list['update_ok_flg'] = true;
+                }else{
+                    $list['update_ok_flg'] = false;
+                }
+            }elseif($rntl_sect_cd_zero_flg == '0'){
+                //ゼロ埋め拠点がない場合は、それぞれのレコードのupdate_okフラグを確認する
+                if($result->as_update_ok_flg == '1'){
+                    $list['update_ok_flg'] = true;
+                }else{
+                    $list['update_ok_flg'] = false;
+                }
+            }
 
 			//--受領チェック表示--//
 			if ($list['receipt_date'] == "-") {
