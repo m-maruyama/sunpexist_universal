@@ -159,7 +159,7 @@ define([
 						if (res_list['wearer_info'][0]) {
 							if(res_list['wearer_info'][0]['cster_emply_cd']){
 								that.ui.cster_emply_cd.val(res_list['wearer_info'][0]['cster_emply_cd']);
-								that.ui.cster_emply_cd.prop('disabled',false);
+								// that.ui.cster_emply_cd.prop('disabled',false);
 							}
 							that.ui.member_name.val(res_list['wearer_info'][0]['werer_name']);
 							that.ui.member_name_kana.val(res_list['wearer_info'][0]['werer_name_kana']);
