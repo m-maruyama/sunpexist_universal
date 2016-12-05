@@ -142,16 +142,14 @@ define([
 					//local:[{text:'a'},{text:'b'},{text:'ab'},{text:'abc def'}]
 				});
 
-
-				var agreement_no = $("select[name='agreement_no']").val();
-				this.model.set('rntl_cont_no', agreement_no);
-				var errors = this.model.validate();
-				if(errors) {
-					this.triggerMethod('showAlerts', errors);
-					return;
-				}
-				this.triggerMethod('click:search','line_no','desc');
-
+					var agreement_no = $("select[name='agreement_no']").val();
+					this.model.set('rntl_cont_no', agreement_no);
+					var errors = this.model.validate();
+					if (errors) {
+						this.triggerMethod('showAlerts', errors);
+						return;
+					}
+					this.triggerMethod('click:search', 'line_no', 'desc');
 
 			},
 

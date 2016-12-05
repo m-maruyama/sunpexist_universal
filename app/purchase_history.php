@@ -11,7 +11,6 @@ use Phalcon\Paginator\Adapter\QueryBuilder as PaginatorQueryBuilder;
 　*/
 $app->post('/purchase/input_item', function () use ($app) {
     $params = json_decode(file_get_contents('php://input'), true);
-
     $query_list = array();
     $list = array();
     $all_list = array();
@@ -21,10 +20,24 @@ $app->post('/purchase/input_item', function () use ($app) {
     $auth = $app->session->get('auth');
 
     array_push($query_list, "corporate_id = '" . $auth['corporate_id'] . "'");
+
     if (!empty($params['agreement_no'])) {
         array_push($query_list, "rntl_cont_no = '" . $params['agreement_no'] . "'");
     } else {
-        array_push($query_list, "rntl_cont_no = '" . $auth['rntl_cont_no'] . "'");
+        $corporate_id = $auth['corporate_id'];
+        $accnt_no = $auth['accnt_no'];
+        //sectionで一番若い契約Noを取得
+        $rntl_cont_no_one = MContract::find(array(
+            //'order' => "$sort_key $order",
+            'conditions' => "corporate_id = '$corporate_id' AND purchase_cont_flg = '1'",
+            "columns" => "rntl_cont_no",
+            "limit" => 1
+            //'conditions'  => "'$user_name_val%"
+        ));
+        foreach ($rntl_cont_no_one as $rntl_cont_value) {
+            $params['rntl_cont_no'] = $rntl_cont_value->rntl_cont_no;
+        }
+        array_push($query_list, "rntl_cont_no = '" . $params['rntl_cont_no'] . "'");
     }
     $query = implode(' AND ', $query_list);
     //ChromePhp::log($params['agreement_no']);
@@ -94,7 +107,21 @@ $app->post('/purchase/item_color', function () use ($app) {
     if (!empty($params['agreement_no'])) {
         array_push($query_list, "rntl_cont_no = '" . $params['agreement_no'] . "'");
     } else {
-        array_push($query_list, "rntl_cont_no = '" . $auth['rntl_cont_no'] . "'");
+        $login_corporate_id = $auth['corporate_id'];
+
+        //sectionで一番若い契約Noを取得
+        $rntl_cont_no_one = MContract::find(array(
+            //'order' => "$sort_key $order",
+            'conditions' => "corporate_id = '$login_corporate_id' AND purchase_cont_flg = '1'",
+            "columns" => "rntl_cont_no",
+            "limit" => 1
+            //'conditions'  => "'$user_name_val%"
+        ));
+        foreach ($rntl_cont_no_one as $rntl_cont_value) {
+            $params['rntl_cont_no'] = $rntl_cont_value->rntl_cont_no;
+        }
+
+        array_push($query_list, "rntl_cont_no = '" . $params['rntl_cont_no'] . "'");
     }
     if (!empty($params['job_type'])) {
         array_push($query_list, "job_type_cd = '" . $params['job_type'] . "'");
@@ -189,13 +216,11 @@ $app->post('/purchase_history/search', function () use ($app) {
         echo json_encode($json_list);
         return true;
     }
-
-
+    
     //検索の場合
     $cond = $params['cond'];
     $page = $params['page'];
     $query_list = array();//追加
-
 
     //初期表示は一番若い契約のnoを入れる
     if (isset($cond['rntl_cont_no'])) {
