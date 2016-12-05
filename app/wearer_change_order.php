@@ -2070,7 +2070,8 @@ $app->post('/wearer_change/info', function ()use($app){
    //ChromePhp::LOG($json_list["sum_num"]);
 
    // 貸与中アイテム一覧の「対象」、「個体管理番号」列の表示/非表示の制御フラグ
-   $json_list["individual_flg"] = $auth['individual_flg'];
+//   $json_list["individual_flg"] = $auth['individual_flg'];
+   $json_list["individual_flg"] = individual_flg($auth['corporate_id'], $wearer_chg_post['rntl_cont_no']);
 
    echo json_encode($json_list);
    //ChromePhp::LOG('JSON_LIST');
