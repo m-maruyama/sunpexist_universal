@@ -96,7 +96,7 @@ $app->post('/agreement_no_input', function () use ($app) {
                 }
                 array_push($all_list, $list);
             }
-            //$app->session->remove("wearer_odr_post");
+            $app->session->remove("wearer_odr_post");
         }
     } else {
         $list['rntl_cont_no'] = null;
