@@ -643,6 +643,7 @@ $app->post('/wearer_return/info', function ()use($app){
      array_push($query_list, "t_delivery_goods_state_details.rntl_cont_no = '".$wearer_other_post['rntl_cont_no']."'");
      array_push($query_list, "t_delivery_goods_state_details.werer_cd = '".$wearer_other_post['werer_cd']."'");
      array_push($query_list, "t_delivery_goods_state_details.rtn_ok_flg = '1'");
+     array_push($query_list, "t_delivery_goods_state_details.receipt_status = '2'");
      $query = implode(' AND ', $query_list);
 
      $arg_str = "";

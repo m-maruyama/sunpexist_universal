@@ -23,7 +23,7 @@ define([
 			ui: {
 				'agreement_no': '#agreement_no',
 				'reason_kbn': '#reason_kbn',
-				'member_no': '#member_no',
+				'cster_emply_cd': '#cster_emply_cd',
 				'member_name': '#member_name',
 				'member_name_kana': '#member_name_kana',
 				'sex_kbn': '#sex_kbn',
@@ -83,8 +83,9 @@ define([
 						if (res_list['order_tran_flg'] == '1' && res_list['return_tran_flg'] == '1') {
 							$('.delete').css('display', '');
 						}
+						that.ui.cster_emply_cd.prop('disabled',true);
 						if (res_list['wearer_info'][0]) {
-							that.ui.member_no.val(res_list['wearer_info'][0]['cster_emply_cd']);
+							that.ui.cster_emply_cd.val(res_list['wearer_info'][0]['cster_emply_cd']);
 							that.ui.member_name.val(res_list['wearer_info'][0]['werer_name']);
 							that.ui.member_name_kana.val(res_list['wearer_info'][0]['werer_name_kana']);
 							that.ui.sex_kbn.val(res_list['wearer_info'][0]['sex_kbn']);
