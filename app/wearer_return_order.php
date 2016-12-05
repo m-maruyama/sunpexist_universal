@@ -1021,7 +1021,7 @@ $app->post('/wearer_return/info', function ()use($app){
    }
    // 返却総枚数(返却可能枚数)
    $json_list["sum_num"] = array();
-   $list["sum_return_num"] = '';
+   $list["sum_return_num"] = '0';
    if (!empty($all_list)) {
      $quantity = 0;
      $return_plan_qty = 0;

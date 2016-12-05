@@ -1190,6 +1190,7 @@ $app->post('/wearer_change/info', function ()use($app){
      );
      $paginator = $paginator_model->getPaginate();
      $results = $paginator->items;
+       ChromePhp::LOG($results);
      //ChromePhp::LOG($results);
      foreach ($results as $result) {
        // レンタル契約No
