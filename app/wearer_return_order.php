@@ -718,7 +718,7 @@ $app->post('/wearer_return/info', function ()use($app){
          // サイズ
          $list["size_cd"] = $item_result->as_size_cd;
          // 対象、個体管理番号
-         if ($auth["individual_flg"] == "1") {
+         if (individual_flg($auth['corporate_id'], $wearer_other_post['rntl_cont_no']) == "1") {
            // 返却予定情報トラン参照（個体管理番号取得）
            $individual_list = array();
            $query_list = array();
@@ -944,7 +944,7 @@ $app->post('/wearer_return/info', function ()use($app){
          // サイズ
          $list["size_cd"] = $result->as_size_cd;
          // 対象、個体管理番号
-         if ($auth["individual_flg"] == "1") {
+         if (individual_flg($auth['corporate_id'], $wearer_other_post['rntl_cont_no']) == "1") {
            // 納品状況明細情報参照
            $list["individual_chk"] = array();
            $element = array();
@@ -1047,7 +1047,7 @@ $app->post('/wearer_return/info', function ()use($app){
    $json_list["item_list"] = $all_list;
 
    // 個体管理番号表示フラグ
-   if ($auth["individual_flg"] == "1") {
+   if (individual_flg($auth['corporate_id'], $wearer_other_post['rntl_cont_no']) == "1") {
      $json_list["individual_flg"] = true;
    } else {
      $json_list["individual_flg"] = false;

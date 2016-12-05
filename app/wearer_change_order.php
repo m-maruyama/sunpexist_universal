@@ -1190,7 +1190,6 @@ $app->post('/wearer_change/info', function ()use($app){
      );
      $paginator = $paginator_model->getPaginate();
      $results = $paginator->items;
-       ChromePhp::LOG($results);
      //ChromePhp::LOG($results);
      foreach ($results as $result) {
        // レンタル契約No
@@ -1886,7 +1885,7 @@ $app->post('/wearer_change/info', function ()use($app){
        $list["size_cd"] = $now_wearer_map['size_cd'];
        // 個体管理番号
        // ※個体管理番号リスト、対象チェックボックス値の生成
-       if ($auth["individual_flg"] == "1") {
+       if (individual_flg($auth['corporate_id'], $cond['agreement_no']) == "1") {
          $list["individual_ctrl_no"] = "";
          $list["individual_chk"] = array();
          $individual_ctrl_no = array();

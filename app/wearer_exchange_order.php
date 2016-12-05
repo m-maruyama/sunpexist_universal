@@ -955,7 +955,7 @@ $app->post('/wearer_exchange/list', function ()use($app){
           }
         }
         // 対象、個体管理番号
-        if ($auth["individual_flg"] == "1") {
+        if (individual_flg($auth['corporate_id'], $wearer_size_change_post['rntl_cont_no']) == "1") {
           // 返却予定情報トラン参照（個体管理番号取得）
           $individual_list = array();
           $query_list = array();
@@ -1080,7 +1080,7 @@ $app->post('/wearer_exchange/list', function ()use($app){
         // 返却枚数
         // ※返却予定情報トランに存在する場合はこちらを設定
         $list["return_num"] = 0;
-        if ($auth["individual_flg"] == "0") {
+        if (individual_flg($auth['corporate_id'], $wearer_size_change_post['rntl_cont_no']) == "0") {
           if ($item_result->as_size_add_flg == "0") {
             $list["return_num"] = $list["exchange_possible_num"];
             $list["return_num_text_disp"] = false;
@@ -1230,7 +1230,7 @@ $app->post('/wearer_exchange/list', function ()use($app){
           $list["size_add_flg"] = false;
         }
         // 個体管理番号表示フラグ
-        if ($auth["individual_flg"] == "1") {
+        if (individual_flg($auth['corporate_id'], $wearer_size_change_post['rntl_cont_no']) == "1") {
           $list["individual_flg"] = true;
         } else {
           $list["individual_flg"] = false;
@@ -1393,7 +1393,7 @@ $app->post('/wearer_exchange/list', function ()use($app){
           }
         }
         // 対象、個体管理番号
-        if ($auth["individual_flg"] == "1") {
+        if (individual_flg($auth['corporate_id'], $wearer_size_change_post['rntl_cont_no']) == "1") {
           // 納品状況明細情報参照
           $list["individual_chk"] = array();
           $element = array();
@@ -1469,7 +1469,7 @@ $app->post('/wearer_exchange/list', function ()use($app){
           $list["return_num"] = $list["exchange_possible_num"];
           $list["return_num_text_disp"] = false;
         } else {
-          if ($auth["individual_flg"] == "1") {
+          if (individual_flg($auth['corporate_id'], $wearer_size_change_post['rntl_cont_no']) == "1") {
             $list["return_num_text_disp"] = false;
           } else {
             $list["return_num_text_disp"] = true;
@@ -1482,7 +1482,7 @@ $app->post('/wearer_exchange/list', function ()use($app){
           $list["size_add_flg"] = false;
         }
         // 個体管理番号表示フラグ
-        if ($auth["individual_flg"] == "1") {
+        if (individual_flg($auth['corporate_id'], $wearer_size_change_post['rntl_cont_no']) == "1") {
           $list["individual_flg"] = true;
         } else {
           $list["individual_flg"] = false;
@@ -1546,7 +1546,7 @@ $app->post('/wearer_exchange/list', function ()use($app){
   $json_list["item_list"] = $all_list;
 
   // 個体管理番号表示フラグ
-  if ($auth["individual_flg"] == "1") {
+  if (individual_flg($auth['corporate_id'], $wearer_size_change_post['rntl_cont_no']) == "1") {
     $json_list["individual_flg"] = true;
   } else {
     $json_list["individual_flg"] = false;
