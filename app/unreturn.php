@@ -662,12 +662,12 @@ $app->post('/unreturn/search', function ()use($app){
 	}
     */
 
-    // 個体管理番号表示/非表示フラグ設定
-    if (individual_flg($auth['corporate_id'], $cond['agreement_no']) == 1) {
-        $individual_flg = true;
-    } else {
-        $individual_flg = false;
-    }
+	// 個体管理番号表示/非表示フラグ設定
+	if ($auth["individual_flg"] == 1) {
+		$individual_flg = true;
+	} else {
+		$individual_flg = false;
+	}
 /*
 	$query_list = array();
 	array_push($query_list, "corporate_id = '".$auth['corporate_id']."'");

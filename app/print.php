@@ -18,7 +18,7 @@ $app->post('/print/pdf', function ()use($app){
     $auth = $app->session->get("auth");
     $cond = $params["cond"];
     //個別管理番号あるなし　1:あり 0:なし
-    $individual_check = individual_flg($auth['corporate_id'], $cond['rntl_cont_no']);
+    $individual_check = $cond['individual_number'];
     //$individual_check = 1;
     $query_list = array();
 

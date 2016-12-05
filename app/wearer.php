@@ -792,12 +792,12 @@ $app->post('/wearer/detail', function ()use($app){
 		$wearer_item_list = array_merge($wearer_item_list, $return_list);
 	}
 
-    // 個体管理番号表示/非表示フラグ設定
-    if (individual_flg($auth['corporate_id'], $cond['agreement_no']) == 1) {
-        $individual_flg = true;
-    } else {
-        $individual_flg = false;
-    }
+	// 個体管理番号表示制御フラグ
+	if ($auth["individual_flg"] == "1") {
+		$json_list["individual_flg"] = true;
+	} else {
+		$json_list["individual_flg"] = false;
+	}
 
 	$json_list['taiyo_list'] = $wearer_item_list;
 	echo json_encode($json_list);
