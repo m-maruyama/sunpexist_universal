@@ -1136,12 +1136,12 @@ $app->post('/wearer_change/info', function ()use($app){
    $query_list = array();
    $list = array();
    $now_wearer_list = array();
-     ChromePhp::log($wearer_chg_post);
    array_push($query_list, "t_delivery_goods_state_details.corporate_id = '".$auth['corporate_id']."'");
    array_push($query_list, "t_delivery_goods_state_details.rntl_cont_no = '".$wearer_chg_post['rntl_cont_no']."'");
    array_push($query_list, "t_delivery_goods_state_details.werer_cd = '".$wearer_chg_post['werer_cd']."'");
-     array_push($query_list, "m_input_item.job_type_cd = '".$wearer_chg_post['job_type_cd']."'");
-     array_push($query_list, "t_delivery_goods_state_details.rtn_ok_flg = '1'");
+   array_push($query_list, "m_input_item.job_type_cd = '".$wearer_chg_post['job_type_cd']."'");
+   array_push($query_list, "t_delivery_goods_state_details.rtn_ok_flg = '1'");
+   array_push($query_list, "t_delivery_goods_state_details.receipt_status = '2'");
    $query = implode(' AND ', $query_list);
 
    $arg_str = "";
