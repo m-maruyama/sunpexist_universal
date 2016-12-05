@@ -109,7 +109,7 @@ define([
 								alert(res_val["error_msg"]);
 								return true;
 							}else{
-								that.triggerMethod('click:input_insert',agreement_no_val);
+								that.triggerMethod('click:input_insert',rntl_cont_no);
 							}
 						}
 					});
