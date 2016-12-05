@@ -1002,7 +1002,7 @@ $app->post('/wearer_return/info', function ()use($app){
          // 返却枚数
          $list["return_num"] = "";
          // 個体管理番号表示フラグ
-         if ($auth["individual_flg"] == "1") {
+         if (individual_flg($auth['corporate_id'], $wearer_other_post['rntl_cont_no']) == "1") {
            $list["individual_flg"] = true;
          } else {
            $list["individual_flg"] = false;
