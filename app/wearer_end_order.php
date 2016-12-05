@@ -495,7 +495,7 @@ $app->post('/wearer_end_order_info', function ()use($app){
   $arg_str .= " WHERE ";
   $arg_str .= $query;
   $arg_str .= " ORDER BY order_req_no DESC";
-  ChromePhp::LOG($arg_str);
+  //ChromePhp::LOG($arg_str);
   $t_returned_plan_info_tran = new TReturnedPlanInfoTran();
   $results = new Resultset(NULL, $t_returned_plan_info_tran, $t_returned_plan_info_tran->getReadConnection()->query($arg_str));
   $result_obj = (array)$results;

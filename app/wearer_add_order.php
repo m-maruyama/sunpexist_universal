@@ -1019,8 +1019,8 @@ $app->post('/wearer_add/delete', function ()use($app){
     $results = new Resultset(NULL, $m_wearer_std_tran, $m_wearer_std_tran->getReadConnection()->query('rollback'));
 
     $json_list["error_code"] = "1";
-    ChromePhp::LOG("発注取消処理エラー");
-    ChromePhp::LOG($e);
+    //ChromePhp::LOG("発注取消処理エラー");
+    //ChromePhp::LOG($e);
 
     echo json_encode($json_list);
     return;

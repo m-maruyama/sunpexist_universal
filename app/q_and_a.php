@@ -285,7 +285,7 @@ $app->post('/qa/input', function ()use($app){
 				$arg_str .= $up_query;
 				$arg_str .= " WHERE ";
 				$arg_str .= $src_query;
-				ChromePhp::LOG($arg_str);
+				//ChromePhp::LOG($arg_str);
 				$results = new Resultset(NULL, $q_and_a, $q_and_a->getReadConnection()->query($arg_str));
 				$result_obj = (array)$results;
 				$results_cnt = $result_obj["\0*\0_count"];
@@ -324,7 +324,7 @@ $app->post('/qa/input', function ()use($app){
 		} catch (Exception $e) {
 			$transaction = new Resultset(NULL, $q_and_a, $q_and_a->getReadConnection()->query("rollback"));
 
-			ChromePhp::log($e);
+			//ChromePhp::log($e);
 			$json_list["error_code"] = "1";
 			$error_msg[] = 'E001 更新処理中に予期せぬエラーが発生しました。';
 			$json_list['error_msg'] = $error_msg;

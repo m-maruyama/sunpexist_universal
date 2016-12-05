@@ -27,7 +27,7 @@ $app->post('/purchase/input_item', function () use ($app) {
         array_push($query_list, "rntl_cont_no = '" . $auth['rntl_cont_no'] . "'");
     }
     $query = implode(' AND ', $query_list);
-ChromePhp::log($params['agreement_no']);
+    //ChromePhp::log($params['agreement_no']);
     // SQLクエリー実行
     $arg_str = 'SELECT ';
     $arg_str .= ' distinct on (item_cd) *';
