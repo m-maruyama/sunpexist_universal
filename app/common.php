@@ -1472,17 +1472,17 @@ $app->post('/update_possible_chk', function ()use($app) {
           array_push($query_list, "m_account.corporate_id = '".$auth['corporate_id']."'");
           array_push($query_list, "m_account.user_id = '".$auth['user_id']."'");
           array_push($query_list, "m_contract.corporate_id = '".$auth['corporate_id']."'");
-            if(isset($cond['rntl_cont_no'])) {
+//            if(isset($cond['rntl_cont_no'])) {
                 array_push($query_list, "m_contract.rntl_cont_no = '".$cond['rntl_cont_no']."'");
-            }else{
-                array_push($query_list, "m_contract.rntl_cont_no = '".$auth['rntl_cont_no']."'");
-            }
+//            }else{
+//                array_push($query_list, "m_contract.rntl_cont_no = '".$auth['rntl_cont_no']."'");
+//            }
           array_push($query_list, "m_contract.rntl_cont_flg = '1'");
           array_push($query_list, "m_contract_resource.corporate_id = '".$auth['corporate_id']."'");
           array_push($query_list, "m_contract_resource.accnt_no = '".$auth['accnt_no']."'");
-            if(isset($cond['rntl_sect_cd'])) {
+//            if(isset($cond['rntl_sect_cd'])) {
                 array_push($query_list, "m_contract_resource.rntl_sect_cd = '" . $cond['rntl_sect_cd'] . "'");
-            }
+//            }
             $query = implode(' AND ', $query_list);
 
           $arg_str = '';
