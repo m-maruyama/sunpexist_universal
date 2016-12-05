@@ -487,19 +487,10 @@ $app->post('/wearer_size_change/search', function ()use($app){
                         $list['order_req_no'] = $order_req_no;
                         $list['order_reason_kbn'] = $order_reason_kbn;
                         $list['wearer_add_button'] = "サイズ交換";
-                        $list['wearer_add_red'] = "[済]";
+                        $list['wearer_add_red'] = "";
                         $list['add_disabled'] = "disabled";
                         $list['btnPattern'] = "D";
                     }
-                }
-            }
-            // パターンD: 着用者基本マスタトラン．送信区分 = 処理中のデータがある場合、ボタンの文言は「サイズ交換」で非活性表示する。
-            if ($list['btnPattern'] == "") {
-                if ($list['wearer_tran_flg'] == "1" && $list['snd_kbn'] == "処理中") {
-                    $list['wearer_add_button'] = "サイズ交換";
-                    $list['wearer_add_red'] = "[済]";
-                    $list['add_disabled'] = "disabled";
-                    $list['btnPattern'] = "D";
                 }
             }
             if ($list['btnPattern'] == "") {
@@ -518,7 +509,6 @@ $app->post('/wearer_size_change/search', function ()use($app){
             } else {
                 $list['exchange_reciept_button'] = false;
             }
-
             // 発注入力へのパラメータ設定
             $list['param'] = '';
             $list['param'] .= $list['rntl_cont_no'].':';
@@ -553,7 +543,7 @@ $app->post('/wearer_size_change/search', function ()use($app){
                         $order_req_no = $t_order_tran_result->order_req_no;
                         $order_sts_kbn = $t_order_tran_result->order_sts_kbn;
                         $order_reason_kbn = $t_order_tran_result->order_reason_kbn;
-                        if ($order_sts_kbn == '4') {
+                        if ($order_sts_kbn != '4') {
                             $patarn_flg = true;
                             break;
                         }
@@ -613,10 +603,23 @@ $app->post('/wearer_size_change/search', function ()use($app){
                 }
             }
             // パターンD: 着用者基本マスタトラン．送信区分 = 処理中のデータがある場合、ボタンの文言は「その他交換」で非活性表示する。
+
             if ($list['btnPattern'] == "") {
-                if ($list['wearer_tran_flg'] == "1" && $list['snd_kbn'] == "処理中") {
+                //パターンD： 着用者基本マスタトラン．送信区分 = 処理中のデータがある場合、ボタンの文言は「サイズ交換」で非活性表示する。
+                $patarn_flg = true;
+                foreach ($t_order_tran_results as $t_order_tran_result) {
+                    $order_req_no = $t_order_tran_result->order_req_no;
+                    $order_sts_kbn = $t_order_tran_result->order_sts_kbn;
+                    $order_reason_kbn = $t_order_tran_result->order_reason_kbn;
+                    $snd_kbn = $t_order_tran_result->snd_kbn;
+                    if ($snd_kbn == '9') {
+                        $patarn_flg = false;
+                        break;
+                    }
+                }
+                if (!$patarn_flg) {
                     $list['wearer_return_button'] = "その他交換";
-                    $list['wearer_return_red'] = "[済]";
+                    $list['wearer_return_red'] = "";
                     $list['return_disabled'] = "disabled";
                     $list['btnPattern'] = "D";
                 }
