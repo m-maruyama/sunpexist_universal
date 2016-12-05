@@ -90,8 +90,7 @@ define([
 				},
 				'click @ui.input_insert': function(){
 					var that = this;
-					this.ui.agreement_no = $('#agreement_no');
-					var agreement_no_val = this.ui.agreement_no.val();
+					var rntl_cont_no = $("select[name='agreement_no']").val();
 					var rntl_sect_cd = $("select[name='section']").val();
 					var modelForUpdate = this.model;
 					modelForUpdate.url = App.api.CM0130;
@@ -99,6 +98,7 @@ define([
 						"scr": '貸与開始-着用者を登録して終了-更新可否チェック',
 						"log_type": '1',
 						"rntl_sect_cd": rntl_sect_cd,
+						"rntl_cont_no": rntl_cont_no
 					};
 					modelForUpdate.fetchMx({
 						data:cond,
@@ -117,8 +117,7 @@ define([
 				'click @ui.input_item': function(e) {
 					e.preventDefault();
 					var that = this;
-					this.ui.agreement_no = $('#agreement_no');
-					var agreement_no_val = this.ui.agreement_no.val();
+					var rntl_cont_no = $("select[name='agreement_no']").val();
 					var rntl_sect_cd = $("select[name='section']").val();
 					var modelForUpdate = this.model;
 					modelForUpdate.url = App.api.CM0130;
@@ -126,6 +125,7 @@ define([
 						"scr": '貸与開始-商品明細入力へ-更新可否チェック',
 						"log_type": '1',
 						"rntl_sect_cd": rntl_sect_cd,
+						"rntl_cont_no": rntl_cont_no
 					};
 					modelForUpdate.fetchMx({
 						data:cond,

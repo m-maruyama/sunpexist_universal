@@ -198,6 +198,7 @@ define([
 						"job_type_cd": job_type_cd
 					};
 
+					var rntl_cont_no = $("select[name='agreement_no']").val();
 					var rntl_sect_cd = $("select[name='section']").val();
 					var modelForUpdate = this.model;
 					modelForUpdate.url = App.api.CM0130;
@@ -206,6 +207,7 @@ define([
 						"log_type": '3',
 						"data": data,
 						"rntl_sect_cd": rntl_sect_cd,
+						"rntl_cont_no": rntl_cont_no
 					};
 					modelForUpdate.fetchMx({
 						data:cond,
@@ -221,6 +223,7 @@ define([
 				'click @ui.complete': function(){
 					var that = this;
 					var rntl_sect_cd = $("select[name='section']").val();
+					var rntl_cont_no = $("select[name='agreement_no']").val();
 
 					var modelForUpdate = this.model;
 					modelForUpdate.url = App.api.CM0130;
@@ -228,6 +231,7 @@ define([
 						"scr": '不要品返却-入力完了-更新可否チェック',
 						"log_type": '1',
 						"rntl_sect_cd": rntl_sect_cd,
+						"rntl_cont_no": rntl_cont_no
 					};
 					modelForUpdate.fetchMx({
 						data:cond,
@@ -243,6 +247,7 @@ define([
 				'click @ui.orderSend': function(){
 					var that = this;
 					var rntl_sect_cd = $("select[name='section']").val();
+					var rntl_cont_no = $("select[name='agreement_no']").val();
 
 					var modelForUpdate = this.model;
 					modelForUpdate.url = App.api.CM0130;
@@ -250,6 +255,7 @@ define([
 						"scr": '不要品返却-発注送信-更新可否チェック',
 						"log_type": '1',
 						"rntl_sect_cd": rntl_sect_cd,
+						"rntl_cont_no": rntl_cont_no
 					};
 					modelForUpdate.fetchMx({
 						data:cond,

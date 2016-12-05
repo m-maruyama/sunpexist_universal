@@ -45,6 +45,7 @@ define([
 						"scr": '発注送信処理-発注取消-更新可否チェック',
 						"log_type": '1',
 						"rntl_sect_cd": osc_val[3],
+						"rntl_cont_no": osc_val[1]
 					};
 					modelForUpdate.fetchMx({
 							data:cond,
@@ -104,6 +105,7 @@ define([
 						"scr": '発注送信処理-発注取消-更新可否チェック',
 						"log_type": '1',
 						"rntl_sect_cd": osc_val[3],
+						"rntl_cont_no": osc_val[1]
 					};
 					modelForUpdate.fetchMx({
 						data:cond,
