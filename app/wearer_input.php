@@ -566,7 +566,6 @@ $app->post('/input_insert', function () use ($app) {
     $list = array();
     $json_list = array();
     $error_list = array();
-
     //更新可否チェック（更新可否チェック仕様書）
 
     //  入力された内容を元に、着用者基本マスタトラン、着用者商品マスタトラン、発注情報トランに登録を行う。

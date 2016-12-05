@@ -1420,7 +1420,7 @@ $app->post('/update_possible_chk', function ()use($app) {
         //アカウントno
         $accnt_no = $auth['accnt_no'];
         //画面で選択された契約no
-        $agreement_no = $auth['rntl_cont_no'];
+        $agreement_no = $cond['rntl_cont_no'];
         //前処理 契約リソースマスタ参照 拠点ゼロ埋め確認
         $arg_str = "";
         $arg_str .= "SELECT ";
@@ -1446,9 +1446,7 @@ $app->post('/update_possible_chk', function ()use($app) {
                 )
             );
             $paginator = $paginator_model->getPaginate();
-            ChromePhp::log($results);
             $results = $paginator->items;
-            ChromePhp::log($results);
             $i = 0;
             foreach ($results as $result) {
                 $all_list[$i]['rntl_sect_cd'] = $result->rntl_sect_cd;
@@ -1456,7 +1454,7 @@ $app->post('/update_possible_chk', function ()use($app) {
                 $i++;
             }
             if (count($all_list) > 0) {
-                $rntl_sect_cd_zero_flg = '1';
+                //$rntl_sect_cd_zero_flg = '1';
                 $update_ok_flg = $all_list[0]['update_ok_flg'];
                 if($update_ok_flg == '0'){
                     $json_list["chk_flg"] = false;
@@ -1466,7 +1464,7 @@ $app->post('/update_possible_chk', function ()use($app) {
                 }
             }
         }else{
-            $rntl_sect_cd_zero_flg = '0';
+            //$rntl_sect_cd_zero_flg = '0';
             //ゼロ埋めの場合の処理が必要
 
           //--契約上の更新可否フラグチェック--//
@@ -1540,8 +1538,8 @@ $app->post('/update_possible_chk', function ()use($app) {
           }
         }
     }
-ChromePhp::log($update_ok_flg);
-  //--更新可否時間帯チェック--//
+
+    //--更新可否時間帯チェック--//
   // 更新不可開始時刻
   $query_list = array();
   array_push($query_list, "m_gencode.cls_cd = '015'");
