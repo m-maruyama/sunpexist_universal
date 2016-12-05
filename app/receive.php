@@ -57,7 +57,6 @@ $app->post('/receive/search', function ()use($app){
 					$all_list[] = $result->rntl_sect_cd;
 			}
 	}
-
 	if (in_array("0000000000", $all_list)) {
 			$rntl_sect_cd_zero_flg = 1;
 	}else{
@@ -329,7 +328,7 @@ $app->post('/receive/search', function ()use($app){
 		$order = 'asc';
 	}
 
-	//---SQLクエリー実行---//
+    //---SQLクエリー実行---//
 	$arg_str = "SELECT ";
 	$arg_str .= " * ";
 	$arg_str .= " FROM ";
@@ -356,7 +355,9 @@ $app->post('/receive/search', function ()use($app){
     $arg_str .= "m_job_type.job_type_name as as_job_type_name,";
 	$arg_str .= "t_order.order_sts_kbn as as_order_sts_kbn,";
 	$arg_str .= "t_order.order_req_ymd as as_order_req_ymd,";
-    $arg_str .= "m_contract_resource.update_ok_flg as as_update_ok_flg,";
+    if ($rntl_sect_cd_zero_flg == 0) {
+        $arg_str .= "m_contract_resource.update_ok_flg as as_update_ok_flg,";
+    }
     $arg_str .= "t_delivery_goods_state.ship_ymd as as_ship_ymd,";
 	$arg_str .= "t_delivery_goods_state.rec_order_no as as_rec_order_no";
 	$arg_str .= " FROM t_delivery_goods_state_details INNER JOIN";
@@ -395,7 +396,8 @@ $app->post('/receive/search', function ()use($app){
 	$arg_str .= " WHERE ";
 	$arg_str .= $query;
 	$arg_str .= ") as distinct_table";
-	if (!empty($q_sort_key)) {
+
+    if (!empty($q_sort_key)) {
 		$arg_str .= " ORDER BY ";
 		$arg_str .= $q_sort_key." ".$order;
 	}
@@ -492,16 +494,60 @@ $app->post('/receive/search', function ()use($app){
             } else {
                 $list['rntl_sect_cd'] = "-";
             }
-            // 更新可否フラグ 受領状況照会のチェックボックス 表示 非表示
-            if (!empty($result->as_update_ok_flg)) {
+
+            //契約リソースマスターにゼロ埋めの拠点があれば、そのゼロ埋めのupdate_okフラグを適用する。
+            //ゼロ埋めが複数あり、それらのupdate_okフラグが異なることは想定しない。
+            if($rntl_sect_cd_zero_flg == '1'){
+
+                $arg_str = "";
+                $arg_str .= "SELECT ";
+                $arg_str .= " * ";
+                $arg_str .= " FROM ";
+                $arg_str .= "m_contract_resource";
+                $arg_str .= " WHERE ";
+                $arg_str .= "corporate_id = '$login_id_session'";
+                $arg_str .= " AND rntl_cont_no = '$agreement_no'";
+                $arg_str .= " AND accnt_no = '$accnt_no'";
+                $arg_str .= " AND rntl_sect_cd = '0000000000'";
+
+                $m_contract_resource = new MContractResource();
+                $zero_results = new Resultset(null, $m_contract_resource, $m_contract_resource->getReadConnection()->query($arg_str));
+                $result_obj = (array)$zero_results;
+                $results_cnt = $result_obj["\0*\0_count"];
+                if ($results_cnt > 0) {
+                    $paginator_model = new PaginatorModel(
+                        array(
+                            "data" => $zero_results,
+                            "limit" => $results_cnt,
+                            "page" => 1
+                        )
+                    );
+                }
+                $paginator = $paginator_model->getPaginate();
+                $zero_results = $paginator->items;
+                $i = 0;
+                foreach ($zero_results as $zero_result) {
+                    $all_list[$i]['rntl_sect_cd'] = $zero_result->rntl_sect_cd;
+                    $all_list[$i]['update_ok_flg'] = $zero_result->update_ok_flg;
+                    $i++;
+                }
+                if (count($all_list) > 0) {
+                    $update_ok_flg = $all_list[0]['update_ok_flg'];
+                }
+                if($update_ok_flg == '1'){
+                    $list['update_ok_flg'] = true;
+                }else{
+                    $list['update_ok_flg'] = false;
+                }
+            }elseif($rntl_sect_cd_zero_flg == '0'){
+                //ゼロ埋め拠点がない場合は、それぞれのレコードのupdate_okフラグを確認する
                 if($result->as_update_ok_flg == '1'){
                     $list['update_ok_flg'] = true;
                 }else{
                     $list['update_ok_flg'] = false;
                 }
-            } else{
-                $list['update_ok_flg'] = false;
             }
+
 			// 貸与パターン
 			if (!empty($result->as_job_type_name)) {
 				$list['job_type_name'] = $result->as_job_type_name;
