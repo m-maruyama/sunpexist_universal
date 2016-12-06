@@ -18,10 +18,14 @@ $app->post('/wearer_other_change_info', function ()use($app){
     // アカウントセッション取得
     $auth = $app->session->get("auth");
 
+    $json_list = array();
     // 前画面セッション取得
     $wearer_size_change_post = $app->session->get("wearer_size_change_post");
-
-    $json_list = array();
+    if(empty($wearer_size_change_post)){
+        $json_list['no_session_flg'] = '1';
+        echo json_encode($json_list);
+        return;
+    }
 
     //--着用者入力項目情報--//
     $all_list = array();
@@ -909,7 +913,8 @@ $app->post('/wearer_other_change_list', function ()use($app){
                     $list["individual_ctrl_no"] = implode("<br/>", $list["individual_ctrl_no"]);
                 }else{
                     // 交換可能枚数
-                    $list["rtn_ok_cnt"] = $item_result->as_rtn_ok_cnt;
+                    $list["rtn_ok_cnt"] = $list["quantity"];
+
                     foreach ($tran_list as $tran_map) {
                         if (
                             $list["item_cd"] == $tran_map["item_cd"] &&
@@ -1101,7 +1106,8 @@ $app->post('/wearer_other_change_list', function ()use($app){
                     $list["individual_ctrl_no"] = implode("<br/>", $list["individual_ctrl_no"]);
                 }else{
                     // 交換可能枚数
-                    $list["rtn_ok_cnt"] = $result->as_rtn_ok_cnt;
+                    $list["rtn_ok_cnt"] = $list["quantity"];
+
                 }
                 // 返却枚数
                 if(!isset($list["return_num"])){
@@ -1369,24 +1375,24 @@ $app->post('/wearer_other_change_insert', function () use ($app) {
             $m_wearer_std_count = MWearerStdTran::find(array(
                 'conditions' => $query
             ))->count();
-            $cster_emply_cd_chk = true;
-            //存在する場合NG
-            if ($m_wearer_std_count > 0) {
-                array_push($error_list, '既に社員コードが使用されています。');
-                $cster_emply_cd_chk = false;
-            }
-            if($cster_emply_cd_chk){
-                // 着用者基本マスタ．着用者状況区分 ＝ 稼働
-                array_push($query_list, "werer_sts_kbn = '1'");
-                //--- クエリー実行・取得 ---//
-                $m_wearer_std_count = MWearerStd::find(array(
-                    'conditions' => $query
-                ))->count();
-                //存在する場合NG
-                if ($m_wearer_std_count > 0) {
-                    array_push($error_list, '既に社員コードが使用されています。');
-                }
-            }
+//            $cster_emply_cd_chk = true;
+//            //存在する場合NG
+//            if ($m_wearer_std_count > 0) {
+//                array_push($error_list, '既に社員コードが使用されています。');
+//                $cster_emply_cd_chk = false;
+//            }
+//            if($cster_emply_cd_chk){
+//                // 着用者基本マスタ．着用者状況区分 ＝ 稼働
+//                array_push($query_list, "werer_sts_kbn = '1'");
+//                //--- クエリー実行・取得 ---//
+//                $m_wearer_std_count = MWearerStd::find(array(
+//                    'conditions' => $query
+//                ))->count();
+//                //存在する場合NG
+//                if ($m_wearer_std_count > 0) {
+//                    array_push($error_list, '既に社員コードが使用されています。');
+//                }
+//            }
 
         }
     }
@@ -1678,15 +1684,15 @@ $app->post('/wearer_other_change_insert', function () use ($app) {
             array_push($up_query_list, "upd_pg_id = '".$auth['accnt_no']."'");
             // 職種マスタ_統合ハッシュキー(企業ID、レンタル契約No.、職種コード)
             $m_job_type_comb_hkey = md5(
-                $auth['corporate_id']
-                .$wearer_data_input['agreement_no']
+                $auth['corporate_id'].'-'
+                .$wearer_data_input['agreement_no'].'-'
                 .$job_type_cd
             );
             array_push($up_query_list, "m_job_type_comb_hkey = '".$m_job_type_comb_hkey."'");
             // 部門マスタ_統合ハッシュキー(企業ID、レンタル契約No.、レンタル部門コード)
             $m_section_comb_hkey = md5(
-                $auth['corporate_id']
-                .$wearer_data_input['agreement_no']
+                $auth['corporate_id'].'-'
+                .$wearer_data_input['agreement_no'].'-'
                 .$wearer_data_input['section']
             );
             array_push($up_query_list, "m_section_comb_hkey = '".$m_section_comb_hkey."'");
@@ -1715,10 +1721,10 @@ $app->post('/wearer_other_change_insert', function () use ($app) {
             array_push($values_list, "'".$job_type_cd."'");
             // 着用者基本マスタ_統合ハッシュキー(企業ID、着用者コード、レンタル契約No.、レンタル部門コード、職種コード)
             $m_wearer_std_comb_hkey = md5(
-                $auth['corporate_id']
-                .$wearer_size_change_post["werer_cd"]
-                .$wearer_data_input['agreement_no']
-                .$wearer_data_input['section']
+                $auth['corporate_id'].'-'
+                .$wearer_size_change_post["werer_cd"].'-'
+                .$wearer_data_input['agreement_no'].'-'
+                .$wearer_data_input['section'].'-'
                 .$job_type_cd
             );
             array_push($calum_list, "m_wearer_std_comb_hkey");
@@ -1844,16 +1850,16 @@ $app->post('/wearer_other_change_insert', function () use ($app) {
             array_push($values_list, "'".$auth['accnt_no']."'");
             // 職種マスタ_統合ハッシュキー(企業ID、レンタル契約No.、職種コード)
             $m_job_type_comb_hkey = md5(
-                $auth['corporate_id']
-                .$wearer_data_input['agreement_no']
+                $auth['corporate_id'].'-'
+                .$wearer_data_input['agreement_no'].'-'
                 .$job_type_cd
             );
             array_push($calum_list, "m_job_type_comb_hkey");
             array_push($values_list, "'".$m_job_type_comb_hkey."'");
             // 部門マスタ_統合ハッシュキー(企業ID、レンタル契約No.、レンタル部門コード)
             $m_section_comb_hkey = md5(
-                $auth['corporate_id']
-                .$wearer_data_input['agreement_no']
+                $auth['corporate_id'].'-'
+                .$wearer_data_input['agreement_no'].'-'
                 .$wearer_data_input['section']
             );
             array_push($calum_list, "m_section_comb_hkey");
@@ -1928,8 +1934,8 @@ $app->post('/wearer_other_change_insert', function () use ($app) {
                     $order_req_line_no = $cnt++;
                     // 発注情報_統合ハッシュキー(企業ID、発注依頼No、発注依頼行No)
                     $t_order_comb_hkey = md5(
-                        $auth['corporate_id']
-                        .$shin_order_req_no
+                        $auth['corporate_id'].'-'
+                        .$shin_order_req_no.'-'
                         .$order_req_line_no
                     );
                     array_push($calum_list, "t_order_comb_hkey");
@@ -2080,25 +2086,25 @@ $app->post('/wearer_other_change_insert', function () use ($app) {
                     array_push($values_list, "'".$wearer_data_input['reason_kbn']."'");
                     // 商品マスタ_統合ハッシュキー(企業ID、商品コード、色コード、サイズコード)
                     $m_item_comb_hkey = md5(
-                        $auth['corporate_id']
-                        .$item_map['item_cd']
-                        .$item_map['color_cd']
+                        $auth['corporate_id'].'-'
+                        .$item_map['item_cd'].'-'
+                        .$item_map['color_cd'].'-'
                         .$item_map['size_cd']
                     );
                     array_push($calum_list, "m_item_comb_hkey");
                     array_push($values_list, "'".$m_item_comb_hkey."'");
                     // 職種マスタ_統合ハッシュキー(企業ID、レンタル契約No.、職種コード)
                     $m_job_type_comb_hkey = md5(
-                        $auth['corporate_id']
-                        .$wearer_data_input['agreement_no']
+                        $auth['corporate_id'].'-'
+                        .$wearer_data_input['agreement_no'].'-'
                         .$job_type_cd
                     );
                     array_push($calum_list, "m_job_type_comb_hkey");
                     array_push($values_list, "'".$m_job_type_comb_hkey."'");
                     // 部門マスタ_統合ハッシュキー(企業ID、レンタル契約No.、レンタル部門コード)
                     $m_section_comb_hkey = md5(
-                        $auth['corporate_id']
-                        .$wearer_data_input['agreement_no']
+                        $auth['corporate_id'].'-'
+                        .$wearer_data_input['agreement_no'].'-'
                         .$wearer_data_input['section']
                     );
                     array_push($calum_list, "m_section_comb_hkey");
@@ -2106,23 +2112,23 @@ $app->post('/wearer_other_change_insert', function () use ($app) {
                     // 着用者基本マスタ_統合ハッシュキー(企業ID、着用者コード、レンタル契約No.、レンタル部門コード、職種コード)
                     $m_wearer_std_comb_hkey = md5(
                         $auth['corporate_id']
-                        .$wearer_size_change_post["werer_cd"]
-                        .$wearer_data_input['agreement_no']
-                        .$wearer_data_input['section']
+                        .$wearer_size_change_post["werer_cd"].'-'
+                        .$wearer_data_input['agreement_no'].'-'
+                        .$wearer_data_input['section'].'-'
                         .$job_type_cd
                     );
                     array_push($calum_list, "m_wearer_std_comb_hkey");
                     array_push($values_list, "'".$m_wearer_std_comb_hkey."'");
                     // 着用者商品マスタ_統合ハッシュキー(企業ID、着用者コード、レンタル契約No.、レンタル部門コード、職種コード、職種アイテムコード、商品コード、色コード、サイズコード)
                     $m_wearer_item_comb_hkey = md5(
-                        $auth['corporate_id']
-                        .$wearer_size_change_post["werer_cd"]
-                        .$wearer_data_input['agreement_no']
-                        .$wearer_data_input['section']
-                        .$job_type_cd
-                        .$item_map['job_type_item_cd']
-                        .$item_map['item_cd']
-                        .$item_map['color_cd']
+                        $auth['corporate_id'].'-'
+                        .$wearer_size_change_post["werer_cd"].'-'
+                        .$wearer_data_input['agreement_no'].'-'
+                        .$wearer_data_input['section'].'-'
+                        .$job_type_cd.'-'
+                        .$item_map['job_type_item_cd'].'-'
+                        .$item_map['item_cd'].'-'
+                        .$item_map['color_cd'].'-'
                         .$item_map['size_cd']
                     );
                     array_push($calum_list, "m_wearer_item_comb_hkey");
@@ -2249,17 +2255,17 @@ $app->post('/wearer_other_change_insert', function () use ($app) {
                         array_push($values_list, "'".$wearer_data_input['reason_kbn']."'");
                         // 部門マスタ_統合ハッシュキー(企業ID、レンタル契約No.、レンタル部門コード)
                         $m_section_comb_hkey = md5(
-                            $auth['corporate_id']
-                            .$wearer_data_input['agreement_no']
+                            $auth['corporate_id'].'-'
+                            .$wearer_data_input['agreement_no'].'-'
                             .$wearer_data_input['section']
                         );
                         array_push($calum_list, "m_section_comb_hkey");
                         array_push($values_list, "'".$m_section_comb_hkey."'");
                         // 商品マスタ_統合ハッシュキー(企業ID、商品コード、色コード、サイズコード)
                         $m_item_comb_hkey = md5(
-                            $auth['corporate_id']
-                            .$item_map['item_cd']
-                            .$item_map['color_cd']
+                            $auth['corporate_id'].'-'
+                            .$item_map['item_cd'].'-'
+                            .$item_map['color_cd'].'-'
                             .$item_map['size_cd']
                         );
                         array_push($calum_list, "m_item_comb_hkey");
@@ -2356,17 +2362,17 @@ $app->post('/wearer_other_change_insert', function () use ($app) {
                     array_push($values_list, "'".$wearer_data_input['reason_kbn']."'");
                     // 部門マスタ_統合ハッシュキー(企業ID、レンタル契約No.、レンタル部門コード)
                     $m_section_comb_hkey = md5(
-                        $auth['corporate_id']
-                        .$wearer_data_input['agreement_no']
+                        $auth['corporate_id'].'-'
+                        .$wearer_data_input['agreement_no'].'-'
                         .$wearer_data_input['section']
                     );
                     array_push($calum_list, "m_section_comb_hkey");
                     array_push($values_list, "'".$m_section_comb_hkey."'");
                     // 商品マスタ_統合ハッシュキー(企業ID、商品コード、色コード、サイズコード)
                     $m_item_comb_hkey = md5(
-                        $auth['corporate_id']
-                        .$item_map['item_cd']
-                        .$item_map['color_cd']
+                        $auth['corporate_id'].'-'
+                        .$item_map['item_cd'].'-'
+                        .$item_map['color_cd'].'-'
                         .$item_map['size_cd']
                     );
                     array_push($calum_list, "m_item_comb_hkey");
@@ -2528,6 +2534,6 @@ $app->post('/wearer_other_change_delete', function ()use($app){
         echo json_encode($json_list);
         return;
     }
-
+    $app->session->remove("wearer_size_change_post");
     echo json_encode($json_list);
 });
