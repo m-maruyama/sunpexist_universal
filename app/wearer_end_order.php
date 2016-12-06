@@ -694,7 +694,7 @@ $app->post('/wearer_end_order_list', function ()use($app){
     array_push($query_list, "t_delivery_goods_state_details.rntl_cont_no = '".$wearer_end_post['rntl_cont_no']."'");
     array_push($query_list, "t_delivery_goods_state_details.werer_cd = '".$wearer_end_post['werer_cd']."'");
     array_push($query_list, "t_delivery_goods_state_details.rtn_ok_flg = '1'");
-    array_push($query_list, "t_delivery_goods_state_details.receipt_status = '2'");
+//    array_push($query_list, "t_delivery_goods_state_details.receipt_status = '2'");
     $query = implode(' AND ', $query_list);
     $arg_str = "";
     $arg_str .= "SELECT ";
@@ -909,7 +909,7 @@ $app->post('/wearer_end_order_list', function ()use($app){
             $query_list[] = "t_delivery_goods_state_details.color_cd = '".$now_wearer_map['color_cd']."'";
             $query_list[] = "t_delivery_goods_state_details.size_cd = '".$list["size_cd"]."'";
             $query_list[] = "t_delivery_goods_state_details.rtn_ok_flg = '1'";
-            $query_list[] = "t_delivery_goods_state_details.receipt_status = '2'";
+//            $query_list[] = "t_delivery_goods_state_details.receipt_status = '2'";
             $query = implode(' AND ', $query_list);
             $arg_str = "";
             $arg_str .= "SELECT ";
