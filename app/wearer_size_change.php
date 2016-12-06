@@ -530,9 +530,9 @@ $app->post('/wearer_size_change/search', function ()use($app){
             $patarn_flg = true;
             if (!empty($t_order_tran_cnt)) {
                 // パターンD: 着用者基本マスタトラン．送信区分 = 処理中のデータがある場合、ボタンの文言は「その他交換」で非活性表示する。
-                if ($list['wearer_tran_flg'] == "1" && $list['snd_kbn'] == "処理中") {
+                if ($order_sts_kbn == '4' && $list['wearer_tran_flg'] == "1" && $list['snd_kbn'] == "処理中") {
                     $list['wearer_return_button'] = "その他交換";
-                    $list['wearer_return_red'] = "[済]";
+                    $list['wearer_return_red'] = "";
                     $list['return_disabled'] = "disabled";
                     $list['btnPattern'] = "D";
                 }
