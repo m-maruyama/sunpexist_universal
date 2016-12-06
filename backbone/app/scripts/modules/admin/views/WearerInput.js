@@ -136,7 +136,7 @@ define([
 								alert(res_val["error_msg"]);
 								return true;
 							}else{
-								that.triggerMethod('click:input_item',agreement_no_val);
+								that.triggerMethod('click:input_item',rntl_cont_no);
 							}
 						}
 					});
