@@ -83,8 +83,15 @@ $app->post('/print/pdf', function ()use($app){
     $arg_str .= " ON t_order.order_req_no = t_returned_plan_info.order_req_no"; //発注情報.発注依頼No = 発注状況情報.発注依頼No
     $arg_str .= " INNER JOIN m_section";
     $arg_str .= " ON t_order.m_section_comb_hkey = m_section.m_section_comb_hkey";//発注情報.部門マスタ_統合ハッシュキー = 部門マスタ.部門マスタ_統合ハッシュキー
-    $arg_str .= " INNER JOIN (m_job_type INNER JOIN m_input_item ON m_job_type.m_job_type_comb_hkey = m_input_item.m_job_type_comb_hkey)"; //職種マスタ.職種マスタ_統合ハッシュキー = 投入商品マスタ.職種マスタ_統合ハッシュキー
-    $arg_str .= " ON t_order.m_job_type_comb_hkey = m_job_type.m_job_type_comb_hkey";
+    //$arg_str .= " INNER JOIN (m_job_type INNER JOIN m_input_item ON m_job_type.m_job_type_comb_hkey = m_input_item.m_job_type_comb_hkey)"; //職種マスタ.職種マスタ_統合ハッシュキー = 投入商品マスタ.職種マスタ_統合ハッシュキー
+    //$arg_str .= " ON t_order.m_job_type_comb_hkey = m_job_type.m_job_type_comb_hkey";
+    $arg_str .= " INNER JOIN (m_job_type INNER JOIN m_input_item";
+    $arg_str .= " ON m_job_type.corporate_id = m_input_item.corporate_id";
+    $arg_str .= " AND m_job_type.rntl_cont_no = m_input_item.rntl_cont_no";
+    $arg_str .= " AND m_job_type.job_type_cd = m_input_item.job_type_cd)";
+    $arg_str .= " ON t_returned_plan_info.job_type_cd = m_job_type.job_type_cd";
+    $arg_str .= " AND t_returned_plan_info.item_cd = m_input_item.item_cd";
+    $arg_str .= " AND t_returned_plan_info.color_cd = m_input_item.color_cd";
     $arg_str .= " INNER JOIN m_wearer_std";
     $arg_str .= " ON t_order.werer_cd = m_wearer_std.werer_cd";
     $arg_str .= " INNER JOIN m_contract";
@@ -99,6 +106,7 @@ $app->post('/print/pdf', function ()use($app){
         $arg_str .= " ORDER BY ";
         $arg_str .= $q_sort_key." ".$order;
     }
+    ChromePhp::log($arg_str);
     $t_returned_plan_info = new TReturnedPlanInfo();
     $results = new Resultset(null, $t_returned_plan_info, $t_returned_plan_info->getReadConnection()->query($arg_str));
     $result_obj = (array)$results;
@@ -1432,7 +1440,7 @@ $app->post('/print/search', function ()use($app){
     */
 
 	// 個体管理番号表示/非表示フラグ設定
-	if (individual_flg($auth['corporate_id'], $wearer_other_post['rntl_cont_no']) == 1) {
+	if (individual_flg($auth['corporate_id'], $agreement_no) == 1) {
 		$individual_flg = true;
 	} else {
 		$individual_flg = false;
