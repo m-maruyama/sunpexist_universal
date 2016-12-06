@@ -537,27 +537,6 @@ $app->post('/wearer_size_change/search', function ()use($app){
                     $list['btnPattern'] = "D";
                 }
                 if ($list['btnPattern'] == "") {
-                    //パターンA： 発注情報トラン．発注状況区分 = その他交換のデータが無い場合、ボタンの文言は「その他交換」で表示する。
-                    $patarn_flg = false;
-                    foreach ($t_order_tran_results as $t_order_tran_result) {
-                        $order_req_no = $t_order_tran_result->order_req_no;
-                        $order_sts_kbn = $t_order_tran_result->order_sts_kbn;
-                        $order_reason_kbn = $t_order_tran_result->order_reason_kbn;
-                        if ($order_sts_kbn != '4') {
-                            $patarn_flg = true;
-                            break;
-                        }
-                    }
-                    if (!$patarn_flg) {
-                        $list['order_req_no'] = $order_req_no;
-                        $list['order_reason_kbn'] = $order_reason_kbn;
-                        $list['wearer_return_button'] = 'その他交換';
-                        $list['wearer_return_red'] = "";
-                        $list['return_disabled'] = "";
-                        $list['btnPattern'] = "A";
-                    }
-                }
-                if ($list['btnPattern'] == "") {
                     //パターンB： 発注情報トラン．発注状況区分 = その他交換のデータがある場合、かつ、発注情報トラン．送信区分 = 未送信の場合、ボタンの文言は「その他交換[済]」で表示する。
                     $patarn_flg = true;
                     foreach ($t_order_tran_results as $t_order_tran_result) {
@@ -622,6 +601,27 @@ $app->post('/wearer_size_change/search', function ()use($app){
                     $list['wearer_return_red'] = "";
                     $list['return_disabled'] = "disabled";
                     $list['btnPattern'] = "D";
+                }
+            }
+            if ($list['btnPattern'] == "") {
+                //パターンA： 発注情報トラン．発注状況区分 = その他交換のデータが無い場合、ボタンの文言は「その他交換」で表示する。
+                $patarn_flg = false;
+                foreach ($t_order_tran_results as $t_order_tran_result) {
+                    $order_req_no = $t_order_tran_result->order_req_no;
+                    $order_sts_kbn = $t_order_tran_result->order_sts_kbn;
+                    $order_reason_kbn = $t_order_tran_result->order_reason_kbn;
+                    if ($order_sts_kbn != '4') {
+                        $patarn_flg = true;
+                        break;
+                    }
+                }
+                if ($patarn_flg) {
+                    $list['order_req_no'] = $order_req_no;
+                    $list['order_reason_kbn'] = $order_reason_kbn;
+                    $list['wearer_return_button'] = 'その他交換';
+                    $list['wearer_return_red'] = "";
+                    $list['return_disabled'] = "";
+                    $list['btnPattern'] = "A";
                 }
             }
             if ($list['btnPattern'] == "") {

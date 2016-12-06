@@ -1782,28 +1782,28 @@ $app->post('/wearer_exchange/delete', function ()use($app){
     //--着用者基本マスタトラン削除--//
     // 発注情報トランを参照
     //ChromePhp::LOG("発注情報トラン参照");
-    $query_list = array();
-    array_push($query_list, "t_order_tran.corporate_id = '".$auth['corporate_id']."'");
-    array_push($query_list, "t_order_tran.order_req_no <> '".$cond['order_req_no']."'");
-    array_push($query_list, "t_order_tran.werer_cd = '".$cond['werer_cd']."'");
-    $query = implode(' AND ', $query_list);
-
-    $arg_str = "";
-    $arg_str = "SELECT ";
-    $arg_str .= "*";
-    $arg_str .= " FROM ";
-    $arg_str .= "t_order_tran";
-    $arg_str .= " WHERE ";
-    $arg_str .= $query;
-    //ChromePhp::LOG($arg_str);
-    $t_order_tran = new TOrderTran();
-    $results = new Resultset(NULL, $t_order_tran, $t_order_tran->getReadConnection()->query($arg_str));
-    $result_obj = (array)$results;
-    $results_cnt = $result_obj["\0*\0_count"];
-    //ChromePhp::LOG($results_cnt);
-
-    // 上記発注情報トラン件数が0の場合に着用者基本マスタトランのデータを削除する
-    if (empty($results_cnt)) {
+//    $query_list = array();
+//    array_push($query_list, "t_order_tran.corporate_id = '".$auth['corporate_id']."'");
+//    array_push($query_list, "t_order_tran.order_req_no <> '".$cond['order_req_no']."'");
+//    array_push($query_list, "t_order_tran.werer_cd = '".$cond['werer_cd']."'");
+//    $query = implode(' AND ', $query_list);
+//
+//    $arg_str = "";
+//    $arg_str = "SELECT ";
+//    $arg_str .= "*";
+//    $arg_str .= " FROM ";
+//    $arg_str .= "t_order_tran";
+//    $arg_str .= " WHERE ";
+//    $arg_str .= $query;
+//    //ChromePhp::LOG($arg_str);
+//    $t_order_tran = new TOrderTran();
+//    $results = new Resultset(NULL, $t_order_tran, $t_order_tran->getReadConnection()->query($arg_str));
+//    $result_obj = (array)$results;
+//    $results_cnt = $result_obj["\0*\0_count"];
+//    //ChromePhp::LOG($results_cnt);
+//
+//    // 上記発注情報トラン件数が0の場合に着用者基本マスタトランのデータを削除する
+//    if (empty($results_cnt)) {
       //ChromePhp::LOG("着用者基本マスタトラン削除");
       $query_list = array();
       array_push($query_list, "m_wearer_std_tran.corporate_id = '".$auth['corporate_id']."'");
@@ -1811,6 +1811,7 @@ $app->post('/wearer_exchange/delete', function ()use($app){
       array_push($query_list, "m_wearer_std_tran.rntl_cont_no = '".$cond['rntl_cont_no']."'");
       array_push($query_list, "m_wearer_std_tran.rntl_sect_cd = '".$cond['rntl_sect_cd']."'");
       array_push($query_list, "m_wearer_std_tran.job_type_cd = '".$cond['job_type_cd']."'");
+      array_push($query_list, "m_wearer_std_tran.order_sts_kbn = '3'");//サイズ交換
       // 発注区分「着用者編集」ではない
       array_push($query_list, "m_wearer_std_tran.order_sts_kbn <> '6'");
       $query = implode(' AND ', $query_list);
@@ -1826,7 +1827,7 @@ $app->post('/wearer_exchange/delete', function ()use($app){
       $result_obj = (array)$results;
       $results_cnt = $result_obj["\0*\0_count"];
       //ChromePhp::LOG($results_cnt);
-    }
+//    }
 
     //--発注情報トラン削除--//
     //ChromePhp::LOG("発注情報トラン削除");
@@ -3920,7 +3921,7 @@ $app->post('/wearer_exchange/send', function ()use($app){
               array_push($query_list, "item_cd = '" . $item_map['item_cd'] . "'");
               array_push($query_list, "color_cd = '" . $item_map['color_cd'] . "'");
               //発注状況区分
-              array_push($query_list, "order_sts_kbn = '4'");//サイズ交換のトラン
+              array_push($query_list, "order_sts_kbn = '4'");//その他交換のトラン
 
               //sql文字列を' AND 'で結合
               $query = implode(' AND ', $query_list);
@@ -3962,6 +3963,7 @@ $app->post('/wearer_exchange/send', function ()use($app){
     $tran_results_cnt = $result_obj["\0*\0_count"];
     //ChromePhp::LOG($results_cnt);
     $order_sts_kbn = "";
+    $order_req_no = "";
     if (!empty($results_cnt)) {
       $paginator_model = new PaginatorModel(
           array(
