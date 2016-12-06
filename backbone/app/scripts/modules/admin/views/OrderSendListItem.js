@@ -384,7 +384,7 @@ define([
 					}
 				}
 				// その他 交換-発注取消
-				if (type == "WX0030_req") {
+				if (type == "WC0030_req") {
 					if(window.confirm('発注No.' + data["wst_order_req_no"] + 'の発注取消を実行します。\nよろしいですか？')) {
 						$.blockUI({ message: '<p><img src="ajax-loader.gif" style="margin: 0 auto;" /> 発注取消中...</p>' });
 						var data = {
