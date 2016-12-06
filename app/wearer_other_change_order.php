@@ -1336,20 +1336,20 @@ $app->post('/wearer_other_change_insert', function () use ($app) {
 
     }
     // 社員コード
-    if ($wearer_data_input['cster_emply_cd_chk']) {
-        if (mb_strlen($wearer_data_input['cster_emply_cd']) == 0) {
-            $json_list["error_code"] = "1";
-            $error_msg = "社員コードありにチェックしている場合、社員コードを入力してください。";
-            array_push($json_list["error_msg"], $error_msg);
-        }
-    }
-    if (!$wearer_data_input['cster_emply_cd_chk']) {
-        if (mb_strlen($wearer_data_input['cster_emply_cd']) > 0) {
-            $json_list["error_code"] = "1";
-            $error_msg = "社員コードありにチェックしていない場合、社員コードの入力は不要です。";
-            array_push($json_list["error_msg"], $error_msg);
-        }
-    }
+//    if ($wearer_data_input['cster_emply_cd_chk']) {
+//        if (mb_strlen($wearer_data_input['cster_emply_cd']) == 0) {
+//            $json_list["error_code"] = "1";
+//            $error_msg = "社員コードありにチェックしている場合、社員コードを入力してください。";
+//            array_push($json_list["error_msg"], $error_msg);
+//        }
+//    }
+//    if (!$wearer_data_input['cster_emply_cd_chk']) {
+//        if (mb_strlen($wearer_data_input['cster_emply_cd']) > 0) {
+//            $json_list["error_code"] = "1";
+//            $error_msg = "社員コードありにチェックしていない場合、社員コードの入力は不要です。";
+//            array_push($json_list["error_msg"], $error_msg);
+//        }
+//    }
     $query_list = array();
     if ($wearer_data_input['cster_emply_cd']) {
         //社員コードのマスタチェック(社員コードありの場合のみ)
