@@ -95,7 +95,7 @@ $app->post('/print/pdf_tran', function ()use($app){
     $arg_str .= " WHERE ";
     $arg_str .= $query;
     $arg_str .= ") as distinct_table";
-    //ChromePhp::log($arg_str);
+     //ChromePhp::log($arg_str);
     if (!empty($q_sort_key)) {
         $arg_str .= " ORDER BY ";
         $arg_str .= $q_sort_key." ".$order;

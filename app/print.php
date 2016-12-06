@@ -106,7 +106,7 @@ $app->post('/print/pdf', function ()use($app){
         $arg_str .= " ORDER BY ";
         $arg_str .= $q_sort_key." ".$order;
     }
-    ChromePhp::log($arg_str);
+    //ChromePhp::log($arg_str);
     $t_returned_plan_info = new TReturnedPlanInfo();
     $results = new Resultset(null, $t_returned_plan_info, $t_returned_plan_info->getReadConnection()->query($arg_str));
     $result_obj = (array)$results;
