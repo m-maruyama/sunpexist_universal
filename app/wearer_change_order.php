@@ -1885,7 +1885,7 @@ $app->post('/wearer_change/info', function ()use($app){
        $list["size_cd"] = $now_wearer_map['size_cd'];
        // 個体管理番号
        // ※個体管理番号リスト、対象チェックボックス値の生成
-       if (individual_flg($auth['corporate_id'], $cond['agreement_no']) == "1") {
+       if (individual_flg($auth['corporate_id'], $now_wearer_map['rntl_cont_no']) == "1") {
          $list["individual_ctrl_no"] = "";
          $list["individual_chk"] = array();
          $individual_ctrl_no = array();
