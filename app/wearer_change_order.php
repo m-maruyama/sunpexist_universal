@@ -3613,11 +3613,11 @@ $app->post('/wearer_change/complete', function ()use($app){
               // レンタル部門コード
               array_push($calum_list, "rntl_sect_cd");
               array_push($values_list, "'".$wearer_data_input['section']."'");
-              // 貸与パターン
-              $job_type_cd = explode(':', $wearer_data_input['job_type']);
-              $job_type_cd = $job_type_cd[0];
-              array_push($calum_list, "job_type_cd");
-              array_push($values_list, "'".$job_type_cd."'");
+                // 貸与パターン 職種変更前の拠点に変更
+                //$job_type_cd = explode(':', $wearer_data_input['job_type']);
+                //$job_type_cd = $job_type_cd[0];
+                array_push($calum_list, "job_type_cd");
+                array_push($values_list, "'".$now_item_input_map['now_job_type_cd']."'");
               // 発注依頼日
               array_push($calum_list, "order_date");
               array_push($values_list, "'".date('Y-m-d H:i:s', time())."'");
@@ -3713,11 +3713,11 @@ $app->post('/wearer_change/complete', function ()use($app){
             // レンタル部門コード
             array_push($calum_list, "rntl_sect_cd");
             array_push($values_list, "'".$wearer_data_input['section']."'");
-            // 貸与パターン
-            $job_type_cd = explode(':', $wearer_data_input['job_type']);
-            $job_type_cd = $job_type_cd[0];
+            // 貸与パターン 職種変更前の拠点に変更
+            //$job_type_cd = explode(':', $wearer_data_input['job_type']);
+            //$job_type_cd = $job_type_cd[0];
             array_push($calum_list, "job_type_cd");
-            array_push($values_list, "'".$job_type_cd."'");
+            array_push($values_list, "'".$now_item_input_map['now_job_type_cd']."'");
             // 発注依頼日
             array_push($calum_list, "order_date");
             array_push($values_list, "'".date('Y-m-d H:i:s', time())."'");
@@ -5142,10 +5142,12 @@ $app->post('/wearer_change/send', function ()use($app){
              array_push($calum_list, "rntl_sect_cd");
              array_push($values_list, "'".$wearer_data_input['section']."'");
              // 貸与パターン
-             $job_type_cd = explode(':', $wearer_data_input['job_type']);
-             $job_type_cd = $job_type_cd[0];
-             array_push($calum_list, "job_type_cd");
-             array_push($values_list, "'".$job_type_cd."'");
+             //$job_type_cd = explode(':', $wearer_data_input['job_type']);
+             //$job_type_cd = $job_type_cd[0];
+             //職種変更または異動の返却予定情報トランへの職種コードは変更前のを入れる
+               array_push($calum_list, "job_type_cd");
+               array_push($values_list, "'".$now_item_input_map['now_job_type_cd']."'");
+               //array_push($values_list, "'".$job_type_cd."'");
              // 発注依頼日
              array_push($calum_list, "order_date");
              array_push($values_list, "'".date('Y-m-d H:i:s', time())."'");
@@ -5242,10 +5244,13 @@ $app->post('/wearer_change/send', function ()use($app){
            array_push($calum_list, "rntl_sect_cd");
            array_push($values_list, "'".$wearer_data_input['section']."'");
            // 貸与パターン
-           $job_type_cd = explode(':', $wearer_data_input['job_type']);
-           $job_type_cd = $job_type_cd[0];
-           array_push($calum_list, "job_type_cd");
-           array_push($values_list, "'".$job_type_cd."'");
+           //$job_type_cd = explode(':', $wearer_data_input['job_type']);
+           //$job_type_cd = $job_type_cd[0];
+             //職種変更または異動の返却予定情報トランへの職種コードは変更前のを入れる
+             array_push($calum_list, "job_type_cd");
+             array_push($values_list, "'".$now_item_input_map['now_job_type_cd']."'");
+             //array_push($calum_list, "job_type_cd");
+             //array_push($values_list, "'".$job_type_cd."'");
            // 発注依頼日
            array_push($calum_list, "order_date");
            array_push($values_list, "'".date('Y-m-d H:i:s', time())."'");
