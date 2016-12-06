@@ -1439,6 +1439,31 @@ $app->post('/wearer_other_change_insert', function () use ($app) {
                 }
             }
         }
+        //発注NGパターン：同一商品を交換で発注かけようとした場合にエラーで戻す
+        //発注情報トランに同じ着用者＋商品情報で検索
+        if($item_map["return_num"]>0){
+            $query_list=array();
+            array_push($query_list, "corporate_id = '" . $auth['corporate_id'] . "'");
+            array_push($query_list, "rntl_cont_no = '" . $wearer_size_change_post['rntl_cont_no'] . "'");
+            array_push($query_list, "werer_cd = '" . $wearer_size_change_post['werer_cd'] . "'");
+            //商品情報
+            array_push($query_list, "item_cd = '" . $item_map['item_cd'] . "'");
+            array_push($query_list, "color_cd = '" . $item_map['color_cd'] . "'");
+            //発注状況区分
+            array_push($query_list, "order_sts_kbn = '3'");//サイズ交換のトラン
+
+            //sql文字列を' AND 'で結合
+            $query = implode(' AND ', $query_list);
+            //--- クエリー実行・取得 ---//
+            $t_order_tran_count = TOrderTran::find(array(
+                'conditions' => $query
+            ))->count();
+            if($t_order_tran_count > 0){
+                $json_list["error_code"] = "1";
+                $error_msg = $item_map['item_cd']."-".$item_map['color_cd']."は既にサイズ交換の発注がされています。";
+                array_push($json_list["error_msg"], $error_msg);
+            }
+        }
         $rtn_cnt += $item_map["return_num"];
     }
     //交換する商品がない場合
@@ -2411,33 +2436,32 @@ $app->post('/wearer_other_change_delete', function ()use($app){
     try {
         //--着用者基本マスタトラン削除--//
         // 発注情報トランを参照
-        $query_list = array();
-        array_push($query_list, "t_order_tran.corporate_id = '".$auth['corporate_id']."'");
-        array_push($query_list, "t_order_tran.order_req_no <> '".$cond['order_req_no']."'");
-        array_push($query_list, "t_order_tran.werer_cd = '".$cond['werer_cd']."'");
-        $query = implode(' AND ', $query_list);
-
-        $arg_str = "";
-        $arg_str = "SELECT ";
-        $arg_str .= "*";
-        $arg_str .= " FROM ";
-        $arg_str .= "t_order_tran";
-        $arg_str .= " WHERE ";
-        $arg_str .= $query;
-        $t_order_tran = new TOrderTran();
-        $results = new Resultset(NULL, $t_order_tran, $t_order_tran->getReadConnection()->query($arg_str));
-        $result_obj = (array)$results;
-        $results_cnt = $result_obj["\0*\0_count"];
-        // 上記発注情報トラン件数が0の場合に着用者基本マスタトランのデータを削除する
-        if (empty($results_cnt)) {
+//        $query_list = array();
+//        array_push($query_list, "t_order_tran.corporate_id = '".$auth['corporate_id']."'");
+//        array_push($query_list, "t_order_tran.order_req_no <> '".$cond['order_req_no']."'");
+//        array_push($query_list, "t_order_tran.werer_cd = '".$cond['werer_cd']."'");
+//        $query = implode(' AND ', $query_list);
+//
+//        $arg_str = "";
+//        $arg_str = "SELECT ";
+//        $arg_str .= "*";
+//        $arg_str .= " FROM ";
+//        $arg_str .= "t_order_tran";
+//        $arg_str .= " WHERE ";
+//        $arg_str .= $query;
+//        $t_order_tran = new TOrderTran();
+//        $results = new Resultset(NULL, $t_order_tran, $t_order_tran->getReadConnection()->query($arg_str));
+//        $result_obj = (array)$results;
+//        $results_cnt = $result_obj["\0*\0_count"];
+//        // 上記発注情報トラン件数が0の場合に着用者基本マスタトランのデータを削除する
+//        if (empty($results_cnt)) {
             $query_list = array();
             array_push($query_list, "m_wearer_std_tran.corporate_id = '".$auth['corporate_id']."'");
             array_push($query_list, "m_wearer_std_tran.werer_cd = '".$cond['werer_cd']."'");
             array_push($query_list, "m_wearer_std_tran.rntl_cont_no = '".$cond['rntl_cont_no']."'");
             array_push($query_list, "m_wearer_std_tran.rntl_sect_cd = '".$cond['rntl_sect_cd']."'");
             array_push($query_list, "m_wearer_std_tran.job_type_cd = '".$cond['job_type_cd']."'");
-            // 発注区分「着用者編集」ではない
-            array_push($query_list, "m_wearer_std_tran.order_sts_kbn <> '6'");
+            array_push($query_list, "m_wearer_std_tran.order_sts_kbn = '4'");
             $query = implode(' AND ', $query_list);
 
             $arg_str = "";
@@ -2449,7 +2473,7 @@ $app->post('/wearer_other_change_delete', function ()use($app){
             $results = new Resultset(NULL, $m_wearer_std_tran, $m_wearer_std_tran->getReadConnection()->query($arg_str));
             $result_obj = (array)$results;
             $results_cnt = $result_obj["\0*\0_count"];
-        }
+//        }
 
         //--発注情報トラン削除--//
         $query_list = array();
