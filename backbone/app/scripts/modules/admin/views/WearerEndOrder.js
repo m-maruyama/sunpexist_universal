@@ -17,6 +17,12 @@ define([
 			},
 			model: new Backbone.Model(),
 			onShow: function() {
+				if (window.sessionStorage.getItem("referrer")=='wearer_end_order_complete') {
+					window.sessionStorage.setItem("referrer","wearer_end_order");
+					location.href = './wearer_end.html';
+				}else{
+					window.sessionStorage.setItem("referrer","wearer_end_order");
+				}
 				var that = this;
 
 				var modelForUpdate = this.model;

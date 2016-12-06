@@ -17,6 +17,12 @@ define([
 			},
 			model: new Backbone.Model(),
 			onShow: function() {
+				if (window.sessionStorage.getItem("referrer")=='other_change_other_complete') {
+					window.sessionStorage.setItem("referrer","other_change_other");
+					location.href = './wearer_size_change.html';
+				}else{
+					window.sessionStorage.setItem("referrer","other_change_other");
+				}
 				var that = this;
 				var modelForUpdate = this.model;
 				modelForUpdate.url = App.api.CM0040;

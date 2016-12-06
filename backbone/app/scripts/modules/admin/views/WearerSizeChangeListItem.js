@@ -198,6 +198,7 @@ define([
 							var arr_str = cond.toString();
 							// 検索項目値、ページ数のセッション保持
 							window.sessionStorage.setItem("wearer_size_change_cond", arr_str);
+							window.sessionStorage.setItem("referrer","wearer_size_change");
 							if (transition == "size_change") {
 								// サイズ交換の発注入力画面へ遷移
 								var $form = $('<form/>', {'action': '/universal/wearer_exchange_order.html', 'method': 'post'});

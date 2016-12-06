@@ -117,6 +117,7 @@ define([
 							);
 							var arr_str = cond.toString();
 							window.sessionStorage.setItem("wearer_change_cond", arr_str);
+							window.sessionStorage.setItem("referrer","weare_change");
 
 							// 発注入力画面へ遷移
 							var $form = $('<form/>', {'action': '/universal/wearer_change_order.html', 'method': 'post'});

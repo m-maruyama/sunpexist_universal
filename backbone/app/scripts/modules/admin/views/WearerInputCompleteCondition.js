@@ -13,6 +13,15 @@ define([
                 "home_button": "#home_button",
             },
             onRender: function () {
+                if(window.sessionStorage.getItem('referrer')=='wearer_complete'){
+                    //リロード時
+                    window.sessionStorage.removeItem('referrer', 'wearer_complete');
+                    location.href = './wearer_input.html';
+                }else{
+                    //初期表示時
+                    window.sessionStorage.setItem('referrer', 'wearer_complete');
+                }
+
             },
 
             events: {

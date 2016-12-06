@@ -167,6 +167,7 @@ define([
 							var arr_str = cond.toString();
 							// 検索項目値、ページ数のセッション保持
 							window.sessionStorage.setItem("wearer_other_cond", arr_str);
+							window.sessionStorage.setItem("referrer","wearer_other");
 							if (transition == "add") {
 								// 追加貸与の発注入力画面へ遷移
 								var $form = $('<form/>', {'action': '/universal/wearer_add_order.html', 'method': 'post'});

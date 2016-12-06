@@ -35,6 +35,11 @@ define([
 			bindings: {
 			},
 			onShow: function() {
+				if (window.sessionStorage.getItem("referrer")=='other_change_other_complete') {
+					location.href = './wearer_size_change.html';
+				}else{
+					window.sessionStorage.setItem("referrer","other_change_other_complete");
+				}
 				var that = this;
 				var data = this.options.data;
 				var scr = data["scr"];

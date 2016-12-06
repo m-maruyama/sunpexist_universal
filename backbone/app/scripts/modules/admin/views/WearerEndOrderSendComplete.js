@@ -35,6 +35,11 @@ define([
 			bindings: {
 			},
 			onShow: function() {
+				if (window.sessionStorage.getItem("referrer")=='wearer_end_order_complete') {
+					location.href = './wearer_end.html';
+				}else{
+					window.sessionStorage.setItem("referrer","wearer_end_order_complete");
+				}
 				var that = this;
 				var data = this.options.data;
 				var scr = data["scr"];
