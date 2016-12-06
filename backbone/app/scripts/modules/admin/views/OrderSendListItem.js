@@ -153,7 +153,7 @@ define([
 							}
 							// 種別：その他交換
 							if (data["order_sts_kbn"] == '4') {
-								transition = "WC0030_req";
+								transition = "WOC0030_req";
 							}
 							// 種別：着用者編集
 							if (data["order_sts_kbn"] == '6') {
@@ -384,7 +384,7 @@ define([
 					}
 				}
 				// その他 交換-発注取消
-				if (type == "WC0030_req") {
+				if (type == "WOC0030_req") {
 					if(window.confirm('発注No.' + data["wst_order_req_no"] + 'の発注取消を実行します。\nよろしいですか？')) {
 						$.blockUI({ message: '<p><img src="ajax-loader.gif" style="margin: 0 auto;" /> 発注取消中...</p>' });
 						var data = {
@@ -397,7 +397,7 @@ define([
 						};
 
 						var modelForUpdate = this.model;
-						modelForUpdate.url = App.api.WX0030;
+						modelForUpdate.url = App.api.WOC0030;
 						var cond = {
 							"scr": 'その他交換-発注取消',
 							"log_type": '2',
