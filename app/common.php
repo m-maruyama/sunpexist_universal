@@ -1153,8 +1153,6 @@ $app->post('/section_purchase', function () use ($app) {
     array_push($query_list, "corporate_id = '".$auth['corporate_id']."'");
     if (!empty($params['agreement_no'])) {
         array_push($query_list, "rntl_cont_no = '".$params['agreement_no']."'");
-    } else {
-        array_push($query_list, "rntl_cont_no = '".$auth['rntl_cont_no']."'");
     }
     $query = implode(' AND ', $query_list);
 
