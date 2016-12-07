@@ -349,6 +349,8 @@ $app->post('/receive/search', function ()use($app){
 	$arg_str .= "t_order.order_req_line_no as as_order_req_line_no,";
 	$arg_str .= "m_wearer_std.cster_emply_cd as as_cster_emply_cd,";
 	$arg_str .= "m_wearer_std.werer_name as as_werer_name,";
+    $arg_str .= "m_wearer_std.werer_cd as as_werer_cd,";
+    $arg_str .= "m_wearer_std.rntl_cont_no as as_rntl_cont_no,";
 	$arg_str .= "m_section.rntl_sect_name as as_rntl_sect_name,";
     $arg_str .= "m_section.rntl_sect_cd as as_rntl_sect_cd,";
     $arg_str .= "m_job_type.job_type_name as as_job_type_name,";
@@ -419,7 +421,10 @@ $app->post('/receive/search', function ()use($app){
 		$paginator = $paginator_model->getPaginate();
 		$results = $paginator->items;
 
+        $arr_cnt = 0;
 		foreach($results as $result){
+            // name属性用カウント値
+            $list["arr_num"] = $arr_cnt++;
 			// 受領ステータス
 			$list['receipt_status'] = $result->as_receipt_status;
 			// 受領日
@@ -430,6 +435,10 @@ $app->post('/receive/search', function ()use($app){
 			} else {
 				$list['ship_no'] = "-";
 			}
+            // 着用者コード
+            $list['werer_cd'] = $result->as_werer_cd;
+            // レンタル契約No
+            $list['rntl_cont_no'] = $result->as_rntl_cont_no;
 			// 商品コード
 			$list['item_cd'] = $result->as_item_cd;
 			// 色コード
@@ -777,4 +786,50 @@ $app->post('/receive/update', function ()use($app) {
 	$page_list['page_number'] = $page['page_number'];
 	$json_list['page'] = $page_list;
 	echo json_encode($json_list);
+});
+
+/**
+ * 受領可能チェック
+ */
+$app->post('/receive/check', function ()use($app) {
+
+    $params = json_decode(file_get_contents("php://input"), true);
+
+    // アカウントセッション取得
+    $auth = $app->session->get("auth");
+
+    $cond = $params['cond'];
+    $json_list = array();
+    //--返却予定情報トラン検索--//
+    $query_list = array();
+    //着用者情報
+    array_push($query_list, "t_returned_plan_info_tran.corporate_id = '".$auth['corporate_id']."'");
+    array_push($query_list, "t_returned_plan_info_tran.rntl_cont_no = '".$cond['rntl_cont_no']."'");
+    array_push($query_list, "t_returned_plan_info_tran.werer_cd = '".$cond['werer_cd']."'");
+    //商品情報
+    array_push($query_list, "t_returned_plan_info_tran.item_cd = '".$cond['item_cd']."'");
+    array_push($query_list, "t_returned_plan_info_tran.color_cd = '".$cond['color_cd']."'");
+    array_push($query_list, "t_returned_plan_info_tran.size_cd = '".$cond['size_cd']."'");
+    $query = implode(' AND ', $query_list);
+
+    $arg_str = 'SELECT order_sts_kbn FROM';
+    $arg_str .= ' t_returned_plan_info_tran';
+    $arg_str .= ' WHERE ';
+    $arg_str .= $query;
+
+    $t_returned_plan_info_tran = new TReturnedPlanInfoTran();
+    $results = new Resultset(NULL, $t_returned_plan_info_tran, $t_returned_plan_info_tran->getReadConnection()->query($arg_str));
+    $result_obj = (array)$results;
+    $results_cnt = $result_obj["\0*\0_count"];
+    if($results_cnt>0){
+        $kbn_name = '';
+        foreach ($results as $result){
+            $kbn_name = get_kbn_name($result->order_sts_kbn);
+        }
+        $json_list["error_code"] = "1";
+        $json_list["error_msg"] = $kbn_name.'の発注があるため、受領出来ません。';
+        echo json_encode($json_list);
+        return;
+    }
+    echo json_encode($json_list);
 });

@@ -11,6 +11,7 @@ define([
 			tagName: "tr",
 			ui: {
 				"detailLink": "a.detail",
+				"receive_check": ".update_check",
 			},
 			bindings: {
 				'.update_check': 'updateFlag'
@@ -22,6 +23,54 @@ define([
 				'click @ui.detailLink': function(e){
 					e.preventDefault();
 					this.triggerMethod('click:a', this.model);
+				},
+				'change @ui.receive_check': function(e){
+					if(e.target.checked){
+						//チェックがオンの時に対象商品が返却情報トランにないかチェックする
+						var that = this;
+						var receive_check_id = e.target.id;
+						// console.log($('#'+receive_check_id.replace( /receive_check/g , "size_cd" )).val());
+						var rntl_cont_no = $('#'+receive_check_id.replace( /receive_check/g , "rntl_cont_no" )).val();
+						var werer_cd = $('#'+receive_check_id.replace( /receive_check/g , "werer_cd" )).val();
+						var size_cd = $('#'+receive_check_id.replace( /receive_check/g , "size_cd" )).val();
+						var item_cd = $('#'+receive_check_id.replace( /receive_check/g , "item_cd" )).val();
+						var color_cd = $('#'+receive_check_id.replace( /receive_check/g , "color_cd" )).val();
+						// $('#return_num'+e.target.value).val();
+
+						var modelForUpdate = this.model;
+						modelForUpdate.url = App.api.RE0030;
+						var cond = {
+							"scr": '受領商品チェック',
+							"cond": {
+								'rntl_cont_no':rntl_cont_no,
+								'werer_cd':werer_cd,
+								'size_cd':size_cd,
+								'item_cd':item_cd,
+								'color_cd':color_cd
+							}
+						};
+						modelForUpdate.fetchMx({
+							data:cond,
+							success:function(res){
+								var res_val = res.attributes;
+								if (res_val["error_code"] == "1") {
+									e.target.checked = false;
+									alert(res_val["error_msg"]);
+								}
+							}
+						});
+					}
+                    //
+                    //
+					// var list_cnt = $('#list_cnt').val();
+					// var sum_order_num = 0;
+					// var sum_return_num = 0;
+					// for (var i=0; i<list_cnt; i++) {
+					// 	sum_order_num += parseInt($('#order_num'+i).val());
+					// 	sum_return_num += parseInt($('#return_num'+i).val());
+					// }
+					// $('#order_count').val(sum_order_num);
+					// $('#return_count').val(sum_return_num);
 				}
 			},
 			templateHelpers: {

@@ -1807,3 +1807,35 @@ function byte_cnt($data)
 
     return strlen(bin2hex(mb_convert_encoding($data, $af, $bf))) / 2;
 }
+/*
+ * 発注状況区分名取得
+ *
+ * 発注状況区分の値を引数に渡して、
+ * 区分の文字列を戻す
+ */
+function get_kbn_name($kbn){
+    switch ($kbn){
+        case '1':
+            return '貸与';
+            break;
+        case '2':
+            return '終了';
+            break;
+        case '3':
+            return 'サイズ交換';
+            break;
+        case '4':
+            return 'その他交換';
+            break;
+        case '5':
+            return '異動';
+            break;
+        case '6':
+            return '異動';
+            break;
+        case '9':
+            return 'キャンセル';
+            break;
+        default:
+    }
+}

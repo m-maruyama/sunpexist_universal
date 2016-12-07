@@ -162,6 +162,7 @@ define([
 			"LE0020": host + "/lend/download",
 			"RE0010": host + "/receive/search",
 			"RE0020": host + "/receive/update",
+			"RE0030": host + "/receive/check",
 			"MI0010": host + "/manpower_info/search",
 			"MI0020": host + "/manpower_info/detail",
 			"MI0030": host + "/manpower_info/download",

@@ -2,7 +2,12 @@
   <td>
     {{#if chk_disp}}
         {{#if update_ok_flg}}
-    <input type="checkbox" id="receive_check" name="receive_check[]" class="checkbox-inline update_check" value="{{ship_no}}:{{ship_line_no}}:{{rntl_sect_cd}}" {{disabled}}>
+    <input type="checkbox" id="receive_check{{arr_num}}" name="receive_check[]" class="checkbox-inline update_check" value="{{ship_no}}:{{ship_line_no}}:{{rntl_sect_cd}}" {{disabled}}>
+    <input type="hidden" id="rntl_cont_no{{arr_num}}" value="{{rntl_cont_no}}">
+    <input type="hidden" id="werer_cd{{arr_num}}" value="{{werer_cd}}">
+    <input type="hidden" id="size_cd{{arr_num}}" value="{{size_cd}}">
+    <input type="hidden" id="item_cd{{arr_num}}" value="{{item_cd}}">
+    <input type="hidden" id="color_cd{{arr_num}}" value="{{color_cd}}">
         {{/if}}
     {{/if}}
   </td>

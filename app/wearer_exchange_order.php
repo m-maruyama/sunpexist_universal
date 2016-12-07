@@ -827,7 +827,7 @@ $app->post('/wearer_exchange/list', function ()use($app){
     $query_list[] = "t_delivery_goods_state_details.rntl_cont_no = '".$wearer_size_change_post['rntl_cont_no']."'";
     $query_list[] = "t_delivery_goods_state_details.werer_cd = '".$wearer_size_change_post['werer_cd']."'";
     $query_list[] = "t_delivery_goods_state_details.rtn_ok_flg = '1'";
-//    $query_list[] = "t_delivery_goods_state_details.receipt_status = '2'";
+    $query_list[] = "t_delivery_goods_state_details.receipt_status = '2'";
     $query = implode(' AND ', $query_list);
 
     $arg_str = "";
@@ -1266,7 +1266,7 @@ $app->post('/wearer_exchange/list', function ()use($app){
     $query_list[] = "t_delivery_goods_state_details.rntl_cont_no = '".$wearer_size_change_post['rntl_cont_no']."'";
     $query_list[] = "t_delivery_goods_state_details.werer_cd = '".$wearer_size_change_post['werer_cd']."'";
     $query_list[] = "t_delivery_goods_state_details.rtn_ok_flg = '1'";
-//    $query_list[] = "t_delivery_goods_state_details.receipt_status = '2'";
+    $query_list[] = "t_delivery_goods_state_details.receipt_status = '2'";
     $query = implode(' AND ', $query_list);
 
     $arg_str = "";
