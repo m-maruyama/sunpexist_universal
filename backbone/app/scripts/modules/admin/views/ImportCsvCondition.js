@@ -163,6 +163,7 @@ define([
   					var cond = {
   						"scr": '一括データ取込-更新可否チェック',
   						"log_type": '1',
+                        "update_skip_flg": 'importCsv'
   					};
   					modelForUpdate.fetchMx({
   						data:cond,
