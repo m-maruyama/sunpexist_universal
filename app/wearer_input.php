@@ -59,7 +59,6 @@ $app->post('/agreement_no_input', function () use ($app) {
     if ($results_cnt > 0) {
         $list['rntl_cont_no'] = null;
         $list['rntl_cont_name'] = null;
-        array_push($all_list, $list);
         // 前画面が着用者検索画面でない場合、セッションを削除
         if($referrer > -1){
             // 前画面セッション取得
@@ -75,6 +74,7 @@ $app->post('/agreement_no_input', function () use ($app) {
                 }
                 array_push($all_list, $list);
             }
+            $json_list['rntl_cont_no'] = $list['rntl_cont_no'];
             if(isset($wearer_odr_post)){
               $json_list['rntl_cont_no'] = $wearer_odr_post['rntl_cont_no'];
               $json_list['werer_cd'] = $wearer_odr_post['werer_cd'];

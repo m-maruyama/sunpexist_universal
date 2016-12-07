@@ -27,6 +27,7 @@ define([
                 'click @ui.next_button': function (e) {
                     var referrer = window.sessionStorage.getItem('referrer');
                     window.sessionStorage.setItem('referrer', 'wearer_order_complete');
+                    window.sessionStorage.removeItem('referrer_complete');
                     if(referrer=='wearer_end_order'){
                         location.href = './wearer_end.html';
                     }else if(referrer=='wearer_order'){
@@ -38,6 +39,7 @@ define([
                 },
                 'click @ui.home_button': function (e) {
                     window.sessionStorage.setItem('referrer', 'wearer_order_complete');
+                    window.sessionStorage.removeItem('referrer_complete');
                     location.href = './home.html';
                 },
                 'click @ui.returnSlipDownload': function(e){
