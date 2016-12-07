@@ -564,9 +564,9 @@ $app->post('/import_csv', function () use ($app) {
         $app->session->set("chk_cster_emply_cd_1", "empty");
         $app->session->set("chk_cster_emply_cd_2", "empty");
         $app->session->set("chk_order_kbn", "empty");
+
         foreach ($new_list as $line_new) {
             $values_list = array();
-
             // 処理番号
             $values_list[] = "'" . $job_no . "'";
             // 行番号(CSVまたはExcelの行数)
@@ -1074,7 +1074,73 @@ $app->post('/import_csv', function () use ($app) {
         echo json_encode($json_list);
         return;
     }
+
+    //貸与パターンと発注番号別ごとの貸与パターン比較個数チェック
+    $import_job_list = array();
+    $list = array();
+    $arg_str = "";
+    $arg_str = "SELECT * FROM t_import_job";
+    $arg_str .= " WHERE ";
+    $arg_str .= " job_no = '" . $job_no . "' AND order_kbn = '1'";
+    $arg_str .= " ORDER BY order_req_no,order_req_line_no ASC";
+
+    $results = new Resultset(null, $t_import_job, $t_import_job->getReadConnection()->query($arg_str));
+    $result_obj = (array)$results;
+    $results_cnt = $result_obj["\0*\0_count"];
+    if (!empty($results_cnt)) {
+        $paginator_model = new PaginatorModel(
+            array(
+                "data" => $results,
+                "limit" => $results_cnt,
+                "page" => 1
+            )
+        );
+        $paginator = $paginator_model->getPaginate();
+        $results = $paginator->items;
+        $i = 0;
+        foreach ($results as $result) {
+            if(isset($check_order_req_no)) {
+                //発注番号が変わったタイミングで発注番号単位の商品数と貸与パターンに対する商品数を比較して異なる場合はエラーメッセージを出力する
+                if ($check_order_req_no !== $result->order_req_no) {
+                    $arg_str = "";
+                    $arg_str = "SELECT * FROM  m_input_item WHERE corporate_id = '" . $corporate_id . "' AND rntl_cont_no = '" . $agreement_no . "' AND job_type_cd = '" . $check_job_type_cd . "'";
+                    ChromePhp::log($arg_str);
+                    $m_job_type_count = new Resultset(null, $t_import_job, $t_import_job->getReadConnection()->query($arg_str));
+                    $m_job_type_count_obj = (array)$m_job_type_count;
+                    if(count($list) !== count($m_job_type_count)){
+                        $error_list[] = '発注番号' . $check_order_req_no . 'の貸与パターンに対する商品指定数が不正です。';
+                    }
+                    $i++;
+                    $list = [];
+                }
+            }
+            $list[] = $result->item_cd;
+            $check_job_type_cd = $result->rent_pattern_code;
+            $check_order_req_no = $result->order_req_no;
+        }
+        //最後の発注no用 個数チェック
+        $arg_str = "";
+        $arg_str = "SELECT * FROM  m_input_item WHERE corporate_id = '" . $corporate_id . "' AND rntl_cont_no = '" . $agreement_no . "' AND job_type_cd = '" . $check_job_type_cd . "'";
+        //ChromePhp::log($arg_str);
+        $m_job_type_count = new Resultset(null, $t_import_job, $t_import_job->getReadConnection()->query($arg_str));
+        if(count($list) !== count($m_job_type_count)){
+            $error_list[] = '発注番号' . $check_order_req_no . 'の貸与パターンに対する商品指定数が不正です。';
+        }
+    }
+
+    // マスターチェック処理で異常が発生した場合、以降処理せず終了
+    if (!empty($error_list)) {
+        $json_list['errors'] = $error_list;
+        $json_list["error_code"] = "1";
+        echo json_encode($json_list);
+        return;
+    }
+
     //--マスターチェック処理--ここまで//
+
+
+
+
 
     //--発注NGパターンチェック--ここから//
     $import_job_list = array();
