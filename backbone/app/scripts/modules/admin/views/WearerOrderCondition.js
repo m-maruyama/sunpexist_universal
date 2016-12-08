@@ -380,7 +380,7 @@ define([
 								if(res_val["error_code"]=='1') {
 									that.triggerMethod('error_msg', res_val["error_msg"]);
 								}else{
-									window.sessionStorage.setItem('referrer', 'wearer_order');
+									window.sessionStorage.setItem('referrer', 'wearer_order_send');
 									location.href="wearer_order_complete.html";
 								}
 							}
