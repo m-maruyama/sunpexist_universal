@@ -179,6 +179,7 @@ $app->post('/history/search', function ()use($app){
 	}
 	if($cond['order_kbn1']){
 		array_push($order_kbn,'3');
+        array_push($order_kbn,'4');
 	}
 	if($cond['order_kbn2']){
 		array_push($order_kbn,'5');
@@ -225,10 +226,10 @@ $app->post('/history/search', function ()use($app){
 		array_push($reason_kbn,'17');
 	}
 	if($cond['reason_kbn9']){
-		array_push($reason_kbn,'21');
+		array_push($reason_kbn,'12');
 	}
 	if($cond['reason_kbn10']){
-		array_push($reason_kbn,'22');
+		array_push($reason_kbn,'13');
 	}
 	if($cond['reason_kbn11']){
 		array_push($reason_kbn,'23');
