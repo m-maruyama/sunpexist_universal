@@ -53,6 +53,11 @@ define([
 							success:function(res){
 								var res_val = res.attributes;
 								if (res_val["error_code"] == "1") {
+									if(e.target.checked){
+										e.target.checked = false;
+									}else{
+										e.target.checked = true;
+									}
 									alert(res_val["error_msg"]);
 								}
 							}
