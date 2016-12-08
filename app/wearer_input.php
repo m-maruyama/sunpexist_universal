@@ -1086,7 +1086,7 @@ $app->post('/input_delete', function () use ($app) {
         }else{
             $json_list['ok'] = 'ok';
             echo json_encode($json_list);
-            $app->session->get("wearer_odr_post");
+            $app->session->remove("wearer_odr_post");
             $transaction->commit();
             return;
         }

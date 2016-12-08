@@ -298,6 +298,7 @@ define([
                                             that.triggerMethod('error_msg', er);
                                         }else{
                                             window.sessionStorage.setItem('referrer', 'wearer_input');
+                                            window.sessionStorage.removeItem('wearer_input_ref');
                                             location.href = './wearer_input.html';
                                         }
                                     }

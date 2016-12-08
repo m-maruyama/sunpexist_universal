@@ -42,8 +42,7 @@ define([
 				var that = this;
 				// 検索画面以外から遷移してきた場合は「着用者入力取消」ボタンを隠す
 				if(
-					!window.sessionStorage.getItem('wearer_search') &&
-					!window.sessionStorage.getItem('wearer_order_search')
+					(window.sessionStorage.getItem('wearer_input_ref') != 'wearer_search')
 				)
 				{
 					this.ui.input_delete_button.hide();

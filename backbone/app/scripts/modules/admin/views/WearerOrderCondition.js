@@ -213,7 +213,7 @@ define([
 								if(res_val["error_cd"]=='1') {
 									that.triggerMethod('error_msg', res_val["error_msg"]);
 								}else{
-									window.sessionStorage.setItem('referrer', 'wearer_input');
+									window.sessionStorage.setItem('referrer', 'wearer_delete');
 									location.href = './wearer_input.html';
 								}
 							}
