@@ -30,7 +30,7 @@ define([
                     window.sessionStorage.removeItem('referrer_complete');
                     if(referrer=='wearer_end_order'){
                         location.href = './wearer_end.html';
-                    }else if(referrer=='wearer_order'){
+                    }else if(referrer=='wearer_order'||referrer=='wearer_order_send'){
                         location.href = './wearer_input.html';
                     }else if(referrer=='wearer_end_order_err'){
                         window.sessionStorage.getItem('error_msg');
