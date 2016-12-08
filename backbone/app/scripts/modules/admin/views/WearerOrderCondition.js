@@ -267,13 +267,6 @@ define([
 				'click @ui.inputButton': function(e){
 					e.preventDefault();
 					var that = this;
-
-
-
-
-
-
-
 					var modelForUpdate = this.model;
 					modelForUpdate.url = App.api.WO0014;
 					if(this.ui.shipment_to.val()){
