@@ -910,7 +910,7 @@ $app->post('/wearer_end_order_list', function ()use($app){
             $query_list[] = "t_delivery_goods_state_details.size_cd = '".$list["size_cd"]."'";
             $query_list[] = "t_delivery_goods_state_details.rtn_ok_flg = '1'";
             $query_list[] = "t_delivery_goods_state_details.receipt_status = '2'";
-//            $query = implode(' AND ', $query_list);
+            $query = implode(' AND ', $query_list);
             $arg_str = "";
             $arg_str .= "SELECT ";
             $arg_str .= " * ";
