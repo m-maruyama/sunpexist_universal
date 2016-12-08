@@ -1257,6 +1257,7 @@ $app->post('/wearer_end_order_insert', function () use ($app) {
     array_push($query_list, "corporate_id = '".$auth['corporate_id']."'");
     array_push($query_list, "rntl_cont_no = '".$wearer_end_post['rntl_cont_no']."'");
     array_push($query_list, "werer_cd = '".$wearer_end_post['werer_cd']."'");
+      ChromePhp::LOG($wearer_end_post['werer_cd']);
     array_push($query_list, "receipt_status = '1'");
     $query = implode(' AND ', $query_list);
     $arg_str = "";

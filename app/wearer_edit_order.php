@@ -754,33 +754,35 @@ $app->post('/wearer_edit_complete', function ()use($app){
        foreach ($results as $result) {
          $order_sts_kbn = $result->order_sts_kbn;
          $order_reason_kbn = $result->order_reason_kbn;
-       }
 
        // 着用者編集の場合、何かしらの発注区分の情報がある際は発注NGとする
-       $json_list["error_code"] = "1";
-       if ($order_sts_kbn == "1" && $order_reason_kbn == "03") {
-         $error_msg = "追加貸与の発注が登録されていた為、操作を完了できませんでした。追加貸与の発注を削除してから再度登録して下さい。";
-         $json_list["error_msg"][] = $error_msg;
+//       if ($order_sts_kbn == "1" && $order_reason_kbn == "03") {
+//         $error_msg = "追加貸与の発注が登録されていた為、操作を完了できませんでした。追加貸与の発注を削除してから再度登録して下さい。";
+//         $json_list["error_msg"][] = $error_msg;
+//       }
+           if ($order_sts_kbn == "2" && ($order_reason_kbn == "05" || $order_reason_kbn == "06" || $order_reason_kbn == "08" || $order_reason_kbn == "20")) {
+               $error_msg = "貸与終了の発注が登録されていた為、操作を完了できませんでした。貸与終了の発注を削除してから再度登録して下さい。";
+               $json_list["error_msg"][] = $error_msg;
+               $json_list["error_code"] = "1";
+           }
+//       if ($order_sts_kbn == "2" && $order_reason_kbn == "07") {
+//         $error_msg = "不要品返却の発注が登録されていた為、操作を完了できませんでした。不要品返却の発注を削除してから再度登録して下さい。";
+//         $json_list["error_msg"][] = $error_msg;
+//       }
+//       if ($order_sts_kbn == "3" || $order_sts_kbn == "4") {
+//         $error_msg = "交換の発注が登録されていた為、操作を完了できませんでした。交換の発注を削除してから再度登録して下さい。";
+//         $json_list["error_msg"][] = $error_msg;
+//       }
+           if ($order_sts_kbn == "5" && ($order_reason_kbn == "09" || $order_reason_kbn == "10" || $order_reason_kbn == "11" || $order_reason_kbn == "24")) {
+               $error_msg = "職種変更または異動の発注が登録されていた為、操作を完了できませんでした。職種変更または異動の発注を削除してから再度登録して下さい。";
+               $json_list["error_msg"][] = $error_msg;
+               $json_list["error_code"] = "1";
+           }
        }
-       if ($order_sts_kbn == "2" && ($order_reason_kbn == "05" || $order_reason_kbn == "06" || $order_reason_kbn == "08" || $order_reason_kbn == "20")) {
-         $error_msg = "貸与終了の発注が登録されていた為、操作を完了できませんでした。貸与終了の発注を削除してから再度登録して下さい。";
-         $json_list["error_msg"][] = $error_msg;
+       if($json_list["error_code"] == "1"){
+           echo json_encode($json_list);
+           return;
        }
-       if ($order_sts_kbn == "2" && $order_reason_kbn == "07") {
-         $error_msg = "不要品返却の発注が登録されていた為、操作を完了できませんでした。不要品返却の発注を削除してから再度登録して下さい。";
-         $json_list["error_msg"][] = $error_msg;
-       }
-       if ($order_sts_kbn == "3" || $order_sts_kbn == "4") {
-         $error_msg = "交換の発注が登録されていた為、操作を完了できませんでした。交換の発注を削除してから再度登録して下さい。";
-         $json_list["error_msg"][] = $error_msg;
-       }
-       if ($order_sts_kbn == "5" && ($order_reason_kbn == "09" || $order_reason_kbn == "10" || $order_reason_kbn == "11" || $order_reason_kbn == "24")) {
-         $error_msg = "職種変更または異動の発注が登録されていた為、操作を完了できませんでした。職種変更または異動の発注を削除してから再度登録して下さい。";
-         $json_list["error_msg"][] = $error_msg;
-       }
-
-       echo json_encode($json_list);
-       return;
      }
 
      // トランザクション開始
@@ -849,32 +851,33 @@ $app->post('/wearer_edit_complete', function ()use($app){
          array_push($src_query_list, "werer_cd = '".$wearer_edit_post['werer_cd']."'");
          array_push($src_query_list, "rntl_sect_cd = '".$wearer_edit_post['rntl_sect_cd']."'");
          array_push($src_query_list, "job_type_cd = '".$wearer_edit_post['job_type_cd']."'");
+         array_push($src_query_list, "order_req_no = '".$shin_order_req_no."'");
          $src_query = implode(' AND ', $src_query_list);
 
          $up_query_list = array();
          // 着用者基本マスタ_統合ハッシュキー(企業ID、着用者コード、レンタル契約No.、レンタル部門コード、職種コード)
-         $m_wearer_std_comb_hkey = md5(
-           $auth['corporate_id']."-".
-           $wearer_edit_post["werer_cd"]."-".
-           $wearer_data_input['agreement_no']."-".
-           $wearer_data_input['section']."-".
-           $wearer_data_input['job_type']
-         );
-         array_push($up_query_list, "m_wearer_std_comb_hkey = '".$m_wearer_std_comb_hkey."'");
-         // 発注No
-         array_push($up_query_list, "order_req_no = '".$shin_order_req_no."'");
-         // 企業ID
-         array_push($up_query_list, "corporate_id = '".$auth['corporate_id']."'");
-         // 着用者コード
-         array_push($up_query_list, "werer_cd = '".$wearer_edit_post['werer_cd']."'");
-         // 契約No
-         array_push($up_query_list, "rntl_cont_no = '".$wearer_data_input['agreement_no']."'");
-         // 部門コード
-         array_push($up_query_list, "rntl_sect_cd = '".$wearer_data_input['section']."'");
-         // 貸与パターン
-         $job_type_cd = explode(':', $wearer_data_input['job_type']);
-         $job_type_cd = $job_type_cd[0];
-         array_push($up_query_list, "job_type_cd = '".$job_type_cd."'");
+//         $m_wearer_std_comb_hkey = md5(
+//           $auth['corporate_id']."-".
+//           $wearer_edit_post["werer_cd"]."-".
+//           $wearer_data_input['agreement_no']."-".
+//           $wearer_data_input['section']."-".
+//           $wearer_data_input['job_type']
+//         );
+//         array_push($up_query_list, "m_wearer_std_comb_hkey = '".$m_wearer_std_comb_hkey."'");
+//         // 発注No
+//         array_push($up_query_list, "order_req_no = '".$shin_order_req_no."'");
+//         // 企業ID
+//         array_push($up_query_list, "corporate_id = '".$auth['corporate_id']."'");
+//         // 着用者コード
+//         array_push($up_query_list, "werer_cd = '".$wearer_edit_post['werer_cd']."'");
+//         // 契約No
+//         array_push($up_query_list, "rntl_cont_no = '".$wearer_data_input['agreement_no']."'");
+//         // 部門コード
+//         array_push($up_query_list, "rntl_sect_cd = '".$wearer_data_input['section']."'");
+//         // 貸与パターン
+//         $job_type_cd = explode(':', $wearer_data_input['job_type']);
+//         $job_type_cd = $job_type_cd[0];
+//         array_push($up_query_list, "job_type_cd = '".$job_type_cd."'");
          // 客先社員コード
          array_push($up_query_list, "cster_emply_cd = '".$wearer_data_input['member_no']."'");
          // 着用者名
@@ -996,7 +999,8 @@ $app->post('/wearer_edit_complete', function ()use($app){
            $wearer_edit_post["werer_cd"]."-".
            $wearer_data_input['agreement_no']."-".
            $wearer_data_input['section']."-".
-           $job_type_cd
+           $job_type_cd."-".
+           $shin_order_req_no
          );
          array_push($calum_list, "m_wearer_std_comb_hkey");
          array_push($values_list, "'".$m_wearer_std_comb_hkey."'");
@@ -1328,36 +1332,38 @@ $app->post('/wearer_edit_send', function ()use($app){
       $paginator = $paginator_model->getPaginate();
       $results = $paginator->items;
       //ChromePhp::LOG($results);
-      foreach ($results as $result) {
-        $order_sts_kbn = $result->order_sts_kbn;
-        $order_reason_kbn = $result->order_reason_kbn;
-      }
+        foreach ($results as $result) {
+            $order_sts_kbn = $result->order_sts_kbn;
+            $order_reason_kbn = $result->order_reason_kbn;
 
-      // 着用者編集の場合、何かしらの発注区分の情報がある際は発注NGとする
-      $json_list["error_code"] = "1";
-      if ($order_sts_kbn == "1" && $order_reason_kbn == "03") {
-        $error_msg = "追加貸与の発注が登録されていた為、操作を完了できませんでした。追加貸与の発注を削除してから再度登録して下さい。";
-        $json_list["error_msg"] = $error_msg;
-      }
-      if ($order_sts_kbn == "2" && ($order_reason_kbn == "05" || $order_reason_kbn == "06" || $order_reason_kbn == "08" || $order_reason_kbn == "20")) {
-        $error_msg = "貸与終了の発注が登録されていた為、操作を完了できませんでした。貸与終了の発注を削除してから再度登録して下さい。";
-        $json_list["error_msg"] = $error_msg;
-      }
-      if ($order_sts_kbn == "2" && $order_reason_kbn == "07") {
-        $error_msg = "不要品返却の発注が登録されていた為、操作を完了できませんでした。不要品返却の発注を削除してから再度登録して下さい。";
-        $json_list["error_msg"] = $error_msg;
-      }
-      if ($order_sts_kbn == "3" || $order_sts_kbn == "4") {
-        $error_msg = "交換の発注が登録されていた為、操作を完了できませんでした。交換の発注を削除してから再度登録して下さい。";
-        $json_list["error_msg"] = $error_msg;
-      }
-      if ($order_sts_kbn == "5" && ($order_reason_kbn == "09" || $order_reason_kbn == "10" || $order_reason_kbn == "11" || $order_reason_kbn == "24")) {
-        $error_msg = "職種変更または異動の発注が登録されていた為、操作を完了できませんでした。職種変更または異動の発注を削除してから再度登録して下さい。";
-        $json_list["error_msg"] = $error_msg;
-      }
-
-      echo json_encode($json_list);
-      return;
+            // 着用者編集の場合、何かしらの発注区分の情報がある際は発注NGとする
+//       if ($order_sts_kbn == "1" && $order_reason_kbn == "03") {
+//         $error_msg = "追加貸与の発注が登録されていた為、操作を完了できませんでした。追加貸与の発注を削除してから再度登録して下さい。";
+//         $json_list["error_msg"][] = $error_msg;
+//       }
+            if ($order_sts_kbn == "2" && ($order_reason_kbn == "05" || $order_reason_kbn == "06" || $order_reason_kbn == "08" || $order_reason_kbn == "20")) {
+                $error_msg = "貸与終了の発注が登録されていた為、操作を完了できませんでした。貸与終了の発注を削除してから再度登録して下さい。";
+                $json_list["error_msg"][] = $error_msg;
+                $json_list["error_code"] = "1";
+            }
+//       if ($order_sts_kbn == "2" && $order_reason_kbn == "07") {
+//         $error_msg = "不要品返却の発注が登録されていた為、操作を完了できませんでした。不要品返却の発注を削除してから再度登録して下さい。";
+//         $json_list["error_msg"][] = $error_msg;
+//       }
+//       if ($order_sts_kbn == "3" || $order_sts_kbn == "4") {
+//         $error_msg = "交換の発注が登録されていた為、操作を完了できませんでした。交換の発注を削除してから再度登録して下さい。";
+//         $json_list["error_msg"][] = $error_msg;
+//       }
+            if ($order_sts_kbn == "5" && ($order_reason_kbn == "09" || $order_reason_kbn == "10" || $order_reason_kbn == "11" || $order_reason_kbn == "24")) {
+                $error_msg = "職種変更または異動の発注が登録されていた為、操作を完了できませんでした。職種変更または異動の発注を削除してから再度登録して下さい。";
+                $json_list["error_msg"][] = $error_msg;
+                $json_list["error_code"] = "1";
+            }
+        }
+        if($json_list["error_code"] == "1"){
+            echo json_encode($json_list);
+            return;
+        }
     }
 
     $m_wearer_std_tran = new MWearerStdTran();
@@ -1425,32 +1431,33 @@ $app->post('/wearer_edit_send', function ()use($app){
         array_push($src_query_list, "werer_cd = '".$wearer_edit_post['werer_cd']."'");
         array_push($src_query_list, "rntl_sect_cd = '".$wearer_edit_post['rntl_sect_cd']."'");
         array_push($src_query_list, "job_type_cd = '".$wearer_edit_post['job_type_cd']."'");
+        array_push($src_query_list, "order_req_no = '".$shin_order_req_no."'");
         $src_query = implode(' AND ', $src_query_list);
 
         $up_query_list = array();
         // 着用者基本マスタ_統合ハッシュキー(企業ID、着用者コード、レンタル契約No.、レンタル部門コード、職種コード)
-        $m_wearer_std_comb_hkey = md5(
-          $auth['corporate_id']."-".
-          $wearer_edit_post["werer_cd"]."-".
-          $wearer_data_input['agreement_no']."-".
-          $wearer_data_input['section']."-".
-          $wearer_data_input['job_type']
-        );
-        array_push($up_query_list, "m_wearer_std_comb_hkey = '".$m_wearer_std_comb_hkey."'");
-        // 発注No
-        array_push($up_query_list, "order_req_no = '".$shin_order_req_no."'");
-        // 企業ID
-        array_push($up_query_list, "corporate_id = '".$auth['corporate_id']."'");
-        // 着用者コード
-        array_push($up_query_list, "werer_cd = '".$wearer_edit_post['werer_cd']."'");
-        // 契約No
-        array_push($up_query_list, "rntl_cont_no = '".$wearer_data_input['agreement_no']."'");
-        // 部門コード
-        array_push($up_query_list, "rntl_sect_cd = '".$wearer_data_input['section']."'");
-        // 貸与パターン
-        $job_type_cd = explode(':', $wearer_data_input['job_type']);
-        $job_type_cd = $job_type_cd[0];
-        array_push($up_query_list, "job_type_cd = '".$job_type_cd."'");
+//        $m_wearer_std_comb_hkey = md5(
+//          $auth['corporate_id']."-".
+//          $wearer_edit_post["werer_cd"]."-".
+//          $wearer_data_input['agreement_no']."-".
+//          $wearer_data_input['section']."-".
+//          $wearer_data_input['job_type']
+//        );
+//        array_push($up_query_list, "m_wearer_std_comb_hkey = '".$m_wearer_std_comb_hkey."'");
+//        // 発注No
+//        array_push($up_query_list, "order_req_no = '".$shin_order_req_no."'");
+//        // 企業ID
+//        array_push($up_query_list, "corporate_id = '".$auth['corporate_id']."'");
+//        // 着用者コード
+//        array_push($up_query_list, "werer_cd = '".$wearer_edit_post['werer_cd']."'");
+//        // 契約No
+//        array_push($up_query_list, "rntl_cont_no = '".$wearer_data_input['agreement_no']."'");
+//        // 部門コード
+//        array_push($up_query_list, "rntl_sect_cd = '".$wearer_data_input['section']."'");
+//        // 貸与パターン
+//        $job_type_cd = explode(':', $wearer_data_input['job_type']);
+//        $job_type_cd = $job_type_cd[0];
+//        array_push($up_query_list, "job_type_cd = '".$job_type_cd."'");
         // 客先社員コード
         array_push($up_query_list, "cster_emply_cd = '".$wearer_data_input['member_no']."'");
         // 着用者名
@@ -1572,7 +1579,8 @@ $app->post('/wearer_edit_send', function ()use($app){
           $wearer_edit_post["werer_cd"]."-".
           $wearer_data_input['agreement_no']."-".
           $wearer_data_input['section']."-".
-          $job_type_cd
+          $job_type_cd."-".
+          $shin_order_req_no
         );
         array_push($calum_list, "m_wearer_std_comb_hkey");
         array_push($values_list, "'".$m_wearer_std_comb_hkey."'");

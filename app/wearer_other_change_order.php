@@ -1725,7 +1725,8 @@ $app->post('/wearer_other_change_insert', function () use ($app) {
                 .$wearer_size_change_post["werer_cd"].'-'
                 .$wearer_data_input['agreement_no'].'-'
                 .$wearer_data_input['section'].'-'
-                .$job_type_cd
+                .$job_type_cd.'-'.
+                $shin_order_req_no
             );
             array_push($calum_list, "m_wearer_std_comb_hkey");
             array_push($values_list, "'".$m_wearer_std_comb_hkey."'");
@@ -2399,7 +2400,7 @@ $app->post('/wearer_other_change_insert', function () use ($app) {
         // トランザクションロールバック
         $m_wearer_std_tran = new MWearerStdTran();
         $results = new Resultset(NULL, $m_wearer_std_tran, $m_wearer_std_tran->getReadConnection()->query('rollback'));
-
+ChromePhp::LOG($e);
         $json_list["error_code"] = "1";
         $error_msg = "入力登録処理において、データ更新エラーが発生しました。";
         array_push($json_list["error_msg"], $error_msg);
