@@ -54,7 +54,6 @@ define([
 							success:function(res){
 								var res_val = res.attributes;
 								if (res_val["error_code"] == "1") {
-									e.target.checked = false;
 									alert(res_val["error_msg"]);
 								}
 							}
