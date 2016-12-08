@@ -1127,7 +1127,7 @@ $app->post('/import_csv', function () use ($app) {
                 if ($check_order_req_no !== $result->order_req_no) {
                     $arg_str = "";
                     $arg_str = "SELECT * FROM  m_input_item WHERE corporate_id = '" . $corporate_id . "' AND rntl_cont_no = '" . $agreement_no . "' AND job_type_cd = '" . $check_job_type_cd . "'";
-                    ChromePhp::log($arg_str);
+                    //ChromePhp::log($arg_str);
                     $m_job_type_count = new Resultset(null, $t_import_job, $t_import_job->getReadConnection()->query($arg_str));
                     $m_job_type_count_obj = (array)$m_job_type_count;
                     if(count($list) !== count($m_job_type_count)){
@@ -1572,7 +1572,7 @@ $app->post('/import_csv', function () use ($app) {
                 $values_list[] = "'" . $agreement_no . "'";
                 $values_list[] = "'" . $result->rntl_sect_cd . "'";
                 $values_list[] = "'" . $result->rent_pattern_code . "'";
-                if(isset($result->job_type_item_cd)){
+                if($result->item_cd == null){
                     $values_list[] = "null";
                 }else{
                     $values_list[] = "'" . $result->job_type_item_cd . "'";
