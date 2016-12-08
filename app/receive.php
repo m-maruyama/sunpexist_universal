@@ -832,7 +832,7 @@ $app->post('/receive/check', function ()use($app) {
             $kbn_name = get_kbn_name($result->order_sts_kbn);
         }
         $json_list["error_code"] = "1";
-        $json_list["error_msg"] = $kbn_name.'の発注があるため、受領出来ません。';
+        $json_list["error_msg"] = $kbn_name.'の発注があるため、受領更新出来ません。';
         echo json_encode($json_list);
         return;
     }
