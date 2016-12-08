@@ -111,24 +111,36 @@ $app->post('/history/search', function ()use($app){
 
     //発注日from
 	if(!empty($cond['order_day_from'])){
-		array_push($query_list,"TO_DATE(t_order.order_req_ymd,'YYYY/MM/DD') >= TO_DATE('".$cond['order_day_from']."','YYYY/MM/DD')");
+        array_push($query_list,"CAST(CASE 
+            WHEN t_order.order_req_ymd = '00000000' THEN NULL 
+            ELSE t_order.order_req_ymd 
+            END 
+            AS DATE) >= CAST('".$cond['order_day_from']."' AS DATE)");
 	}
 	//発注日to
 	if(!empty($cond['order_day_to'])){
-		array_push($query_list,"TO_DATE(t_order.order_req_ymd,'YYYY/MM/DD') <= TO_DATE('".$cond['order_day_to']."','YYYY/MM/DD')");
+        array_push($query_list,"CAST(CASE 
+            WHEN t_order.order_req_ymd = '00000000' THEN NULL 
+            ELSE t_order.order_req_ymd 
+            END 
+            AS DATE) <= CAST('".$cond['order_day_to']."' AS DATE)");
 	}
 
 	//出荷日from
 	if(!empty($cond['send_day_from'])){
-		$cond['send_day_from'] = date('Y-m-d 00:00:00', strtotime($cond['send_day_from']));
-		array_push($query_list,"t_order_state.ship_ymd >= '".$cond['send_day_from']."'");
-//		array_push($query_list,"TO_DATE(t_order_state.ship_ymd,'YYYY/MM/DD') >= TO_DATE('".$cond['send_day_from']."','YYYY/MM/DD')");
+		array_push($query_list,"CAST(CASE 
+            WHEN t_order_state.ship_ymd = '00000000' THEN NULL 
+            ELSE t_order_state.ship_ymd 
+            END 
+            AS DATE) >= CAST('".$cond['send_day_from']."' AS DATE)");
 	}
 	//出荷日to
 	if(!empty($cond['send_day_to'])){
-		$cond['send_day_to'] = date('Y-m-d 23:59:59', strtotime($cond['send_day_to']));
-		array_push($query_list,"t_order_state.ship_ymd <= '".$cond['send_day_to']."'");
-//		array_push($query_list,"TO_DATE(t_order_state.ship_ymd,'YYYY/MM/DD') <= TO_DATE('".$cond['send_day_to']."','YYYY/MM/DD')");
+		array_push($query_list,"CAST(CASE 
+            WHEN t_order_state.ship_ymd = '00000000' THEN NULL 
+            ELSE t_order_state.ship_ymd 
+            END 
+            AS DATE) <= CAST('".$cond['send_day_to']."' AS DATE)");
 	}
 	//個体管理番号
 	if(!empty($cond['individual_number'])){

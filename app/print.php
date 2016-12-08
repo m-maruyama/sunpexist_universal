@@ -913,24 +913,28 @@ $app->post('/print/search', function ()use($app){
 		array_push($query_list,"t_returned_plan_info.size_cd = '".$cond['item_size']."'");
 	}
 	//発注日from
-	if(!empty($cond['order_day_from'])){
-		array_push($query_list,"TO_DATE(t_order.order_req_ymd,'YYYY/MM/DD') >= TO_DATE('".$cond['order_day_from']."','YYYY/MM/DD')");
-	}
+	if(!empty($cond['order_day_from'])) {
+        array_push($query_list, "CAST(CASE 
+            WHEN t_order.order_req_ymd = '00000000' THEN NULL 
+            ELSE t_order.order_req_ymd 
+            END 
+            AS DATE) >= CAST('" . $cond['order_day_from'] . "' AS DATE)");
+    }
 	//発注日to
 	if(!empty($cond['order_day_to'])){
-		array_push($query_list,"TO_DATE(t_order.order_req_ymd,'YYYY/MM/DD') <= TO_DATE('".$cond['order_day_to']."','YYYY/MM/DD')");
+        array_push($query_list,"CAST(CASE 
+            WHEN t_order.order_req_ymd = '00000000' THEN NULL 
+            ELSE t_order.order_req_ymd 
+            END 
+            AS DATE) <= CAST('".$cond['order_day_to']."' AS DATE)");
 	}
 	//返却日from
 	if(!empty($cond['return_day_from'])){
-		$cond['return_day_from'] = date('Y/m/d 00:00:00', strtotime($cond['return_day_from']));
-		array_push($query_list,"t_returned_plan_info.return_date >= '".$cond['return_day_from']."'");
-//		array_push($query_list,"TO_DATE(t_returned_results.return_date,'YYYY/MM/DD') >= TO_DATE('".$cond['return_day_from']."','YYYY/MM/DD')");
+        array_push($query_list,"CAST(t_returned_plan_info.return_date AS DATE) >= CAST('".$cond['return_day_from']."' AS DATE)");
 	}
 	//返却日to
 	if(!empty($cond['return_day_to'])){
-		$cond['return_day_to'] = date('Y/m/d 23:59:59', strtotime($cond['return_day_to']));
-		array_push($query_list,"t_returned_plan_info.return_date <= '".$cond['return_day_to']."'");
-//		array_push($query_list,"TO_DATE(t_returned_results.return_date,'YYYY/MM/DD') <= TO_DATE('".$cond['return_day_to']."','YYYY/MM/DD')");
+        array_push($query_list,"CAST(t_returned_plan_info.return_date AS DATE) <= CAST('".$cond['return_day_to']."' AS DATE)");
 	}
 	//個体管理番号
 	if(!empty($cond['individual_number'])){
