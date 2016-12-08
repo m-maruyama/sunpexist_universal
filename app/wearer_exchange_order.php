@@ -2283,31 +2283,33 @@ $app->post('/wearer_exchange/complete', function ()use($app){
          if ($order_sts_kbn == "2" && ($order_reason_kbn == "05" || $order_reason_kbn == "06" || $order_reason_kbn == "08" || $order_reason_kbn == "20")) {
            $json_list["error_code"] = "1";
            $error_msg = "貸与終了の発注が登録されていた為、操作を完了できませんでした。貸与終了の発注を削除してから再度登録して下さい。";
-           $json_list["error_msg"] = $error_msg;
+           $json_list["error_msg"][] = $error_msg;
            echo json_encode($json_list);
            return;
          }
          if ($order_sts_kbn == "5" && ($order_reason_kbn == "09" || $order_reason_kbn == "10" || $order_reason_kbn == "11" || $order_reason_kbn == "24")) {
            $json_list["error_code"] = "1";
            $error_msg = "職種変更または異動の発注が登録されていた為、操作を完了できませんでした。職種変更または異動の発注を削除してから再度登録して下さい。";
-           $json_list["error_msg"] = $error_msg;
+           $json_list["error_msg"][] = $error_msg;
            echo json_encode($json_list);
            return;
          }
+ /*
          if ($order_sts_kbn == "1" && $order_reason_kbn == "03") {
            $json_list["error_code"] = "1";
            $error_msg = "追加貸与の発注が登録されていた為、操作を完了できませんでした。追加貸与の発注を削除してから再度登録して下さい。";
-           $json_list["error_msg"] = $error_msg;
+           $json_list["error_msg"][] = $error_msg;
            echo json_encode($json_list);
            return;
          }
          if ($order_sts_kbn == "2" && $order_reason_kbn == "07") {
            $json_list["error_code"] = "1";
            $error_msg = "不要品返却の発注が登録されていた為、操作を完了できませんでした。不要品返却の発注を削除してから再度登録して下さい。";
-           $json_list["error_msg"] = $error_msg;
+           $json_list["error_msg"][] = $error_msg;
            echo json_encode($json_list);
            return;
          }
+  */
        }
      }
      //--発注商品一覧--//
