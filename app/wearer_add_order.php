@@ -76,6 +76,7 @@ $app->post('/wearer_add/info', function ()use($app){
   $arg_str .= "m_wearer_std_tran.werer_name as as_werer_name,";
   $arg_str .= "m_wearer_std_tran.werer_name_kana as as_werer_name_kana,";
   $arg_str .= "m_wearer_std_tran.appointment_ymd as as_appointment_ymd,";
+  $arg_str .= "m_wearer_std_tran.sex_kbn as as_sex_kbn,";
   $arg_str .= "m_wearer_std_tran.resfl_ymd as as_resfl_ymd";
   $arg_str .= " FROM ";
   $arg_str .= "m_wearer_std_tran";
@@ -111,6 +112,8 @@ $app->post('/wearer_add/info', function ()use($app){
       $list['werer_name'] = $result->as_werer_name;
       // 着用者名（読み仮名）
       $list['werer_name_kana'] = $result->as_werer_name_kana;
+      // 性別
+      $wearer_other_post['sex_kbn'] = $result->as_sex_kbn;
     }
 
     array_push($all_list, $list);
@@ -521,11 +524,11 @@ $app->post('/wearer_add/info', function ()use($app){
    $all_list = array();
    $list = array();
    $query_list = array();
-   array_push($query_list, "m_wearer_std_tran.corporate_id = '".$auth['corporate_id']."'");
-   array_push($query_list, "m_wearer_std_tran.rntl_cont_no = '".$wearer_other_post['rntl_cont_no']."'");
-   array_push($query_list, "m_wearer_std_tran.werer_cd = '".$wearer_other_post['werer_cd']."'");
-   array_push($query_list, "m_wearer_std_tran.rntl_sect_cd = '".$wearer_other_post['rntl_sect_cd']."'");
-   array_push($query_list, "m_wearer_std_tran.job_type_cd = '".$wearer_other_post['job_type_cd']."'");
+   array_push($query_list, "t_order_tran.corporate_id = '".$auth['corporate_id']."'");
+   array_push($query_list, "t_order_tran.rntl_cont_no = '".$wearer_other_post['rntl_cont_no']."'");
+   array_push($query_list, "t_order_tran.werer_cd = '".$wearer_other_post['werer_cd']."'");
+   array_push($query_list, "t_order_tran.rntl_sect_cd = '".$wearer_other_post['rntl_sect_cd']."'");
+   array_push($query_list, "t_order_tran.job_type_cd = '".$wearer_other_post['job_type_cd']."'");
    // 発注状況区分
    array_push($query_list, "t_order_tran.order_sts_kbn = '1'");
    // 理由区分
@@ -539,12 +542,7 @@ $app->post('/wearer_add/info', function ()use($app){
    $arg_str .= "t_order_tran.size_cd as as_order_size_cd,";
    $arg_str .= "t_order_tran.order_qty as as_order_qty";
    $arg_str .= " FROM ";
-   $arg_str .= "m_wearer_std_tran INNER JOIN t_order_tran";
-   $arg_str .= " ON (m_wearer_std_tran.corporate_id = t_order_tran.corporate_id";
-   $arg_str .= " AND m_wearer_std_tran.rntl_cont_no = t_order_tran.rntl_cont_no";
-   $arg_str .= " AND m_wearer_std_tran.werer_cd = t_order_tran.werer_cd";
-   $arg_str .= " AND m_wearer_std_tran.rntl_sect_cd = t_order_tran.rntl_sect_cd";
-   $arg_str .= " AND m_wearer_std_tran.job_type_cd = t_order_tran.job_type_cd)";
+   $arg_str .= "t_order_tran";
    $arg_str .= " WHERE ";
    $arg_str .= $query;
    $arg_str .= " ORDER BY as_order_item_cd ASC, as_order_color_cd ASC";
@@ -577,13 +575,14 @@ $app->post('/wearer_add/info', function ()use($app){
        array_push($query_list, "m_job_type.job_type_cd = '".$wearer_other_post['job_type_cd']."'");
        array_push($query_list, "m_item.item_cd = '".$result->as_order_item_cd."'");
        array_push($query_list, "m_item.color_cd= '".$result->as_order_color_cd."'");
+       array_push($query_list, "m_item.size_cd= '".$result->as_order_size_cd."'");
        $query = implode(' AND ', $query_list);
 
        $arg_str = "";
        $arg_str = "SELECT ";
        $arg_str .= " * ";
        $arg_str .= " FROM ";
-       $arg_str .= "(SELECT distinct on (m_item.item_cd, m_item.color_cd, m_input_item.job_type_item_cd) ";
+       $arg_str .= "(SELECT distinct on (m_item.item_cd, m_item.color_cd, m_item.size_cd,m_input_item.job_type_item_cd) ";
        $arg_str .= "m_item.item_cd as as_item_cd,";
        $arg_str .= "m_item.color_cd as as_color_cd,";
        $arg_str .= "m_item.size_cd as as_size_cd,";
@@ -1660,9 +1659,8 @@ $app->post('/wearer_add/complete', function ()use($app){
        }
 
        //--発注情報トラン登録--//
-       $cnt = 1;
-       // 発注商品一覧内容登録
        if (!empty($item_list)) {
+         $cnt = 1;
          // 現在の追加貸与発注の情報をクリーン
          //ChromePhp::LOG("発注情報トランクリーン");
          $query_list = array();
@@ -1676,18 +1674,16 @@ $app->post('/wearer_add/complete', function ()use($app){
          // 着用者状況区分「その他（着用開始）」
          array_push($query_list, "werer_sts_kbn = '7'");
          $query = implode(' AND ', $query_list);
-
          $arg_str = "";
          $arg_str = "DELETE FROM ";
          $arg_str .= "t_order_tran";
          $arg_str .= " WHERE ";
          $arg_str .= $query;
-         //ChromePhp::LOG($arg_str);
          $t_order_tran = new TOrderTran();
          $results = new Resultset(NULL, $t_order_tran, $t_order_tran->getReadConnection()->query($arg_str));
          $results_cnt = $result_obj["\0*\0_count"];
-         //ChromePhp::LOG($results_cnt);
-         //ChromePhp::LOG("発注情報トラン登録");
+
+         // 発注商品一覧内容登録
          foreach ($item_list as $item_map) {
            $calum_list = array();
            $values_list = array();
