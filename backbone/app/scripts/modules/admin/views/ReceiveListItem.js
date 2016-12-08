@@ -25,7 +25,6 @@ define([
 					this.triggerMethod('click:a', this.model);
 				},
 				'change @ui.receive_check': function(e){
-					if(e.target.checked){
 						//チェックがオンの時に対象商品が返却情報トランにないかチェックする
 						var that = this;
 						var receive_check_id = e.target.id;
@@ -58,7 +57,6 @@ define([
 								}
 							}
 						});
-					}
                     //
                     //
 					// var list_cnt = $('#list_cnt').val();
