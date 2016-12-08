@@ -160,9 +160,11 @@ $app->post('/import_csv', function () use ($app) {
                         exit;
                     }
                 }
+            }
+            if ($line_list[7] == '1') {
                 if (empty($line_list[8])) {
                     if (count($error_list) < 20) {
-                        $error_list[] = $line_cnt . '行目の発注コードを入力してください。';
+                        $error_list[] = $line_cnt . '行目の商品コードを入力してください。';
                     } else {
                         $json_list['errors'] = $error_list;
                         $json_list["error_code"] = "1";
@@ -170,6 +172,12 @@ $app->post('/import_csv', function () use ($app) {
                         exit;
                     }
                 }
+            }elseif ($line_list[7] == '0' || $line_list[7] == '5'){
+
+                $line_list[8] = NULL;
+            }
+
+            if ($line_list[7] == '1') {
                 if (empty($line_list[9])) {
                     if (count($error_list) < 20) {
                         $error_list[] = $line_cnt . '行目のサイズコードを入力してください。';
@@ -180,6 +188,12 @@ $app->post('/import_csv', function () use ($app) {
                         exit;
                     }
                 }
+            }elseif ($line_list[7] == '0' || $line_list[7] == '5'){
+
+                $line_list[9] = NULL;
+            }
+
+            if ($line_list[7] == '1') {
                 if (empty($line_list[10])) {
                     if (count($error_list) < 20) {
                         $error_list[] = $line_cnt . '行目の色コードを入力してください。';
@@ -190,6 +204,12 @@ $app->post('/import_csv', function () use ($app) {
                         exit;
                     }
                 }
+            }elseif ($line_list[7] == '0' || $line_list[7] == '5'){
+
+                $line_list[10] = NULL;
+            }
+
+            if ($line_list[7] == '1') {
                 if (empty($line_list[11])) {
                     if (count($error_list) < 20) {
                         $error_list[] = $line_cnt . '行目の数量を入力してください。';
@@ -200,6 +220,11 @@ $app->post('/import_csv', function () use ($app) {
                         exit;
                     }
                 }
+            }elseif ($line_list[7] == '0' || $line_list[7] == '5'){
+
+                $line_list[11] = 0;
+            }
+
                 if (empty($line_list[13])) {
                     if (count($error_list) < 20) {
                         $error_list[] = $line_cnt . '行目の理由区分を入力してください。';
@@ -210,9 +235,8 @@ $app->post('/import_csv', function () use ($app) {
                         exit;
                     }
                 }
-            } elseif ($line_list[7] == '0') {
 
-            }
+
             //日本語文字数チェック
             //着用者漢字
             if (byte_cnv($line_list[1]) > 100) {
@@ -753,7 +777,6 @@ $app->post('/import_csv', function () use ($app) {
     $arg_str .= "WHERE NOT EXISTS ";
     $arg_str .= "( SELECT * FROM (SELECT * FROM m_wearer_std WHERE corporate_id = '$corporate_id' AND rntl_cont_no = '$agreement_no' AND job_type_cd = T1.rent_pattern_code) AS T2 ";
     $arg_str .= "WHERE T1.cster_emply_cd = T2.cster_emply_cd AND T2.werer_sts_kbn = '1') ";
-
     $results = new Resultset(null, $t_import_job, $t_import_job->getReadConnection()->query($arg_str));
     $result_obj = (array)$results;
     $results_cnt = $result_obj["\0*\0_count"];
@@ -795,7 +818,6 @@ $app->post('/import_csv', function () use ($app) {
     $arg_str .= "t_import_job.cster_emply_cd = m_wearer_std_tran.cster_emply_cd ";
     $arg_str .= "WHERE ";
     $arg_str .= "t_import_job.job_no = '" . $job_no . "' AND m_wearer_std_tran.corporate_id = '$corporate_id' AND m_wearer_std_tran.rntl_cont_no = '$agreement_no' ";
-
     $results = new Resultset(null, $t_import_job, $t_import_job->getReadConnection()->query($arg_str));
     $result_obj = (array)$results;
     $results_cnt = $result_obj["\0*\0_count"];
@@ -897,7 +919,7 @@ $app->post('/import_csv', function () use ($app) {
     $arg_str5 = "SELECT ";
     $arg_str5 .= " * ";
     $arg_str5 .= " FROM ";
-    $arg_str5 .= "(SELECT * FROM t_import_job WHERE job_no = '" . $job_no . "') AS T1";
+    $arg_str5 .= "(SELECT * FROM t_import_job WHERE order_kbn = '1' AND job_no = '" . $job_no . "') AS T1";
     $arg_str5 .= " WHERE NOT EXISTS ";
     $arg_str5 .= "(SELECT ";
     $arg_str5 .= " * ";
@@ -928,11 +950,12 @@ $app->post('/import_csv', function () use ($app) {
             }
         }
     }
+
     //マスターチェック6  商品マスタのカラーコード検索条件
     $arg_str6 = "SELECT ";
     $arg_str6 .= " * ";
     $arg_str6 .= " FROM ";
-    $arg_str6 .= "(SELECT * FROM t_import_job WHERE job_no = '" . $job_no . "') AS T1";
+    $arg_str6 .= "(SELECT * FROM t_import_job WHERE order_kbn = '1' AND job_no = '" . $job_no . "') AS T1";
     $arg_str6 .= " WHERE NOT EXISTS ";
     $arg_str6 .= "(SELECT ";
     $arg_str6 .= " * ";
@@ -963,7 +986,7 @@ $app->post('/import_csv', function () use ($app) {
             }
         }
     }
-    //C-3-5 社員コードごとの客先商品id(emply_order_req_no)の重複 検索条件
+    //C-3-5 社員コードごとのお客様発注no(emply_order_req_no)の重複 検索条件
     $arg_str8 = "SELECT ";
     $arg_str8 .= " * ";
     $arg_str8 .= " FROM t_import_job";
@@ -1549,15 +1572,25 @@ $app->post('/import_csv', function () use ($app) {
                 $values_list[] = "'" . $agreement_no . "'";
                 $values_list[] = "'" . $result->rntl_sect_cd . "'";
                 $values_list[] = "'" . $result->rent_pattern_code . "'";
-                $values_list[] = "'" . $result->job_type_item_cd . "'";
+                if(isset($result->job_type_item_cd)){
+                    $values_list[] = "null";
+                }else{
+                    $values_list[] = "'" . $result->job_type_item_cd . "'";
+                }
                 $values_list[] = "'" . $result->werer_cd . "'";
-                $values_list[] = "'" . $result->item_cd . "'";
-                $values_list[] = "'" . $result->color_cd . "'";
-                $values_list[] = "'" . $result->size_cd . "'";
-                $values_list[] = "' '";
-                $values_list[] = "' '";
-                $values_list[] = "' '";
-                $values_list[] = "' '";
+                if($result->item_cd == null){
+                    $values_list[] = "null";
+                    $values_list[] = "null";
+                    $values_list[] = "null";
+                }else{
+                    $values_list[] = "'" . $result->item_cd . "'";
+                    $values_list[] = "'" . $result->color_cd . "'";
+                    $values_list[] = "'" . $result->size_cd . "'";
+                }
+                $values_list[] = "null";
+                $values_list[] = "null";
+                $values_list[] = "null";
+                $values_list[] = "null";
                 $values_list[] = "'" . $result->ship_to_cd . "'";
                 $values_list[] = "'" . $result->ship_to_brnch_cd . "'";
                 $values_list[] = $result->quantity;
@@ -1685,7 +1718,6 @@ $app->post('/import_csv', function () use ($app) {
         $arg_str .= "(" . $calum_query . ")";
         $arg_str .= " VALUES ";
         $arg_str .= $values_query;
-        //ChromePhp::LOG($arg_str);
         $results = new Resultset(NULL, $t_import_job, $t_import_job->getReadConnection()->query($arg_str));
 
         // トランザクション-コミット
@@ -1801,28 +1833,31 @@ function chk_format($error_list, $line_list, $line_cnt)
             array_push($error_list, error_msg_format($line_cnt, '発注区分'));
         }
     }
-    if (isset($line_list[8])) {
-        //商品コード
-        if (!chk_pattern($line_list[8], 6)) {
-            array_push($error_list, error_msg_format($line_cnt, '商品コード'));
+    //異動と着用者登録のみの場合は必須チェックをskip
+    if($line_list[7] == '1'){
+        if (isset($line_list[8])) {
+            //商品コード
+            if (!chk_pattern($line_list[8], 6)) {
+                array_push($error_list, error_msg_format($line_cnt, '商品コード'));
+            }
         }
-    }
-    if (isset($line_list[9])) {
-        //サイズコード
-        if (!chk_pattern($line_list[9], 7)) {
-            array_push($error_list, error_msg_format($line_cnt, 'サイズコード'));
+        if (isset($line_list[9])) {
+            //サイズコード
+            if (!chk_pattern($line_list[9], 7)) {
+                array_push($error_list, error_msg_format($line_cnt, 'サイズコード'));
+            }
         }
-    }
-    if (isset($line_list[10])) {
-        //色コード
-        if (!chk_pattern($line_list[10], 8)) {
-            array_push($error_list, error_msg_format($line_cnt, '色コード'));
+        if (isset($line_list[10])) {
+            //色コード
+            if (!chk_pattern($line_list[10], 8)) {
+                array_push($error_list, error_msg_format($line_cnt, '色コード'));
+            }
         }
-    }
-    if (isset($line_list[11])) {
-        //数量
-        if (!chk_pattern($line_list[11], 9)) {
-            array_push($error_list, error_msg_format($line_cnt, '数量'));
+        if (isset($line_list[11])) {
+            //数量
+            if (!chk_pattern($line_list[11], 9)) {
+                array_push($error_list, error_msg_format($line_cnt, '数量'));
+            }
         }
     }
     if (isset($line_list[12])) {
