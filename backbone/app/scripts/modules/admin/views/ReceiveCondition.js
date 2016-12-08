@@ -36,8 +36,8 @@ define([
 				"item_size": "#item_size",
 				'order_day_from': '#order_day_from',
 				'order_day_to': '#order_day_to',
-				'send_day_from': '#send_day_from',
-				'send_day_to': '#send_day_to',
+				'receipt_day_from': '#receipt_day_from',
+				'receipt_day_to': '#receipt_day_to',
 				'status0': '#status0',
 				'status1': '#status1',
 				'order_kbn0': '#order_kbn0',
@@ -84,8 +84,8 @@ define([
 				"#item_size": "item_size",
 				'#order_day_from': 'order_day_from',
 				'#order_day_to': 'order_day_to',
-				'#send_day_from': 'send_day_from',
-				'#send_day_to': 'send_day_to',
+				'#receipt_day_from': 'receipt_day_from',
+				'#receipt_day_to': 'receipt_day_to',
 				'#status0': 'status0',
 				'#status1': 'status1',
 				'#order_kbn0': 'order_kbn0',
@@ -228,8 +228,8 @@ define([
 					this.model.set('item_size', this.ui.item_size.val());
 					this.model.set('order_day_from', this.ui.order_day_from.val());
 					this.model.set('order_day_to', this.ui.order_day_to.val());
-					this.model.set('send_day_from', this.ui.send_day_from.val());
-					this.model.set('send_day_to', this.ui.send_day_to.val());
+					this.model.set('receipt_day_from', this.ui.receipt_day_from.val());
+					this.model.set('receipt_day_to', this.ui.receipt_day_to.val());
 					this.model.set('status0', this.ui.status0.prop('checked'));
 					this.model.set('status1', this.ui.status1.prop('checked'));
 					this.model.set('order_kbn0', this.ui.order_kbn0.prop('checked'));

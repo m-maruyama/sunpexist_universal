@@ -107,24 +107,29 @@ $app->post('/receive/search', function ()use($app){
 	}
 	//発注日from
 	if(!empty($cond['order_day_from'])){
-		array_push($query_list,"TO_DATE(t_order.order_req_ymd,'YYYY/MM/DD') >= TO_DATE('".$cond['order_day_from']."','YYYY/MM/DD')");
+        array_push($query_list,"CAST(CASE 
+            WHEN t_order.order_req_ymd = '00000000' THEN NULL 
+            ELSE t_order.order_req_ymd 
+            END 
+            AS DATE) >= CAST('".$cond['order_day_from']."' AS DATE)");
 	}
 	//発注日to
 	if(!empty($cond['order_day_to'])){
-		array_push($query_list,"TO_DATE(t_order.order_req_ymd,'YYYY/MM/DD') <= TO_DATE('".$cond['order_day_to']."','YYYY/MM/DD')");
+        array_push($query_list,"CAST(CASE 
+            WHEN t_order.order_req_ymd = '00000000' THEN NULL 
+            ELSE t_order.order_req_ymd 
+            END 
+            AS DATE) <= CAST('".$cond['order_day_to']."' AS DATE)");
 	}
 	//受領日from
 	if(!empty($cond['receipt_day_from'])){
-		$cond['receipt_day_from'] = date('Y-m-d 00:00:00', strtotime($cond['receipt_day_from']));
-		array_push($query_list,"t_delivery_goods_state_details.receipt_date >= '".$cond['receipt_day_from']."'");
-//		array_push($query_list,"TO_DATE(t_order_state.ship_ymd,'YYYY/MM/DD') >= TO_DATE('".$cond['send_day_from']."','YYYY/MM/DD')");
+        array_push($query_list,"CAST(t_delivery_goods_state_details.receipt_date AS DATE) >= CAST('".$cond['receipt_day_from']."' AS DATE)");
 	}
 	//受領日to
 	if(!empty($cond['receipt_day_to'])){
-		$cond['receipt_day_to'] = date('Y-m-d 23:59:59', strtotime($cond['receipt_day_to']));
-		array_push($query_list,"t_delivery_goods_state_details.receipt_date <= '".$cond['receipt_day_to']."'");
-//		array_push($query_list,"TO_DATE(t_order_state.ship_ymd,'YYYY/MM/DD') <= TO_DATE('".$cond['send_day_to']."','YYYY/MM/DD')");
-	}
+        array_push($query_list,"CAST(t_delivery_goods_state_details.receipt_date AS DATE) <= CAST('".$cond['receipt_day_to']."' AS DATE)");
+
+    }
 	//個体管理番号
 	if(!empty($cond['individual_number'])){
 		array_push($query_list,"t_delivery_goods_state_details.individual_ctrl_no LIKE '".$cond['individual_number']."%'");

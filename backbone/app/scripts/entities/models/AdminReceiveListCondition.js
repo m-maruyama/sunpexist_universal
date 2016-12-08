@@ -22,8 +22,8 @@ define([
 					item_size : null,
 					order_day_from : null,
 					order_day_to : null,
-					send_day_from : null,
-					send_day_to : null,
+					receipt_day_from : null,
+					receipt_day_to : null,
 					individual_number : null,
 					status0: this.get('status0'),
 					status1: this.get('status1'),
@@ -97,11 +97,11 @@ define([
 				if(this.get('order_day_to')) {
 					result.order_day_to = this.get('order_day_to');
 				}
-				if(this.get('send_day_from')) {
-					result.send_day_from = this.get('send_day_from');
+				if(this.get('receipt_day_from')) {
+					result.receipt_day_from = this.get('receipt_day_from');
 				}
-				if(this.get('send_day_to')) {
-					result.send_day_to = this.get('send_day_to');
+				if(this.get('receipt_day_to')) {
+					result.receipt_day_to = this.get('receipt_day_to');
 				}
 				if(this.get('individual_number')) {
 					result.individual_number = this.get('individual_number');
