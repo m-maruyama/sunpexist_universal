@@ -331,45 +331,150 @@ $app->post('/wearer_edit/search', function ()use($app){
             $list['job_type_name'] = "-";
         }
         //---「着用者編集」、「返却伝票ダウンロード」ボタンの生成---//
-        if ($list['wearer_tran_flg'] == "1") {
-          if ($result->as_order_sts_kbn !== '6') {
-            //パターンA： 着用者基本マスタトラン．発注状況区分 = 着用者編集のデータが無い場合、ボタンの文言は「着用者編集」で表示する。
-            $list['wearer_edit_button'] = "着用者編集";
-            $list['wearer_edit_red'] = "";
-            $list['disabled'] = "";
-            $list['return_reciept_button'] = false;
-          } elseif ($result->as_order_sts_kbn == '6' && $result->as_snd_kbn == '0') {
-            //パターンB： 着用者基本マスタトラン．発注状況区分 = 着用者編集のデータがある場合、かつ、着用者基本マスタトラン．送信区分 = 未送信の場合、ボタンの文言は「着用者編集[済]」で表示する。
-            $list['wearer_edit_button'] = "着用者編集";
-            $list['wearer_edit_red'] = "[済]";
-            $list['disabled'] = "";
-            $list['return_reciept_button'] = true;
-          } elseif ($result->as_order_sts_kbn == '6' && $result->as_snd_kbn == '1') {
-            //パターンC： 着用者基本マスタトラン．発注状況区分 = 着用者編集のデータがある場合、かつ、着用者基本マスタトラン．送信区分 = 送信済の場合、ボタンの文言は「着用者編集[済]」で非活性表示する。
-            $list['wearer_edit_button'] = "着用者編集";
-            $list['wearer_edit_red'] = "[済]";
-            $list['disabled'] = "disabled";
-            $list['return_reciept_button'] = true;
-          } elseif ($result->as_snd_kbn == '9') {
-            //パターンD： 着用者基本マスタトラン．送信区分 = 処理中のデータがある場合、ボタンの文言は「着用者編集」で非活性表示する。
-            $list['wearer_edit_button'] = "着用者編集";
-            $list['wearer_edit_red'] = "";
-            $list['disabled'] = "disabled";
-            $list['return_reciept_button'] = false;
-          } else {
-            // 上記パターンに該当しない場合、デフォルトでボタンの文言は「着用者編集」を表示する。
-            $list['wearer_edit_button'] = "着用者編集";
-            $list['wearer_edit_red'] = "";
-            $list['disabled'] = "";
-            $list['return_reciept_button'] = false;
+
+          // 着用者基本マスタトラン参照
+          $query_list = array();
+          $query_list[] = "corporate_id = '".$auth['corporate_id']."'";
+          $query_list[] = "rntl_cont_no = '".$list['rntl_cont_no']."'";
+          $query_list[] = "werer_cd = '".$list['werer_cd']."'";
+          $query = implode(' AND ', $query_list);
+          $arg_str = "";
+          $arg_str .= "SELECT distinct on (order_req_no) ";
+          $arg_str .= "*";
+          $arg_str .= " FROM ";
+          $arg_str .= "m_wearer_std_tran";
+          $arg_str .= " WHERE ";
+          $arg_str .= $query;
+          $m_wearer_std_tran = new MWearerStdTran();
+          $m_wearer_std_tran_results = new Resultset(NULL, $m_wearer_std_tran, $m_wearer_std_tran->getReadConnection()->query($arg_str));
+          $result_obj = (array)$m_wearer_std_tran_results;
+          $m_wearer_std_tran_cnt = $result_obj["\0*\0_count"];
+          if ($m_wearer_std_tran_cnt > 0) {
+              $paginator_model = new PaginatorModel(
+                  array(
+                      "data"  => $m_wearer_std_tran_results,
+                      "limit" => $m_wearer_std_tran_cnt,
+                      "page" => 1
+                  )
+              );
+              $paginator = $paginator_model->getPaginate();
+              $m_wearer_std_tran_results = $paginator->items;
+              $patarn_flg = true;
+              $list['btnPattern'] = '';
+              foreach ($m_wearer_std_tran_results as $m_wearer_std_tran_result) {
+                  if ($m_wearer_std_tran_result->snd_kbn == '9') {
+                      $patarn_flg = false;
+                      break;
+                  }
+              }
+              if (!$patarn_flg) {
+                  $list['wearer_edit_button'] = "着用者編集";
+                  $list['wearer_edit_red'] = "";
+                  $list['disabled'] = "disabled";
+                  $list['btnPattern'] = "D";
+              }
+              if(!$list['btnPattern']){
+                  foreach ($m_wearer_std_tran_results as $m_wearer_std_tran_result) {
+                      //パターンA： 着用者基本マスタトラン．発注状況区分 = 着用者編集のデータが無い場合、ボタンの文言は「着用者編集」で表示する。
+                      if ($m_wearer_std_tran_result->order_sts_kbn == '6') {
+                          $patarn_flg = true;
+                          break;
+                      }
+                  }
+                  if (!$patarn_flg) {
+                      $list['wearer_edit_button'] = "着用者編集";
+                      $list['wearer_edit_red'] = "";
+                      $list['disabled'] = "";
+                      $list['return_reciept_button'] = false;
+                      $list['btnPattern'] = "A";
+                  }
+              }
+              if(!$list['btnPattern']){
+                  foreach ($m_wearer_std_tran_results as $m_wearer_std_tran_result) {
+                      //パターンB： 着用者基本マスタトラン．発注状況区分 = 着用者編集のデータがある場合、かつ、着用者基本マスタトラン．送信区分 = 未送信の場合、ボタンの文言は「着用者編集[済]」で表示する。
+                      if ($m_wearer_std_tran_result->order_sts_kbn == '6' && $m_wearer_std_tran_result->snd_kbn == '0') {
+                          $patarn_flg = false;
+                          break;
+                      }
+                  }
+                  if (!$patarn_flg) {
+                      $list['wearer_edit_button'] = "着用者編集";
+                      $list['wearer_edit_red'] = "[済]";
+                      $list['disabled'] = "";
+                      $list['return_reciept_button'] = true;
+                      $list['btnPattern'] = "B";
+                  }
+              }
+
+              if(!$list['btnPattern']){
+                  foreach ($m_wearer_std_tran_results as $m_wearer_std_tran_result) {
+                      //パターンC： 着用者基本マスタトラン．発注状況区分 = 着用者編集のデータがある場合、かつ、着用者基本マスタトラン．送信区分 = 送信済の場合、ボタンの文言は「着用者編集[済]」で非活性表示する。
+                      if ($m_wearer_std_tran_result->order_sts_kbn == '6' && $m_wearer_std_tran_result->snd_kbn == '1') {
+                          $patarn_flg = false;
+                          break;
+                      }
+                  }
+                  if (!$patarn_flg) {
+                      $list['wearer_edit_button'] = "着用者編集";
+                      $list['wearer_edit_red'] = "[済]";
+                      $list['disabled'] = "disabled";
+                      $list['return_reciept_button'] = true;
+                      $list['btnPattern'] = "C";
+                  }
+              }
+              if(!$list['btnPattern']){
+                  // 上記パターンに該当しない場合、デフォルトでボタンの文言は「着用者編集」を表示する。
+                  $list['wearer_edit_button'] = "着用者編集";
+                  $list['wearer_edit_red'] = "";
+                  $list['disabled'] = "";
+                  $list['return_reciept_button'] = false;
+              }
+          }else{
+              // 上記パターンに該当しない場合、デフォルトでボタンの文言は「着用者編集」を表示する。
+              $list['wearer_edit_button'] = "着用者編集";
+              $list['wearer_edit_red'] = "";
+              $list['disabled'] = "";
+              $list['return_reciept_button'] = false;
           }
-        } else {
-          // 上記パターンに該当しない場合、デフォルトでボタンの文言は「着用者編集」を表示する。
-          $list['wearer_edit_button'] = "着用者編集";
-          $list['wearer_edit_red'] = "";
-          $list['disabled'] = "";
-          $list['return_reciept_button'] = false;
-        }
+//        if ($list['wearer_tran_flg'] == "1") {
+//          if ($result->as_order_sts_kbn !== '6') {
+//            //パターンA： 着用者基本マスタトラン．発注状況区分 = 着用者編集のデータが無い場合、ボタンの文言は「着用者編集」で表示する。
+//            $list['wearer_edit_button'] = "着用者編集";
+//            $list['wearer_edit_red'] = "";
+//            $list['disabled'] = "";
+//            $list['return_reciept_button'] = false;
+//          } elseif ($result->as_order_sts_kbn == '6' && $result->as_snd_kbn == '0') {
+//            //パターンB： 着用者基本マスタトラン．発注状況区分 = 着用者編集のデータがある場合、かつ、着用者基本マスタトラン．送信区分 = 未送信の場合、ボタンの文言は「着用者編集[済]」で表示する。
+//            $list['wearer_edit_button'] = "着用者編集";
+//            $list['wearer_edit_red'] = "[済]";
+//            $list['disabled'] = "";
+//            $list['return_reciept_button'] = true;
+//          } elseif ($result->as_order_sts_kbn == '6' && $result->as_snd_kbn == '1') {
+//            //パターンC： 着用者基本マスタトラン．発注状況区分 = 着用者編集のデータがある場合、かつ、着用者基本マスタトラン．送信区分 = 送信済の場合、ボタンの文言は「着用者編集[済]」で非活性表示する。
+//            $list['wearer_edit_button'] = "着用者編集";
+//            $list['wearer_edit_red'] = "[済]";
+//            $list['disabled'] = "disabled";
+//            $list['return_reciept_button'] = true;
+//          } elseif ($result->as_snd_kbn == '9') {
+//            //パターンD： 着用者基本マスタトラン．送信区分 = 処理中のデータがある場合、ボタンの文言は「着用者編集」で非活性表示する。
+//            $list['wearer_edit_button'] = "着用者編集";
+//            $list['wearer_edit_red'] = "";
+//            $list['disabled'] = "disabled";
+//            $list['return_reciept_button'] = false;
+//          } else {
+//            // 上記パターンに該当しない場合、デフォルトでボタンの文言は「着用者編集」を表示する。
+//            $list['wearer_edit_button'] = "着用者編集";
+//            $list['wearer_edit_red'] = "";
+//            $list['disabled'] = "";
+//            $list['return_reciept_button'] = false;
+//          }
+//        } else {
+//          // 上記パターンに該当しない場合、デフォルトでボタンの文言は「着用者編集」を表示する。
+//          $list['wearer_edit_button'] = "着用者編集";
+//          $list['wearer_edit_red'] = "";
+//          $list['disabled'] = "";
+//          $list['return_reciept_button'] = false;
+//        }
 
         // 発注入力へのパラメータ設定
         $list['param'] = '';

@@ -330,7 +330,7 @@ $app->post('/wearer_search/search', function ()use($app){
                     }
                 }
                 if ($list['btnPattern'] == "") {
-                    //パターンD： 発注情報トラン．発注状況区分 = 貸与 かつ、発注情報トラン．理由区分 = 追加貸与以外のデータがある場合、かつ、着用者基本マスタトラン．送信区分 = 送信済の場合、ボタンの文言は「貸与開始[済]」で非活性表示する。
+                    //パターンD： 発注情報トラン．発注状況区分 = 貸与 かつ、発注情報トラン．理由区分 = 追加貸与以外のデータがある場合、かつ、着用者基本マスタトラン．送信区分 = 送信中の場合、ボタンの文言は「貸与開始[済]」で非活性表示する。
                     $patarn_flg = true;
                     foreach ($t_order_tran_results as $t_order_tran_result) {
                         $order_req_no = $t_order_tran_result->order_req_no;
@@ -344,9 +344,9 @@ $app->post('/wearer_search/search', function ()use($app){
                     }
                     if (!$patarn_flg) {
                         $list['wearer_input_button'] = "貸与開始";
-                        $list['wearer_input_red'] = "[済]";
+                        $list['wearer_input_red'] = "";
                         $list['disabled'] = "disabled";
-                        $list['btnPattern'] = "C";
+                        $list['btnPattern'] = "D";
                     }
                 }
             }
