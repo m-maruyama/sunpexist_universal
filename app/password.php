@@ -112,15 +112,19 @@ $app->post('/password', function () use ($app) {
             echo json_encode($json_list);
             return true;
         }
-        $old_pass_list = array();
-        $old_pass_list = json_decode($account[0]->old_pass_word, true);
-        foreach ($old_pass_list as $old_pass) {
-            if (md5($params['password']) == $old_pass) {
-                //過去のパスワード10回分チェック、同じパスワードがあったらエラー
-                // エラーメッセージを表示して処理を終了する。
-                $json_list['status'] = 5;
-                echo json_encode($json_list);
-                return true;
+        //過去のパスワードがあった場合、下記の処理を実施
+        if (json_decode($account[0]->old_pass_word, true) !== null){
+            $old_pass_list = array();
+            $old_pass_list = json_decode($account[0]->old_pass_word, true);
+
+            foreach ($old_pass_list as $old_pass) {
+                if (md5($params['password']) == $old_pass) {
+                    //過去のパスワード10回分チェック、同じパスワードがあったらエラー
+                    // エラーメッセージを表示して処理を終了する。
+                    $json_list['status'] = 5;
+                    echo json_encode($json_list);
+                    return true;
+                }
             }
         }
         //パスワード更新
