@@ -1392,7 +1392,7 @@ $app->post('/wearer_order_delete', function ()use($app){
   }
     // トランザクションコミット
     $results = new Resultset(NULL, $t_order_tran, $t_order_tran->getReadConnection()->query('commit'));
-    $app->session->remove("wearer_odr_post");
+//    $app->session->remove("wearer_odr_post");
   echo json_encode($json_list);
 });
 /**

@@ -316,6 +316,7 @@ define([
 								that.triggerMethod('error_msg', res_val["error_msg"]);
 							}else{
 								window.sessionStorage.setItem('referrer', 'wearer_order');
+								window.sessionStorage.removeItem('wearer_input_ref');
 								location.href="wearer_order_complete.html";
 							}
 						}
@@ -374,6 +375,7 @@ define([
 									that.triggerMethod('error_msg', res_val["error_msg"]);
 								}else{
 									window.sessionStorage.setItem('referrer', 'wearer_order_send');
+									window.sessionStorage.removeItem('wearer_input_ref');
 									location.href="wearer_order_complete.html";
 								}
 							}

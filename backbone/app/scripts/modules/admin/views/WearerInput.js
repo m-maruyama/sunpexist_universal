@@ -41,10 +41,7 @@ define([
 			onRender: function() {
 				var that = this;
 				// 検索画面以外から遷移してきた場合は「着用者入力取消」ボタンを隠す
-				if(
-					(window.sessionStorage.getItem('wearer_input_ref') != 'wearer_search')
-				)
-				{
+				if((window.sessionStorage.getItem('wearer_input_ref') != 'wearer_search')) {
 					this.ui.input_delete_button.hide();
 				}
 				// 初期表示時は「着用者のみ登録して終了」「商品明細入力へ」ボタンを隠す
@@ -115,30 +112,9 @@ define([
 				},
 				'click @ui.input_item': function(e) {
 					e.preventDefault();
-					var that = this;
 					var rntl_cont_no = $("select[name='agreement_no']").val();
-					var rntl_sect_cd = $("select[name='section']").val();
-					var modelForUpdate = this.model;
-					modelForUpdate.url = App.api.CM0130;
-					var cond = {
-						"scr": '貸与開始-商品明細入力へ-更新可否チェック',
-						"log_type": '1',
-						"rntl_sect_cd": rntl_sect_cd,
-						"rntl_cont_no": rntl_cont_no
-					};
-					modelForUpdate.fetchMx({
-						data:cond,
-						success:function(res){
-							var type = "cm0130_res";
-							var res_val = res.attributes;
-							if(res_val.chk_flg == false){
-								alert(res_val["error_msg"]);
-								return true;
-							}else{
-								that.triggerMethod('click:input_item',rntl_cont_no);
-							}
-						}
-					});
+								this.triggerMethod('click:input_item',rntl_cont_no);
+
 					//this.ui.agreement_no = $('#agreement_no');
 					//this.triggerMethod('click:input_item', this.ui.agreement_no.val());
 				},

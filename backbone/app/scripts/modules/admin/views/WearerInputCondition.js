@@ -73,6 +73,7 @@ define([
                 if(window.sessionStorage.getItem('referrer') == "wearer_search" ||
                   window.sessionStorage.getItem('referrer') == "wearer_input"||
                   window.sessionStorage.getItem('referrer') == "wearer_order" ||
+                    window.sessionStorage.getItem('referrer') == "wearer_delete" ||
                   window.sessionStorage.getItem('referrer') == "wearer_order_search"
                 )
                 {
@@ -196,6 +197,7 @@ define([
                             that.triggerMethod('error_msg', er);
                         }else{
                             alert('着用者を登録しました。');
+                            window.sessionStorage.removeItem('wearer_input_ref');
                             location.href = './wearer_input_complete.html';
                         }
                     }
@@ -250,6 +252,28 @@ define([
                             res.attributes["errors"] = null;
                             that.triggerMethod('error_msg', er);
                         }else{
+                            var rntl_cont_no = $("select[name='agreement_no']").val();
+                            var rntl_sect_cd = $("select[name='section']").val();
+                            model.url = App.api.CM0130;
+                            var cond = {
+                                "scr": '貸与開始-着用者を登録して終了-更新可否チェック',
+                                "log_type": '1',
+                                "rntl_sect_cd": rntl_sect_cd,
+                                "rntl_cont_no": rntl_cont_no
+                            };
+                            model.fetchMx({
+                                data:cond,
+                                success:function(res){
+                                    var type = "cm0130_res";
+                                    var res_val = res.attributes;
+                                    if(res_val.chk_flg == false){
+                                        alert(res_val["error_msg"]);
+                                        return true;
+                                    }else{
+                                        that.triggerMethod('click:input_insert',rntl_cont_no);
+                                    }
+                                }
+                            });
                             model.set('rntl_cont_no', rntl_cont_no);
                             var cond = {
                                 "scr": '商品詳細入力へ',

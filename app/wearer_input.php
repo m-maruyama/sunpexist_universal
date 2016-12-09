@@ -134,11 +134,9 @@ $app->post('/wearer_input', function () use ($app) {
 
     $json_list = array();
     $list = array();
-
     // 画面遷移により、以降の処理で使用するパラメータを設定
-    if ($disp_type == "wearer_search") {
+    if ($disp_type == "wearer_search"||$disp_type == "wearer_delete") {
       $wearer_odr_post = $app->session->get("wearer_odr_post");
-      //ChromePhp::LOG($wearer_odr_post);
       $query_list = array();
       $query_list[] = "corporate_id = '".$auth["corporate_id"]."'";
       $query_list[] = "rntl_cont_no = '".$wearer_odr_post['rntl_cont_no']."'";

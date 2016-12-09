@@ -21,6 +21,7 @@ define([
                 if(window.sessionStorage.getItem('referrer') == "wearer_search" ||
                   window.sessionStorage.getItem('referrer') == "wearer_input"||
                   window.sessionStorage.getItem('referrer') == "wearer_order" ||
+                  window.sessionStorage.getItem('referrer') == "wearer_delete" ||
                   window.sessionStorage.getItem('referrer') == "wearer_order_search"
                 )
                 {
