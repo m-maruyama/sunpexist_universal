@@ -132,8 +132,8 @@ $app->post('/home', function ()use($app){
     if($app->session->get("auth")['button30_use_flg']==1){$json_list['button30_use_flg']=1;};
 
     //document処理
-    ChromePhp::log(DOCUMENT_UPLOAD.$corporate_id.'/meta.txt');
-ChromePhp::log(file_exists(DOCUMENT_UPLOAD.$corporate_id.'/meta.txt'));
+    //ChromePhp::log(DOCUMENT_UPLOAD.$corporate_id.'/meta.txt');
+    //ChromePhp::log(file_exists(DOCUMENT_UPLOAD.$corporate_id.'/meta.txt'));
     if(file_exists(DOCUMENT_UPLOAD.$corporate_id.'/meta.txt')){
 
         //企業idディレクトリ内のメタ.txtを取得
@@ -158,7 +158,7 @@ ChromePhp::log(file_exists(DOCUMENT_UPLOAD.$corporate_id.'/meta.txt'));
                 'corporate' => $corporate_id
             );
         }
-        ChromePhp::log($manual_list);
+        //ChromePhp::log($manual_list);
         $json_list['manual_list'] = $manual_list;
         }
     }
