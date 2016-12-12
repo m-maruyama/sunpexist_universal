@@ -132,10 +132,12 @@ $app->post('/home', function ()use($app){
     if($app->session->get("auth")['button30_use_flg']==1){$json_list['button30_use_flg']=1;};
 
     //document処理
+    ChromePhp::log(DOCUMENT_UPLOAD.$corporate_id.'/meta.txt');
+ChromePhp::log(file_exists(DOCUMENT_UPLOAD.$corporate_id.'/meta.txt'));
+    if(file_exists(DOCUMENT_UPLOAD.$corporate_id.'/meta.txt')){
 
-    if(file_exists(APP_PATH.COMMON_PASS.$corporate_id.'/meta.txt')){
         //企業idディレクトリ内のメタ.txtを取得
-        $fileName = APP_PATH.COMMON_PASS.$corporate_id.'/meta.txt';
+        $fileName = DOCUMENT_UPLOAD.$corporate_id.'/meta.txt';
 
         $file = file($fileName);
         mb_convert_variables("UTF-8", "SJIS-win", $file);
@@ -156,6 +158,7 @@ $app->post('/home', function ()use($app){
                 'corporate' => $corporate_id
             );
         }
+        ChromePhp::log($manual_list);
         $json_list['manual_list'] = $manual_list;
         }
     }
@@ -176,18 +179,20 @@ $app->post('/home_manual', function ()use($app){
 
     //ファイルの存在を確認し処理を実行
     header("Content-Type: application/octet-stream");
-    if(file_exists(APP_PATH.COMMON_PASS.$cond['corporate']."/".$cond['file'])){
+    ChromePhp::log(file_exists(DOCUMENT_UPLOAD.$cond['corporate']."/".$cond['file']));
+    if(file_exists(DOCUMENT_UPLOAD.$cond['corporate']."/".$cond['file'])){
         //拡張子取り出し
         $ext = substr(strrchr($cond['file'], '.'), 0);
         //実体ファイルセット
-        $fileName = APP_PATH.COMMON_PASS.$cond['corporate']."/".$cond['file'];
+        $fileName = DOCUMENT_UPLOAD.$cond['corporate']."/".$cond['file'];
         //ファイル名セット
         header("Content-Disposition: attachment; filename=".$filename.$ext);
     }else{
         //実体ファイルがない場合はこちらの処理
-        $fileName = APP_PATH.COMMON_PASS."/file_no.pdf";
+        $fileName = DOCUMENT_UPLOAD."/file_no.pdf";
         header("Content-Disposition: attachment; filename=nofile.pdf");
     }
+    ChromePhp::log($fileName);
     //ファイルのダウンロード
     readfile($fileName);
 });

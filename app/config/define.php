@@ -17,7 +17,7 @@ define("IMPORT_SAMPLE_FILE", "import_sample.zip");
 //TODO:後で値を変更
 define("CORPORATE_ID_DYNAM", "10006598S010000");
 
-
+define("DOCUMENT_UPLOAD", "/home/uni-doc-upload/tmpdir/DATA/");
 
 //返却伝票印刷設定
 //$boldFont = $font->addTTFfont('../app/library/tcpdf/fonts/migmix-1p-bold.ttf');
