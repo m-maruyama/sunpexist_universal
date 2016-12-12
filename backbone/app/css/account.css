@@ -687,3 +687,10 @@ label.allCheck {
 .page {
     text-align: center;
 }
+.glyphicon.glyphicon-lock {
+    background: #265a88;
+    padding: 8px;
+    border-radius: 4px;
+    border-color: #204d74;
+    border: 1px solid;
+}
