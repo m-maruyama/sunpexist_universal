@@ -213,11 +213,11 @@ $app->post('/wearer_input', function () use ($app) {
     $json_list['job_type_cd'] = $wearer_odr_post['job_type_cd'];
     $json_list['ship_to_cd'] = $wearer_odr_post['ship_to_cd'];
     $json_list['ship_to_brnch_cd'] = $wearer_odr_post['ship_to_brnch_cd'];
-    if(!empty($wearer_odr_post['appointment_ymd'])){
-      $json_list['appointment_ymd'] = date('Y/m/d', strtotime($wearer_odr_post['appointment_ymd']));
-    } else {
-      $json_list['appointment_ymd'] = "";
-    }
+//    if(!empty($wearer_odr_post['appointment_ymd'])){
+//      $json_list['appointment_ymd'] = date('Y/m/d', strtotime($wearer_odr_post['appointment_ymd']));
+//    } else {
+//      $json_list['appointment_ymd'] = "";
+//    }
     if(!empty($wearer_odr_post['resfl_ymd'])){
       $json_list['resfl_ymd'] = date('Y/m/d', strtotime($wearer_odr_post['resfl_ymd']));
     } else {
@@ -842,7 +842,7 @@ $app->post('/input_insert', function () use ($app) {
         $werer_name_kana = $cond['werer_name_kana']; //着用者名（カナ）
         $sex_kbn = $cond['sex_kbn'];//性別区分
         $werer_sts_kbn = '7';//着用者状況区分
-        $appointment_ymd = date("Ymd", strtotime($cond['appointment_ymd']));//発令日
+//        $appointment_ymd = date("Ymd", strtotime($cond['appointment_ymd']));//発令日
         $resfl_ymd = date("Ymd", strtotime($cond['resfl_ymd']));//着用開始日
         $ship_to_cd = $cond['ship_to_cd']; //出荷先コード
         $ship_to_brnch_cd = $cond['ship_to_brnch_cd']; //出荷先支店コード
@@ -950,8 +950,8 @@ $app->post('/input_insert', function () use ($app) {
         array_push($calum_list, "werer_sts_kbn");
         array_push($values_list, "'" . $werer_sts_kbn . "'");
         // 発令日
-        array_push($calum_list, "appointment_ymd");
-        array_push($values_list, "'" . $appointment_ymd . "'");
+//        array_push($calum_list, "appointment_ymd");
+//        array_push($values_list, "'" . $appointment_ymd . "'");
         // 着用開始日
         array_push($calum_list, "resfl_ymd");
         array_push($values_list, "'" . $resfl_ymd . "'");
