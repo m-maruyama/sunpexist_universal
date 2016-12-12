@@ -461,8 +461,6 @@ define([
 						'order_count': order_count,
 						'comment': comment
 					}
-
-
 					// 発注商品一覧
 					var list_cnt = $("input[name='list_cnt']").val();
 					var item = new Object();
@@ -477,6 +475,7 @@ define([
 						item[i]["possible_num"] = $("input[name='possible_num"+i+"']").val();
 						item[i]["rtn_ok_cnt"] = $("input[name='rtn_ok_cnt"+i+"']").val();
 						item[i]["individual_flg"] = $("input[name='individual_flg"+i+"']").val();
+						item[i]["order_num"] = $("input[name='order_num"+i+"']").val();
 						item[i]["individual_data"] = new Object();
 						if (item[i]["individual_flg"]) {
 							//個体管理番号表示フラグがONの場合、対象、個体管理番号単位
