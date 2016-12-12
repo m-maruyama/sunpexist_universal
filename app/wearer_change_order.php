@@ -713,12 +713,12 @@ $app->post('/wearer_change/info', function ()use($app){
           // 着用者名（読み仮名）
           $list['werer_name_kana'] = $result->as_werer_name_kana;
           // 発令日
-          $list['appointment_ymd'] = $result->as_appointment_ymd;
-          if (!empty($list['appointment_ymd'])) {
-            $list['appointment_ymd'] = date('Y/m/d', strtotime($list['appointment_ymd']));
-          } else {
-            $list['appointment_ymd'] = '';
-          }
+//          $list['appointment_ymd'] = $result->as_appointment_ymd;
+//          if (!empty($list['appointment_ymd'])) {
+//            $list['appointment_ymd'] = date('Y/m/d', strtotime($list['appointment_ymd']));
+//          } else {
+//            $list['appointment_ymd'] = '';
+//          }
           // 異動日
           $list['resfl_ymd'] = $result->as_resfl_ymd;
           if (!empty($list['resfl_ymd'])) {
@@ -778,12 +778,12 @@ $app->post('/wearer_change/info', function ()use($app){
           // 着用者名（読み仮名）
           $list['werer_name_kana'] = $result->as_werer_name_kana;
           // 発令日
-          $list['appointment_ymd'] = $result->as_appointment_ymd;
-          if (!empty($list['appointment_ymd'])) {
-            $list['appointment_ymd'] = date('Y/m/d', strtotime($list['appointment_ymd']));
-          } else {
-            $list['appointment_ymd'] = '';
-          }
+//          $list['appointment_ymd'] = $result->as_appointment_ymd;
+//          if (!empty($list['appointment_ymd'])) {
+//            $list['appointment_ymd'] = date('Y/m/d', strtotime($list['appointment_ymd']));
+//          } else {
+//            $list['appointment_ymd'] = '';
+//          }
           // 異動日
           $list['resfl_ymd'] = $result->as_resfl_ymd;
           if (!empty($list['resfl_ymd'])) {
@@ -2773,12 +2773,12 @@ $app->post('/wearer_change/complete', function ()use($app){
            array_push($up_query_list, "resfl_ymd = NULL");
          }
          // 発令日
-         if (!empty($wearer_data_input['appointment_ymd'])) {
-           $appointment_ymd = date('Ymd', strtotime($wearer_data_input['appointment_ymd']));
-           array_push($up_query_list, "appointment_ymd = '".$appointment_ymd."'");
-         } else {
-           array_push($up_query_list, "appointment_ymd = NULL");
-         }
+//         if (!empty($wearer_data_input['appointment_ymd'])) {
+//           $appointment_ymd = date('Ymd', strtotime($wearer_data_input['appointment_ymd']));
+//           array_push($up_query_list, "appointment_ymd = '".$appointment_ymd."'");
+//         } else {
+//           array_push($up_query_list, "appointment_ymd = NULL");
+//         }
          // 出荷先、出荷先支店コード
          if (!empty($wearer_data_input['shipment'])) {
            $shipment = explode(':', $wearer_data_input['shipment']);
@@ -2936,14 +2936,14 @@ $app->post('/wearer_change/complete', function ()use($app){
            array_push($values_list, "NULL");
          }
          // 発令日
-         if (!empty($wearer_data_input['appointment_ymd'])) {
-           $appointment_ymd = date('Ymd', strtotime($wearer_data_input['appointment_ymd']));
-           array_push($calum_list, "appointment_ymd");
-           array_push($values_list, "'".$appointment_ymd."'");
-         } else {
-           array_push($calum_list, "appointment_ymd");
-           array_push($values_list, "NULL");
-         }
+//         if (!empty($wearer_data_input['appointment_ymd'])) {
+//           $appointment_ymd = date('Ymd', strtotime($wearer_data_input['appointment_ymd']));
+//           array_push($calum_list, "appointment_ymd");
+//           array_push($values_list, "'".$appointment_ymd."'");
+//         } else {
+//           array_push($calum_list, "appointment_ymd");
+//           array_push($values_list, "NULL");
+//         }
          // 出荷先、出荷先支店コード
          if (!empty($wearer_data_input['shipment'])) {
            $shipment = explode(':', $wearer_data_input['shipment']);
@@ -3216,14 +3216,14 @@ $app->post('/wearer_change/complete', function ()use($app){
            array_push($calum_list, "werer_sts_kbn");
            array_push($values_list, "'1'");
            // 発令日
-           if (!empty($wearer_data_input['appointment_ymd'])) {
-             $appointment_ymd = date('Ymd', strtotime($wearer_data_input['appointment_ymd']));
-             array_push($calum_list, "appointment_ymd");
-             array_push($values_list, "'".$appointment_ymd."'");
-           } else {
-             array_push($calum_list, "appointment_ymd");
-             array_push($values_list, "NULL");
-           }
+//           if (!empty($wearer_data_input['appointment_ymd'])) {
+//             $appointment_ymd = date('Ymd', strtotime($wearer_data_input['appointment_ymd']));
+//             array_push($calum_list, "appointment_ymd");
+//             array_push($values_list, "'".$appointment_ymd."'");
+//           } else {
+//             array_push($calum_list, "appointment_ymd");
+//             array_push($values_list, "NULL");
+//           }
            // 異動日
            if (!empty($wearer_data_input['resfl_ymd'])) {
              $resfl_ymd = date('Ymd', strtotime($wearer_data_input['resfl_ymd']));
@@ -3445,14 +3445,14 @@ $app->post('/wearer_change/complete', function ()use($app){
         array_push($calum_list, "werer_sts_kbn");
         array_push($values_list, "'1'");
         // 発令日
-        if (!empty($wearer_data_input['appointment_ymd'])) {
-          $appointment_ymd = date('Ymd', strtotime($wearer_data_input['appointment_ymd']));
-          array_push($calum_list, "appointment_ymd");
-          array_push($values_list, "'".$appointment_ymd."'");
-        } else {
-          array_push($calum_list, "appointment_ymd");
-          array_push($values_list, "NULL");
-        }
+//        if (!empty($wearer_data_input['appointment_ymd'])) {
+//          $appointment_ymd = date('Ymd', strtotime($wearer_data_input['appointment_ymd']));
+//          array_push($calum_list, "appointment_ymd");
+//          array_push($values_list, "'".$appointment_ymd."'");
+//        } else {
+//          array_push($calum_list, "appointment_ymd");
+//          array_push($values_list, "NULL");
+//        }
         // 異動日
         if (!empty($wearer_data_input['resfl_ymd'])) {
           $resfl_ymd = date('Ymd', strtotime($wearer_data_input['resfl_ymd']));
@@ -4303,12 +4303,12 @@ $app->post('/wearer_change/send', function ()use($app){
           array_push($up_query_list, "resfl_ymd = NULL");
         }
         // 発令日
-        if (!empty($wearer_data_input['appointment_ymd'])) {
-          $appointment_ymd = date('Ymd', strtotime($wearer_data_input['appointment_ymd']));
-          array_push($up_query_list, "appointment_ymd = '".$appointment_ymd."'");
-        } else {
-          array_push($up_query_list, "appointment_ymd = NULL");
-        }
+//        if (!empty($wearer_data_input['appointment_ymd'])) {
+//          $appointment_ymd = date('Ymd', strtotime($wearer_data_input['appointment_ymd']));
+//          array_push($up_query_list, "appointment_ymd = '".$appointment_ymd."'");
+//        } else {
+//          array_push($up_query_list, "appointment_ymd = NULL");
+//        }
         // 出荷先、出荷先支店コード
         if (!empty($wearer_data_input['shipment'])) {
           $shipment = explode(':', $wearer_data_input['shipment']);
@@ -4465,14 +4465,14 @@ $app->post('/wearer_change/send', function ()use($app){
           array_push($values_list, "NULL");
         }
         // 発令日
-        if (!empty($wearer_data_input['appointment_ymd'])) {
-          $appointment_ymd = date('Ymd', strtotime($wearer_data_input['appointment_ymd']));
-          array_push($calum_list, "appointment_ymd");
-          array_push($values_list, "'".$appointment_ymd."'");
-        } else {
-          array_push($calum_list, "appointment_ymd");
-          array_push($values_list, "NULL");
-        }
+//        if (!empty($wearer_data_input['appointment_ymd'])) {
+//          $appointment_ymd = date('Ymd', strtotime($wearer_data_input['appointment_ymd']));
+//          array_push($calum_list, "appointment_ymd");
+//          array_push($values_list, "'".$appointment_ymd."'");
+//        } else {
+//          array_push($calum_list, "appointment_ymd");
+//          array_push($values_list, "NULL");
+//        }
         // 出荷先、出荷先支店コード
         if (!empty($wearer_data_input['shipment'])) {
           $shipment = explode(':', $wearer_data_input['shipment']);
@@ -4743,14 +4743,14 @@ $app->post('/wearer_change/send', function ()use($app){
           array_push($calum_list, "werer_sts_kbn");
           array_push($values_list, "'1'");
           // 発令日
-          if (!empty($wearer_data_input['appointment_ymd'])) {
-            $appointment_ymd = date('Ymd', strtotime($wearer_data_input['appointment_ymd']));
-            array_push($calum_list, "appointment_ymd");
-            array_push($values_list, "'".$appointment_ymd."'");
-          } else {
-            array_push($calum_list, "appointment_ymd");
-            array_push($values_list, "NULL");
-          }
+//          if (!empty($wearer_data_input['appointment_ymd'])) {
+//            $appointment_ymd = date('Ymd', strtotime($wearer_data_input['appointment_ymd']));
+//            array_push($calum_list, "appointment_ymd");
+//            array_push($values_list, "'".$appointment_ymd."'");
+//          } else {
+//            array_push($calum_list, "appointment_ymd");
+//            array_push($values_list, "NULL");
+//          }
           // 異動日
           if (!empty($wearer_data_input['resfl_ymd'])) {
             $resfl_ymd = date('Ymd', strtotime($wearer_data_input['resfl_ymd']));
@@ -4972,14 +4972,14 @@ $app->post('/wearer_change/send', function ()use($app){
        array_push($calum_list, "werer_sts_kbn");
        array_push($values_list, "'1'");
        // 発令日
-       if (!empty($wearer_data_input['appointment_ymd'])) {
-         $appointment_ymd = date('Ymd', strtotime($wearer_data_input['appointment_ymd']));
-         array_push($calum_list, "appointment_ymd");
-         array_push($values_list, "'".$appointment_ymd."'");
-       } else {
-         array_push($calum_list, "appointment_ymd");
-         array_push($values_list, "NULL");
-       }
+//       if (!empty($wearer_data_input['appointment_ymd'])) {
+//         $appointment_ymd = date('Ymd', strtotime($wearer_data_input['appointment_ymd']));
+//         array_push($calum_list, "appointment_ymd");
+//         array_push($values_list, "'".$appointment_ymd."'");
+//       } else {
+//         array_push($calum_list, "appointment_ymd");
+//         array_push($values_list, "NULL");
+//       }
        // 異動日
        if (!empty($wearer_data_input['resfl_ymd'])) {
          $resfl_ymd = date('Ymd', strtotime($wearer_data_input['resfl_ymd']));
