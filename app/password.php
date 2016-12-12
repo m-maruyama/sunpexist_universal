@@ -135,7 +135,7 @@ $app->post('/password', function () use ($app) {
 
         $account[0]->pass_word = $hash_pass;
         //履歴パスワード
-        if ($old_pass_list) {
+        if (isset($old_pass_list)) {
             //パスワードが変更されたら
             //履歴は10まで
             if (count($old_pass_list) >= 10) {
