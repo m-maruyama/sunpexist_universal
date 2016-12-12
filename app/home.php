@@ -179,7 +179,6 @@ $app->post('/home_manual', function ()use($app){
 
     //ファイルの存在を確認し処理を実行
     header("Content-Type: application/octet-stream");
-    ChromePhp::log(file_exists(DOCUMENT_UPLOAD.$cond['corporate']."/".$cond['file']));
     if(file_exists(DOCUMENT_UPLOAD.$cond['corporate']."/".$cond['file'])){
         //拡張子取り出し
         $ext = substr(strrchr($cond['file'], '.'), 0);
@@ -192,7 +191,6 @@ $app->post('/home_manual', function ()use($app){
         $fileName = DOCUMENT_UPLOAD."/file_no.pdf";
         header("Content-Disposition: attachment; filename=nofile.pdf");
     }
-    ChromePhp::log($fileName);
     //ファイルのダウンロード
     readfile($fileName);
 });
