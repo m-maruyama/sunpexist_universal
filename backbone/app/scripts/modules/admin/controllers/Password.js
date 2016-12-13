@@ -18,8 +18,15 @@ define([
 					model: new App.Entities.Models.AdminPassword()
 				});
 				passwordView.listenTo(passwordView, 'success', function(){
-					location.href = './login.html';
-					return;
+
+					var account_param = JSON.parse(window.sessionStorage.getItem('account_param'));
+					if(account_param.page_from == 'account'){
+						window.sessionStorage.setItem('page_from', 'password');
+						location.href = './account.html';
+					}else {
+						location.href = './login.html';
+						return;
+					}
 				});
 				App.main.show(passwordView);
 			}

@@ -11,6 +11,7 @@ define([
 			getReq: function() {
 				var result = {
 					accnt_no : null,
+					page_no : null,
 					corporate_id : null,
 					agreement_no : null,
 					user_id : null,
@@ -27,6 +28,9 @@ define([
 				};
 				if(this.get('accnt_no')) {
 					result.accnt_no = this.get('accnt_no');
+				}
+				if(this.get('page_no')) {
+					result.page_no = this.get('page_no');
 				}
 				if(this.get('corporate_id')) {
 					result.corporate_id = this.get('corporate_id');

@@ -38,13 +38,21 @@ define([
 						order = 'asc';
 					}
 					var sort_key = e.target.id;
-
 					this.model.set('sort_key',sort_key);
 					this.model.set('order',order);
 					this.triggerMethod('sort', e.target.id,order);
 				}
 			},
 			fetch:function(accountListConditionModel){
+				var account_param = JSON.parse(window.sessionStorage.getItem('account_param'));
+				window.sessionStorage.clear('account_param');
+				window.sessionStorage.clear('page_from');
+				if(!account_param){
+					this.model.set('page_no','');
+				}else{
+					console.log(account_param.corporate_id);
+					$("#corporate_id").val(account_param.corporate_id);
+				}
 				var cond = {
 					"scr": 'アカウント管理',
 					"page":this.options.pagerModel.getPageRequest(),
@@ -61,10 +69,6 @@ define([
 					},
 					complete:function(res){
 						$.unblockUI();
-						// 個体管理番号表示/非表示制御
-						//if (res.responseJSON.individual_flag.valueOf()) {
-						//	$('.tb_individual_num').css('display','');
-						//}
 					},
 
 

@@ -114,24 +114,7 @@ define([
 				this.listenTo(accountListListCollection, 'sync', function(){
 					addFlag = false;
 				});
-				// $(window).on('beforeunload', function() {
-					// if (addFlag){
-						// return '更新が完了していません。ページ遷移をしますか？';
-					// }
-					// return;
-				// });
-				// var fetchList = function(pageNumber){
-					// if(addFlag && !window.confirm('更新が完了していません。ページ遷移をしますか？')){
-						// return;
-					// }
-					// //accountListListView.empty();
-					// if(pageNumber){
-						// pagerModel.set('page_number', pageNumber);
-					// }
-					// accountListListView.fetch(accountListConditionModel);
-				// };
 
-				// elに指定した要素が既にあることが前提
 
 				App.main.show(accountView);
 				//コンディション追加

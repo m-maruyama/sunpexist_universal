@@ -9,7 +9,6 @@ use Phalcon\Paginator\Adapter\QueryBuilder as PaginatorQueryBuilder;
 $app->post('/account/search', function () use ($app) {
 
     $params = json_decode(file_get_contents('php://input'), true);
-
     // アカウントセッション取得
     $auth = $app->session->get('auth');
 
@@ -21,11 +20,16 @@ $app->post('/account/search', function () use ($app) {
         return;
     }
     */
-
+    ChromePhp::log($params);
     $cond = $params['cond'];
+    ChromePhp::log($cond);
     $page = $params['page'];
+    ChromePhp::log($page);
     $query_list = array();//追加
-
+    if(isset($cond['page_no'])){
+        $page['page_number'] = $cond['page_no'];
+    }
+    ChromePhp::log($page);
     //sql文字列を' AND 'で結合
     $query = implode(' AND ', $query_list);
     $sort_key = '';
@@ -89,32 +93,32 @@ $app->post('/account/search', function () use ($app) {
 
     $corporate_id_val = $cond['corporate_id'];
 
+    //企業idが指定の時
     if (!$corporate_id_val == null) {
-        $corporate_id_val;
+        $search_corporate = "corporate_id = '$corporate_id_val'";
     } else {
-        $corporate_id_val = '%%';
+        //企業idが全ての時
+        $search_corporate = 'corporate_id LIKE "%%"';
     }
 
     $user_id_val = $cond['user_id'];
     $user_name_val = $cond['user_name'];
     $mail_address = $cond['mail_address'];
 
-    //$account = MAccount::find();
-    //ChromePhp::log(count($account));カウント
-    //count($robots);
-    //$conditions = "name = :name: AND type = :type:";
     //全検索
     $results = MAccount::find(array(
         'order' => "$sort_key $order",
-        'conditions' => "corporate_id LIKE '$corporate_id_val' AND user_name LIKE '%$user_name_val%' AND user_id LIKE '$user_id_val%' AND mail_address LIKE '$mail_address%' AND del_flg LIKE '0'",
+        'conditions' => "$search_corporate AND user_name LIKE '%$user_name_val%' AND user_id LIKE '$user_id_val%' AND mail_address LIKE '$mail_address%' AND del_flg LIKE '0'",
         //'conditions'  => "'$user_name_val%"
     ));
     //ChromePhp::log($results);
     $results_count = (count($results));//ページング処理２０個制限の前に数を数える
+    ChromePhp::log($results_count);
     $paginator_model = new PaginatorModel(
         array(
             'data' => $results,
-            'limit' => $page['records_per_page'],
+            //'limit' => $page['records_per_page'],
+            'limit' => '5',
             'page' => $page['page_number'],
         )
     );
@@ -141,7 +145,8 @@ $app->post('/account/search', function () use ($app) {
         $list['login_err_count'] = $result->login_err_count;
         array_push($all_list, $list);//$all_listaに$listをpush
     }
-    $page_list['records_per_page'] = $page['records_per_page'];
+    //$page_list['records_per_page'] = $page['records_per_page'];
+    $page_list['records_per_page'] = '5';
     $page_list['page_number'] = $page['page_number'];
     $page_list['total_records'] = $results_count;//全件数をアップ
     $json_list['page'] = $page_list;
