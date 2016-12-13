@@ -1475,7 +1475,7 @@ $app->post('/print/search', function ()use($app){
                 foreach ($del_gd_results as $del_gd_result) {
                     array_push($num_list, $del_gd_result->individual_ctrl_no);
                     if ($del_gd_result->receipt_date !== null) {
-                        array_push($day_list, $del_gd_result->receipt_date);
+                        array_push($day_list,  date('Y/m/d',strtotime($del_gd_result->receipt_date)));
                     } else {
                         array_push($day_list, "-");
                     }
