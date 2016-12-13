@@ -408,7 +408,7 @@ $app->post('/history/search', function ()use($app){
     $t_order = new TOrder();
 	$results = new Resultset(null, $t_order, $t_order->getReadConnection()->query($arg_str));
 	$result_obj = (array)$results;
-	$results_cnt = $result_obj["\0*\0_count"];
+    $results_cnt_history = $result_obj["\0*\0_count"];
 
 	$paginator_model = new PaginatorModel(
 		array(
@@ -739,10 +739,10 @@ $app->post('/history/search', function ()use($app){
 		}
 	}
 */
-
+ChromePhp::LOG($results_cnt_history);
 	$page_list['records_per_page'] = $page['records_per_page'];
 	$page_list['page_number'] = $page['page_number'];
-	$page_list['total_records'] = $results_cnt;
+	$page_list['total_records'] = $results_cnt_history;
 	$json_list['page'] = $page_list;
 	$json_list['list'] = $all_list;
 	$json_list['individual_flag'] = $individual_flg;

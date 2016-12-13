@@ -205,10 +205,10 @@ $app->post('/unreturn/search', function ()use($app){
 		array_push($reason_kbn,'17');
 	}
 	if($cond['reason_kbn4']){
-		array_push($reason_kbn,'21');
+        array_push($reason_kbn,'12');
 	}
 	if($cond['reason_kbn5']){
-		array_push($reason_kbn,'22');
+        array_push($reason_kbn,'13');
 	}
 	if($cond['reason_kbn6']){
 		array_push($reason_kbn,'23');
