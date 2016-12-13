@@ -108,7 +108,6 @@ define([
 
 						}else if(getHash[1] == 'account') {
 							var account_param = JSON.parse(window.sessionStorage.getItem('account_param'));
-console.log(account_param);
 							this.model.set('accnt_no', account_param.accnt_no);
 							this.model.set('password', this.ui.password.val());
 							this.model.set('password_c', this.ui.password_c.val());

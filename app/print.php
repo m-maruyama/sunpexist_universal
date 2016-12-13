@@ -1455,7 +1455,6 @@ $app->post('/print/search', function ()use($app){
             $arg_str .= " WHERE ";
             $arg_str .= $query;
             $t_delivery_goods_state_details = new TDeliveryGoodsStateDetails();
-            ChromePhp::log($arg_str);
             $del_gd_results = new Resultset(null, $t_delivery_goods_state_details, $t_delivery_goods_state_details->getReadConnection()->query($arg_str));
             $result_obj = (array)$del_gd_results;
             $results_cnt = $result_obj["\0*\0_count"];

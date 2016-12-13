@@ -65,7 +65,6 @@ define([
 						this.triggerMethod('showAlerts', errors);
 						return;
 					}
-					$("#corporate_id").val('10006598S010000');
 					search_flg = 'on';
 					this.triggerMethod('click:search',this.model.get('sort_key'),this.model.get('account'));
 				}

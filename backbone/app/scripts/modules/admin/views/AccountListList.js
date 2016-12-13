@@ -50,7 +50,6 @@ define([
 				if(!account_param){
 					this.model.set('page_no','');
 				}else{
-					console.log(account_param.corporate_id);
 					$("#corporate_id").val(account_param.corporate_id);
 				}
 				var cond = {
