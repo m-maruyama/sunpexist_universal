@@ -1323,8 +1323,8 @@ $app->post('/wearer_other_change_insert', function () use ($app) {
         return;
     }
     if (!empty($wearer_data_input["comment"])) {
-        if (mb_strlen($wearer_data_input["comment"]) > 50) {
-            array_push($error_list,'コメント欄は50文字以内で入力してください。');
+        if (mb_strlen($wearer_data_input["comment"]) > 100) {
+            array_push($error_list,'コメント欄は100文字以内で入力してください。');
             $json_list['error_msg'] = $error_list;
             $json_list["error_code"] = "1";
         }
