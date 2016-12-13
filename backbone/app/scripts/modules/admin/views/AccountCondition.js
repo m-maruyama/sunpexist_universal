@@ -43,6 +43,34 @@ define([
 			},
 			onRender: function() {
 				var that = this;
+				this.triggerMethod('hideAlerts');
+				var page_from = window.sessionStorage.getItem('page_from');
+				var account_param = JSON.parse(window.sessionStorage.getItem('account_param'));
+				if(page_from == 'password'){
+					$(".listTable").css('display', 'block');
+					this.ui.user_id.val(account_param.login_id);
+					this.ui.user_name.val(account_param.user_name);
+					this.ui.mail_address.val(account_param.mail_address);
+					var corporate_id = $("select[name='corporate_id']").val();
+					var agreement_no = $("select[name='agreement_no']").val();
+					this.model.set('corporate_id', corporate_id);
+					this.model.set('agreement_no', agreement_no);
+					this.model.set('user_id', this.ui.user_id.val());
+					this.model.set('user_name', this.ui.user_name.val());
+					this.model.set('mail_address', this.ui.mail_address.val());
+					this.model.set('search', this.ui.search.val());
+					this.model.set('page_no', account_param.page_no);
+					var errors = this.model.validate();
+					if(errors) {
+						this.triggerMethod('showAlerts', errors);
+						return;
+					}
+					$("#corporate_id").val('10006598S010000');
+					search_flg = 'on';
+					this.triggerMethod('click:search',this.model.get('sort_key'),this.model.get('account'));
+				}
+			},
+			onShow: function() {
 			},
 			events: {
 				'click @ui.search': function(e){
@@ -51,7 +79,7 @@ define([
 					$(".listTable").css('display', 'block');
 					var corporate_id = $("select[name='corporate_id']").val();
 					var agreement_no = $("select[name='agreement_no']").val();
-
+					this.model.set('page_no', '');
 					this.model.set('corporate_id', corporate_id);
 					this.model.set('agreement_no', agreement_no);
 					this.model.set('user_id', this.ui.user_id.val());

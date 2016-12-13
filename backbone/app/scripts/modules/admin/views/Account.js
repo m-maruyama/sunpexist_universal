@@ -16,7 +16,9 @@ define([
 				'modal': '#myModal',
 				'addBtn': '.add',
 				'message': '#message',
-				'updateBtn': 'button.update'
+				'updateBtn': 'button.update',
+				"page": ".page",
+				"page_2": ".page_2"
 			},
 			regions: {
 				"page": ".page",
@@ -39,5 +41,4 @@ define([
 			},
 		});
 	});
-
 });

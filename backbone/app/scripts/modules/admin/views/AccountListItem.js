@@ -42,14 +42,33 @@ define([
 					$(".accnt_no_group").removeClass("hidden");
 				},
 				//パスワード変更がクリックされた
-				'click @ui.passwordEditBtn': function(e){
+				'click @ui.passwordEditBtn': function(e) {
 					e.preventDefault();
 					var accnt_no = this.ui.passwordEditBtn.val();
-					window.sessionStorage.setItem('accnt_no', accnt_no);
-					location.href = "./password.html?page=account";
 
+					if(!$(".page .pagination .active").text()) {
+						var page_no = '1';
+					} else{
+						var page_no = $(".page .pagination .active").text();
+					}
+
+					var corporate_id = $("select[name='corporate_id']").val();
+					var login_id = $("#user_id").val();
+					var user_name = $("#user_name").val();
+					var mail_address = $("#mail_address").val();
+					var account_param = {
+						'page_from': 'account',
+						'accnt_no': accnt_no,
+						'page_no': page_no,
+						'corporate_id' : corporate_id,
+						'login_id' : login_id,
+						'user_name' : user_name,
+						'mail_address' : mail_address
+					}
+
+					window.sessionStorage.setItem('account_param', JSON.stringify(account_param));
+					location.href = "./password.html?page=account";
 					return;
-					//this.triggerMethod('click:a', this.model, '4');
 				},
 			},
 			templateHelpers: {

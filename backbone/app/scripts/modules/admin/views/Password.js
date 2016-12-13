@@ -24,17 +24,14 @@ define([
 			onRender: function() {
 				var that = this;
 				that.triggerMethod('hideAlerts');
-
 				var getHash = location.search.replace(/^\?(.*)$/, '$1');
+
 				if(getHash){
-					//console.log('入ってる');
 					var getHash = getHash.split( '=' );
-					//console.log(getHash);
 						if(getHash[0] == 'dp') {
 							$("#passwordContent").addClass("none");
 							if($('#passwordContent').length){
 							}
-
 							var cond = {
 								"hashcheck": 'ハッシュチェック',
 								"hashid": getHash[1],
@@ -60,22 +57,17 @@ define([
 							});
 						}else if(getHash[1] == 'account') {
 							this.ui.content.removeClass("none");
-							//console.log('account');
 							this.ui.backBtn.removeClass("none");
+
 						}else if(getHash[1] == 'login') {
 							this.ui.content.removeClass("none");
-							//console.log('login');
 						}
 					}else{
-						//console.log('入ってない');
 
 					}
 
 			},
 			onShow: function(){
-					//e.preventDefault();
-
-
 			},
 			events: {
 				"click @ui.submit": function(e){
@@ -86,7 +78,6 @@ define([
 					var getHash = getHash.split( '=' );
 
 					if(getHash){
-
 						if(getHash[0] == 'dp') {
 							//console.log('dp');
 							var tmp_corporate_id = $("#tmp_corporate_id").val();
@@ -116,8 +107,9 @@ define([
 							};
 
 						}else if(getHash[1] == 'account') {
-							var accnt_no = window.sessionStorage.getItem('accnt_no');
-							this.model.set('accnt_no', accnt_no);
+							var account_param = JSON.parse(window.sessionStorage.getItem('account_param'));
+console.log(account_param);
+							this.model.set('accnt_no', account_param.accnt_no);
 							this.model.set('password', this.ui.password.val());
 							this.model.set('password_c', this.ui.password_c.val());
 							var errors = this.model.validate();
@@ -129,7 +121,7 @@ define([
 							var cond = {
 								"scr": 'パスワード変更',
 								"from": 'account',
-								"accn_no": accnt_no,
+								"accn_no": account_param.accnt_no,
 								"password": this.ui.password.val(),
 								"password_c": this.ui.password_c.val()
 							};
@@ -184,8 +176,10 @@ define([
 						}
 					});
 				},
-				"click @ui.btnBack": function(){
+				"click @ui.backBtn": function(){
+					window.sessionStorage.setItem('page_from', 'password');
 					location.href = './account.html';
+
 				}
 			}
 		});
