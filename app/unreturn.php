@@ -667,8 +667,8 @@ $app->post('/unreturn/search', function ()use($app){
                 $day_list = array();
                 foreach ($del_gd_results as $del_gd_result) {
                     array_push($num_list, $del_gd_result->individual_ctrl_no);
-                    if (!empty($del_gd_result->receipt_date)) {
-                        array_push($day_list, date('Y/m/d',strtotime($del_gd_result->receipt_date)));
+                    if ($del_gd_result->receipt_date !== null) {
+                        array_push($day_list, $del_gd_result->receipt_date);
                     } else {
                         array_push($day_list, "-");
                     }
@@ -677,7 +677,9 @@ $app->post('/unreturn/search', function ()use($app){
                 $individual_ctrl_no = implode("<br>", $num_list);
                 $list['individual_num'] = $individual_ctrl_no;
                 // 受領日
+                //ChromePhp::log($day_list);
                 $receipt_date = implode("<br>", $day_list);
+                //ChromePhp::log($receipt_date);
                 $list['order_res_ymd'] = $receipt_date;
             }
 
