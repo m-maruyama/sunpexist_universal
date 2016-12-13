@@ -1011,10 +1011,10 @@ $app->post('/print/search', function ()use($app){
         array_push($reason_kbn,'17');
     }
     if($cond['reason_kbn4']){
-        array_push($reason_kbn,'21');
+        array_push($reason_kbn,'12');
     }
     if($cond['reason_kbn5']){
-        array_push($reason_kbn,'22');
+        array_push($reason_kbn,'13');
     }
     if($cond['reason_kbn6']){
         array_push($reason_kbn,'23');
@@ -1049,10 +1049,12 @@ $app->post('/print/search', function ()use($app){
 //		array_push($query_list,"order_reason_kbn IN ('".$reason_kbn_str."')");
         array_push($status_kbn_list,$reason_kbn_query);
     }
+    //各区分を' OR 'で結合
     if (!empty($status_kbn_list)) {
         $status_kbn_map = implode(' OR ', $status_kbn_list);
         array_push($query_list,"(".$status_kbn_map.")");
     }
+
     $query = implode(' AND ', $query_list);
     $sort_key ='';
     $order ='';
@@ -1189,7 +1191,7 @@ $app->post('/print/search', function ()use($app){
         $arg_str .= " ORDER BY ";
         $arg_str .= $q_sort_key." ".$order;
     }
-    ChromePhp::log($arg_str);
+    //ChromePhp::log($arg_str);
 
     $t_order = new TOrder();
     $results = new Resultset(null, $t_order, $t_order->getReadConnection()->query($arg_str));
@@ -1442,7 +1444,7 @@ $app->post('/print/search', function ()use($app){
             array_push($query_list, "ship_no = '".$list['ship_no']."'");
             array_push($query_list, "item_cd = '".$list['item_cd']."'");
             array_push($query_list, "color_cd = '".$list['color_cd']."'");
-            array_push($query_list, "size_cd = '".$list['size_cd']."'");
+            //rray_push($query_list, "size_cd = '".$list['size_cd']."'");
             $query = implode(' AND ', $query_list);
             $arg_str = "";
             $arg_str .= "SELECT ";
@@ -1453,11 +1455,10 @@ $app->post('/print/search', function ()use($app){
             $arg_str .= " WHERE ";
             $arg_str .= $query;
             $t_delivery_goods_state_details = new TDeliveryGoodsStateDetails();
-
+            ChromePhp::log($arg_str);
             $del_gd_results = new Resultset(null, $t_delivery_goods_state_details, $t_delivery_goods_state_details->getReadConnection()->query($arg_str));
             $result_obj = (array)$del_gd_results;
             $results_cnt = $result_obj["\0*\0_count"];
-            ChromePhp::log($arg_str);
             if ($results_cnt > 0) {
                 $paginator_model = new PaginatorModel(
                     array(
@@ -1473,7 +1474,6 @@ $app->post('/print/search', function ()use($app){
                 $day_list = array();
                 foreach ($del_gd_results as $del_gd_result) {
                     array_push($num_list, $del_gd_result->individual_ctrl_no);
-                    ChromePhp::log($del_gd_result->receipt_date);
                     if (!empty($del_gd_result->receipt_date)) {
                         array_push($day_list, date('Y/m/d',strtotime($del_gd_result->receipt_date)));
                     } else {

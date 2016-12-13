@@ -20,16 +20,12 @@ $app->post('/account/search', function () use ($app) {
         return;
     }
     */
-    ChromePhp::log($params);
     $cond = $params['cond'];
-    ChromePhp::log($cond);
     $page = $params['page'];
-    ChromePhp::log($page);
     $query_list = array();//追加
     if(isset($cond['page_no'])){
         $page['page_number'] = $cond['page_no'];
     }
-    ChromePhp::log($page);
     //sql文字列を' AND 'で結合
     $query = implode(' AND ', $query_list);
     $sort_key = '';
@@ -113,7 +109,7 @@ $app->post('/account/search', function () use ($app) {
     ));
     //ChromePhp::log($results);
     $results_count = (count($results));//ページング処理２０個制限の前に数を数える
-    ChromePhp::log($results_count);
+    //ChromePhp::log($results_count);
     $paginator_model = new PaginatorModel(
         array(
             'data' => $results,
