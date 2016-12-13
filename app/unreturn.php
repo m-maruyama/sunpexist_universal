@@ -243,10 +243,11 @@ $app->post('/unreturn/search', function ()use($app){
 //		array_push($query_list,"order_reason_kbn IN ('".$reason_kbn_str."')");
 		array_push($status_kbn_list,$reason_kbn_query);
 	}
-	if (!empty($status_kbn_list)) {
-		$status_kbn_map = implode(' OR ', $status_kbn_list);
-		array_push($query_list,"(".$status_kbn_map.")");
-	}
+    //各区分を' OR 'で結合
+    if (!empty($status_kbn_list)) {
+        $status_kbn_map = implode(' OR ', $status_kbn_list);
+        array_push($query_list,"(".$status_kbn_map.")");
+    }
 	$query = implode(' AND ', $query_list);
 	$sort_key ='';
 	$order ='';
