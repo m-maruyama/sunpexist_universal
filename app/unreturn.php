@@ -629,39 +629,61 @@ $app->post('/unreturn/search', function ()use($app){
 				$list['return_status_name'] = $gencode_map->gen_name;
 			}
 
-			//---個体管理番号・受領日時の取得---//
-			$query_list = array();
-			// 納品状況明細情報. 企業ID
-			array_push($query_list, "corporate_id = '".$auth['corporate_id']."'");
-			// 納品状況明細情報. 出荷No
-			array_push($query_list, "ship_no = '".$list['ship_no']."'");
-			//sql文字列を' AND 'で結合
-			$query = implode(' AND ', $query_list);
-			$del_gd_std = TDeliveryGoodsStateDetails::query()
-				->where($query)
-				->columns('*')
-				->execute();
-			if ($del_gd_std) {
-				$num_list = array();
-				$day_list = array();
-				foreach ($del_gd_std as $del_gd_std_map) {
-					array_push($num_list, $del_gd_std_map->individual_ctrl_no);
-					array_push($day_list, date('Y/m/d',strtotime($del_gd_std_map->receipt_date)));
-				}
-				// 個体管理番号
-				$individual_ctrl_no = implode("<br>", $num_list);
-				$list['individual_num'] = $individual_ctrl_no;
-				// 受領日
-				$receipt_date = implode("<br>", $day_list);
-				$list['order_res_ymd'] = $receipt_date;
-			} else {
-				$list['individual_num'] = "-";
-				$list['order_res_ymd'] = "-";
-			}
+            //---個体管理番号・受領日時の取得---//
+            $list['individual_num'] = "-";
+            $list['order_res_ymd'] = "-";
+            $query_list = array();
+            array_push($query_list, "corporate_id = '".$auth['corporate_id']."'");
+            array_push($query_list, "ship_no = '".$list['ship_no']."'");
+            array_push($query_list, "item_cd = '".$list['item_cd']."'");
+            array_push($query_list, "color_cd = '".$list['color_cd']."'");
+            //rray_push($query_list, "size_cd = '".$list['size_cd']."'");
+            $query = implode(' AND ', $query_list);
+            $arg_str = "";
+            $arg_str .= "SELECT ";
+            $arg_str .= "individual_ctrl_no,";
+            $arg_str .= "receipt_date";
+            $arg_str .= " FROM ";
+            $arg_str .= "t_delivery_goods_state_details";
+            $arg_str .= " WHERE ";
+            $arg_str .= $query;
+            $t_delivery_goods_state_details = new TDeliveryGoodsStateDetails();
+            ChromePhp::log($arg_str);
+            $del_gd_results = new Resultset(null, $t_delivery_goods_state_details, $t_delivery_goods_state_details->getReadConnection()->query($arg_str));
+            $result_obj = (array)$del_gd_results;
+            $results_cnt = $result_obj["\0*\0_count"];
+            if ($results_cnt > 0) {
+                $paginator_model = new PaginatorModel(
+                    array(
+                        "data"  => $del_gd_results,
+                        "limit" => $results_cnt,
+                        "page" => 1
+                    )
+                );
+                $paginator = $paginator_model->getPaginate();
+                $del_gd_results = $paginator->items;
 
-			array_push($all_list,$list);
-		}
-	}
+                $num_list = array();
+                $day_list = array();
+                foreach ($del_gd_results as $del_gd_result) {
+                    array_push($num_list, $del_gd_result->individual_ctrl_no);
+                    if (!empty($del_gd_result->receipt_date)) {
+                        array_push($day_list, date('Y/m/d',strtotime($del_gd_result->receipt_date)));
+                    } else {
+                        array_push($day_list, "-");
+                    }
+                }
+                // 個体管理番号
+                $individual_ctrl_no = implode("<br>", $num_list);
+                $list['individual_num'] = $individual_ctrl_no;
+                // 受領日
+                $receipt_date = implode("<br>", $day_list);
+                $list['order_res_ymd'] = $receipt_date;
+            }
+
+            array_push($all_list,$list);
+        }
+    }
 
 	//ソート設定(配列ソート)
 	// 商品-色(サイズ-サイズ2)
