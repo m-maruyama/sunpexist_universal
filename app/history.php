@@ -739,7 +739,6 @@ $app->post('/history/search', function ()use($app){
 		}
 	}
 */
-ChromePhp::LOG($results_cnt_history);
 	$page_list['records_per_page'] = $page['records_per_page'];
 	$page_list['page_number'] = $page['page_number'];
 	$page_list['total_records'] = $results_cnt_history;
