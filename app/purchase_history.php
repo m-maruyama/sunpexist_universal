@@ -26,6 +26,7 @@ $app->post('/purchase/input_item', function () use ($app) {
     } else {
         $corporate_id = $auth['corporate_id'];
         $accnt_no = $auth['accnt_no'];
+        $params['rntl_cont_no'] = "";
         //sectionで一番若い契約Noを取得
         $rntl_cont_no_one = MContract::find(array(
             //'order' => "$sort_key $order",
@@ -108,6 +109,7 @@ $app->post('/purchase/item_color', function () use ($app) {
         array_push($query_list, "rntl_cont_no = '" . $params['agreement_no'] . "'");
     } else {
         $login_corporate_id = $auth['corporate_id'];
+        $params['rntl_cont_no'] = "";
 
         //sectionで一番若い契約Noを取得
         $rntl_cont_no_one = MContract::find(array(
@@ -221,13 +223,14 @@ $app->post('/purchase_history/search', function () use ($app) {
     $cond = $params['cond'];
     $page = $params['page'];
     $query_list = array();//追加
-    $rent = array();
+
 
     //初期表示は一番若い契約のnoを入れる
     if (isset($cond['rntl_cont_no'])) {
     } else {
         $login_corporate_id = $auth['corporate_id'];
-
+        $cond['rntl_cont_no'] = "";
+        $rent['value'] = "";
         //sectionで一番若い契約Noを取得
         $rntl_cont_no_one = MContract::find(array(
             //'order' => "$sort_key $order",
