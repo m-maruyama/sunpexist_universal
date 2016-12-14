@@ -141,8 +141,8 @@ $app->post('/account/search', function () use ($app) {
         $list['login_err_count'] = $result->login_err_count;
         array_push($all_list, $list);//$all_listaに$listをpush
     }
-    //$page_list['records_per_page'] = $page['records_per_page'];
-    $page_list['records_per_page'] = '5';
+    $page_list['records_per_page'] = $page['records_per_page'];
+    //$page_list['records_per_page'] = '5';
     $page_list['page_number'] = $page['page_number'];
     $page_list['total_records'] = $results_count;//全件数をアップ
     $json_list['page'] = $page_list;
