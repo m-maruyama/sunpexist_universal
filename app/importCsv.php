@@ -1280,6 +1280,7 @@ $app->post('/import_csv', function () use ($app) {
         $arg_str .= " WHERE ";
         $arg_str .= "job_no = '" . $job_no . "'";
         $arg_str .= " ORDER BY order_req_no ASC";
+        //ChromePhp::log($arg_str);
         $results = new Resultset(null, $t_import_job, $t_import_job->getReadConnection()->query($arg_str));
         $result_obj = (array)$results;
         $results_cnt = $result_obj["\0*\0_count"];
@@ -1400,6 +1401,7 @@ $app->post('/import_csv', function () use ($app) {
             }
 
             $values_query = implode(",", $values_querys);
+
         } else {
             $error_list[] = "登録するデータが存在しなかったため、取込処理が中断されました。";
             $json_list['errors'] = $error_list;
@@ -1572,17 +1574,17 @@ $app->post('/import_csv', function () use ($app) {
                 $values_list[] = "'" . $agreement_no . "'";
                 $values_list[] = "'" . $result->rntl_sect_cd . "'";
                 $values_list[] = "'" . $result->rent_pattern_code . "'";
-                if($result->item_cd == null){
+                if ($result->item_cd == null) {
                     $values_list[] = "null";
-                }else{
+                } else {
                     $values_list[] = "'" . $result->job_type_item_cd . "'";
                 }
                 $values_list[] = "'" . $result->werer_cd . "'";
-                if($result->item_cd == null){
+                if ($result->item_cd == null) {
                     $values_list[] = "null";
                     $values_list[] = "null";
                     $values_list[] = "null";
-                }else{
+                } else {
                     $values_list[] = "'" . $result->item_cd . "'";
                     $values_list[] = "'" . $result->color_cd . "'";
                     $values_list[] = "'" . $result->size_cd . "'";
@@ -1611,41 +1613,41 @@ $app->post('/import_csv', function () use ($app) {
                 $values_list[] = "'" . $result->emply_order_req_no . "'";
                 $values_list[] = "'" . $result->order_reason_kbn . "'";
                 $m_item_comb_hkey = md5(
-                    $auth['corporate_id']."-".
-                    $result->item_cd."-".
-                    $result->color_cd."-".
+                    $auth['corporate_id'] . "-" .
+                    $result->item_cd . "-" .
+                    $result->color_cd . "-" .
                     $result->size_cd
                 );
                 $values_list[] = "'" . $m_item_comb_hkey . "'";
                 $m_job_type_comb_hkey = md5(
-                    $auth['corporate_id']."-".
-                    $agreement_no."-".
+                    $auth['corporate_id'] . "-" .
+                    $agreement_no . "-" .
                     $result->rent_pattern_code
                 );
                 $values_list[] = "'" . $m_job_type_comb_hkey . "'";
                 $m_section_comb_hkey = md5(
-                    $auth['corporate_id']."-".
-                    $agreement_no."-".
+                    $auth['corporate_id'] . "-" .
+                    $agreement_no . "-" .
                     $result->rntl_sect_cd
                 );
                 $values_list[] = "'" . $m_section_comb_hkey . "'";
                 $m_wearer_std_comb_hkey = md5(
-                    $auth['corporate_id']."-".
-                    $result->werer_cd."-".
-                    $agreement_no."-".
-                    $result->rntl_sect_cd."-".
+                    $auth['corporate_id'] . "-" .
+                    $result->werer_cd . "-" .
+                    $agreement_no . "-" .
+                    $result->rntl_sect_cd . "-" .
                     $result->rent_pattern_code
                 );
                 $values_list[] = "'" . $m_wearer_std_comb_hkey . "'";
                 $m_wearer_item_comb_hkey = md5(
-                    $auth['corporate_id']."-".
-                    $result->werer_cd."-".
-                    $agreement_no."-".
-                    $result->rntl_sect_cd."-".
-                    $result->rent_pattern_code."-".
-                    $result->job_type_item_cd."-".
-                    $result->item_cd."-".
-                    $result->color_cd."-".
+                    $auth['corporate_id'] . "-" .
+                    $result->werer_cd . "-" .
+                    $agreement_no . "-" .
+                    $result->rntl_sect_cd . "-" .
+                    $result->rent_pattern_code . "-" .
+                    $result->job_type_item_cd . "-" .
+                    $result->item_cd . "-" .
+                    $result->color_cd . "-" .
                     $result->size_cd
                 );
                 $values_list[] = "'" . $m_wearer_item_comb_hkey . "'";
@@ -1656,69 +1658,74 @@ $app->post('/import_csv', function () use ($app) {
             }
 
             $values_query = implode(",", $values_querys);
-        } else {
-            $error_list[] = "登録するデータが存在しなかったため、取込処理が中断されました。";
-            $json_list['errors'] = $error_list;
-            $json_list["error_code"] = "1";
-            echo json_encode($json_list);
-            return;
-        }
-        // 発注情報トラン登録
-        // CALUME設定
-        $calum_list = array(
-            "t_order_comb_hkey",
-            "corporate_id",
-            "order_req_no",
-            "order_req_line_no",
-            "order_req_ymd",
-            "order_sts_kbn",
-            "rntl_cont_no",
-            "rntl_sect_cd",
-            "job_type_cd",
-            "job_type_item_cd",
-            "werer_cd",
-            "item_cd",
-            "color_cd",
-            "size_cd",
-            "size_two_cd",
-            "whse_cd",
-            "stk_usr_cd",
-            "stk_usr_brnch_cd",
-            "ship_to_cd",
-            "ship_to_brnch_cd",
-            "order_qty",
-            "memo",
-            "werer_name",
-            "cster_emply_cd",
-            "werer_sts_kbn",
-            "resfl_ymd",
-            "snd_kbn",
-            "snd_date",
-            "del_kbn",
-            "rgst_date",
-            "rgst_user_id",
-            "upd_date",
-            "upd_user_id",
-            "upd_pg_id",
-            "order_status",
-            "emply_order_req_no",
-            "order_reason_kbn",
-            "m_item_comb_hkey",
-            "m_job_type_comb_hkey",
-            "m_section_comb_hkey",
-            "m_wearer_std_comb_hkey",
-            "m_wearer_item_comb_hkey",
-            "appointment_ymd"
-        );
-        $calum_query = implode(",", $calum_list);
 
-        // 発注情報トラン登録 ここまで
-        $arg_str = "";
-        $arg_str = "INSERT INTO t_order_tran";
-        $arg_str .= "(" . $calum_query . ")";
-        $arg_str .= " VALUES ";
-        $arg_str .= $values_query;
-        $results = new Resultset(NULL, $t_import_job, $t_import_job->getReadConnection()->query($arg_str));
+            /*
+            else {
+                ChromePhp::log('koko3');
+                $error_list[] = "登録するデータが存在しなかったため、取込処理が中断されました。";
+                $json_list['errors'] = $error_list;
+                $json_list["error_code"] = "1";
+                echo json_encode($json_list);
+                return;
+            }
+            */
+            // 発注情報トラン登録
+            // CALUME設定
+            $calum_list = array(
+                "t_order_comb_hkey",
+                "corporate_id",
+                "order_req_no",
+                "order_req_line_no",
+                "order_req_ymd",
+                "order_sts_kbn",
+                "rntl_cont_no",
+                "rntl_sect_cd",
+                "job_type_cd",
+                "job_type_item_cd",
+                "werer_cd",
+                "item_cd",
+                "color_cd",
+                "size_cd",
+                "size_two_cd",
+                "whse_cd",
+                "stk_usr_cd",
+                "stk_usr_brnch_cd",
+                "ship_to_cd",
+                "ship_to_brnch_cd",
+                "order_qty",
+                "memo",
+                "werer_name",
+                "cster_emply_cd",
+                "werer_sts_kbn",
+                "resfl_ymd",
+                "snd_kbn",
+                "snd_date",
+                "del_kbn",
+                "rgst_date",
+                "rgst_user_id",
+                "upd_date",
+                "upd_user_id",
+                "upd_pg_id",
+                "order_status",
+                "emply_order_req_no",
+                "order_reason_kbn",
+                "m_item_comb_hkey",
+                "m_job_type_comb_hkey",
+                "m_section_comb_hkey",
+                "m_wearer_std_comb_hkey",
+                "m_wearer_item_comb_hkey",
+                "appointment_ymd"
+            );
+            $calum_query = implode(",", $calum_list);
+
+            // 発注情報トラン登録 ここまで
+            $arg_str = "";
+            $arg_str = "INSERT INTO t_order_tran";
+            $arg_str .= "(" . $calum_query . ")";
+            $arg_str .= " VALUES ";
+            $arg_str .= $values_query;
+            $results = new Resultset(NULL, $t_import_job, $t_import_job->getReadConnection()->query($arg_str));
+        }
 
         // トランザクション-コミット
         $transaction = new Resultset(NULL, $t_import_job, $t_import_job->getReadConnection()->query("commit"));
