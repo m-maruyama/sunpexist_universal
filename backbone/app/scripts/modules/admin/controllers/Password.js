@@ -20,9 +20,14 @@ define([
 				passwordView.listenTo(passwordView, 'success', function(){
 
 					var account_param = JSON.parse(window.sessionStorage.getItem('account_param'));
-					if(account_param.page_from == 'account'){
-						window.sessionStorage.setItem('page_from', 'password');
-						location.href = './account.html';
+					if (account_param !== null){
+						if(account_param.page_from == 'account') {
+							window.sessionStorage.setItem('page_from', 'password');
+							location.href = './account.html';
+						}else{
+							location.href = './login.html';
+							return;
+						}
 					}else {
 						location.href = './login.html';
 						return;
