@@ -221,6 +221,7 @@ $app->post('/purchase_history/search', function () use ($app) {
     $cond = $params['cond'];
     $page = $params['page'];
     $query_list = array();//追加
+    $rent = array();
 
     //初期表示は一番若い契約のnoを入れる
     if (isset($cond['rntl_cont_no'])) {

@@ -17,6 +17,7 @@ $app->post('/print/pdf', function ()use($app){
     // アカウントセッション取得
     $auth = $app->session->get("auth");
     $cond = $params["cond"];
+    $page = $params['page'];
     //個別管理番号あるなし　1:あり 0:なし
     $individual_check = individual_flg($auth['corporate_id'], $cond['rntl_cont_no']);
     //$individual_check = 1;
