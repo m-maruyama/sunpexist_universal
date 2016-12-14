@@ -113,8 +113,8 @@ $app->post('/account/search', function () use ($app) {
     $paginator_model = new PaginatorModel(
         array(
             'data' => $results,
-            //'limit' => $page['records_per_page'],
-            'limit' => '5',
+            'limit' => $page['records_per_page'],
+            //'limit' => '5',
             'page' => $page['page_number'],
         )
     );
