@@ -558,7 +558,10 @@ $app->post('/history/search', function ()use($app){
 				$list['shin_item_code'] = "-";
 			}
 			// 発注数
-			$list['order_qty'] = $result->as_order_qty;
+            $list['order_qty'] = '0';
+            if($result->as_order_qty){
+                $list['order_qty'] = $result->as_order_qty;
+            }
 			// メーカー受注番号
 			if (!empty($result->as_rec_order_no)) {
 				$list['rec_order_no'] = $result->as_rec_order_no;
@@ -576,7 +579,10 @@ $app->post('/history/search', function ()use($app){
 			// 出荷日
 			$list['ship_ymd'] = $result->as_ship_ymd;
 			// 出荷数
-			$list['ship_qty'] = $result->as_ship_qty;
+            $list['ship_qty'] = '0';
+            if($result->as_ship_qty){
+                $list['ship_qty'] = $result->as_ship_qty;
+            }
 			// 契約No
 			if (!empty($result->as_rntl_cont_name)) {
 				$list['rntl_cont_name'] = $result->as_rntl_cont_name;
