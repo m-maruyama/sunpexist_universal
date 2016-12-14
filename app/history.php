@@ -383,7 +383,7 @@ $app->post('/history/search', function ()use($app){
 	}
 	//$arg_str .= " INNER JOIN m_job_type";
 	//$arg_str .= " ON t_order.m_job_type_comb_hkey = m_job_type.m_job_type_comb_hkey";
-    $arg_str .= " INNER JOIN (m_job_type INNER JOIN m_input_item";
+    $arg_str .= " LEFT JOIN (m_job_type INNER JOIN m_input_item";
     $arg_str .= " ON m_job_type.corporate_id = m_input_item.corporate_id";
     $arg_str .= " AND m_job_type.rntl_cont_no = m_input_item.rntl_cont_no";
     $arg_str .= " AND m_job_type.job_type_cd = m_input_item.job_type_cd)";
