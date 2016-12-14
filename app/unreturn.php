@@ -144,7 +144,7 @@ $app->post('/unreturn/search', function ()use($app){
 		array_push($query_list,"t_returned_plan_info.individual_ctrl_no LIKE '".$cond['individual_number']."%'");
 	}
 	// 着用者状況区分
-	array_push($query_list,"m_wearer_std.werer_sts_kbn = '1'");
+//	array_push($query_list,"m_wearer_std.werer_sts_kbn = '1'");
 
     //ゼロ埋めがない場合、ログインアカウントの条件追加
     if($rntl_sect_cd_zero_flg == 0){
@@ -363,7 +363,7 @@ $app->post('/unreturn/search', function ()use($app){
 	}
 	//$arg_str .= " INNER JOIN m_job_type";
 	//$arg_str .= " ON t_order.m_job_type_comb_hkey = m_job_type.m_job_type_comb_hkey";
-    $arg_str .= " INNER JOIN (m_job_type INNER JOIN m_input_item";
+    $arg_str .= " LEFT JOIN (m_job_type INNER JOIN m_input_item";
     $arg_str .= " ON m_job_type.corporate_id = m_input_item.corporate_id";
     $arg_str .= " AND m_job_type.rntl_cont_no = m_input_item.rntl_cont_no";
     $arg_str .= " AND m_job_type.job_type_cd = m_input_item.job_type_cd)";
