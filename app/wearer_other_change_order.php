@@ -1407,6 +1407,7 @@ $app->post('/wearer_other_change_insert', function () use ($app) {
 
     //返品商品がなかったらエラーにするためのカウンタ
     $rtn_cnt = 0;
+
     // 発注商品一覧
     foreach ($item_list as $item_map) {
         // 返却枚数フォーマットチェック
@@ -1465,7 +1466,10 @@ $app->post('/wearer_other_change_insert', function () use ($app) {
             // 商品毎返却可能チェック
             if (!empty($item_map["individual_data"])) {
                 $target_cnt = 0;
+                $error_check = "";
+                $error_msg = "";
                 foreach ($item_map["individual_data"] as $individual_data) {
+
                     if ($individual_data["target_flg"] == "1") {
                         $target_cnt++;
                         $rtn_cnt += $individual_data["return_num"];
@@ -1489,8 +1493,17 @@ $app->post('/wearer_other_change_insert', function () use ($app) {
                         ))->count();
                         if($t_order_tran_count > 0){
                             $json_list["error_code"] = "1";
-                            $error_msg = $item_map['item_cd']."-".$item_map['color_cd']."は既にサイズ交換の発注がされています。";
-                            array_push($json_list["error_msg"], $error_msg);
+                            if ($error_check == ""){
+                                $error_msg = $item_map['item_cd']."-".$item_map['color_cd']."は既にサイズ交換の発注がされています。";
+                                array_push($json_list["error_msg"], $error_msg);
+
+                            }else{
+                                if ($error_check !== $item_map['item_cd']."-".$item_map['color_cd']."は既にサイズ交換の発注がされています。"){
+                                    $error_msg = $item_map['item_cd']."-".$item_map['color_cd']."は既にサイズ交換の発注がされています。";
+                                    array_push($json_list["error_msg"], $error_msg);
+                                }
+                            }
+                            $error_check = $error_msg;
                         }
                     }
 
