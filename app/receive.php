@@ -546,7 +546,9 @@ $app->post('/receive/search', function ()use($app){
 		$arg_str .= " ON t_order.m_section_comb_hkey = m_section.m_section_comb_hkey";
 	}
 	$arg_str .= " INNER JOIN m_wearer_std";
-	$arg_str .= " ON t_order.werer_cd = m_wearer_std.werer_cd";
+    $arg_str .= " ON t_order.werer_cd = m_wearer_std.werer_cd";
+    $arg_str .= " AND t_order.corporate_id = m_wearer_std.corporate_id";
+    $arg_str .= " AND t_order.rntl_cont_no = m_wearer_std.rntl_cont_no";
 	$arg_str .= " INNER JOIN (m_job_type INNER JOIN m_input_item";
 	$arg_str .= " ON m_job_type.corporate_id = m_input_item.corporate_id";
 	$arg_str .= " AND m_job_type.rntl_cont_no = m_input_item.rntl_cont_no";
@@ -631,11 +633,11 @@ $app->post('/receive/search', function ()use($app){
 				$list['ship_qty'] = "-";
 			}
 			// 個体管理番号
-			if (!empty($result->as_individual_ctrl_no)) {
+			/*if (!empty($result->as_individual_ctrl_no)) {
 				$list['individual_ctrl_no'] = $result->as_individual_ctrl_no;
 			} else {
 				$list['individual_ctrl_no'] = "-";
-			}
+			}*/
 			// 発注No
 			if (!empty($result->as_order_req_no)) {
 				$list['order_req_no'] = $result->as_order_req_no;
@@ -816,7 +818,50 @@ $app->post('/receive/search', function ()use($app){
 				}
 			}
 
-			array_push($all_list,$list);
+            //---個体管理番号・受領日時の取得---//
+            $list['individual_num'] = "-";
+            $query_list = array();
+            array_push($query_list, "corporate_id = '".$auth['corporate_id']."'");
+            array_push($query_list, "ship_no = '".$list['ship_no']."'");
+            array_push($query_list, "item_cd = '".$list['item_cd']."'");
+            array_push($query_list, "color_cd = '".$list['color_cd']."'");
+            //rray_push($query_list, "size_cd = '".$list['size_cd']."'");
+            $query = implode(' AND ', $query_list);
+            $arg_str = "";
+            $arg_str .= "SELECT ";
+            $arg_str .= "individual_ctrl_no";
+            $arg_str .= " FROM ";
+            $arg_str .= "t_delivery_goods_state_details";
+            $arg_str .= " WHERE ";
+            $arg_str .= $query;
+            $t_delivery_goods_state_details = new TDeliveryGoodsStateDetails();
+            $del_gd_results = new Resultset(null, $t_delivery_goods_state_details, $t_delivery_goods_state_details->getReadConnection()->query($arg_str));
+            $result_obj = (array)$del_gd_results;
+            $results_cnt = $result_obj["\0*\0_count"];
+            if ($results_cnt > 0) {
+                $paginator_model = new PaginatorModel(
+                    array(
+                        "data"  => $del_gd_results,
+                        "limit" => $results_cnt,
+                        "page" => 1
+                    )
+                );
+                $paginator = $paginator_model->getPaginate();
+                $del_gd_results = $paginator->items;
+
+                $num_list = array();
+                $day_list = array();
+                foreach ($del_gd_results as $del_gd_result) {
+                    array_push($num_list, $del_gd_result->individual_ctrl_no);
+                }
+                // 個体管理番号
+                $individual_ctrl_no = implode("<br>", $num_list);
+                $list['individual_ctrl_no'] = $individual_ctrl_no;
+                // 受領日
+                //ChromePhp::log($day_list);
+            }
+
+            array_push($all_list,$list);
 		}
 	}
 
