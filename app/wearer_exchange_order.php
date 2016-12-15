@@ -1302,7 +1302,7 @@ $app->post('/wearer_exchange/list', function ()use($app){
     $arg_str .= $query;
     $arg_str .= ") as distinct_table";
     $arg_str .= " ORDER BY as_item_cd ASC, as_color_cd ASC";
-    ChromePhp::LOG($arg_str);
+    //ChromePhp::LOG($arg_str);
     $t_delivery_goods_state_details = new TDeliveryGoodsStateDetails();
     $results = new Resultset(null, $t_delivery_goods_state_details, $t_delivery_goods_state_details->getReadConnection()->query($arg_str));
     $result_obj = (array)$results;
