@@ -734,7 +734,7 @@ $app->post('/wearer_other_change_list', function ()use($app){
         $arg_str .= " *, ";
         $arg_str .= " count(*) as_rtn_ok_cnt";
         $arg_str .= " FROM ";
-        $arg_str .= "(SELECT distinct on (t_delivery_goods_state_details.individual_ctrl_no, m_item.item_cd, m_item.color_cd, m_item.size_cd) ";
+        $arg_str .= "(SELECT distinct on (m_item.item_cd, m_item.color_cd, m_item.size_cd) ";
         $arg_str .= "t_delivery_goods_state_details.quantity as as_quantity,";
         $arg_str .= "t_delivery_goods_state_details.return_plan__qty as as_return_plan_qty,";
         $arg_str .= "t_delivery_goods_state_details.returned_qty as as_returned_qty,";
@@ -905,12 +905,15 @@ $app->post('/wearer_other_change_list', function ()use($app){
                         }
                         array_push($list["individual_chk"], $element);
                     }
+
                     // 個体管理番号数
                     $list["individual_cnt"] = count($list["individual_ctrl_no"]);
                     // 個体管理番号(val)
                     $list["individual_ctrl_no_val"] =  $list["individual_ctrl_no"];
                     // 個体管理番号(表示用)
                     $list["individual_ctrl_no"] = implode("<br/>", $list["individual_ctrl_no"]);
+
+
                 }else{
                     // 交換可能枚数
                     $list["rtn_ok_cnt"] = $list["quantity"];
@@ -966,6 +969,8 @@ $app->post('/wearer_other_change_list', function ()use($app){
             $sum_list["sum_order_num"] = $sum_return_num;
         }
         array_push($json_list["sum_num"], $sum_list);
+
+
     } else {
         // 発注情報トランに情報が存在しない場合、こちらで商品一覧生成
         $all_list = array();
@@ -1057,6 +1062,7 @@ $app->post('/wearer_other_change_list', function ()use($app){
                 $list["input_item_name"] = $result->as_input_item_name;
                 // サイズ
                 $list["size_cd"] = $result->as_size_cd;
+
                 // 対象、個体管理番号
                 if ($individual_flg == "1") {
                     $list["order_num_disable"] = "disabled";
@@ -1102,6 +1108,9 @@ $app->post('/wearer_other_change_list', function ()use($app){
                     }
                     // 個体管理番号数
                     $list["individual_cnt"] = count($list["individual_ctrl_no"]);
+                    // 個体管理番号(val)
+                    $list["individual_ctrl_no_val"] =  $list["individual_ctrl_no"];
+
                     // 個体管理番号(表示用)
                     $list["individual_ctrl_no"] = implode("<br/>", $list["individual_ctrl_no"]);
                 }else{
