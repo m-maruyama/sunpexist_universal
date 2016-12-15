@@ -570,6 +570,7 @@ $app->post('/wearer_return/info', function ()use($app){
    // 返却予定情報トラン(不要品返却発注履歴)確認
    $tran_list = array();
    $list = array();
+   $json_list["sum_return_num"] = '0';
    $query_list = array();
    array_push($query_list, "m_wearer_std_tran.corporate_id = '".$auth['corporate_id']."'");
    array_push($query_list, "m_wearer_std_tran.rntl_cont_no = '".$wearer_other_post['rntl_cont_no']."'");
@@ -692,6 +693,7 @@ $app->post('/wearer_return/info', function ()use($app){
        $item_results = $paginator->items;
        //ChromePhp::LOG("発注情報トラン商品一覧仮リスト");
        //ChromePhp::LOG($results);
+       $sum_return_cnt = 0;
        foreach ($item_results as $item_result) {
          // name属性用カウント値
          $list["arr_num"] = $arr_num++;
@@ -827,7 +829,7 @@ $app->post('/wearer_return/info', function ()use($app){
          }
          // 返却枚数
          // ※返却予定情報トランに存在する場合はこちらを設定
-         $list["return_num"] = "";
+         $list["return_num"] = "0";
          foreach ($tran_list as $tran_map) {
            if (
              $list["item_cd"] == $tran_map["item_cd"] &&
@@ -836,8 +838,10 @@ $app->post('/wearer_return/info', function ()use($app){
            )
            {
              $list["return_num"] = $tran_map["return_plan_qty"];
+               $sum_return_cnt += intval($tran_map["return_plan_qty"]);
            }
          }
+         $json_list["sum_return_num"] = $sum_return_cnt;
          // 個体管理番号表示フラグ
          if ($auth["individual_flg"] == "1") {
            $list["individual_flg"] = true;
@@ -857,6 +861,7 @@ $app->post('/wearer_return/info', function ()use($app){
        }
      }
    } else {
+     $json_list["sum_return_num"] = '0';
      // 発注情報トランに情報が存在しない場合、こちらで商品一覧生成
      $all_list = array();
      $list = array();
@@ -865,6 +870,7 @@ $app->post('/wearer_return/info', function ()use($app){
      array_push($query_list, "t_delivery_goods_state_details.rntl_cont_no = '".$wearer_other_post['rntl_cont_no']."'");
      array_push($query_list, "t_delivery_goods_state_details.werer_cd = '".$wearer_other_post['werer_cd']."'");
      array_push($query_list, "t_delivery_goods_state_details.rtn_ok_flg = '1'");
+     array_push($query_list, "t_delivery_goods_state_details.receipt_status = '2'");
      $query = implode(' AND ', $query_list);
 
      $arg_str = "";
@@ -1000,7 +1006,7 @@ $app->post('/wearer_return/info', function ()use($app){
            $list["individual_ctrl_no"] = implode("<br/>", $list["individual_ctrl_no"]);
          }
          // 返却枚数
-         $list["return_num"] = "";
+         $list["return_num"] = "0";
          // 個体管理番号表示フラグ
          if (individual_flg($auth['corporate_id'], $wearer_other_post['rntl_cont_no']) == "1") {
            $list["individual_flg"] = true;
@@ -1019,21 +1025,20 @@ $app->post('/wearer_return/info', function ()use($app){
        }
      }
    }
-   // 返却総枚数(返却可能枚数)
+//   // 返却総枚数(返却可能枚数)
    $json_list["sum_num"] = array();
-   $list["sum_return_num"] = '0';
-   if (!empty($all_list)) {
-     $quantity = 0;
-     $return_plan_qty = 0;
-     $returned_qty = 0;
-     foreach ($all_list as $all_map) {
-       $quantity += $all_map["quantity"];
-       $return_plan_qty += $all_map["return_plan_qty"];
-       $returned_qty += $all_map["returned_qty"];
-     }
-     // 返却可能枚数=総数量-返却予定数-返却済数
-     $list["sum_return_num"] = $quantity - $return_plan_qty - $returned_qty;
-   }
+//   if (!empty($all_list)) {
+//     $quantity = 0;
+//     $return_plan_qty = 0;
+//     $returned_qty = 0;
+//     foreach ($all_list as $all_map) {
+//       $quantity += $all_map["quantity"];
+//       $return_plan_qty += $all_map["return_plan_qty"];
+//       $returned_qty += $all_map["returned_qty"];
+//     }
+//     // 返却可能枚数=総数量-返却予定数-返却済数
+////     $list["sum_return_num"] = $quantity - $return_plan_qty - $returned_qty;
+//   }
    array_push($json_list["sum_num"], $list);
 
    // 商品リスト件数による一覧表示制御
