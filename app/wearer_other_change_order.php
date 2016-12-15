@@ -1461,14 +1461,7 @@ $app->post('/wearer_other_change_insert', function () use ($app) {
                 foreach ($item_map["individual_data"] as $individual_data) {
                     if ($individual_data["target_flg"] == "1") {
                         $target_cnt++;
-                    }
-                }
-                if ($item_map["rtn_ok_cnt"] < $target_cnt) {
-                    if (empty($return_num_possible_err)) {
-                        $return_num_possible_err = "err";
-                        $json_list["error_code"] = "1";
-                        $error_msg = "発注商品一覧にて返却枚数が現在の所持枚数を超過している商品があります。";
-                        array_push($json_list["error_msg"], $error_msg);
+                        $rtn_cnt += $individual_data["return_num"];
                     }
                 }
             }
