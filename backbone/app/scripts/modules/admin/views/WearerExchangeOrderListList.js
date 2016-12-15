@@ -69,13 +69,59 @@ define([
 							that.triggerMethod('showAlerts', errorMessages);
 						}
 						var res_list = res.attributes;
-						//console.log(res_list);
 						that.render(res_list);
+
 						if (res_list["individual_flg"] == '1') {
 							$('.individual_flg').css('display','');
 						} else {
 							$('.exchange_possible_num').css('display','');
 						}
+						var item_array = res_list.item_list;
+
+						if (res_list["individual_flg"] == '1') {
+
+							for (var i = 0; i < item_array.length; i++) {
+								//返却枚数 セレクトボックスのdisable追加
+								$("#return_num"+ i).prop("disabled", true);
+								if ($('#size_cd' + i).val()) {
+									var individual_cnt = $("input[name='individual_cnt" + i + "']").val();
+									$("#order_num" + i).val(individual_cnt);
+									$("#return_num" + i).val(individual_cnt);
+								} else {
+									$("#order_num" + i).val('0');
+									$("#return_num" + i).val('0');
+								}
+							}
+						}else{
+							for (var i = 0; i < item_array.length; i++) {
+								if ($('#size_cd' + i).val()) {
+									var exchange_possible_num = $("input[name='exchange_possible_num" + i + "']").val();
+									$("#order_num" + i).val(exchange_possible_num);
+									$("#return_num" + i).val(exchange_possible_num);
+								} else {
+									$("#order_num" + i).val('0');
+									$("#return_num" + i).val('0');
+								}
+							}
+						}
+						//返却枚数合計
+						var return_count = parseInt(0);
+						$(".return_num").each(function () {
+							if ($(this).val()) {
+								return_count += parseInt($(this).val());
+							}
+						});
+						$("input[name='return_count']").val(return_count);
+
+						//発注枚数合計
+						var order_count = parseInt(0);
+						$(".order_num").each(function () {
+							if ($(this).val()) {
+								order_count += parseInt($(this).val());
+							}
+						});
+						$("input[name='order_count']").val(order_count);
+
 						$.unblockUI();
 					}
 				});
@@ -85,7 +131,71 @@ define([
 					e.preventDefault();
 					var that = this;
 
- 				},
+					if($("input[name='individual_flg0']").val()){
+						//発注枚数、返却枚数
+						var size_cd = e.target.id;
+						var item_no = size_cd.split('size_cd')[1];
+						var individual_cnt = $("input[name='individual_cnt"+item_no+"']").val();
+						$("#order_num"+item_no).val(individual_cnt);
+						$("#return_num"+item_no).val(individual_cnt);
+
+						if(!$("#"+size_cd).val()){
+							$("#order_num"+item_no).val('0');
+							$("#return_num"+item_no).val('0');
+						}
+
+						//返却枚数合計
+						var return_count = parseInt(0);
+						$(".return_num").each(function () {
+							if ($(this).val()) {
+								return_count += parseInt($(this).val());
+							}
+						});
+						$("input[name='return_count']").val(return_count);
+
+						//発注枚数合計
+						var order_count = parseInt(0);
+						$(".order_num").each(function () {
+							if ($(this).val()) {
+								order_count += parseInt($(this).val());
+							}
+						});
+						$("input[name='order_count']").val(order_count);
+
+					}else {
+						//発注枚数、返却枚数
+						var size_cd = e.target.id;
+						var item_no = size_cd.split('size_cd')[1];
+						var exchange_possible_num = $("input[name='exchange_possible_num" + item_no + "']").val();
+						$("#order_num" + item_no).val(exchange_possible_num);
+						$("#return_num" + item_no).val(exchange_possible_num);
+
+						if (!$("#" + size_cd).val()) {
+							$("#order_num" + item_no).val('0');
+							$("#return_num" + item_no).val('0');
+						}
+
+						//返却枚数合計
+						var return_count = parseInt(0);
+						$(".return_num").each(function () {
+							if ($(this).val()) {
+								return_count += parseInt($(this).val());
+							}
+						});
+						$("input[name='return_count']").val(return_count);
+
+						//発注枚数合計
+						var order_count = parseInt(0);
+						$(".order_num").each(function () {
+							if ($(this).val()) {
+								order_count += parseInt($(this).val());
+							}
+						});
+						$("input[name='order_count']").val(order_count);
+
+					}
+
+				},
 				'click @ui.size_add': function(e) {
 					e.preventDefault();
 					var that = this;

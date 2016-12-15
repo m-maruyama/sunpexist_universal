@@ -87,9 +87,9 @@ $app->post('/print/pdf_tran', function ()use($app){
     $arg_str .= " AND t_returned_plan_info_tran.item_cd = m_input_item.item_cd";
     $arg_str .= " AND t_returned_plan_info_tran.color_cd = m_input_item.color_cd";
     $arg_str .= " INNER JOIN m_wearer_std";
-    $arg_str .= " ON t_order.werer_cd = m_wearer_std.werer_cd";
-    $arg_str .= " AND t_order.corporate_id = m_wearer_std.corporate_id";
-    $arg_str .= " AND t_order.rntl_cont_no = m_wearer_std.rntl_cont_no";
+    $arg_str .= " ON t_order_tran.werer_cd = m_wearer_std.werer_cd";
+    $arg_str .= " AND t_order_tran.corporate_id = m_wearer_std.corporate_id";
+    $arg_str .= " AND t_order_tran.rntl_cont_no = m_wearer_std.rntl_cont_no";
     $arg_str .= " INNER JOIN m_contract";
     $arg_str .= " ON t_order_tran.rntl_cont_no = m_contract.rntl_cont_no";
     $arg_str .= " INNER JOIN m_corporate";
