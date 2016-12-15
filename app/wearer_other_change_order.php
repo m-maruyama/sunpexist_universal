@@ -983,7 +983,7 @@ $app->post('/wearer_other_change_list', function ()use($app){
         $arg_str .= " *, ";
         $arg_str .= " count(*) as_rtn_ok_cnt";
         $arg_str .= " FROM ";
-        $arg_str .= "(SELECT distinct on (t_delivery_goods_state_details.individual_ctrl_no, m_item.item_cd, m_item.color_cd, m_item.size_cd)";
+        $arg_str .= "(SELECT distinct on (m_item.item_cd, m_item.color_cd, m_item.size_cd)";
         $arg_str .= "t_delivery_goods_state_details.quantity as as_quantity,";
         $arg_str .= "t_delivery_goods_state_details.return_plan__qty as as_return_plan_qty,";
         $arg_str .= "t_delivery_goods_state_details.returned_qty as as_returned_qty,";
