@@ -1296,11 +1296,12 @@ $app->post('/import_csv', function () use ($app) {
             $results = $paginator->items;
             $values_querys = array();
             foreach ($results as $result) {
+                ChromePhp::log($results);
                 // 着用者基本マスタトラン登録用VALUES設定
                 $values_list = array();
 
                 // 出荷先、出荷先支店コード取得
-                if ($result->order_kbn == "1" || $result->order_kbn == "5") {
+                if ($result->order_kbn == "1" || $result->order_kbn == "5" || $result->order_kbn == "0") {
                     $query_list = array();
                     $query_list[] = "corporate_id = '" . $auth['corporate_id'] . "'";
                     $query_list[] = "rntl_cont_no = '" . $agreement_no . "'";
@@ -1314,6 +1315,7 @@ $app->post('/import_csv', function () use ($app) {
                     $arg_str .= "m_section";
                     $arg_str .= " WHERE ";
                     $arg_str .= $query;
+
                     $m_section_results = new Resultset(null, $t_import_job, $t_import_job->getReadConnection()->query($arg_str));
                     $result_obj = (array)$m_section_results;
                     $results_cnt = $result_obj["\0*\0_count"];
