@@ -578,7 +578,7 @@ $app->post('/receive/search', function ()use($app){
 	$t_delivery_goods_state_details = new TDeliveryGoodsStateDetails();
 	$results = new Resultset(null, $t_delivery_goods_state_details, $t_delivery_goods_state_details->getReadConnection()->query($arg_str));
 	$result_obj = (array)$results;
-	$results_cnt = $result_obj["\0*\0_count"];
+	$results_cnt_list = $result_obj["\0*\0_count"];
 	$paginator_model = new PaginatorModel(
 		array(
 			"data"  => $results,
@@ -590,7 +590,7 @@ $app->post('/receive/search', function ()use($app){
 	$all_list = array();
 	$json_list = array();
 
-	if(!empty($results_cnt)){
+	if(!empty($results_cnt_list)){
 		$paginator = $paginator_model->getPaginate();
 		$results = $paginator->items;
 
@@ -884,7 +884,7 @@ $app->post('/receive/search', function ()use($app){
 
 	$page_list['records_per_page'] = $page['records_per_page'];
 	$page_list['page_number'] = $page['page_number'];
-	$page_list['total_records'] = $results_cnt;
+	$page_list['total_records'] = $results_cnt_list;
 	$json_list['page'] = $page_list;
 	$json_list['list'] = $all_list;
 	$json_list['individual_flag'] = $individual_flg;
