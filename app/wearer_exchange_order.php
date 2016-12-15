@@ -885,12 +885,14 @@ $app->post('/wearer_exchange/list', function ()use($app){
         $list["item_name"] = $item_result->as_item_name;
         // 数量
         $list["quantity"] = $item_result->as_quantity;
-          // 標準数
+          // 標準枚数
           $list["possible_num"] = $item_result->as_std_input_qty;
-        // 交換可能枚数
-        $list["exchange_possible_num"] = $list["possible_num"];;
-        // 標準枚数
-        $list["possible_num"] = $item_result->as_std_input_qty;
+          // 交換可能枚数
+          if (individual_flg($auth['corporate_id'], $wearer_size_change_post['rntl_cont_no']) == "1") {
+              $list["exchange_possible_num"] = $list["possible_num"];
+          }else{
+              $list["exchange_possible_num"] = $list["quantity"];
+          }
         // 商品コード
         $list["item_cd"] = $item_result->as_item_cd;
         // 色コード
@@ -1300,7 +1302,7 @@ $app->post('/wearer_exchange/list', function ()use($app){
     $arg_str .= $query;
     $arg_str .= ") as distinct_table";
     $arg_str .= " ORDER BY as_item_cd ASC, as_color_cd ASC";
-    //ChromePhp::LOG($arg_str);
+    ChromePhp::LOG($arg_str);
     $t_delivery_goods_state_details = new TDeliveryGoodsStateDetails();
     $results = new Resultset(null, $t_delivery_goods_state_details, $t_delivery_goods_state_details->getReadConnection()->query($arg_str));
     $result_obj = (array)$results;
@@ -1333,8 +1335,12 @@ $app->post('/wearer_exchange/list', function ()use($app){
         $list["possible_num"] = $result->as_std_input_qty;
         // 数量
         $list["quantity"] = $result->as_quantity;
-        // 交換可能枚数
-        $list["exchange_possible_num"] = $list["possible_num"];
+          // 交換可能枚数
+          if (individual_flg($auth['corporate_id'], $wearer_size_change_post['rntl_cont_no']) == "1") {
+              $list["exchange_possible_num"] = $list["possible_num"];
+          }else{
+              $list["exchange_possible_num"] = $list["quantity"];
+          }
         // 返却予定数
         $list["return_plan_qty"] = $result->as_return_plan_qty;
         // 返却済数
@@ -1739,7 +1745,7 @@ $app->post('/wearer_exchange/add_size', function ()use($app){
       $arg_str .= "t_delivery_goods_state_details";
       $arg_str .= " WHERE ";
       $arg_str .= $query;
-      ChromePhp::LOG($arg_str);
+      //ChromePhp::LOG($arg_str);
       $t_delivery_goods_state_details = new TDeliveryGoodsStateDetails();
       $t_delivery_goods_state_details_results = new Resultset(null, $t_delivery_goods_state_details, $t_delivery_goods_state_details->getReadConnection()->query($arg_str));
       $result_obj = (array)$t_delivery_goods_state_details_results;
@@ -1913,7 +1919,7 @@ $app->post('/wearer_exchange/delete', function ()use($app){
  */
 $app->post('/wearer_exchange/complete', function ()use($app){
    $params = json_decode(file_get_contents("php://input"), true);
-ChromePhp::log($params);
+//ChromePhp::log($params);
    // アカウントセッション
    $auth = $app->session->get("auth");
    //ChromePhp::LOG($auth);
