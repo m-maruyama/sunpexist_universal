@@ -682,7 +682,7 @@ $app->post('/wearer_other_change_list', function ()use($app){
     $arg_str = "SELECT ";
     $arg_str .= " * ";
     $arg_str .= " FROM ";
-    $arg_str .= "(SELECT distinct on (t_returned_plan_info_tran.individual_ctrl_no,t_returned_plan_info_tran.item_cd, t_returned_plan_info_tran.color_cd, t_returned_plan_info_tran.size_cd) ";
+    $arg_str .= "(SELECT distinct on (t_returned_plan_info_tran.item_cd, t_returned_plan_info_tran.color_cd, t_returned_plan_info_tran.size_cd) ";
     $arg_str .= "t_returned_plan_info_tran.item_cd as as_order_item_cd,";
     $arg_str .= "t_returned_plan_info_tran.color_cd as as_order_color_cd,";
     $arg_str .= "t_returned_plan_info_tran.size_cd as as_order_size_cd,";
