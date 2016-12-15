@@ -1425,6 +1425,34 @@ $app->post('/wearer_other_change_insert', function () use ($app) {
                     }
                 }
             }
+
+            //発注NGパターン：同一商品を交換で発注かけようとした場合にエラーで戻す
+            //発注情報トランに同じ着用者＋商品情報で検索
+            if($item_map["return_num"]>0){
+                $query_list=array();
+                array_push($query_list, "corporate_id = '" . $auth['corporate_id'] . "'");
+                array_push($query_list, "rntl_cont_no = '" . $wearer_size_change_post['rntl_cont_no'] . "'");
+                array_push($query_list, "werer_cd = '" . $wearer_size_change_post['werer_cd'] . "'");
+                //商品情報
+                array_push($query_list, "item_cd = '" . $item_map['item_cd'] . "'");
+                array_push($query_list, "color_cd = '" . $item_map['color_cd'] . "'");
+                //発注状況区分
+                array_push($query_list, "order_sts_kbn = '3'");//サイズ交換のトラン
+
+                //sql文字列を' AND 'で結合
+                $query = implode(' AND ', $query_list);
+                //--- クエリー実行・取得 ---//
+                $t_order_tran_count = TOrderTran::find(array(
+                    'conditions' => $query
+                ))->count();
+                if($t_order_tran_count > 0){
+                    $json_list["error_code"] = "1";
+                    $error_msg = $item_map['item_cd']."-".$item_map['color_cd']."は既にサイズ交換の発注がされています。";
+                    array_push($json_list["error_msg"], $error_msg);
+                }
+            }
+            $rtn_cnt += $item_map["return_num"];
+
         } else {
             // ※個体管理番号表示フラグがONの場合
             // 商品毎返却可能チェック
@@ -1445,32 +1473,7 @@ $app->post('/wearer_other_change_insert', function () use ($app) {
                 }
             }
         }
-        //発注NGパターン：同一商品を交換で発注かけようとした場合にエラーで戻す
-        //発注情報トランに同じ着用者＋商品情報で検索
-        if($item_map["return_num"]>0){
-            $query_list=array();
-            array_push($query_list, "corporate_id = '" . $auth['corporate_id'] . "'");
-            array_push($query_list, "rntl_cont_no = '" . $wearer_size_change_post['rntl_cont_no'] . "'");
-            array_push($query_list, "werer_cd = '" . $wearer_size_change_post['werer_cd'] . "'");
-            //商品情報
-            array_push($query_list, "item_cd = '" . $item_map['item_cd'] . "'");
-            array_push($query_list, "color_cd = '" . $item_map['color_cd'] . "'");
-            //発注状況区分
-            array_push($query_list, "order_sts_kbn = '3'");//サイズ交換のトラン
 
-            //sql文字列を' AND 'で結合
-            $query = implode(' AND ', $query_list);
-            //--- クエリー実行・取得 ---//
-            $t_order_tran_count = TOrderTran::find(array(
-                'conditions' => $query
-            ))->count();
-            if($t_order_tran_count > 0){
-                $json_list["error_code"] = "1";
-                $error_msg = $item_map['item_cd']."-".$item_map['color_cd']."は既にサイズ交換の発注がされています。";
-                array_push($json_list["error_msg"], $error_msg);
-            }
-        }
-        $rtn_cnt += $item_map["return_num"];
     }
     //交換する商品がない場合
     if($rtn_cnt <= 0){
