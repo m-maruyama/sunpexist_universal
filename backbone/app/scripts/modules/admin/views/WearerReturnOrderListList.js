@@ -29,9 +29,11 @@ define([
 			},
 			ui: {
 				'return_count': '#return_count',
+				'return_num': '.return_num',
 			},
 			bindings: {
 				'#return_count': 'return_count',
+				'.return_num': 'return_num',
 			},
 			onShow: function() {
 				$.blockUI({ message: '<p><img src="ajax-loader.gif" style="margin: 0 auto;" /> 読み込み中...</p>' });
@@ -66,6 +68,20 @@ define([
 				});
 			},
 			events: {
+				'change @ui.return_num': function(e){
+					var return_count = 0;
+					return_count = parseInt(e.target.value);
+					if(isNaN(return_count)){
+						return_count = 0;
+					}
+					$('#'+e.target.id).val(return_count);
+					var list_cnt = $('#list_cnt').val();
+					var sum_return_num = 0;
+					for (var i=0; i<list_cnt; i++) {
+						sum_return_num += parseInt($('#return_num'+i).val());
+					}
+					$('#return_count').val(sum_return_num);
+				},
 			},
 		});
 	});
