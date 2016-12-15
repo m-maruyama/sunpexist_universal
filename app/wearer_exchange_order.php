@@ -791,7 +791,6 @@ $app->post('/wearer_exchange/list', function ()use($app){
   $result_obj = (array)$results;
   $results_cnt = $result_obj["\0*\0_count"];
   //ChromePhp::LOG("発注情報トラン商品一覧件数");
-  //ChromePhp::LOG($results_cnt);
   if (!empty($results_cnt)) {
     // 発注情報トランに情報が存在する場合、こちらで商品一覧生成
     $paginator_model = new PaginatorModel(
@@ -860,7 +859,7 @@ $app->post('/wearer_exchange/list', function ()use($app){
     $arg_str .= $query;
     $arg_str .= ") as distinct_table";
     $arg_str .= " ORDER BY as_item_cd ASC, as_color_cd ASC";
-    //ChromePhp::LOG($arg_str);
+   // ChromePhp::LOG($arg_str);
     $m_input_item = new MInputItem();
     $item_results = new Resultset(null, $m_input_item, $m_input_item->getReadConnection()->query($arg_str));
     $result_obj = (array)$item_results;
@@ -886,8 +885,10 @@ $app->post('/wearer_exchange/list', function ()use($app){
         $list["item_name"] = $item_result->as_item_name;
         // 数量
         $list["quantity"] = $item_result->as_quantity;
+          // 標準数
+          $list["possible_num"] = $item_result->as_std_input_qty;
         // 交換可能枚数
-        $list["exchange_possible_num"] = $list["quantity"];
+        $list["exchange_possible_num"] = $list["possible_num"];;
         // 標準枚数
         $list["possible_num"] = $item_result->as_std_input_qty;
         // 商品コード
@@ -1333,7 +1334,7 @@ $app->post('/wearer_exchange/list', function ()use($app){
         // 数量
         $list["quantity"] = $result->as_quantity;
         // 交換可能枚数
-        $list["exchange_possible_num"] = $list["quantity"];
+        $list["exchange_possible_num"] = $list["possible_num"];
         // 返却予定数
         $list["return_plan_qty"] = $result->as_return_plan_qty;
         // 返却済数
@@ -1454,28 +1455,39 @@ $app->post('/wearer_exchange/list', function ()use($app){
           // 個体管理番号(表示用)
           $list["individual_ctrl_no"] = implode("<br/>", $list["individual_ctrl_no"]);
         }
-        // 発注枚数
-        $list["order_num"] = 0;
-        if ($result->as_size_add_flg == "0") {
-          $list["order_num"] = $list["exchange_possible_num"];
-          $list["order_num_text_disp"] = true;
-        } else {
-          $list["order_num"] = "";
-          $list["order_num_text_disp"] = false;
-        }
-        // 返却枚数
-        $list["return_num"] = 0;
-        if ($result->as_size_add_flg == "0") {
-          $list["return_num"] = $list["exchange_possible_num"];
-          $list["return_num_text_disp"] = false;
-        } else {
+          // 個体管理番号表示フラグ
           if (individual_flg($auth['corporate_id'], $wearer_size_change_post['rntl_cont_no']) == "1") {
-            $list["return_num_text_disp"] = false;
+              $list["order_num"] = 0;
+              $list["order_num_text_disp"] = true;
+              $list["return_num"] = 0;
+              $list["return_num_text_disp"] = true;
+
           } else {
-            $list["return_num_text_disp"] = true;
+              // 発注枚数
+              $list["order_num"] = 0;
+              if ($result->as_size_add_flg == "0") {
+                  $list["order_num"] = $list["exchange_possible_num"];
+                  $list["order_num_text_disp"] = true;
+              } else {
+                  $list["order_num"] = "";
+                  $list["order_num_text_disp"] = false;
+              }
+              // 返却枚数
+              $list["return_num"] = 0;
+              if ($result->as_size_add_flg == "0") {
+                  $list["return_num"] = $list["exchange_possible_num"];
+                  $list["return_num_text_disp"] = false;
+              } else {
+                  if (individual_flg($auth['corporate_id'], $wearer_size_change_post['rntl_cont_no']) == "1") {
+                      $list["return_num_text_disp"] = false;
+                  } else {
+                      $list["return_num_text_disp"] = true;
+                  }
+              }
+              // サイズ追加リンク表示
           }
-        }
-        // サイズ追加リンク表示
+
+
         if ($result->as_size_add_flg == "1") {
           $list["size_add_flg"] = true;
         } else {
@@ -1727,7 +1739,7 @@ $app->post('/wearer_exchange/add_size', function ()use($app){
       $arg_str .= "t_delivery_goods_state_details";
       $arg_str .= " WHERE ";
       $arg_str .= $query;
-      //ChromePhp::LOG($arg_str);
+      ChromePhp::LOG($arg_str);
       $t_delivery_goods_state_details = new TDeliveryGoodsStateDetails();
       $t_delivery_goods_state_details_results = new Resultset(null, $t_delivery_goods_state_details, $t_delivery_goods_state_details->getReadConnection()->query($arg_str));
       $result_obj = (array)$t_delivery_goods_state_details_results;
@@ -1901,7 +1913,7 @@ $app->post('/wearer_exchange/delete', function ()use($app){
  */
 $app->post('/wearer_exchange/complete', function ()use($app){
    $params = json_decode(file_get_contents("php://input"), true);
-
+ChromePhp::log($params);
    // アカウントセッション
    $auth = $app->session->get("auth");
    //ChromePhp::LOG($auth);
@@ -1915,7 +1927,6 @@ $app->post('/wearer_exchange/complete', function ()use($app){
    $wearer_data_input = $params["wearer_data"];
    $item_list = $params["item"];
    //ChromePhp::LOG($wearer_data_input);
-   //ChromePhp::LOG($item_list);
 
    $json_list = array();
    // DB更新エラーコード 0:正常 その他:要因エラー
@@ -2070,10 +2081,12 @@ $app->post('/wearer_exchange/complete', function ()use($app){
            }
          }
        }
+
        if (empty($order_num_format_err)) {
          // 商品毎発注可能チェック
          if ($item_map["add_flg"] == "0") {
            if (!empty($item_map["order_num"])) {
+               //ChromePhp::log($item_map["exchange_possible_num"]);
              if ($item_map["order_num"] > $item_map["exchange_possible_num"]) {
                if (empty($order_num_possible_err)) {
                  $order_num_possible_err = "err";
@@ -3348,7 +3361,8 @@ $app->post('/wearer_exchange/complete', function ()use($app){
               array_push($values_list, "'3'");
               // 返却予定数
               array_push($calum_list, "return_plan_qty");
-              array_push($values_list, "'".$individual_data['return_num']."'");
+              //array_push($values_list, "'".$individual_data['return_num']."'");
+                array_push($values_list, "'1'");
               // 返却数
               array_push($calum_list, "return_qty");
               array_push($values_list, "'0'");
