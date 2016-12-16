@@ -2002,7 +2002,8 @@ $app->post('/wearer_change/info', function ()use($app){
        }
 
        $list["return_num_disable"] = "disabled";
-
+         $same_item_flg = "";
+         $return_qty = "";
          //返却可能枚数の条件分岐
          if(individual_flg($auth['corporate_id'], $wearer_chg_post['rntl_cont_no'])){
              for ($i=0; $i<count($chg_wearer_list); $i++) {
@@ -2012,18 +2013,22 @@ $app->post('/wearer_change/info', function ()use($app){
                  ) {
                      //商品cdと色cdが同じ商品があった場合
                      if ($chg_wearer_list[$i]['std_input_qty'] < $now_wearer_map['std_input_qty']) {
-                         $list["return_num"] = $now_wearer_map['possible_num'];
+                         $return_qty = $now_wearer_map['std_input_qty'] - $chg_wearer_list[$i]['std_input_qty'];
+                         $same_item_flg = '1';
                      }
-                 }else {
-                     $list["possible_num"] = $list["individual_cnt"];
                  }
              }
+
+            if($same_item_flg == '1'){
+                $list["possible_num"] = $return_qty;
+            }else{
+                $list["possible_num"] = $list["individual_cnt"];
+            }
 
          }else{
              // 返却可能枚数（所持数）
              $list["possible_num"] = $now_wearer_map['possible_num'];
          }
-
 
        //--その他の必要hiddenパラメータ--//
        // 部門コード
@@ -2046,7 +2051,6 @@ $app->post('/wearer_change/info', function ()use($app){
    } else {
      $json_list["now_list_disp_flg"] = false;
    }
-
    $json_list["now_list_cnt"] = count($now_list);
    $json_list["now_list"] = $now_list;
    //ChromePhp::LOG('現在貸与中アイテム一覧リスト');
@@ -2433,7 +2437,7 @@ $app->post('/wearer_change/complete', function ()use($app){
                $target_cnt = $target_cnt + 1;
              }
            }
-           if ($now_item_input_map["possible_num"] != $target_cnt) {
+           if ($now_item_input_map["possible_num"] > $target_cnt) {
              if (empty($now_return_num_err1)) {
                $now_return_num_err1 = "err";
                $json_list["error_code"] = "1";
@@ -2441,6 +2445,14 @@ $app->post('/wearer_change/complete', function ()use($app){
                array_push($json_list["error_msg"], $error_msg);
              }
            }
+             if ($now_item_input_map["possible_num"] < $target_cnt) {
+                 if (empty($now_return_num_err1)) {
+                     $now_return_num_err1 = "err";
+                     $json_list["error_code"] = "1";
+                     $error_msg = "現在貸与中のアイテム：返却枚数が超過している商品があります。";
+                     array_push($json_list["error_msg"], $error_msg);
+                 }
+             }
          } else {
            //※個体管理番号なしの場合
            if ($now_item_input_map["possible_num"] < $now_item_input_map["now_return_num"]) {
