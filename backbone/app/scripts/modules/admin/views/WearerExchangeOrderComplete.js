@@ -46,7 +46,6 @@ define([
 				var mode = data["mode"];
 				var wearer_data = data["wearer_data"];
 				var item = data["item"];
-console.log(item);
 				var modelForUpdate = this.model;
 				modelForUpdate.url = App.api.WX0013;
 				var cond = {

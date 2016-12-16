@@ -377,7 +377,6 @@ define([
 					var target_id = e.target.id;
 					var return_id = target_id.replace( /target_flg/g , "return_num" ) ;
 					return_num = parseInt($('#'+return_id).val());
-					console.log(return_num);
 					if(e.target.checked){
 						return_num += 1;
 					}else{
