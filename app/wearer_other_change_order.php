@@ -1143,21 +1143,21 @@ $app->post('/wearer_other_change_list', function ()use($app){
                 array_push($all_list, $list);
             }
             // 返却総枚数(返却可能枚数)
-            $json_list["sum_num"] = array();
-            $sum_list = array();
-            $sum_list["sum_return_num"] = '0';
-            $sum_list["sum_order_num"] = '0';
-            if (!empty($all_list)) {
-                $sum_return_num = 0;
-                $sum_order_num = 0;
-                foreach ($all_list as $all_map) {
-                    $sum_return_num += $all_map["return_num"];
-                }
-                $sum_list["sum_return_num"] = $sum_return_num;
-                $sum_list["sum_order_num"] = $sum_return_num;
-            }
-            array_push($json_list["sum_num"], $sum_list);
+//            $json_list["sum_num"] = array();
+//            $sum_list = array();
+//            if (!empty($all_list)) {
+//                $sum_return_num = 0;
+//                $sum_order_num = 0;
+//                foreach ($all_list as $all_map) {
+//                    $sum_return_num += $all_map["return_num"];
+//                }
+//            }
         }
+        // 返却総枚数(返却可能枚数)
+        $json_list["sum_num"] = array();
+        $sum_list["sum_return_num"] = '0';
+        $sum_list["sum_order_num"] = '0';
+        array_push($json_list["sum_num"], $sum_list);
     }
 
     // 商品リスト件数による一覧表示制御
