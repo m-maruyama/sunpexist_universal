@@ -354,7 +354,7 @@ $app->post('/print/pdf_tran', function ()use($app){
                 //グループの配列があれば、リストの配列にグループを入れる
                 if (count($group_array) > 0) {
                     $group_array[0]["return_plan_qty"] = $sum_return_qty;
-                    $group_array[0]["border"] = "LR";
+                    $group_array[0]["border"] = "LRT";
 
                     //商品ごとのグループを１行ずつ、出力用の配列に入れる
                     $i = 0;
@@ -397,7 +397,7 @@ $app->post('/print/pdf_tran', function ()use($app){
         }
         if (count($group_array) > 0) {
             $group_array[0]["return_plan_qty"] = count($group_array);
-            $group_array[0]["border"] = "LR";
+            $group_array[0]["border"] = "LRT";
 
             //商品ごとのグループを１行ずつ、出力用の配列に入れる
             $i = 0;
