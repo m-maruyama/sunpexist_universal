@@ -1482,49 +1482,31 @@ $app->post('/wearer_other_change_insert', function () use ($app) {
                         //商品情報
                         array_push($query_list, "item_cd = '" . $item_map['item_cd'] . "'");
                         array_push($query_list, "color_cd = '" . $item_map['color_cd'] . "'");
+                        array_push($query_list, "individual_ctrl_no = '" . $individual_data['individual_ctrl_no'] . "'");
                         //発注状況区分
                         array_push($query_list, "order_sts_kbn = '3'");//サイズ交換のトラン
 
                         //sql文字列を' AND 'で結合
                         $query = implode(' AND ', $query_list);
                         //--- クエリー実行・取得 ---//
-                        $t_order_tran_count = TOrderTran::find(array(
+                        $t_rtn_tran_count = TReturnedPlanInfoTran::find(array(
                             'conditions' => $query
                         ))->count();
-                        if($t_order_tran_count > 0){
+                        if($t_rtn_tran_count > 0){
                             $json_list["error_code"] = "1";
-                            if ($error_check == ""){
-                                $error_msg = $item_map['item_cd']."-".$item_map['color_cd']."は既にサイズ交換の発注がされています。";
-                                array_push($json_list["error_msg"], $error_msg);
-
-                            }else{
-                                if ($error_check !== $item_map['item_cd']."-".$item_map['color_cd']."は既にサイズ交換の発注がされています。"){
-                                    $error_msg = $item_map['item_cd']."-".$item_map['color_cd']."は既にサイズ交換の発注がされています。";
-                                    array_push($json_list["error_msg"], $error_msg);
-                                }
-                            }
-                            $error_check = $error_msg;
+                            $error_msg = $item_map['item_cd'] . "-" . $item_map['color_cd'] . "の個体管理番号:" . $individual_data['individual_ctrl_no'] . "は既にサイズ交換の発注がされています。";
+                            array_push($json_list["error_msg"], $error_msg);
                         }
                     }
-
 
                 }
             }
             //発注NGパターン：同一商品を交換で発注かけようとした場合にエラーで戻す
             //発注情報トランに同じ着用者＋商品情報で検索
 
-
-
-
         }
 
     }
-
-
-
-
-
-
 
     //交換する商品がない場合
     if($rtn_cnt <= 0){
