@@ -799,6 +799,41 @@ $app->post('/wearer_change/info', function ()use($app){
       $json_list['wearer_info'] = $all_list;
     }
 
+    //以前の職種取得//
+    $query_list = array();
+    array_push($query_list, "m_wearer_std.corporate_id = '".$auth['corporate_id']."'");
+    array_push($query_list, "m_wearer_std.rntl_cont_no = '".$wearer_chg_post['rntl_cont_no']."'");
+    array_push($query_list, "m_wearer_std.werer_cd = '".$wearer_chg_post['werer_cd']."'");
+    $query = implode(' AND ', $query_list);
+
+    $arg_str = "";
+    $arg_str = "SELECT ";
+    $arg_str .= "m_wearer_std.job_type_cd as as_job_type_cd";
+    $arg_str .= " FROM ";
+    $arg_str .= "m_wearer_std";
+    $arg_str .= " WHERE ";
+    $arg_str .= $query;
+    $arg_str .= " ORDER BY m_wearer_std.upd_date DESC";
+
+    $m_weare_std = new MWearerStd();
+    $results = new Resultset(NULL, $m_weare_std, $m_weare_std->getReadConnection()->query($arg_str));
+    $result_obj = (array)$results;
+    $results_cnt = $result_obj["\0*\0_count"];
+    if (!empty($results_cnt)) {
+        $paginator_model = new PaginatorModel(
+            array(
+                "data" => $results,
+                "limit" => 1,
+                "page" => 1
+            )
+        );
+        $paginator = $paginator_model->getPaginate();
+        $results = $paginator->items;
+        foreach ($results as $result) {
+            $bef_job_type_cd = $result->as_job_type_cd;
+        }
+    }
+
     //--発注情報トラン・返却予定情報トラン内、「職種変更または異動」情報の有無確認--//
     //※発注情報トラン参照
     $query_list = array();
@@ -825,8 +860,8 @@ $app->post('/wearer_change/info', function ()use($app){
     $arg_str .= " WHERE ";
     $arg_str .= $query;
     $arg_str .= " ORDER BY t_order_tran.upd_date DESC";
-    //ChromePhp::LOG($arg_str);
     $t_order_tran = new TOrderTran();
+    //ChromePhp::log($arg_str);
     $results = new Resultset(NULL, $t_order_tran, $t_order_tran->getReadConnection()->query($arg_str));
     $result_obj = (array)$results;
     $results_cnt = $result_obj["\0*\0_count"];
@@ -861,7 +896,7 @@ $app->post('/wearer_change/info', function ()use($app){
     array_push($query_list, "t_returned_plan_info_tran.rntl_cont_no = '".$wearer_chg_post['rntl_cont_no']."'");
     array_push($query_list, "t_returned_plan_info_tran.werer_cd = '".$wearer_chg_post['werer_cd']."'");
     array_push($query_list, "t_returned_plan_info_tran.rntl_sect_cd = '".$wearer_chg_post['rntl_sect_cd']."'");
-    array_push($query_list, "t_returned_plan_info_tran.job_type_cd = '".$wearer_chg_post['job_type_cd']."'");
+    array_push($query_list, "t_returned_plan_info_tran.job_type_cd = '".$bef_job_type_cd."'");
     array_push($query_list, "t_returned_plan_info_tran.order_sts_kbn = '5'");
     $reason_kbns = array();
     array_push($reason_kbns, "t_returned_plan_info_tran.order_reason_kbn = '09'");
@@ -1578,39 +1613,74 @@ $app->post('/wearer_change/info', function ()use($app){
    $chk_list = array();
    $add_list = array();
 
+     if(individual_flg($auth['corporate_id'], $wearer_chg_post['rntl_cont_no'])){
+         // 発注前後リストの商品比較処理
+         for ($i=0; $i<count($chg_wearer_list); $i++) {
+             $list = array();
+             $chg_wearer_list[$i]["overlap_flg"] = true;
+             for ($j=0; $j<count($now_wearer_list); $j++) {
 
-   // 発注前後リストの商品比較処理
-   for ($i=0; $i<count($chg_wearer_list); $i++) {
-     $list = array();
-     $chg_wearer_list[$i]["overlap_flg"] = true;
-     for ($j=0; $j<count($now_wearer_list); $j++) {
+                 if (
+                     $chg_wearer_list[$i]["item_cd"] == $now_wearer_list[$j]["item_cd"]
+                     && $chg_wearer_list[$i]["color_cd"] == $now_wearer_list[$j]["color_cd"]
+                     && ($chg_wearer_list[$i]["std_input_qty"] == $now_wearer_list[$j]["std_input_qty"]
+                         || $chg_wearer_list[$i]["std_input_qty"] < $now_wearer_list[$j]["std_input_qty"])
+                 )
+                 {
+                     $chg_wearer_list[$i]["overlap_flg"] = false;
+                 }
+             }
+             if ($chg_wearer_list[$i]["overlap_flg"]) {
 
-       if (
-        $chg_wearer_list[$i]["item_cd"] == $now_wearer_list[$j]["item_cd"]
-        && $chg_wearer_list[$i]["color_cd"] == $now_wearer_list[$j]["color_cd"]
-        && ($chg_wearer_list[$i]["std_input_qty"] == $now_wearer_list[$j]["quantity"]
-        || $chg_wearer_list[$i]["std_input_qty"] < $now_wearer_list[$j]["quantity"])
-       )
-       {
-           $chg_wearer_list[$i]["overlap_flg"] = false;
-       }
+                 $list["item_cd"] = $chg_wearer_list[$i]["item_cd"];
+                 $list["color_cd"] = $chg_wearer_list[$i]["color_cd"];
+                 $list["size_cd"] = $chg_wearer_list[$i]["size_cd"];
+                 $list["item_name"] = $chg_wearer_list[$i]["item_name"];
+                 $list["job_type_cd"] = $chg_wearer_list[$i]["job_type_cd"];
+                 $list["rntl_sect_cd"] = $chg_wearer_list[$i]["rntl_sect_cd"];
+                 $list["job_type_item_cd"] = $chg_wearer_list[$i]["job_type_item_cd"];
+                 $list["size_two_cd"] = $chg_wearer_list[$i]["size_two_cd"];
+                 $list["std_input_qty"] = $chg_wearer_list[$i]["std_input_qty"];
+                 $list["input_item_name"] = $chg_wearer_list[$i]["input_item_name"];
+
+                 array_push($chk_list, $list);
+             }
+         }
+
+     }else{
+         // 発注前後リストの商品比較処理
+         for ($i=0; $i<count($chg_wearer_list); $i++) {
+             $list = array();
+             $chg_wearer_list[$i]["overlap_flg"] = true;
+             for ($j=0; $j<count($now_wearer_list); $j++) {
+                 if (
+                     $chg_wearer_list[$i]["item_cd"] == $now_wearer_list[$j]["item_cd"]
+                     && $chg_wearer_list[$i]["color_cd"] == $now_wearer_list[$j]["color_cd"]
+                     && ($chg_wearer_list[$i]["std_input_qty"] == $now_wearer_list[$j]["quantity"]
+                         || $chg_wearer_list[$i]["std_input_qty"] < $now_wearer_list[$j]["quantity"])
+                 )
+                 {
+                     $chg_wearer_list[$i]["overlap_flg"] = false;
+                 }
+             }
+             if ($chg_wearer_list[$i]["overlap_flg"]) {
+
+                 $list["item_cd"] = $chg_wearer_list[$i]["item_cd"];
+                 $list["color_cd"] = $chg_wearer_list[$i]["color_cd"];
+                 $list["size_cd"] = $chg_wearer_list[$i]["size_cd"];
+                 $list["item_name"] = $chg_wearer_list[$i]["item_name"];
+                 $list["job_type_cd"] = $chg_wearer_list[$i]["job_type_cd"];
+                 $list["rntl_sect_cd"] = $chg_wearer_list[$i]["rntl_sect_cd"];
+                 $list["job_type_item_cd"] = $chg_wearer_list[$i]["job_type_item_cd"];
+                 $list["size_two_cd"] = $chg_wearer_list[$i]["size_two_cd"];
+                 $list["std_input_qty"] = $chg_wearer_list[$i]["std_input_qty"];
+                 $list["input_item_name"] = $chg_wearer_list[$i]["input_item_name"];
+
+                 array_push($chk_list, $list);
+             }
+         }
      }
-     if ($chg_wearer_list[$i]["overlap_flg"]) {
 
-       $list["item_cd"] = $chg_wearer_list[$i]["item_cd"];
-       $list["color_cd"] = $chg_wearer_list[$i]["color_cd"];
-       $list["size_cd"] = $chg_wearer_list[$i]["size_cd"];
-       $list["item_name"] = $chg_wearer_list[$i]["item_name"];
-       $list["job_type_cd"] = $chg_wearer_list[$i]["job_type_cd"];
-       $list["rntl_sect_cd"] = $chg_wearer_list[$i]["rntl_sect_cd"];
-       $list["job_type_item_cd"] = $chg_wearer_list[$i]["job_type_item_cd"];
-       $list["size_two_cd"] = $chg_wearer_list[$i]["size_two_cd"];
-       $list["std_input_qty"] = $chg_wearer_list[$i]["std_input_qty"];
-       $list["input_item_name"] = $chg_wearer_list[$i]["input_item_name"];
-
-       array_push($chk_list, $list);
-     }
-   }
    //ChromePhp::LOG('発注後のみ商品リスト');
    //ChromePhp::LOG(count($chk_list));
    //ChromePhp::LOG($chk_list);
@@ -2120,7 +2190,6 @@ $app->post('/wearer_change/delete', function ()use($app){
   // フロントパラメータ取得
   $cond = $params['data'];
   //ChromePhp::LOG("フロント側パラメータ");
-  //ChromePhp::LOG($cond);
 
   $json_list = array();
   // DB更新エラーコード 0:正常 1:更新エラー
@@ -2249,7 +2318,7 @@ $app->post('/wearer_change/delete', function ()use($app){
     //ChromePhp::LOG("返却予定情報トラン削除");
     $query_list = array();
     array_push($query_list, "t_returned_plan_info_tran.corporate_id = '".$auth['corporate_id']."'");
-    array_push($query_list, "t_returned_plan_info_tran.order_req_no = '".$cond['return_req_no']."'");
+    array_push($query_list, "t_returned_plan_info_tran.order_req_no = '".$cond['order_req_no']."'");
     // 発注区分「異動」
     array_push($query_list, "t_returned_plan_info_tran.order_sts_kbn = '5'");
     // 理由区分「職種変更または異動」系ステータス
@@ -2270,7 +2339,6 @@ $app->post('/wearer_change/delete', function ()use($app){
     $arg_str .= "t_returned_plan_info_tran";
     $arg_str .= " WHERE ";
     $arg_str .= $query;
-    //ChromePhp::LOG($arg_str);
     $t_returned_plan_info_tran = new TReturnedPlanInfoTran();
     $results = new Resultset(NULL, $t_returned_plan_info_tran, $t_returned_plan_info_tran->getReadConnection()->query($arg_str));
     $result_obj = (array)$results;
