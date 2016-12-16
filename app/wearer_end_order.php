@@ -1112,6 +1112,58 @@ $app->post('/wearer_end_order_insert', function () use ($app) {
         }
       }
     }
+      // ※発注情報状況・納品状況情報参照
+      $query_list = array();
+      array_push($query_list, "corporate_id = '".$auth['corporate_id']."'");
+      array_push($query_list, "rntl_cont_no = '".$wearer_end_post['rntl_cont_no']."'");
+      array_push($query_list, "werer_cd = '".$wearer_end_post['werer_cd']."'");
+      array_push($query_list, "ship_qty = 0");
+      array_push($query_list, "ship_ymd = '00000000'");
+      $query = implode(' AND ', $query_list);
+      $arg_str = "";
+      $arg_str .= "SELECT ";
+      $arg_str .= "*";
+      $arg_str .= " FROM ";
+      $arg_str .= "t_order_state";
+      $arg_str .= " WHERE ";
+      $arg_str .= $query;
+      //ChromePhp::LOG($arg_str);
+      $t_order_state = new TOrderState();
+      $results = new Resultset(NULL, $t_order_state, $t_order_state->getReadConnection()->query($arg_str));
+      $result_obj = (array)$results;
+      $results_cnt = $result_obj["\0*\0_count"];
+      if ($results_cnt > 0) {
+          $json_list["error_code"] = "1";
+          $error_msg = "対象の方は未出荷の商品がある為、貸与終了の発注を完了できません。";
+          array_push($json_list["error_msg"], $error_msg);
+          echo json_encode($json_list);
+          return;
+      }
+      $query_list = array();
+      array_push($query_list, "corporate_id = '".$auth['corporate_id']."'");
+      array_push($query_list, "rntl_cont_no = '".$wearer_end_post['rntl_cont_no']."'");
+      array_push($query_list, "werer_cd = '".$wearer_end_post['werer_cd']."'");
+      array_push($query_list, "receipt_status = '1'");
+      $query = implode(' AND ', $query_list);
+      $arg_str = "";
+      $arg_str .= "SELECT ";
+      $arg_str .= "*";
+      $arg_str .= " FROM ";
+      $arg_str .= "t_delivery_goods_state_details";
+      $arg_str .= " WHERE ";
+      $arg_str .= $query;
+      //ChromePhp::LOG($arg_str);
+      $t_delivery_goods_state_details = new TDeliveryGoodsStateDetails();
+      $results = new Resultset(NULL, $t_delivery_goods_state_details, $t_delivery_goods_state_details->getReadConnection()->query($arg_str));
+      $result_obj = (array)$results;
+      $results_cnt = $result_obj["\0*\0_count"];
+      if ($results_cnt > 0) {
+          $json_list["error_code"] = "1";
+          $error_msg = "対象の方は未受領の商品がある為、貸与終了の発注を完了できません。";
+          array_push($json_list["error_msg"], $error_msg);
+          echo json_encode($json_list);
+          return;
+      }
 
     echo json_encode($json_list);
   } else if ($mode == "update") {
@@ -1257,7 +1309,6 @@ $app->post('/wearer_end_order_insert', function () use ($app) {
     array_push($query_list, "corporate_id = '".$auth['corporate_id']."'");
     array_push($query_list, "rntl_cont_no = '".$wearer_end_post['rntl_cont_no']."'");
     array_push($query_list, "werer_cd = '".$wearer_end_post['werer_cd']."'");
-      ChromePhp::LOG($wearer_end_post['werer_cd']);
     array_push($query_list, "receipt_status = '1'");
     $query = implode(' AND ', $query_list);
     $arg_str = "";
