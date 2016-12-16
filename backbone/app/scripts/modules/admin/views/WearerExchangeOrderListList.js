@@ -371,17 +371,19 @@ define([
 					$("input[name='return_count']").val(return_count);
 				},
 				'change @ui.target_flg': function(e) {
-					e.preventDefault();
-					var that = this;
 
-					var no = e.target.classList[1];
-					var cnt = parseInt(0);
-					$("#"+e.target.id).each(function () {
-						if ($(this).prop("checked")) {
-							cnt += parseInt(1);
-						}
-					});
-					$("#return_num"+no).val(cnt);
+					var return_num = 0;
+
+					var target_id = e.target.id;
+					var return_id = target_id.replace( /target_flg/g , "return_num" ) ;
+					return_num = parseInt($('#'+return_id).val());
+					console.log(return_num);
+					if(e.target.checked){
+						return_num += 1;
+					}else{
+						return_num -= 1;
+					}
+					$('#'+return_id).val(return_num);
 
 					var return_count = parseInt(0);
 					$(".return_num").each(function () {
@@ -390,6 +392,7 @@ define([
 						}
 					});
 					$("input[name='return_count']").val(return_count);
+
 				}
 			}
 		});
