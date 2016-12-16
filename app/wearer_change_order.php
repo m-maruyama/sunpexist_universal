@@ -1174,7 +1174,7 @@ $app->post('/wearer_change/info', function ()use($app){
    $arg_str .= $query;
    $arg_str .= ") as distinct_table";
    $arg_str .= " ORDER BY as_item_cd ASC, as_color_cd ASC";
-   ChromePhp::LOG($arg_str);
+   //ChromePhp::LOG($arg_str);
    $t_delivery_goods_state_details = new TDeliveryGoodsStateDetails();
    $results = new Resultset(null, $t_delivery_goods_state_details, $t_delivery_goods_state_details->getReadConnection()->query($arg_str));
    $result_obj = (array)$results;
@@ -1526,7 +1526,7 @@ $app->post('/wearer_change/info', function ()use($app){
      $results = new Resultset(NULL, $m_input_item, $m_input_item->getReadConnection()->query($arg_str));
      $result_obj = (array)$results;
      $results_cnt = $result_obj["\0*\0_count"];
-     ChromePhp::LOG($arg_str);
+     //ChromePhp::LOG($arg_str);
 
      if (!empty($results_cnt)) {
        $paginator_model = new PaginatorModel(
@@ -3911,7 +3911,7 @@ $app->post('/wearer_change/complete', function ()use($app){
       // トランザクションロールバック
       $m_wearer_std_tran = new MWearerStdTran();
       $results = new Resultset(NULL, $m_wearer_std_tran, $m_wearer_std_tran->getReadConnection()->query('rollback'));
-      ChromePhp::LOG($e);
+      //ChromePhp::LOG($e);
 
       $json_list["error_code"] = "1";
       $error_msg = "入力登録処理において、データ更新エラーが発生しました。";
