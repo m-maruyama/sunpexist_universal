@@ -1174,7 +1174,7 @@ $app->post('/wearer_change/info', function ()use($app){
    $arg_str .= $query;
    $arg_str .= ") as distinct_table";
    $arg_str .= " ORDER BY as_item_cd ASC, as_color_cd ASC";
-   //ChromePhp::LOG($arg_str);
+   ChromePhp::LOG($arg_str);
    $t_delivery_goods_state_details = new TDeliveryGoodsStateDetails();
    $results = new Resultset(null, $t_delivery_goods_state_details, $t_delivery_goods_state_details->getReadConnection()->query($arg_str));
    $result_obj = (array)$results;
@@ -1526,7 +1526,7 @@ $app->post('/wearer_change/info', function ()use($app){
      $results = new Resultset(NULL, $m_input_item, $m_input_item->getReadConnection()->query($arg_str));
      $result_obj = (array)$results;
      $results_cnt = $result_obj["\0*\0_count"];
-     //ChromePhp::LOG($results_cnt);
+     ChromePhp::LOG($arg_str);
 
      if (!empty($results_cnt)) {
        $paginator_model = new PaginatorModel(
@@ -2000,9 +2000,30 @@ $app->post('/wearer_change/info', function ()use($app){
            $list["return_num"] = $now_wearer_map['possible_num'];
          }
        }
+
        $list["return_num_disable"] = "disabled";
-       // 返却可能枚数（所持数）
-       $list["possible_num"] = $now_wearer_map['possible_num'];
+
+         //返却可能枚数の条件分岐
+         if(individual_flg($auth['corporate_id'], $wearer_chg_post['rntl_cont_no'])){
+             for ($i=0; $i<count($chg_wearer_list); $i++) {
+                 if (
+                     $now_wearer_map['item_cd'] == $chg_wearer_list[$i]['item_cd']
+                     && $now_wearer_map['color_cd'] == $chg_wearer_list[$i]['color_cd']
+                 ) {
+                     //商品cdと色cdが同じ商品があった場合
+                     if ($chg_wearer_list[$i]['std_input_qty'] < $now_wearer_map['std_input_qty']) {
+                         $list["return_num"] = $now_wearer_map['possible_num'];
+                     }
+                 }else {
+                     $list["possible_num"] = $list["individual_cnt"];
+                 }
+             }
+
+         }else{
+             // 返却可能枚数（所持数）
+             $list["possible_num"] = $now_wearer_map['possible_num'];
+         }
+
 
        //--その他の必要hiddenパラメータ--//
        // 部門コード
@@ -3737,7 +3758,9 @@ $app->post('/wearer_change/complete', function ()use($app){
               array_push($values_list, "'5'");
               // 返却予定数
               array_push($calum_list, "return_plan_qty");
-              array_push($values_list, "'".$individual_data['return_num']."'");
+                array_push($values_list, "'1'");
+
+                //array_push($values_list, "'".$individual_data['return_num']."'");
               // 返却数
               array_push($calum_list, "return_qty");
               array_push($values_list, "'0'");

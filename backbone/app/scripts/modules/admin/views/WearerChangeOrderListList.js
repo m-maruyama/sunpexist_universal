@@ -64,6 +64,22 @@ define([
 						that.render(res_list);
 						if (res_list["individual_flg"] == '1') {
 							$('.individual_flg').css('display','');
+
+							var return_count_num = 0;
+							for(var i=0;i<res_list.now_list_cnt;i++){
+								if ($("input[name='now_size_cd" + i + "']").val()) {
+
+									var possible_num = $("input[name='possible_num" + i + "']").val();
+									$("#now_return_num" + i).val(possible_num);
+									return_count_num = parseInt(return_count_num) + parseInt(possible_num);
+
+								} else {
+									$("#now_return_num" + i).val('0');
+								}
+							}
+							//返却枚数合計
+							$("input[name='now_return_count']").val(return_count_num);
+
 						}
 						$.unblockUI();
 					}
