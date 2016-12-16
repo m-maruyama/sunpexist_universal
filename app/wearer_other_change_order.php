@@ -1145,8 +1145,8 @@ $app->post('/wearer_other_change_list', function ()use($app){
             // 返却総枚数(返却可能枚数)
             $json_list["sum_num"] = array();
             $sum_list = array();
-            $sum_list["sum_return_num"] = '';
-            $sum_list["sum_order_num"] = '';
+            $sum_list["sum_return_num"] = '0';
+            $sum_list["sum_order_num"] = '0';
             if (!empty($all_list)) {
                 $sum_return_num = 0;
                 $sum_order_num = 0;
