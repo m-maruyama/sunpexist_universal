@@ -106,6 +106,9 @@ $app->post('/lend/search', function ()use($app){
 	// 着用者状況区分
 	array_push($query_list,"m_wearer_std.werer_sts_kbn = '1'");
 
+    //納品状況明細情報 数量　<> 納品状況明細情報 返却済数
+    array_push($query_list,"NOT EXISTS (SELECT * FROM t_delivery_goods_state_details as TS WHERE t_delivery_goods_state_details.quantity = t_delivery_goods_state_details.returned_qty)");
+
     //ゼロ埋めがない場合、ログインアカウントの条件追加
     if($rntl_sect_cd_zero_flg == 0){
         array_push($query_list,"m_contract_resource.accnt_no = '$accnt_no'");
@@ -180,7 +183,10 @@ $app->post('/lend/search', function ()use($app){
 	$arg_str .= "m_wearer_item.size_two_cd as as_size_two_cd,";
 	$arg_str .= "m_wearer_item.job_type_item_cd as as_job_type_item_cd,";
 	$arg_str .= "t_delivery_goods_state_details.individual_ctrl_no as as_individual_ctrl_no,";
-	$arg_str .= "t_delivery_goods_state.ship_qty as as_ship_qty,";
+    $arg_str .= "t_delivery_goods_state_details.quantity as as_quantity,";
+    $arg_str .= "t_delivery_goods_state_details.returned_qty as as_returned_qty,";
+
+    $arg_str .= "t_delivery_goods_state.ship_qty as as_ship_qty,";
 	$arg_str .= "t_delivery_goods_state.ship_ymd as as_ship_ymd,";
 	$arg_str .= "t_returned_plan_info.order_date as as_re_order_date,";
 	$arg_str .= "t_order.order_req_no as as_order_req_no,";
