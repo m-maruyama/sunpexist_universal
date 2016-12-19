@@ -211,8 +211,10 @@ $app->post('/lend/search', function ()use($app){
         $arg_str .= " ) ON t_order.m_section_comb_hkey = m_section.m_section_comb_hkey";
     }
 	$arg_str .= " INNER JOIN m_wearer_std";
-	$arg_str .= " ON t_order.m_wearer_std_comb_hkey = m_wearer_std.m_wearer_std_comb_hkey";
-	$arg_str .= " INNER JOIN m_wearer_item";
+	$arg_str .= " ON t_order.corporate_id = m_wearer_std.corporate_id";
+    $arg_str .= " AND t_order.rntl_cont_no = m_wearer_std.rntl_cont_no";
+    $arg_str .= " AND t_order.werer_cd = m_wearer_std.werer_cd";
+    $arg_str .= " INNER JOIN m_wearer_item";
 	$arg_str .= " ON t_order.m_wearer_item_comb_hkey = m_wearer_item.m_wearer_item_comb_hkey";
 	$arg_str .= " WHERE ";
 	$arg_str .= $query;
@@ -221,6 +223,7 @@ $app->post('/lend/search', function ()use($app){
 		$arg_str .= " ORDER BY ";
 		$arg_str .= $q_sort_key." ".$order;
 	}
+    //ChromePhp::log($arg_str);
 	$t_order = new TOrder();
 	$results = new Resultset(null, $t_order, $t_order->getReadConnection()->query($arg_str));
 	$result_obj = (array)$results;
