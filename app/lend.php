@@ -186,7 +186,6 @@ $app->post('/lend/search', function ()use($app){
 	$arg_str .= "t_order.order_req_no as as_order_req_no,";
 	$arg_str .= "t_delivery_goods_state.rec_order_no as as_rec_order_no,";
 	$arg_str .= "t_delivery_goods_state.ship_no as as_ship_no";
-
 	$arg_str .= " FROM t_order LEFT JOIN";
 	$arg_str .= " (t_order_state LEFT JOIN";
 	$arg_str .= " (t_delivery_goods_state LEFT JOIN";
