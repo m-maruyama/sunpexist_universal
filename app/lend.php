@@ -183,7 +183,7 @@ $app->post('/lend/search', function ()use($app){
 	$arg_str .= "t_delivery_goods_state.ship_qty as as_ship_qty,";
 	$arg_str .= "t_delivery_goods_state.ship_ymd as as_ship_ymd,";
 	$arg_str .= "t_returned_plan_info.order_date as as_re_order_date,";
-	$arg_str .= "t_returned_plan_info.order_req_no as as_order_req_no,";
+	$arg_str .= "t_order.order_req_no as as_order_req_no,";
 	$arg_str .= "t_delivery_goods_state.rec_order_no as as_rec_order_no,";
 	$arg_str .= "t_delivery_goods_state.ship_no as as_ship_no";
 
@@ -221,7 +221,6 @@ $app->post('/lend/search', function ()use($app){
 		$arg_str .= " ORDER BY ";
 		$arg_str .= $q_sort_key." ".$order;
 	}
-	//ChromePhp::log($arg_str);
 	$t_order = new TOrder();
 	$results = new Resultset(null, $t_order, $t_order->getReadConnection()->query($arg_str));
 	$result_obj = (array)$results;
