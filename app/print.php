@@ -900,7 +900,7 @@ $app->post('/print/search', function ()use($app){
     }
     //貸与パターン
     if(!empty($cond['job_type'])){
-        array_push($query_list,"t_returned_plan_info.rent_pattern_code = '".$cond['job_type']."'");
+        array_push($query_list,"t_returned_plan_info.job_type_cd = '".$cond['job_type']."'");
     }
     //商品
     if(!empty($cond['input_item'])){

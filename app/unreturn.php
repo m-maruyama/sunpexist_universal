@@ -93,7 +93,7 @@ $app->post('/unreturn/search', function ()use($app){
 	}
 	//貸与パターン
 	if(!empty($cond['job_type'])){
-		array_push($query_list,"t_returned_plan_info.rent_pattern_code = '".$cond['job_type']."'");
+		array_push($query_list,"t_returned_plan_info.job_type_cd = '".$cond['job_type']."'");
 	}
 	//商品
 	if(!empty($cond['input_item'])){
@@ -825,7 +825,6 @@ $app->post('/unreturn/search', function ()use($app){
             $arg_str .= "t_returned_plan_info";
             $arg_str .= " WHERE ";
             $arg_str .= $query;
-            ChromePhp::log($arg_str);
             $t_returned_plan_info = new TReturnedPlanInfo();
             $t_returned_results = new Resultset(null, $t_returned_plan_info, $t_returned_plan_info->getReadConnection()->query($arg_str));
             $result_obj = (array)$t_returned_results;
@@ -898,9 +897,6 @@ $app->post('/unreturn/search', function ()use($app){
 	$page_list['records_per_page'] = $page['records_per_page'];
 	$page_list['page_number'] = $page['page_number'];
 	$page_list['total_records'] = $results_cnt;
-
-    ChromePhp::log($page_list);
-
 
 	$json_list['page'] = $page_list;
 	$json_list['list'] = $all_list;
