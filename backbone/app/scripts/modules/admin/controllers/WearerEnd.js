@@ -87,8 +87,6 @@ define([
 				};
 
 				this.listenTo(wearerEndConditionView, 'first:section', function() {
-					var sectionConditionView = new App.Admin.Views.SectionCondition();
-					wearerEndConditionView.section.show(sectionConditionView);
 
 					//拠点絞り込み--ここから
 					var sectionListListCollection = new App.Entities.Collections.AdminSectionModalListList();
@@ -337,10 +335,11 @@ define([
 				wearerEndConditionView.agreement_no.show(agreementNoConditionView);
 				Sleep(0.02);
 				// wearerEndConditionView.section.show(sectionConditionView);
-				wearerEndConditionView.job_type.show(jobTypeConditionView);
-				Sleep(0.01);
 				wearerEndConditionView.sex_kbn.show(sexKbnConditionView);
 				Sleep(0.01);
+				wearerEndConditionView.section.show(sectionConditionView);
+				Sleep(0.01);
+				wearerEndConditionView.job_type.show(jobTypeConditionView);
 				// wearerEndView.sectionModal.show(sectionModalView.render());
 				// sectionListListCollection// sectionModalView.condition.show(sectionModalConditionView);
 			}
