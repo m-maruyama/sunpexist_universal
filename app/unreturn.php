@@ -144,7 +144,7 @@ $app->post('/unreturn/search', function ()use($app){
 		array_push($query_list,"t_returned_plan_info.individual_ctrl_no LIKE '".$cond['individual_number']."%'");
 	}
 	// 着用者状況区分
-//	array_push($query_list,"m_wearer_std.werer_sts_kbn = '1'");
+	//array_push($query_list,"m_wearer_std.werer_sts_kbn = '1'");
 
     //ゼロ埋めがない場合、ログインアカウントの条件追加
     if($rntl_sect_cd_zero_flg == 0){
@@ -451,7 +451,7 @@ $app->post('/unreturn/search', function ()use($app){
 	$arg_str .= "t_returned_plan_info.item_cd as as_item_cd,";
 	$arg_str .= "t_returned_plan_info.color_cd as as_color_cd,";
 	$arg_str .= "t_returned_plan_info.size_cd as as_size_cd,";
-	$arg_str .= "t_order.job_type_cd as as_job_type_cd,";
+	$arg_str .= "t_returned_plan_info.job_type_cd as as_job_type_cd,";
 	$arg_str .= "t_order.size_two_cd as as_size_two_cd,";
 	$arg_str .= "t_order.order_qty as as_order_qty,";
     $arg_str .= "m_input_item.input_item_name as as_input_item_name,";
@@ -463,7 +463,7 @@ $app->post('/unreturn/search', function ()use($app){
 	$arg_str .= "t_delivery_goods_state.ship_ymd as as_ship_ymd,";
 	$arg_str .= "t_delivery_goods_state.ship_qty as as_ship_qty,";
 	$arg_str .= "t_delivery_goods_state.return_qty as as_return_qty,";
-	$arg_str .= "t_delivery_goods_state_details.individual_ctrl_no as as_individual_ctrl_no,";
+	$arg_str .= "t_returned_plan_info.individual_ctrl_no as as_individual_ctrl_no,";
 	$arg_str .= "t_delivery_goods_state_details.receipt_date as as_receipt_date,";
 	$arg_str .= "t_returned_plan_info.rntl_cont_no as as_rntl_cont_no,";
 	$arg_str .= "m_contract.rntl_cont_name as as_rntl_cont_name";
@@ -474,7 +474,18 @@ $app->post('/unreturn/search', function ()use($app){
 	$arg_str .= " ON t_order_state.t_order_state_comb_hkey = t_delivery_goods_state.t_order_state_comb_hkey)";
 	$arg_str .= " ON t_returned_plan_info.order_req_no = t_order_state.order_req_no)";
 	$arg_str .= " ON t_order.order_req_no = t_returned_plan_info.order_req_no";
-	if($rntl_sect_cd_zero_flg == 1){
+    $arg_str .= " LEFT JOIN (m_job_type INNER JOIN m_input_item";
+    $arg_str .= " ON m_job_type.corporate_id = m_input_item.corporate_id";
+    $arg_str .= " AND m_job_type.rntl_cont_no = m_input_item.rntl_cont_no";
+    $arg_str .= " AND m_job_type.job_type_cd = m_input_item.job_type_cd)";
+    $arg_str .= " ON t_returned_plan_info.corporate_id = m_job_type.corporate_id";
+    $arg_str .= " AND t_returned_plan_info.rntl_cont_no = m_job_type.rntl_cont_no";
+    $arg_str .= " AND t_returned_plan_info.job_type_cd = m_job_type.job_type_cd";
+    $arg_str .= " AND t_returned_plan_info.corporate_id = m_input_item.corporate_id";
+    $arg_str .= " AND t_returned_plan_info.item_cd = m_input_item.item_cd";
+    $arg_str .= " AND t_returned_plan_info.color_cd = m_input_item.color_cd";
+
+    if($rntl_sect_cd_zero_flg == 1){
 		$arg_str .= " INNER JOIN m_section";
 		$arg_str .= " ON t_order.m_section_comb_hkey = m_section.m_section_comb_hkey";
 	}elseif($rntl_sect_cd_zero_flg == 0){
@@ -486,16 +497,6 @@ $app->post('/unreturn/search', function ()use($app){
 	}
 	//$arg_str .= " INNER JOIN m_job_type";
 	//$arg_str .= " ON t_order.m_job_type_comb_hkey = m_job_type.m_job_type_comb_hkey";
-    $arg_str .= " LEFT JOIN (m_job_type INNER JOIN m_input_item";
-    $arg_str .= " ON m_job_type.corporate_id = m_input_item.corporate_id";
-    $arg_str .= " AND m_job_type.rntl_cont_no = m_input_item.rntl_cont_no";
-    $arg_str .= " AND m_job_type.job_type_cd = m_input_item.job_type_cd)";
-    $arg_str .= " ON t_order.corporate_id = m_job_type.corporate_id";
-    $arg_str .= " AND t_order.rntl_cont_no = m_job_type.rntl_cont_no";
-    $arg_str .= " AND t_order.job_type_cd = m_job_type.job_type_cd";
-    $arg_str .= " AND t_order.corporate_id = m_input_item.corporate_id";
-    $arg_str .= " AND t_order.item_cd = m_input_item.item_cd";
-    $arg_str .= " AND t_order.color_cd = m_input_item.color_cd";
     $arg_str .= " INNER JOIN m_wearer_std";
     $arg_str .= " ON t_order.werer_cd = m_wearer_std.werer_cd";
     $arg_str .= " AND t_order.corporate_id = m_wearer_std.corporate_id";
@@ -509,8 +510,6 @@ $app->post('/unreturn/search', function ()use($app){
 		$arg_str .= " ORDER BY ";
 		$arg_str .= $q_sort_key." ".$order;
 	}
-	//ChromePhp::log($arg_str);
-
 	$t_order = new TOrder();
 	$results = new Resultset(null, $t_order, $t_order->getReadConnection()->query($arg_str));
 	$result_obj = (array)$results;
@@ -533,8 +532,8 @@ $app->post('/unreturn/search', function ()use($app){
     $list['color'] = "blue";
 
 	if(!empty($results_cnt)) {
-		$paginator = $paginator_model->getPaginate();
-		$results = $paginator->items;
+        $paginator = $paginator_model->getPaginate();
+        $results = $paginator->items;
 
 		foreach($results as $result){
 
@@ -760,7 +759,7 @@ $app->post('/unreturn/search', function ()use($app){
 				$list['return_status_name'] = $gencode_map->gen_name;
 			}
 
-            //---個体管理番号・受領日時の取得---//
+            //---受領日時の取得---//
             $list['individual_num'] = "-";
             $list['order_res_ymd'] = "-";
             $query_list = array();
@@ -772,7 +771,6 @@ $app->post('/unreturn/search', function ()use($app){
             $query = implode(' AND ', $query_list);
             $arg_str = "";
             $arg_str .= "SELECT ";
-            $arg_str .= "individual_ctrl_no,";
             $arg_str .= "receipt_date";
             $arg_str .= " FROM ";
             $arg_str .= "t_delivery_goods_state_details";
@@ -781,12 +779,12 @@ $app->post('/unreturn/search', function ()use($app){
             $t_delivery_goods_state_details = new TDeliveryGoodsStateDetails();
             $del_gd_results = new Resultset(null, $t_delivery_goods_state_details, $t_delivery_goods_state_details->getReadConnection()->query($arg_str));
             $result_obj = (array)$del_gd_results;
-            $results_cnt = $result_obj["\0*\0_count"];
-            if ($results_cnt > 0) {
+            $results_cnt2 = $result_obj["\0*\0_count"];
+            if ($results_cnt2 > 0) {
                 $paginator_model = new PaginatorModel(
                     array(
                         "data"  => $del_gd_results,
-                        "limit" => $results_cnt,
+                        "limit" => $results_cnt2,
                         "page" => 1
                     )
                 );
@@ -796,16 +794,12 @@ $app->post('/unreturn/search', function ()use($app){
                 $num_list = array();
                 $day_list = array();
                 foreach ($del_gd_results as $del_gd_result) {
-                    array_push($num_list, $del_gd_result->individual_ctrl_no);
                     if ($del_gd_result->receipt_date !== null) {
                         array_push($day_list,  date('Y/m/d',strtotime($del_gd_result->receipt_date)));
                     } else {
                         array_push($day_list, "-");
                     }
                 }
-                // 個体管理番号
-                $individual_ctrl_no = implode("<br>", $num_list);
-                $list['individual_num'] = $individual_ctrl_no;
                 // 受領日
                 //ChromePhp::log($day_list);
                 $receipt_date = implode("<br>", $day_list);
@@ -813,6 +807,48 @@ $app->post('/unreturn/search', function ()use($app){
                 $list['order_res_ymd'] = $receipt_date;
             }
 
+
+            //---個体管理番号---//
+            $list['individual_num'] = "-";
+            $list['order_res_ymd'] = "-";
+            $query_list = array();
+            array_push($query_list, "corporate_id = '".$auth['corporate_id']."'");
+            array_push($query_list, "order_req_no = '".$list['order_req_no']."'");
+            array_push($query_list, "item_cd = '".$list['item_cd']."'");
+            array_push($query_list, "color_cd = '".$list['color_cd']."'");
+            //rray_push($query_list, "size_cd = '".$list['size_cd']."'");
+            $query = implode(' AND ', $query_list);
+            $arg_str = "";
+            $arg_str .= "SELECT ";
+            $arg_str .= "individual_ctrl_no";
+            $arg_str .= " FROM ";
+            $arg_str .= "t_returned_plan_info";
+            $arg_str .= " WHERE ";
+            $arg_str .= $query;
+            ChromePhp::log($arg_str);
+            $t_returned_plan_info = new TReturnedPlanInfo();
+            $t_returned_results = new Resultset(null, $t_returned_plan_info, $t_returned_plan_info->getReadConnection()->query($arg_str));
+            $result_obj = (array)$t_returned_results;
+            $results_cnt3 = $result_obj["\0*\0_count"];
+            if ($results_cnt3 > 0) {
+                $paginator_model = new PaginatorModel(
+                    array(
+                        "data"  => $t_returned_results,
+                        "limit" => $results_cnt3,
+                        "page" => 1
+                    )
+                );
+                $paginator = $paginator_model->getPaginate();
+                $t_returned_results = $paginator->items;
+
+                $num_list = array();
+                foreach ($t_returned_results as $t_returned_result) {
+                    array_push($num_list, $t_returned_result->individual_ctrl_no);
+                }
+                // 個体管理番号
+                $individual_ctrl_no = implode("<br>", $num_list);
+                $list['individual_num'] = $individual_ctrl_no;
+            }
             array_push($all_list,$list);
         }
     }
@@ -862,6 +898,10 @@ $app->post('/unreturn/search', function ()use($app){
 	$page_list['records_per_page'] = $page['records_per_page'];
 	$page_list['page_number'] = $page['page_number'];
 	$page_list['total_records'] = $results_cnt;
+
+    ChromePhp::log($page_list);
+
+
 	$json_list['page'] = $page_list;
 	$json_list['list'] = $all_list;
 	$json_list['individual_flag'] = $individual_flg;
