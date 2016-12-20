@@ -340,6 +340,7 @@ define([
 				wearerEndConditionView.job_type.show(jobTypeConditionView);
 				Sleep(0.01);
 				wearerEndConditionView.sex_kbn.show(sexKbnConditionView);
+				Sleep(0.01);
 				// wearerEndView.sectionModal.show(sectionModalView.render());
 				// sectionListListCollection// sectionModalView.condition.show(sectionModalConditionView);
 			}

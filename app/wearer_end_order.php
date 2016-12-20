@@ -2034,7 +2034,7 @@ $app->post('/wearer_end_order_insert', function () use ($app) {
               array_push($values_list, "'2'");
               // 返却予定数
               array_push($calum_list, "return_plan_qty");
-              array_push($values_list, "'".$individual_data['return_num']."'");
+              array_push($values_list, "'1'");
               // 返却数
               array_push($calum_list, "return_qty");
               array_push($values_list, "'0'");
