@@ -509,7 +509,7 @@ $app->post('/unreturn/search', function ()use($app){
 		$arg_str .= " ORDER BY ";
 		$arg_str .= $q_sort_key." ".$order;
 	}
-	ChromePhp::log($arg_str);
+	//ChromePhp::log($arg_str);
 
 	$t_order = new TOrder();
 	$results = new Resultset(null, $t_order, $t_order->getReadConnection()->query($arg_str));
