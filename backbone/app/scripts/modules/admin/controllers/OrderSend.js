@@ -89,8 +89,6 @@ define([
 				};
 
 				this.listenTo(orderSendConditionView, 'first:section', function() {
-					var sectionConditionView = new App.Admin.Views.SectionCondition();
-					orderSendConditionView.section.show(sectionConditionView);
 					//拠点絞り込み--ここから
 					var sectionListListCollection = new App.Entities.Collections.AdminSectionModalListList();
 					var sectionModalListListView = new App.Admin.Views.SectionModalListList({
@@ -234,10 +232,11 @@ define([
 				orderSendView.condition.show(orderSendConditionView);
 				orderSendConditionView.agreement_no.show(agreementNoConditionView);
 				Sleep(0.02);
-				//orderSendConditionView.section.show(sectionConditionView);
-				orderSendConditionView.job_type.show(jobTypeConditionView);
-				Sleep(0.01);
 				orderSendConditionView.sex_kbn.show(sexKbnConditionView);
+				Sleep(0.01);
+				orderSendConditionView.section.show(sectionConditionView);
+				Sleep(0.01);
+				orderSendConditionView.job_type.show(jobTypeConditionView);
 				Sleep(0.01);
 				orderSendConditionView.snd_kbn.show(sndKbnConditionView);
 			}

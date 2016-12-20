@@ -87,8 +87,6 @@ define([
 				};
 
 				this.listenTo(wearerChangeConditionView, 'first:section', function() {
-					var sectionConditionView = new App.Admin.Views.SectionCondition();
-					wearerChangeConditionView.section.show(sectionConditionView);
 
 					//拠点絞り込み--ここから
 					var sectionListListCollection = new App.Entities.Collections.AdminSectionModalListList();
@@ -308,9 +306,11 @@ define([
 				wearerChangeConditionView.agreement_no.show(agreementNoConditionView);
 				Sleep(0.02);
 				//wearerChangeConditionView.section.show(sectionConditionView);
-				wearerChangeConditionView.job_type.show(jobTypeConditionView);
-				Sleep(0.01);
 				wearerChangeConditionView.sex_kbn.show(sexKbnConditionView);
+				Sleep(0.01);
+				wearerChangeConditionView.section.show(sectionConditionView);
+				Sleep(0.01);
+				wearerChangeConditionView.job_type.show(jobTypeConditionView);
 			}
 		});
 	});
