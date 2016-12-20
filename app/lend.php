@@ -423,13 +423,14 @@ $app->post('/lend/search', function ()use($app){
 			$search_q = array();
 			array_push($search_q, "corporate_id = '".$auth['corporate_id']."'");
 			array_push($search_q, "rntl_cont_no = '".$cond['agreement_no']."'");
-			array_push($search_q, "job_type_cd = '".$cond['job_type']."'");
+			array_push($search_q, "job_type_cd = '".$list['now_job_type_cd']."'");
 			array_push($search_q, "job_type_item_cd = '".$list['job_type_item_cd']."'");
 			array_push($search_q, "item_cd = '".$list['item_cd']."'");
 			array_push($search_q, "color_cd = '".$list['color_cd']."'");
 			array_push($search_q, "size_two_cd = '".$list['size_two_cd']."'");
 			//sql文字列を' AND 'で結合
 			$query = implode(' AND ', $search_q);
+            //ChromePhp::log($query);
 			$input_item = MInputItem::query()
 				->where($query)
 				->columns('*')
