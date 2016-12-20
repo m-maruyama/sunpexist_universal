@@ -953,7 +953,7 @@ $app->post('/print/search', function ()use($app){
         array_push($query_list,"t_returned_plan_info.individual_ctrl_no LIKE '".$cond['individual_number']."%'");
     }
     // 着用者状況区分
-    array_push($query_list,"m_wearer_std.werer_sts_kbn = '1'");
+    //array_push($query_list,"m_wearer_std.werer_sts_kbn = '1'");
 
     //ゼロ埋めがない場合、ログインアカウントの条件追加
     if($rntl_sect_cd_zero_flg == 0){
@@ -1317,7 +1317,7 @@ $app->post('/print/search', function ()use($app){
         $arg_str .= " ORDER BY ";
         $arg_str .= $q_sort_key." ".$order;
     }
-    //ChromePhp::log($arg_str);
+    ChromePhp::log($arg_str);
 
     $t_order = new TOrder();
     $results = new Resultset(null, $t_order, $t_order->getReadConnection()->query($arg_str));
