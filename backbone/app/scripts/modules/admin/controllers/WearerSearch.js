@@ -201,8 +201,11 @@ define([
 				App.main.show(wearerSearchView);
 				wearerSearchView.condition.show(wearerSearchConditionView);
 				wearerSearchConditionView.agreement_no.show(agreementNoConditionView);
+				Sleep(0.02);
 				wearerSearchConditionView.section.show(sectionConditionView);
+				Sleep(0.01);
 				wearerSearchConditionView.job_type.show(jobTypeConditionView);
+				Sleep(0.01);
 				wearerSearchConditionView.sex_kbn.show(sexKbnConditionView);
 				wearerSearchView.sectionModal.show(sectionModalView.render());
 				sectionModalView.page.show(paginationView);

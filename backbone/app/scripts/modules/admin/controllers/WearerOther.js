@@ -306,8 +306,10 @@ define([
 				App.main.show(wearerOtherView);
 				wearerOtherView.condition.show(wearerOtherConditionView);
 				wearerOtherConditionView.agreement_no.show(agreementNoConditionView);
+				Sleep(0.02);
 				//wearerOtherConditionView.section.show(sectionConditionView);
 				wearerOtherConditionView.job_type.show(jobTypeConditionView);
+				Sleep(0.01);
 				wearerOtherConditionView.sex_kbn.show(sexKbnConditionView);
 			}
 		});

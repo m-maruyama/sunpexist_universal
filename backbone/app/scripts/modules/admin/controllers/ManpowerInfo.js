@@ -218,7 +218,9 @@ define([
 				App.main.show(manpowerInfoView);
 				manpowerInfoView.condition.show(manpowerInfoConditionView);
 				manpowerInfoConditionView.agreement_no.show(agreementNoConditionView);
+				Sleep(0.02);
 				manpowerInfoConditionView.section.show(sectionConditionView);
+				Sleep(0.01);
 				manpowerInfoView.sectionModal.show(sectionModalView.render());
 				sectionModalView.page.show(paginationSectionView);
 				sectionModalView.condition.show(sectionModalConditionView);

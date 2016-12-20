@@ -229,10 +229,15 @@ define([
 
 				App.main.show(historyView);
 				historyView.condition.show(historyConditionView);
+
 				historyConditionView.agreement_no.show(agreementNoConditionView);
+				Sleep(0.02);
 				historyConditionView.section.show(sectionConditionView);
+				Sleep(0.01);
 				historyConditionView.job_type.show(jobTypeConditionView);
+				Sleep(0.01);
 				historyConditionView.input_item.show(inputItemConditionView);
+				Sleep(0.01);
 				historyConditionView.item_color.show(itemColorConditionView);
 				historyConditionView.individual_number.show(individualNumberConditionView);
 				historyView.sectionModal.show(sectionModalView.render());

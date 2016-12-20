@@ -16,6 +16,17 @@
 	}
 })();
 
+/*
+* レンダリングの順番調整のための関数
+ */
+function Sleep( T ){
+	var d1 = new Date().getTime();
+	var d2 = new Date().getTime();
+	while( d2 < d1+1000*T ){    //T秒待つ
+		d2=new Date().getTime();
+	}
+	return;
+}
 require([
 		'jquery',
 		'backbone',
@@ -89,6 +100,8 @@ require([
 			//}, 500);
 			this.fetch(options);
 		};
+
+
 
 		/**
 		 * サーバー仕様に合わせてfetchを改造

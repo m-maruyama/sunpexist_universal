@@ -35,7 +35,7 @@ define([
 				var that = this;
 				this.setNav('unreturn');
 				var pagerModel = new App.Entities.Models.Pager();
-        var pagerModel2 = new App.Entities.Models.Pager();
+        		var pagerModel2 = new App.Entities.Models.Pager();
 				var pagerModel3 = new App.Entities.Models.Pager();
 				var modal = false;
 				var unreturnModel = null;
@@ -230,9 +230,13 @@ define([
 				App.main.show(unreturnView);
 				unreturnView.condition.show(unreturnConditionView);
 				unreturnConditionView.agreement_no.show(agreementNoConditionView);
+				Sleep(0.02);
 				unreturnConditionView.section.show(sectionConditionView);
+				Sleep(0.01);
 				unreturnConditionView.job_type.show(jobTypeConditionView);
+				Sleep(0.01);
 				unreturnConditionView.input_item.show(inputItemConditionView);
+				Sleep(0.01);
 				unreturnConditionView.item_color.show(itemColorConditionView);
 				unreturnConditionView.individual_number.show(individualNumberConditionView);
 				unreturnView.sectionModal.show(sectionModalView.render());

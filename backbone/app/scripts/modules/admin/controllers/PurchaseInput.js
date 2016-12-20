@@ -93,6 +93,7 @@ define([
 
 				purchaseInputView.condition.show(purchaseInputConditionView);
 				purchaseInputConditionView.agreement_no.show(agreementNoConditionView);
+				Sleep(0.02);
 				//purchaseInputListListView.fetch(purchaseInputListConditionModel);//fetchで実施しているのでコメントアウト
 				//purchaseInputView.listTable.show(purchaseInputListListView);//fetchで実施しているのでコメントアウト
 				purchaseInputConditionView.section.show(sectionPurchaseConditionView);

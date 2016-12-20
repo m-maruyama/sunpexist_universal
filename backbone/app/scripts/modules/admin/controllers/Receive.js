@@ -263,9 +263,13 @@ define([
 				App.main.show(receiveView);
 				receiveView.condition.show(receiveConditionView);
 				receiveConditionView.agreement_no.show(agreementNoConditionView);
+				Sleep(0.02);
 				receiveConditionView.section.show(sectionConditionView);
+				Sleep(0.01);
 				receiveConditionView.job_type.show(jobTypeConditionView);
+				Sleep(0.01);
 				receiveConditionView.input_item.show(inputItemConditionView);
+				Sleep(0.01);
 				receiveConditionView.item_color.show(itemColorConditionView);
 				receiveConditionView.individual_number.show(individualNumberConditionView);
 				receiveView.sectionModal.show(sectionModalView.render());

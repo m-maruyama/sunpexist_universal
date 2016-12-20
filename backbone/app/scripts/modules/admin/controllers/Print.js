@@ -229,9 +229,13 @@ define([
 				App.main.show(printView);
 				printView.condition.show(printConditionView);
 				printConditionView.agreement_no.show(agreementNoConditionView);
+				Sleep(0.02);
 				printConditionView.section.show(sectionConditionView);
+				Sleep(0.01);
 				printConditionView.job_type.show(jobTypeConditionView);
+				Sleep(0.01);
 				printConditionView.input_item.show(inputItemConditionView);
+				Sleep(0.01);
 				printConditionView.item_color.show(itemColorConditionView);
 				printConditionView.individual_number.show(individualNumberConditionView);
 				printView.sectionModal.show(sectionModalView.render());

@@ -91,8 +91,11 @@ define([
 				stockView.page.show(paginationView);
 				stockView.condition.show(stockConditionView);
 				stockConditionView.agreement_no.show(agreementNoConditionView);
+				Sleep(0.02);
 				stockConditionView.job_type_zaiko.show(jobTypeZaikoConditionView);
+				Sleep(0.01);
 				stockConditionView.item.show(itemZaikoConditionView);
+				Sleep(0.01);
 				stockConditionView.item_color.show(itemColorZaikoConditionView);
 			}
 		});

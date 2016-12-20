@@ -125,8 +125,11 @@ define([
 				wearerOrderView.condition.show(wearerOrderConditionView);
 				wearerOrderView.listTable.show(wearerOrderListListView);
 				wearerOrderConditionView.agreement_no.show(agreementNoConditionView);
+				Sleep(0.02);
 				wearerOrderConditionView.reason_kbn.show(reasonKbnConditionView);
+				Sleep(0.01);
 				wearerOrderConditionView.section.show(sectionConditionView);
+				Sleep(0.01);
 				wearerOrderConditionView.job_type.show(jobTypeConditionView);
 				wearerOrderView.sectionModal.show(sectionModalView.render());
 				sectionModalView.page.show(paginationView);
