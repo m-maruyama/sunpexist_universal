@@ -58,7 +58,7 @@ $app->post('/print/pdf', function ()use($app){
     $arg_str .= "t_order.order_qty as as_order_qty,";
     $arg_str .= "t_order.size_two_cd as as_size_two_cd,";
     $arg_str .= "m_corporate.corporate_name as as_corporate_name,";
-    $arg_str .= "t_returned_plan_info.cster_emply_cd as as_cster_emply_cd,";
+    $arg_str .= "m_wearer_std.cster_emply_cd as as_cster_emply_cd,";
     $arg_str .= "t_returned_plan_info.corporate_id as as_corporate_id,";
     $arg_str .= "t_returned_plan_info.rntl_cont_no as as_rntl_cont_no,";
     $arg_str .= "t_returned_plan_info.order_req_no as as_order_req_no,";
@@ -109,7 +109,6 @@ $app->post('/print/pdf', function ()use($app){
         $arg_str .= " ORDER BY ";
         $arg_str .= $q_sort_key." ".$order;
     }
-    //ChromePhp::log($arg_str);
     $t_returned_plan_info = new TReturnedPlanInfo();
     $results = new Resultset(null, $t_returned_plan_info, $t_returned_plan_info->getReadConnection()->query($arg_str));
     $result_obj = (array)$results;
