@@ -164,13 +164,12 @@ $app->post('/lend/search', function ()use($app){
 		$q_sort_key = "as_cster_emply_cd";
 		$order = 'asc';
 	}
-
+    //商品cd、色cd単位でdistinct
 	//---SQLクエリー実行---//
-	$arg_str = "SELECT ";
-//	$arg_str .= " * ";
-//	$arg_str .= " FROM ";
-//	$arg_str .= "(SELECT ";
-//	$arg_str .= "(SELECT distinct on (t_delivery_goods_state_details.individual_ctrl_no) ";
+    $arg_str = "SELECT ";
+    $arg_str .= " * ";
+    $arg_str .= " FROM ";
+	$arg_str .= "(SELECT distinct on (t_delivery_goods_state_details.item_cd,t_delivery_goods_state_details.color_cd) ";
 	$arg_str .= "m_wearer_std.cster_emply_cd as as_cster_emply_cd,";
 	$arg_str .= "m_wearer_std.werer_name as as_werer_name,";
 	$arg_str .= "m_wearer_std.rntl_sect_cd as as_now_rntl_sect_cd,";
@@ -223,12 +222,11 @@ $app->post('/lend/search', function ()use($app){
 	$arg_str .= " ON t_order.m_wearer_item_comb_hkey = m_wearer_item.m_wearer_item_comb_hkey";
 	$arg_str .= " WHERE ";
 	$arg_str .= $query;
-//	$arg_str .= ") as distinct_table";
+	$arg_str .= ") as distinct_table";
 	if (!empty($q_sort_key)) {
 		$arg_str .= " ORDER BY ";
 		$arg_str .= $q_sort_key." ".$order;
 	}
-    //ChromePhp::log($arg_str);
 	$t_order = new TOrder();
 	$results = new Resultset(null, $t_order, $t_order->getReadConnection()->query($arg_str));
 	$result_obj = (array)$results;
@@ -423,7 +421,7 @@ $app->post('/lend/search', function ()use($app){
 			$search_q = array();
 			array_push($search_q, "corporate_id = '".$auth['corporate_id']."'");
 			array_push($search_q, "rntl_cont_no = '".$cond['agreement_no']."'");
-			array_push($search_q, "job_type_cd = '".$list['now_job_type_cd']."'");
+			array_push($search_q, "job_type_cd = '".$list['old_job_type_cd']."'");
 			array_push($search_q, "job_type_item_cd = '".$list['job_type_item_cd']."'");
 			array_push($search_q, "item_cd = '".$list['item_cd']."'");
 			array_push($search_q, "color_cd = '".$list['color_cd']."'");
@@ -446,7 +444,59 @@ $app->post('/lend/search', function ()use($app){
 				$list['input_item_name'] = "-";
 			}
 
-			array_push($all_list,$list);
+            //---個体管理番号・受領日時の取得---//
+            $list['individual_num'] = "-";
+            $list['order_res_ymd'] = "-";
+            $query_list = array();
+            array_push($query_list, "corporate_id = '".$auth['corporate_id']."'");
+            array_push($query_list, "ship_no = '".$list['ship_no']."'");
+            array_push($query_list, "item_cd = '".$list['item_cd']."'");
+            array_push($query_list, "color_cd = '".$list['color_cd']."'");
+            array_push($query_list, "size_cd = '".$list['size_cd']."'");
+            $query = implode(' AND ', $query_list);
+            $arg_str = "";
+            $arg_str .= "SELECT ";
+            $arg_str .= "individual_ctrl_no,";
+            $arg_str .= "receipt_date";
+            $arg_str .= " FROM ";
+            $arg_str .= "t_delivery_goods_state_details";
+            $arg_str .= " WHERE ";
+            $arg_str .= $query;
+            $t_delivery_goods_state_details = new TDeliveryGoodsStateDetails();
+            $del_gd_results = new Resultset(null, $t_delivery_goods_state_details, $t_delivery_goods_state_details->getReadConnection()->query($arg_str));
+            $result_obj = (array)$del_gd_results;
+            $results_cnt = $result_obj["\0*\0_count"];
+            if ($results_cnt > 0) {
+                $paginator_model = new PaginatorModel(
+                    array(
+                        "data"  => $del_gd_results,
+                        "limit" => $results_cnt,
+                        "page" => 1
+                    )
+                );
+                $paginator = $paginator_model->getPaginate();
+                $del_gd_results = $paginator->items;
+
+                $num_list = array();
+                $day_list = array();
+                foreach ($del_gd_results as $del_gd_result) {
+                    array_push($num_list, $del_gd_result->individual_ctrl_no);
+                    if (!empty($del_gd_result->receipt_date)) {
+                        array_push($day_list, date('Y/m/d',strtotime($del_gd_result->receipt_date)));
+                    } else {
+                        array_push($day_list, "-");
+                    }
+                }
+                // 個体管理番号
+                $individual_ctrl_no = implode("<br>", $num_list);
+                $list['individual_num'] = $individual_ctrl_no;
+                // 受領日
+                $receipt_date = implode("<br>", $day_list);
+                $list['order_res_ymd'] = $receipt_date;
+            }
+
+
+            array_push($all_list,$list);
 		}
 	}
 

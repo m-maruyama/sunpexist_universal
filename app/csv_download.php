@@ -2415,6 +2415,9 @@ $app->post('/csv_download', function ()use($app){
 		// 着用者状況区分(稼働)
 		array_push($query_list,"m_wearer_std.werer_sts_kbn = '1'");
 
+        //納品状況明細情報 数量　<> 納品状況明細情報 返却済数
+        array_push($query_list,"NOT EXISTS (SELECT * FROM t_delivery_goods_state_details as TS WHERE t_delivery_goods_state_details.quantity = t_delivery_goods_state_details.returned_qty)");
+
         //ゼロ埋めがない場合、ログインアカウントの条件追加
         if($rntl_sect_cd_zero_flg == 0){
             array_push($query_list,"m_contract_resource.accnt_no = '$accnt_no'");
@@ -2471,12 +2474,12 @@ $app->post('/csv_download', function ()use($app){
 			$order = 'asc';
 		}
 
+        //商品cd、色cd単位でdistinct
         //---SQLクエリー実行---//
         $arg_str = "SELECT ";
-//	$arg_str .= " * ";
-//	$arg_str .= " FROM ";
-//	$arg_str .= "(SELECT ";
-//	$arg_str .= "(SELECT distinct on (t_delivery_goods_state_details.individual_ctrl_no) ";
+        $arg_str .= " * ";
+        $arg_str .= " FROM ";
+        $arg_str .= "(SELECT distinct on (t_delivery_goods_state_details.item_cd,t_delivery_goods_state_details.color_cd) ";
         $arg_str .= "m_wearer_std.cster_emply_cd as as_cster_emply_cd,";
         $arg_str .= "m_wearer_std.werer_name as as_werer_name,";
         $arg_str .= "m_wearer_std.rntl_sect_cd as as_now_rntl_sect_cd,";
@@ -2489,13 +2492,15 @@ $app->post('/csv_download', function ()use($app){
         $arg_str .= "m_wearer_item.size_two_cd as as_size_two_cd,";
         $arg_str .= "m_wearer_item.job_type_item_cd as as_job_type_item_cd,";
         $arg_str .= "t_delivery_goods_state_details.individual_ctrl_no as as_individual_ctrl_no,";
+        $arg_str .= "t_delivery_goods_state_details.quantity as as_quantity,";
+        $arg_str .= "t_delivery_goods_state_details.returned_qty as as_returned_qty,";
+
         $arg_str .= "t_delivery_goods_state.ship_qty as as_ship_qty,";
         $arg_str .= "t_delivery_goods_state.ship_ymd as as_ship_ymd,";
         $arg_str .= "t_returned_plan_info.order_date as as_re_order_date,";
         $arg_str .= "t_order.order_req_no as as_order_req_no,";
         $arg_str .= "t_delivery_goods_state.rec_order_no as as_rec_order_no,";
         $arg_str .= "t_delivery_goods_state.ship_no as as_ship_no";
-
         $arg_str .= " FROM t_order LEFT JOIN";
         $arg_str .= " (t_order_state LEFT JOIN";
         $arg_str .= " (t_delivery_goods_state LEFT JOIN";
@@ -2527,7 +2532,7 @@ $app->post('/csv_download', function ()use($app){
         $arg_str .= " ON t_order.m_wearer_item_comb_hkey = m_wearer_item.m_wearer_item_comb_hkey";
         $arg_str .= " WHERE ";
         $arg_str .= $query;
-//	$arg_str .= ") as distinct_table";
+        $arg_str .= ") as distinct_table";
         if (!empty($q_sort_key)) {
             $arg_str .= " ORDER BY ";
             $arg_str .= $q_sort_key." ".$order;
@@ -2727,7 +2732,7 @@ $app->post('/csv_download', function ()use($app){
 				$search_q = array();
 				array_push($search_q, "corporate_id = '".$auth['corporate_id']."'");
 				array_push($search_q, "rntl_cont_no = '".$cond['agreement_no']."'");
-				array_push($search_q, "job_type_cd = '".$cond['job_type']."'");
+                array_push($search_q, "job_type_cd = '".$list['old_job_type_cd']."'");
 				array_push($search_q, "job_type_item_cd = '".$list['job_type_item_cd']."'");
 				array_push($search_q, "item_cd = '".$list['item_cd']."'");
 				array_push($search_q, "color_cd = '".$list['color_cd']."'");
@@ -2748,8 +2753,59 @@ $app->post('/csv_download', function ()use($app){
 				} else {
 					$list['input_item_name'] = "-";
 				}
+                //---個体管理番号・受領日時の取得---//
+                $list['individual_num'] = "-";
+                $list['order_res_ymd'] = "-";
+                $query_list = array();
+                array_push($query_list, "corporate_id = '".$auth['corporate_id']."'");
+                array_push($query_list, "ship_no = '".$list['ship_no']."'");
+                array_push($query_list, "item_cd = '".$list['item_cd']."'");
+                array_push($query_list, "color_cd = '".$list['color_cd']."'");
+                array_push($query_list, "size_cd = '".$list['size_cd']."'");
+                $query = implode(' AND ', $query_list);
+                $arg_str = "";
+                $arg_str .= "SELECT ";
+                $arg_str .= "individual_ctrl_no,";
+                $arg_str .= "receipt_date";
+                $arg_str .= " FROM ";
+                $arg_str .= "t_delivery_goods_state_details";
+                $arg_str .= " WHERE ";
+                $arg_str .= $query;
+                $t_delivery_goods_state_details = new TDeliveryGoodsStateDetails();
+                $del_gd_results = new Resultset(null, $t_delivery_goods_state_details, $t_delivery_goods_state_details->getReadConnection()->query($arg_str));
+                $result_obj = (array)$del_gd_results;
+                $results_cnt = $result_obj["\0*\0_count"];
+                if ($results_cnt > 0) {
+                    $paginator_model = new PaginatorModel(
+                        array(
+                            "data"  => $del_gd_results,
+                            "limit" => $results_cnt,
+                            "page" => 1
+                        )
+                    );
+                    $paginator = $paginator_model->getPaginate();
+                    $del_gd_results = $paginator->items;
 
-				array_push($all_list,$list);
+                    $num_list = array();
+                    $day_list = array();
+                    foreach ($del_gd_results as $del_gd_result) {
+                        array_push($num_list, $del_gd_result->individual_ctrl_no);
+                        if (!empty($del_gd_result->receipt_date)) {
+                            array_push($day_list, date('Y/m/d',strtotime($del_gd_result->receipt_date)));
+                        } else {
+                            array_push($day_list, "-");
+                        }
+                    }
+                    // 個体管理番号
+                    $individual_ctrl_no = implode("<br>", $num_list);
+                    $list['individual_num'] = $individual_ctrl_no;
+                    // 受領日
+                    $receipt_date = implode("<br>", $day_list);
+                    $list['order_res_ymd'] = $receipt_date;
+                }
+
+
+                array_push($all_list,$list);
 			}
 		}
 
