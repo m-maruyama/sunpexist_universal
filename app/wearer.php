@@ -380,7 +380,7 @@ $app->post('/wearer/detail', function ()use($app){
 	$result_obj = (array)$results;
 	$results_cnt = $result_obj["\0*\0_count"];
 	//ChromePhp::log($m_wearer_std->getReadConnection()->query($arg_str));
-
+    ChromePhp::log($arg_str);
 	$list = array();
 	$all_list = array();
 
