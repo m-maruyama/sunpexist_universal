@@ -440,7 +440,7 @@ $app->post('/unreturn/search', function ()use($app){
     $arg_str .= " * ";
     $arg_str .= " FROM ";
 //	$arg_str .= "(SELECT ";
-    $arg_str .= "(SELECT distinct on (t_returned_plan_info.order_req_no, t_returned_plan_info.order_req_line_no) ";
+    $arg_str .= "(SELECT distinct on (t_returned_plan_info.item_cd, t_returned_plan_info.color_cd) ";
     $arg_str .= "t_returned_plan_info.order_req_no as as_order_req_no,";
     $arg_str .= "t_order.order_req_ymd as as_order_req_ymd,";
     $arg_str .= "t_returned_plan_info.order_sts_kbn as as_order_sts_kbn,";
