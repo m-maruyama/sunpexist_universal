@@ -87,8 +87,6 @@ define([
 				};
 
 				this.listenTo(wearerOtherConditionView, 'first:section', function() {
-					var sectionConditionView = new App.Admin.Views.SectionCondition();
-					wearerOtherConditionView.section.show(sectionConditionView);
 
 					//拠点絞り込み--ここから
 					var sectionListListCollection = new App.Entities.Collections.AdminSectionModalListList();
