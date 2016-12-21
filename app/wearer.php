@@ -380,7 +380,6 @@ $app->post('/wearer/detail', function ()use($app){
 	$result_obj = (array)$results;
 	$results_cnt = $result_obj["\0*\0_count"];
 	//ChromePhp::log($m_wearer_std->getReadConnection()->query($arg_str));
-    ChromePhp::log($arg_str);
 	$list = array();
 	$all_list = array();
 
@@ -551,10 +550,8 @@ $app->post('/wearer/detail', function ()use($app){
 		}
 
 		$json_list['kozin_list'] = $all_list;
-		ChromePhp::log($json_list['kozin_list']);
 	} else {
 		$json_list['kozin_list'] = null;
-		ChromePhp::log($json_list['kozin_list']);
 	}
 
 	//---着用者貸与情報---//
@@ -800,6 +797,5 @@ $app->post('/wearer/detail', function ()use($app){
     }
 
 	$json_list['taiyo_list'] = $wearer_item_list;
-    ChromePhp::log($json_list);
 	echo json_encode($json_list);
 });
