@@ -339,6 +339,7 @@ $app->post('/receive/search', function ()use($app){
             array_push($reason_kbn_3, "t_order.order_reason_kbn = '11'");
         }
         if ($reason_kbn_3) {
+            $order_kbn = "(t_order.order_sts_kbn = '5' AND m_wearer_std.werer_sts_kbn = '8')";
             //理由区分のみ
             //異動の場合、着用者基本マスタ.着用者状況区分＝8：異動の着用者を検索する。
             $reason_kbn_3_str = implode(' OR ', $reason_kbn_3);
