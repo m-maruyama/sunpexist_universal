@@ -488,6 +488,8 @@ $app->post('/unreturn/search', function ()use($app){
     $arg_str .= " ON t_order.m_job_type_comb_hkey = m_job_type.m_job_type_comb_hkey";
     $arg_str .= " INNER JOIN m_wearer_std";
     $arg_str .= " ON t_order.werer_cd = m_wearer_std.werer_cd";
+    $arg_str .= " AND t_order.corporate_id = m_wearer_std.corporate_id";
+    $arg_str .= " AND t_order.rntl_cont_no = m_wearer_std.rntl_cont_no";
     $arg_str .= " INNER JOIN m_contract";
     $arg_str .= " ON t_order.rntl_cont_no = m_contract.rntl_cont_no";
     $arg_str .= " WHERE ";
