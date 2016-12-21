@@ -551,10 +551,10 @@ $app->post('/wearer/detail', function ()use($app){
 		}
 
 		$json_list['kozin_list'] = $all_list;
-		//ChromePhp::log($json_list['kozin_list']);
+		ChromePhp::log($json_list['kozin_list']);
 	} else {
 		$json_list['kozin_list'] = null;
-		//ChromePhp::log($json_list['kozin_list']);
+		ChromePhp::log($json_list['kozin_list']);
 	}
 
 	//---着用者貸与情報---//
@@ -800,5 +800,6 @@ $app->post('/wearer/detail', function ()use($app){
     }
 
 	$json_list['taiyo_list'] = $wearer_item_list;
+    ChromePhp::log($json_list);
 	echo json_encode($json_list);
 });
