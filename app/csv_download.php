@@ -2027,7 +2027,9 @@ $app->post('/csv_download', function ()use($app){
 			$arg_str .= " ON t_order.m_section_comb_hkey = m_section.m_section_comb_hkey";
 		}
 		$arg_str .= " INNER JOIN m_wearer_std";
-		$arg_str .= " ON t_order.werer_cd = m_wearer_std.werer_cd";
+        $arg_str .= " ON t_order.werer_cd = m_wearer_std.werer_cd";
+        $arg_str .= " AND t_order.corporate_id = m_wearer_std.corporate_id";
+        $arg_str .= " AND t_order.rntl_cont_no = m_wearer_std.rntl_cont_no";
 		$arg_str .= " INNER JOIN (m_job_type INNER JOIN m_input_item";
 		$arg_str .= " ON m_job_type.corporate_id = m_input_item.corporate_id";
 		$arg_str .= " AND m_job_type.rntl_cont_no = m_input_item.rntl_cont_no";
