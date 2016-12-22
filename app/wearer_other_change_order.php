@@ -776,6 +776,17 @@ $app->post('/wearer_other_change_list', function ()use($app){
         $results_cnt = $result_obj["\0*\0_count"];
         if (!empty($results_cnt)) {
             foreach ($item_results as $item_result) {
+                // 交換可能枚数
+                if (individual_flg($auth['corporate_id'], $wearer_size_change_post['rntl_cont_no']) == "1") {
+                    $list["rtn_ok_cnt"] = $result->as_std_input_qty;
+                }else{
+                    //数量 - 返却予定数が0以下だったら表示しない
+                    if(($item_result->as_quantity - $item_result->as_return_plan_qty) <= 0){
+                        continue;
+                    }
+                    //数量 - 返却予定数を交換可能枚数とする
+                    $list["rtn_ok_cnt"] = $item_result->as_quantity - $item_result->as_return_plan_qty;
+                }
                 // name属性用カウント値
                 $list["arr_num"] = $arr_num++;
                 // No
@@ -915,8 +926,6 @@ $app->post('/wearer_other_change_list', function ()use($app){
 
 
                 }else{
-                    // 交換可能枚数
-                    $list["rtn_ok_cnt"] = $list["quantity"];
 
                     foreach ($tran_list as $tran_map) {
                         if (
@@ -1033,6 +1042,17 @@ $app->post('/wearer_other_change_list', function ()use($app){
             $arr_num = 0;
             $list_cnt = 1;
             foreach ($results as $result) {
+                // 交換可能枚数
+                if (individual_flg($auth['corporate_id'], $wearer_size_change_post['rntl_cont_no']) == "1") {
+                    $list["rtn_ok_cnt"] = $result->as_std_input_qty;
+                }else{
+                    //数量 - 返却予定数が0以下だったら表示しない
+                    if(($result->as_quantity - $result->as_return_plan_qty) <= 0){
+                        continue;
+                    }
+                    //数量 - 返却予定数を交換可能枚数とする
+                    $list["rtn_ok_cnt"] = $result->as_quantity - $result->as_return_plan_qty;
+                }
                 // name属性用カウント値
                 $list["arr_num"] = $arr_num++;
                 // No
@@ -1113,10 +1133,6 @@ $app->post('/wearer_other_change_list', function ()use($app){
 
                     // 個体管理番号(表示用)
                     $list["individual_ctrl_no"] = implode("<br/>", $list["individual_ctrl_no"]);
-                }else{
-                    // 交換可能枚数
-                    $list["rtn_ok_cnt"] = $list["quantity"];
-
                 }
                 // 返却枚数
                 if(!isset($list["return_num"])){
