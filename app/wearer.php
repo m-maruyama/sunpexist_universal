@@ -569,7 +569,7 @@ $app->post('/wearer/detail', function ()use($app){
     $arg_str = "SELECT ";
     $arg_str .= " * ";
     $arg_str .= " FROM ";
-    $arg_str .= "(SELECT distinct on (t_delivery_goods_state_details.item_cd,t_delivery_goods_state_details.color_cd,t_delivery_goods_state_details.size_cd) ";
+    $arg_str .= "(SELECT distinct on (m_wearer_item.item_cd,m_wearer_item.color_cd,m_wearer_item.size_cd,t_delivery_goods_state.ship_no) ";
     $arg_str .= "m_wearer_std.cster_emply_cd as as_cster_emply_cd,";
     $arg_str .= "m_wearer_std.werer_name as as_werer_name,";
     $arg_str .= "m_wearer_std.werer_cd as as_werer_cd,";
