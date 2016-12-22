@@ -3202,9 +3202,10 @@ $app->post('/csv_download', function ()use($app){
                         }
                     }
                     // 個体管理番号
-                    $individual_ctrl_no = implode(PHP_EOL, $num_list);
+                    $individual_ctrl_no = implode('"'.PHP_EOL.'"', $num_list);
                     $list['individual_num'] = $individual_ctrl_no;
-                    // 受領日
+                    //ChromePhp::log($list['individual_num']);
+                    // 受領日,
                     $receipt_date = implode(PHP_EOL, $day_list);
                     $list['order_res_ymd'] = $receipt_date;
                 }
@@ -3562,6 +3563,7 @@ $app->post('/csv_download', function ()use($app){
 				foreach ($gencode as $gencode_map) {
 					$list['zk_status_name'] = $gencode_map->gen_name;
 				}
+
 
 				array_push($all_list,$list);
 			}
