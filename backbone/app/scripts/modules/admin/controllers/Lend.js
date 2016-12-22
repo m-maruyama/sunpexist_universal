@@ -227,13 +227,13 @@ define([
 				App.main.show(lendView);
 				lendView.condition.show(lendConditionView);
 				lendConditionView.agreement_no.show(agreementNoConditionView);
-				Sleep(0.02);
+				Sleep(0.04);
 				lendConditionView.section.show(sectionConditionView);
-				Sleep(0.01);
+				Sleep(0.02);
 				lendConditionView.job_type.show(jobTypeConditionView);
-				Sleep(0.01);
+				Sleep(0.02);
 				lendConditionView.input_item.show(inputItemConditionView);
-				Sleep(0.01);
+				Sleep(0.02);
 				lendConditionView.item_color.show(itemColorConditionView);
 				lendConditionView.individual_number.show(individualNumberConditionView);
 				lendView.sectionModal.show(sectionModalView.render());

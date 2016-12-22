@@ -104,97 +104,107 @@ $app->post('/csv_download', function ()use($app){
 	if ($cond["ui_type"] === "history") {
         $result["csv_code"] = "0001";
 
-		//---発注状況検索処理---//
-		//企業ID
-		array_push($query_list,"t_order.corporate_id = '".$auth['corporate_id']."'");
-		//契約No
-		if(!empty($cond['agreement_no'])){
-			array_push($query_list,"t_order.rntl_cont_no = '".$cond['agreement_no']."'");
-		}
-		//発注No
-		if(!empty($cond['no'])){
-			array_push($query_list,"t_order.order_req_no LIKE '".$cond['no']."%'");
-		}
-		//お客様発注No
-		if(!empty($cond['emply_order'])){
-			array_push($query_list,"t_order.emply_req_no LIKE '".$cond['emply_order_no']."%'");
-		}
-		//社員番号
-		if(!empty($cond['member_no'])){
-			array_push($query_list,"m_wearer_std.cster_emply_cd LIKE '".$cond['member_no']."%'");
-		}
-		//着用者名
-		if(!empty($cond['member_name'])){
-			array_push($query_list,"m_wearer_std.werer_name LIKE '%".$cond['member_name']."%'");
-		}
-		//拠点
-		if(!empty($cond['section'])){
-			array_push($query_list,"t_order.rntl_sect_cd = '".$cond['section']."'");
-		}
-		//貸与パターン
-		if(!empty($cond['job_type'])){
-			array_push($query_list,"t_order.job_type_cd = '".$cond['job_type']."'");
-		}
-		//商品
-		if(!empty($cond['input_item'])){
-			array_push($query_list,"t_order.item_cd = '".$cond['input_item']."'");
-		}
-		//色
-		if(!empty($cond['item_color'])){
-			array_push($query_list,"t_order.color_cd = '".$cond['item_color']."'");
-		}
-		//サイズ
-		if(!empty($cond['item_size'])){
-			array_push($query_list,"t_order.size_cd = '".$cond['item_size']."'");
-		}
-		//発注日from
-		if(!empty($cond['order_day_from'])){
-			array_push($query_list,"TO_DATE(t_order.order_req_ymd,'YYYY/MM/DD') >= TO_DATE('".$cond['order_day_from']."','YYYY/MM/DD')");
-		}
-		//発注日to
-		if(!empty($cond['order_day_to'])){
-			array_push($query_list,"TO_DATE(t_order.order_req_ymd,'YYYY/MM/DD') <= TO_DATE('".$cond['order_day_to']."','YYYY/MM/DD')");
-		}
-		//出荷日from
-		if(!empty($cond['send_day_from'])){
-			$cond['send_day_from'] = date('Y/m/d 00:00:00', strtotime($cond['send_day_from']));
-			array_push($query_list,"t_order_state.ship_ymd >= '".$cond['send_day_from']."'");
-//		array_push($query_list,"TO_DATE(t_order_state.ship_ymd,'YYYY/MM/DD') >= TO_DATE('".$cond['send_day_from']."','YYYY/MM/DD')");
-		}
-		//出荷日to
-		if(!empty($cond['send_day_to'])){
-			$cond['send_day_to'] = date('Y/m/d 23:59:59', strtotime($cond['send_day_to']));
-			array_push($query_list,"t_order_state.ship_ymd <= '".$cond['send_day_to']."'");
-//		array_push($query_list,"TO_DATE(t_order_state.ship_ymd,'YYYY/MM/DD') <= TO_DATE('".$cond['send_day_to']."','YYYY/MM/DD')");
-		}
-		//個体管理番号
-		if(!empty($cond['individual_number'])){
-			array_push($query_list,"t_delivery_goods_state_details.individual_ctrl_no LIKE '".$cond['individual_number']."%'");
-		}
+		//---発注状況検索処理---//	//企業ID
+        array_push($query_list,"t_order.corporate_id = '".$auth['corporate_id']."'");
+        //契約No
+        if(!empty($cond['agreement_no'])){
+            array_push($query_list,"t_order.rntl_cont_no = '".$cond['agreement_no']."'");
+        }
+        //発注No
+        if(!empty($cond['no'])){
+            array_push($query_list,"t_order.order_req_no LIKE '".$cond['no']."%'");
+        }
+        //お客様発注No
+        if(!empty($cond['emply_order_no'])){
+            array_push($query_list,"t_order.emply_order_req_no LIKE '".$cond['emply_order_no']."%'");
+        }
+        //社員番号
+        if(!empty($cond['member_no'])){
+            array_push($query_list,"m_wearer_std.cster_emply_cd LIKE '".$cond['member_no']."%'");
+        }
+        //着用者名
+        if(!empty($cond['member_name'])){
+            array_push($query_list,"m_wearer_std.werer_name LIKE '%".$cond['member_name']."%'");
+        }
+        //拠点
+        if(!empty($cond['section'])){
+            array_push($query_list,"t_order.rntl_sect_cd = '".$cond['section']."'");
+        }
+        //貸与パターン
+        if(!empty($cond['job_type'])){
+            array_push($query_list,"t_order.job_type_cd = '".$cond['job_type']."'");
+        }
+        //商品
+        if(!empty($cond['input_item'])){
+            array_push($query_list,"t_order.item_cd = '".$cond['input_item']."'");
+        }
+        //色
+        if(!empty($cond['item_color'])){
+            array_push($query_list,"t_order.color_cd = '".$cond['item_color']."'");
+        }
+        //サイズ
+        if(!empty($cond['item_size'])){
+            array_push($query_list,"t_order.size_cd = '".$cond['item_size']."'");
+        }
+        //発注日from
+        if(!empty($cond['order_day_from'])){
+            array_push($query_list,"CAST(CASE 
+            WHEN t_order.order_req_ymd = '00000000' THEN NULL 
+            ELSE t_order.order_req_ymd 
+            END 
+            AS DATE) >= CAST('".$cond['order_day_from']."' AS DATE)");
+        }
+        //発注日to
+        if(!empty($cond['order_day_to'])){
+            array_push($query_list,"CAST(CASE 
+            WHEN t_order.order_req_ymd = '00000000' THEN NULL 
+            ELSE t_order.order_req_ymd 
+            END 
+            AS DATE) <= CAST('".$cond['order_day_to']."' AS DATE)");
+        }
 
-		//ゼロ埋めがない場合、ログインアカウントの条件追加
-		if($rntl_sect_cd_zero_flg == 0){
-				array_push($query_list,"m_contract_resource.accnt_no = '$accnt_no'");
-		}
+        //出荷日from
+        if(!empty($cond['send_day_from'])){
+            array_push($query_list,"CAST(CASE 
+            WHEN t_order_state.ship_ymd = '00000000' THEN NULL 
+            ELSE t_order_state.ship_ymd 
+            END 
+            AS DATE) >= CAST('".$cond['send_day_from']."' AS DATE)");
+        }
+        //出荷日to
+        if(!empty($cond['send_day_to'])){
+            array_push($query_list,"CAST(CASE 
+            WHEN t_order_state.ship_ymd = '00000000' THEN NULL 
+            ELSE t_order_state.ship_ymd 
+            END 
+            AS DATE) <= CAST('".$cond['send_day_to']."' AS DATE)");
+        }
+        //個体管理番号
+        if(!empty($cond['individual_number'])){
+            array_push($query_list,"t_delivery_goods_state_details.individual_ctrl_no LIKE '".$cond['individual_number']."%'");
+        }
 
-		$status_kbn_list = array();
+        //ゼロ埋めがない場合、ログインアカウントの条件追加
+        if($rntl_sect_cd_zero_flg == 0){
+            array_push($query_list,"m_contract_resource.accnt_no = '$accnt_no'");
+        }
 
-		//ステータス
-		$status_list = array();
-		if($cond['status0']){
-			// 未出荷
-			array_push($status_list,"1");
-		}
-		if($cond['status1']){
-			// 出荷済み
-			array_push($status_list,"2");
-		}
-		if(!empty($status_list)) {
-			$status_str = implode("','",$status_list);
-	//		$status_query = "order_status IN ('".$status_str."')";
-			array_push($query_list,"order_status IN ('".$status_str."')");
-	//		array_push($status_kbn_list,$status_query);
-		}
+        $status_kbn_list = array();
+
+        //ステータス
+        $status_list = array();
+        if($cond['status0']){
+            // 未出荷
+            array_push($status_list,"1");
+        }
+        if($cond['status1']){
+            // 出荷済み
+            array_push($status_list,"2");
+        }
+        if(!empty($status_list)) {
+            $status_str = implode("','",$status_list);
+            array_push($query_list,"t_order.order_status IN ('".$status_str."')");
+        }
         //発注区分
         $reason_kbn_1 = array();
         $kbn_list = array();
@@ -459,70 +469,71 @@ $app->post('/csv_download', function ()use($app){
         if($kbn_list){
             array_push($query_list,'('.implode(' OR ', $kbn_list).')');
         }
-		$query = implode(' AND ', $query_list);
+        //sql文字列を' AND 'で結合
+        $query = implode(' AND ', $query_list);
+        $sort_key ='';
+        $order ='';
 
-		if(!empty($page['sort_key'])){
-			$sort_key = $page['sort_key'];
-			$order = $page['order'];
-			if($sort_key == 'order_req_no' || $sort_key == 'order_req_ymd' || $sort_key == 'order_status' || $sort_key == 'order_sts_kbn'){
-				$sort_key = 'as_'.$sort_key;
-			}
-			if($sort_key == 'job_type_cd'){
-				$sort_key = 'as_job_type_name';
-			}
-			if($sort_key == 'cster_emply_cd'){
-				$sort_key = 'as_cster_emply_cd';
-			}
-			if($sort_key == 'rntl_sect_name'){
-				$sort_key = 'as_rntl_sect_name';
-			}
-			if($sort_key == 'werer_name'){
-				$sort_key = 'as_werer_name';
-			}
-			if($sort_key == 'item_code'){
-				$sort_key = 'as_item_cd';
-			}
-			if($sort_key == 'item_code'){
-				$sort_key = 'as_item_cd';
-			}
-			if($sort_key == 'item_name'){
-				$sort_key = 'as_input_item_name';
-			}
-			if($sort_key == 'maker_rec_no'){
-				$sort_key = 'as_rec_order_no';
-			}
-			if($sort_key == 'send_shd_ymd'){
-				$sort_key = 'as_order_req_ymd';
-			}
-			if($sort_key == 'order_status'){
-				$sort_key = 'as_order_status';
-			}
-			if($sort_key == 'maker_send_no'){
-				$sort_key = 'as_ship_no';
-			}
-			if($sort_key == 'ship_ymd'){
-				$sort_key = 'as_ship_ymd';
-			}
-			if($sort_key == 'send_ymd'){
-				$sort_key = 'as_ship_ymd';
-			}
-			if($sort_key == 'individual_num'){
-				$sort_key = 'as_individual_ctrl_no';
-			}
-			if($sort_key == 'order_res_ymd'){
-				$sort_key = 'as_receipt_date';
-			}
-			if($sort_key == 'rental_no'){
-				$sort_key = 'as_rntl_cont_no';
-			}
-			if($sort_key == 'rental_name'){
-				$sort_key = 'as_rntl_cont_name';
-			}
-		} else {
-			//指定がなければ発注No
-			$sort_key = "as_order_req_no";
-			$order = 'asc';
-		}
+        //ソート設定
+        if(!empty($page['sort_key'])){
+            $sort_key = $page['sort_key'];
+            $order = $page['order'];
+            if($sort_key == 'order_req_no' || $sort_key == 'order_req_ymd' || $sort_key == 'order_status' || $sort_key == 'order_sts_kbn'){
+                $q_sort_key = 'as_'.$sort_key;
+            }
+            if($sort_key == 'job_type_cd'){
+                $q_sort_key = 'as_job_type_name';
+            }
+            if($sort_key == 'cster_emply_cd'){
+                $q_sort_key = 'as_cster_emply_cd';
+            }
+            if($sort_key == 'rntl_sect_name'){
+                $q_sort_key = 'as_rntl_sect_name';
+            }
+            if($sort_key == 'werer_name'){
+                $q_sort_key = 'as_werer_name';
+            }
+            if($sort_key == 'item_code'){
+                $q_sort_key = 'as_item_cd,as_size_cd';
+            }
+            if($sort_key == 'item_name'){
+                $q_sort_key = 'as_input_item_name';
+            }
+            if($sort_key == 'maker_rec_no'){
+                $q_sort_key = 'as_rec_order_no';
+            }
+            if($sort_key == 'send_shd_ymd'){
+                $q_sort_key = 'as_order_req_ymd';
+            }
+            if($sort_key == 'order_status'){
+                $q_sort_key = 'as_order_status';
+            }
+            if($sort_key == 'maker_send_no'){
+                $q_sort_key = 'as_ship_no';
+            }
+            if($sort_key == 'ship_ymd'){
+                $q_sort_key = 'as_ship_ymd';
+            }
+            if($sort_key == 'send_ymd'){
+                $q_sort_key = 'as_ship_ymd';
+            }
+            if($sort_key == 'individual_num'){
+                $q_sort_key = 'as_individual_ctrl_no';
+            }
+            if($sort_key == 'order_res_ymd'){
+                $q_sort_key = 'as_receipt_date';
+            }
+            if($sort_key == 'rental_no'){
+                $q_sort_key = 'as_rntl_cont_no';
+            }
+            if($sort_key == 'rental_name'){
+                $q_sort_key = 'as_rntl_cont_name';
+            }
+        } else {
+            //指定がなければ発注No
+            $q_sort_key = "as_order_req_no";
+            $order = 'asc';
+        }
         //---SQLクエリー実行---//
         $arg_str = "SELECT ";
         $arg_str .= " * ";
@@ -588,9 +599,12 @@ $app->post('/csv_download', function ()use($app){
         $arg_str .= " WHERE ";
         $arg_str .= $query;
         $arg_str .= ") as distinct_table";
-		$arg_str .= " ORDER BY ";
-		$arg_str .= $sort_key." ".$order;
-		$t_order = new TOrder();
+        if (!empty($q_sort_key)) {
+            $arg_str .= " ORDER BY ";
+            $arg_str .= $q_sort_key." ".$order;
+        }
+
+        $t_order = new TOrder();
 		$results = new Resultset(null, $t_order, $t_order->getReadConnection()->query($arg_str));
 		$result_obj = (array)$results;
 		$results_cnt = $result_obj["\0*\0_count"];
@@ -838,10 +852,10 @@ $app->post('/csv_download', function ()use($app){
 						}
 					}
 					// 個体管理番号
-					$individual_ctrl_no = implode(PHP_EOL, $num_list);
+					$individual_ctrl_no = implode("\n", $num_list);
 					$list['individual_num'] = $individual_ctrl_no;
 					// 受領日
-					$receipt_date = implode(PHP_EOL, $day_list);
+					$receipt_date = implode("\n", $day_list);
 					$list['order_res_ymd'] = $receipt_date;
 				}
 
@@ -955,7 +969,7 @@ $app->post('/csv_download', function ()use($app){
 				array_push($csv_body_list, $all_map["ship_qty"]);
 				// 個体管理番号
 				if ($individual_flg) {
-					array_push($csv_body_list, '="'.$all_map["individual_num"].'"');
+					array_push($csv_body_list, $all_map["individual_num"]);
 				}
 				// 受領日
 				array_push($csv_body_list, $all_map["order_res_ymd"]);
@@ -1862,7 +1876,7 @@ $app->post('/csv_download', function ()use($app){
 				array_push($csv_body_list, $all_map["ship_qty"]);
 				// 個体管理番号
 				if ($individual_flg) {
-					array_push($csv_body_list, '="'.$all_map["individual_num"].'"');
+					array_push($csv_body_list, $all_map["individual_num"]);
 				}
 				// 受領日
 				array_push($csv_body_list, $all_map["order_res_ymd"]);
@@ -1940,26 +1954,31 @@ $app->post('/csv_download', function ()use($app){
 		if(!empty($cond['item_size'])){
 			array_push($query_list,"t_delivery_goods_state_details.size_cd = '".$cond['item_size']."'");
 		}
-		//発注日from
-		if(!empty($cond['order_day_from'])){
-			array_push($query_list,"TO_DATE(t_order.order_req_ymd,'YYYY/MM/DD') >= TO_DATE('".$cond['order_day_from']."','YYYY/MM/DD')");
-		}
-		//発注日to
-		if(!empty($cond['order_day_to'])){
-			array_push($query_list,"TO_DATE(t_order.order_req_ymd,'YYYY/MM/DD') <= TO_DATE('".$cond['order_day_to']."','YYYY/MM/DD')");
-		}
-		//受領日from
-		if(!empty($cond['receipt_day_from'])){
-			$cond['receipt_day_from'] = date('Y-m-d 00:00:00', strtotime($cond['receipt_day_from']));
-			array_push($query_list,"t_delivery_goods_state_details.receipt_date >= '".$cond['receipt_day_from']."'");
-	//		array_push($query_list,"TO_DATE(t_order_state.ship_ymd,'YYYY/MM/DD') >= TO_DATE('".$cond['send_day_from']."','YYYY/MM/DD')");
-		}
-		//受領日to
-		if(!empty($cond['receipt_day_to'])){
-			$cond['receipt_day_to'] = date('Y-m-d 23:59:59', strtotime($cond['receipt_day_to']));
-			array_push($query_list,"t_delivery_goods_state_details.receipt_date <= '".$cond['receipt_day_to']."'");
-	//		array_push($query_list,"TO_DATE(t_order_state.ship_ymd,'YYYY/MM/DD') <= TO_DATE('".$cond['send_day_to']."','YYYY/MM/DD')");
-		}
+        //発注日from
+        if(!empty($cond['order_day_from'])){
+            array_push($query_list,"CAST(CASE 
+            WHEN t_order.order_req_ymd = '00000000' THEN NULL 
+            ELSE t_order.order_req_ymd 
+            END 
+            AS DATE) >= CAST('".$cond['order_day_from']."' AS DATE)");
+        }
+        //発注日to
+        if(!empty($cond['order_day_to'])){
+            array_push($query_list,"CAST(CASE 
+            WHEN t_order.order_req_ymd = '00000000' THEN NULL 
+            ELSE t_order.order_req_ymd 
+            END 
+            AS DATE) <= CAST('".$cond['order_day_to']."' AS DATE)");
+        }
+        //受領日from
+        if(!empty($cond['receipt_day_from'])){
+            array_push($query_list,"CAST(t_delivery_goods_state_details.receipt_date AS DATE) >= CAST('".$cond['receipt_day_from']."' AS DATE)");
+        }
+        //受領日to
+        if(!empty($cond['receipt_day_to'])){
+            array_push($query_list,"CAST(t_delivery_goods_state_details.receipt_date AS DATE) <= CAST('".$cond['receipt_day_to']."' AS DATE)");
+
+        }
 		//個体管理番号
 		if(!empty($cond['individual_number'])){
 			array_push($query_list,"t_delivery_goods_state_details.individual_ctrl_no LIKE '".$cond['individual_number']."%'");
@@ -2450,12 +2469,47 @@ $app->post('/csv_download', function ()use($app){
 				} else {
 					$list['ship_qty'] = "-";
 				}
-				// 個体管理番号
-				if (!empty($result->as_individual_ctrl_no)) {
-					$list['individual_ctrl_no'] = $result->as_individual_ctrl_no;
-				} else {
-					$list['individual_ctrl_no'] = "-";
-				}
+
+                //---個体管理番号・受領日時の取得---//
+                $list['individual_num'] = "-";
+                $query_list = array();
+                array_push($query_list, "corporate_id = '".$auth['corporate_id']."'");
+                array_push($query_list, "ship_no = '".$list['ship_no']."'");
+                array_push($query_list, "item_cd = '".$list['item_cd']."'");
+                array_push($query_list, "color_cd = '".$list['color_cd']."'");
+                //rray_push($query_list, "size_cd = '".$list['size_cd']."'");
+                $query = implode(' AND ', $query_list);
+                $arg_str = "";
+                $arg_str .= "SELECT ";
+                $arg_str .= "individual_ctrl_no";
+                $arg_str .= " FROM ";
+                $arg_str .= "t_delivery_goods_state_details";
+                $arg_str .= " WHERE ";
+                $arg_str .= $query;
+                $t_delivery_goods_state_details = new TDeliveryGoodsStateDetails();
+                $del_gd_results = new Resultset(null, $t_delivery_goods_state_details, $t_delivery_goods_state_details->getReadConnection()->query($arg_str));
+                $result_obj = (array)$del_gd_results;
+                $del_gd_results_cnt = $result_obj["\0*\0_count"];
+                if ($del_gd_results_cnt > 0) {
+                    $paginator_model = new PaginatorModel(
+                        array(
+                            "data"  => $del_gd_results,
+                            "limit" => $del_gd_results_cnt,
+                            "page" => 1
+                        )
+                    );
+                    $paginator = $paginator_model->getPaginate();
+                    $del_gd_results = $paginator->items;
+
+                    $num_list = array();
+                    $day_list = array();
+                    foreach ($del_gd_results as $del_gd_result) {
+                        array_push($num_list, $del_gd_result->individual_ctrl_no);
+                    }
+                    // 個体管理番号
+                    $individual_ctrl_no = implode("\n", $num_list);
+                    $list['individual_num'] = $individual_ctrl_no;
+                }
 				// 発注No
 				if (!empty($result->as_order_req_no)) {
 					$list['order_req_no'] = $result->as_order_req_no;
@@ -2671,7 +2725,7 @@ $app->post('/csv_download', function ()use($app){
 				array_push($csv_body_list, $all_map["ship_qty"]);
 				// 個体管理番号
 				if ($individual_flg) {
-					array_push($csv_body_list, '="'.$all_map["individual_ctrl_no"].'"');
+					array_push($csv_body_list, $all_map["individual_ctrl_no"]);
 				}
 				// 発注No
 				array_push($csv_body_list, $all_map["order_req_no"]);
