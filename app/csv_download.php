@@ -2722,9 +2722,14 @@ $app->post('/csv_download', function ()use($app){
 				// 出荷数
 				array_push($csv_body_list, $all_map["ship_qty"]);
 				// 個体管理番号
+                /*
 				if ($individual_flg) {
 					array_push($csv_body_list, $all_map["individual_ctrl_no"]);
-				}
+				}*/
+                // 個体管理番号
+                if ($individual_flg) {
+                    array_push($csv_body_list, $all_map["individual_num"]);
+                }
 				// 発注No
 				array_push($csv_body_list, $all_map["order_req_no"]);
 				// 発注行No
