@@ -852,10 +852,10 @@ $app->post('/csv_download', function ()use($app){
 						}
 					}
 					// 個体管理番号
-					$individual_ctrl_no = implode("\n", $num_list);
+					$individual_ctrl_no = implode(PHP_EOL, $num_list);
 					$list['individual_num'] = $individual_ctrl_no;
 					// 受領日
-					$receipt_date = implode("\n", $day_list);
+					$receipt_date = implode(PHP_EOL, $day_list);
 					$list['order_res_ymd'] = $receipt_date;
 				}
 
@@ -1677,7 +1677,6 @@ $app->post('/csv_download', function ()use($app){
 				}
 
                 //---受領日時の取得---//
-                $list['individual_num'] = "-";
                 $list['order_res_ymd'] = "-";
                 $query_list = array();
                 array_push($query_list, "corporate_id = '".$auth['corporate_id']."'");
@@ -1719,14 +1718,13 @@ $app->post('/csv_download', function ()use($app){
                     }
                     // 受領日
                     //ChromePhp::log($day_list);
-                    $receipt_date = implode("\n", $day_list);
+                    $receipt_date = implode(PHP_EOL, $day_list);
                     //ChromePhp::log($receipt_date);
                     $list['order_res_ymd'] = $receipt_date;
                 }
 
                 //---個体管理番号---//
                 $list['individual_num'] = "-";
-                $list['order_res_ymd'] = "-";
                 $query_list = array();
                 array_push($query_list, "corporate_id = '".$auth['corporate_id']."'");
                 array_push($query_list, "order_req_no = '".$list['order_req_no']."'");
@@ -1762,7 +1760,7 @@ $app->post('/csv_download', function ()use($app){
                     }
 
                     // 個体管理番号
-                    $individual_ctrl_no = implode("\n", $num_list);
+                    $individual_ctrl_no = implode(PHP_EOL, $num_list);
                     $list['individual_num'] = $individual_ctrl_no;
                 }
 
@@ -2507,7 +2505,7 @@ $app->post('/csv_download', function ()use($app){
                         array_push($num_list, $del_gd_result->individual_ctrl_no);
                     }
                     // 個体管理番号
-                    $individual_ctrl_no = implode("\n", $num_list);
+                    $individual_ctrl_no = implode(PHP_EOL, $num_list);
                     $list['individual_num'] = $individual_ctrl_no;
                 }
 				// 発注No
