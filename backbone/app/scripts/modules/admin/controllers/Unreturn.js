@@ -230,13 +230,13 @@ define([
 				App.main.show(unreturnView);
 				unreturnView.condition.show(unreturnConditionView);
 				unreturnConditionView.agreement_no.show(agreementNoConditionView);
-				Sleep(0.02);
+				Sleep(0.04);
 				unreturnConditionView.section.show(sectionConditionView);
-				Sleep(0.01);
+				Sleep(0.02);
 				unreturnConditionView.job_type.show(jobTypeConditionView);
-				Sleep(0.01);
+				Sleep(0.02);
 				unreturnConditionView.input_item.show(inputItemConditionView);
-				Sleep(0.01);
+				Sleep(0.02);
 				unreturnConditionView.item_color.show(itemColorConditionView);
 				unreturnConditionView.individual_number.show(individualNumberConditionView);
 				unreturnView.sectionModal.show(sectionModalView.render());

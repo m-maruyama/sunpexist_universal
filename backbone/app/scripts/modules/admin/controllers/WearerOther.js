@@ -304,11 +304,11 @@ define([
 				App.main.show(wearerOtherView);
 				wearerOtherView.condition.show(wearerOtherConditionView);
 				wearerOtherConditionView.agreement_no.show(agreementNoConditionView);
-				Sleep(0.02);
+				Sleep(0.04);
 				wearerOtherConditionView.sex_kbn.show(sexKbnConditionView);
-				Sleep(0.01);
+				Sleep(0.02);
 				wearerOtherConditionView.section.show(sectionConditionView);
-				Sleep(0.01);
+				Sleep(0.02);
 				wearerOtherConditionView.job_type.show(jobTypeConditionView);
 			}
 		});

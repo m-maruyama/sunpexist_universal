@@ -142,7 +142,7 @@ define([
 				});
 				App.main.show(wearerInputView);
 				wearerInputView.agreement_no.show(agreementNoConditionView);
-				Sleep(0.02);
+				Sleep(0.04);
 				wearerInputView.sectionModal.show(sectionModalView.render());
 				sectionModalView.page.show(paginationView);
 				sectionModalView.condition.show(sectionModalConditionView);

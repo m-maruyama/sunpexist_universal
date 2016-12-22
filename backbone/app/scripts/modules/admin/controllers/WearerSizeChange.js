@@ -304,10 +304,11 @@ define([
 				App.main.show(wearerSizeChangeView);
 				wearerSizeChangeView.condition.show(wearerSizeChangeConditionView);
 				wearerSizeChangeConditionView.agreement_no.show(agreementNoConditionView);
-				Sleep(0.02);
+				Sleep(0.04);
 				wearerSizeChangeConditionView.section.show(sectionConditionView);
+				Sleep(0.02);
 				wearerSizeChangeConditionView.sex_kbn.show(sexKbnConditionView);
-				Sleep(0.01);
+				Sleep(0.02);
 				wearerSizeChangeConditionView.job_type.show(jobTypeConditionView);
 			}
 		});

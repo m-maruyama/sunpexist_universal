@@ -333,12 +333,12 @@ define([
 				App.main.show(wearerEndView);
 				wearerEndView.condition.show(wearerEndConditionView);
 				wearerEndConditionView.agreement_no.show(agreementNoConditionView);
-				Sleep(0.02);
+				Sleep(0.04);
 				// wearerEndConditionView.section.show(sectionConditionView);
 				wearerEndConditionView.sex_kbn.show(sexKbnConditionView);
-				Sleep(0.01);
+				Sleep(0.02);
 				wearerEndConditionView.section.show(sectionConditionView);
-				Sleep(0.01);
+				Sleep(0.02);
 				wearerEndConditionView.job_type.show(jobTypeConditionView);
 				// wearerEndView.sectionModal.show(sectionModalView.render());
 				// sectionListListCollection// sectionModalView.condition.show(sectionModalConditionView);

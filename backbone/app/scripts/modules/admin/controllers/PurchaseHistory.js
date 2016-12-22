@@ -222,13 +222,13 @@ define([
 				App.main.show(purchaseHistoryView);
 				purchaseHistoryView.condition.show(purchaseHistoryConditionView);
 				purchaseHistoryConditionView.agreement_no.show(agreementNoConditionView);
-				Sleep(0.02);
+				Sleep(0.04);
 				purchaseHistoryConditionView.section.show(sectionConditionView);
-				Sleep(0.01);
+				Sleep(0.02);
 				purchaseHistoryView.sectionModal.show(sectionModalView.render());
-				Sleep(0.01);
+				Sleep(0.02);
 				purchaseHistoryConditionView.input_item.show(purchaseInputItemConditionView);
-				Sleep(0.01);
+				Sleep(0.02);
 				purchaseHistoryConditionView.item_color.show(purchaseItemColorConditionView);
 				sectionModalView.condition.show(sectionModalConditionView);
 				sectionModalView.page.show(paginationSectionView);

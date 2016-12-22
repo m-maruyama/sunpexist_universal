@@ -231,13 +231,13 @@ define([
 				App.main.show(orderSendView);
 				orderSendView.condition.show(orderSendConditionView);
 				orderSendConditionView.agreement_no.show(agreementNoConditionView);
-				Sleep(0.02);
+				Sleep(0.04);
 				orderSendConditionView.sex_kbn.show(sexKbnConditionView);
-				Sleep(0.01);
+				Sleep(0.02);
 				orderSendConditionView.section.show(sectionConditionView);
-				Sleep(0.01);
+				Sleep(0.02);
 				orderSendConditionView.job_type.show(jobTypeConditionView);
-				Sleep(0.01);
+				Sleep(0.02);
 				orderSendConditionView.snd_kbn.show(sndKbnConditionView);
 			}
 		});

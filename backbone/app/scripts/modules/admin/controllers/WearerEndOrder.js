@@ -63,7 +63,7 @@ define([
 				App.main.show(wearerEndOrderView);
 				wearerEndOrderView.condition.show(wearerEndOrderConditionView);
 				wearerEndOrderView.listTable.show(wearerEndListListView);
-				Sleep(0.01);
+				Sleep(0.02);
 				wearerEndOrderConditionView.reason_kbn.show(reasonKbnConditionView);
 			}
 		});

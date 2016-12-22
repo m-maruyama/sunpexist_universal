@@ -191,9 +191,9 @@ define([
 
 				App.main.show(inquiryInputView);
 				inquiryInputView.condition.show(inquiryInputConditionView);
-				Sleep(0.01);
+				Sleep(0.02);
 				inquiryInputConditionView.section.show(sectionConditionView);
-				Sleep(0.01);
+				Sleep(0.02);
 				inquiryInputView.sectionModal.show(sectionModalView.render());
 				sectionModalView.page.show(paginationSectionView);
 				sectionModalView.condition.show(sectionModalConditionView);

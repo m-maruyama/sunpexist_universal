@@ -224,13 +224,13 @@ define([
 				App.main.show(wearerView);
 				wearerView.condition.show(wearerConditionView);
 				wearerConditionView.agreement_no.show(agreementNoConditionView);
-				Sleep(0.02);
+				Sleep(0.04);
 				wearerConditionView.section.show(sectionConditionView);
-				Sleep(0.01);
+				Sleep(0.02);
 				wearerConditionView.job_type.show(jobTypeConditionView);
-				Sleep(0.01);
+				Sleep(0.02);
 				wearerConditionView.input_item.show(inputItemConditionView);
-				Sleep(0.01);
+				Sleep(0.02);
 				wearerConditionView.item_color.show(itemColorConditionView);
 				wearerConditionView.individual_number.show(individualNumberConditionView);
 				wearerView.sectionModal.show(sectionModalView.render());
