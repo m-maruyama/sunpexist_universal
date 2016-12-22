@@ -877,6 +877,10 @@ $app->post('/wearer_exchange/list', function ()use($app){
       //ChromePhp::LOG("発注情報トラン商品一覧仮リスト");
       //ChromePhp::LOG($results);
       foreach ($item_results as $item_result) {
+          //数量 - 返却予定数が0以下だったら表示しない
+          if(($item_result->as_quantity - $item_result->as_return_plan_qty) <= 0){
+              continue;
+          }
         // name属性用カウント値
         $list["arr_num"] = $arr_num++;
         // No
@@ -891,7 +895,8 @@ $app->post('/wearer_exchange/list', function ()use($app){
           if (individual_flg($auth['corporate_id'], $wearer_size_change_post['rntl_cont_no']) == "1") {
               $list["exchange_possible_num"] = $list["possible_num"];
           }else{
-              $list["exchange_possible_num"] = $list["quantity"];
+              //数量 - 返却予定数を交換可能枚数とする
+              $list["exchange_possible_num"] = $list["quantity"] - $item_result->as_return_plan_qty;
           }
         // 商品コード
         $list["item_cd"] = $item_result->as_item_cd;
@@ -1325,6 +1330,9 @@ $app->post('/wearer_exchange/list', function ()use($app){
       $arr_num = 0;
       $list_cnt = 1;
       foreach ($results as $result) {
+          if(($result->as_quantity - $result->as_return_plan_qty) <= 0){
+              continue;
+          }
         // name属性用カウント値
         $list["arr_num"] = $arr_num++;
         // No
@@ -1339,7 +1347,7 @@ $app->post('/wearer_exchange/list', function ()use($app){
           if (individual_flg($auth['corporate_id'], $wearer_size_change_post['rntl_cont_no']) == "1") {
               $list["exchange_possible_num"] = $list["possible_num"];
           }else{
-              $list["exchange_possible_num"] = $list["quantity"];
+              $list["exchange_possible_num"] = $list["quantity"] - $result->as_return_plan_qty;
           }
         // 返却予定数
         $list["return_plan_qty"] = $result->as_return_plan_qty;
