@@ -374,7 +374,6 @@ $app->post('/wearer/detail', function ()use($app){
 	$arg_str .= " WHERE ";
 	$arg_str .= $query;
 	$arg_str .= ") as distinct_table";
-
 	$m_wearer_std = new MWearerStd();
 	$results = new Resultset(null, $m_wearer_std, $m_wearer_std->getReadConnection()->query($arg_str));
 	$result_obj = (array)$results;
@@ -562,37 +561,79 @@ $app->post('/wearer/detail', function ()use($app){
 	array_push($query_list,"m_wearer_std.rntl_cont_no = '".$cond['agreement_no']."'");
 	array_push($query_list,"m_wearer_std.werer_cd = '".$cond['wearer_cd']."'");
 	$query = implode(' AND ', $query_list);
-	$arg_str = "";
-	$arg_str .= "SELECT ";
-	$arg_str .= "m_wearer_std.werer_cd as as_werer_cd,";
-	$arg_str .= "m_wearer_std.rntl_cont_no as as_rntl_cont_no,";
-	$arg_str .= "m_wearer_item.item_cd as as_item_cd,";
-	$arg_str .= "m_wearer_item.color_cd as as_color_cd,";
-	$arg_str .= "m_wearer_item.size_cd as as_size_cd,";
-	$arg_str .= "m_wearer_item.size_two_cd as as_size_two_cd,";
-	$arg_str .= "m_input_item.input_item_name as as_input_item_name";
-	$arg_str .= " FROM ";
-	$arg_str .= "m_wearer_std INNER JOIN";
-	$arg_str .= " (m_wearer_item INNER JOIN m_input_item";
-	$arg_str .= " ON m_wearer_item.corporate_id = m_input_item.corporate_id";
-	$arg_str .= " AND m_wearer_item.rntl_cont_no = m_input_item.rntl_cont_no";
-	$arg_str .= " AND m_wearer_item.job_type_cd = m_input_item.job_type_cd";
-	$arg_str .= " AND m_wearer_item.job_type_item_cd = m_input_item.job_type_item_cd";
-	$arg_str .= " AND m_wearer_item.item_cd = m_input_item.item_cd";
-	$arg_str .= " AND m_wearer_item.color_cd = m_input_item.color_cd)";
-	$arg_str .= " ON m_wearer_std.corporate_id = m_wearer_item.corporate_id";
-	$arg_str .= " AND m_wearer_std.rntl_cont_no = m_wearer_item.rntl_cont_no";
-	$arg_str .= " AND m_wearer_std.werer_cd = m_wearer_item.werer_cd";
-	$arg_str .= " WHERE ";
-	$arg_str .= $query;
-	$arg_str .= " ORDER BY as_item_cd, as_color_cd, as_size_cd ASC";
-	$m_wearer_std = new MWearerStd();
-	$results = new Resultset(null, $m_wearer_std, $m_wearer_std->getReadConnection()->query($arg_str));
-	$result_obj = (array)$results;
-	$results_cnt = $result_obj["\0*\0_count"];
 
-	$wearer_item_list = array();
-	$list = array();
+
+
+    //商品cd、色cd単位でdistinct
+    //---SQLクエリー実行---//
+    $arg_str = "SELECT ";
+    $arg_str .= " * ";
+    $arg_str .= " FROM ";
+    $arg_str .= "(SELECT distinct on (t_delivery_goods_state_details.item_cd,t_delivery_goods_state_details.color_cd,t_delivery_goods_state_details.size_cd) ";
+    $arg_str .= "m_wearer_std.cster_emply_cd as as_cster_emply_cd,";
+    $arg_str .= "m_wearer_std.werer_name as as_werer_name,";
+    $arg_str .= "m_wearer_std.werer_cd as as_werer_cd,";
+    $arg_str .= "m_wearer_std.rntl_sect_cd as as_now_rntl_sect_cd,";
+    $arg_str .= "m_wearer_std.job_type_cd as as_now_job_type_cd,";
+    $arg_str .= "m_wearer_std.rntl_cont_no as as_rntl_cont_no,";
+    $arg_str .= "t_order.rntl_sect_cd as as_old_rntl_sect_cd,";
+    $arg_str .= "t_order.job_type_cd as as_old_job_type_cd,";
+    $arg_str .= "t_order.order_req_no as as_order_req_no,";
+    $arg_str .= "m_wearer_item.item_cd as as_item_cd,";
+    $arg_str .= "m_wearer_item.color_cd as as_color_cd,";
+    $arg_str .= "m_wearer_item.size_cd as as_size_cd,";
+    $arg_str .= "m_wearer_item.size_two_cd as as_size_two_cd,";
+    $arg_str .= "m_wearer_item.job_type_item_cd as as_job_type_item_cd,";
+    $arg_str .= "t_delivery_goods_state_details.individual_ctrl_no as as_individual_ctrl_no,";
+    $arg_str .= "t_delivery_goods_state_details.quantity as as_quantity,";
+    $arg_str .= "t_delivery_goods_state_details.returned_qty as as_returned_qty,";
+
+    $arg_str .= "t_delivery_goods_state.ship_qty as as_ship_qty,";
+    $arg_str .= "t_delivery_goods_state.ship_ymd as as_ship_ymd,";
+    $arg_str .= "t_returned_plan_info.order_date as as_re_order_date,";
+    $arg_str .= "t_returned_plan_info.return_plan_qty as as_return_plan_qty,";
+
+    $arg_str .= "t_order.order_req_no as as_order_req_no,";
+    $arg_str .= "t_delivery_goods_state.rec_order_no as as_rec_order_no,";
+    $arg_str .= "t_delivery_goods_state_details.ship_no as as_ship_no";
+    $arg_str .= " FROM t_order LEFT JOIN";
+    $arg_str .= " (t_order_state LEFT JOIN";
+    $arg_str .= " (t_delivery_goods_state LEFT JOIN";
+    $arg_str .= " t_delivery_goods_state_details";
+    $arg_str .= " ON t_delivery_goods_state.corporate_id = t_delivery_goods_state_details.corporate_id";
+    $arg_str .= " AND t_delivery_goods_state.ship_no = t_delivery_goods_state_details.ship_no";
+    $arg_str .= " AND t_delivery_goods_state.ship_line_no = t_delivery_goods_state_details.ship_line_no)";
+    $arg_str .= " ON t_order_state.t_order_state_comb_hkey = t_delivery_goods_state.t_order_state_comb_hkey)";
+    $arg_str .= " ON t_order.t_order_comb_hkey = t_order_state.t_order_comb_hkey";
+    $arg_str .= " LEFT JOIN t_returned_plan_info";
+    $arg_str .= " ON t_order.corporate_id = t_returned_plan_info.corporate_id";
+    $arg_str .= " AND t_order.order_req_no = t_returned_plan_info.order_req_no";
+    $arg_str .= " AND t_order.order_req_line_no = t_returned_plan_info.order_req_line_no";
+
+    $arg_str .= " INNER JOIN m_wearer_std";
+    $arg_str .= " ON t_order.corporate_id = m_wearer_std.corporate_id";
+    $arg_str .= " AND t_order.rntl_cont_no = m_wearer_std.rntl_cont_no";
+    $arg_str .= " AND t_order.werer_cd = m_wearer_std.werer_cd";
+    $arg_str .= " INNER JOIN m_wearer_item";
+    $arg_str .= " ON t_order.m_wearer_item_comb_hkey = m_wearer_item.m_wearer_item_comb_hkey";
+    $arg_str .= " WHERE ";
+    $arg_str .= $query;
+    $arg_str .= ") as distinct_table";
+
+    if (!empty($q_sort_key)) {
+        $arg_str .= " ORDER BY ";
+        $arg_str .= $q_sort_key." ".$order;
+    }
+    //ChromePhp::log($arg_str);
+    $t_order = new TOrder();
+    $results = new Resultset(null, $t_order, $t_order->getReadConnection()->query($arg_str));
+    $result_obj = (array)$results;
+    $results_cnt = $result_obj["\0*\0_count"];
+
+
+    //$json_list = array();
+    $wearer_item_list = array();
+    $list = array();
 
 	if(!empty($results_cnt)){
 		$paginator_model = new PaginatorModel(
@@ -604,7 +645,6 @@ $app->post('/wearer/detail', function ()use($app){
 		);
 		$paginator = $paginator_model->getPaginate();
 		$results = $paginator->items;
-
 		//表No用
 		$no_num = 1;
 		foreach($results as $result) {
@@ -635,14 +675,47 @@ $app->post('/wearer/detail', function ()use($app){
 				$list['size_two_cd'] = "";
 			}
 			// 投入商品名(商品名)
+            /*
 			if (!empty($result->as_input_item_name)) {
 				$list['item_name'] = $result->as_input_item_name;
 			} else {
 				$list['item_name'] = "-";
 			}
+            */
+
+            // 投入商品名
+            $search_q = array();
+            array_push($search_q, "corporate_id = '".$auth['corporate_id']."'");
+            array_push($search_q, "rntl_cont_no = '".$result->as_rntl_cont_no."'");
+            array_push($search_q, "job_type_cd = '".$result->as_old_job_type_cd."'");
+            array_push($search_q, "job_type_item_cd = '".$result->as_job_type_item_cd."'");
+            array_push($search_q, "item_cd = '".$list['item_cd']."'");
+            array_push($search_q, "color_cd = '".$list['color_cd']."'");
+            array_push($search_q, "size_two_cd = '".$result->as_size_two_cd."'");
+            //sql文字列を' AND 'で結合
+            $query = implode(' AND ', $search_q);
+            $input_item = MInputItem::query()
+                ->where($query)
+                ->columns('*')
+                ->execute();
+            // 取得オブジェクトを配列化→クラス内propety：protected値を取得する→リストカウント
+            $input_item_obj = (array)$input_item;
+            $cnt = $input_item_obj["\0*\0_count"];
+            if (!empty($cnt)) {
+                //ChromePhp::log($input_item);
+                foreach ($input_item as $input_item_map) {
+                    $list['item_name'] = $input_item_map->input_item_name;
+                }
+            } else {
+                $list['item_name'] = "-";
+            }
 			// 商品-色(サイズ-サイズ2)変換
 			$list['shin_item_code'] = $list['item_cd']."-".$list['color_cd']."(".$list['size_cd']."-".$list['size_two_cd'].")";
+
+
+
 			// 個体管理番号(バーコード)
+            /*
 			$list['individual_ctrl_no'] = "-";
 			$query_list = array();
 			array_push($query_list,"t_delivery_goods_state_details.corporate_id = '".$auth['corporate_id']."'");
@@ -677,12 +750,71 @@ $app->post('/wearer/detail', function ()use($app){
 					$list['individual_ctrl_no'] = $delivery_goods_state_result->as_individual_ctrl_no;
 				}
 			}
+            */
+
+            //---個体管理番号・受領日時の取得---//
+                $list['individual_num'] = "-";
+                $list['order_res_ymd'] = "-";
+                $query_list = array();
+                array_push($query_list, "corporate_id = '" . $auth['corporate_id'] . "'");
+                array_push($query_list, "ship_no = '" . $result->as_ship_no . "'");
+                array_push($query_list, "item_cd = '" . $list['item_cd'] . "'");
+                array_push($query_list, "color_cd = '" . $list['color_cd'] . "'");
+                array_push($query_list, "size_cd = '" . $list['size_cd'] . "'");
+                $query = implode(' AND ', $query_list);
+                $arg_str = "";
+                $arg_str .= "SELECT ";
+                $arg_str .= "individual_ctrl_no,";
+                $arg_str .= "receipt_date";
+                $arg_str .= " FROM ";
+                $arg_str .= "t_delivery_goods_state_details";
+                $arg_str .= " WHERE ";
+                $arg_str .= $query;
+                $t_delivery_goods_state_details = new TDeliveryGoodsStateDetails();
+                $del_gd_results = new Resultset(null, $t_delivery_goods_state_details, $t_delivery_goods_state_details->getReadConnection()->query($arg_str));
+                $result_obj = (array)$del_gd_results;
+                $results_cnt = $result_obj["\0*\0_count"];
+                if ($results_cnt > 0) {
+                    $paginator_model = new PaginatorModel(
+                        array(
+                            "data" => $del_gd_results,
+                            "limit" => $results_cnt,
+                            "page" => 1
+                        )
+                    );
+                    $paginator = $paginator_model->getPaginate();
+                    $del_gd_results = $paginator->items;
+
+                    $num_list = array();
+                    //$day_list = array();
+                    foreach ($del_gd_results as $del_gd_result) {
+                        array_push($num_list, $del_gd_result->individual_ctrl_no);
+                        /*
+                        if (!empty($del_gd_result->receipt_date)) {
+                            array_push($day_list, date('Y/m/d',strtotime($del_gd_result->receipt_date)));
+                        } else {
+                            array_push($day_list, "-");
+                        }
+                        */
+                    }
+                    // 個体管理番号
+                    $individual_ctrl_no = implode("<br>", $num_list);
+                    $list['individual_num'] = $individual_ctrl_no;
+                    // 受領日
+                    //$receipt_date = implode("<br>", $day_list);
+                    //$list['order_res_ymd'] = $receipt_date;
+                }
+
+
+
+
 
 			array_push($wearer_item_list, $list);
 		}
 	}
 
 	// 未返却情報抽出
+    /*
 	$query_list = array();
 	array_push($query_list,"t_returned_plan_info.corporate_id = '".$auth['corporate_id']."'");
 	array_push($query_list,"t_returned_plan_info.rntl_cont_no = '".$cond['agreement_no']."'");
@@ -787,7 +919,7 @@ $app->post('/wearer/detail', function ()use($app){
 	// 未返却リストがある場合、既存の貸与リストにマージ
 	if (!empty($return_list)) {
 		$wearer_item_list = array_merge($wearer_item_list, $return_list);
-	}
+	}*/
 
     // 個体管理番号表示/非表示フラグ設定
     if (individual_flg($auth['corporate_id'], $cond['agreement_no']) == 1) {
@@ -796,6 +928,10 @@ $app->post('/wearer/detail', function ()use($app){
         $individual_flg = false;
     }
 
+
+    $json_list['individual_flg'] = $individual_flg;
 	$json_list['taiyo_list'] = $wearer_item_list;
+
+    //ChromePhp::log($json_list);
 	echo json_encode($json_list);
 });

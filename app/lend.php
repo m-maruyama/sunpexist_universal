@@ -114,6 +114,7 @@ $app->post('/lend/search', function ()use($app){
         array_push($query_list,"m_contract_resource.accnt_no = '$accnt_no'");
     }
 
+
 	//sql文字列を' AND 'で結合
 	$query = implode(' AND ', $query_list);
 	$sort_key ='';
@@ -169,7 +170,7 @@ $app->post('/lend/search', function ()use($app){
     $arg_str = "SELECT ";
     $arg_str .= " * ";
     $arg_str .= " FROM ";
-	$arg_str .= "(SELECT distinct on (t_delivery_goods_state_details.item_cd,t_delivery_goods_state_details.color_cd) ";
+	$arg_str .= "(SELECT distinct on (m_wearer_item.item_cd,m_wearer_item.color_cd,m_wearer_item.size_cd) ";
 	$arg_str .= "m_wearer_std.cster_emply_cd as as_cster_emply_cd,";
 	$arg_str .= "m_wearer_std.werer_name as as_werer_name,";
 	$arg_str .= "m_wearer_std.rntl_sect_cd as as_now_rntl_sect_cd,";
@@ -223,15 +224,19 @@ $app->post('/lend/search', function ()use($app){
 	$arg_str .= " WHERE ";
 	$arg_str .= $query;
 	$arg_str .= ") as distinct_table";
+    //ChromePhp::log($arg_str);
 	if (!empty($q_sort_key)) {
 		$arg_str .= " ORDER BY ";
 		$arg_str .= $q_sort_key." ".$order;
 	}
+	ChromePhp::log($arg_str);
 	$t_order = new TOrder();
 	$results = new Resultset(null, $t_order, $t_order->getReadConnection()->query($arg_str));
 	$result_obj = (array)$results;
 	$results_cnt = $result_obj["\0*\0_count"];
+    //ChromePhp::log($results);
 
+    //ChromePhp::log($results_cnt);
 	$paginator_model = new PaginatorModel(
 		array(
 			"data"  => $results,
@@ -465,12 +470,12 @@ $app->post('/lend/search', function ()use($app){
             $t_delivery_goods_state_details = new TDeliveryGoodsStateDetails();
             $del_gd_results = new Resultset(null, $t_delivery_goods_state_details, $t_delivery_goods_state_details->getReadConnection()->query($arg_str));
             $result_obj = (array)$del_gd_results;
-            $results_cnt = $result_obj["\0*\0_count"];
-            if ($results_cnt > 0) {
+            $results_cnt2 = $result_obj["\0*\0_count"];
+            if ($results_cnt2 > 0) {
                 $paginator_model = new PaginatorModel(
                     array(
                         "data"  => $del_gd_results,
-                        "limit" => $results_cnt,
+                        "limit" => $results_cnt2,
                         "page" => 1
                     )
                 );
@@ -576,6 +581,7 @@ $app->post('/lend/search', function ()use($app){
 	$page_list['page_number'] = $page['page_number'];
 	$page_list['total_records'] = $results_cnt;
 	$json_list['page'] = $page_list;
+    //ChromePhp::log($page_list);
 	$json_list['list'] = $all_list;
 	$json_list['individual_flag'] = $individual_flg;
 	echo json_encode($json_list);
