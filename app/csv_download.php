@@ -2722,9 +2722,14 @@ $app->post('/csv_download', function ()use($app){
 				// 出荷数
 				array_push($csv_body_list, $all_map["ship_qty"]);
 				// 個体管理番号
+                /*
 				if ($individual_flg) {
 					array_push($csv_body_list, $all_map["individual_ctrl_no"]);
-				}
+				}*/
+                // 個体管理番号
+                if ($individual_flg) {
+                    array_push($csv_body_list, $all_map["individual_num"]);
+                }
 				// 発注No
 				array_push($csv_body_list, $all_map["order_req_no"]);
 				// 発注行No
@@ -2880,7 +2885,7 @@ $app->post('/csv_download', function ()use($app){
         $arg_str = "SELECT ";
         $arg_str .= " * ";
         $arg_str .= " FROM ";
-        $arg_str .= "(SELECT distinct on (t_delivery_goods_state_details.item_cd,t_delivery_goods_state_details.color_cd) ";
+        $arg_str .= "(SELECT distinct on (m_wearer_item.item_cd,m_wearer_item.color_cd,m_wearer_item.size_cd,t_delivery_goods_state.ship_no) ";
         $arg_str .= "m_wearer_std.cster_emply_cd as as_cster_emply_cd,";
         $arg_str .= "m_wearer_std.werer_name as as_werer_name,";
         $arg_str .= "m_wearer_std.rntl_sect_cd as as_now_rntl_sect_cd,";
@@ -2937,8 +2942,7 @@ $app->post('/csv_download', function ()use($app){
         if (!empty($q_sort_key)) {
             $arg_str .= " ORDER BY ";
             $arg_str .= $q_sort_key." ".$order;
-        }
-        //ChromePhp::log($arg_str);
+        }        //ChromePhp::log($arg_str);
 		$t_order = new TOrder();
 		$results = new Resultset(null, $t_order, $t_order->getReadConnection()->query($arg_str));
 		// 取得オブジェクトを配列化→クラス内propety：protected値を取得する→リストカウント
@@ -3175,12 +3179,12 @@ $app->post('/csv_download', function ()use($app){
                 $t_delivery_goods_state_details = new TDeliveryGoodsStateDetails();
                 $del_gd_results = new Resultset(null, $t_delivery_goods_state_details, $t_delivery_goods_state_details->getReadConnection()->query($arg_str));
                 $result_obj = (array)$del_gd_results;
-                $results_cnt = $result_obj["\0*\0_count"];
-                if ($results_cnt > 0) {
+                $del_gd_results_cnt = $result_obj["\0*\0_count"];
+                if ($del_gd_results_cnt > 0) {
                     $paginator_model = new PaginatorModel(
                         array(
                             "data"  => $del_gd_results,
-                            "limit" => $results_cnt,
+                            "limit" => $del_gd_results_cnt,
                             "page" => 1
                         )
                     );
@@ -3198,10 +3202,10 @@ $app->post('/csv_download', function ()use($app){
                         }
                     }
                     // 個体管理番号
-                    $individual_ctrl_no = implode("<br>", $num_list);
+                    $individual_ctrl_no = implode(PHP_EOL, $num_list);
                     $list['individual_num'] = $individual_ctrl_no;
                     // 受領日
-                    $receipt_date = implode("<br>", $day_list);
+                    $receipt_date = implode(PHP_EOL, $day_list);
                     $list['order_res_ymd'] = $receipt_date;
                 }
 
@@ -3332,9 +3336,14 @@ $app->post('/csv_download', function ()use($app){
 				// 商品名
 				array_push($csv_body_list, $all_map["input_item_name"]);
 				// 個体管理番号
+                /*
 				if ($individual_flg) {
 					array_push($csv_body_list, '="'.$all_map["individual_ctrl_no"].'"');
-				}
+				}*/
+                // 個体管理番号
+                if ($individual_flg) {
+                    array_push($csv_body_list, $all_map["individual_num"]);
+                }
 				// 出荷数
 				array_push($csv_body_list, $all_map["ship_qty"]);
 				// 出荷日
