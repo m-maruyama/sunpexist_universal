@@ -84,7 +84,7 @@ $app->post('/wearer_end/search', function ()use($app){
     if (!$section_all_zero_flg) {
         $query_list[] = "wcr.corporate_id = '".$auth['corporate_id']."'";
         $query_list[] = "wcr.rntl_cont_no = '".$cond['agreement_no']."'";
-        $query_list[] = "wcr.accnt_no = '".$auth['accnt_no']."'";
+        //$query_list[] = "wcr.accnt_no = '".$auth['accnt_no']."'";
     }
     $query = implode(' AND ', $query_list);
 
