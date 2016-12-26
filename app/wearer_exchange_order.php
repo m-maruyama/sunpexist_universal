@@ -879,7 +879,7 @@ $app->post('/wearer_exchange/list', function ()use($app){
       foreach ($item_results as $item_result) {
           // 交換可能枚数
           if (individual_flg($auth['corporate_id'], $wearer_size_change_post['rntl_cont_no']) == "1") {
-              $list["exchange_possible_num"] = $result->as_std_input_qty;
+              $list["exchange_possible_num"] = $item_result->as_std_input_qty;
           }else{
               //数量 - 返却予定数が0以下だったら表示しない
               if(($item_result->as_quantity - $item_result->as_return_plan_qty) <= 0){
