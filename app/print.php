@@ -1266,6 +1266,7 @@ $app->post('/print/search', function ()use($app){
     $arg_str .= "t_delivery_goods_state.return_qty as as_return_qty,";
     $arg_str .= "t_delivery_goods_state_details.individual_ctrl_no as as_individual_ctrl_no,";
     $arg_str .= "t_delivery_goods_state_details.receipt_date as as_receipt_date,";
+    $arg_str .= "t_delivery_goods_state_details.return_plan__qty as as_return_plan__qty,";
     $arg_str .= "t_returned_plan_info.rntl_cont_no as as_rntl_cont_no,";
     $arg_str .= "m_contract.rntl_cont_name as as_rntl_cont_name";
     $arg_str .= " FROM t_order LEFT JOIN";
@@ -1458,8 +1459,12 @@ $app->post('/print/search', function ()use($app){
             } else {
                 $list['shin_item_code'] = "-";
             }
-            // 発注数
-            $list['order_qty'] = $result->as_order_qty;
+            // 返却予定数
+            $list['order_qty'] = '0';
+            if($result->as_order_qty){
+                $list['order_qty'] = $result->as_return_plan__qty;
+            }
+
             // メーカー受注番号
             if (!empty($result->as_rec_order_no)) {
                 $list['rec_order_no'] = $result->as_rec_order_no;
