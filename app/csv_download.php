@@ -718,7 +718,7 @@ $app->post('/csv_download', function ()use($app){
 				}
 				// 発注数
 				$list['order_qty'] = $result->as_order_qty;
-				// メーカー受注番号
+				// 受注番号
 				if (!empty($result->as_rec_order_no)) {
 					$list['rec_order_no'] = $result->as_rec_order_no;
 				} else {
@@ -726,7 +726,7 @@ $app->post('/csv_download', function ()use($app){
 				}
 				// 発注ステータス
 				$list['order_status'] = $result->as_order_status;
-				// メーカー伝票番号
+				// 伝票番号
 				if (!empty($result->as_ship_no)) {
 					$list['ship_no'] = $result->as_ship_no;
 				} else {
@@ -913,11 +913,11 @@ $app->post('/csv_download', function ()use($app){
 		array_push($header_2, "商品-色(サイズ-サイズ2)");
 		array_push($header_2, "商品名");
 		array_push($header_2, "発注数");
-		array_push($header_2, "メーカー受注番号");
+		array_push($header_2, "受注番号");
 		array_push($header_2, "出荷予定日");
 		array_push($header_2, "受注数");
 		array_push($header_2, "ステータス");
-		array_push($header_2, "メーカー伝票番号");
+		array_push($header_2, "伝票番号");
 		array_push($header_2, "出荷日");
 		array_push($header_2, "出荷数");
 		if ($individual_flg) {
@@ -953,7 +953,7 @@ $app->post('/csv_download', function ()use($app){
 				array_push($csv_body_list, $all_map["input_item_name"]);
 				// 発注数
 				array_push($csv_body_list, $all_map["order_qty"]);
-				// メーカー受注番号
+				// 受注番号
 				array_push($csv_body_list, $all_map["rec_order_no"]);
 				// 出荷予定日
 				array_push($csv_body_list, $all_map["send_shd_ymd"]);
@@ -961,7 +961,7 @@ $app->post('/csv_download', function ()use($app){
 				array_push($csv_body_list, $all_map["order_qty"]);
 				// ステータス
 				array_push($csv_body_list, $all_map["order_status_name"]);
-				// メーカー伝票番号
+				// 伝票番号
 				array_push($csv_body_list, $all_map["ship_no"]);
 				// 出荷日
 				array_push($csv_body_list, $all_map["ship_ymd"]);
@@ -1559,7 +1559,7 @@ $app->post('/csv_download', function ()use($app){
                 if($result->as_order_qty){
                     $list['order_qty'] = $result->as_return_plan__qty;
                 }
-				// メーカー受注番号
+				// 受注番号
 				if (!empty($result->as_rec_order_no)) {
 					$list['rec_order_no'] = $result->as_rec_order_no;
 				} else {
@@ -1574,7 +1574,7 @@ $app->post('/csv_download', function ()use($app){
                 if($result->as_return_qty){
                     $list['return_qty'] = $result->as_return_qty;
                 }
-				// メーカー伝票番号
+				// 伝票番号
 				if (!empty($result->as_ship_no)) {
 					$list['ship_no'] = $result->as_ship_no;
 				} else {
@@ -1819,11 +1819,11 @@ $app->post('/csv_download', function ()use($app){
 		array_push($header_2, "商品-色(サイズ-サイズ2)");
 		array_push($header_2, "商品名");
 		array_push($header_2, "返却予定数");
-		array_push($header_2, "メーカー受注番号");
+		array_push($header_2, "受注番号");
 		array_push($header_2, "返却予定日");
 		array_push($header_2, "返却数");
 		array_push($header_2, "ステータス");
-		array_push($header_2, "メーカー伝票番号");
+		array_push($header_2, "伝票番号");
 		array_push($header_2, "出荷日");
 		array_push($header_2, "出荷数");
 		if ($individual_flg) {
@@ -1859,7 +1859,7 @@ $app->post('/csv_download', function ()use($app){
 				array_push($csv_body_list, $all_map["input_item_name"]);
 				// 発注数
 				array_push($csv_body_list, $all_map["order_qty"]);
-				// メーカー受注番号
+				//受注番号
 				array_push($csv_body_list, $all_map["rec_order_no"]);
 				// 返却予定日
 				array_push($csv_body_list, $all_map["re_order_date"]);
@@ -1867,7 +1867,7 @@ $app->post('/csv_download', function ()use($app){
 				array_push($csv_body_list, $all_map["return_qty"]);
 				// ステータス
 				array_push($csv_body_list, $all_map["return_status_name"]);
-				// メーカー伝票番号
+				// 伝票番号
 				array_push($csv_body_list, $all_map["ship_no"]);
 				// 出荷日
 				array_push($csv_body_list, $all_map["ship_ymd"]);
@@ -2284,7 +2284,7 @@ $app->post('/csv_download', function ()use($app){
 			if($sort_key == 'receipt_date'){
 				$q_sort_key = 'as_receipt_date';
 			}
-			// メーカー伝票番号
+			// 伝票番号
 			if($sort_key == 'maker_rec_no'){
 				$q_sort_key = 'as_rec_order_no';
 			}
@@ -2336,7 +2336,7 @@ $app->post('/csv_download', function ()use($app){
 			if($sort_key == 'send_ymd'){
 				$q_sort_key = 'as_ship_ymd';
 			}
-			// メーカー受注番号
+			// 受注番号
 			if($sort_key == 'maker_send_no'){
 				$q_sort_key = 'as_ship_no';
 			}
@@ -2442,7 +2442,7 @@ $app->post('/csv_download', function ()use($app){
 				$list['receipt_status'] = $result->as_receipt_status;
 				// 受領日
 				$list['receipt_date'] = $result->as_receipt_date;
-				// メーカー伝票番号
+				// 伝票番号
 				if (!empty($result->as_ship_no)) {
 					$list['ship_no'] = $result->as_ship_no;
 				} else {
@@ -2553,7 +2553,7 @@ $app->post('/csv_download', function ()use($app){
 				$list['order_req_ymd'] = $result->as_order_req_ymd;
 				// 出荷日
 				$list['ship_ymd'] = $result->as_ship_ymd;
-				// メーカー受注番号
+				// 受注番号
 				if (!empty($result->as_rec_order_no)) {
 					$list['rec_order_no'] = $result->as_rec_order_no;
 				} else {
@@ -2688,7 +2688,7 @@ $app->post('/csv_download', function ()use($app){
 
 		$header_2 = array();
 		array_push($header_2, "受領日");
-		array_push($header_2, "メーカー伝票番号");
+		array_push($header_2, "伝票番号");
 		array_push($header_2, "商品-色(サイズ-サイズ2)");
 		array_push($header_2, "商品名");
 		array_push($header_2, "出荷数");
@@ -2705,7 +2705,7 @@ $app->post('/csv_download', function ()use($app){
 		array_push($header_2, "発注区分");
 		array_push($header_2, "発注日");
 		array_push($header_2, "出荷日");
-		array_push($header_2, "メーカー受注番号");
+		array_push($header_2, "受注番号");
 		array_push($csv_datas, $header_2);
 
 		// ボディ作成
@@ -2714,7 +2714,7 @@ $app->post('/csv_download', function ()use($app){
 				$csv_body_list = array();
 				// 受領日
 				array_push($csv_body_list, $all_map["receipt_date"]);
-				// メーカー伝票番号
+				// 伝票番号
 				array_push($csv_body_list, $all_map["ship_no"]);
 				// 商品-色(サイズ-サイズ2)
 				array_push($csv_body_list, $all_map["shin_item_code"]);
@@ -2751,7 +2751,7 @@ $app->post('/csv_download', function ()use($app){
 				array_push($csv_body_list, $all_map["order_req_ymd"]);
 				// 出荷日
 				array_push($csv_body_list, $all_map["ship_ymd"]);
-				// メーカー受注番号
+				// 受注番号
 				array_push($csv_body_list, $all_map["rec_order_no"]);
 
 				// CSVレコード配列にマージ
@@ -2867,11 +2867,11 @@ $app->post('/csv_download', function ()use($app){
 			if($sort_key == 'order_req_no'){
 				$q_sort_key = 'as_order_req_no';
 			}
-			// メーカー受注番号
+			// 受注番号
 			if($sort_key == 'maker_rec_no'){
 				$q_sort_key = 'as_rec_order_no';
 			}
-			// メーカー伝票番号
+			// 伝票番号
 			if($sort_key == 'maker_send_no'){
 				$q_sort_key = 'as_ship_no';
 			}
@@ -3018,13 +3018,13 @@ $app->post('/csv_download', function ()use($app){
 				} else {
 					$list['order_req_no'] = "-";
 				}
-				// メーカー受注番号
+				// 受注番号
 				if (!empty($result->as_rec_order_no)) {
 					$list['rec_order_no'] = $result->as_rec_order_no;
 				} else {
 					$list['rec_order_no'] = "-";
 				}
-				// メーカー伝票番号
+				// 伝票番号
 				if (!empty($result->as_ship_no)) {
 					$list['ship_no'] = $result->as_ship_no;
 				} else {
@@ -3313,8 +3313,8 @@ $app->post('/csv_download', function ()use($app){
 		array_push($header_2, "出荷日");
 		array_push($header_2, "返却予定日");
 		array_push($header_2, "発注No");
-		array_push($header_2, "メーカー受注番号");
-		array_push($header_2, "メーカー伝票番号");
+		array_push($header_2, "受注番号");
+		array_push($header_2, "伝票番号");
 		array_push($csv_datas, $header_2);
 
 		// ボディ作成
@@ -3354,9 +3354,9 @@ $app->post('/csv_download', function ()use($app){
 				array_push($csv_body_list, $all_map["re_order_date"]);
 				// 発注No
 				array_push($csv_body_list, $all_map["order_req_no"]);
-				// メーカー受注番号
+				// 受注番号
 				array_push($csv_body_list, $all_map["rec_order_no"]);
-				// メーカー伝票番号
+				// 伝票番号
 				array_push($csv_body_list, $all_map["ship_no"]);
 
 				// CSVレコード配列にマージ
