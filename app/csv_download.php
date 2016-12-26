@@ -845,7 +845,7 @@ $app->post('/csv_download', function ()use($app){
 					$day_list = array();
 					foreach ($del_gd_results as $del_gd_result) {
 						array_push($num_list, $del_gd_result->individual_ctrl_no);
-						if (!empty($del_gd_result->receipt_date)) {
+						if ($del_gd_result->receipt_date !== null) {
 							array_push($day_list, date('Y/m/d',strtotime($del_gd_result->receipt_date)));
 						} else {
 							array_push($day_list, "-");
@@ -3195,7 +3195,7 @@ $app->post('/csv_download', function ()use($app){
                     $day_list = array();
                     foreach ($del_gd_results as $del_gd_result) {
                         array_push($num_list, $del_gd_result->individual_ctrl_no);
-                        if (!empty($del_gd_result->receipt_date)) {
+                        if ($del_gd_result->receipt_date !== null) {
                             array_push($day_list, date('Y/m/d',strtotime($del_gd_result->receipt_date)));
                         } else {
                             array_push($day_list, "-");

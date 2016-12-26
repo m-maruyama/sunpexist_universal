@@ -831,6 +831,7 @@ $app->post('/history/search', function ()use($app){
 			$arg_str .= "t_delivery_goods_state_details";
 			$arg_str .= " WHERE ";
 			$arg_str .= $query;
+            //ChromePhp::log($arg_str);
 			$t_delivery_goods_state_details = new TDeliveryGoodsStateDetails();
 			$del_gd_results = new Resultset(null, $t_delivery_goods_state_details, $t_delivery_goods_state_details->getReadConnection()->query($arg_str));
 			$result_obj = (array)$del_gd_results;
@@ -850,7 +851,8 @@ $app->post('/history/search', function ()use($app){
 				$day_list = array();
 				foreach ($del_gd_results as $del_gd_result) {
 					array_push($num_list, $del_gd_result->individual_ctrl_no);
-					if (!empty($del_gd_result->receipt_date)) {
+
+                    if ($del_gd_result->receipt_date !== null) {
 						array_push($day_list, date('Y/m/d',strtotime($del_gd_result->receipt_date)));
 					} else {
 						array_push($day_list, "-");
@@ -863,7 +865,6 @@ $app->post('/history/search', function ()use($app){
 				$receipt_date = implode("<br>", $day_list);
 				$list['order_res_ymd'] = $receipt_date;
 			}
-
 			array_push($all_list,$list);
 		}
 	}
