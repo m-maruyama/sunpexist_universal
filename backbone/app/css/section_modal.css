@@ -9,3 +9,8 @@
 .select_section_button {
     padding: 1px!important;
 }
+.modal .close {
+    font-size: 35px;
+    line-height: 0.3;
+    opacity: 0.8;
+}
