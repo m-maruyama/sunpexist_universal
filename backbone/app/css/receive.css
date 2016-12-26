@@ -631,3 +631,6 @@ hr{
 .blue {
     background: #e2eaff;
 }
+.receive_button {
+    width:120px;
+}
