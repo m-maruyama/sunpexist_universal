@@ -542,6 +542,9 @@ $app->post('/change_section', function () use ($app) {
         $list['cust_to_brnch_name1'] = $result->cust_to_brnch_name1;
         $list['cust_to_brnch_name2'] = $result->cust_to_brnch_name2;
         $list['zip_no'] = $result->zip_no;
+        if (!empty($list['zip_no'])) {
+          $list['zip_no'] = preg_replace('/^(\d{3})(\d{4})$/', '$1-$2', $list['zip_no']);
+        }
         $list['address'] = $result->address1.$result->address2.$result->address3.$result->address4;
         array_push($m_shipment_to_list, $list);
     }

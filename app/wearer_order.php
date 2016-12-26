@@ -228,6 +228,9 @@ $app->post('/wearer_order_info', function ()use($app){
         $json_list['ship_to_cd'] = $m_shipment_to_result->ship_to_cd.','.$m_shipment_to_result->ship_to_brnch_cd;
         $json_list['cust_to_brnch_name'] = $m_shipment_to_result->cust_to_brnch_name1.$m_shipment_to_result->cust_to_brnch_name2;
         $json_list['zip_no'] = $m_shipment_to_result->zip_no;
+        if (!empty($json_list['zip_no'])) {
+          $json_list['zip_no'] = preg_replace('/^(\d{3})(\d{4})$/', '$1-$2', $json_list['zip_no']);
+        }
         if($m_shipment_to_result->address1){
             $json_list['address1'] = $m_shipment_to_result->address1;
         }else{
