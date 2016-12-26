@@ -1042,10 +1042,13 @@ $app->post('/wearer_exchange/list', function ()use($app){
           $paginator = $paginator_model->getPaginate();
           $t_delivery_goods_state_details_results = $paginator->items;
           $i = 0;
-          foreach ($t_delivery_goods_state_details_results as $t_delivery_goods_state_details_result) {          //数量 - 返却予定数が0以下だったら表示しない
+          $individual_cnt = 0;
+          foreach ($t_delivery_goods_state_details_results as $t_delivery_goods_state_details_result) {
+              //数量 - 返却予定数が0以下だったら表示しない
               if(($t_delivery_goods_state_details_result->quantity - $t_delivery_goods_state_details_result->return_plan__qty) <= 0){
                   continue;
               }
+              $individual_cnt += 1;
             // サイズ追加フラグ有/無で表示制限
             if ($item_result->as_size_add_flg == "1") {
               $element["checked"] = "";
@@ -1075,6 +1078,11 @@ $app->post('/wearer_exchange/list', function ()use($app){
             }
             array_push($list["individual_chk"], $element);
           }
+            if($individual_cnt <= 0){
+                $arr_num--;
+                $list_cnt--;
+                continue;
+            }
           // 個体管理番号数
           $list["individual_cnt"] = count($list["individual_ctrl_no"]);
           // 個体管理番号(表示用)
@@ -1453,10 +1461,13 @@ $app->post('/wearer_exchange/list', function ()use($app){
           $paginator = $paginator_model->getPaginate();
           $t_delivery_goods_state_details_results = $paginator->items;
           $i = 0;
-          foreach ($t_delivery_goods_state_details_results as $t_delivery_goods_state_details_result) {          //数量 - 返却予定数が0以下だったら表示しない
-              if(($t_delivery_goods_state_details_result->quantity - $t_delivery_goods_state_details_result->return_plan__qty) <= 0){
-                  continue;
-              }
+          $individual_cnt = 0;
+          foreach ($t_delivery_goods_state_details_results as $t_delivery_goods_state_details_result) {
+            //数量 - 返却予定数が0以下だったら表示しない
+            if(($t_delivery_goods_state_details_result->quantity - $t_delivery_goods_state_details_result->return_plan__qty) <= 0){
+                continue;
+            }
+            $individual_cnt += 1;
             array_push($list["individual_ctrl_no"], $t_delivery_goods_state_details_result->individual_ctrl_no);
             $element["name_no"] = $list["arr_num"];
             $element["individual_ctrl_no"] = $t_delivery_goods_state_details_result->individual_ctrl_no;
@@ -1473,6 +1484,11 @@ $app->post('/wearer_exchange/list', function ()use($app){
               $element["br"] = "";
             }
             array_push($list["individual_chk"], $element);
+          }
+          if($individual_cnt <= 0){
+              $arr_num--;
+              $list_cnt--;
+              continue;
           }
           // 個体管理番号数
           $list["individual_cnt"] = count($list["individual_ctrl_no"]);
