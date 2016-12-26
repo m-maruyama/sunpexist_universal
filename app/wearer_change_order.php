@@ -286,64 +286,204 @@ $app->post('/sex_kbn_change', function ()use($app){
 $app->post('/section_change', function ()use($app){
     $params = json_decode(file_get_contents("php://input"), true);
 
+    $json_list = array();
+
     // アカウントセッション取得
-    $auth = $app->session->get("auth");
-    //ChromePhp::LOG($auth);
+    $auth = $app->session->get('auth');
 
-    // 前画面セッション取得
-    $wearer_chg_post = $app->session->get("wearer_chg_post");
-    //ChromePhp::LOG($wearer_chg_post);
-
+    // 契約リソースマスタ参照
     $query_list = array();
     $list = array();
     $all_list = array();
-    $json_list = array();
-
-    array_push($query_list, "corporate_id = '".$auth['corporate_id']."'");
-    array_push($query_list, "rntl_cont_no = '".$wearer_chg_post['rntl_cont_no']."'");
+    if (!empty($params["corporate_flg"])) {
+        if (!empty($params["corporate"])) {
+            $query_list[] = "corporate_id = '".$params["corporate"]."'";
+        }
+    } else {
+        $query_list[] = "corporate_id = '".$auth["corporate_id"]."'";
+    }
+    if (!empty($params['agreement_no'])) {
+        $query_list[] = "rntl_cont_no = '".$params['agreement_no']."'";
+    } else {
+        if (empty($params["corporate_flg"])) {
+            $query_list[] = "rntl_cont_no = '".$app->session->get('first_rntl_cont_no')."'";
+        }
+    }
+    $query_list[] = "accnt_no = '".$auth["accnt_no"]."'";
     $query = implode(' AND ', $query_list);
 
-    $arg_str = 'SELECT ';
+    $arg_str = '';
+    $arg_str .= 'SELECT ';
     $arg_str .= ' distinct on (rntl_sect_cd) *';
-    $arg_str .= ' FROM m_section';
+    $arg_str .= ' FROM ';
+    $arg_str .= 'm_contract_resource';
     $arg_str .= ' WHERE ';
     $arg_str .= $query;
-    $arg_str .= ' ORDER BY rntl_sect_cd asc';
-
-    $m_section = new MSection();
-    $results = new Resultset(NULL, $m_section, $m_section->getReadConnection()->query($arg_str));
+    $m_contract_resource = new MContractResource();
+    $results = new Resultset(null, $m_contract_resource, $m_contract_resource->getReadConnection()->query($arg_str));
     $results_array = (array) $results;
     $results_cnt = $results_array["\0*\0_count"];
-    //ChromePhp::LOG($results_cnt);
-
     if ($results_cnt > 0) {
-      $paginator_model = new PaginatorModel(
-    		array(
-    			"data"  => $results,
-    			"limit" => $results_cnt,
-    			"page" => 1
-    		)
-    	);
-      $paginator = $paginator_model->getPaginate();
-  		$results = $paginator->items;
-
-      foreach ($results as $result) {
-        $list['rntl_sect_cd'] = $result->rntl_sect_cd;
-        $list['rntl_sect_name'] = $result->rntl_sect_name;
-        // 初期選択状態版を生成
-        if ($list['rntl_sect_cd'] == $wearer_chg_post['rntl_sect_cd']) {
-          $list['selected'] = 'selected';
-        } else {
-          $list['selected'] = '';
+        $paginator_model = new PaginatorModel(
+            array(
+                "data"  => $results,
+                "limit" => $results_cnt,
+                "page" => 1
+            )
+        );
+        $paginator = $paginator_model->getPaginate();
+        $results = $paginator->items;
+        foreach ($results as $result) {
+            $all_list[] = $result->rntl_sect_cd;
         }
+    }
+    // ※0埋めチェック後、それぞれ検索処理分岐
+    if (in_array("0000000000", $all_list)) {
+        $query_list = array();
+        $list = array();
+        $all_list = array();
+        if (!empty($params["corporate_flg"])) {
+            if (!empty($params["corporate"])) {
+                $query_list[] = "corporate_id = '".$params["corporate"]."'";
+            }
+        } else {
+            $query_list[] = "corporate_id = '".$auth["corporate_id"]."'";
+        }
+        if (!empty($params['agreement_no'])) {
+            $query_list[] = "rntl_cont_no = '".$params['agreement_no']."'";
+        } else {
+            if (empty($params["corporate_flg"])) {
+                $query_list[] = "rntl_cont_no = '".$app->session->get('first_rntl_cont_no')."'";
+            }
+        }
+        $query = implode(' AND ', $query_list);
 
-        array_push($all_list, $list);
-      }
+        $arg_str = '';
+        $arg_str .= 'SELECT ';
+        $arg_str .= ' distinct on (rntl_sect_cd) *';
+        $arg_str .= ' FROM ';
+        $arg_str .= 'm_section';
+        if (!empty($query)) {
+            $arg_str .= ' WHERE ';
+            $arg_str .= $query;
+        }
+        $arg_str .= ' ORDER BY rntl_sect_cd asc';
+        $m_section = new MSection();
+        $results = new Resultset(null, $m_section, $m_section->getReadConnection()->query($arg_str));
+        $results_array = (array) $results;
+        $results_cnt = $results_array["\0*\0_count"];
+
+        if ($results_cnt > 0) {
+            $list['rntl_sect_cd'] = null;
+            $list['rntl_sect_name'] = '全て';
+            $all_list[] = $list;
+
+            $paginator_model = new PaginatorModel(
+                array(
+                    "data"  => $results,
+                    "limit" => $results_cnt,
+                    "page" => 1
+                )
+            );
+            $paginator = $paginator_model->getPaginate();
+            $results = $paginator->items;
+
+            foreach ($results as $result) {
+                $list['rntl_sect_cd'] = $result->rntl_sect_cd;
+                $list['rntl_sect_name'] = $result->rntl_sect_name;
+                if (!empty($params['section'])) {
+                    if ($list['rntl_sect_cd'] == $params['section']) {
+                        $list['selected'] = "selected";
+                    } else {
+                        $list['selected'] = "";
+                    }
+                } else {
+                    $list['selected'] = "";
+                }
+
+                $all_list[] = $list;
+            }
+        } else {
+            $list['rntl_sect_cd'] = null;
+            $list['rntl_sect_name'] = '';
+            $list['selected'] = "";
+            $all_list[] = $list;
+        }
     } else {
-      $list['rntl_sect_cd'] = NULL;
-      $list['rntl_sect_name'] = '';
-      $list['selected'] = '';
-      array_push($all_list, $list);
+        $query_list = array();
+        $list = array();
+        $all_list = array();
+        if (!empty($params["corporate_flg"])) {
+            if (!empty($params["corporate"])) {
+                $query_list[] = "m_contract_resource.corporate_id = '".$params["corporate"]."'";
+            }
+        } else {
+            $query_list[] = "m_contract_resource.corporate_id = '".$auth["corporate_id"]."'";
+        }
+        if (!empty($params['agreement_no'])) {
+            $query_list[] = "m_contract_resource.rntl_cont_no = '".$params['agreement_no']."'";
+        } else {
+            if (empty($params["corporate_flg"])) {
+                $query_list[] = "m_contract_resource.rntl_cont_no = '".$app->session->get('first_rntl_cont_no')."'";
+            }
+        }
+        $query_list[] = "m_contract_resource.accnt_no = '".$auth["accnt_no"]."'";
+        $query = implode(' AND ', $query_list);
+
+        $arg_str = '';
+        $arg_str .= 'SELECT ';
+        $arg_str .= 'm_section.rntl_sect_cd as rntl_sect_cd,';
+        $arg_str .= 'm_section.rntl_sect_name as rntl_sect_name';
+        $arg_str .= ' FROM ';
+        $arg_str .= 'm_contract_resource';
+        $arg_str .= ' INNER JOIN m_section';
+        $arg_str .= ' ON m_contract_resource.corporate_id = m_section.corporate_id';
+        $arg_str .= ' AND m_contract_resource.rntl_cont_no = m_section.rntl_cont_no';
+        $arg_str .= ' AND m_contract_resource.rntl_sect_cd = m_section.rntl_sect_cd';
+        $arg_str .= ' WHERE ';
+        $arg_str .= $query;
+        $arg_str .= ' ORDER BY m_section.rntl_sect_cd asc';
+        $m_contract_resource = new MContractResource();
+        $results = new Resultset(null, $m_contract_resource, $m_contract_resource->getReadConnection()->query($arg_str));
+        $results_array = (array) $results;
+        $results_cnt = $results_array["\0*\0_count"];
+
+        if ($results_cnt > 0) {
+            $list['rntl_sect_cd'] = null;
+            $list['rntl_sect_name'] = '全て';
+            $all_list[] = $list;
+
+            $paginator_model = new PaginatorModel(
+                array(
+                    "data"  => $results,
+                    "limit" => $results_cnt,
+                    "page" => 1
+                )
+            );
+            $paginator = $paginator_model->getPaginate();
+            $results = $paginator->items;
+
+            foreach ($results as $result) {
+                $list['rntl_sect_cd'] = $result->rntl_sect_cd;
+                $list['rntl_sect_name'] = $result->rntl_sect_name;
+                if (!empty($params['section'])) {
+                    if ($list['rntl_sect_cd'] == $params['section']) {
+                        $list['selected'] = "selected";
+                    } else {
+                        $list['selected'] = "";
+                    }
+                } else {
+                    $list['selected'] = "";
+                }
+
+                $all_list[] = $list;
+            }
+        } else {
+            $list['rntl_sect_cd'] = null;
+            $list['rntl_sect_name'] = '';
+            $list['selected'] = "";
+            $all_list[] = $list;
+        }
     }
 
     $json_list['section_list'] = $all_list;
