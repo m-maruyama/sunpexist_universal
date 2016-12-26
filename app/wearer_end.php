@@ -54,7 +54,7 @@ $app->post('/wearer_end/search', function ()use($app){
             $all_list['a'][] = $result->rntl_sect_cd;
         }
     }
-    if (in_array("0000000000", $all_list)) {
+    if (in_array("0000000000", $all_list['a'])) {
         $section_all_zero_flg = true;
     } else {
         $section_all_zero_flg = false;

@@ -123,22 +123,15 @@ $app->post('/unreturn/search', function ()use($app){
             END 
             AS DATE) <= CAST('".$cond['order_day_to']."' AS DATE)");
 	}
-	//返却日from
-	if(!empty($cond['return_day_from'])){
-        array_push($query_list,"CAST(CASE 
-            WHEN t_returned_plan_info.return_date = '00000000' THEN NULL 
-            ELSE t_returned_plan_info.return_date 
-            END 
-            AS DATE) >= CAST('".$cond['return_day_from']."' AS DATE)");
-	}
-	//返却日to
-	if(!empty($cond['return_day_to'])){
-        array_push($query_list,"CAST(CASE 
-            WHEN t_returned_plan_info.return_date = '00000000' THEN NULL 
-            ELSE t_returned_plan_info.return_date 
-            END 
-            AS DATE) <= CAST('".$cond['return_day_to']."' AS DATE)");
-	}
+    //返却日from
+    if(!empty($cond['receipt_day_from'])){
+        array_push($query_list,"CAST(t_returned_plan_info.return_date AS DATE) >= CAST('".$cond['return_day_from']."' AS DATE)");
+    }
+    //返却日to
+    if(!empty($cond['receipt_day_to'])) {
+        array_push($query_list, "CAST(t_returned_plan_info.return_date AS DATE) <= CAST('" . $cond['return_day_to'] . "' AS DATE)");
+    }
+
 	//個体管理番号
 	if(!empty($cond['individual_number'])){
 		array_push($query_list,"t_returned_plan_info.individual_ctrl_no LIKE '".$cond['individual_number']."%'");
