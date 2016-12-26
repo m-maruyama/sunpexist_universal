@@ -1015,6 +1015,7 @@ $app->post('/wearer_exchange/list', function ()use($app){
           $query_list[] = "t_delivery_goods_state_details.color_cd = '".$list["color_cd"]."'";
           $query_list[] = "t_delivery_goods_state_details.size_cd = '".$list["now_size_cd"]."'";
           $query_list[] = "t_delivery_goods_state_details.rtn_ok_flg = '1'";
+          $query_list[] = "t_delivery_goods_state_details.receipt_status = '2'";
           $query = implode(' AND ', $query_list);
 
           $arg_str = "";
@@ -1423,6 +1424,7 @@ $app->post('/wearer_exchange/list', function ()use($app){
           $query_list[] = "t_delivery_goods_state_details.color_cd = '".$list["color_cd"]."'";
           $query_list[] = "t_delivery_goods_state_details.size_cd = '".$list["now_size_cd"]."'";
           $query_list[] = "t_delivery_goods_state_details.rtn_ok_flg = '1'";
+          $query_list[] = "t_delivery_goods_state_details.receipt_status = '2'";
           $query = implode(' AND ', $query_list);
 
           $arg_str = "";
@@ -1616,6 +1618,8 @@ $app->post('/wearer_exchange/add_size', function ()use($app){
   $query_list[] = "t_delivery_goods_state_details.item_cd = '".$cond['item_cd']."'";
   $query_list[] = "t_delivery_goods_state_details.color_cd = '".$cond['color_cd']."'";
   $query_list[] = "t_delivery_goods_state_details.size_cd = '".$cond['size_cd']."'";
+  $query_list[] = "t_delivery_goods_state_details.rtn_ok_flg = '1'";
+  $query_list[] = "t_delivery_goods_state_details.receipt_status = '2'";
   $query = implode(' AND ', $query_list);
 
   $arg_str = "";
@@ -1746,6 +1750,7 @@ $app->post('/wearer_exchange/add_size', function ()use($app){
       $query_list[] = "t_delivery_goods_state_details.color_cd = '".$list["color_cd"]."'";
       $query_list[] = "t_delivery_goods_state_details.size_cd = '".$list["now_size_cd"]."'";
       $query_list[] = "t_delivery_goods_state_details.rtn_ok_flg = '1'";
+      $query_list[] = "t_delivery_goods_state_details.receipt_status = '2'";
       $query = implode(' AND ', $query_list);
 
       $arg_str = "";

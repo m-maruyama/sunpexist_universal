@@ -866,6 +866,7 @@ $app->post('/wearer_other_change_list', function ()use($app){
                     array_push($query_list, "t_delivery_goods_state_details.color_cd = '".$list["color_cd"]."'");
                     array_push($query_list, "t_delivery_goods_state_details.size_cd = '".$list["size_cd"]."'");
                     array_push($query_list, "t_delivery_goods_state_details.rtn_ok_flg = '1'");
+                    array_push($query_list, "t_delivery_goods_state_details.receipt_status = '2'");
                     $query = implode(' AND ', $query_list);
 
                     $arg_str = "";
@@ -1099,6 +1100,7 @@ $app->post('/wearer_other_change_list', function ()use($app){
                     array_push($query_list, "t_delivery_goods_state_details.color_cd = '".$list["color_cd"]."'");
                     array_push($query_list, "t_delivery_goods_state_details.size_cd = '".$list["size_cd"]."'");
                     array_push($query_list, "t_delivery_goods_state_details.rtn_ok_flg = '1'");
+                    array_push($query_list, "t_delivery_goods_state_details.receipt_status = '2'");
                     $query = implode(' AND ', $query_list);
 
                     $arg_str = "";
