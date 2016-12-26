@@ -1312,7 +1312,6 @@ $app->post('/print/search', function ()use($app){
         $arg_str .= " ORDER BY ";
         $arg_str .= $q_sort_key." ".$order;
     }
-    //ChromePhp::log($arg_str);
 
     $t_order = new TOrder();
     $results = new Resultset(null, $t_order, $t_order->getReadConnection()->query($arg_str));
@@ -1630,6 +1629,10 @@ $app->post('/print/search', function ()use($app){
             $t_returned_results = new Resultset(null, $t_returned_plan_info, $t_returned_plan_info->getReadConnection()->query($arg_str));
             $result_obj = (array)$t_returned_results;
             $results_cnt3 = $result_obj["\0*\0_count"];
+            if (individual_flg($auth['corporate_id'], $cond['agreement_no']) == 1) {
+                //出荷数
+                $list['ship_qty'] = $results_cnt3;
+            }
             if ($results_cnt3 > 0) {
                 $paginator_model = new PaginatorModel(
                     array(

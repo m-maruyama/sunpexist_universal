@@ -434,7 +434,7 @@ $app->post('/unreturn/search', function ()use($app){
     $arg_str .= " * ";
     $arg_str .= " FROM ";
 //	$arg_str .= "(SELECT ";
-    $arg_str .= "(SELECT distinct on (t_returned_plan_info.item_cd, t_returned_plan_info.color_cd) ";
+    $arg_str .= "(SELECT distinct on (t_returned_plan_info.item_cd, t_returned_plan_info.color_cd, t_returned_plan_info.size_cd) ";
     $arg_str .= "t_returned_plan_info.order_req_no as as_order_req_no,";
     $arg_str .= "t_order.order_req_ymd as as_order_req_ymd,";
     $arg_str .= "t_returned_plan_info.order_sts_kbn as as_order_sts_kbn,";
@@ -455,7 +455,7 @@ $app->post('/unreturn/search', function ()use($app){
     $arg_str .= "t_delivery_goods_state.rec_order_no as as_rec_order_no,";
     $arg_str .= "t_delivery_goods_state.ship_no as as_ship_no,";
     $arg_str .= "t_delivery_goods_state.ship_ymd as as_ship_ymd,";
-    $arg_str .= "t_delivery_goods_state.ship_qty as as_ship_qty,";
+    $arg_str .= "t_order_state.ship_qty as as_ship_qty,";
     $arg_str .= "t_delivery_goods_state.return_qty as as_return_qty,";
     $arg_str .= "t_delivery_goods_state_details.individual_ctrl_no as as_individual_ctrl_no,";
     $arg_str .= "t_delivery_goods_state_details.receipt_date as as_receipt_date,";
@@ -465,7 +465,7 @@ $app->post('/unreturn/search', function ()use($app){
     $arg_str .= " FROM t_order LEFT JOIN";
     $arg_str .= " (t_returned_plan_info LEFT JOIN";
     $arg_str .= " (t_order_state LEFT JOIN ";
-    $arg_str .= " (t_delivery_goods_state LEFT JOIN t_delivery_goods_state_details ON t_delivery_goods_state.ship_no = t_delivery_goods_state_details.ship_no)";
+    $arg_str .= " (t_delivery_goods_state LEFT JOIN t_delivery_goods_state_details ON t_delivery_goods_state.ship_no = t_delivery_goods_state_details.ship_no AND t_delivery_goods_state.ship_line_no = t_delivery_goods_state_details.ship_line_no)";
     $arg_str .= " ON t_order_state.t_order_state_comb_hkey = t_delivery_goods_state.t_order_state_comb_hkey)";
     $arg_str .= " ON t_returned_plan_info.order_req_no = t_order_state.order_req_no)";
     $arg_str .= " ON t_order.order_req_no = t_returned_plan_info.order_req_no";
@@ -494,7 +494,8 @@ $app->post('/unreturn/search', function ()use($app){
 		$arg_str .= " ORDER BY ";
 		$arg_str .= $q_sort_key." ".$order;
 	}
-	$t_order = new TOrder();
+
+    $t_order = new TOrder();
 	$results = new Resultset(null, $t_order, $t_order->getReadConnection()->query($arg_str));
 	$result_obj = (array)$results;
 	$results_cnt = $result_obj["\0*\0_count"];
@@ -817,6 +818,12 @@ $app->post('/unreturn/search', function ()use($app){
             $t_returned_results = new Resultset(null, $t_returned_plan_info, $t_returned_plan_info->getReadConnection()->query($arg_str));
             $result_obj = (array)$t_returned_results;
             $results_cnt3 = $result_obj["\0*\0_count"];
+
+            if (individual_flg($auth['corporate_id'], $cond['agreement_no']) == 1) {
+                //出荷数
+                $list['ship_qty'] = $results_cnt3;
+            }
+
             if ($results_cnt3 > 0) {
                 $paginator_model = new PaginatorModel(
                     array(
