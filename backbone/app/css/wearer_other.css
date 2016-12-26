@@ -620,3 +620,6 @@ label.allCheck {
 .table span {
     color: #c00;
 }
+label {
+    margin-bottom: 0;
+}
