@@ -328,6 +328,7 @@ $app->post('/wearer_input', function () use ($app) {
     $m_job_type_results = MJobType::query()
         ->where($query)
         ->columns('*')
+        ->orderby('CAST(job_type_cd AS INTEGER) asc')
         ->execute();
     foreach ($m_job_type_results as $m_job_type_result) {
       $list['job_type_cd'] = $m_job_type_result->job_type_cd;

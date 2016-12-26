@@ -588,11 +588,11 @@ $app->post('/job_type', function () use ($app) {
   $query = implode(' AND ', $query_list);
 
   $arg_str = 'SELECT ';
-  $arg_str .= ' distinct on (job_type_cd) *';
+  $arg_str .= ' *';
   $arg_str .= ' FROM m_job_type';
   $arg_str .= ' WHERE ';
   $arg_str .= $query;
-  $arg_str .= ' ORDER BY job_type_cd asc';
+  $arg_str .= ' ORDER BY CAST(job_type_cd AS INTEGER) asc';
 
   $m_job_type = new MJobType();
   $results = new Resultset(null, $m_job_type, $m_job_type->getReadConnection()->query($arg_str));
