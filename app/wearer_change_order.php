@@ -2085,8 +2085,7 @@ $app->post('/wearer_change/info', function ()use($app){
 
          $arg_str = "";
          $arg_str = "SELECT ";
-         $arg_str .= "individual_ctrl_no,";
-         $arg_str .= "rtn_ok_flg";
+         $arg_str .= "*";
          $arg_str .= " FROM ";
          $arg_str .= "t_delivery_goods_state_details";
          $arg_str .= " WHERE ";
@@ -2110,7 +2109,13 @@ $app->post('/wearer_change/info', function ()use($app){
            $last_val = count($results);
            $cnt = 1;
            //ChromePhp::LOG($results);
+             $individual_cnt = 0;
            foreach ($results as $result) {
+               //数量 - 返却予定数が0以下だったら表示しない
+               if(($result->quantity - $result->return_plan__qty) <= 0){
+                   continue;
+               }
+               $individual_cnt += 1;
              $cnt = $cnt++;
              array_push($individual_ctrl_no, $result->individual_ctrl_no);
 
@@ -2163,6 +2168,11 @@ $app->post('/wearer_change/info', function ()use($app){
              // 対象チェックボックス値
              array_push($list["individual_chk"], $individual);
            }
+             if($individual_cnt <= 0){
+                 $arr_cnt--;
+                 $list_cnt--;
+                 continue;
+             }
            // 表示個体管理番号数
            $list["individual_cnt"] = count($individual_ctrl_no);
            // 個体管理番号
