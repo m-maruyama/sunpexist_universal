@@ -1607,7 +1607,6 @@ $app->post('/print/search', function ()use($app){
 
             //---個体管理番号---//
             $list['individual_num'] = "-";
-            $list['order_res_ymd'] = "-";
             $query_list = array();
             array_push($query_list, "corporate_id = '".$auth['corporate_id']."'");
             array_push($query_list, "order_req_no = '".$list['order_req_no']."'");
