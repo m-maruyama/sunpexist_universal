@@ -1104,13 +1104,15 @@ $app->post('/section_modal', function () use ($app) {
     $arg_str .= ' ORDER BY rntl_sect_cd asc';
 
     $m_section = new MSection();
-    $results = new Resultset(null, $m_section, $m_section->getReadConnection()->query($arg_str));
-    $result_obj = (array)$results;
+    $results_all = new Resultset(null, $m_section, $m_section->getReadConnection()->query($arg_str));
+    $result_obj = (array)$results_all;
     $results_cnt = $result_obj["\0*\0_count"];
+    $all_list = array();
+    $json_list = array();
     if (!empty($results_cnt)) {
         $paginator_model = new PaginatorModel(
             array(
-                "data" => $results,
+                "data" => $results_all,
                 'limit' => $page['records_per_page'],
                 'page' => $page['page_number'],
             )
@@ -1119,19 +1121,17 @@ $app->post('/section_modal', function () use ($app) {
             $paginator = $paginator_model->getPaginate();
             $results = $paginator->items;
         }
-    }
-    $all_list = array();
-    $json_list = array();
-    $i = 0;
-    foreach ($results as $result) {
-        $all_list[$i]['rntl_sect_cd'] = $result->rntl_sect_cd;
-        $all_list[$i]['rntl_sect_name'] = $result->rntl_sect_name;
-        ++$i;
+        $i = 0;
+        foreach ($results as $result) {
+            $all_list[$i]['rntl_sect_cd'] = $result->rntl_sect_cd;
+            $all_list[$i]['rntl_sect_name'] = $result->rntl_sect_name;
+            ++$i;
+        }
     }
     $json_list['list'] = $all_list;
     $page_list['records_per_page'] = $page['records_per_page'];
     $page_list['page_number'] = $page['page_number'];
-    $page_list['total_records'] = count($results);
+    $page_list['total_records'] = count($results_all);
     $json_list['page'] = $page_list;
     echo json_encode($json_list);
 });

@@ -87,6 +87,8 @@ define([
 				};
 
 				this.listenTo(wearerSizeChangeConditionView, 'first:section', function() {
+					var sectionConditionView = new App.Admin.Views.SectionCondition();
+					wearerSizeChangeConditionView.section.show(sectionConditionView);
 
 					//拠点絞り込み--ここから
 					var sectionListListCollection = new App.Entities.Collections.AdminSectionModalListList();
@@ -136,6 +138,9 @@ define([
 					sectionModalView.condition.show(sectionModalConditionView);
 					sectionModalView.page.show(paginationSectionView);
 					//拠点絞り込み--ここまで
+					this.listenTo(paginationSectionView, 'selected', function(pageNumber){
+						fetchList_section(pageNumber);
+					});
 				});
 
 				this.listenTo(paginationView, 'selected', function(pageNumber){
@@ -149,9 +154,6 @@ define([
 				});
 				this.listenTo(paginationView4, 'selected', function(pageNumber){
 					fetchList_2(pageNumber);
-				});
-				this.listenTo(paginationSectionView, 'selected', function(pageNumber){
-					fetchList_section(pageNumber);
 				});
 
 				this.listenTo(wearerSizeChangeListListView, 'sort', function(sortKey,order){
@@ -304,11 +306,9 @@ define([
 				App.main.show(wearerSizeChangeView);
 				wearerSizeChangeView.condition.show(wearerSizeChangeConditionView);
 				wearerSizeChangeConditionView.agreement_no.show(agreementNoConditionView);
-				Sleep(0.04);
-				wearerSizeChangeConditionView.section.show(sectionConditionView);
 				Sleep(0.02);
 				wearerSizeChangeConditionView.sex_kbn.show(sexKbnConditionView);
-				Sleep(0.02);
+				Sleep(0.01);
 				wearerSizeChangeConditionView.job_type.show(jobTypeConditionView);
 			}
 		});

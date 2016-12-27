@@ -34,7 +34,6 @@ define([
 				var pagerModel2 = new App.Entities.Models.Pager();
 				var pagerModel3 = new App.Entities.Models.Pager();
 				var pagerModel4 = new App.Entities.Models.Pager();
-				var modal = false;
 				var wearerEndModel = null;
 				var wearerEndView = new App.Admin.Views.WearerEnd();
 				var wearerEndListListCollection = new App.Entities.Collections.AdminWearerEndListList();
@@ -87,7 +86,8 @@ define([
 				};
 
 				this.listenTo(wearerEndConditionView, 'first:section', function() {
-
+					var sectionConditionView = new App.Admin.Views.SectionCondition();
+					wearerEndConditionView.section.show(sectionConditionView);
 					//拠点絞り込み--ここから
 					var sectionListListCollection = new App.Entities.Collections.AdminSectionModalListList();
 					var sectionModalListListView = new App.Admin.Views.SectionModalListList({
@@ -118,7 +118,6 @@ define([
 						sectionModalView.listTable.show(sectionModalListListView);
 					};
 					this.listenTo(sectionModalConditionView, 'click:section_search', function (sortKey, order) {
-						modal = true;
 						fetchList_section(1, sortKey, order);
 					});
 					this.listenTo(sectionModalView, 'fetched', function(){
@@ -135,44 +134,27 @@ define([
 					sectionModalView.condition.show(sectionModalConditionView);
 					sectionModalView.page.show(paginationSectionView);
 					//拠点絞り込み--ここまで
+					this.listenTo(paginationSectionView, 'selected', function(pageNumber){
+						fetchList_section(pageNumber);
+					});
 				});
 
-				this.listenTo(paginationSectionView, 'selected', function(pageNumber){
-					fetchList_section(pageNumber);
-				});
 				this.listenTo(paginationView, 'selected', function(pageNumber){
-					if(modal){
-						fetchList_section(pageNumber);
-					}else{
-						fetchList(pageNumber);
-					}
+					fetchList(pageNumber);
 				});
 				this.listenTo(paginationView2, 'selected', function(pageNumber){
-					if(modal){
-						fetchList_section(pageNumber);
-					}else{
-						fetchList(pageNumber);
-					}
+					fetchList(pageNumber);
 				});
 				this.listenTo(paginationView3, 'selected', function(pageNumber){
-					if(modal){
-						fetchList_section(pageNumber);
-					}else{
-						fetchList(pageNumber);
-					}
+					fetchList(pageNumber);
 				});
 				this.listenTo(paginationView4, 'selected', function(pageNumber){
-					if(modal){
-						fetchList_section(pageNumber);
-					}else{
-						fetchList(pageNumber);
-					}
+					fetchList(pageNumber);
 				});
 				this.listenTo(wearerEndListListView, 'sort', function(sortKey,order){
 					fetchList(null,sortKey,order);
 				});
 				this.listenTo(wearerEndConditionView, 'click:search', function(sortKey,order){
-					modal = false;
 					fetchList(1,sortKey,order);
 				});
 				//貸与終了ボタン
@@ -233,7 +215,6 @@ define([
 						fetchList_section_2(pageNumber);
 					});
 					this.listenTo(sectionModalConditionView2, 'click:section_search', function(sortKey, order){
-						modal = true;
 						fetchList_section_2(1,sortKey,order);
 					});
 					this.listenTo(sectionModalView2, 'fetched', function(){
@@ -251,7 +232,6 @@ define([
 				});
 				// 貸与パターン
 				this.listenTo(wearerEndConditionView, 'research:job_type', function(data){
-					modal = false;
 					var jobTypeConditionView = new App.Admin.Views.JobTypeCondition({
 						agreement_no: data["agreement_no"],
 						job_type: data["job_type"]
@@ -313,7 +293,6 @@ define([
 						fetchList_section_2(pageNumber);
 					});
 					this.listenTo(sectionModalConditionView2, 'click:section_search', function(sortKey, order){
-						modal = true;
 						fetchList_section_2(1,sortKey,order);
 					});
 					this.listenTo(sectionModalView2, 'fetched', function(){
@@ -336,8 +315,6 @@ define([
 				Sleep(0.04);
 				// wearerEndConditionView.section.show(sectionConditionView);
 				wearerEndConditionView.sex_kbn.show(sexKbnConditionView);
-				Sleep(0.02);
-				wearerEndConditionView.section.show(sectionConditionView);
 				Sleep(0.02);
 				wearerEndConditionView.job_type.show(jobTypeConditionView);
 				// wearerEndView.sectionModal.show(sectionModalView.render());
