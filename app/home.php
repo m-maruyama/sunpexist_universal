@@ -70,6 +70,7 @@ $app->post('/home', function ()use($app){
     $result_obj2 = (array)$results2;
     $results_cnt2 = $result_obj2["\0*\0_count"];
 
+    //発注未送信件数
     //パターン１とパターン２を足した件数
     $emply_cd_no_regist_cnt = $results_cnt + $results_cnt2;
 
@@ -84,6 +85,8 @@ $app->post('/home', function ()use($app){
         "conditions" => "corporate_id = ?1 AND return_status = '1'",
         "bind"	=> array(1 => $corporate_id)
     ))->count();
+
+
     $json_list['emply_cd_no_regist_cnt'] = $emply_cd_no_regist_cnt;
     $json_list['no_recieve_cnt'] = $no_recieve_cnt;
     $json_list['no_return_cnt'] = $no_return_cnt;
