@@ -669,14 +669,13 @@ $app->post('/wearer_return/info', function ()use($app){
      $arg_str .= " AND t_delivery_goods_state_details.color_cd = m_item.color_cd";
      $arg_str .= " AND t_delivery_goods_state_details.size_cd = m_item.size_cd)";
      $arg_str .= " INNER JOIN m_input_item";
-     $arg_str .= " ON (m_item.corporate_id = m_item.corporate_id";
+     $arg_str .= " ON (m_item.corporate_id = m_input_item.corporate_id";
      $arg_str .= " AND m_item.item_cd = m_input_item.item_cd";
      $arg_str .= " AND m_item.color_cd = m_input_item.color_cd)";
      $arg_str .= " WHERE ";
      $arg_str .= $query;
      $arg_str .= ") as distinct_table";
      $arg_str .= " ORDER BY as_item_cd ASC, as_color_cd ASC";
-     //ChromePhp::LOG($arg_str);
      $m_input_item = new MInputItem();
      $item_results = new Resultset(null, $m_input_item, $m_input_item->getReadConnection()->query($arg_str));
      $result_obj = (array)$item_results;
@@ -871,6 +870,8 @@ $app->post('/wearer_return/info', function ()use($app){
      array_push($query_list, "t_delivery_goods_state_details.werer_cd = '".$wearer_other_post['werer_cd']."'");
      array_push($query_list, "t_delivery_goods_state_details.rtn_ok_flg = '1'");
      array_push($query_list, "t_delivery_goods_state_details.receipt_status = '2'");
+     //自分の貸与パターンを絞り込み
+     $query_list[] = "m_input_item.job_type_cd = '".$wearer_other_post['job_type_cd']."'";
      $query = implode(' AND ', $query_list);
 
      $arg_str = "";
@@ -885,6 +886,7 @@ $app->post('/wearer_return/info', function ()use($app){
      $arg_str .= "m_item.color_cd as as_color_cd,";
      $arg_str .= "m_item.size_cd as as_size_cd,";
      $arg_str .= "m_item.item_name as as_item_name,";
+     $arg_str .= "m_input_item.job_type_cd as as_job_type_cd,";
      $arg_str .= "m_input_item.job_type_item_cd as as_job_type_item_cd,";
      $arg_str .= "m_input_item.input_item_name as as_input_item_name,";
      $arg_str .= "m_input_item.std_input_qty as as_std_input_qty";
@@ -895,7 +897,7 @@ $app->post('/wearer_return/info', function ()use($app){
      $arg_str .= " AND t_delivery_goods_state_details.color_cd = m_item.color_cd";
      $arg_str .= " AND t_delivery_goods_state_details.size_cd = m_item.size_cd)";
      $arg_str .= " INNER JOIN m_input_item";
-     $arg_str .= " ON (m_item.corporate_id = m_item.corporate_id";
+     $arg_str .= " ON (m_item.corporate_id = m_input_item.corporate_id";
      $arg_str .= " AND m_item.item_cd = m_input_item.item_cd";
      $arg_str .= " AND m_item.color_cd = m_input_item.color_cd)";
      $arg_str .= " WHERE ";

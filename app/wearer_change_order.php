@@ -1289,6 +1289,8 @@ $app->post('/wearer_change/info', function ()use($app){
    //array_push($query_list, "m_input_item.job_type_cd = '".$wearer_chg_post['job_type_cd']."'");
    array_push($query_list, "t_delivery_goods_state_details.rtn_ok_flg = '1'");
    array_push($query_list, "t_delivery_goods_state_details.receipt_status = '2'");
+     //自分の貸与パターンを絞り込み
+     $query_list[] = "m_input_item.job_type_cd = '".$m_wearer_job_type_cd."'";
    $query = implode(' AND ', $query_list);
 
    $arg_str = "";
@@ -1303,7 +1305,8 @@ $app->post('/wearer_change/info', function ()use($app){
    $arg_str .= "m_item.color_cd as as_color_cd,";
    $arg_str .= "m_item.size_cd as as_size_cd,";
    $arg_str .= "m_item.item_name as as_item_name,";
-   $arg_str .= "m_input_item.job_type_item_cd as as_job_type_item_cd,";
+     $arg_str .= "m_input_item.job_type_cd as as_job_type_cd,";
+     $arg_str .= "m_input_item.job_type_item_cd as as_job_type_item_cd,";
    $arg_str .= "m_input_item.input_item_name as as_input_item_name,";
    $arg_str .= "m_input_item.size_two_cd as as_size_two_cd,";
    $arg_str .= "m_input_item.std_input_qty as as_std_input_qty";
@@ -1321,7 +1324,7 @@ $app->post('/wearer_change/info', function ()use($app){
    $arg_str .= $query;
    $arg_str .= ") as distinct_table";
    $arg_str .= " ORDER BY as_item_cd ASC, as_color_cd ASC";
-   //ChromePhp::LOG($arg_str);
+   ChromePhp::LOG($arg_str);
    $t_delivery_goods_state_details = new TDeliveryGoodsStateDetails();
    $results = new Resultset(null, $t_delivery_goods_state_details, $t_delivery_goods_state_details->getReadConnection()->query($arg_str));
    $result_obj = (array)$results;
