@@ -14,7 +14,8 @@ $app->post('/home', function ()use($app){
     $all_list = array();
     $json_list = array();
     $corporate_id = $app->session->get("auth")['corporate_id'];
-
+    ChromePhp::log($app->session->get("auth"));
+    $rntl_cont_no = $app->session->get("auth")['rntl_cont_no'];
     //発注未送信件数
 
     // 発注区分=貸与で発注情報トランのデータが存在しない場合は対象外とする
@@ -36,6 +37,8 @@ $app->post('/home', function ()use($app){
     $arg_str .= " WHERE ";
     $arg_str .= "T2.snd_kbn = '0'";
     $arg_str .= " AND T1.corporate_id = '".$corporate_id."'";
+    $arg_str .= " AND T1.rntl_cont_no = '".$rntl_cont_no."'";
+
     $arg_str .= ") as distinct_table";
     $arg_str .= " ORDER BY as_wst_order_req_no ASC";
     $m_wearer_std_tran = new MWearerStdTran();
@@ -62,6 +65,8 @@ $app->post('/home', function ()use($app){
     $arg_str .= " WHERE ";
     $arg_str .= "T2.snd_kbn = '0'";
     $arg_str .= " AND T1.corporate_id = '".$corporate_id."'";
+    $arg_str .= " AND T1.rntl_cont_no = '".$rntl_cont_no."'";
+
     $arg_str .= ") as distinct_table";
     $arg_str .= " ORDER BY as_wst_order_req_no ASC";
 
@@ -75,20 +80,251 @@ $app->post('/home', function ()use($app){
     $emply_cd_no_regist_cnt = $results_cnt + $results_cnt2;
 
     //未受領件数
-    $no_recieve_cnt = TDeliveryGoodsStateDetails::find(array(
-        "conditions" => "corporate_id = ?1 AND receipt_status = '2'",
-        "bind"	=> array(1 => $corporate_id)
-    ))->count();
+    $arg_str = "";
+    $arg_str = "SELECT";
+    $arg_str .= " * ";
+    $arg_str .= "FROM
+    (
+        SELECT
+            distinct
+        on  (t_delivery_goods_state_details.ship_no, t_delivery_goods_state_details.ship_line_no)
+        *
+        FROM
+            t_delivery_goods_state_details
+            INNER JOIN
+    (
+        t_delivery_goods_state
+                    INNER JOIN
+    (
+        t_order_state
+                            INNER JOIN
+    (
+        t_order
+                                    INNER JOIN
+                                        m_section
+                                    ON  t_order.m_section_comb_hkey = m_section.m_section_comb_hkey
+                                    INNER JOIN
+                                        m_wearer_std
+                                    ON  t_order.werer_cd = m_wearer_std.werer_cd
+    AND t_order.corporate_id = m_wearer_std.corporate_id
+    AND t_order.rntl_cont_no = m_wearer_std.rntl_cont_no
+                                    INNER JOIN
+    (
+        m_job_type
+                                            INNER JOIN
+                                                m_input_item
+                                            ON  m_job_type.corporate_id = m_input_item.corporate_id
+    AND m_job_type.rntl_cont_no = m_input_item.rntl_cont_no
+    AND m_job_type.job_type_cd = m_input_item.job_type_cd
+                                        )
+                                    ON  t_order.corporate_id = m_job_type.corporate_id
+    AND t_order.rntl_cont_no = m_job_type.rntl_cont_no
+    AND t_order.job_type_cd = m_job_type.job_type_cd
+    AND t_order.item_cd = m_input_item.item_cd
+    AND t_order.color_cd = m_input_item.color_cd
+                                )
+                            ON  t_order_state.corporate_id = t_order.corporate_id
+    AND t_order_state.order_req_no = t_order.order_req_no
+    AND t_order_state.order_req_line_no = t_order.order_req_line_no
+                        )
+                    ON  t_delivery_goods_state.corporate_id = t_order_state.corporate_id
+    AND t_delivery_goods_state.rec_order_no = t_order_state.rec_order_no
+    AND t_delivery_goods_state.rec_order_line_no = t_order_state.rec_order_line_no
+                )
+            ON  t_delivery_goods_state_details.corporate_id = t_delivery_goods_state.corporate_id
+    AND t_delivery_goods_state_details.ship_no = t_delivery_goods_state.ship_no
+    AND t_delivery_goods_state_details.ship_line_no = t_delivery_goods_state.ship_line_no
+        WHERE
+            t_delivery_goods_state_details.corporate_id = '"."$corporate_id"."'
+            AND t_delivery_goods_state_details.rntl_cont_no = '"."$rntl_cont_no"."'
+            AND t_delivery_goods_state_details.receipt_status IN('1')
+    AND (
+        (
+            t_order.order_sts_kbn = '1'
+            AND m_wearer_std.werer_sts_kbn = '1'
+            AND (
+                t_order.order_reason_kbn = '01'
+                OR  t_order.order_reason_kbn = '02'
+                OR  t_order.order_reason_kbn = '03'
+                OR  t_order.order_reason_kbn = '04'
+                OR  t_order.order_reason_kbn = '19'
+            )
+        )
+        OR  (
+            (
+                t_order.order_sts_kbn = '3'
+                OR  t_order.order_sts_kbn = '4'
+            )
+            AND m_wearer_std.werer_sts_kbn = '1'
+            AND (
+                t_order.order_reason_kbn = '14'
+                OR  t_order.order_reason_kbn = '15'
+                OR  t_order.order_reason_kbn = '16'
+                OR  t_order.order_reason_kbn = '17'
+                OR  t_order.order_reason_kbn = '12'
+                OR  t_order.order_reason_kbn = '13'
+                OR  t_order.order_reason_kbn = '23'
+            )
+        )
+        OR  (
+            (
+                t_order.order_sts_kbn = '5'
+                AND m_wearer_std.werer_sts_kbn = '8'
+            )
+            AND (
+                t_order.order_reason_kbn = '09'
+                OR  t_order.order_reason_kbn = '10'
+                OR  t_order.order_reason_kbn = '11'
+            )
+        )
+        OR  (
+            t_order.order_sts_kbn = '2'
+            AND (
+                (
+                    t_order.order_reason_kbn = '05'
+                    AND m_wearer_std.werer_sts_kbn = '4'
+                )
+                OR  (
+                    t_order.order_reason_kbn = '06'
+                    AND m_wearer_std.werer_sts_kbn = '2'
+                )
+                OR  t_order.order_reason_kbn = '07'
+                AND m_wearer_std.werer_sts_kbn = '1'
+                OR  t_order.order_reason_kbn = '08'
+                AND m_wearer_std.werer_sts_kbn = '1'
+                OR  t_order.order_reason_kbn = '24'
+                AND m_wearer_std.werer_sts_kbn = '1'
+            )
+        )
+        OR  t_order.order_sts_kbn = '9'
+        AND m_wearer_std.werer_sts_kbn = '1'
+    )
+    ) as distinct_table";
+
+    $t_delivery_goods_state_details = new TDeliveryGoodsStateDetails();
+    $results = new Resultset(null, $t_delivery_goods_state_details, $t_delivery_goods_state_details->getReadConnection()->query($arg_str));
+    $result_obj = (array)$results;
+    $results_cnt_list = $result_obj["\0*\0_count"];
+
 
     //未返却件数
+    $arg_str = "";
+    $arg_str = "SELECT";
+    $arg_str .= " * ";
+    $arg_str .= "FROM";
+    $arg_str .= "
+    (
+        SELECT
+            distinct
+        on  (t_returned_plan_info.item_cd, t_returned_plan_info.color_cd, t_returned_plan_info.size_cd) 
+            *
+        FROM
+            t_returned_plan_info
+            LEFT JOIN
+    (
+        t_order
+                    LEFT JOIN
+    (
+        t_order_state
+                            LEFT JOIN
+    (
+        t_delivery_goods_state
+                                    LEFT JOIN
+                                        t_delivery_goods_state_details
+                                    ON  t_delivery_goods_state.ship_no = t_delivery_goods_state_details.ship_no
+    AND t_delivery_goods_state.ship_line_no = t_delivery_goods_state_details.ship_line_no
+                                )
+                            ON  t_order_state.t_order_state_comb_hkey = t_delivery_goods_state.t_order_state_comb_hkey
+                        )
+                    ON  t_order.t_order_comb_hkey = t_order_state.t_order_comb_hkey
+                )
+            ON  t_order.order_req_no = t_returned_plan_info.order_req_no
+            INNER JOIN
+                m_section
+            ON  t_order.m_section_comb_hkey = m_section.m_section_comb_hkey
+            INNER JOIN
+                m_job_type
+            ON  t_order.m_job_type_comb_hkey = m_job_type.m_job_type_comb_hkey
+            INNER JOIN
+                m_wearer_std
+            ON  t_order.werer_cd = m_wearer_std.werer_cd
+    AND t_order.corporate_id = m_wearer_std.corporate_id
+    AND t_order.rntl_cont_no = m_wearer_std.rntl_cont_no
+            INNER JOIN
+                m_contract
+            ON  t_order.rntl_cont_no = m_contract.rntl_cont_no
+        WHERE
+            t_returned_plan_info.corporate_id = '"."$corporate_id"."'
+            AND t_returned_plan_info.rntl_cont_no = '"."$rntl_cont_no"."'
+            AND t_returned_plan_info.return_status IN('1')
+    AND (
+        (
+            (
+                t_order.order_sts_kbn = '3'
+                OR  t_order.order_sts_kbn = '4'
+            )
+            AND m_wearer_std.werer_sts_kbn = '1'
+            AND (
+                t_order.order_reason_kbn = '14'
+                OR  t_order.order_reason_kbn = '15'
+                OR  t_order.order_reason_kbn = '16'
+                OR  t_order.order_reason_kbn = '17'
+                OR  t_order.order_reason_kbn = '12'
+                OR  t_order.order_reason_kbn = '13'
+                OR  t_order.order_reason_kbn = '23'
+            )
+        )
+        OR  (
+            (
+                t_order.order_sts_kbn = '5'
+                AND m_wearer_std.werer_sts_kbn = '8'
+            )
+            AND (
+                t_order.order_reason_kbn = '09'
+                OR  t_order.order_reason_kbn = '10'
+                OR  t_order.order_reason_kbn = '11'
+            )
+        )
+        OR  (
+            t_order.order_sts_kbn = '2'
+            AND (
+                (
+                    t_order.order_reason_kbn = '05'
+                    AND m_wearer_std.werer_sts_kbn = '4'
+                )
+                OR  (
+                    t_order.order_reason_kbn = '06'
+                    AND m_wearer_std.werer_sts_kbn = '2'
+                )
+                OR  t_order.order_reason_kbn = '07'
+                AND m_wearer_std.werer_sts_kbn = '1'
+                OR  t_order.order_reason_kbn = '08'
+                AND m_wearer_std.werer_sts_kbn = '1'
+                OR  t_order.order_reason_kbn = '24'
+                AND m_wearer_std.werer_sts_kbn = '1'
+            )
+        )
+        OR  t_order.order_sts_kbn = '9'
+        AND m_wearer_std.werer_sts_kbn = '1'
+    )
+    ) as distinct_table";
+    $t_order = new TOrder();
+    $results = new Resultset(null, $t_order, $t_order->getReadConnection()->query($arg_str));
+    $results_array = (array)$results;
+    $results_cnt = $results_array["\0*\0_count"];
+
+    $no_return_cnt = $results_cnt;
+
+
+    /*
     $no_return_cnt = TReturnedPlanInfo::find(array(
         "conditions" => "corporate_id = ?1 AND return_status = '1'",
         "bind"	=> array(1 => $corporate_id)
     ))->count();
-
+    */
 
     $json_list['emply_cd_no_regist_cnt'] = $emply_cd_no_regist_cnt;
-    $json_list['no_recieve_cnt'] = $no_recieve_cnt;
+    $json_list['no_recieve_cnt'] = $results_cnt_list;
     $json_list['no_return_cnt'] = $no_return_cnt;
     //お知らせ
     $now = date( "Y/m/d H:i:s", time() );
