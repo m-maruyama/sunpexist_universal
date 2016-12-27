@@ -27,16 +27,17 @@ $app->post('/home', function ()use($app){
     $arg_str .= "T2.order_req_no as as_wst_order_req_no,";
     $arg_str .= "T2.order_sts_kbn as as_wst_order_sts_kbn,";
     $arg_str .= "T2.snd_kbn as as_snd_kbn,";
-    $arg_str .= "T1.order_req_no as as_order_req_no";
+    $arg_str .= "T1.corporate_id as as_corporate_id,";
+    $arg_str .= "T1.rntl_cont_no as as_rntl_cont_no";
     $arg_str .= " FROM ";
     $arg_str .= "(SELECT * FROM m_wearer_std_tran WHERE order_sts_kbn = '1') as T2";
     $arg_str .= " INNER JOIN (SELECT * FROM t_order_tran) as T1";
     $arg_str .= " ON T2.order_req_no = T1.order_req_no";
     $arg_str .= " WHERE ";
     $arg_str .= "T2.snd_kbn = '0'";
+    $arg_str .= " AND T1.corporate_id = '".$corporate_id."'";
     $arg_str .= ") as distinct_table";
     $arg_str .= " ORDER BY as_wst_order_req_no ASC";
-
     $m_wearer_std_tran = new MWearerStdTran();
     $results = new Resultset(null, $m_wearer_std_tran, $m_wearer_std_tran->getReadConnection()->query($arg_str));
     $result_obj = (array)$results;
@@ -51,13 +52,16 @@ $app->post('/home', function ()use($app){
     $arg_str .= "T2.order_req_no as as_wst_order_req_no,";
     $arg_str .= "T2.order_sts_kbn as as_wst_order_sts_kbn,";
     $arg_str .= "T2.snd_kbn as as_snd_kbn,";
-    $arg_str .= "T1.order_req_no as as_order_req_no";
+    $arg_str .= "T1.order_req_no as as_order_req_no,";
+    $arg_str .= "T1.corporate_id as as_corporate_id,";
+    $arg_str .= "T1.rntl_cont_no as as_rntl_cont_no";
     $arg_str .= " FROM ";
     $arg_str .= "(SELECT * FROM m_wearer_std_tran WHERE NOT order_sts_kbn = '1') as T2";
     $arg_str .= " LEFT JOIN (SELECT * FROM t_order_tran) as T1";
     $arg_str .= " ON T2.order_req_no = T1.order_req_no";
     $arg_str .= " WHERE ";
     $arg_str .= "T2.snd_kbn = '0'";
+    $arg_str .= " AND T1.corporate_id = '".$corporate_id."'";
     $arg_str .= ") as distinct_table";
     $arg_str .= " ORDER BY as_wst_order_req_no ASC";
 
@@ -66,6 +70,7 @@ $app->post('/home', function ()use($app){
     $result_obj2 = (array)$results2;
     $results_cnt2 = $result_obj2["\0*\0_count"];
 
+    //発注未送信件数
     //パターン１とパターン２を足した件数
     $emply_cd_no_regist_cnt = $results_cnt + $results_cnt2;
 
@@ -80,6 +85,8 @@ $app->post('/home', function ()use($app){
         "conditions" => "corporate_id = ?1 AND return_status = '1'",
         "bind"	=> array(1 => $corporate_id)
     ))->count();
+
+
     $json_list['emply_cd_no_regist_cnt'] = $emply_cd_no_regist_cnt;
     $json_list['no_recieve_cnt'] = $no_recieve_cnt;
     $json_list['no_return_cnt'] = $no_return_cnt;
