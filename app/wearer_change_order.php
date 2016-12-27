@@ -1093,7 +1093,6 @@ $app->post('/wearer_change/info', function ()use($app){
    // フロントパラメータ取得
    $cond = $params['data'];
    //ChromePhp::LOG("フロント側パラメータ");
-   //ChromePhp::LOG($cond);
 
    $json_list = array();
 
@@ -1167,7 +1166,6 @@ $app->post('/wearer_change/info', function ()use($app){
    $arg_str .= " WHERE ";
    $arg_str .= $query;
    $arg_str .= " ORDER BY upd_date DESC";
-
    $t_order_tran = new TOrderTran();
    $results = new Resultset(NULL, $t_order_tran, $t_order_tran->getReadConnection()->query($arg_str));
    $result_obj = (array)$results;
@@ -1203,18 +1201,18 @@ $app->post('/wearer_change/info', function ()use($app){
    array_push($query_list, "werer_cd = '".$wearer_chg_post['werer_cd']."'");
    array_push($query_list, "rntl_sect_cd = '".$wearer_chg_post['rntl_sect_cd']."'");
    array_push($query_list, "job_type_cd = '".$wearer_chg_post['job_type_cd']."'");
-   array_push($query_list, "order_req_no = '".$wearer_chg_post['return_req_no']."'");
+     array_push($query_list, "order_req_no = '".$wearer_chg_post['order_req_no']."'");
    $query = implode(' AND ', $query_list);
 
    $arg_str = "";
    $arg_str = "SELECT ";
-   $arg_str .= "rntl_sect_cd,";
-   $arg_str .= "job_type_cd";
+   $arg_str .= "*";
    $arg_str .= " FROM ";
    $arg_str .= "t_returned_plan_info_tran";
    $arg_str .= " WHERE ";
    $arg_str .= $query;
    $arg_str .= " ORDER BY order_req_no DESC";
+   //ChromePhp::log($arg_str);
 
    $t_returned_plan_info_tran = new TReturnedPlanInfoTran();
    $results = new Resultset(NULL, $t_returned_plan_info_tran, $t_returned_plan_info_tran->getReadConnection()->query($arg_str));
@@ -1237,9 +1235,9 @@ $app->post('/wearer_change/info', function ()use($app){
      $results = $paginator->items;
      //ChromePhp::LOG($results);
      foreach ($results as $result) {
-       // 発注情報トラン.レンタル部門コード
+       // 返却情報トラン.レンタル部門コード
        $t_returned_plan_info_tran_rntl_sect_cd = $result->rntl_sect_cd;
-       // 発注情報トラン.職種コード
+       // 返却情報トラン.職種コード
        $t_returned_plan_info_tran_job_type_cd = $result->job_type_cd;
      }
    }
@@ -1288,7 +1286,7 @@ $app->post('/wearer_change/info', function ()use($app){
    array_push($query_list, "t_delivery_goods_state_details.corporate_id = '".$auth['corporate_id']."'");
    array_push($query_list, "t_delivery_goods_state_details.rntl_cont_no = '".$wearer_chg_post['rntl_cont_no']."'");
    array_push($query_list, "t_delivery_goods_state_details.werer_cd = '".$wearer_chg_post['werer_cd']."'");
-   array_push($query_list, "m_input_item.job_type_cd = '".$wearer_chg_post['job_type_cd']."'");
+   //array_push($query_list, "m_input_item.job_type_cd = '".$wearer_chg_post['job_type_cd']."'");
    array_push($query_list, "t_delivery_goods_state_details.rtn_ok_flg = '1'");
    array_push($query_list, "t_delivery_goods_state_details.receipt_status = '2'");
    $query = implode(' AND ', $query_list);
@@ -1316,7 +1314,7 @@ $app->post('/wearer_change/info', function ()use($app){
    $arg_str .= " AND t_delivery_goods_state_details.color_cd = m_item.color_cd";
    $arg_str .= " AND t_delivery_goods_state_details.size_cd = m_item.size_cd)";
    $arg_str .= " INNER JOIN m_input_item";
-   $arg_str .= " ON (m_item.corporate_id = m_item.corporate_id";
+   $arg_str .= " ON (m_item.corporate_id = m_input_item.corporate_id";
    $arg_str .= " AND m_item.item_cd = m_input_item.item_cd";
    $arg_str .= " AND m_item.color_cd = m_input_item.color_cd)";
    $arg_str .= " WHERE ";
@@ -1375,87 +1373,7 @@ $app->post('/wearer_change/info', function ()use($app){
        array_push($now_wearer_list, $list);
      }
    }
-/*
-   array_push($query_list, "mw.corporate_id = '".$auth['corporate_id']."'");
-   array_push($query_list, "mw.rntl_cont_no = '".$wearer_chg_post['rntl_cont_no']."'");
-   array_push($query_list, "mw.werer_cd = '".$wearer_chg_post['werer_cd']."'");
-   array_push($query_list, "mw.rntl_sect_cd = '".$m_wearer_rntl_sect_cd."'");
-   array_push($query_list, "mw.job_type_cd = '".$m_wearer_job_type_cd."'");
-   array_push($query_list, "mw.werer_sts_kbn = '1'");
-   array_push($query_list, "mi.corporate_id = '".$auth['corporate_id']."'");
-   $query = implode(' AND ', $query_list);
 
-   $arg_str = "";
-   $arg_str = "SELECT ";
-   $arg_str .= "*";
-   $arg_str .= " FROM ";
-   $arg_str .= "(SELECT distinct on (mi.item_cd, mi.color_cd, mii.job_type_item_cd) ";
-   $arg_str .= "mw.rntl_cont_no as as_rntl_cont_no,";
-   $arg_str .= "mw.rntl_sect_cd as as_rntl_sect_cd,";
-   $arg_str .= "mi.item_cd as as_item_cd,";
-   $arg_str .= "mi.color_cd as_color_cd,";
-   $arg_str .= "mi.size_cd as_size_cd,";
-   $arg_str .= "mi.item_name as_item_name,";
-   $arg_str .= "mii.job_type_cd as_job_type_cd,";
-   $arg_str .= "mii.job_type_item_cd as_job_type_item_cd,";
-   $arg_str .= "mii.size_two_cd as_size_two_cd,";
-   $arg_str .= "mii.std_input_qty as_std_input_qty,";
-   $arg_str .= "mii.input_item_name as as_input_item_name";
-   $arg_str .= " FROM ";
-   $arg_str .= "(m_input_item as mii INNER JOIN m_item as mi ON (mii.item_cd=mi.item_cd AND mii.color_cd=mi.color_cd))";
-   $arg_str .= " INNER JOIN ";
-   $arg_str .= "(m_wearer_std as mw INNER JOIN m_job_type as mj ON (mw.corporate_id=mj.corporate_id AND mw.rntl_cont_no=mj.rntl_cont_no AND mw.job_type_cd=mj.job_type_cd))";
-   $arg_str .= " ON (mii.corporate_id=mj.corporate_id AND mii.rntl_cont_no=mj.rntl_cont_no AND mii.job_type_cd=mj.job_type_cd)";
-   $arg_str .= " WHERE ";
-   $arg_str .= $query;
-   $arg_str .= ") as distinct_table";
-   $arg_str .= " ORDER BY as_item_cd,as_color_cd ASC";
-
-   $m_input_item = new MInputItem();
-   $results = new Resultset(NULL, $m_input_item, $m_input_item->getReadConnection()->query($arg_str));
-   $result_obj = (array)$results;
-   $results_cnt = $result_obj["\0*\0_count"];
-   //ChromePhp::LOG($results_cnt);
-
-   if (!empty($results_cnt)) {
-     $paginator_model = new PaginatorModel(
-         array(
-             "data"  => $results,
-             "limit" => $results_cnt,
-             "page" => 1
-         )
-     );
-     $paginator = $paginator_model->getPaginate();
-     $results = $paginator->items;
-     //ChromePhp::LOG($results);
-     foreach ($results as $result) {
-       // レンタル契約No
-       $list["rntl_cont_no"] = $wearer_chg_post['rntl_cont_no'];
-       // 商品コード
-       $list["item_cd"] = $result->as_item_cd;
-       // 色コード
-       $list["color_cd"] = $result->as_color_cd;
-       // サイズコード
-       $list["size_cd"] = $result->as_size_cd;
-       // 商品名
-       $list["item_name"] = $result->as_item_name;
-       // 職種コード
-       $list["job_type_cd"] = $m_wearer_job_type_cd;
-       // 部門コード
-       $list["rntl_sect_cd"] = $m_wearer_rntl_sect_cd;
-       // 職種アイテムコード
-       $list["job_type_item_cd"] = $result->as_job_type_item_cd;
-       // サイズコード2
-       $list["size_two_cd"] = $result->as_size_two_cd;
-       // 標準投入数
-       $list["std_input_qty"] = $result->as_std_input_qty;
-       // 投入商品名
-       $list["input_item_name"] = $result->as_input_item_name;
-
-       array_push($now_wearer_list, $list);
-     }
-   }
-*/
    //ChromePhp::LOG('【変更前】商品リスト');
    //ChromePhp::LOG(count($now_wearer_list));
    //ChromePhp::LOG($now_wearer_list);
@@ -1720,7 +1638,6 @@ $app->post('/wearer_change/info', function ()use($app){
      //ChromePhp::LOG($chg_wearer_list);
    }
 
-   //ChromePhp::LOG($chg_wearer_list);
      //ChromePhp::log($now_wearer_list);
 
    //--新たに追加されるアイテム一覧リストの生成--//
@@ -1760,6 +1677,10 @@ $app->post('/wearer_change/info', function ()use($app){
                  array_push($chk_list, $list);
              }
          }
+         ///ChromePhp::log($chg_wearer_job_type_cd);
+         //ChromePhp::log($m_wearer_job_type_cd);
+         //ChromePhp::log($chk_list);
+
 
      }else{
          // 発注前後リストの商品比較処理
@@ -2138,6 +2059,7 @@ $app->post('/wearer_change/info', function ()use($app){
              array_push($query_list, "t_returned_plan_info_tran.color_cd = '".$now_wearer_map['color_cd']."'");
              array_push($query_list, "t_returned_plan_info_tran.size_cd = '".$list["size_cd"]."'");
              array_push($query_list, "t_returned_plan_info_tran.individual_ctrl_no = '".$individual["individual_ctrl_no"]."'");
+             array_push($query_list, "t_order_tran.job_type_cd = '".$chg_wearer_job_type_cd."'");
              $query = implode(' AND ', $query_list);
 
              $arg_str = "";
@@ -2145,7 +2067,9 @@ $app->post('/wearer_change/info', function ()use($app){
              $arg_str .= "individual_ctrl_no";
              $arg_str .= " FROM ";
              $arg_str .= "t_returned_plan_info_tran";
-             $arg_str .= " WHERE ";
+             $arg_str .= " INNER JOIN t_order_tran";
+             $arg_str .= " ON t_returned_plan_info_tran.order_req_no = t_order_tran.order_req_no";
+               $arg_str .= " WHERE ";
              $arg_str .= $query;
 
              $t_returned_plan_info_tran = new TReturnedPlanInfoTran();
