@@ -27,16 +27,17 @@ $app->post('/home', function ()use($app){
     $arg_str .= "T2.order_req_no as as_wst_order_req_no,";
     $arg_str .= "T2.order_sts_kbn as as_wst_order_sts_kbn,";
     $arg_str .= "T2.snd_kbn as as_snd_kbn,";
-    $arg_str .= "T1.order_req_no as as_order_req_no";
+    $arg_str .= "T1.corporate_id as as_corporate_id,";
+    $arg_str .= "T1.rntl_cont_no as as_rntl_cont_no";
     $arg_str .= " FROM ";
     $arg_str .= "(SELECT * FROM m_wearer_std_tran WHERE order_sts_kbn = '1') as T2";
     $arg_str .= " INNER JOIN (SELECT * FROM t_order_tran) as T1";
     $arg_str .= " ON T2.order_req_no = T1.order_req_no";
     $arg_str .= " WHERE ";
     $arg_str .= "T2.snd_kbn = '0'";
+    $arg_str .= " AND T1.corporate_id = '".$corporate_id."'";
     $arg_str .= ") as distinct_table";
     $arg_str .= " ORDER BY as_wst_order_req_no ASC";
-
     $m_wearer_std_tran = new MWearerStdTran();
     $results = new Resultset(null, $m_wearer_std_tran, $m_wearer_std_tran->getReadConnection()->query($arg_str));
     $result_obj = (array)$results;
@@ -51,13 +52,16 @@ $app->post('/home', function ()use($app){
     $arg_str .= "T2.order_req_no as as_wst_order_req_no,";
     $arg_str .= "T2.order_sts_kbn as as_wst_order_sts_kbn,";
     $arg_str .= "T2.snd_kbn as as_snd_kbn,";
-    $arg_str .= "T1.order_req_no as as_order_req_no";
+    $arg_str .= "T1.order_req_no as as_order_req_no,";
+    $arg_str .= "T1.corporate_id as as_corporate_id,";
+    $arg_str .= "T1.rntl_cont_no as as_rntl_cont_no";
     $arg_str .= " FROM ";
     $arg_str .= "(SELECT * FROM m_wearer_std_tran WHERE NOT order_sts_kbn = '1') as T2";
     $arg_str .= " LEFT JOIN (SELECT * FROM t_order_tran) as T1";
     $arg_str .= " ON T2.order_req_no = T1.order_req_no";
     $arg_str .= " WHERE ";
     $arg_str .= "T2.snd_kbn = '0'";
+    $arg_str .= " AND T1.corporate_id = '".$corporate_id."'";
     $arg_str .= ") as distinct_table";
     $arg_str .= " ORDER BY as_wst_order_req_no ASC";
 
