@@ -30,10 +30,12 @@ define([
 			ui: {
 				'return_count': '#return_count',
 				'return_num': '.return_num',
+				'target_flg': '.target_flg',
 			},
 			bindings: {
 				'#return_count': 'return_count',
 				'.return_num': 'return_num',
+				'.target_flg': 'target_flg',
 			},
 			onShow: function() {
 				$.blockUI({ message: '<p><img src="ajax-loader.gif" style="margin: 0 auto;" /> 読み込み中...</p>' });
@@ -68,6 +70,26 @@ define([
 				});
 			},
 			events: {
+				'change @ui.target_flg': function(e){
+					var return_num = 0;
+
+					var target_id = e.target.id;
+					var return_id = target_id.replace( /target_flg/g , "return_num" ) ;
+					return_num = parseInt($('#'+return_id).val());
+					if(e.target.checked){
+						return_num += 1;
+					}else{
+						return_num -= 1;
+					}
+					$('#'+return_id).val(return_num);
+					var return_count = parseInt(0);
+					$(".return_num").each(function () {
+						if ($(this).val()) {
+							return_count += parseInt($(this).val());
+						}
+					});
+					$("input[name='return_count']").val(return_count);
+				},
 				'change @ui.return_num': function(e){
 					var return_count = 0;
 					return_count = parseInt(e.target.value);

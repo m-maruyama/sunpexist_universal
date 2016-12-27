@@ -1,23 +1,21 @@
 <div class="form-group">
-	<label class="col-md-3 control-label" for="">出荷先</label>
+	<label class="col-md-3 control-label" for="m_shipment_to">出荷先</label>
 	<div class="col-md-5">
-		<select class="form-control input-sm" id="shipment" name="shipment">
-			<!--option selected="selected">支店店舗と同じ</option-->
-			{{#each shipment_list}}<option value="{{ship_to_cd}}:{{ship_to_brnch_cd}}" {{selected}}>{{cust_to_brnch_name1}}{{cust_to_brnch_name2}}</option>{{/each}}
+		<select class="form-control input-sm" id="m_shipment_to" name="m_shipment_to">
+			<option selected="selected" value="">拠点と同じ</option>
+			{{#each m_shipment_to_list}}<option value="{{ship_to_cd}},{{ship_to_brnch_cd}}">{{cust_to_brnch_name1}}{{cust_to_brnch_name2}}</option>{{/each}}
 		</select>
 	</div>
 </div>
-{{#each post_address}}
 <div class="form-group">
-	<label class="col-md-3 control-label" for="">郵便番号</label>
+	<label class="col-md-3 control-label" for="zip_no">郵便番号</label>
 	<div class="col-md-3">
-		<input type="text" class="form-control input-sm" id="post_number" name="post_number" disabled="disabled" value="{{zip_no}}">
+		<input type="text" class="form-control input-sm" id="zip_no" disabled="disabled" value="{{zip_no}}">
 	</div>
 </div>
 <div class="form-group" style="margin-bottom: 40px">
-	<label class="col-md-3 control-label" for="">住所</label>
+	<label class="col-md-3 control-label" for="address">住所</label>
 	<div class="col-md-8">
-		<textarea rows="3" class="form-control input-sm" id="address" name="address" disabled="disabled">{{address1}}{{address2}}{{address3}}{{address4}}</textarea>
+		<textarea rows="3" class="form-control input-sm" id="address" disabled="disabled">{{address1}}{{address2}}{{address3}}{{address4}}</textarea>
 	</div>
 </div>
-{{/each}}
