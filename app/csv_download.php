@@ -1376,71 +1376,151 @@ $app->post('/csv_download', function ()use($app){
         //ChromePhp::log($sort_key);
         //ChromePhp::log($q_sort_key);
 
-        //---SQLクエリー実行---//
-        $arg_str = "SELECT ";
-        $arg_str .= " * ";
-        $arg_str .= " FROM ";
+
+        if (individual_flg($auth['corporate_id'], $cond['agreement_no']) == 1) {
+
+            //---SQLクエリー実行---//
+            $arg_str = "SELECT ";
+            $arg_str .= " * ";
+            $arg_str .= " FROM ";
 //	$arg_str .= "(SELECT ";
-        $arg_str .= "(SELECT distinct on (t_returned_plan_info.item_cd, t_returned_plan_info.color_cd) ";
-        $arg_str .= "t_returned_plan_info.order_req_no as as_order_req_no,";
-        $arg_str .= "t_order.order_req_ymd as as_order_req_ymd,";
-        $arg_str .= "t_returned_plan_info.order_sts_kbn as as_order_sts_kbn,";
-        $arg_str .= "t_order.order_reason_kbn as as_order_reason_kbn,";
-        $arg_str .= "m_section.rntl_sect_name as as_rntl_sect_name,";
-        $arg_str .= "m_job_type.job_type_name as as_job_type_name,";
-        $arg_str .= "m_wearer_std.cster_emply_cd as as_cster_emply_cd,";
-        $arg_str .= "m_wearer_std.werer_name as as_werer_name,";
-        $arg_str .= "t_returned_plan_info.item_cd as as_item_cd,";
-        $arg_str .= "t_returned_plan_info.color_cd as as_color_cd,";
-        $arg_str .= "t_returned_plan_info.size_cd as as_size_cd,";
-				$arg_str .= "t_order.job_type_cd as as_job_type_cd,";
-        $arg_str .= "t_order.size_two_cd as as_size_two_cd,";
-        $arg_str .= "t_order.order_qty as as_order_qty,";
-        $arg_str .= "t_returned_plan_info.order_date as as_re_order_date,";
-        $arg_str .= "t_returned_plan_info.return_status as as_return_status,";
-        $arg_str .= "t_returned_plan_info.return_date as as_return_date,";
-        $arg_str .= "t_delivery_goods_state.rec_order_no as as_rec_order_no,";
-        $arg_str .= "t_delivery_goods_state.ship_no as as_ship_no,";
-        $arg_str .= "t_delivery_goods_state.ship_ymd as as_ship_ymd,";
-        $arg_str .= "t_delivery_goods_state.ship_qty as as_ship_qty,";
-        $arg_str .= "t_delivery_goods_state.return_qty as as_return_qty,";
-        $arg_str .= "t_delivery_goods_state_details.individual_ctrl_no as as_individual_ctrl_no,";
-        $arg_str .= "t_delivery_goods_state_details.receipt_date as as_receipt_date,";
-        $arg_str .= "t_delivery_goods_state_details.return_plan__qty as as_return_plan__qty,";
-        $arg_str .= "t_returned_plan_info.rntl_cont_no as as_rntl_cont_no,";
-        $arg_str .= "m_contract.rntl_cont_name as as_rntl_cont_name";
-        $arg_str .= " FROM t_order LEFT JOIN";
-        $arg_str .= " (t_returned_plan_info LEFT JOIN";
-        $arg_str .= " (t_order_state LEFT JOIN ";
-        $arg_str .= " (t_delivery_goods_state LEFT JOIN t_delivery_goods_state_details ON t_delivery_goods_state.ship_no = t_delivery_goods_state_details.ship_no)";
-        $arg_str .= " ON t_order_state.t_order_state_comb_hkey = t_delivery_goods_state.t_order_state_comb_hkey)";
-        $arg_str .= " ON t_returned_plan_info.order_req_no = t_order_state.order_req_no)";
-        $arg_str .= " ON t_order.order_req_no = t_returned_plan_info.order_req_no";
-        if($rntl_sect_cd_zero_flg == 1){
-					$arg_str .= " INNER JOIN m_section";
-					$arg_str .= " ON t_order.m_section_comb_hkey = m_section.m_section_comb_hkey";
-        }elseif($rntl_sect_cd_zero_flg == 0){
-					$arg_str .= " INNER JOIN (m_section INNER JOIN m_contract_resource";
-					$arg_str .= " ON m_section.corporate_id = m_contract_resource.corporate_id";
-					$arg_str .= " AND m_section.rntl_cont_no = m_contract_resource.rntl_cont_no";
-					$arg_str .= " AND m_section.rntl_sect_cd = m_contract_resource.rntl_sect_cd";
-					$arg_str .= " ) ON t_order.m_section_comb_hkey = m_section.m_section_comb_hkey";
+            $arg_str .= "(SELECT distinct on (t_returned_plan_info.item_cd, t_returned_plan_info.color_cd, t_returned_plan_info.size_cd) ";
+            $arg_str .= "t_returned_plan_info.order_req_no as as_order_req_no,";
+            $arg_str .= "t_returned_plan_info.order_date as as_order_req_ymd,";
+            $arg_str .= "t_returned_plan_info.order_sts_kbn as as_order_sts_kbn,";
+            $arg_str .= "t_order.order_reason_kbn as as_order_reason_kbn,";
+            $arg_str .= "m_section.rntl_sect_name as as_rntl_sect_name,";
+            $arg_str .= "m_job_type.job_type_name as as_job_type_name,";
+            $arg_str .= "m_wearer_std.cster_emply_cd as as_cster_emply_cd,";
+            $arg_str .= "m_wearer_std.werer_name as as_werer_name,";
+            $arg_str .= "t_returned_plan_info.item_cd as as_item_cd,";
+            $arg_str .= "t_returned_plan_info.color_cd as as_color_cd,";
+            $arg_str .= "t_returned_plan_info.size_cd as as_size_cd,";
+            $arg_str .= "t_order.job_type_cd as as_job_type_cd,";
+            $arg_str .= "t_order.size_two_cd as as_size_two_cd,";
+            $arg_str .= "t_order.order_qty as as_order_qty,";
+            $arg_str .= "t_returned_plan_info.order_date as as_re_order_date,";
+            $arg_str .= "t_returned_plan_info.return_status as as_return_status,";
+            $arg_str .= "t_returned_plan_info.return_date as as_return_date,";
+            $arg_str .= "t_delivery_goods_state.rec_order_no as as_rec_order_no,";
+            $arg_str .= "t_delivery_goods_state.ship_no as as_ship_no,";
+            $arg_str .= "t_delivery_goods_state.ship_ymd as as_ship_ymd,";
+            $arg_str .= "t_order_state.ship_qty as as_ship_qty,";
+            $arg_str .= "t_returned_plan_info.return_qty as as_return_qty,";
+            $arg_str .= "t_returned_plan_info.individual_ctrl_no as as_individual_ctrl_no,";
+            $arg_str .= "t_delivery_goods_state_details.receipt_date as as_receipt_date,";
+            $arg_str .= "t_returned_plan_info.return_plan_qty as as_return_plan__qty,";
+            $arg_str .= "t_returned_plan_info.rntl_cont_no as as_rntl_cont_no,";
+            $arg_str .= "m_contract.rntl_cont_name as as_rntl_cont_name";
+            /*
+            $arg_str .= " FROM t_order LEFT JOIN";
+            $arg_str .= " (t_returned_plan_info LEFT JOIN";
+            $arg_str .= " (t_order_state LEFT JOIN ";
+            $arg_str .= " (t_delivery_goods_state LEFT JOIN t_delivery_goods_state_details ON t_delivery_goods_state.ship_no = t_delivery_goods_state_details.ship_no AND t_delivery_goods_state.ship_line_no = t_delivery_goods_state_details.ship_line_no)";
+            $arg_str .= " ON t_order_state.t_order_state_comb_hkey = t_delivery_goods_state.t_order_state_comb_hkey)";
+            $arg_str .= " ON t_returned_plan_info.order_req_no = t_order_state.order_req_no)";
+            $arg_str .= " ON t_order.order_req_no = t_returned_plan_info.order_req_no";
+            */
+            $arg_str .= " FROM t_returned_plan_info LEFT JOIN";
+            $arg_str .= " (t_order LEFT JOIN";
+            $arg_str .= " (t_order_state LEFT JOIN ";
+            $arg_str .= " (t_delivery_goods_state LEFT JOIN t_delivery_goods_state_details ON t_delivery_goods_state.ship_no = t_delivery_goods_state_details.ship_no AND t_delivery_goods_state.ship_line_no = t_delivery_goods_state_details.ship_line_no)";
+            $arg_str .= " ON t_order_state.t_order_state_comb_hkey = t_delivery_goods_state.t_order_state_comb_hkey)";
+            $arg_str .= " ON t_order.t_order_comb_hkey = t_order_state.t_order_comb_hkey)";
+            $arg_str .= " ON t_order.order_req_no = t_returned_plan_info.order_req_no";
+
+            if ($rntl_sect_cd_zero_flg == 1) {
+                $arg_str .= " INNER JOIN m_section";
+                $arg_str .= " ON t_order.m_section_comb_hkey = m_section.m_section_comb_hkey";
+            } elseif ($rntl_sect_cd_zero_flg == 0) {
+                $arg_str .= " INNER JOIN (m_section INNER JOIN m_contract_resource";
+                $arg_str .= " ON m_section.corporate_id = m_contract_resource.corporate_id";
+                $arg_str .= " AND m_section.rntl_cont_no = m_contract_resource.rntl_cont_no";
+                $arg_str .= " AND m_section.rntl_sect_cd = m_contract_resource.rntl_sect_cd";
+                $arg_str .= " ) ON t_order.m_section_comb_hkey = m_section.m_section_comb_hkey";
+            }
+            $arg_str .= " INNER JOIN m_job_type";
+            $arg_str .= " ON t_order.m_job_type_comb_hkey = m_job_type.m_job_type_comb_hkey";
+            $arg_str .= " INNER JOIN m_wearer_std";
+            $arg_str .= " ON t_order.werer_cd = m_wearer_std.werer_cd";
+            $arg_str .= " AND t_order.corporate_id = m_wearer_std.corporate_id";
+            $arg_str .= " AND t_order.rntl_cont_no = m_wearer_std.rntl_cont_no";
+            $arg_str .= " INNER JOIN m_contract";
+            $arg_str .= " ON t_order.rntl_cont_no = m_contract.rntl_cont_no";
+            $arg_str .= " WHERE ";
+            $arg_str .= $query;
+            $arg_str .= ") as distinct_table";
+            if (!empty($q_sort_key)) {
+                $arg_str .= " ORDER BY ";
+                $arg_str .= $q_sort_key . " " . $order;
+            }
+
+        }else {
+
+            //---SQLクエリー実行---//
+            $arg_str = "SELECT ";
+            $arg_str .= "t_returned_plan_info.order_req_no as as_order_req_no,";
+            $arg_str .= "t_order.order_req_ymd as as_order_req_ymd,";
+            $arg_str .= "t_returned_plan_info.order_sts_kbn as as_order_sts_kbn,";
+            $arg_str .= "t_order.order_reason_kbn as as_order_reason_kbn,";
+            $arg_str .= "m_section.rntl_sect_name as as_rntl_sect_name,";
+            $arg_str .= "m_job_type.job_type_name as as_job_type_name,";
+            $arg_str .= "m_wearer_std.cster_emply_cd as as_cster_emply_cd,";
+            $arg_str .= "m_wearer_std.werer_name as as_werer_name,";
+            $arg_str .= "t_returned_plan_info.item_cd as as_item_cd,";
+            $arg_str .= "t_returned_plan_info.color_cd as as_color_cd,";
+            $arg_str .= "t_returned_plan_info.size_cd as as_size_cd,";
+            $arg_str .= "t_order.job_type_cd as as_job_type_cd,";
+            $arg_str .= "t_order.size_two_cd as as_size_two_cd,";
+            $arg_str .= "t_order.order_qty as as_order_qty,";
+            $arg_str .= "t_returned_plan_info.order_date as as_re_order_date,";
+            $arg_str .= "t_returned_plan_info.return_status as as_return_status,";
+            $arg_str .= "t_returned_plan_info.return_date as as_return_date,";
+            $arg_str .= "t_delivery_goods_state.rec_order_no as as_rec_order_no,";
+            $arg_str .= "t_delivery_goods_state.ship_no as as_ship_no,";
+            $arg_str .= "t_delivery_goods_state.ship_ymd as as_ship_ymd,";
+            $arg_str .= "t_order_state.ship_qty as as_ship_qty,";
+            $arg_str .= "t_returned_plan_info.return_qty as as_return_qty,";
+            $arg_str .= "t_returned_plan_info.individual_ctrl_no as as_individual_ctrl_no,";
+            $arg_str .= "t_delivery_goods_state_details.receipt_date as as_receipt_date,";
+            $arg_str .= "t_returned_plan_info.return_plan_qty as as_return_plan__qty,";
+            $arg_str .= "t_returned_plan_info.rntl_cont_no as as_rntl_cont_no,";
+            $arg_str .= "m_contract.rntl_cont_name as as_rntl_cont_name";
+            $arg_str .= " FROM t_returned_plan_info LEFT JOIN";
+            $arg_str .= " (t_order LEFT JOIN";
+            $arg_str .= " (t_order_state LEFT JOIN ";
+            $arg_str .= " (t_delivery_goods_state LEFT JOIN t_delivery_goods_state_details ON t_delivery_goods_state.ship_no = t_delivery_goods_state_details.ship_no AND t_delivery_goods_state.ship_line_no = t_delivery_goods_state_details.ship_line_no)";
+            $arg_str .= " ON t_order_state.t_order_state_comb_hkey = t_delivery_goods_state.t_order_state_comb_hkey)";
+            $arg_str .= " ON t_order.t_order_comb_hkey = t_order_state.t_order_comb_hkey)";
+            $arg_str .= " ON t_order.order_req_no = t_returned_plan_info.order_req_no";
+            $arg_str .= " AND t_order.order_req_line_no = t_returned_plan_info.order_req_line_no";
+            if ($rntl_sect_cd_zero_flg == 1) {
+                $arg_str .= " INNER JOIN m_section";
+                $arg_str .= " ON t_order.m_section_comb_hkey = m_section.m_section_comb_hkey";
+            } elseif ($rntl_sect_cd_zero_flg == 0) {
+                $arg_str .= " INNER JOIN (m_section INNER JOIN m_contract_resource";
+                $arg_str .= " ON m_section.corporate_id = m_contract_resource.corporate_id";
+                $arg_str .= " AND m_section.rntl_cont_no = m_contract_resource.rntl_cont_no";
+                $arg_str .= " AND m_section.rntl_sect_cd = m_contract_resource.rntl_sect_cd";
+                $arg_str .= " ) ON t_order.m_section_comb_hkey = m_section.m_section_comb_hkey";
+            }
+            $arg_str .= " INNER JOIN m_job_type";
+            $arg_str .= " ON t_order.m_job_type_comb_hkey = m_job_type.m_job_type_comb_hkey";
+            $arg_str .= " INNER JOIN m_wearer_std";
+            $arg_str .= " ON t_order.werer_cd = m_wearer_std.werer_cd";
+            $arg_str .= " AND t_order.corporate_id = m_wearer_std.corporate_id";
+            $arg_str .= " AND t_order.rntl_cont_no = m_wearer_std.rntl_cont_no";
+            $arg_str .= " INNER JOIN m_contract";
+            $arg_str .= " ON t_order.rntl_cont_no = m_contract.rntl_cont_no";
+            $arg_str .= " WHERE ";
+            $arg_str .= $query;
+            //$arg_str .= ") as distinct_table";
+            if (!empty($q_sort_key)) {
+                $arg_str .= " ORDER BY ";
+                $arg_str .= $q_sort_key . " " . $order;
+            }
         }
-        $arg_str .= " INNER JOIN m_job_type";
-        $arg_str .= " ON t_order.m_job_type_comb_hkey = m_job_type.m_job_type_comb_hkey";
-        $arg_str .= " INNER JOIN m_wearer_std";
-        $arg_str .= " ON t_order.werer_cd = m_wearer_std.werer_cd";
-        $arg_str .= " AND t_order.corporate_id = m_wearer_std.corporate_id";
-        $arg_str .= " AND t_order.rntl_cont_no = m_wearer_std.rntl_cont_no";
-        $arg_str .= " INNER JOIN m_contract";
-        $arg_str .= " ON t_order.rntl_cont_no = m_contract.rntl_cont_no";
-        $arg_str .= " WHERE ";
-        $arg_str .= $query;
-        $arg_str .= ") as distinct_table";
-        if (!empty($q_sort_key)) {
-            $arg_str .= " ORDER BY ";
-            $arg_str .= $q_sort_key." ".$order;
-        }
+
 		$t_order = new TOrder();
 		$results = new Resultset(null, $t_order, $t_order->getReadConnection()->query($arg_str));
 		$results_array = (array)$results;
