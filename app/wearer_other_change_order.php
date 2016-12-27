@@ -752,7 +752,7 @@ $app->post('/wearer_other_change_list', function ()use($app){
         $arg_str .= " AND t_delivery_goods_state_details.color_cd = m_item.color_cd";
         $arg_str .= " AND t_delivery_goods_state_details.size_cd = m_item.size_cd)";
         $arg_str .= " INNER JOIN m_input_item";
-        $arg_str .= " ON (m_item.corporate_id = m_input_item.corporate_id";
+        $arg_str .= " ON (m_item.corporate_id = m_item.corporate_id";
         $arg_str .= " AND m_item.item_cd = m_input_item.item_cd";
         $arg_str .= " AND m_item.color_cd = m_input_item.color_cd)";
         $arg_str .= " WHERE ";
@@ -1029,7 +1029,7 @@ $app->post('/wearer_other_change_list', function ()use($app){
         $arg_str .= " AND t_delivery_goods_state_details.color_cd = m_item.color_cd";
         $arg_str .= " AND t_delivery_goods_state_details.size_cd = m_item.size_cd)";
         $arg_str .= " INNER JOIN m_input_item";
-        $arg_str .= " ON (m_item.corporate_id = m_input_item.corporate_id";
+        $arg_str .= " ON (m_item.corporate_id = m_item.corporate_id";
         $arg_str .= " AND m_item.item_cd = m_input_item.item_cd";
         $arg_str .= " AND m_item.color_cd = m_input_item.color_cd)";
         $arg_str .= " WHERE ";
