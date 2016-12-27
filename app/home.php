@@ -81,13 +81,26 @@ $app->post('/home', function ()use($app){
     $arg_str .= "(SELECT * FROM m_wearer_std_tran WHERE order_sts_kbn = '1') as T2";
     $arg_str .= " INNER JOIN (SELECT * FROM t_order_tran) as T1";
     $arg_str .= " ON T2.order_req_no = T1.order_req_no";
+    if ($rntl_sect_cd_zero_flg == 1){
+        $arg_str .= " INNER JOIN m_section";
+        $arg_str .= " ON T1.m_section_comb_hkey = m_section.m_section_comb_hkey";
+    } else if ($rntl_sect_cd_zero_flg == 0){
+        $arg_str .= " INNER JOIN m_contract_resource";
+        $arg_str .= " ON T2.corporate_id = m_contract_resource.corporate_id";
+        $arg_str .= " AND T2.rntl_cont_no = m_contract_resource.rntl_cont_no";
+        $arg_str .= " AND T2.rntl_sect_cd = m_contract_resource.rntl_sect_cd";
+    }
+
     $arg_str .= " WHERE ";
     $arg_str .= "T2.snd_kbn = '0'";
     $arg_str .= " AND T1.corporate_id = '".$corporate_id."'";
     $arg_str .= " AND T1.rntl_cont_no = '".$rntl_cont_no."'";
-
+    if($rntl_sect_cd_zero_flg == 0){
+        $arg_str .= "AND m_contract_resource.accnt_no = '$accnt_no'";
+    }
     $arg_str .= ") as distinct_table";
     $arg_str .= " ORDER BY as_wst_order_req_no ASC";
+    ChromePhp::log($arg_str);
     $m_wearer_std_tran = new MWearerStdTran();
     $results = new Resultset(null, $m_wearer_std_tran, $m_wearer_std_tran->getReadConnection()->query($arg_str));
     $result_obj = (array)$results;
@@ -109,14 +122,26 @@ $app->post('/home', function ()use($app){
     $arg_str .= "(SELECT * FROM m_wearer_std_tran WHERE NOT order_sts_kbn = '1') as T2";
     $arg_str .= " LEFT JOIN (SELECT * FROM t_order_tran) as T1";
     $arg_str .= " ON T2.order_req_no = T1.order_req_no";
+    if ($rntl_sect_cd_zero_flg == 1){
+        $arg_str .= " INNER JOIN m_section";
+        $arg_str .= " ON T1.m_section_comb_hkey = m_section.m_section_comb_hkey";
+    } else if ($rntl_sect_cd_zero_flg == 0){
+        $arg_str .= " INNER JOIN m_contract_resource";
+        $arg_str .= " ON T2.corporate_id = m_contract_resource.corporate_id";
+        $arg_str .= " AND T2.rntl_cont_no = m_contract_resource.rntl_cont_no";
+        $arg_str .= " AND T2.rntl_sect_cd = m_contract_resource.rntl_sect_cd";
+    }
     $arg_str .= " WHERE ";
     $arg_str .= "T2.snd_kbn = '0'";
     $arg_str .= " AND T1.corporate_id = '".$corporate_id."'";
     $arg_str .= " AND T1.rntl_cont_no = '".$rntl_cont_no."'";
+    if($rntl_sect_cd_zero_flg == 0){
+        $arg_str .= "AND m_contract_resource.accnt_no = '$accnt_no'";
+    }
 
     $arg_str .= ") as distinct_table";
     $arg_str .= " ORDER BY as_wst_order_req_no ASC";
-
+    ChromePhp::log($arg_str);
     $m_wearer_std_tran2 = new MWearerStdTran();
     $results2 = new Resultset(null, $m_wearer_std_tran2, $m_wearer_std_tran2->getReadConnection()->query($arg_str));
     $result_obj2 = (array)$results2;
@@ -126,9 +151,9 @@ $app->post('/home', function ()use($app){
     //パターン１とパターン２を足した件数
     $emply_cd_no_regist_cnt = $results_cnt + $results_cnt2;
 
-    //未受領件数
 
     $query = "";
+
     $query .= "
             t_delivery_goods_state_details.corporate_id = '"."$corporate_id"."'
             AND t_delivery_goods_state_details.rntl_cont_no = '"."$rntl_cont_no"."'
@@ -194,6 +219,13 @@ $app->post('/home', function ()use($app){
         OR  t_order.order_sts_kbn = '9'
         AND m_wearer_std.werer_sts_kbn = '1'
     )";
+    $query_list = array();
+    //ゼロ埋めがない場合、ログインアカウントの条件追加
+    if($rntl_sect_cd_zero_flg == 0){
+        array_push($query_list,"m_contract_resource.accnt_no = '$accnt_no'");
+        //未受領件数
+        $query = implode(' AND ', $query_list);
+    }
     //---SQLクエリー実行---//
     $arg_str = "SELECT ";
     $arg_str .= " * ";
@@ -329,7 +361,13 @@ $app->post('/home', function ()use($app){
         OR  t_order.order_sts_kbn = '9'
         AND m_wearer_std.werer_sts_kbn = '1'
     )";
-
+    $query_list = array();
+    //ゼロ埋めがない場合、ログインアカウントの条件追加
+    if($rntl_sect_cd_zero_flg == 0){
+        array_push($query_list,"m_contract_resource.accnt_no = '$accnt_no'");
+        //未受領件数
+        $query = implode(' AND ', $query_list);
+    }
 
     if (individual_flg($auth['corporate_id'], $rntl_cont_no) == 1) {
 
@@ -454,9 +492,9 @@ $app->post('/home', function ()use($app){
         $arg_str .= " ON t_order.rntl_cont_no = m_contract.rntl_cont_no";
         $arg_str .= " WHERE ";
         $arg_str .= $query;
+        ChromePhp::log($arg_str);
 
     }
-
     $t_order = new TOrder();
     $results = new Resultset(null, $t_order, $t_order->getReadConnection()->query($arg_str));
     $results_array = (array)$results;
