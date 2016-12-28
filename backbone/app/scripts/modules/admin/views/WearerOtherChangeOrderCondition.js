@@ -528,7 +528,6 @@ define([
 								that.triggerMethod('inputComplete', data);
 							}else{
 								window.sessionStorage.setItem('referrer', 'wearer_other_change_order');
-								// 入力完了画面処理へ移行
 								var data = {
 									"scr": scr,
 									"wearer_data": wearer_data,
@@ -536,11 +535,19 @@ define([
 									"mode": 'input',
 									"item": item
 								};
-								if(send=='0'){
-									that.triggerMethod('inputComplete', data);
+								if(send=='1'){
+									//発注送信の場合
+									var msg = "発注送信を行いますが、よろしいですか？";
+									if (window.confirm(msg)) {
+										// 入力完了画面処理へ移行
+										that.triggerMethod('sendComplete', data);
+									}
 								}else{
-									that.triggerMethod('sendComplete', data);
-
+									var msg = "入力を完了しますが、よろしいですか？";
+									if (window.confirm(msg)) {
+										// 入力完了画面処理へ移行
+										that.triggerMethod('inputComplete', data);
+									}
 								}
 							}
 						}
