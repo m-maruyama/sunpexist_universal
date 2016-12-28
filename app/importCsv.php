@@ -817,10 +817,12 @@ $app->post('/import_csv', function () use ($app) {
     $arg_str .= "INNER JOIN m_wearer_std_tran ON ";
     $arg_str .= "t_import_job.cster_emply_cd = m_wearer_std_tran.cster_emply_cd ";
     $arg_str .= "WHERE ";
-    $arg_str .= "t_import_job.job_no = '" . $job_no . "' AND m_wearer_std_tran.corporate_id = '$corporate_id' AND m_wearer_std_tran.rntl_cont_no = '$agreement_no' ";
+    $arg_str .= "t_import_job.job_no = '" . $job_no . "' AND m_wearer_std_tran.corporate_id = '$corporate_id' AND m_wearer_std_tran.rntl_cont_no = '$agreement_no' AND t_import_job.order_kbn <> '5' ";
     $results = new Resultset(null, $t_import_job, $t_import_job->getReadConnection()->query($arg_str));
     $result_obj = (array)$results;
     $results_cnt = $result_obj["\0*\0_count"];
+    //ChromePhp::log($arg_str);
+    //ChromePhp::log($results_cnt);
     if (!empty($results_cnt)) {
         $results_count = (count($results));
         $paginator_model = new PaginatorModel(
@@ -1296,7 +1298,7 @@ $app->post('/import_csv', function () use ($app) {
             $results = $paginator->items;
             $values_querys = array();
             foreach ($results as $result) {
-                ChromePhp::log($results);
+                //ChromePhp::log($results);
                 // 着用者基本マスタトラン登録用VALUES設定
                 $values_list = array();
 
