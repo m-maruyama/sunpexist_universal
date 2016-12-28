@@ -62,96 +62,105 @@ $app->post('/home', function ()use($app){
         $rntl_sect_cd_zero_flg = 0;
     }
 
-
     //発注未送信件数
 
     // 発注区分=貸与で発注情報トランのデータが存在しない場合は対象外とする
     // パターン１ 発注区分 = 貸与 発注トランに発注番号を省いた件数 未送信
+    $all_list = array();
+    $query = "";
+    $query .= "m_wearer_std_tran.corporate_id = '"."$corporate_id"."'";
+    $query .= " AND m_wearer_std_tran.rntl_cont_no = '"."$rntl_cont_no"."'";
+    $query .= " AND m_wearer_std_tran.snd_kbn = '0'";
+    if ($rntl_sect_cd_zero_flg == 0) {
+        $query .= " AND m_contract_resource.corporate_id = '".$corporate_id."'";
+        $query .= " AND m_contract_resource.rntl_cont_no = '".$rntl_cont_no."'";
+        $query .= " AND m_contract_resource.accnt_no = '".$auth['accnt_no']."'";
+    }
+
     $arg_str = "";
     $arg_str .= "SELECT ";
     $arg_str .= " * ";
     $arg_str .= " FROM ";
-    $arg_str .= "(SELECT distinct on (T2.order_req_no) ";
-    $arg_str .= "T2.order_req_no as as_wst_order_req_no,";
-    $arg_str .= "T2.order_sts_kbn as as_wst_order_sts_kbn,";
-    $arg_str .= "T2.snd_kbn as as_snd_kbn,";
-    $arg_str .= "T1.corporate_id as as_corporate_id,";
-    $arg_str .= "T1.rntl_cont_no as as_rntl_cont_no";
+    $arg_str .= "(SELECT distinct on (m_wearer_std_tran.order_req_no) ";
+    $arg_str .= "m_wearer_std_tran.order_req_no as as_wst_order_req_no,";
+    $arg_str .= "m_wearer_std_tran.werer_cd as as_werer_cd,";
+    $arg_str .= "m_wearer_std_tran.cster_emply_cd as as_cster_emply_cd,";
+    $arg_str .= "m_wearer_std_tran.werer_name as as_werer_name,";
+    $arg_str .= "m_wearer_std_tran.sex_kbn as as_sex_kbn,";
+    $arg_str .= "m_wearer_std_tran.order_sts_kbn as as_wst_order_sts_kbn,";
+    $arg_str .= "m_wearer_std_tran.snd_kbn as as_wst_snd_kbn,";
+    $arg_str .= "m_wearer_std_tran.corporate_id as as_corporate_id,";
+    $arg_str .= "m_wearer_std_tran.rntl_cont_no as as_rntl_cont_no,";
+    $arg_str .= "m_wearer_std_tran.rntl_sect_cd as as_rntl_sect_cd,";
+    $arg_str .= "m_wearer_std_tran.job_type_cd as as_job_type_cd,";
+    $arg_str .= "m_wearer_std_tran.rgst_date as as_rgst_date,";
+    $arg_str .= "m_section.rntl_sect_name as as_rntl_sect_name,";
+    $arg_str .= "m_job_type.job_type_name as as_job_type_name,";
+    $arg_str .= "t_order_tran.order_req_no as as_order_req_no,";
+    $arg_str .= "t_order_tran.order_req_ymd as as_order_req_ymd,";
+    $arg_str .= "t_order_tran.order_sts_kbn as as_order_sts_kbn,";
+    $arg_str .= "t_order_tran.order_reason_kbn as as_order_reason_kbn,";
+    $arg_str .= "t_order_tran.snd_kbn as as_snd_kbn,";
+    $arg_str .= "t_returned_plan_info_tran.order_req_no as as_rtn_order_req_no";
     $arg_str .= " FROM ";
-    $arg_str .= "(SELECT * FROM m_wearer_std_tran WHERE order_sts_kbn = '1') as T2";
-    $arg_str .= " INNER JOIN (SELECT * FROM t_order_tran) as T1";
-    $arg_str .= " ON T2.order_req_no = T1.order_req_no";
-    if ($rntl_sect_cd_zero_flg == 1){
-        $arg_str .= " INNER JOIN m_section";
-        $arg_str .= " ON T1.m_section_comb_hkey = m_section.m_section_comb_hkey";
-    } else if ($rntl_sect_cd_zero_flg == 0){
+    $arg_str .= "(m_wearer_std_tran";
+    if ($rntl_sect_cd_zero_flg == 1) {
+        $arg_str .= " INNER JOIN ";
+        $arg_str .= "m_section";
+        $arg_str .= " ON (m_wearer_std_tran.corporate_id = m_section.corporate_id";
+        $arg_str .= " AND m_wearer_std_tran.rntl_cont_no = m_section.rntl_cont_no";
+        $arg_str .= " AND m_wearer_std_tran.rntl_sect_cd = m_section.rntl_sect_cd)";
+    } else {
+        $arg_str .= " INNER JOIN ";
+        $arg_str .= "(m_section";
         $arg_str .= " INNER JOIN m_contract_resource";
-        $arg_str .= " ON T2.corporate_id = m_contract_resource.corporate_id";
-        $arg_str .= " AND T2.rntl_cont_no = m_contract_resource.rntl_cont_no";
-        $arg_str .= " AND T2.rntl_sect_cd = m_contract_resource.rntl_sect_cd";
+        $arg_str .= " ON m_section.corporate_id = m_contract_resource.corporate_id";
+        $arg_str .= " AND m_section.rntl_cont_no = m_contract_resource.rntl_cont_no";
+        $arg_str .= " AND m_section.rntl_sect_cd = m_contract_resource.rntl_sect_cd)";
+        $arg_str .= " ON m_wearer_std_tran.corporate_id = m_section.corporate_id";
+        $arg_str .= " AND m_wearer_std_tran.rntl_cont_no = m_section.rntl_cont_no";
+        $arg_str .= " AND m_wearer_std_tran.rntl_sect_cd = m_section.rntl_sect_cd";
     }
-
+    $arg_str .= " INNER JOIN m_job_type";
+    $arg_str .= " ON (m_wearer_std_tran.corporate_id = m_job_type.corporate_id";
+    $arg_str .= " AND m_wearer_std_tran.rntl_cont_no = m_job_type.rntl_cont_no";
+    $arg_str .= " AND m_wearer_std_tran.job_type_cd = m_job_type.job_type_cd))";
+    $arg_str .= " LEFT JOIN ";
+    $arg_str .= "t_order_tran";
+    $arg_str .= " ON m_wearer_std_tran.order_req_no = t_order_tran.order_req_no";
+    $arg_str .= " LEFT JOIN ";
+    $arg_str .= "t_returned_plan_info_tran";
+    $arg_str .= " ON m_wearer_std_tran.order_req_no = t_returned_plan_info_tran.order_req_no";
     $arg_str .= " WHERE ";
-    $arg_str .= "T2.snd_kbn = '0'";
-    $arg_str .= " AND T1.corporate_id = '".$corporate_id."'";
-    $arg_str .= " AND T1.rntl_cont_no = '".$rntl_cont_no."'";
-    if($rntl_sect_cd_zero_flg == 0){
-        $arg_str .= "AND m_contract_resource.accnt_no = '$accnt_no'";
-    }
+    $arg_str .= $query;
     $arg_str .= ") as distinct_table";
-    $arg_str .= " ORDER BY as_wst_order_req_no ASC";
-    ChromePhp::log($arg_str);
     $m_wearer_std_tran = new MWearerStdTran();
+    $emply_cd_no_regist_cnt = 0;
     $results = new Resultset(null, $m_wearer_std_tran, $m_wearer_std_tran->getReadConnection()->query($arg_str));
     $result_obj = (array)$results;
     $results_cnt = $result_obj["\0*\0_count"];
 
-    // パターン２　発注区分 = 貸与以外 未送信
-    $arg_str = "";
-    $arg_str .= "SELECT ";
-    $arg_str .= " * ";
-    $arg_str .= " FROM ";
-    $arg_str .= "(SELECT distinct on (T2.order_req_no) ";
-    $arg_str .= "T2.order_req_no as as_wst_order_req_no,";
-    $arg_str .= "T2.order_sts_kbn as as_wst_order_sts_kbn,";
-    $arg_str .= "T2.snd_kbn as as_snd_kbn,";
-    $arg_str .= "T1.order_req_no as as_order_req_no,";
-    $arg_str .= "T1.corporate_id as as_corporate_id,";
-    $arg_str .= "T1.rntl_cont_no as as_rntl_cont_no";
-    $arg_str .= " FROM ";
-    $arg_str .= "(SELECT * FROM m_wearer_std_tran WHERE NOT order_sts_kbn = '1') as T2";
-    $arg_str .= " LEFT JOIN (SELECT * FROM t_order_tran) as T1";
-    $arg_str .= " ON T2.order_req_no = T1.order_req_no";
-    if ($rntl_sect_cd_zero_flg == 1){
-        $arg_str .= " INNER JOIN m_section";
-        $arg_str .= " ON T1.m_section_comb_hkey = m_section.m_section_comb_hkey";
-    } else if ($rntl_sect_cd_zero_flg == 0){
-        $arg_str .= " INNER JOIN m_contract_resource";
-        $arg_str .= " ON T2.corporate_id = m_contract_resource.corporate_id";
-        $arg_str .= " AND T2.rntl_cont_no = m_contract_resource.rntl_cont_no";
-        $arg_str .= " AND T2.rntl_sect_cd = m_contract_resource.rntl_sect_cd";
-    }
-    $arg_str .= " WHERE ";
-    $arg_str .= "T2.snd_kbn = '0'";
-    $arg_str .= " AND T1.corporate_id = '".$corporate_id."'";
-    $arg_str .= " AND T1.rntl_cont_no = '".$rntl_cont_no."'";
-    if($rntl_sect_cd_zero_flg == 0){
-        $arg_str .= "AND m_contract_resource.accnt_no = '$accnt_no'";
-    }
+    if (!empty($results_cnt)) {
+        foreach ($results as $result) {
+            // 発注区分=貸与で発注情報トランのデータが存在しない場合は対象外とする
+            if ($result->as_wst_order_sts_kbn == "1" && empty($result->as_order_req_no)) {
+                continue;
+            }
+            $list['order_req_no'] = $result->as_order_req_no;
+            // 着用者コード
+            $list['werer_cd'] = $result->as_werer_cd;
+            // 発注状況区分
+            $list['order_sts_kbn'] = $result->as_wst_order_sts_kbn;
+            $all_list[] = $list;
 
-    $arg_str .= ") as distinct_table";
-    $arg_str .= " ORDER BY as_wst_order_req_no ASC";
-    ChromePhp::log($arg_str);
-    $m_wearer_std_tran2 = new MWearerStdTran();
-    $results2 = new Resultset(null, $m_wearer_std_tran2, $m_wearer_std_tran2->getReadConnection()->query($arg_str));
-    $result_obj2 = (array)$results2;
-    $results_cnt2 = $result_obj2["\0*\0_count"];
+            //発注未送信件数
+        }
+    }
+    $emply_cd_no_regist_cnt = count($all_list);
+    ChromePhp::log($all_list);
 
     //発注未送信件数
     //パターン１とパターン２を足した件数
-    $emply_cd_no_regist_cnt = $results_cnt + $results_cnt2;
-
-
     $query = "";
 
     $query .= "
@@ -219,13 +228,13 @@ $app->post('/home', function ()use($app){
         OR  t_order.order_sts_kbn = '9'
         AND m_wearer_std.werer_sts_kbn = '1'
     )";
-    $query_list = array();
+
+
     //ゼロ埋めがない場合、ログインアカウントの条件追加
     if($rntl_sect_cd_zero_flg == 0){
-        array_push($query_list,"m_contract_resource.accnt_no = '$accnt_no'");
-        //未受領件数
-        $query = implode(' AND ', $query_list);
+        $query .= " AND m_contract_resource.accnt_no = '$accnt_no'";
     }
+
     //---SQLクエリー実行---//
     $arg_str = "SELECT ";
     $arg_str .= " * ";
@@ -361,12 +370,10 @@ $app->post('/home', function ()use($app){
         OR  t_order.order_sts_kbn = '9'
         AND m_wearer_std.werer_sts_kbn = '1'
     )";
-    $query_list = array();
     //ゼロ埋めがない場合、ログインアカウントの条件追加
     if($rntl_sect_cd_zero_flg == 0){
-        array_push($query_list,"m_contract_resource.accnt_no = '$accnt_no'");
         //未受領件数
-        $query = implode(' AND ', $query_list);
+        $query .= " AND m_contract_resource.accnt_no = '$accnt_no'";
     }
 
     if (individual_flg($auth['corporate_id'], $rntl_cont_no) == 1) {
@@ -492,7 +499,7 @@ $app->post('/home', function ()use($app){
         $arg_str .= " ON t_order.rntl_cont_no = m_contract.rntl_cont_no";
         $arg_str .= " WHERE ";
         $arg_str .= $query;
-        ChromePhp::log($arg_str);
+        //ChromePhp::log($arg_str);
 
     }
     $t_order = new TOrder();
