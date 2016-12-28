@@ -727,6 +727,9 @@ $app->post('/wearer_other_change_list', function ()use($app){
         array_push($query_list, "t_delivery_goods_state_details.werer_cd = '".$wearer_size_change_post['werer_cd']."'");
         array_push($query_list, "t_delivery_goods_state_details.rtn_ok_flg = '1'");
         array_push($query_list, "t_delivery_goods_state_details.receipt_status = '2'");
+        //自分の貸与パターンを絞り込み
+        $query_list[] = "m_input_item.job_type_cd = '".$wearer_size_change_post['job_type_cd']."'";
+
         $query = implode(' AND ', $query_list);
 
         $arg_str = "";
@@ -752,7 +755,7 @@ $app->post('/wearer_other_change_list', function ()use($app){
         $arg_str .= " AND t_delivery_goods_state_details.color_cd = m_item.color_cd";
         $arg_str .= " AND t_delivery_goods_state_details.size_cd = m_item.size_cd)";
         $arg_str .= " INNER JOIN m_input_item";
-        $arg_str .= " ON (m_item.corporate_id = m_item.corporate_id";
+        $arg_str .= " ON (m_item.corporate_id = m_input_item.corporate_id";
         $arg_str .= " AND m_item.item_cd = m_input_item.item_cd";
         $arg_str .= " AND m_item.color_cd = m_input_item.color_cd)";
         $arg_str .= " WHERE ";
@@ -1003,6 +1006,7 @@ $app->post('/wearer_other_change_list', function ()use($app){
         array_push($query_list, "t_delivery_goods_state_details.receipt_status = '2'");
         //自分の貸与パターンを絞り込み
         $query_list[] = "m_input_item.job_type_cd = '".$wearer_size_change_post['job_type_cd']."'";
+
         $query = implode(' AND ', $query_list);
 
         $arg_str = "";
@@ -1029,7 +1033,7 @@ $app->post('/wearer_other_change_list', function ()use($app){
         $arg_str .= " AND t_delivery_goods_state_details.color_cd = m_item.color_cd";
         $arg_str .= " AND t_delivery_goods_state_details.size_cd = m_item.size_cd)";
         $arg_str .= " INNER JOIN m_input_item";
-        $arg_str .= " ON (m_item.corporate_id = m_item.corporate_id";
+        $arg_str .= " ON (m_item.corporate_id = m_input_item.corporate_id";
         $arg_str .= " AND m_item.item_cd = m_input_item.item_cd";
         $arg_str .= " AND m_item.color_cd = m_input_item.color_cd)";
         $arg_str .= " WHERE ";

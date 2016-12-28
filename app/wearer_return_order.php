@@ -645,7 +645,10 @@ $app->post('/wearer_return/info', function ()use($app){
      array_push($query_list, "t_delivery_goods_state_details.werer_cd = '".$wearer_other_post['werer_cd']."'");
      array_push($query_list, "t_delivery_goods_state_details.rtn_ok_flg = '1'");
      array_push($query_list, "t_delivery_goods_state_details.receipt_status = '2'");
-     $query = implode(' AND ', $query_list);
+       //自分の貸与パターンを絞り込み
+       $query_list[] = "m_input_item.job_type_cd = '".$wearer_other_post['job_type_cd']."'";
+
+       $query = implode(' AND ', $query_list);
 
      $arg_str = "";
      $arg_str = "SELECT ";
