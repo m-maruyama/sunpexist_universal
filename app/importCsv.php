@@ -525,8 +525,8 @@ $app->post('/import_csv', function () use ($app) {
     // リストを社員番号、発注区分単位で整頓しておく
     array_multisort(array_column($new_list, 0), SORT_ASC, array_column($new_list, 7), SORT_ASC, $new_list);
     //echo json_encode($json_list);
-    //ChromePhp::LOG($new_list);
-    //exit;
+    ChromePhp::LOG($new_list);
+    exit;
     //--CSV or Excel形式毎のバリデーション--ここまで//
 
     //--インポートログテーブル登録処理--ここから//
