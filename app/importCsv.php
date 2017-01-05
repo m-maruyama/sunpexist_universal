@@ -40,6 +40,7 @@ $app->post('/import_csv', function () use ($app) {
     ChromePhp::log($getFileExt->getExtension());
     //--CSV or Excel形式毎のバリデーション--ここから//
     if ($getFileExt->getExtension() == 'csv') {
+        ChromePhp::log('A');
         try {
             $file = file($_FILES['file']['tmp_name']);
             mb_convert_variables("UTF-8", "SJIS-win", $file);
@@ -731,6 +732,7 @@ $app->post('/import_csv', function () use ($app) {
 
             $no_line++;
         }
+        ChromePhp::log($values_query);
         $values_query = implode(",", $values_query);
         $arg_str = "";
         $arg_str = "INSERT INTO t_import_job";
