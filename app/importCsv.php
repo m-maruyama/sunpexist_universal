@@ -37,6 +37,7 @@ $app->post('/import_csv', function () use ($app) {
     $getFileExt = new SplFileInfo($_FILES['file']['name']);
     $job_no = $auth["corporate_id"] . $auth["user_id"];
 
+    ChromePhp::log($getFileExt->getExtension());
     //--CSV or Excel形式毎のバリデーション--ここから//
     if ($getFileExt->getExtension() == 'csv') {
         try {
@@ -737,10 +738,11 @@ $app->post('/import_csv', function () use ($app) {
         $arg_str .= " VALUES ";
         $arg_str .= $values_query;
         //ChromePhp::LOG("インポートログ登録クエリー");
-        //ChromePhp::log($arg_str);
+        ChromePhp::log($arg_str);
         $results = new Resultset(NULL, $t_import_job, $t_import_job->getReadConnection()->query($arg_str));
         // トランザクション-コミット
         $transaction = new Resultset(NULL, $t_import_job, $t_import_job->getReadConnection()->query("commit"));
+
     } catch (Exception $e) {
         ChromePhp::log($e);
         // トランザクション-ロールバック
