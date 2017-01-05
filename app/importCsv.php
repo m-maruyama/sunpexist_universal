@@ -741,6 +741,7 @@ $app->post('/import_csv', function () use ($app) {
         // トランザクション-コミット
         $transaction = new Resultset(NULL, $t_import_job, $t_import_job->getReadConnection()->query("commit"));
     } catch (Exception $e) {
+        ChromePhp::log($e);
         // トランザクション-ロールバック
         $transaction = new Resultset(NULL, $t_import_job, $t_import_job->getReadConnection()->query("rollback"));
 
