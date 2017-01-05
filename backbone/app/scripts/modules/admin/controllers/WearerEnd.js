@@ -87,6 +87,12 @@ define([
 
 				this.listenTo(wearerEndConditionView, 'first:section', function() {
 					var sectionConditionView = new App.Admin.Views.SectionCondition();
+					wearerEndConditionView.agreement_no.show(agreementNoConditionView);
+					Sleep(0.04);
+					wearerEndConditionView.sex_kbn.show(sexKbnConditionView);
+					Sleep(0.02);
+					wearerEndConditionView.job_type.show(jobTypeConditionView);
+					Sleep(0.02);
 					wearerEndConditionView.section.show(sectionConditionView);
 					//拠点絞り込み--ここから
 					var sectionListListCollection = new App.Entities.Collections.AdminSectionModalListList();
@@ -168,12 +174,15 @@ define([
 					var agreementNoConditionView = new App.Admin.Views.AgreementNoCondition({
 						data: data
 					});
+					wearerEndConditionView.agreement_no.show(agreementNoConditionView);
+					Sleep(0.04);
 				});
 				// 性別
 				this.listenTo(wearerEndConditionView, 'research:sex', function(data){
 					var sexKbnConditionView = new App.Admin.Views.SexKbnCondition({
 						data: data
 					});
+					wearerEndConditionView.sex_kbn.show(sexKbnConditionView);
 				});
 				// 拠点
 				this.listenTo(wearerEndConditionView, 'research:section', function(data){
@@ -236,6 +245,7 @@ define([
 						agreement_no: data["agreement_no"],
 						job_type: data["job_type"]
 					});
+					wearerEndConditionView.job_type.show(jobTypeConditionView);
 				});
 				// 検索結果一覧
 				this.listenTo(wearerEndConditionView, 'back:research', function(sortKey,order,page){
@@ -311,12 +321,6 @@ define([
 
 				App.main.show(wearerEndView);
 				wearerEndView.condition.show(wearerEndConditionView);
-				wearerEndConditionView.agreement_no.show(agreementNoConditionView);
-				Sleep(0.04);
-				// wearerEndConditionView.section.show(sectionConditionView);
-				wearerEndConditionView.sex_kbn.show(sexKbnConditionView);
-				Sleep(0.02);
-				wearerEndConditionView.job_type.show(jobTypeConditionView);
 				// wearerEndView.sectionModal.show(sectionModalView.render());
 				// sectionListListCollection// sectionModalView.condition.show(sectionModalConditionView);
 			}

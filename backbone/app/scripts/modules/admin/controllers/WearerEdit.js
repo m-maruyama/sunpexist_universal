@@ -88,6 +88,12 @@ define([
 
 				this.listenTo(wearerEditConditionView, 'first:section', function() {
 					var sectionConditionView = new App.Admin.Views.SectionCondition();
+					wearerEditConditionView.agreement_no.show(agreementNoConditionView);
+					Sleep(0.04);
+					wearerEditConditionView.sex_kbn.show(sexKbnConditionView);
+					Sleep(0.02);
+					wearerEditConditionView.job_type.show(jobTypeConditionView);
+					Sleep(0.02);
 					wearerEditConditionView.section.show(sectionConditionView);
 					//拠点絞り込み--ここから
 					var sectionListListCollection = new App.Entities.Collections.AdminSectionModalListList();
@@ -169,12 +175,15 @@ define([
 					var agreementNoConditionView = new App.Admin.Views.AgreementNoCondition({
 						data: data
 					});
+					wearerEditConditionView.agreement_no.show(agreementNoConditionView);
+					Sleep(0.04);
 				});
 				// 性別
 				this.listenTo(wearerEditConditionView, 'research:sex', function(data){
 					var sexKbnConditionView = new App.Admin.Views.SexKbnCondition({
 						data: data
 					});
+					wearerEditConditionView.sex_kbn.show(sexKbnConditionView);
 				});
 				// 拠点
 				this.listenTo(wearerEditConditionView, 'research:section', function(data){
@@ -239,6 +248,7 @@ define([
 						agreement_no: data["agreement_no"],
 						job_type: data["job_type"]
 					});
+					wearerEditConditionView.job_type.show(jobTypeConditionView);
 				});
 				// 検索結果一覧
 				this.listenTo(wearerEditConditionView, 'back:research', function(sortKey,order,page){
@@ -304,11 +314,6 @@ define([
 
 				App.main.show(wearerEditView);
 				wearerEditView.condition.show(wearerEditConditionView);
-				wearerEditConditionView.agreement_no.show(agreementNoConditionView);
-				Sleep(0.04);
-				wearerEditConditionView.sex_kbn.show(sexKbnConditionView);
-				Sleep(0.02);
-				wearerEditConditionView.job_type.show(jobTypeConditionView);
 			}
 		});
 	});
