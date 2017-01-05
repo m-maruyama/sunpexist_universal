@@ -45,6 +45,7 @@ $app->post('/import_csv', function () use ($app) {
             $file = file($_FILES['file']['tmp_name']);
             mb_convert_variables("UTF-8", "SJIS-win", $file);
             $chk_file = $file;
+            ChromePhp::log($chk_file);
             unset($chk_file[0]); //チェック時はヘッダーを無視する
         } catch (Exception $e) {
             $error_list[] = '取り込んだファイルの形式が不正です。';
@@ -525,9 +526,7 @@ $app->post('/import_csv', function () use ($app) {
     // リストを社員番号、発注区分単位で整頓しておく
     array_multisort(array_column($new_list, 0), SORT_ASC, array_column($new_list, 7), SORT_ASC, $new_list);
     //echo json_encode($json_list);
-    ChromePhp::log('B');
-    ChromePhp::LOG($new_list);
-    exit;
+
     //--CSV or Excel形式毎のバリデーション--ここまで//
 
     //--インポートログテーブル登録処理--ここから//
