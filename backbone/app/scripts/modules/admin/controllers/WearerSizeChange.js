@@ -88,6 +88,12 @@ define([
 
 				this.listenTo(wearerSizeChangeConditionView, 'first:section', function() {
 					var sectionConditionView = new App.Admin.Views.SectionCondition();
+					wearerSizeChangeConditionView.agreement_no.show(agreementNoConditionView);
+					Sleep(0.04);
+					wearerSizeChangeConditionView.sex_kbn.show(sexKbnConditionView);
+					Sleep(0.01);
+					wearerSizeChangeConditionView.job_type.show(jobTypeConditionView);
+					Sleep(0.01);
 					wearerSizeChangeConditionView.section.show(sectionConditionView);
 
 					//拠点絞り込み--ここから
@@ -170,12 +176,15 @@ define([
 					var agreementNoConditionView = new App.Admin.Views.AgreementNoCondition({
 						data: data
 					});
+					wearerSizeChangeConditionView.agreement_no.show(agreementNoConditionView);
+					Sleep(0.04);
 				});
 				// 性別
 				this.listenTo(wearerSizeChangeConditionView, 'research:sex', function(data){
 					var sexKbnConditionView = new App.Admin.Views.SexKbnCondition({
 						data: data
 					});
+					wearerSizeChangeConditionView.sex_kbn.show(sexKbnConditionView);
 				});
 				// 拠点
 				this.listenTo(wearerSizeChangeConditionView, 'research:section', function(data){
@@ -240,6 +249,7 @@ define([
 						agreement_no: data["agreement_no"],
 						job_type: data["job_type"]
 					});
+					wearerSizeChangeConditionView.job_type.show(jobTypeConditionView);
 				});
 				// 検索結果一覧
 				this.listenTo(wearerSizeChangeConditionView, 'back:research', function(sortKey,order,page){
@@ -305,11 +315,6 @@ define([
 
 				App.main.show(wearerSizeChangeView);
 				wearerSizeChangeView.condition.show(wearerSizeChangeConditionView);
-				wearerSizeChangeConditionView.agreement_no.show(agreementNoConditionView);
-				Sleep(0.02);
-				wearerSizeChangeConditionView.sex_kbn.show(sexKbnConditionView);
-				Sleep(0.01);
-				wearerSizeChangeConditionView.job_type.show(jobTypeConditionView);
 			}
 		});
 	});
