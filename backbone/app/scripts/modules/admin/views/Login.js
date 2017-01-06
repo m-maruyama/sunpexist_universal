@@ -22,6 +22,13 @@ define([
 				"submit": "button",
 				"errors": ".errors"
 			},
+			onRender: function() {
+				//前回ログインした企業IDをデフォルト表示
+				var corporate_id = localStorage.getItem('corporate_id');
+				if(corporate_id){
+					this.ui.corporate_id.val(corporate_id);
+				}
+			},
 			events: {
 				"click @ui.submit": function(e){
 					e.preventDefault();
@@ -60,7 +67,8 @@ define([
 								alert('仮パスワードを確認いたしました。パスワードを変更してください。');
 								that.triggerMethod('password');
 							}
-
+							// ログインデータの保存
+							localStorage.setItem('corporate_id', that.ui.corporate_id.val());
 						}
 					});
 				}
