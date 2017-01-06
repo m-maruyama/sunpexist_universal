@@ -179,11 +179,11 @@ $app->post('/wearer_other/search', function ()use($app){
         }
         $or_query = "";
         $or_query .= "(t_order_tran.order_sts_kbn = '1' AND ";
-        $or_query .= "t_order_tran.order_reason_kbn = '03')";
+        $or_query .= "(t_order_tran.order_reason_kbn = '03' OR t_order_tran.order_reason_kbn = '27'))";
         $tran_query_list[] = $or_query;
         $or_query = "";
         $or_query .= "(t_order_tran.order_sts_kbn = '2' AND ";
-        $or_query .= "t_order_tran.order_reason_kbn = '07')";
+        $or_query .= "(t_order_tran.order_reason_kbn = '07' OR t_order_tran.order_reason_kbn = '28'))";
         $tran_query_list[] = $or_query;
         $tran_query = implode(' OR ', $tran_query_list);
         $query_list[] = "(".$tran_query.")";
@@ -452,9 +452,11 @@ $app->post('/wearer_other/search', function ()use($app){
               $order_sts_kbn = $t_order_tran_result->order_sts_kbn;
               $order_reason_kbn = $t_order_tran_result->order_reason_kbn;
               $snd_kbn = $t_order_tran_result->snd_kbn;
-              if ($order_sts_kbn == '1' && $order_reason_kbn == '03' && $snd_kbn == '0') {
-                $patarn_flg = false;
-                break;
+              if ($order_sts_kbn == '1' && $snd_kbn == '0') {
+                  if($order_reason_kbn == '03' || $order_reason_kbn == '27'){
+                    $patarn_flg = false;
+                    break;
+                  }
               }
             }
             if (!$patarn_flg) {
@@ -475,9 +477,11 @@ $app->post('/wearer_other/search', function ()use($app){
               $order_sts_kbn = $t_order_tran_result->order_sts_kbn;
               $order_reason_kbn = $t_order_tran_result->order_reason_kbn;
               $snd_kbn = $t_order_tran_result->snd_kbn;
-              if ($order_sts_kbn == '1' && $order_reason_kbn == '03' && $snd_kbn == '1') {
-                $patarn_flg = false;
-                break;
+              if ($order_sts_kbn == '1' && $snd_kbn == '1') {
+                  if($order_reason_kbn == '03' || $order_reason_kbn == '27') {
+                      $patarn_flg = false;
+                      break;
+                  }
               }
             }
             if (!$patarn_flg) {
@@ -519,9 +523,11 @@ $app->post('/wearer_other/search', function ()use($app){
               $order_sts_kbn = $t_order_tran_result->order_sts_kbn;
               $order_reason_kbn = $t_order_tran_result->order_reason_kbn;
               $snd_kbn = $t_order_tran_result->snd_kbn;
-              if ($order_sts_kbn == '1' && $order_reason_kbn == '03') {
-                $patarn_flg = true;
-                break;
+              if ($order_sts_kbn == '1' ) {
+                  if($order_reason_kbn == '03' || $order_reason_kbn == '27'){
+                    $patarn_flg = true;
+                    break;
+                  }
               }
             }
             if (!$patarn_flg) {
@@ -614,9 +620,11 @@ $app->post('/wearer_other/search', function ()use($app){
               $order_sts_kbn = $t_order_tran_result->order_sts_kbn;
               $order_reason_kbn = $t_order_tran_result->order_reason_kbn;
               $snd_kbn = $t_order_tran_result->snd_kbn;
-              if ($order_sts_kbn == '2' && $order_reason_kbn == '07') {
-                $patarn_flg = true;
-                break;
+              if ($order_sts_kbn == '2') {
+                  if($order_reason_kbn == '07' || $order_reason_kbn == '28'){
+                    $patarn_flg = true;
+                    break;
+                  }
               }
             }
             if (!$patarn_flg) {
@@ -637,9 +645,11 @@ $app->post('/wearer_other/search', function ()use($app){
               $order_sts_kbn = $t_order_tran_result->order_sts_kbn;
               $order_reason_kbn = $t_order_tran_result->order_reason_kbn;
               $snd_kbn = $t_order_tran_result->snd_kbn;
-              if ($order_sts_kbn == '2' && $order_reason_kbn == '07' && $snd_kbn == '0') {
-                $patarn_flg = false;
-                break;
+              if ($order_sts_kbn == '2' && $snd_kbn == '0') {
+                  if($order_reason_kbn == '07' || $order_reason_kbn == '28'){
+                    $patarn_flg = false;
+                    break;
+                  }
               }
             }
             if (!$patarn_flg) {
@@ -660,9 +670,11 @@ $app->post('/wearer_other/search', function ()use($app){
               $order_sts_kbn = $t_order_tran_result->order_sts_kbn;
               $order_reason_kbn = $t_order_tran_result->order_reason_kbn;
               $snd_kbn = $t_order_tran_result->snd_kbn;
-              if ($order_sts_kbn == '2' && $order_reason_kbn == '07' && $snd_kbn == '1') {
-                $patarn_flg = false;
-                break;
+              if ($order_sts_kbn == '2' && $snd_kbn == '1') {
+                  if($order_reason_kbn == '07' || $order_reason_kbn == '28') {
+                      $patarn_flg = false;
+                      break;
+                  }
               }
             }
             if (!$patarn_flg) {

@@ -158,12 +158,23 @@ define([
 							option2.appendChild(text2);
 							document.getElementById('section').appendChild(option2);
 						}
+						console.log(res_list['job_type_list']);
 						if (res_list['job_type_list'][0]) {
 							var option3 = document.createElement('option');
 							var text3 = document.createTextNode(res_list['job_type_list'][0]['job_type_name']);
 							option3.setAttribute('value', res_list['job_type_list'][0]['job_type_cd']);
 							option3.appendChild(text3);
 							document.getElementById('job_type').appendChild(option3);
+							if(res_list['job_type_list'][0]['order_control_unit'] == '1'){
+								//optionの配列を作成
+								$("#reason_kbn").append($('<option value="07">不用品返却</option>'));
+								$("#reason_kbn").val("07");
+							}
+							if(res_list['job_type_list'][0]['order_control_unit'] == '2'){
+								//optionの配列を作成
+								$("#reason_kbn").append($('<option value="28">不用品返却</option>'));
+								$("#reason_kbn").val("28");
+							}
 						}
 						if (res_list['shipment_list'][0]) {
 							var shipment = res_list['shipment_list'][0]['ship_to_cd'] + ":" + res_list['shipment_list'][0]['ship_to_brnch_cd'];

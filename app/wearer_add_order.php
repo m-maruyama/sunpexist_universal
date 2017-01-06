@@ -38,17 +38,16 @@ $app->post('/wearer_add/info', function ()use($app){
   // 発注状況区分(貸与)
   array_push($query_list,"t_order_tran.order_sts_kbn = '1'");
   // 理由区分(追加貸与)
-  array_push($query_list,"t_order_tran.order_reason_kbn = '03'");
+  array_push($query_list,"(t_order_tran.order_reason_kbn = '27' OR t_order_tran.order_reason_kbn = '03')");
   $query = implode(' AND ', $query_list);
 
-  $arg_str = "";
+    $arg_str = "";
   $arg_str = "SELECT distinct on (order_req_no) ";
   $arg_str .= "*";
   $arg_str .= " FROM ";
   $arg_str .= "t_order_tran";
   $arg_str .= " WHERE ";
   $arg_str .= $query;
-  //ChromePhp::LOG($arg_str);
   $t_order_tran = new TOrderTran();
   $results = new Resultset(NULL, $t_order_tran, $t_order_tran->getReadConnection()->query($arg_str));
   $result_obj = (array)$results;
@@ -67,7 +66,7 @@ $app->post('/wearer_add/info', function ()use($app){
   array_push($query_list, "m_wearer_std_tran.rntl_cont_no = '".$wearer_other_post['rntl_cont_no']."'");
   array_push($query_list, "m_wearer_std_tran.werer_cd = '".$wearer_other_post['werer_cd']."'");
   array_push($query_list, "m_wearer_std_tran.order_sts_kbn = '1'");
-  array_push($query_list, "t_order_tran.order_reason_kbn = '03'");
+  array_push($query_list,"(t_order_tran.order_reason_kbn = '27' OR t_order_tran.order_reason_kbn = '03')");
   $query = implode(' AND ', $query_list);
 
   $arg_str = "";
@@ -412,6 +411,9 @@ $app->post('/wearer_add/info', function ()use($app){
       $list['job_type_cd'] = $result->job_type_cd;
       $list['job_type_name'] = $result->job_type_name;
       $list['sp_job_type_flg'] = $result->sp_job_type_flg;
+        //発注管理単位
+      $list['order_control_unit'] = $result->order_control_unit;
+      $order_control_unit = $result->order_control_unit;
       array_push($all_list, $list);
     }
   } else {
@@ -442,10 +444,14 @@ $app->post('/wearer_add/info', function ()use($app){
   array_push($query_list, "t_order_tran.job_type_cd = '".$wearer_other_post['job_type_cd']."'");
   // 発注状況区分(貸与)
   array_push($query_list,"t_order_tran.order_sts_kbn = '1'");
-  // 理由区分(不要品返却)
-  array_push($query_list,"t_order_tran.order_reason_kbn = '03'");
+  // 理由区分(追加貸与)
+    if($order_control_unit == '1'){
+        array_push($query_list,"t_order_tran.order_reason_kbn = '03'");
+    }
+    if($order_control_unit == '2'){
+        array_push($query_list,"t_order_tran.order_reason_kbn = '27'");
+    }
   $query = implode(' AND ', $query_list);
-
   $arg_str = "";
   $arg_str = "SELECT ";
   $arg_str .= "order_req_no";
@@ -532,7 +538,7 @@ $app->post('/wearer_add/info', function ()use($app){
    // 発注状況区分
    array_push($query_list, "t_order_tran.order_sts_kbn = '1'");
    // 理由区分
-   array_push($query_list, "t_order_tran.order_reason_kbn = '03'");
+   array_push($query_list,"(t_order_tran.order_reason_kbn = '27' OR t_order_tran.order_reason_kbn = '03')");
    $query = implode(' AND ', $query_list);
 
    $arg_str = "";
@@ -589,7 +595,8 @@ $app->post('/wearer_add/info', function ()use($app){
        $arg_str .= "m_item.item_name as as_item_name,";
        $arg_str .= "m_input_item.job_type_item_cd as as_job_type_item_cd,";
        $arg_str .= "m_input_item.input_item_name as as_input_item_name,";
-       $arg_str .= "m_input_item.std_input_qty as as_std_input_qty";
+       $arg_str .= "m_input_item.std_input_qty as as_std_input_qty,";
+       $arg_str .= "m_job_type.order_control_unit as as_order_control_unit";
        $arg_str .= " FROM ";
        $arg_str .= "m_job_type INNER JOIN m_input_item";
        $arg_str .= " ON (m_job_type.corporate_id = m_input_item.corporate_id";
@@ -631,6 +638,9 @@ $app->post('/wearer_add/info', function ()use($app){
            $list["item_cd"] = $item_result->as_item_cd;
            // 色コード
            $list["color_cd"] = $item_result->as_color_cd;
+           //発注管理単位
+           $order_control_unit = $item_result->as_order_control_unit;
+
            // 選択方法
            //※着用者の職種マスタ.職種コードに紐づく投入商品マスタの職種アイテムコード単位で単一or複数判断
            $query_list = array();
@@ -763,7 +773,8 @@ $app->post('/wearer_add/info', function ()use($app){
      $arg_str .= "m_item.item_name as as_item_name,";
      $arg_str .= "m_input_item.job_type_item_cd as as_job_type_item_cd,";
      $arg_str .= "m_input_item.input_item_name as as_input_item_name,";
-     $arg_str .= "m_input_item.std_input_qty as as_std_input_qty";
+     $arg_str .= "m_input_item.std_input_qty as as_std_input_qty,";
+     $arg_str .= "m_job_type.order_control_unit as as_order_control_unit";
      $arg_str .= " FROM ";
      $arg_str .= "m_job_type INNER JOIN m_input_item";
      $arg_str .= " ON (m_job_type.corporate_id = m_input_item.corporate_id";
@@ -810,6 +821,8 @@ $app->post('/wearer_add/info', function ()use($app){
          $list["item_cd"] = $result->as_item_cd;
          // 色コード
          $list["color_cd"] = $result->as_color_cd;
+         //発注管理単位
+         $order_control_unit = $result->as_order_control_unit;
          // 選択方法
          //※着用者の職種マスタ.職種コードに紐づく投入商品マスタの職種アイテムコード単位で単一or複数判断
          $query_list = array();
@@ -946,13 +959,51 @@ $app->post('/wearer_add/delete', function ()use($app){
   //ChromePhp::LOG($auth);
   // 前画面セッション取得
   $wearer_other_post = $app->session->get("wearer_other_post");
-  //ChromePhp::LOG($wearer_other_post);
   // フロントパラメータ取得
   $cond = $params['data'];
   //ChromePhp::LOG("フロント側パラメータ");
   //ChromePhp::LOG($cond);
 
-  $json_list = array();
+    //--貸与パターン--//
+    $query_list = array();
+    array_push($query_list, "corporate_id = '".$auth['corporate_id']."'");
+    array_push($query_list, "rntl_cont_no = '".$wearer_other_post['rntl_cont_no']."'");
+    array_push($query_list, "job_type_cd = '".$wearer_other_post['job_type_cd']."'");
+    $query = implode(' AND ', $query_list);
+    //ChromePhp::log($query);
+    $arg_str = '';
+    $arg_str = 'SELECT ';
+    $arg_str .= '*';
+    $arg_str .= ' FROM ';
+    $arg_str .= 'm_job_type';
+    $arg_str .= ' WHERE ';
+    $arg_str .= $query;
+    $arg_str .= ' ORDER BY job_type_cd asc';
+    $m_job_type = new MJobType();
+    $results = new Resultset(NULL, $m_job_type, $m_job_type->getReadConnection()->query($arg_str));
+    $results_array = (array) $results;
+    $results_cnt = $results_array["\0*\0_count"];
+    //ChromePhp::LOG($results_cnt);
+    if ($results_cnt > 0) {
+        $paginator_model = new PaginatorModel(
+            array(
+                "data" => $results,
+                "limit" => 1,
+                "page" => 1
+            )
+        );
+        $paginator = $paginator_model->getPaginate();
+        $results = $paginator->items;
+
+        foreach ($results as $result) {
+            $order_control_unit = $result->order_control_unit;
+            //1:人員管理、2:貸与枚数管理
+        }
+    }
+
+
+
+    $json_list = array();
   // DB更新エラーコード 0:正常 1:更新エラー
   $json_list["error_code"] = "0";
 
@@ -993,7 +1044,7 @@ $app->post('/wearer_add/delete', function ()use($app){
     // 発注区分「貸与」
     array_push($query_list, "t_order_tran.order_sts_kbn = '1'");
     // 理由区分「追加貸与」系ステータス
-    array_push($query_list, "t_order_tran.order_reason_kbn = '03'");
+    array_push($query_list,"(t_order_tran.order_reason_kbn = '27' OR t_order_tran.order_reason_kbn = '03')");
     $query = implode(' AND ', $query_list);
 
     $arg_str = "";
@@ -1036,7 +1087,7 @@ $app->post('/wearer_add/delete', function ()use($app){
  */
 $app->post('/wearer_add/complete', function ()use($app){
    $params = json_decode(file_get_contents("php://input"), true);
-
+    ChromePhp::log($params);
    // アカウントセッション取得
    $auth = $app->session->get("auth");
    //ChromePhp::LOG($auth);
@@ -1052,7 +1103,45 @@ $app->post('/wearer_add/complete', function ()use($app){
    //ChromePhp::LOG($wearer_data_input);
    //ChromePhp::LOG($item_list);
 
-   $json_list = array();
+    //--貸与パターン--//
+    $query_list = array();
+    array_push($query_list, "corporate_id = '".$auth['corporate_id']."'");
+    array_push($query_list, "rntl_cont_no = '".$wearer_data_input['agreement_no']."'");
+    array_push($query_list, "job_type_cd = '".$wearer_data_input['job_type']."'");
+    $query = implode(' AND ', $query_list);
+
+    $arg_str = '';
+    $arg_str = 'SELECT ';
+    $arg_str .= '*';
+    $arg_str .= ' FROM ';
+    $arg_str .= 'm_job_type';
+    $arg_str .= ' WHERE ';
+    $arg_str .= $query;
+    $arg_str .= ' ORDER BY job_type_cd asc';
+    $m_job_type = new MJobType();
+    $results = new Resultset(NULL, $m_job_type, $m_job_type->getReadConnection()->query($arg_str));
+    $results_array = (array) $results;
+    $results_cnt = $results_array["\0*\0_count"];
+    //ChromePhp::LOG($results_cnt);
+    if ($results_cnt > 0) {
+        $paginator_model = new PaginatorModel(
+            array(
+                "data"  => $results,
+                "limit" => 1,
+                "page" => 1
+            )
+        );
+        $paginator = $paginator_model->getPaginate();
+        $results = $paginator->items;
+
+        foreach ($results as $result) {
+            $order_control_unit = $result->order_control_unit;
+            //1:人員管理、2:貸与枚数管理
+        }
+    }
+
+
+    $json_list = array();
    // DB更新エラーコード 0:正常 その他:要因エラー
    $json_list["error_code"] = "0";
    $json_list["error_msg"] = array();
@@ -1246,7 +1335,7 @@ $app->post('/wearer_add/complete', function ()use($app){
      // 着用者状況区分(その他（着用開始）)
      array_push($query_list,"m_wearer_std_tran.werer_sts_kbn = '7'");
      // 理由区分
-     array_push($query_list,"t_order_tran.order_reason_kbn = '03'");
+     array_push($query_list,"(t_order_tran.order_reason_kbn = '27' OR t_order_tran.order_reason_kbn = '03')");
      $query = implode(' AND ', $query_list);
 
      $arg_str = "";
@@ -1262,7 +1351,7 @@ $app->post('/wearer_add/complete', function ()use($app){
      $arg_str .= " AND m_wearer_std_tran.job_type_cd = t_order_tran.job_type_cd)";
      $arg_str .= " WHERE ";
      $arg_str .= $query;
-     //ChromePhp::LOG($arg_str);
+     ChromePhp::LOG($arg_str);
      $m_wearer_std_tran = new MWearerStdTran();
      $results = new Resultset(NULL, $m_wearer_std_tran, $m_wearer_std_tran->getReadConnection()->query($arg_str));
      $result_obj = (array)$results;
@@ -1670,7 +1759,12 @@ $app->post('/wearer_add/complete', function ()use($app){
          // 発注状況区分「貸与」
          array_push($query_list, "order_sts_kbn = '1'");
          // 理由区分「追加貸与」
-         array_push($query_list, "order_reason_kbn = '03'");
+         if ($order_control_unit == '1'){
+             array_push($query_list, "order_reason_kbn = '03'");
+         }
+         if ($order_control_unit == '2'){
+             array_push($query_list, "order_reason_kbn = '27'");
+         }
          // 着用者状況区分「その他（着用開始）」
          array_push($query_list, "werer_sts_kbn = '7'");
          $query = implode(' AND ', $query_list);
@@ -1683,6 +1777,7 @@ $app->post('/wearer_add/complete', function ()use($app){
          $results = new Resultset(NULL, $t_order_tran, $t_order_tran->getReadConnection()->query($arg_str));
          $results_cnt = $result_obj["\0*\0_count"];
 
+         ChromePhp::log($wearer_data_input);
          // 発注商品一覧内容登録
          foreach ($item_list as $item_map) {
            $calum_list = array();
@@ -1901,7 +1996,7 @@ $app->post('/wearer_add/complete', function ()use($app){
            $arg_str .= "(".$calum_query.")";
            $arg_str .= " VALUES ";
            $arg_str .= "(".$values_query.")";
-           //ChromePhp::LOG($arg_str);
+           ChromePhp::LOG($arg_str);
            $t_order_tran = new TOrderTran();
            $results = new Resultset(NULL, $t_order_tran, $t_order_tran->getReadConnection()->query($arg_str));
            $results_cnt = $result_obj["\0*\0_count"];
@@ -1951,6 +2046,46 @@ $app->post('/wearer_add/send', function ()use($app){
   $item_list = $params["item"];
   //ChromePhp::LOG($wearer_data_input);
   //ChromePhp::LOG($item_list);
+
+  //--貸与パターン--//
+  $query_list = array();
+  array_push($query_list, "corporate_id = '".$auth['corporate_id']."'");
+  array_push($query_list, "rntl_cont_no = '".$wearer_data_input['agreement_no']."'");
+  array_push($query_list, "job_type_cd = '".$wearer_data_input['job_type']."'");
+  $query = implode(' AND ', $query_list);
+
+  $arg_str = '';
+  $arg_str = 'SELECT ';
+  $arg_str .= '*';
+  $arg_str .= ' FROM ';
+  $arg_str .= 'm_job_type';
+  $arg_str .= ' WHERE ';
+  $arg_str .= $query;
+  $arg_str .= ' ORDER BY job_type_cd asc';
+  $m_job_type = new MJobType();
+  $results = new Resultset(NULL, $m_job_type, $m_job_type->getReadConnection()->query($arg_str));
+  $results_array = (array) $results;
+  $results_cnt = $results_array["\0*\0_count"];
+  //ChromePhp::LOG($results_cnt);
+  if ($results_cnt > 0) {
+      $paginator_model = new PaginatorModel(
+          array(
+              "data" => $results,
+              "limit" => 1,
+              "page" => 1
+          )
+      );
+      $paginator = $paginator_model->getPaginate();
+      $results = $paginator->items;
+
+      foreach ($results as $result) {
+          $order_control_unit = $result->order_control_unit;
+          //1:人員管理、2:貸与枚数管理
+      }
+  }
+
+
+
 
   $json_list = array();
   // DB更新エラーコード 0:正常 その他:要因エラー
@@ -2149,8 +2284,8 @@ ChromePhp::LOG($item_input);
     array_push($query_list,"m_wearer_std_tran.order_sts_kbn = '1'");
     // 着用者状況区分(その他（着用開始）)
     array_push($query_list,"m_wearer_std_tran.werer_sts_kbn = '7'");
-    // 理由区分
-    array_push($query_list,"t_order_tran.order_reason_kbn = '03'");
+    // 理由区分(追加貸与)
+    array_push($query_list,"(t_order_tran.order_reason_kbn = '27' OR t_order_tran.order_reason_kbn = '03')");
     $query = implode(' AND ', $query_list);
 
     $arg_str = "";
@@ -2575,7 +2710,12 @@ ChromePhp::LOG($item_input);
         // 発注状況区分「貸与」
         array_push($query_list, "order_sts_kbn = '1'");
         // 理由区分「追加貸与」
-        array_push($query_list, "order_reason_kbn = '03'");
+        if ($order_control_unit == '1'){
+            array_push($query_list, "order_reason_kbn = '03'");
+        }
+        if ($order_control_unit == '2') {
+            array_push($query_list, "order_reason_kbn = '27'");
+        }
         // 着用者状況区分「その他（着用開始）」
         array_push($query_list, "werer_sts_kbn = '7'");
         $query = implode(' AND ', $query_list);

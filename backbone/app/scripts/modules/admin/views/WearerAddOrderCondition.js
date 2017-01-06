@@ -83,7 +83,7 @@ define([
 							that.triggerMethod('showAlerts', errorMessages);
 						}
 						var res_list = res.attributes;
-						//console.log(res_list);
+						console.log(res_list);
 
 						var delete_param =
 							res_list['rntl_cont_no'] + ":"
@@ -163,6 +163,16 @@ define([
 							option3.setAttribute('value', res_list['job_type_list'][0]['job_type_cd']);
 							option3.appendChild(text3);
 							document.getElementById('job_type').appendChild(option3);
+							if(res_list['job_type_list'][0]['order_control_unit'] == '1'){
+								//optionの配列を作成
+								$("#reason_kbn").append($('<option value="03">追加貸与</option>'));
+								$("#reason_kbn").val("03");
+							}
+							if(res_list['job_type_list'][0]['order_control_unit'] == '2'){
+								//optionの配列を作成
+								$("#reason_kbn").append($('<option value="27">追加貸与</option>'));
+								$("#reason_kbn").val("27");
+							}
 						}
 						if (res_list['shipment_list'][0]) {
 							var shipment = res_list['shipment_list'][0]['ship_to_cd'] + ":" + res_list['shipment_list'][0]['ship_to_brnch_cd'];

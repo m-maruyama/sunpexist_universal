@@ -38,7 +38,7 @@ $app->post('/wearer_return/info', function ()use($app){
   // 発注状況区分(終了)
   array_push($query_list,"t_order_tran.order_sts_kbn = '2'");
   // 理由区分(不要品返却)
-  array_push($query_list,"t_order_tran.order_reason_kbn = '07'");
+  array_push($query_list,"(t_order_tran.order_reason_kbn = '28' OR t_order_tran.order_reason_kbn = '07')");
   $query = implode(' AND ', $query_list);
 
   $arg_str = "";
@@ -69,7 +69,7 @@ $app->post('/wearer_return/info', function ()use($app){
   array_push($query_list, "m_wearer_std_tran.rntl_sect_cd = '".$wearer_other_post['rntl_sect_cd']."'");
   array_push($query_list, "m_wearer_std_tran.job_type_cd = '".$wearer_other_post['job_type_cd']."'");
   array_push($query_list, "m_wearer_std_tran.order_sts_kbn = '2'");
-  array_push($query_list, "t_order_tran.order_reason_kbn = '07'");
+  array_push($query_list,"(t_order_tran.order_reason_kbn = '28' OR t_order_tran.order_reason_kbn = '07')");
   $query = implode(' AND ', $query_list);
 
   $arg_str = "";
@@ -409,6 +409,9 @@ $app->post('/wearer_return/info', function ()use($app){
       $list['job_type_cd'] = $result->job_type_cd;
       $list['job_type_name'] = $result->job_type_name;
       $list['sp_job_type_flg'] = $result->sp_job_type_flg;
+      //発注管理単位
+      $list['order_control_unit'] = $result->order_control_unit;
+      //order_control_unit = $result->order_control_unit;
       array_push($all_list, $list);
     }
   } else {
@@ -440,7 +443,7 @@ $app->post('/wearer_return/info', function ()use($app){
   // 発注状況区分(終了)
   array_push($query_list,"t_order_tran.order_sts_kbn = '2'");
   // 理由区分(不要品返却)
-  array_push($query_list,"t_order_tran.order_reason_kbn = '07'");
+  array_push($query_list,"(t_order_tran.order_reason_kbn = '28' OR t_order_tran.order_reason_kbn = '07')");
   $query = implode(' AND ', $query_list);
 
   $arg_str = "";
@@ -489,7 +492,7 @@ $app->post('/wearer_return/info', function ()use($app){
   // 発注状況区分(終了)
   array_push($query_list,"t_returned_plan_info_tran.order_sts_kbn = '2'");
   // 理由区分(不要品返却)
-  array_push($query_list,"t_returned_plan_info_tran.order_reason_kbn = '07'");
+  array_push($query_list,"(t_returned_plan_info_tran.order_reason_kbn = '28' OR t_returned_plan_info_tran.order_reason_kbn = '07')");
   $query = implode(' AND ', $query_list);
 
   $arg_str = "";
@@ -580,7 +583,7 @@ $app->post('/wearer_return/info', function ()use($app){
    // 発注状況区分
    array_push($query_list, "t_returned_plan_info_tran.order_sts_kbn = '2'");
    // 理由区分
-   array_push($query_list, "t_returned_plan_info_tran.order_reason_kbn = '07'");
+   array_push($query_list,"(t_returned_plan_info_tran.order_reason_kbn = '28' OR t_returned_plan_info_tran.order_reason_kbn = '07')");
    $query = implode(' AND ', $query_list);
 
    $arg_str = "";
@@ -735,7 +738,7 @@ $app->post('/wearer_return/info', function ()use($app){
            // 発注状況区分
            array_push($query_list, "t_returned_plan_info_tran.order_sts_kbn = '2'");
            // 理由区分
-           array_push($query_list, "t_returned_plan_info_tran.order_reason_kbn = '07'");
+           array_push($query_list,"(t_returned_plan_info_tran.order_reason_kbn = '28' OR t_returned_plan_info_tran.order_reason_kbn = '07')");
            $query = implode(' AND ', $query_list);
 
            $arg_str = "";
@@ -1129,7 +1132,7 @@ $app->post('/wearer_return/delete', function ()use($app){
     // 発注区分「終了」
     array_push($query_list, "t_order_tran.order_sts_kbn = '2'");
     // 理由区分「不要品返却」系ステータス
-    array_push($query_list, "t_order_tran.order_reason_kbn = '07'");
+    array_push($query_list,"(t_order_tran.order_reason_kbn = '28' OR t_order_tran.order_reason_kbn = '07')");
     $query = implode(' AND ', $query_list);
 
     $arg_str = "";
@@ -1153,7 +1156,7 @@ $app->post('/wearer_return/delete', function ()use($app){
     // 発注区分「終了」
     array_push($query_list, "t_returned_plan_info_tran.order_sts_kbn = '2'");
     // 理由区分「不要品返却」系ステータス
-    array_push($query_list, "t_returned_plan_info_tran.order_reason_kbn = '07'");
+    array_push($query_list,"(t_returned_plan_info_tran.order_reason_kbn = '28' OR t_returned_plan_info_tran.order_reason_kbn = '07')");
     $query = implode(' AND ', $query_list);
 
     $arg_str = "";
@@ -1202,6 +1205,43 @@ $app->post('/wearer_return/complete', function ()use($app){
    // 前画面セッション取得
    $wearer_other_post = $app->session->get("wearer_other_post");
    //ChromePhp::LOG($wearer_other_post);
+
+    //--貸与パターン--//
+    $query_list = array();
+    array_push($query_list, "corporate_id = '".$auth['corporate_id']."'");
+    array_push($query_list, "rntl_cont_no = '".$wearer_other_post['rntl_cont_no']."'");
+    array_push($query_list, "job_type_cd = '".$wearer_other_post['job_type_cd']."'");
+    $query = implode(' AND ', $query_list);
+    //ChromePhp::log($query);
+    $arg_str = '';
+    $arg_str = 'SELECT ';
+    $arg_str .= '*';
+    $arg_str .= ' FROM ';
+    $arg_str .= 'm_job_type';
+    $arg_str .= ' WHERE ';
+    $arg_str .= $query;
+    $arg_str .= ' ORDER BY job_type_cd asc';
+    $m_job_type = new MJobType();
+    $results = new Resultset(NULL, $m_job_type, $m_job_type->getReadConnection()->query($arg_str));
+    $results_array = (array) $results;
+    $results_cnt = $results_array["\0*\0_count"];
+    //ChromePhp::LOG($results_cnt);
+    if ($results_cnt > 0) {
+        $paginator_model = new PaginatorModel(
+            array(
+                "data" => $results,
+                "limit" => 1,
+                "page" => 1
+            )
+        );
+        $paginator = $paginator_model->getPaginate();
+        $results = $paginator->items;
+
+        foreach ($results as $result) {
+            $order_control_unit = $result->order_control_unit;
+            //1:人員管理、2:貸与枚数管理
+        }
+    }
 
    // フロントパラメータ取得
    $mode = $params["mode"];
@@ -1479,7 +1519,7 @@ $app->post('/wearer_return/complete', function ()use($app){
      // 着用者状況区分(その他（着用終了）)
      array_push($query_list,"m_wearer_std_tran.werer_sts_kbn = '3'");
      // 理由区分
-     array_push($query_list, "t_order_tran.order_reason_kbn = '07'");
+     array_push($query_list,"(t_order_tran.order_reason_kbn = '28' OR t_order_tran.order_reason_kbn = '07')");
      $query = implode(' AND ', $query_list);
 
      $arg_str = "";
@@ -1904,7 +1944,7 @@ $app->post('/wearer_return/complete', function ()use($app){
          // 発注状況区分「終了」
          array_push($query_list, "order_sts_kbn = '2'");
          // 理由区分「不要品返却」
-         array_push($query_list, "order_reason_kbn = '07'");
+         array_push($query_list,"(order_reason_kbn = '28' OR order_reason_kbn = '07')");
          // 着用者状況区分「その他（着用終了）」
          array_push($query_list, "werer_sts_kbn = '3'");
          $query = implode(' AND ', $query_list);
@@ -2177,7 +2217,7 @@ $app->post('/wearer_return/complete', function ()use($app){
         // 発注状況区分「終了」
         array_push($query_list, "order_sts_kbn = '2'");
         // 理由区分「不要品返却」
-        array_push($query_list, "order_reason_kbn = '07'");
+        array_push($query_list,"(order_reason_kbn = '28' OR order_reason_kbn = '07')");
         $query = implode(' AND ', $query_list);
 
         $arg_str = "";
@@ -2720,7 +2760,7 @@ $app->post('/wearer_return/send', function ()use($app){
     // 着用者状況区分(その他（着用終了）)
     array_push($query_list,"m_wearer_std_tran.werer_sts_kbn = '3'");
     // 理由区分
-    array_push($query_list, "t_order_tran.order_reason_kbn = '07'");
+    array_push($query_list,"(t_order_tran.order_reason_kbn = '28' OR t_order_tran.order_reason_kbn = '07')");
     $query = implode(' AND ', $query_list);
 
     $arg_str = "";
@@ -3145,7 +3185,7 @@ $app->post('/wearer_return/send', function ()use($app){
         // 発注状況区分「終了」
         array_push($query_list, "order_sts_kbn = '2'");
         // 理由区分「不要品返却」
-        array_push($query_list, "order_reason_kbn = '07'");
+        array_push($query_list,"(order_reason_kbn = '28' OR order_reason_kbn = '07')");
         // 着用者状況区分「その他（着用終了）」
         array_push($query_list, "werer_sts_kbn = '3'");
         $query = implode(' AND ', $query_list);
@@ -3418,7 +3458,7 @@ $app->post('/wearer_return/send', function ()use($app){
        // 発注状況区分「終了」
        array_push($query_list, "order_sts_kbn = '2'");
        // 理由区分「不要品返却」
-       array_push($query_list, "order_reason_kbn = '07'");
+       array_push($query_list,"(order_reason_kbn = '28' OR order_reason_kbn = '07')");
        $query = implode(' AND ', $query_list);
 
        $arg_str = "";

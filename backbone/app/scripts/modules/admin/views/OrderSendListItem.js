@@ -125,8 +125,10 @@ define([
 								transition = "WO0015_req";
 							}
 							// 種別：追加貸与
-							if (data["order_sts_kbn"] == '1' && data["order_reason_kbn"] == '03') {
-								transition = "WR0016_req";
+							if (data["order_sts_kbn"] == '1') {
+								if(data["order_reason_kbn"] == '03' || data["order_reason_kbn"] == '27') {
+									transition = "WR0016_req";
+								}
 							}
 							// 種別：貸与終了
 							if (
@@ -140,8 +142,10 @@ define([
 								transition = "WN0018_req";
 							}
 							// 種別：不要品返却
-							if (data["order_sts_kbn"] == '2' && data["order_reason_kbn"] == '07') {
-								transition = "WR0021_req";
+							if (data["order_sts_kbn"] == '2') {
+								if(data["order_reason_kbn"] == '07' || data["order_reason_kbn"] == '28') {
+									transition = "WR0021_req";
+								}
 							}
 							// 種別：職種変更または異動
 							if (data["order_sts_kbn"] == '5') {
