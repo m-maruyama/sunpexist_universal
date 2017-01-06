@@ -172,6 +172,7 @@ $app->post('/receive/search', function ()use($app){
         }
         if ($cond['reason_kbn2']) {
             array_push($reason_kbn_1, "t_order.order_reason_kbn = '03'");
+            array_push($reason_kbn_1, "t_order.order_reason_kbn = '27'");
         }
         if ($cond['reason_kbn3']) {
             array_push($reason_kbn_1, "t_order.order_reason_kbn = '04'");
@@ -188,7 +189,7 @@ $app->post('/receive/search', function ()use($app){
             array_push($reason_kbn_1, "t_order.order_reason_kbn = '01'");
             array_push($reason_kbn_1, "t_order.order_reason_kbn = '02'");
             array_push($reason_kbn_1, "t_order.order_reason_kbn = '03'");
-            array_push($reason_kbn_1, "t_order.order_reason_kbn = '03'");
+            array_push($reason_kbn_1, "t_order.order_reason_kbn = '27'");
             array_push($reason_kbn_1, "t_order.order_reason_kbn = '04'");
             array_push($reason_kbn_1, "t_order.order_reason_kbn = '19'");
             $reason_kbn_1_str = implode(' OR ', $reason_kbn_1);
@@ -204,6 +205,7 @@ $app->post('/receive/search', function ()use($app){
         }
         if ($cond['reason_kbn2']) {
             array_push($reason_kbn_1, "t_order.order_reason_kbn = '03'");
+            array_push($reason_kbn_1, "t_order.order_reason_kbn = '27'");
         }
         if ($cond['reason_kbn3']) {
             array_push($reason_kbn_1, "t_order.order_reason_kbn = '04'");
@@ -363,6 +365,7 @@ $app->post('/receive/search', function ()use($app){
         }
         if($cond['reason_kbn17']){
             array_push($reason_kbn_4, "t_order.order_reason_kbn = '07' AND m_wearer_std.werer_sts_kbn = '1'");
+            array_push($reason_kbn_4, "t_order.order_reason_kbn = '28' AND m_wearer_std.werer_sts_kbn = '1'");
         }
         if($cond['reason_kbn18']){
             array_push($reason_kbn_4, "t_order.order_reason_kbn = '08' AND m_wearer_std.werer_sts_kbn = '1'");
@@ -379,6 +382,7 @@ $app->post('/receive/search', function ()use($app){
             array_push($reason_kbn_4, "(t_order.order_reason_kbn = '05' AND m_wearer_std.werer_sts_kbn = '4')");
             array_push($reason_kbn_4, "(t_order.order_reason_kbn = '06' AND m_wearer_std.werer_sts_kbn = '2')");
             array_push($reason_kbn_4, "t_order.order_reason_kbn = '07' AND m_wearer_std.werer_sts_kbn = '1'");
+            array_push($reason_kbn_4, "t_order.order_reason_kbn = '28' AND m_wearer_std.werer_sts_kbn = '1'");
             array_push($reason_kbn_4, "t_order.order_reason_kbn = '08' AND m_wearer_std.werer_sts_kbn = '1'");
             array_push($reason_kbn_4, "t_order.order_reason_kbn = '24' AND m_wearer_std.werer_sts_kbn = '1'");
             $reason_kbn_4_str = implode(' OR ', $reason_kbn_4);
@@ -394,6 +398,7 @@ $app->post('/receive/search', function ()use($app){
         }
         if($cond['reason_kbn17']){
             array_push($reason_kbn_4, "t_order.order_reason_kbn = '07' AND m_wearer_std.werer_sts_kbn = '1'");
+            array_push($reason_kbn_4, "t_order.order_reason_kbn = '28' AND m_wearer_std.werer_sts_kbn = '1'");
         }
         if($cond['reason_kbn18']){
             array_push($reason_kbn_4, "t_order.order_reason_kbn = '08' AND m_wearer_std.werer_sts_kbn = '1'");
