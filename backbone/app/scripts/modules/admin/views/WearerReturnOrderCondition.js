@@ -390,10 +390,11 @@ define([
 								item[i]["individual_data"][j]["return_num"] = chk_num;
 							}
 						} else {
+							item[i]["individual_cnt"] = $("input[name='individual_cnt"+i+"']").val();
+							item[i]["individual_no"] = $("input[name='target_flg"+i+"']").val();
 							item[i]["return_num"] = $("input[name='return_num"+i+"']").val();
 						}
 					}
-
 					var modelForUpdate = this.model;
 					modelForUpdate.url = App.api.WR0022;
 					var cond = {
@@ -487,6 +488,8 @@ define([
 								item[i]["individual_data"][j]["return_num"] = chk_num;
 							}
 						} else {
+							item[i]["individual_cnt"] = $("input[name='individual_cnt"+i+"']").val();
+							item[i]["individual_no"] = $("input[name='target_flg"+i+"']").val();
 							item[i]["return_num"] = $("input[name='return_num"+i+"']").val();
 						}
 					}

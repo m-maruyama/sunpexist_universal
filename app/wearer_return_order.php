@@ -725,7 +725,7 @@ $app->post('/wearer_return/info', function ()use($app){
          // サイズ
          $list["size_cd"] = $item_result->as_size_cd;
          // 対象、個体管理番号
-         if (individual_flg($auth['corporate_id'], $wearer_other_post['rntl_cont_no']) == "1") {
+         if (individual_flg($auth['corporate_id'], $wearer_other_post['rntl_cont_no']) == "1" || individual_flg($auth['corporate_id'], $wearer_other_post['rntl_cont_no']) == "0") {
            // 返却予定情報トラン参照（個体管理番号取得）
            $individual_list = array();
            $query_list = array();
@@ -958,7 +958,7 @@ $app->post('/wearer_return/info', function ()use($app){
          // サイズ
          $list["size_cd"] = $result->as_size_cd;
          // 対象、個体管理番号
-         if (individual_flg($auth['corporate_id'], $wearer_other_post['rntl_cont_no']) == "1") {
+         if (individual_flg($auth['corporate_id'], $wearer_other_post['rntl_cont_no']) == "1" || individual_flg($auth['corporate_id'], $wearer_other_post['rntl_cont_no']) == "0") {
            // 納品状況明細情報参照
            $list["individual_chk"] = array();
            $element = array();
@@ -2231,6 +2231,7 @@ $app->post('/wearer_return/complete', function ()use($app){
         $results_cnt = $result_obj["\0*\0_count"];
         //ChromePhp::LOG($results_cnt);
         //ChromePhp::LOG("返却予定情報トラン登録");
+        //ChromePhp::log($item_map);
         foreach ($item_list as $item_map) {
           if ($item_map["individual_flg"] == true && !empty($item_map["individual_data"])) {
             // ※個体管理番号単位での登録の場合
@@ -2369,6 +2370,9 @@ $app->post('/wearer_return/complete', function ()use($app){
             // サイズコード
             array_push($calum_list, "size_cd");
             array_push($values_list, "'".$item_map['size_cd']."'");
+            // 個体管理番号（個なしの場合でも納品状況明細情報の個体管理番号を登録)
+            array_push($calum_list, "individual_ctrl_no");
+            array_push($values_list, "'".$item_map['individual_no']."'");
             // 着用者コード
             array_push($calum_list, "werer_cd");
             array_push($values_list, "'".$wearer_other_post['werer_cd']."'");
@@ -3611,6 +3615,9 @@ $app->post('/wearer_return/send', function ()use($app){
            // サイズコード
            array_push($calum_list, "size_cd");
            array_push($values_list, "'".$item_map['size_cd']."'");
+           // 個体管理番号（個なしの場合でも納品状況明細情報の個体管理番号を登録)
+           array_push($calum_list, "individual_ctrl_no");
+           array_push($values_list, "'".$item_map['individual_no']."'");
            // 着用者コード
            array_push($calum_list, "werer_cd");
            array_push($values_list, "'".$wearer_other_post['werer_cd']."'");
