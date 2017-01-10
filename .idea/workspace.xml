@@ -3,27 +3,8 @@
   <component name="ChangeListManager">
     <list default="true" id="093d48c9-3fdb-4a50-ba0a-ca62a2bcccb7" name="Default" comment="app修正">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/importCsv.php" afterPath="$PROJECT_DIR$/app/importCsv.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/wearer_add_order.php" afterPath="$PROJECT_DIR$/app/wearer_add_order.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/wearer_change_order.php" afterPath="$PROJECT_DIR$/app/wearer_change_order.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/wearer_edit_order.php" afterPath="$PROJECT_DIR$/app/wearer_edit_order.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/wearer_end_order.php" afterPath="$PROJECT_DIR$/app/wearer_end_order.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/wearer_exchange_order.php" afterPath="$PROJECT_DIR$/app/wearer_exchange_order.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/wearer_input.php" afterPath="$PROJECT_DIR$/app/wearer_input.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/wearer_order.php" afterPath="$PROJECT_DIR$/app/wearer_order.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/wearer_other_change_order.php" afterPath="$PROJECT_DIR$/app/wearer_other_change_order.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/wearer_return_order.php" afterPath="$PROJECT_DIR$/app/wearer_return_order.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/wearer_size_change.php" afterPath="$PROJECT_DIR$/app/wearer_size_change.php" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/backbone/app/scripts/modules/admin/Templates.js" afterPath="$PROJECT_DIR$/backbone/app/scripts/modules/admin/Templates.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/backbone/app/scripts/modules/admin/templates/wearerAddOrderCondition.hbs" afterPath="$PROJECT_DIR$/backbone/app/scripts/modules/admin/templates/wearerAddOrderCondition.hbs" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/backbone/app/scripts/modules/admin/templates/wearerChangeOrderCondition.hbs" afterPath="$PROJECT_DIR$/backbone/app/scripts/modules/admin/templates/wearerChangeOrderCondition.hbs" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/backbone/app/scripts/modules/admin/templates/wearerDetailModal.hbs" afterPath="$PROJECT_DIR$/backbone/app/scripts/modules/admin/templates/wearerDetailModal.hbs" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/backbone/app/scripts/modules/admin/templates/wearerEditOrderCondition.hbs" afterPath="$PROJECT_DIR$/backbone/app/scripts/modules/admin/templates/wearerEditOrderCondition.hbs" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/backbone/app/scripts/modules/admin/templates/wearerExchangeOrderCondition.hbs" afterPath="$PROJECT_DIR$/backbone/app/scripts/modules/admin/templates/wearerExchangeOrderCondition.hbs" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/backbone/app/scripts/modules/admin/templates/wearerInputCondition.hbs" afterPath="$PROJECT_DIR$/backbone/app/scripts/modules/admin/templates/wearerInputCondition.hbs" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/backbone/app/scripts/modules/admin/templates/wearerOrderCondition.hbs" afterPath="$PROJECT_DIR$/backbone/app/scripts/modules/admin/templates/wearerOrderCondition.hbs" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/backbone/app/scripts/modules/admin/templates/wearerOtherChangeOrderCondition.hbs" afterPath="$PROJECT_DIR$/backbone/app/scripts/modules/admin/templates/wearerOtherChangeOrderCondition.hbs" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/backbone/app/scripts/modules/admin/templates/wearerReturnOrderCondition.hbs" afterPath="$PROJECT_DIR$/backbone/app/scripts/modules/admin/templates/wearerReturnOrderCondition.hbs" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/backbone/app/scripts/modules/admin/templates/home.hbs" afterPath="$PROJECT_DIR$/backbone/app/scripts/modules/admin/templates/home.hbs" />
     </list>
     <list id="b3330c0a-5742-4be2-af6d-d1950c5743e3" name="Rejected commit: Default" comment="SUNPEXIST_UNIVERSAL-13 拠点絞込画面" />
     <ignored path="universal.iws" />
@@ -368,20 +349,6 @@
               <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
             </PATH_ELEMENT>
           </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="universal" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="universal" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="backbone" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-          </PATH>
         </subPane>
       </pane>
       <pane id="Scope">
@@ -512,14 +479,7 @@
       <workItem from="1477360654343" duration="75035000" />
       <workItem from="1478574455697" duration="20737000" />
       <workItem from="1478659009335" duration="35664000" />
-      <workItem from="1484028673994" duration="3468000" />
-    </task>
-    <task id="LOCAL-00011" summary="SUNPEXIST_UNIVERSAL-13 拠点絞込画面">
-      <created>1472176584499</created>
-      <option name="number" value="00011" />
-      <option name="presentableId" value="LOCAL-00011" />
-      <option name="project" value="LOCAL" />
-      <updated>1472176584499</updated>
+      <workItem from="1484028673994" duration="3638000" />
     </task>
     <task id="LOCAL-00012" summary="SUNPEXIST_UNIVERSAL-41 発注管理（貸与開始）">
       <created>1472203052432</created>
@@ -857,11 +817,18 @@
       <option name="project" value="LOCAL" />
       <updated>1484035179675</updated>
     </task>
-    <option name="localTasksCounter" value="60" />
+    <task id="LOCAL-00060" summary="コンフリクト修正">
+      <created>1484035588588</created>
+      <option name="number" value="00060" />
+      <option name="presentableId" value="LOCAL-00060" />
+      <option name="project" value="LOCAL" />
+      <updated>1484035588589</updated>
+    </task>
+    <option name="localTasksCounter" value="61" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="877919000" />
+    <option name="totallyTimeSpent" value="878089000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="23" width="1440" height="797" extended-state="6" />
@@ -1191,8 +1158,8 @@
         <state relative-caret-position="346">
           <caret line="87" column="38" selection-start-line="87" selection-start-column="38" selection-end-line="87" selection-end-column="38" />
           <folding>
-            <element signature="n#style#0;n#span#0;n#label#0;n#div#2;n#div#0;n#form#0;n#div#1;n#div#1;n#div#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#span#0;n#label#0;n#div#4;n#div#0;n#form#0;n#div#1;n#div#1;n#div#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#span#0;n#label#0;n#div#2;n#div#0;n#form#0;n#div#1;n#div#1;n#div#0;n#!!top" expanded="false" />
+            <element signature="n#style#0;n#span#0;n#label#0;n#div#4;n#div#0;n#form#0;n#div#1;n#div#1;n#div#0;n#!!top" expanded="false" />
           </folding>
         </state>
       </provider>
