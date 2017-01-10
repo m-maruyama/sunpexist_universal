@@ -24,8 +24,8 @@ define([
 			},
 			onRender: function() {
 				//前回ログインした企業IDをデフォルト表示
-				var corporate_id = localStorage.getItem('corporate_id');
-				if(corporate_id){
+				var corporate_id=getCookie("corporate_id");
+				if (corporate_id!=""){
 					this.ui.corporate_id.val(corporate_id);
 				}
 			},
@@ -67,12 +67,45 @@ define([
 								alert('仮パスワードを確認いたしました。パスワードを変更してください。');
 								that.triggerMethod('password');
 							}
-							// ログインデータの保存
-							localStorage.setItem('corporate_id', that.ui.corporate_id.val());
+							// ログインデータの保存(有効期限約10年に設定)
+							setCookie('corporate_id',that.ui.corporate_id.val(),3662);
 						}
 					});
 				}
 			}
 		});
+		/* 保存されているクッキーから、指定したクッキー名の値を取得
+		 * getCookie(クッキー名)
+		 */
+		function getCookie(c_name){
+			var st="";
+			var ed="";
+			if (document.cookie.length>0){
+				st=document.cookie.indexOf(c_name + "=");
+				if (st!=-1){
+					st=st+c_name.length+1;
+					ed=document.cookie.indexOf(";",st);
+					if (ed==-1) ed=document.cookie.length;
+					return unescape(document.cookie.substring(st,ed));
+				}
+			}
+			return "";
+		}
+		/*
+		 * クッキー保存
+		 * setCookie(クッキー名, クッキーの値, クッキーの有効日数);
+		 */
+		function setCookie(c_name,value,expiredays){
+			// 有効期限の日付
+			var exdate=new Date();
+			exdate.setDate(expiredays);
+			// クッキーに保存する文字列を生成
+			var s="";
+			s+=c_name+"="+escape(value);
+			alert(exdate);
+			s+=(expiredays==null)?"":"; expires="+exdate;
+			// クッキーに保存
+			document.cookie=s;
+		}
 	});
 });
