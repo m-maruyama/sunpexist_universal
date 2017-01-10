@@ -1996,7 +1996,7 @@ $app->post('/wearer_add/complete', function ()use($app){
            $arg_str .= "(".$calum_query.")";
            $arg_str .= " VALUES ";
            $arg_str .= "(".$values_query.")";
-           ChromePhp::LOG($arg_str);
+//           ChromePhp::LOG($arg_str);
            $t_order_tran = new TOrderTran();
            $results = new Resultset(NULL, $t_order_tran, $t_order_tran->getReadConnection()->query($arg_str));
            $results_cnt = $result_obj["\0*\0_count"];
@@ -2011,7 +2011,7 @@ $app->post('/wearer_add/complete', function ()use($app){
       // トランザクションロールバック
       $m_wearer_std_tran = new MWearerStdTran();
       $results = new Resultset(NULL, $m_wearer_std_tran, $m_wearer_std_tran->getReadConnection()->query('rollback'));
-      ChromePhp::LOG($e);
+//      ChromePhp::LOG($e);
 
       $json_list["error_code"] = "1";
       $error_msg = "入力登録処理において、データ更新エラーが発生しました。";
@@ -2964,7 +2964,7 @@ ChromePhp::LOG($item_input);
      // トランザクションロールバック
      $m_wearer_std_tran = new MWearerStdTran();
      $results = new Resultset(NULL, $m_wearer_std_tran, $m_wearer_std_tran->getReadConnection()->query('rollback'));
-     ChromePhp::LOG($e);
+//     ChromePhp::LOG($e);
 
      $json_list["error_code"] = "1";
      $error_msg = "発注送信処理において、データ更新エラーが発生しました。";
