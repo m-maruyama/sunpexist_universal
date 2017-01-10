@@ -3800,11 +3800,11 @@ $app->post('/wearer_change/complete', function ()use($app){
       // 現在貸与中のアイテム内容登録
       if (!empty($now_item_input)) {
         // 現発注Noの返却予定情報トランをクリーン
-        if (!empty($wearer_chg_post['return_req_no'])) {
+        if (!empty($wearer_chg_post['order_req_no'])) {
           //ChromePhp::LOG("返却予定情報トランクリーン");
           $query_list = array();
           array_push($query_list, "corporate_id = '".$auth['corporate_id']."'");
-          array_push($query_list, "order_req_no = '".$wearer_chg_post['return_req_no']."'");
+          array_push($query_list, "order_req_no = '".$wearer_chg_post['order_req_no']."'");
           // 発注区分「異動」
           //array_push($query_list, "order_sts_kbn = '5'");
           $query = implode(' AND ', $query_list);
@@ -4001,6 +4001,38 @@ $app->post('/wearer_change/complete', function ()use($app){
             // 理由区分
             array_push($calum_list, "order_reason_kbn");
             array_push($values_list, "'".$wearer_data_input['reason_kbn']."'");
+            //個体管理番号
+            $query_list = array();
+            array_push($query_list, "t_delivery_goods_state_details.corporate_id = '".$auth['corporate_id']."'");
+            array_push($query_list, "t_delivery_goods_state_details.rntl_cont_no = '".$wearer_data_input['agreement_no']."'");
+            array_push($query_list, "t_delivery_goods_state_details.werer_cd = '".$wearer_chg_post['werer_cd']."'");
+            array_push($query_list, "t_delivery_goods_state_details.item_cd = '".$now_item_input_map['now_item_cd']."'");
+            array_push($query_list, "t_delivery_goods_state_details.color_cd = '".$now_item_input_map['now_color_cd']."'");
+            array_push($query_list, "t_delivery_goods_state_details.size_cd = '".$now_item_input_map['now_size_cd']."'");
+            array_push($query_list, "t_delivery_goods_state_details.rtn_ok_flg = '1'");
+            array_push($query_list, "t_delivery_goods_state_details.receipt_status = '2'");
+            $query = implode(' AND ', $query_list);
+
+            $arg_str = "";
+            $arg_str = "SELECT ";
+            $arg_str .= " * ";
+            $arg_str .= " FROM ";
+            $arg_str .= "t_delivery_goods_state_details";
+            $arg_str .= " WHERE ";
+            $arg_str .= $query;
+            $arg_str .= " ORDER BY individual_ctrl_no ASC";
+            $t_delivery_goods_state_details = new TDeliveryGoodsStateDetails();
+            $t_delivery_goods_state_details_results = new Resultset(null, $t_delivery_goods_state_details, $t_delivery_goods_state_details->getReadConnection()->query($arg_str));
+            $result_obj = (array)$t_delivery_goods_state_details_results;
+            $results_cnt = $result_obj["\0*\0_count"];
+
+            foreach ($t_delivery_goods_state_details_results as $t_delivery_goods_state_details_result) {
+                $list["individual_ctrl_no"] = $t_delivery_goods_state_details_result->individual_ctrl_no;
+            }
+
+            array_push($calum_list, "individual_ctrl_no");
+            array_push($values_list, "'".$list["individual_ctrl_no"]."'");
+
             // 部門マスタ_統合ハッシュキー(企業ID、レンタル契約No.、レンタル部門コード)
             $m_section_comb_hkey = md5(
               $auth['corporate_id']."-".
@@ -4510,7 +4542,7 @@ $app->post('/wearer_change/send', function ()use($app){
       }
     }
 
-    // 着用者基本マスタ参照
+    // 着用者基本マスタ参照F
     $query_list = array();
     array_push($query_list, "corporate_id = '".$auth['corporate_id']."'");
     array_push($query_list, "werer_cd = '".$wearer_chg_post['werer_cd']."'");
@@ -5433,11 +5465,11 @@ $app->post('/wearer_change/send', function ()use($app){
      // 現在貸与中のアイテム内容登録
      if (!empty($now_item_input)) {
        // 現発注Noの返却予定情報トランをクリーン
-       if (!empty($wearer_chg_post['return_req_no'])) {
+       if (!empty($wearer_chg_post['order_req_no'])) {
          //ChromePhp::LOG("返却予定情報トランクリーン");
          $query_list = array();
          array_push($query_list, "corporate_id = '".$auth['corporate_id']."'");
-         array_push($query_list, "order_req_no = '".$wearer_chg_post['return_req_no']."'");
+         array_push($query_list, "order_req_no = '".$wearer_chg_post['order_req_no']."'");
          // 発注区分「異動」
          //array_push($query_list, "order_sts_kbn = '5'");
          $query = implode(' AND ', $query_list);
@@ -5638,6 +5670,37 @@ $app->post('/wearer_change/send', function ()use($app){
            // 理由区分
            array_push($calum_list, "order_reason_kbn");
            array_push($values_list, "'".$wearer_data_input['reason_kbn']."'");
+           //個体管理番号
+           $query_list = array();
+           array_push($query_list, "t_delivery_goods_state_details.corporate_id = '".$auth['corporate_id']."'");
+           array_push($query_list, "t_delivery_goods_state_details.rntl_cont_no = '".$wearer_data_input['agreement_no']."'");
+           array_push($query_list, "t_delivery_goods_state_details.werer_cd = '".$wearer_chg_post['werer_cd']."'");
+           array_push($query_list, "t_delivery_goods_state_details.item_cd = '".$now_item_input_map['now_item_cd']."'");
+           array_push($query_list, "t_delivery_goods_state_details.color_cd = '".$now_item_input_map['now_color_cd']."'");
+           array_push($query_list, "t_delivery_goods_state_details.size_cd = '".$now_item_input_map['now_size_cd']."'");
+           array_push($query_list, "t_delivery_goods_state_details.rtn_ok_flg = '1'");
+           array_push($query_list, "t_delivery_goods_state_details.receipt_status = '2'");
+           $query = implode(' AND ', $query_list);
+
+           $arg_str = "";
+           $arg_str = "SELECT ";
+           $arg_str .= " * ";
+           $arg_str .= " FROM ";
+           $arg_str .= "t_delivery_goods_state_details";
+           $arg_str .= " WHERE ";
+           $arg_str .= $query;
+           $arg_str .= " ORDER BY individual_ctrl_no ASC";
+           $t_delivery_goods_state_details = new TDeliveryGoodsStateDetails();
+           $t_delivery_goods_state_details_results = new Resultset(null, $t_delivery_goods_state_details, $t_delivery_goods_state_details->getReadConnection()->query($arg_str));
+           $result_obj = (array)$t_delivery_goods_state_details_results;
+           $results_cnt = $result_obj["\0*\0_count"];
+
+           foreach ($t_delivery_goods_state_details_results as $t_delivery_goods_state_details_result) {
+               $list["individual_ctrl_no"] = $t_delivery_goods_state_details_result->individual_ctrl_no;
+           }
+
+           array_push($calum_list, "individual_ctrl_no");
+           array_push($values_list, "'".$list["individual_ctrl_no"]."'");
            // 部門マスタ_統合ハッシュキー(企業ID、レンタル契約No.、レンタル部門コード)
            $m_section_comb_hkey = md5(
              $auth['corporate_id']."-".
