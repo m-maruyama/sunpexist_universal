@@ -266,7 +266,7 @@ $app->post('/wearer_order_info', function ()use($app){
         $list['cster_emply_cd'] = $cster_emply_cd;
         // 着用者名
         $list['werer_name'] = $wearer_odr_post['werer_name'];
-        // 着用者名（読み仮名）
+        // 着用者名（カナ）
         $list['werer_name_kana'] = $wearer_odr_post['werer_name_kana'];
         // 発令日
 //        $list['appointment_ymd'] = $wearer_odr_post['appointment_ymd'];
@@ -323,7 +323,7 @@ $app->post('/wearer_order_info', function ()use($app){
                 }
                 // 着用者名
                 $list['werer_name'] = $result->as_werer_name;
-                // 着用者名（読み仮名）
+                // 着用者名（カナ）
                 $list['werer_name_kana'] = $result->as_werer_name_kana;
                 // 発令日
 //                $list['appointment_ymd'] = $result->as_appointment_ymd;
@@ -384,7 +384,7 @@ $app->post('/wearer_order_info', function ()use($app){
                 $list['cster_emply_cd'] = $result->as_cster_emply_cd;
                 // 着用者名
                 $list['werer_name'] = $result->as_werer_name;
-                // 着用者名（読み仮名）
+                // 着用者名（カナ）
                 $list['werer_name_kana'] = $result->as_werer_name_kana;
                 // 発令日
 //                $list['appointment_ymd'] = $result->as_appointment_ymd;
@@ -938,7 +938,7 @@ $app->post('/wearer_order_insert', function () use ($app) {
             $corporate_id = $auth['corporate_id']; //企業ID
             $rntl_sect_cd = $cond['rntl_sect_cd']; //レンタル部門コード
             $cster_emply_cd = $wearer_odr_post['cster_emply_cd'];//客先社員コード
-            $werer_name = $wearer_odr_post['werer_name'];//着用者名（漢字）
+            $werer_name = $wearer_odr_post['werer_name'];//着用者名
             $werer_name_kana = $wearer_odr_post['werer_name_kana']; //着用者名（カナ）
             $sex_kbn = $wearer_odr_post['sex_kbn'];//性別区分
 //            $appointment_ymd = date("Ymd", strtotime($wearer_odr_post['appointment_ymd']));//発令日
@@ -959,7 +959,7 @@ $app->post('/wearer_order_insert', function () use ($app) {
             $corporate_id = $auth['corporate_id']; //企業ID
             $m_wearer_std_comb_hkey = md5($auth['corporate_id']. '-' . str_pad($results[0]->nextval, 10, '0', STR_PAD_LEFT). '-' . $wearer_odr_post['rntl_cont_no']. '-' . $cond['rntl_sect_cd']. '-' . $cond['job_type']);
             $cster_emply_cd = $wearer_odr_post['cster_emply_cd'];//客先社員コード
-            $werer_name = $wearer_odr_post['werer_name'];//着用者名（漢字）
+            $werer_name = $wearer_odr_post['werer_name'];//着用者名
             $werer_name_kana = $wearer_odr_post['werer_name_kana']; //着用者名（カナ）
             $sex_kbn = $wearer_odr_post['sex_kbn'];//性別区分
 //            $appointment_ymd = date("Ymd", strtotime($wearer_odr_post['appointment_ymd']));//発令日
@@ -1083,7 +1083,7 @@ $app->post('/wearer_order_insert', function () use ($app) {
         // 客先社員コード
         array_push($calum_list, "cster_emply_cd");
         array_push($values_list, "'" . $cster_emply_cd . "'");
-        // 着用者名（漢字）
+        // 着用者名
         array_push($calum_list, "werer_name");
         array_push($values_list, "'" . $werer_name . "'");
         // 着用者名（カナ）

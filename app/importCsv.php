@@ -93,7 +93,7 @@ $app->post('/import_csv', function () use ($app) {
             }
             if (empty($line_list[1])) {
                 if (count($error_list) < 20) {
-                    $error_list[] = $line_cnt . '行目の着用者名(漢字)を入力してください。';
+                    $error_list[] = $line_cnt . '行目の着用者名を入力してください。';
                 } else {
                     $json_list['errors'] = $error_list;
                     $json_list["error_code"] = "1";
@@ -244,7 +244,7 @@ $app->post('/import_csv', function () use ($app) {
             //着用者漢字
             if (byte_cnv($line_list[1]) > 100) {
                 if (count($error_list) < 20) {
-                    $error_list[] = '着用者名(漢字)の文字数が多すぎます。';
+                    $error_list[] = '着用者名の文字数が多すぎます。';
                 } else {
                     $json_list['errors'] = $error_list;
                     $json_list["error_code"] = "1";
@@ -340,7 +340,7 @@ $app->post('/import_csv', function () use ($app) {
             }
             if (empty($line_list[1])) {
                 if (count($error_list) < 20) {
-                    $error_list[] = $line_cnt . '行目の着用者名(漢字)を入力してください。';
+                    $error_list[] = $line_cnt . '行目の着用者名を入力してください。';
                 } else {
                     $json_list['errors'] = $error_list;
                     $json_list["error_code"] = "1";
@@ -467,7 +467,7 @@ $app->post('/import_csv', function () use ($app) {
             //着用者漢字
             if (byte_cnv($line_list[1]) > 100) {
                 if (count($error_list) < 20) {
-                    $error_list[] = '着用者名(漢字)の文字数が多すぎます。';
+                    $error_list[] = '着用者名の文字数が多すぎます。';
                 } else {
                     $json_list['errors'] = $error_list;
                     $json_list["error_code"] = "1";
@@ -1809,9 +1809,9 @@ function chk_format($error_list, $line_list, $line_cnt)
         }
     }
       if (isset($line_list[1])) {
-          //着用者名（漢字）
+          //着用者名
         if (!chk_pattern($line_list[1], 13)) {
-          array_push($error_list, error_msg_format($line_cnt, '着用者名（漢字）'));
+          array_push($error_list, error_msg_format($line_cnt, '着用者名'));
         }
       }
       if (isset($line_list[2])) {
@@ -2009,7 +2009,7 @@ function chk_pattern($val, $pattaern)
             }
             break;
         case 13:
-            //パターン13(22byte) //着用者名（漢字）
+            //パターン13(22byte) //着用者名
             if (strlen( mb_convert_encoding($val, 'SJIS', 'UTF-8')) > 22) {
                 return false;
             } else {

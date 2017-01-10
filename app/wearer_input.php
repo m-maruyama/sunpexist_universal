@@ -842,7 +842,7 @@ $app->post('/input_insert', function () use ($app) {
         $rntl_sect_cd = $cond['rntl_sect_cd']; //レンタル部門コード
         $job_type_cd = $deli_job[0];//職種コード
         $cster_emply_cd = $cond['cster_emply_cd'];//客先社員コード
-        $werer_name = $cond['werer_name'];//着用者名（漢字）
+        $werer_name = $cond['werer_name'];//着用者名
         $werer_name_kana = $cond['werer_name_kana']; //着用者名（カナ）
         $sex_kbn = $cond['sex_kbn'];//性別区分
         $werer_sts_kbn = '7';//着用者状況区分
@@ -941,7 +941,7 @@ $app->post('/input_insert', function () use ($app) {
         // 客先社員コード
         array_push($calum_list, "cster_emply_cd");
         array_push($values_list, "'" . $cster_emply_cd . "'");
-        // 着用者名（漢字）
+        // 着用者名
         array_push($calum_list, "werer_name");
         array_push($values_list, "'" . $werer_name . "'");
         // 着用者名（カナ）

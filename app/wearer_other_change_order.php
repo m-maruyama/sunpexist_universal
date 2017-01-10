@@ -206,7 +206,7 @@ $app->post('/wearer_other_change_info', function ()use($app){
             $list['cster_emply_cd'] = $result->as_cster_emply_cd;
             // 着用者名
             $list['werer_name'] = $result->as_werer_name;
-            // 着用者名（読み仮名）
+            // 着用者名（カナ）
             $list['werer_name_kana'] = $result->as_werer_name_kana;
             // 性別
             $sex_kbn = $result->as_sex_kbn;
@@ -265,7 +265,7 @@ $app->post('/wearer_other_change_info', function ()use($app){
                 $list['cster_emply_cd'] = $result->as_cster_emply_cd;
                 // 着用者名
                 $list['werer_name'] = $result->as_werer_name;
-                // 着用者名（読み仮名）
+                // 着用者名（カナ）
                 $list['werer_name_kana'] = $result->as_werer_name_kana;
                 // 性別
                 $sex_kbn = $result->as_sex_kbn;
@@ -319,7 +319,7 @@ $app->post('/wearer_other_change_info', function ()use($app){
                     $list['cster_emply_cd'] = $result->as_cster_emply_cd;
                     // 着用者名
                     $list['werer_name'] = $result->as_werer_name;
-                    // 着用者名（読み仮名）
+                    // 着用者名（カナ）
                     $list['werer_name_kana'] = $result->as_werer_name_kana;
                     // 性別
                     $sex_kbn = $result->as_sex_kbn;

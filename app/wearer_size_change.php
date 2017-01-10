@@ -73,7 +73,7 @@ $app->post('/wearer_size_change/search', function ()use($app){
     if(!empty($cond['cster_emply_cd'])){
         $query_list[] = "m_wearer_std.cster_emply_cd LIKE '".$cond['cster_emply_cd']."%'";
     }
-    //着用者名（漢字）
+    //着用者名
     if(!empty($cond['werer_name'])){
         $query_list[] = "m_wearer_std.werer_name LIKE '%".$cond['werer_name']."%'";
     }

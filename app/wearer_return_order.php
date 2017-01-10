@@ -109,7 +109,7 @@ $app->post('/wearer_return/info', function ()use($app){
       $list['cster_emply_cd'] = $result->as_cster_emply_cd;
       // 着用者名
       $list['werer_name'] = $result->as_werer_name;
-      // 着用者名（読み仮名）
+      // 着用者名（カナ）
       $list['werer_name_kana'] = $result->as_werer_name_kana;
     }
 
@@ -161,7 +161,7 @@ $app->post('/wearer_return/info', function ()use($app){
         $list['cster_emply_cd'] = $result->as_cster_emply_cd;
         // 着用者名
         $list['werer_name'] = $result->as_werer_name;
-        // 着用者名（読み仮名）
+        // 着用者名（カナ）
         $list['werer_name_kana'] = $result->as_werer_name_kana;
         // 性別
         $wearer_other_post['sex_kbn'] = $result->as_sex_kbn;
@@ -213,7 +213,7 @@ $app->post('/wearer_return/info', function ()use($app){
           $list['cster_emply_cd'] = $result->as_cster_emply_cd;
           // 着用者名
           $list['werer_name'] = $result->as_werer_name;
-          // 着用者名（読み仮名）
+          // 着用者名（カナ）
           $list['werer_name_kana'] = $result->as_werer_name_kana;
         }
 
@@ -1295,16 +1295,16 @@ $app->post('/wearer_return/complete', function ()use($app){
           array_push($json_list["error_msg"], $error_msg);
         }
      }
-     // 着用者名（読み仮名）
+     // 着用者名（カナ）
      if (empty($wearer_data_input["member_name_kana"])) {
        $json_list["error_code"] = "1";
-       $error_msg = "着用者名(読み仮名)を入力してください。";
+       $error_msg = "着用者名(カナ)を入力してください。";
        array_push($json_list["error_msg"], $error_msg);
      }
      if (mb_strlen($wearer_data_input['member_name_kana']) > 0) {
         if (strlen(mb_convert_encoding($wearer_data_input['member_name_kana'], "SJIS")) > 25) {
           $json_list["error_code"] = "1";
-          $error_msg = "着用者名(読み仮名)が規定の文字数をオーバーしています。";
+          $error_msg = "着用者名(カナ)が規定の文字数をオーバーしています。";
           array_push($json_list["error_msg"], $error_msg);
         }
      }
@@ -2540,16 +2540,16 @@ $app->post('/wearer_return/send', function ()use($app){
          array_push($json_list["error_msg"], $error_msg);
        }
     }
-    // 着用者名（読み仮名）
+    // 着用者名（カナ）
     if (empty($wearer_data_input["member_name_kana"])) {
       $json_list["error_code"] = "1";
-      $error_msg = "着用者名(読み仮名)を入力してください。";
+      $error_msg = "着用者名(カナ)を入力してください。";
       array_push($json_list["error_msg"], $error_msg);
     }
     if (mb_strlen($wearer_data_input['member_name_kana']) > 0) {
        if (strlen(mb_convert_encoding($wearer_data_input['member_name_kana'], "SJIS")) > 25) {
          $json_list["error_code"] = "1";
-         $error_msg = "着用者名(読み仮名)が規定の文字数をオーバーしています。";
+         $error_msg = "着用者名(カナ)が規定の文字数をオーバーしています。";
          array_push($json_list["error_msg"], $error_msg);
        }
     }
