@@ -83,7 +83,7 @@ define([
 							that.triggerMethod('showAlerts', errorMessages);
 						}
 						var res_list = res.attributes;
-						//console.log(res_list);
+						console.log(res_list);
 
 						var delete_param =
 							res_list['rntl_cont_no'] + ":"

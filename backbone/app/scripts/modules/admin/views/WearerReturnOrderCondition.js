@@ -158,7 +158,7 @@ define([
 							option2.appendChild(text2);
 							document.getElementById('section').appendChild(option2);
 						}
-						//console.log(res_list['job_type_list']);
+						console.log(res_list['job_type_list']);
 						if (res_list['job_type_list'][0]) {
 							var option3 = document.createElement('option');
 							var text3 = document.createTextNode(res_list['job_type_list'][0]['job_type_name']);
