@@ -2430,16 +2430,12 @@ $app->post('/wearer_change/complete', function ()use($app){
 
    // 前画面セッション取得
    $wearer_chg_post = $app->session->get("wearer_chg_post");
-   //ChromePhp::LOG($wearer_chg_post);
 
    // フロントパラメータ取得
    $mode = $params["mode"];
    $wearer_data_input = $params["wearer_data"];
    $now_item_input = $params["now_item"];
-   $add_item_input = $params["add_item"];
-   //ChromePhp::LOG($wearer_data_input);
-   //ChromePhp::LOG($now_item_input);
-   //ChromePhp::LOG($add_item_input);
+
 
    $json_list = array();
    // DB更新エラーコード 0:正常 その他:要因エラー
@@ -2873,7 +2869,7 @@ $app->post('/wearer_change/complete', function ()use($app){
          }
      }
 
-     // 着用者基本マスタ参照
+     // 着用者基本マスタトラン参照
      $query_list = array();
      array_push($query_list, "corporate_id = '".$auth['corporate_id']."'");
      array_push($query_list, "werer_cd = '".$wearer_chg_post['werer_cd']."'");
@@ -2905,11 +2901,39 @@ $app->post('/wearer_change/complete', function ()use($app){
        );
        $paginator = $paginator_model->getPaginate();
        $results = $paginator->items;
-       //ChromePhp::LOG($results);
        foreach ($results as $result) {
          $order_sts_kbn = $result->order_sts_kbn;
        }
      }
+
+     // 着用者基本マスタ参照 元々の職種コード、拠点コードの確認
+       $query_list = array();
+       array_push($query_list, "corporate_id = '".$auth['corporate_id']."'");
+       array_push($query_list, "rntl_cont_no = '".$wearer_chg_post['rntl_cont_no']."'");
+       array_push($query_list, "werer_cd = '".$wearer_chg_post['werer_cd']."'");
+       // 着用者状況区分(稼働)
+       array_push($query_list, "werer_sts_kbn = '1'");
+       $query = implode(' AND ', $query_list);
+
+       $arg_str = "";
+       $arg_str = "SELECT ";
+       $arg_str .= "*";
+       $arg_str .= " FROM ";
+       $arg_str .= "m_wearer_std";
+       $arg_str .= " WHERE ";
+       $arg_str .= $query;
+       //ChromePhp::LOG($arg_str);
+       $m_wearer_std = new MWearerStd();
+       $results = new Resultset(NULL, $m_wearer_std, $m_wearer_std->getReadConnection()->query($arg_str));
+       $result_obj = (array)$results;
+       $results_cnt = $result_obj["\0*\0_count"];
+       if (!empty($results_cnt)) {
+           foreach ($results as $result) {
+               $before_rntl_sect_cd = $result->rntl_sect_cd;
+               $before_job_type_cd = $result->job_type_cd;
+           }
+       }
+
 
      // トランザクション開始
      $m_wearer_std_tran = new MWearerStdTran();
@@ -3515,8 +3539,21 @@ $app->post('/wearer_change/complete', function ()use($app){
            array_push($calum_list, "order_status");
            array_push($values_list, "'1'");
            // 理由区分
+           //変更後の職種コード
+           $job_type_cd = explode(':', $wearer_data_input['job_type']);
+           $job_type_cd = $job_type_cd[0];
+           if($before_job_type_cd !== $job_type_cd && $before_rntl_sect_cd == $wearer_data_input["section"]){
+               $reason_kbn = '09'; //貸与パターン変更
+           }
+           if($before_job_type_cd == $job_type_cd && $before_rntl_sect_cd !== $wearer_data_input["section"]){
+               $reason_kbn = '10'; //拠点異動
+           }
+           if($before_job_type_cd !== $job_type_cd && $before_rntl_sect_cd !== $wearer_data_input["section"]) {
+               $reason_kbn = '11'; //貸与パターン変更&拠点異動
+           }
            array_push($calum_list, "order_reason_kbn");
-           array_push($values_list, "'".$wearer_data_input['reason_kbn']."'");
+           array_push($values_list, "'".$reason_kbn."'");
+           //array_push($values_list, "'".$wearer_data_input['reason_kbn']."'");
            // 商品マスタ_統合ハッシュキー(企業ID、商品コード、色コード、サイズコード)
            $m_item_comb_hkey = md5(
              $auth['corporate_id']."-".
@@ -3745,7 +3782,20 @@ $app->post('/wearer_change/complete', function ()use($app){
         array_push($values_list, "'1'");
         // 理由区分
         array_push($calum_list, "order_reason_kbn");
-        array_push($values_list, "'".$wearer_data_input['reason_kbn']."'");
+           //変更後の職種コード
+           $job_type_cd = explode(':', $wearer_data_input['job_type']);
+           $job_type_cd = $job_type_cd[0];
+           if($before_job_type_cd !== $job_type_cd && $before_rntl_sect_cd == $wearer_data_input["section"]){
+               $reason_kbn = '09'; //貸与パターン変更
+           }
+           if($before_job_type_cd == $job_type_cd && $before_rntl_sect_cd !== $wearer_data_input["section"]){
+               $reason_kbn = '10'; //拠点異動
+           }
+           if($before_job_type_cd !== $job_type_cd && $before_rntl_sect_cd !== $wearer_data_input["section"]){
+               $reason_kbn = '11'; //貸与パターン変更&拠点異動
+           }
+           array_push($values_list, "'".$reason_kbn."'");
+           //array_push($values_list, "'".$reason_kbn."'");
         // 商品マスタ_統合ハッシュキー(企業ID、商品コード、色コード、サイズコード)
         $m_item_comb_hkey = "1";
         array_push($calum_list, "m_item_comb_hkey");
@@ -3900,7 +3950,7 @@ $app->post('/wearer_change/complete', function ()use($app){
               array_push($values_list, "'0'");
               // 理由区分
               array_push($calum_list, "order_reason_kbn");
-              array_push($values_list, "'".$wearer_data_input['reason_kbn']."'");
+              array_push($values_list, "'".$reason_kbn."'");
               // 部門マスタ_統合ハッシュキー(企業ID、レンタル契約No.、レンタル部門コード)
               $m_section_comb_hkey = md5(
                 $auth['corporate_id']."-".
@@ -4000,7 +4050,7 @@ $app->post('/wearer_change/complete', function ()use($app){
             array_push($values_list, "'0'");
             // 理由区分
             array_push($calum_list, "order_reason_kbn");
-            array_push($values_list, "'".$wearer_data_input['reason_kbn']."'");
+            array_push($values_list, "'".$reason_kbn."'");
             //個体管理番号
             $query_list = array();
             array_push($query_list, "t_delivery_goods_state_details.corporate_id = '".$auth['corporate_id']."'");
@@ -4542,7 +4592,7 @@ $app->post('/wearer_change/send', function ()use($app){
       }
     }
 
-    // 着用者基本マスタ参照F
+    // 着用者基本マスタ参照
     $query_list = array();
     array_push($query_list, "corporate_id = '".$auth['corporate_id']."'");
     array_push($query_list, "werer_cd = '".$wearer_chg_post['werer_cd']."'");
@@ -4579,6 +4629,34 @@ $app->post('/wearer_change/send', function ()use($app){
         $order_sts_kbn = $result->order_sts_kbn;
       }
     }
+
+      $query_list = array();
+      array_push($query_list, "corporate_id = '".$auth['corporate_id']."'");
+      array_push($query_list, "rntl_cont_no = '".$wearer_chg_post['rntl_cont_no']."'");
+      array_push($query_list, "werer_cd = '".$wearer_chg_post['werer_cd']."'");
+      // 着用者状況区分(稼働)
+      array_push($query_list, "werer_sts_kbn = '1'");
+      $query = implode(' AND ', $query_list);
+
+      $arg_str = "";
+      $arg_str = "SELECT ";
+      $arg_str .= "*";
+      $arg_str .= " FROM ";
+      $arg_str .= "m_wearer_std";
+      $arg_str .= " WHERE ";
+      $arg_str .= $query;
+      //ChromePhp::LOG($arg_str);
+      $m_wearer_std = new MWearerStd();
+      $results = new Resultset(NULL, $m_wearer_std, $m_wearer_std->getReadConnection()->query($arg_str));
+      $result_obj = (array)$results;
+      $results_cnt = $result_obj["\0*\0_count"];
+      if (!empty($results_cnt)) {
+          foreach ($results as $result) {
+              $before_rntl_sect_cd = $result->rntl_sect_cd;
+              $before_job_type_cd = $result->job_type_cd;
+          }
+      }
+
 
     // トランザクション開始
     $m_wearer_std_tran = new MWearerStdTran();
@@ -5180,8 +5258,22 @@ $app->post('/wearer_change/send', function ()use($app){
           array_push($calum_list, "order_status");
           array_push($values_list, "'1'");
           // 理由区分
+          //変更後の職種コード
+          $job_type_cd = explode(':', $wearer_data_input['job_type']);
+          $job_type_cd = $job_type_cd[0];
+          if($before_job_type_cd !== $job_type_cd && $before_rntl_sect_cd == $wearer_data_input["section"]){
+              $reason_kbn = '09'; //貸与パターン変更
+          }
+          if($before_job_type_cd == $job_type_cd && $before_rntl_sect_cd !== $wearer_data_input["section"]){
+              $reason_kbn = '10'; //拠点異動
+          }
+          if($before_job_type_cd !== $job_type_cd && $before_rntl_sect_cd !== $wearer_data_input["section"]) {
+              $reason_kbn = '11'; //貸与パターン変更&拠点異動
+          }
           array_push($calum_list, "order_reason_kbn");
-          array_push($values_list, "'".$wearer_data_input['reason_kbn']."'");
+          array_push($values_list, "'".$reason_kbn."'");
+          //array_push($values_list, "'".$wearer_data_input['reason_kbn']."'");
+
           // 商品マスタ_統合ハッシュキー(企業ID、商品コード、色コード、サイズコード)
           $m_item_comb_hkey = md5(
             $auth['corporate_id']."-".
@@ -5409,8 +5501,21 @@ $app->post('/wearer_change/send', function ()use($app){
        array_push($calum_list, "order_status");
        array_push($values_list, "'1'");
        // 理由区分
+       //変更後の職種コード
+       $job_type_cd = explode(':', $wearer_data_input['job_type']);
+       $job_type_cd = $job_type_cd[0];
+       if($before_job_type_cd !== $job_type_cd && $before_rntl_sect_cd == $wearer_data_input["section"]){
+           $reason_kbn = '09'; //貸与パターン変更
+       }
+       if($before_job_type_cd == $job_type_cd && $before_rntl_sect_cd !== $wearer_data_input["section"]){
+           $reason_kbn = '10'; //拠点異動
+       }
+       if($before_job_type_cd !== $job_type_cd && $before_rntl_sect_cd !== $wearer_data_input["section"]) {
+           $reason_kbn = '11'; //貸与パターン変更&拠点異動
+       }
        array_push($calum_list, "order_reason_kbn");
-       array_push($values_list, "'".$wearer_data_input['reason_kbn']."'");
+       array_push($values_list, "'".$reason_kbn."'");
+       //array_push($values_list, "'".$wearer_data_input['reason_kbn']."'");
        // 商品マスタ_統合ハッシュキー(企業ID、商品コード、色コード、サイズコード)
        $m_item_comb_hkey = "1";
        array_push($calum_list, "m_item_comb_hkey");
@@ -5566,7 +5671,7 @@ $app->post('/wearer_change/send', function ()use($app){
              array_push($values_list, "'1'");
              // 理由区分
              array_push($calum_list, "order_reason_kbn");
-             array_push($values_list, "'".$wearer_data_input['reason_kbn']."'");
+             array_push($values_list, "'".$reason_kbn."'");
              // 部門マスタ_統合ハッシュキー(企業ID、レンタル契約No.、レンタル部門コード)
              $m_section_comb_hkey = md5(
                $auth['corporate_id']."-".
@@ -5669,7 +5774,7 @@ $app->post('/wearer_change/send', function ()use($app){
            array_push($values_list, "'1'");
            // 理由区分
            array_push($calum_list, "order_reason_kbn");
-           array_push($values_list, "'".$wearer_data_input['reason_kbn']."'");
+           array_push($values_list, "'".$reason_kbn."'");
            //個体管理番号
            $query_list = array();
            array_push($query_list, "t_delivery_goods_state_details.corporate_id = '".$auth['corporate_id']."'");
