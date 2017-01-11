@@ -782,7 +782,6 @@ $app->post('/wearer_end_order_list', function ()use($app){
         array_push($now_wearer_list, $list);
       }
     }
-    ChromePhp::log($now_wearer_list);
 
     $chk_list = array();
     $now_list = array();
