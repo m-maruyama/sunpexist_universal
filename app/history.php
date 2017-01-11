@@ -472,7 +472,7 @@ $app->post('/history/search', function ()use($app){
 			$q_sort_key = 'as_rec_order_no';
 		}
 		if($sort_key == 'send_shd_ymd'){
-			$q_sort_key = 'as_order_req_ymd';
+			$q_sort_key = 'as_ship_plan_ymd';
 		}
 		if($sort_key == 'order_status'){
 			$q_sort_key = 'as_order_status';
@@ -533,6 +533,7 @@ $app->post('/history/search', function ()use($app){
 	$arg_str .= "t_delivery_goods_state_details.individual_ctrl_no as as_individual_ctrl_no,";
 	$arg_str .= "t_delivery_goods_state_details.receipt_date as as_receipt_date,";
 	$arg_str .= "t_order.rntl_cont_no as as_rntl_cont_no,";
+    $arg_str .= "t_order.ship_plan_ymd as as_ship_plan_ymd,";
 	$arg_str .= "m_contract.rntl_cont_name as as_rntl_cont_name";
 	$arg_str .= " FROM t_order LEFT JOIN";
 	$arg_str .= " (t_order_state LEFT JOIN (t_delivery_goods_state LEFT JOIN t_delivery_goods_state_details ON t_delivery_goods_state.ship_no = t_delivery_goods_state_details.ship_no)";
@@ -762,7 +763,7 @@ $app->post('/history/search', function ()use($app){
 			// 発注依頼日、出荷予定日
 			if($list['order_req_ymd']){
 				$list['order_req_ymd'] = date('Y/m/d',strtotime($list['order_req_ymd']));
-				$list['send_shd_ymd'] = date('Y/m/d',strtotime($list['order_req_ymd'].' +7 day'));
+				$list['send_shd_ymd'] = date('Y/m/d',strtotime( $result->as_ship_plan_ymd));
 			}else{
 				$list['order_req_ymd'] = '-';
 				$list['send_shd_ymd'] = '-';
