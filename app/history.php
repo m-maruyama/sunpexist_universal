@@ -398,7 +398,7 @@ $app->post('/history/search', function ()use($app){
             $reason_kbn_4_str = implode(' OR ', $reason_kbn_4);
             array_push($kbn_list, "(" . $order_kbn . " AND (" . $reason_kbn_4_str . "))");
         }
-        ChromePhp::log($kbn_list);
+        //ChromePhp::log($kbn_list);
     }else{
         //貸与終了にチェックがついてない
         if($cond['reason_kbn15']){

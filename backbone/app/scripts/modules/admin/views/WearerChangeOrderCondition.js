@@ -5,6 +5,7 @@ define([
 	'backbone.stickit',
 	'bootstrap-datetimepicker',
 	'../behaviors/Alerts',
+	'./SectionCondition',
 	'typeahead',
 	'bloodhound',
 	'blockUI',
@@ -113,6 +114,8 @@ define([
 
 						if (res_list['order_tran_flg'] == '1') {
 							$('.delete').css('display', '');
+
+
 						}
 
 						var data = {
@@ -129,14 +132,16 @@ define([
 						modelForUpdate2.fetchMx({
 							data:cond,
 							success:function(res){
-								var CM0140_res = res.attributes;
-
+								var CM0140_res = res.attributes
+								$('.complete').css('display', '');
+								$('.orderSend').css('display', '');
+								/*
 								if (CM0140_res['order_input_ok_flg'] == "1" || CM0140_res['order_send_ok_flg'] == "1") {
 									$('.complete').css('display', '');
 								}
 								if (CM0140_res['order_send_ok_flg'] == "1") {
 									$('.orderSend').css('display', '');
-								}
+								}*/
 							}
 						});
 
@@ -229,7 +234,8 @@ define([
 						"log_type": '3',
 						"data": data,
 						"rntl_sect_cd": rntl_sect_cd,
-						"rntl_cont_no": rntl_cont_no
+						"rntl_cont_no": rntl_cont_no,
+						"update_skip_flg": true
 					};
 					modelForUpdate.fetchMx({
 						data:cond,
@@ -254,7 +260,8 @@ define([
 						"scr": '職種変更または異動-入力完了-更新可否チェック',
 						"log_type": '1',
 						"rntl_sect_cd": rntl_sect_cd,
-						"rntl_cont_no": rntl_cont_no
+						"rntl_cont_no": rntl_cont_no,
+						"update_skip_flg": true
 					};
 					modelForUpdate.fetchMx({
 						data:cond,
@@ -279,7 +286,8 @@ define([
 						"scr": '職種変更または異動-発注送信-更新可否チェック',
 						"log_type": '1',
 						"rntl_sect_cd": rntl_sect_cd,
-						"rntl_cont_no": rntl_cont_no
+						"rntl_cont_no": rntl_cont_no,
+						"update_skip_flg": true
 					};
 					modelForUpdate.fetchMx({
 						data:cond,
@@ -324,7 +332,7 @@ define([
 						data:cond,
 						success:function(res) {
 							var CM0140_res = res.attributes;
-
+							/*
 							if (CM0140_res['order_input_ok_flg'] == "1" && CM0140_res['order_send_ok_flg'] == "1") {
 								$('.complete').css('display', '');
 								$('.orderSend').css('display', '');
@@ -341,6 +349,7 @@ define([
 								$('.complete').css('display', '');
 								$('.orderSend').css('display', 'none');
 							}
+							*/
 						}
 					});
 				},

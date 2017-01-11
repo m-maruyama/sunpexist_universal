@@ -15,6 +15,7 @@ define([
 					agreement_no : null,
 					corporate : null,
 					corporate_flg : false,
+					url : null,
 					// sort_key : null,
 					// order : null,
 				};
@@ -32,6 +33,9 @@ define([
 				}
 				if(this.get('corporate_flg')) {
 					result.corporate_flg = true;
+				}
+				if(this.get('url')) {
+					result.url = this.get('url');
 				}
 				// if(this.get('sort_key')) {
 				// 	result.sort_key = this.get('sort_key');

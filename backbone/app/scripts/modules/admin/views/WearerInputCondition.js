@@ -19,7 +19,7 @@ define([
             },
             regions: {
               "agreement_no": ".agreement_no",
-              "section_modal": ".section_modal",
+              //"section_modal": ".section_modal",
               "individual_number": ".individual_number"
             },
             ui: {
@@ -358,6 +358,7 @@ define([
                 },
                 'click @ui.section_btn': function (e) {
                     e.preventDefault();
+                    console.log(this.model);
                     this.triggerMethod('click:section_btn', this.model);
                 },
                 'change @ui.job_type': function () {

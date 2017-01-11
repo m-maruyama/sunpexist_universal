@@ -72,7 +72,7 @@ define([
 				var sectionModalView = new App.Admin.Views.SectionModal({
 					model:sectionModalListCondition
 				});
-				this.listenTo(wearerChangeOrderConditionView, 'click:section_btn', function(view, model){
+				this.listenTo(sectionConditionChangeView, 'click:section_btn', function(view, model){
 					// sectionModalView.page.reset();
 					// sectionModalView.listTable.reset();
 					sectionModalView.ui.modal.modal('show');
@@ -98,10 +98,11 @@ define([
 				});
 				var sectionModalListItemView = new App.Admin.Views.SectionModalListItem();
 				this.listenTo(sectionModalListListView, 'childview:click:section_select', function(model){
-					wearerChangeOrderConditionView.ui.section[0].value = model.model.attributes.rntl_sect_cd;
+					sectionConditionChangeView.ui.section[0].value = model.model.attributes.rntl_sect_cd;
 					sectionModalView.ui.modal.modal('hide');
 				});
 				//拠点絞り込み--ここまで
+
 				this.listenTo(paginationView, 'selected', function(pageNumber){
 						fetchList_section(pageNumber);
 				});
