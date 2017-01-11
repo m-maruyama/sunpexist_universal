@@ -371,7 +371,8 @@ $app->post('/wearer/detail', function ()use($app){
 	$arg_str .= " INNER JOIN m_section ON m_wearer_std.m_section_comb_hkey = m_section.m_section_comb_hkey";
 	$arg_str .= " INNER JOIN m_job_type ON m_wearer_std.m_job_type_comb_hkey = m_job_type.m_job_type_comb_hkey";
 	$arg_str .= " INNER JOIN m_shipment_to ON m_wearer_std.ship_to_cd = m_shipment_to.ship_to_cd";
-	$arg_str .= " WHERE ";
+  $arg_str .= " AND m_wearer_std.ship_to_brnch_cd = m_shipment_to.ship_to_brnch_cd";
+  $arg_str .= " WHERE ";
 	$arg_str .= $query;
 	$arg_str .= ") as distinct_table";
 	$m_wearer_std = new MWearerStd();
