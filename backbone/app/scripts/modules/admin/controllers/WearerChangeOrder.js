@@ -8,7 +8,7 @@ define([
 	'../views/WearerChangeOrderSendComplete',
 	'../views/AgreementNoConditionChange',
 	'../views/ReasonKbnConditionChange',
-	'../views/SexKbnConditionChange',
+	'../views/SexKbnConditionChangeOrder',
 	'../views/SectionConditionChange',
 	'../views/JobTypeConditionChange',
 	'../views/ShipmentConditionChange',
@@ -46,7 +46,7 @@ define([
 
 				var agreementNoConditionChangeView = new App.Admin.Views.AgreementNoConditionChange();
 				var reasonKbnConditionChangeView = new App.Admin.Views.ReasonKbnConditionChange();
-				var sexKbnConditionChangeView = new App.Admin.Views.SexKbnConditionChange();
+				var sexKbnConditionChangeView = new App.Admin.Views.SexKbnConditionChangeOrder();
 				var sectionConditionChangeView = new App.Admin.Views.SectionConditionChange();
 				var jobTypeConditionChangeView = new App.Admin.Views.JobTypeConditionChange();
 				var shipmentConditionChangeView = new App.Admin.Views.ShipmentConditionChange();
@@ -140,7 +140,7 @@ define([
 				wearerChangeOrderView.condition.show(wearerChangeOrderConditionView);
 				wearerChangeOrderView.listTable.show(wearerChangeOrderListListView);
 				wearerChangeOrderConditionView.agreement_no.show(agreementNoConditionChangeView);
-				Sleep(0.04);
+				Sleep(0.08);
 				wearerChangeOrderConditionView.section.show(sectionConditionChangeView);
 				Sleep(0.02);
 				wearerChangeOrderConditionView.job_type.show(jobTypeConditionChangeView);
@@ -148,6 +148,7 @@ define([
 				wearerChangeOrderConditionView.reason_kbn.show(reasonKbnConditionChangeView);
 				Sleep(0.02);
 				wearerChangeOrderConditionView.sex_kbn.show(sexKbnConditionChangeView);
+				sexKbnConditionChangeView.ui.sex_kbn.prop('disabled', true);
 				Sleep(0.02);
 				wearerChangeOrderConditionView.shipment.show(shipmentConditionChangeView);
 				wearerChangeOrderView.sectionModal.show(sectionModalView.render());
