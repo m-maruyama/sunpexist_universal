@@ -320,7 +320,7 @@ $app->post('/print/pdf', function ()use($app){
 
                 //グループの配列があれば、リストの配列にグループを入れる
                 if (count($group_array) > 0) {
-                    $group_array[0]["return_plan_qty"] = $sum_return_qty;
+                    //$group_array[0]["return_plan_qty"] = $sum_return_qty;
                     $group_array[0]["border"] = "LRT";
 
                     //商品ごとのグループを１行ずつ、出力用の配列に入れる
@@ -381,7 +381,6 @@ $app->post('/print/pdf', function ()use($app){
             array_push($list_array, $each_array);
         }
     }
-
 
     if ($individual_check == '1'){  //個体管理番号ありの出力
         //商品レコード見出しの高さ
