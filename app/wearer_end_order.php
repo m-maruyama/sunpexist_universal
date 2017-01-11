@@ -775,11 +775,15 @@ $app->post('/wearer_end_order_list', function ()use($app){
         // 返却済数
         $list["returned_qty"] = $result->as_returned_qty;
         // 商品単位の返却可能枚数(所持枚数)
-        $list["possible_num"] = $list["quantity"] - $list["return_plan_qty"] - $list["returned_qty"];
+        //$list["possible_num"] = $list["quantity"] - $list["return_plan_qty"] - $list["returned_qty"];
+          // 商品単位の返却可能枚数(所持枚数)
+          ChromePhp::log($list["return_plan_qty"]);
+          $list["possible_num"] = $list["std_input_qty"] - $list["return_plan_qty"];
 
         array_push($now_wearer_list, $list);
       }
     }
+    ChromePhp::log($now_wearer_list);
 
     $chk_list = array();
     $now_list = array();
@@ -922,7 +926,7 @@ $app->post('/wearer_end_order_list', function ()use($app){
             $arg_str .= "t_delivery_goods_state_details";
             $arg_str .= " WHERE ";
             $arg_str .= $query;
-            //ChromePhp::LOG($arg_str);
+            ChromePhp::LOG($arg_str);
             $t_delivery_goods_state_details = new TDeliveryGoodsStateDetails();
             $t_delivery_goods_state_details_results = new Resultset(null, $t_delivery_goods_state_details, $t_delivery_goods_state_details->getReadConnection()->query($arg_str));
             $result_obj = (array)$t_delivery_goods_state_details_results;
@@ -939,12 +943,13 @@ $app->post('/wearer_end_order_list', function ()use($app){
               )
               {
                 if ($now_wearer_list[$i]['std_input_qty'] < $now_wearer_map['std_input_qty']) {
-                  $list["return_num"] =$now_wearer_map['possible_num'];
+                  $list["return_num"] = $now_wearer_map['possible_num'];
                 }
               } else {
                 $list["return_num"] = $now_wearer_map['possible_num'];
               }
             }
+            ChromePhp::log($now_wearer_map['possible_num']);
             // 返却可能枚数（所持数）
             $list["return_num_disable"] = "disabled";
             $list["possible_num"] = $now_wearer_map['possible_num'];
@@ -972,7 +977,6 @@ $app->post('/wearer_end_order_list', function ()use($app){
             array_push($now_list, $list);
         }
     }
-
     // 返却商品一覧内容の表示フラグ
     if (!empty($now_list)) {
         $json_list["list_disp_flg"] = true;
