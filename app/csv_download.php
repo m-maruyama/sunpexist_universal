@@ -3464,7 +3464,6 @@ $app->post('/csv_download', function ()use($app){
 	//--貸与リストCSVダウンロード ここまで--//
 
 
-
 	//--在庫照会CSVダウンロード--//
 	if ($cond["ui_type"] === "stock") {
 		$result["csv_code"] = "0005";
@@ -3560,14 +3559,14 @@ $app->post('/csv_download', function ()use($app){
 		$arg_str .= "m_item.item_name as as_item_name";
 		$arg_str .= " FROM t_sdmzk";
 		$arg_str .= " INNER JOIN m_item ON t_sdmzk.m_item_comb_hkey = m_item.m_item_comb_hkey";
-		$arg_str .= " INNER JOIN m_rent_pattern_for_sdmzk ON t_sdmzk.rent_pattern_data = m_rent_pattern_for_sdmzk.rent_pattern_data";
+    $arg_str .= " INNER JOIN m_rent_pattern_for_sdmzk ON substring(t_sdmzk.rent_pattern_data, 3) = m_rent_pattern_for_sdmzk.rent_pattern_data";
 		$arg_str .= " WHERE ";
 		$arg_str .= $query;
 		if (!empty($q_sort_key)) {
 			$arg_str .= " ORDER BY ";
 			$arg_str .= $q_sort_key."as_rent_pattern_data,as_zkprcd,as_zkclor,as_zksize_display_order,as_zksize ".$order;
 		}
-
+    //ChromePhp::log($arg_str);
 		$t_sdmzk = new TSdmzk();
 		$results = new Resultset(null, $t_sdmzk, $t_sdmzk->getReadConnection()->query($arg_str));
 		$result_obj = (array)$results;
