@@ -777,7 +777,6 @@ $app->post('/wearer_end_order_list', function ()use($app){
         // 商品単位の返却可能枚数(所持枚数)
         //$list["possible_num"] = $list["quantity"] - $list["return_plan_qty"] - $list["returned_qty"];
           // 商品単位の返却可能枚数(所持枚数)
-          ChromePhp::log($list["return_plan_qty"]);
           $list["possible_num"] = $list["std_input_qty"] - $list["return_plan_qty"];
 
         array_push($now_wearer_list, $list);
@@ -854,6 +853,8 @@ $app->post('/wearer_end_order_list', function ()use($app){
               $arg_str = "";
               $arg_str = "SELECT ";
               $arg_str .= "individual_ctrl_no,";
+              $arg_str .= "quantity,";
+              $arg_str .= "return_plan__qty,";
               $arg_str .= "rtn_ok_flg";
               $arg_str .= " FROM ";
               $arg_str .= "t_delivery_goods_state_details";
@@ -880,6 +881,7 @@ $app->post('/wearer_end_order_list', function ()use($app){
                   //ChromePhp::LOG($results);
                   foreach ($results as $result) {
                       $cnt = $cnt++;
+                      if($result->quantity - $result->return_plan__qty !== 0 ){
                       array_push($individual_ctrl_no, $result->individual_ctrl_no);
 
                       // 返却可能フラグによるdisable制御
@@ -899,6 +901,7 @@ $app->post('/wearer_end_order_list', function ()use($app){
 
                       // 対象チェックボックス値
                       array_push($list["individual_chk"], $individual);
+                      }
                   }
 
                   // 表示個体管理番号数
@@ -906,54 +909,31 @@ $app->post('/wearer_end_order_list', function ()use($app){
                   // 個体管理番号
                   $list["individual_ctrl_no"] = implode("<br>", $individual_ctrl_no);
               }
+                $list["return_num"] = $list["individual_cnt"];
+                $list["possible_num"] = $list["individual_cnt"];
             }
             // ※返却可能枚数
             $list["possible_num"] = 0;
-            $query_list = array();
-            $query_list[] = "t_delivery_goods_state_details.corporate_id = '".$auth['corporate_id']."'";
-            $query_list[] = "t_delivery_goods_state_details.rntl_cont_no = '".$wearer_end_post['rntl_cont_no']."'";
-            $query_list[] = "t_delivery_goods_state_details.werer_cd = '".$wearer_end_post['werer_cd']."'";
-            $query_list[] = "t_delivery_goods_state_details.item_cd = '".$now_wearer_map['item_cd']."'";
-            $query_list[] = "t_delivery_goods_state_details.color_cd = '".$now_wearer_map['color_cd']."'";
-            $query_list[] = "t_delivery_goods_state_details.size_cd = '".$list["size_cd"]."'";
-            $query_list[] = "t_delivery_goods_state_details.rtn_ok_flg = '1'";
-            $query_list[] = "t_delivery_goods_state_details.receipt_status = '2'";
-            $query = implode(' AND ', $query_list);
-            $arg_str = "";
-            $arg_str .= "SELECT ";
-            $arg_str .= " * ";
-            $arg_str .= " FROM ";
-            $arg_str .= "t_delivery_goods_state_details";
-            $arg_str .= " WHERE ";
-            $arg_str .= $query;
-            ChromePhp::LOG($arg_str);
-            $t_delivery_goods_state_details = new TDeliveryGoodsStateDetails();
-            $t_delivery_goods_state_details_results = new Resultset(null, $t_delivery_goods_state_details, $t_delivery_goods_state_details->getReadConnection()->query($arg_str));
-            $result_obj = (array)$t_delivery_goods_state_details_results;
-            $results_cnt = $result_obj["\0*\0_count"];
-            if ($results_cnt > 0) {
-              $list["possible_num"] = $results_cnt;
-            }
-            // 返却枚数
-            $list["return_num"] = "0";
-            for ($i=0; $i<count($now_wearer_list); $i++) {
-              if (
-                $now_wearer_map['item_cd'] == $now_wearer_list[$i]['item_cd']
-                && $now_wearer_map['color_cd'] == $now_wearer_list[$i]['color_cd']
-              )
-              {
-                if ($now_wearer_list[$i]['std_input_qty'] < $now_wearer_map['std_input_qty']) {
-                  $list["return_num"] = $now_wearer_map['possible_num'];
-                }
-              } else {
-                $list["return_num"] = $now_wearer_map['possible_num'];
-              }
-            }
-            ChromePhp::log($now_wearer_map['possible_num']);
-            // 返却可能枚数（所持数）
-            $list["return_num_disable"] = "disabled";
-            $list["possible_num"] = $now_wearer_map['possible_num'];
 
+            if ($individual_flg == "0") {
+                for ($i = 0; $i < count($now_wearer_list); $i++) {
+                    if (
+                        $now_wearer_map['item_cd'] == $now_wearer_list[$i]['item_cd']
+                        && $now_wearer_map['color_cd'] == $now_wearer_list[$i]['color_cd']
+                    ) {
+                        if ($now_wearer_list[$i]['std_input_qty'] < $now_wearer_map['std_input_qty']) {
+                            $list["return_num"] = $now_wearer_map['possible_num'];
+                        }
+                    } else {
+                        $list["return_num"] = $now_wearer_map['possible_num'];
+                    }
+                }
+                // 返却可能枚数（所持数）
+                $list["return_num_disable"] = "disabled";
+                $list["possible_num"] = $now_wearer_map['possible_num'];
+
+            }
+            
             //--その他の必要hiddenパラメータ--//
             // 部門コード
             $list["rntl_sect_cd"] = $now_wearer_map['rntl_sect_cd'];
