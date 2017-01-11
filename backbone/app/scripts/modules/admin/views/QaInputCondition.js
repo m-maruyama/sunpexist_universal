@@ -92,7 +92,7 @@ define([
 					var that = this;
 					var find = $("#case_info").val();
 					//find.replace((/'/g, ''));
-					console.log(find);
+					//console.log(find);
 					$("#case_info").css('display', 'none');
 					$("#checkArea").html(find);
 					// 説明文、ボタンの表示切り替え

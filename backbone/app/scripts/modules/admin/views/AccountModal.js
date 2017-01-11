@@ -134,7 +134,7 @@ define([
 				}
 			},
 			reset: function(){
-				console.log(this);
+				//console.log(this);
 				this.triggerMethod('hideAlerts');
 				$('#corporate_id_modal').val('1');
 				this.ui.accnt_no.val('');

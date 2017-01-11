@@ -37,7 +37,6 @@ $app->post('/import_csv', function () use ($app) {
     $getFileExt = new SplFileInfo($_FILES['file']['name']);
     $job_no = $auth["corporate_id"] . $auth["user_id"];
 
-    ChromePhp::log($getFileExt->getExtension());
     //--CSV or Excel形式毎のバリデーション--ここから//
     if ($getFileExt->getExtension() == 'csv') {
         ChromePhp::log('A');
@@ -45,7 +44,6 @@ $app->post('/import_csv', function () use ($app) {
             $file = file($_FILES['file']['tmp_name']);
             mb_convert_variables("UTF-8", "SJIS-win", $file);
             $chk_file = $file;
-            ChromePhp::log($chk_file);
             unset($chk_file[0]); //チェック時はヘッダーを無視する
         } catch (Exception $e) {
             $error_list[] = '取り込んだファイルの形式が不正です。';
@@ -732,7 +730,6 @@ $app->post('/import_csv', function () use ($app) {
 
             $no_line++;
         }
-        ChromePhp::log($values_query);
         $values_query = implode(",", $values_query);
         $arg_str = "";
         $arg_str = "INSERT INTO t_import_job";

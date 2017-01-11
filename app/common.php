@@ -1407,7 +1407,7 @@ $app->post('/update_possible_chk', function ()use($app) {
 
     //各画面からの契約noを取得
     $cond = $params;
-    ChromePhp::log($cond);
+    //ChromePhp::log($cond);
     $json_list = array();
     $json_list["chk_flg"] = true;
     $json_list["error_msg"] = "";

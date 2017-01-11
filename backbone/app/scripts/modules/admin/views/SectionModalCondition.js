@@ -27,7 +27,6 @@ define([
 					var dir = location.href.split("/");
 					var dir2 = dir[dir.length -1];
 					this.triggerMethod('hideAlerts');
-					console.log(this.model);
 					this.model.set('rntl_sect_cd', this.ui.rntl_sect_cd.val());
 					this.model.set('rntl_sect_name', this.ui.rntl_sect_name.val());
 					this.model.set('agreement_no', $('#agreement_no').val());

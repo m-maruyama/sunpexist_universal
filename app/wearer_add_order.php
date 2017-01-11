@@ -1087,7 +1087,7 @@ $app->post('/wearer_add/delete', function ()use($app){
  */
 $app->post('/wearer_add/complete', function ()use($app){
    $params = json_decode(file_get_contents("php://input"), true);
-    ChromePhp::log($params);
+    //ChromePhp::log($params);
    // アカウントセッション取得
    $auth = $app->session->get("auth");
    //ChromePhp::LOG($auth);
@@ -1351,7 +1351,7 @@ $app->post('/wearer_add/complete', function ()use($app){
      $arg_str .= " AND m_wearer_std_tran.job_type_cd = t_order_tran.job_type_cd)";
      $arg_str .= " WHERE ";
      $arg_str .= $query;
-     ChromePhp::LOG($arg_str);
+     //ChromePhp::LOG($arg_str);
      $m_wearer_std_tran = new MWearerStdTran();
      $results = new Resultset(NULL, $m_wearer_std_tran, $m_wearer_std_tran->getReadConnection()->query($arg_str));
      $result_obj = (array)$results;
@@ -1777,7 +1777,7 @@ $app->post('/wearer_add/complete', function ()use($app){
          $results = new Resultset(NULL, $t_order_tran, $t_order_tran->getReadConnection()->query($arg_str));
          $results_cnt = $result_obj["\0*\0_count"];
 
-         ChromePhp::log($wearer_data_input);
+         //ChromePhp::log($wearer_data_input);
          // 発注商品一覧内容登録
          foreach ($item_list as $item_map) {
            $calum_list = array();

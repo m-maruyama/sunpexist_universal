@@ -63,7 +63,6 @@ define([
 			events: {
 				'click @ui.section_btn': function(e){
 					e.preventDefault();
-					console.log(this.model);
 					this.triggerMethod('click:section_btn', this.model);
 
 				}

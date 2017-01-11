@@ -981,7 +981,7 @@ $app->post('/wearer_change/info', function ()use($app){
     $arg_str .= $query;
     $arg_str .= " ORDER BY t_order_tran.upd_date DESC";
     $t_order_tran = new TOrderTran();
-    ChromePhp::log($arg_str);
+    //ChromePhp::log($arg_str);
     $results = new Resultset(NULL, $t_order_tran, $t_order_tran->getReadConnection()->query($arg_str));
     $result_obj = (array)$results;
     $results_cnt = $result_obj["\0*\0_count"];
