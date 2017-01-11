@@ -102,7 +102,6 @@ define([
 			// クッキーに保存する文字列を生成
 			var s="";
 			s+=c_name+"="+escape(value);
-			alert(exdate);
 			s+=(expiredays==null)?"":"; expires="+exdate;
 			// クッキーに保存
 			document.cookie=s;
