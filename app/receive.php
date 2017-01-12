@@ -85,6 +85,10 @@ $app->post('/receive/search', function ()use($app){
     if(!empty($cond['member_name'])){
         array_push($query_list,"m_wearer_std.werer_name LIKE '%".$cond['member_name']."%'");
     }
+    //伝票番号
+    if(!empty($cond['maker_send_no'])){
+        array_push($query_list,"t_delivery_goods_state_details.ship_no LIKE '".$cond['maker_send_no']."%'");
+    }
     //拠点
     if(!empty($cond['section'])){
         array_push($query_list,"t_order.rntl_sect_cd = '".$cond['section']."'");
