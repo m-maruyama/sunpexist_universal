@@ -3477,7 +3477,7 @@ $app->post('/csv_download', function ()use($app){
 		}
 		//貸与パターン
 		if(!empty($cond['job_type_zaiko'])){
-			array_push($query_list,"t_sdmzk.rent_pattern_data = '".$cond['job_type_zaiko']."'");
+       array_push($query_list,"substring(t_sdmzk.rent_pattern_data, 3) = '".$cond['job_type_zaiko']."'");
 		}
 		//商品
 		if(!empty($cond['item'])){
@@ -3571,7 +3571,6 @@ $app->post('/csv_download', function ()use($app){
 		$results = new Resultset(null, $t_sdmzk, $t_sdmzk->getReadConnection()->query($arg_str));
 		$result_obj = (array)$results;
 		$results_cnt = $result_obj["\0*\0_count"];
-
 		$paginator_model = new PaginatorModel(
 			array(
 				"data"  => $results,
