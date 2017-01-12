@@ -118,7 +118,7 @@ $app->post('/stock/search', function ()use($app){
 		$arg_str .= " ORDER BY ";
 		$arg_str .= $q_sort_key."as_rent_pattern_data,as_zkprcd,as_zkclor,as_zksize_display_order,as_zksize ".$order;
 	}
-
+  //ChromePhp::log($arg_str);
 	$t_sdmzk = new TSdmzk();
 	$results = new Resultset(null, $t_sdmzk, $t_sdmzk->getReadConnection()->query($arg_str));
 	$result_obj = (array)$results;
