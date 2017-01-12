@@ -25,7 +25,7 @@ define([
 			},
 			regions: {
 				'agreement_no': '.agreement_no',
-				'reason_kbn': '.reason_kbn',
+				//'reason_kbn': '.reason_kbn',
 				'sex_kbn': '.sex_kbn',
 				"section": ".section",
 				"job_type": ".job_type",
@@ -34,7 +34,7 @@ define([
 			},
 			ui: {
 				'agreement_no': '#agreement_no',
-				'reason_kbn': '#reason_kbn',
+				//'reason_kbn': '#reason_kbn',
 				'sex_kbn': '#sex_kbn',
 				//'emply_cd_flg': '#emply_cd_flg',
 				'member_no': '#member_no',
@@ -58,7 +58,7 @@ define([
 			},
 			bindings: {
 				'#agreement_no': 'agreement_no',
-				'#reason_kbn': 'reason_kbn',
+				//'#reason_kbn': 'reason_kbn',
 				'#sex_kbn': 'sex_kbn',
 				//'#emply_cd_flg': 'emply_cd_flg',
 				'#member_no': 'member_no',
@@ -384,7 +384,7 @@ define([
 						var reasonKbnConditionChangeView = new App.Admin.Views.ReasonKbnConditionChange({
 							job_type: job_type
 						});
-						this.reason_kbn.show(reasonKbnConditionChangeView);
+						//this.reason_kbn.show(reasonKbnConditionChangeView);
 						that.triggerMethod('change:job_type', data);
 					}
 				},

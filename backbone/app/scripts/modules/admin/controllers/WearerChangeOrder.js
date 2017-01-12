@@ -146,8 +146,8 @@ define([
 				Sleep(0.02);
 				wearerChangeOrderConditionView.job_type.show(jobTypeConditionChangeView);
 				Sleep(0.02);
-				wearerChangeOrderConditionView.reason_kbn.show(reasonKbnConditionChangeView);
-				Sleep(0.02);
+				//wearerChangeOrderConditionView.reason_kbn.show(reasonKbnConditionChangeView);
+				//Sleep(0.02);
 				wearerChangeOrderConditionView.sex_kbn.show(sexKbnConditionChangeView);
 				Sleep(0.02);
 				wearerChangeOrderConditionView.shipment.show(shipmentConditionChangeView);
