@@ -706,6 +706,7 @@ $app->post('/wearer_end_order_list', function ()use($app){
     $arg_str .= "t_delivery_goods_state_details.quantity as as_quantity,";
     $arg_str .= "t_delivery_goods_state_details.return_plan__qty as as_return_plan_qty,";
     $arg_str .= "t_delivery_goods_state_details.returned_qty as as_returned_qty,";
+    $arg_str .= "t_delivery_goods_state_details.werer_cd as as_werer_cd,";
     $arg_str .= "m_item.item_cd as as_item_cd,";
     $arg_str .= "m_item.color_cd as as_color_cd,";
     $arg_str .= "m_item.size_cd as as_size_cd,";
@@ -768,16 +769,41 @@ $app->post('/wearer_end_order_list', function ()use($app){
         $list["std_input_qty"] = $result->as_std_input_qty;
         // 投入商品名
         $list["input_item_name"] = $result->as_input_item_name;
-        // 数量
-        $list["quantity"] = $result->as_quantity;
-        // 返却予定数
-        $list["return_plan_qty"] = $result->as_return_plan_qty;
+
+          //返却予定数と数量の総数を計算する。
+          $parameter = array(
+              "corporate_id" => $auth['corporate_id'],
+              "rntl_cont_no" => $wearer_end_post['rntl_cont_no'],
+              "werer_cd" => $result->as_werer_cd,
+              "item_cd" => $result->as_item_cd,
+              "size_cd" => $result->as_size_cd);
+          //返却予定数の総数
+          $TDeliveryGoodsStateDetails = TDeliveryGoodsStateDetails::find(array(
+              'conditions'  => "corporate_id = :corporate_id: AND rntl_cont_no = :rntl_cont_no:  AND werer_cd = :werer_cd: AND item_cd = :item_cd: AND size_cd = :size_cd:",
+              "bind" => $parameter
+          ));
+          $each_item_count = $TDeliveryGoodsStateDetails->count();
+          // foreachでまわす
+          $each_item_return_plan_qty = 0;
+          $each_item_quantity = 0;
+          for($i = 0; $i < $each_item_count; $i++){
+              $each_item_return_plan_qty = $each_item_return_plan_qty + $TDeliveryGoodsStateDetails[$i]->return_plan__qty;
+              $each_item_quantity = $each_item_quantity + $TDeliveryGoodsStateDetails[$i]->quantity;
+          }
+
+        // 数量 納品状況明細情報の商品ごとの数量を合計した数
+        $list["quantity"] = $each_item_quantity;
+        // 返却予定数 納品状況明細情報の商品ごとの返却予定数を合計した数
+        $list["return_plan_qty"] = $each_item_return_plan_qty;
         // 返却済数
         $list["returned_qty"] = $result->as_returned_qty;
         // 商品単位の返却可能枚数(所持枚数)
-        $list["possible_num"] = $list["quantity"] - $list["return_plan_qty"] - $list["returned_qty"];
-
+        //$list["possible_num"] = $list["quantity"] - $list["return_plan_qty"] - $list["returned_qty"];
+        // 商品単位の返却可能枚数(所持枚数) 数量の総数 - 返却予定数の総数
+        $list["possible_num"] = $list["quantity"] - $list["return_plan_qty"];
+        if($list["possible_num"] > 0){
         array_push($now_wearer_list, $list);
+        }
       }
     }
 
@@ -850,6 +876,8 @@ $app->post('/wearer_end_order_list', function ()use($app){
               $arg_str = "";
               $arg_str = "SELECT ";
               $arg_str .= "individual_ctrl_no,";
+              $arg_str .= "quantity,";
+              $arg_str .= "return_plan__qty,";
               $arg_str .= "rtn_ok_flg";
               $arg_str .= " FROM ";
               $arg_str .= "t_delivery_goods_state_details";
@@ -876,6 +904,7 @@ $app->post('/wearer_end_order_list', function ()use($app){
                   //ChromePhp::LOG($results);
                   foreach ($results as $result) {
                       $cnt = $cnt++;
+                      if($result->quantity - $result->return_plan__qty !== 0 ){
                       array_push($individual_ctrl_no, $result->individual_ctrl_no);
 
                       // 返却可能フラグによるdisable制御
@@ -895,6 +924,7 @@ $app->post('/wearer_end_order_list', function ()use($app){
 
                       // 対象チェックボックス値
                       array_push($list["individual_chk"], $individual);
+                      }
                   }
 
                   // 表示個体管理番号数
@@ -902,53 +932,33 @@ $app->post('/wearer_end_order_list', function ()use($app){
                   // 個体管理番号
                   $list["individual_ctrl_no"] = implode("<br>", $individual_ctrl_no);
               }
+                $list["return_num"] = $list["individual_cnt"];
+                $list["possible_num"] = $list["individual_cnt"];
             }
             // ※返却可能枚数
             $list["possible_num"] = 0;
-            $query_list = array();
-            $query_list[] = "t_delivery_goods_state_details.corporate_id = '".$auth['corporate_id']."'";
-            $query_list[] = "t_delivery_goods_state_details.rntl_cont_no = '".$wearer_end_post['rntl_cont_no']."'";
-            $query_list[] = "t_delivery_goods_state_details.werer_cd = '".$wearer_end_post['werer_cd']."'";
-            $query_list[] = "t_delivery_goods_state_details.item_cd = '".$now_wearer_map['item_cd']."'";
-            $query_list[] = "t_delivery_goods_state_details.color_cd = '".$now_wearer_map['color_cd']."'";
-            $query_list[] = "t_delivery_goods_state_details.size_cd = '".$list["size_cd"]."'";
-            $query_list[] = "t_delivery_goods_state_details.rtn_ok_flg = '1'";
-            $query_list[] = "t_delivery_goods_state_details.receipt_status = '2'";
-            $query = implode(' AND ', $query_list);
-            $arg_str = "";
-            $arg_str .= "SELECT ";
-            $arg_str .= " * ";
-            $arg_str .= " FROM ";
-            $arg_str .= "t_delivery_goods_state_details";
-            $arg_str .= " WHERE ";
-            $arg_str .= $query;
-            //ChromePhp::LOG($arg_str);
-            $t_delivery_goods_state_details = new TDeliveryGoodsStateDetails();
-            $t_delivery_goods_state_details_results = new Resultset(null, $t_delivery_goods_state_details, $t_delivery_goods_state_details->getReadConnection()->query($arg_str));
-            $result_obj = (array)$t_delivery_goods_state_details_results;
-            $results_cnt = $result_obj["\0*\0_count"];
-            if ($results_cnt > 0) {
-              $list["possible_num"] = $results_cnt;
-            }
-            // 返却枚数
-            $list["return_num"] = "0";
-            for ($i=0; $i<count($now_wearer_list); $i++) {
-              if (
-                $now_wearer_map['item_cd'] == $now_wearer_list[$i]['item_cd']
-                && $now_wearer_map['color_cd'] == $now_wearer_list[$i]['color_cd']
-              )
-              {
-                if ($now_wearer_list[$i]['std_input_qty'] < $now_wearer_map['std_input_qty']) {
-                  $list["return_num"] =$now_wearer_map['possible_num'];
-                }
-              } else {
-                $list["return_num"] = $now_wearer_map['possible_num'];
-              }
-            }
-            // 返却可能枚数（所持数）
-            $list["return_num_disable"] = "disabled";
-            $list["possible_num"] = $now_wearer_map['possible_num'];
 
+            if ($individual_flg == "0") {
+                /*
+                for ($i = 0; $i < count($now_wearer_list); $i++) {
+                    if (
+                        $now_wearer_map['item_cd'] == $now_wearer_list[$i]['item_cd']
+                        && $now_wearer_map['color_cd'] == $now_wearer_list[$i]['color_cd']
+                    ) {
+                        if ($now_wearer_list[$i]['std_input_qty'] < $now_wearer_map['std_input_qty']) {
+                            $list["return_num"] = $now_wearer_map['possible_num'];
+                        }
+                    } else {
+                        $list["return_num"] = $now_wearer_map['possible_num'];
+                    }
+                }
+                */
+                // 返却可能枚数（所持数）
+                $list["return_num_disable"] = "disabled";
+                $list["possible_num"] = $now_wearer_map['possible_num'];
+                $list["return_num"] = $now_wearer_map['possible_num'];
+            }
+            
             //--その他の必要hiddenパラメータ--//
             // 部門コード
             $list["rntl_sect_cd"] = $now_wearer_map['rntl_sect_cd'];
@@ -972,7 +982,6 @@ $app->post('/wearer_end_order_list', function ()use($app){
             array_push($now_list, $list);
         }
     }
-
     // 返却商品一覧内容の表示フラグ
     if (!empty($now_list)) {
         $json_list["list_disp_flg"] = true;
