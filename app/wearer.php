@@ -683,32 +683,35 @@ $app->post('/wearer/detail', function ()use($app){
 			}
             */
 
-            // 投入商品名
-            $search_q = array();
-            array_push($search_q, "corporate_id = '".$auth['corporate_id']."'");
-            array_push($search_q, "rntl_cont_no = '".$result->as_rntl_cont_no."'");
-            array_push($search_q, "job_type_cd = '".$result->as_old_job_type_cd."'");
-            array_push($search_q, "job_type_item_cd = '".$result->as_job_type_item_cd."'");
-            array_push($search_q, "item_cd = '".$list['item_cd']."'");
-            array_push($search_q, "color_cd = '".$list['color_cd']."'");
-            array_push($search_q, "size_two_cd = '".$result->as_size_two_cd."'");
-            //sql文字列を' AND 'で結合
-            $query = implode(' AND ', $search_q);
-            $input_item = MInputItem::query()
-                ->where($query)
-                ->columns('*')
-                ->execute();
-            // 取得オブジェクトを配列化→クラス内propety：protected値を取得する→リストカウント
-            $input_item_obj = (array)$input_item;
-            $cnt = $input_item_obj["\0*\0_count"];
-            if (!empty($cnt)) {
-                //ChromePhp::log($input_item);
-                foreach ($input_item as $input_item_map) {
-                    $list['item_name'] = $input_item_map->input_item_name;
-                }
-            } else {
-                $list['item_name'] = "-";
+        // 投入商品名
+        $search_q = array();
+        array_push($search_q, "corporate_id = '".$auth['corporate_id']."'");
+        array_push($search_q, "rntl_cont_no = '".$result->as_rntl_cont_no."'");
+        array_push($search_q, "job_type_cd = '".$result->as_old_job_type_cd."'");
+        array_push($search_q, "job_type_item_cd = '".$result->as_job_type_item_cd."'");
+        array_push($search_q, "item_cd = '".$list['item_cd']."'");
+        array_push($search_q, "color_cd = '".$list['color_cd']."'");
+        //サイズ2が空だったらサイズ2を検索条件に入れない
+        if($list['size_two_cd'] !== '') {
+            array_push($search_q, "size_two_cd = '".$list['size_two_cd']."'");
+        }
+        //sql文字列を' AND 'で結合
+        $query = implode(' AND ', $search_q);
+        $input_item = MInputItem::query()
+            ->where($query)
+            ->columns('*')
+            ->execute();
+        // 取得オブジェクトを配列化→クラス内propety：protected値を取得する→リストカウント
+        $input_item_obj = (array)$input_item;
+        $cnt = $input_item_obj["\0*\0_count"];
+        if (!empty($cnt)) {
+            //ChromePhp::log($input_item);
+            foreach ($input_item as $input_item_map) {
+                $list['item_name'] = $input_item_map->input_item_name;
             }
+        } else {
+            $list['item_name'] = "-";
+        }
 			// 商品-色(サイズ-サイズ2)変換
 			$list['shin_item_code'] = $list['item_cd']."-".$list['color_cd']."(".$list['size_cd']."-".$list['size_two_cd'].")";
 
