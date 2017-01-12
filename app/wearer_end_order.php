@@ -706,6 +706,7 @@ $app->post('/wearer_end_order_list', function ()use($app){
     $arg_str .= "t_delivery_goods_state_details.quantity as as_quantity,";
     $arg_str .= "t_delivery_goods_state_details.return_plan__qty as as_return_plan_qty,";
     $arg_str .= "t_delivery_goods_state_details.returned_qty as as_returned_qty,";
+    $arg_str .= "t_delivery_goods_state_details.werer_cd as as_werer_cd,";
     $arg_str .= "m_item.item_cd as as_item_cd,";
     $arg_str .= "m_item.color_cd as as_color_cd,";
     $arg_str .= "m_item.size_cd as as_size_cd,";
@@ -768,18 +769,36 @@ $app->post('/wearer_end_order_list', function ()use($app){
         $list["std_input_qty"] = $result->as_std_input_qty;
         // 投入商品名
         $list["input_item_name"] = $result->as_input_item_name;
-        // 数量
-        $list["quantity"] = $result->as_quantity;
-        // 返却予定数
-        $list["return_plan_qty"] = $result->as_return_plan_qty;
+
+          //返却予定数と数量の総数を計算する。
+          $parameter = array("werer_cd" => $result->as_werer_cd,"item_cd" => $result->as_item_cd,"size_cd" => $result->as_size_cd);
+          //返却予定数の総数
+          $TDeliveryGoodsStateDetails = TDeliveryGoodsStateDetails::find(array(
+              'conditions'  => "werer_cd = :werer_cd: AND item_cd = :item_cd: AND size_cd = :size_cd:",
+              "bind" => $parameter
+          ));
+          $each_item_count = $TDeliveryGoodsStateDetails->count();
+          // foreachでまわす
+          $each_item_return_plan_qty = 0;
+          $each_item_quantity = 0;
+          for($i = 0; $i < $each_item_count; $i++){
+              $each_item_return_plan_qty = $each_item_return_plan_qty + $TDeliveryGoodsStateDetails[$i]->return_plan__qty;
+              $each_item_quantity = $each_item_quantity + $TDeliveryGoodsStateDetails[$i]->quantity;
+          }
+
+        // 数量 納品状況明細情報の商品ごとの数量を合計した数
+        $list["quantity"] = $each_item_quantity;
+        // 返却予定数 納品状況明細情報の商品ごとの返却予定数を合計した数
+        $list["return_plan_qty"] = $each_item_return_plan_qty;
         // 返却済数
         $list["returned_qty"] = $result->as_returned_qty;
         // 商品単位の返却可能枚数(所持枚数)
         //$list["possible_num"] = $list["quantity"] - $list["return_plan_qty"] - $list["returned_qty"];
-          // 商品単位の返却可能枚数(所持枚数)
-          $list["possible_num"] = $list["std_input_qty"] - $list["return_plan_qty"];
-
+        // 商品単位の返却可能枚数(所持枚数) 数量の総数 - 返却予定数の総数
+        $list["possible_num"] = $list["quantity"] - $list["return_plan_qty"];
+        if($list["possible_num"] > 0){
         array_push($now_wearer_list, $list);
+        }
       }
     }
 
@@ -915,6 +934,7 @@ $app->post('/wearer_end_order_list', function ()use($app){
             $list["possible_num"] = 0;
 
             if ($individual_flg == "0") {
+                /*
                 for ($i = 0; $i < count($now_wearer_list); $i++) {
                     if (
                         $now_wearer_map['item_cd'] == $now_wearer_list[$i]['item_cd']
@@ -927,10 +947,11 @@ $app->post('/wearer_end_order_list', function ()use($app){
                         $list["return_num"] = $now_wearer_map['possible_num'];
                     }
                 }
+                */
                 // 返却可能枚数（所持数）
                 $list["return_num_disable"] = "disabled";
                 $list["possible_num"] = $now_wearer_map['possible_num'];
-
+                $list["return_num"] = $now_wearer_map['possible_num'];
             }
             
             //--その他の必要hiddenパラメータ--//
