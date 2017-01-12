@@ -24,6 +24,8 @@ define([
 			events: {
 				'click @ui.search': function(e){
 					e.preventDefault();
+					var dir = location.href.split("/");
+					var dir2 = dir[dir.length -1];
 					this.triggerMethod('hideAlerts');
 					this.model.set('rntl_sect_cd', this.ui.rntl_sect_cd.val());
 					this.model.set('rntl_sect_name', this.ui.rntl_sect_name.val());
@@ -32,6 +34,7 @@ define([
 						this.model.set('corporate', $('#corporate').val());
 						this.model.set('corporate_flg', true);
 					}
+					this.model.set('url', dir2);
 					// this.model.set('sort_key', 'rntl_sect_cd');
 					// this.model.set('order','asc');
 					var errors = this.model.validate();

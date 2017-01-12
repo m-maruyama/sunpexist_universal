@@ -64,6 +64,7 @@ define([
 				'click @ui.section_btn': function(e){
 					e.preventDefault();
 					this.triggerMethod('click:section_btn', this.model);
+
 				}
 			}
 		});

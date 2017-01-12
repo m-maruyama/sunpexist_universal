@@ -45,7 +45,7 @@ define([
 					//console.log(data);
 				} else {
 					var data = this.options.data;
-					console.log(data);
+					//console.log(data);
 				}
 				var modelForUpdate = this.model;
 				modelForUpdate.url = App.api.QA0020;

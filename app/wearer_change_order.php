@@ -293,6 +293,7 @@ $app->post('/section_change', function ()use($app){
     $wearer_chg_post = $app->session->get("wearer_chg_post");
 
     // 契約リソースマスタ参照
+    /*
     $query_list = array();
     $list = array();
     $all_list = array();
@@ -338,12 +339,17 @@ $app->post('/section_change', function ()use($app){
             $all_list[] = $result->rntl_sect_cd;
         }
     }
-
+    */
+    /*
     if (in_array("0000000000", $all_list)) {
         $section_all_zero_flg = true;
     } else {
         $section_all_zero_flg = false;
     }
+    */
+    //職種変更または異動の入力画面は拠点を全店表示のため、全店舗0000000000埋め扱い
+    $section_all_zero_flg = true;
+
     if($section_all_zero_flg){
         $query_list = array();
         $list = array();

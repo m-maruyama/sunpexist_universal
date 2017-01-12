@@ -1030,7 +1030,6 @@ $app->post('/section_modal', function () use ($app) {
     $query_list = array();
     $cond = $params['cond'];
     $page = $params['page'];
-
     // アカウントセッション取得
     $auth = $app->session->get('auth');
     //拠点
@@ -1050,7 +1049,6 @@ $app->post('/section_modal', function () use ($app) {
 
     //sql文字列を' AND 'で結合
     $query = implode(' AND ', $query_list);
-
     //--- クエリー実行・取得 ---//
     $m_contract_resources = MContract::query()
         ->where($query)
@@ -1067,6 +1065,11 @@ $app->post('/section_modal', function () use ($app) {
             $all_zero = true;
         }
     }
+    //職種変更または異動の入力画面、拠点モーダル内の検索ボタンの場合はゼロ埋めと同じ
+    if($cond['url'] == 'wearer_change_order.html'){
+        $all_zero = true;
+    }
+
     $list = array();
     $all_list = array();
     $query_list = array();
@@ -1404,7 +1407,7 @@ $app->post('/update_possible_chk', function ()use($app) {
 
     //各画面からの契約noを取得
     $cond = $params;
-
+    //ChromePhp::log($cond);
     $json_list = array();
     $json_list["chk_flg"] = true;
     $json_list["error_msg"] = "";
