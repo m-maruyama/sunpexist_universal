@@ -1384,7 +1384,7 @@ $app->post('/csv_download', function ()use($app){
             $arg_str .= " * ";
             $arg_str .= " FROM ";
 //	$arg_str .= "(SELECT ";
-            $arg_str .= "(SELECT distinct on (t_returned_plan_info.item_cd, t_returned_plan_info.color_cd, t_returned_plan_info.size_cd) ";
+            $arg_str .= "(SELECT distinct on (t_returned_plan_info.order_req_no, t_returned_plan_info.item_cd, t_returned_plan_info.color_cd, t_returned_plan_info.size_cd) ";
             $arg_str .= "t_returned_plan_info.order_req_no as as_order_req_no,";
             $arg_str .= "t_returned_plan_info.order_date as as_order_req_ymd,";
             $arg_str .= "t_returned_plan_info.order_sts_kbn as as_order_sts_kbn,";
@@ -1520,7 +1520,6 @@ $app->post('/csv_download', function ()use($app){
                 $arg_str .= $q_sort_key . " " . $order;
             }
         }
-
 		$t_order = new TOrder();
 		$results = new Resultset(null, $t_order, $t_order->getReadConnection()->query($arg_str));
 		$results_array = (array)$results;
@@ -1811,7 +1810,7 @@ $app->post('/csv_download', function ()use($app){
                 array_push($query_list, "order_req_no = '".$list['order_req_no']."'");
                 array_push($query_list, "item_cd = '".$list['item_cd']."'");
                 array_push($query_list, "color_cd = '".$list['color_cd']."'");
-                //rray_push($query_list, "size_cd = '".$list['size_cd']."'");
+                array_push($query_list, "size_cd = '".$list['size_cd']."'");
                 $query = implode(' AND ', $query_list);
                 $arg_str = "";
                 $arg_str .= "SELECT ";
