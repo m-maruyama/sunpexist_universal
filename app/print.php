@@ -303,7 +303,7 @@ $app->post('/print/pdf', function ()use($app){
                 if (count($each_array) > 1) {
                     $group_array[] = $each_array;
                 }
-                $sum_return_qty = $sum_return_qty + $item->as_return_plan_qty;
+                //$sum_return_qty = $sum_return_qty + $item->as_return_plan_qty;
                 $group_array[] = array(
                     'item_cd' => "",
                     'color_cd' => "",
@@ -313,12 +313,14 @@ $app->post('/print/pdf', function ()use($app){
                     'individual_ctrl_no' => $item->as_individual_ctrl_no,
                     'border' => "LR",
                 );
+                //返却数用計算
+                $group_array[0]["return_plan_qty"] = count($group_array);
                 $each_array = array();
             } else {
 
                 //グループの配列があれば、リストの配列にグループを入れる
                 if (count($group_array) > 0) {
-                    $group_array[0]["return_plan_qty"] = $sum_return_qty;
+                    //$group_array[0]["return_plan_qty"] = $sum_return_qty;
                     $group_array[0]["border"] = "LRT";
 
                     //商品ごとのグループを１行ずつ、出力用の配列に入れる
@@ -328,13 +330,13 @@ $app->post('/print/pdf', function ()use($app){
                     }
 
                     $group_array = array();
-                    $sum_return_qty = 0;
+                    //$sum_return_qty = 0;
                 }
                 //前の行と違う場合に、$each_arrayに値が入っていれば出力用の配列に入れる
                 if (count($each_array) > 0) {
                     array_push($list_array, $each_array);
                     $each_array = array();
-                    $sum_return_qty = 0;
+                    //$sum_return_qty = 0;
                 }
 
 
@@ -355,12 +357,13 @@ $app->post('/print/pdf', function ()use($app){
                     'border' => 1,
                 );
 
-                $sum_return_qty = $sum_return_qty + $item->as_return_plan_qty;
+                //$sum_return_qty = $sum_return_qty + $item->as_return_plan_qty;
                 $item_check = $item->as_item_cd . $item->as_color_cd . $item->as_size_cd;
             }
 
         }
         if (count($group_array) > 0) {
+            //返却数用計算
             $group_array[0]["return_plan_qty"] = count($group_array);
             $group_array[0]["border"] = "LRT";
 
@@ -378,7 +381,6 @@ $app->post('/print/pdf', function ()use($app){
             array_push($list_array, $each_array);
         }
     }
-
 
     if ($individual_check == '1'){  //個体管理番号ありの出力
         //商品レコード見出しの高さ
