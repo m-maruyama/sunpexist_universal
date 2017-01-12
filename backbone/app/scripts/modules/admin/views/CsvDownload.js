@@ -66,11 +66,18 @@ define([
 					cond_map["job_type_zaiko"] = $("select[name='job_type_zaiko']").val();
 					cond_map["item"] = $("select[name='item']").val();
 
+					//ソート条件
+					var page = new Object();
+					page["sort_key"] = this.options.model.attributes.sort_key;
+					page["order"] = this.options.model.attributes.order;
+
+
 					var msg = "データ量により、ダウンロード処理に時間がかかる可能性があります。ダウンロードを実施してよろしいですか？";
 					if (window.confirm(msg)) {
 						var cond = {
 							"scr": 'CSVダウンロード',
-							"cond": cond_map
+							"cond": cond_map,
+							"page": page
 						};
 						var form = $('<form action="' + App.api.DL0010 + '" method="post"></form>');
 						var data = $('<input type="hidden" name="data" />');

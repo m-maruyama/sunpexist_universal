@@ -42,6 +42,7 @@ $app->post('/csv_download', function ()use($app){
 
 	//--フロント側パラメータ取得--//
 	$cond = $params['cond'];
+    $page = $params['page'];
 
 	//--レスポンス配列生成--//
 	$result = array();
@@ -603,7 +604,6 @@ $app->post('/csv_download', function ()use($app){
             $arg_str .= " ORDER BY ";
             $arg_str .= $q_sort_key." ".$order;
         }
-
         $t_order = new TOrder();
 		$results = new Resultset(null, $t_order, $t_order->getReadConnection()->query($arg_str));
 		$result_obj = (array)$results;
