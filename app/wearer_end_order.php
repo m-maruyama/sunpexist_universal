@@ -771,10 +771,15 @@ $app->post('/wearer_end_order_list', function ()use($app){
         $list["input_item_name"] = $result->as_input_item_name;
 
           //返却予定数と数量の総数を計算する。
-          $parameter = array("werer_cd" => $result->as_werer_cd,"item_cd" => $result->as_item_cd,"size_cd" => $result->as_size_cd);
+          $parameter = array(
+              "corporate_id" => $auth['corporate_id'],
+              "rntl_cont_no" => $wearer_end_post['rntl_cont_no'],
+              "werer_cd" => $result->as_werer_cd,
+              "item_cd" => $result->as_item_cd,
+              "size_cd" => $result->as_size_cd);
           //返却予定数の総数
           $TDeliveryGoodsStateDetails = TDeliveryGoodsStateDetails::find(array(
-              'conditions'  => "werer_cd = :werer_cd: AND item_cd = :item_cd: AND size_cd = :size_cd:",
+              'conditions'  => "corporate_id = :corporate_id: AND rntl_cont_no = :rntl_cont_no:  AND werer_cd = :werer_cd: AND item_cd = :item_cd: AND size_cd = :size_cd:",
               "bind" => $parameter
           ));
           $each_item_count = $TDeliveryGoodsStateDetails->count();
