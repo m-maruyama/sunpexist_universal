@@ -25,6 +25,7 @@ define([
 					receipt_day_from : null,
 					receipt_day_to : null,
 					individual_number : null,
+					maker_send_no : null,
 					status0: this.get('status0'),
 					status1: this.get('status1'),
 					order_kbn0: this.get('order_kbn0'),
@@ -75,6 +76,9 @@ define([
 				}
 				if(this.get('member_name')) {
 					result.member_name = this.get('member_name');
+				}
+				if(this.get('maker_send_no')) {
+					result.maker_send_no = this.get('maker_send_no');
 				}
 				if(this.get('section')) {
 					result.section = this.get('section');

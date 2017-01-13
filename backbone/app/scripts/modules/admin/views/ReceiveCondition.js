@@ -66,6 +66,7 @@ define([
 				'reason_kbn18': '#reason_kbn18',
 				'reason_kbn19': '#reason_kbn19',
 				"individual_number": "#individual_number",
+				"maker_send_no": "#maker_send_no",
 				"reset": '.reset',
 				"search": '.search',
 				'datepicker': '.datepicker',
@@ -114,6 +115,7 @@ define([
 				'#reason_kbn18': 'reason_kbn18',
 				'#reason_kbn19': 'reason_kbn19',
 				"#individual_number": "individual_number",
+				"#maker_send_no": "maker_send_no",
 				"#reset": 'reset',
 				'#search': 'search',
 				'#datepicker': 'datepicker',
@@ -217,6 +219,7 @@ define([
 					this.model.set('emply_order_no', this.ui.emply_order_no.val());
 					this.model.set('member_no', this.ui.member_no.val());
 					this.model.set('member_name', this.ui.member_name.val());
+					this.model.set('maker_send_no', this.ui.maker_send_no.val());
 					var section = $("select[name='section']").val();
 					this.model.set('section', section);
 					var job_type = $("select[name='job_type']").val();
