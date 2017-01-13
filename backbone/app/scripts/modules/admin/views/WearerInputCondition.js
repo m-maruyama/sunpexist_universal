@@ -188,17 +188,13 @@ define([
                 model.url = App.api.WI0012;
 
                 model.fetchMx({
-                    data:cond,
-                    success:function(res){
+                    data: cond,
+                    success: function (res) {
                         var res_val = res.attributes;
-                        if(res_val["errors"]) {
+                        if (res_val["errors"]) {
                             var er = res_val["errors"]
                             res.attributes["errors"] = null;
                             that.triggerMethod('error_msg', er);
-                        }else{
-                            alert('着用者を登録しました。');
-                            window.sessionStorage.removeItem('wearer_input_ref');
-                            location.href = './wearer_input_complete.html';
                         }
                     }
                 });
@@ -206,7 +202,6 @@ define([
             },
             input_item: function (rntl_cont_no) {
                 var that = this;
-
                 var model = this.model;
                 model.set('agreement_no', rntl_cont_no);
                 model.set('cster_emply_cd_chk', this.ui.cster_emply_cd_chk.prop('checked'));
@@ -242,6 +237,25 @@ define([
                     "mode": 'check',
                     "cond": model.getReq()
                 };
+
+                //商品明細入力へボタンを押下時のSIJSにない文字変換と、全角カナ、全角スペースチェックを行う
+                model.url = App.api.WI0015;
+                model.fetchMx({
+                    data: cond,
+                    success: function (res) {
+                        var res_val = res.attributes;
+                        console.log(res_val);
+
+                        if (res_val["errors"]) {
+                            var er = res_val["errors"]
+                            res.attributes["errors"] = null;
+                            that.triggerMethod('error_msg', er);
+                            return true;
+                        }
+                    }
+                });
+
+                //商品詳細入力へ
                 model.url = App.api.WI0012;
                 model.fetchMx({
                     data:cond,

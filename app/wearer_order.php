@@ -793,7 +793,17 @@ $app->post('/wearer_order_insert', function () use ($app) {
             $json_list['error_msg'] = $error_list;
             $json_list["error_code"] = "1";
         }
+        $str_utf8 = $cond['comment'];
+        if (convert_not_sjis($str_utf8) !== true){
+            $output_text = convert_not_sjis($str_utf8);
+            array_push($error_list, 'コメント欄に使用できない文字が含まれています。'."$output_text");
+            $json_list['error_msg'] = $error_list;
+            $json_list["error_code"] = "1";
+        };
     }
+
+
+
     $add_item_input = $params["add_item"];
     $order_count = 0;
     // 貸与されるアイテム

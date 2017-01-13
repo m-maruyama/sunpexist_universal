@@ -1840,3 +1840,27 @@ function get_kbn_name($kbn){
         default:
     }
 }
+
+//SJISにない文字を?に変換する
+function convert_not_sjis($str_utf8){
+    //preg_split関数を利用し、1文字ずつに分割した配列に変換します。
+    $char_utf8_list = preg_split('//u', $str_utf8, -1, PREG_SPLIT_NO_EMPTY);
+    $char_sjis_list = $char_utf8_list;
+    //UTF-8の文字列の配列を、Shift_JISに変換します。変換できないものは?になります。
+    mb_convert_variables('SJIS', 'UTF-8', $char_sjis_list);
+    //Shift_JISの文字列の配列を、UTF-8に戻します。
+    mb_convert_variables('UTF-8', 'SJIS', $char_sjis_list);
+    //配列を表示用に連結します。
+    $output_text = implode('', $char_sjis_list);
+    //表示用の値を返す
+    if($str_utf8 == $output_text){
+        return true;
+    }else{
+        return $output_text;
+    }
+}
+//全角カタカナ全角スペースのみOK
+function kana_check($kana){
+    mb_regex_encoding("UTF-8");
+    return mb_ereg("^[ァ-ヶー　]*$", $kana);
+}

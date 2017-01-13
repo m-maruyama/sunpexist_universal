@@ -215,6 +215,7 @@ define([
 			"WI0012": host + "/input_insert",
 			"WI0013": host + "/input_delete_check",
 			"WI0014": host + "/input_delete",
+			"WI0015": host + "/wearer_item_button",
 			"WN0010": host + "/wearer_end/search",
 			"WN0011": host + "/wearer_end/reason_kbn",
 			"WN0012": host + "/section_wearer_end",

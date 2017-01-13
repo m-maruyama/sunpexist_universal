@@ -109,6 +109,52 @@ $app->post('/agreement_no_input', function () use ($app) {
     echo json_encode($json_list);
 });
 
+
+
+/*
+ * 商品明細入力を押下時のエラーチェック
+ *
+ * @param disp_type
+ * wearer_search 検索一覧画面
+ * wearer_order 商品明細情報入力画面
+ * wearer_order_search
+ */
+
+$app->post('/wearer_item_button', function () use ($app) {
+    $params = json_decode(file_get_contents('php://input'), true);
+    $cond = $params['cond'];
+    $json_list = array();
+    $error_list = array();
+    //全角カタカナ 全角スペースチェック
+
+    //全角カタカナ 全角スペースチェック
+    $kana = $cond['werer_name_kana'];
+    if (kana_check($kana) === false){
+        array_push($error_list, '着用者名（カナ）に全角カタカナまたは全角スペース以外が入力されています');
+    }
+    //SJISにない文字を?に変換
+    //着用者名
+    $str_utf8 = $cond['werer_name'];
+    if (convert_not_sjis($str_utf8) !== true){
+        $output_text = convert_not_sjis($str_utf8);
+        array_push($error_list, '着用者名に使用できない文字が含まれています。'."$output_text");
+    };
+    //着用者カナ
+    $str_utf8 = $cond['werer_name_kana'];
+    if (convert_not_sjis($str_utf8) !== true){
+        $output_text = convert_not_sjis($str_utf8);
+        array_push($error_list, '着用者名（カナ）に使用できない文字が含まれています。'."$output_text");
+    };
+
+
+    $json_list['cond'] = $cond;
+    $json_list['errors'] = $error_list;
+
+    echo json_encode($json_list);
+});
+
+
+
 /*
  * 着用者入力各フォーム
  *
@@ -128,7 +174,6 @@ $app->post('/wearer_input', function () use ($app) {
     $cond = $params['cond'];
     $referrer = $cond['referrer'];
     $disp_type = $cond['disp_type'];
-    //ChromePhp::LOG($cond);
     //ChromePhp::LOG($referrer);
     //ChromePhp::LOG($disp_type);
 
@@ -562,7 +607,6 @@ $app->post('/input_insert', function () use ($app) {
     // アカウントセッション取得
     $auth = $app->session->get('auth');
     $cond = $params['cond'];
-    //ChromePhp::LOG($cond);
 
     $query_list = array();
     $list = array();
@@ -643,6 +687,7 @@ $app->post('/input_insert', function () use ($app) {
     if ($mc_count == 0) {
         array_push($error_list, '契約Noの値が不正です。');
     }
+
     // 社員コード
     if ($cond['cster_emply_cd_chk']) {
         if (mb_strlen($cond['cster_emply_cd']) == 0) {
@@ -782,6 +827,25 @@ $app->post('/input_insert', function () use ($app) {
     if (byte_cnt($cond['werer_name_kana']) > 22) {
         array_push($error_list, '着用者名(カナ)の文字数が多すぎます。');
     }
+
+    //全角カタカナ 全角スペースチェック
+    $kana = $cond['werer_name_kana'];
+    if (kana_check($kana) === false){
+        array_push($error_list, '着用者名（カナ）に全角カタカナまたは全角スペース以外が入力されています');
+    }
+    //SJISにない文字を?に変換
+    //着用者名
+    $str_utf8 = $cond['werer_name'];
+    if (convert_not_sjis($str_utf8) !== true){
+        $output_text = convert_not_sjis($str_utf8);
+        array_push($error_list, '着用者名に使用できない文字が含まれています。'."$output_text");
+    };
+    //着用者カナ
+    $str_utf8 = $cond['werer_name_kana'];
+    if (convert_not_sjis($str_utf8) !== true){
+        $output_text = convert_not_sjis($str_utf8);
+        array_push($error_list, '着用者名（カナ）に使用できない文字が含まれています。'."$output_text");
+    };
 
 //    DB登録
     if ($error_list) {
