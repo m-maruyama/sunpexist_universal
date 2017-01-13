@@ -2510,12 +2510,6 @@ $app->post('/wearer_change/complete', function ()use($app){
           array_push($json_list["error_msg"], $error_msg);
         }
      }
-     // 着用者名（カナ）
-     if (empty($wearer_data_input["member_name_kana"])) {
-       $json_list["error_code"] = "1";
-       $error_msg = "着用者名(カナ)を入力してください。";
-       array_push($json_list["error_msg"], $error_msg);
-     }
      if (mb_strlen($wearer_data_input['member_name_kana']) > 0) {
         if (strlen(mb_convert_encoding($wearer_data_input['member_name_kana'], "SJIS")) > 25) {
           $json_list["error_code"] = "1";
@@ -4251,12 +4245,7 @@ $app->post('/wearer_change/send', function ()use($app){
          array_push($json_list["error_msg"], $error_msg);
        }
     }
-    // 着用者名（カナ）
-    if (empty($wearer_data_input["member_name_kana"])) {
-      $json_list["error_code"] = "1";
-      $error_msg = "着用者名(カナ)を入力してください。";
-      array_push($json_list["error_msg"], $error_msg);
-    }
+
     if (mb_strlen($wearer_data_input['member_name_kana']) > 0) {
        if (strlen(mb_convert_encoding($wearer_data_input['member_name_kana'], "SJIS")) > 25) {
          $json_list["error_code"] = "1";
