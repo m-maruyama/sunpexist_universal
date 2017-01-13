@@ -146,7 +146,6 @@ $app->post('/wearer_item_button', function () use ($app) {
         array_push($error_list, '着用者名（カナ）に使用できない文字が含まれています。'."$output_text");
     };
 
-
     $json_list['cond'] = $cond;
     $json_list['errors'] = $error_list;
 
@@ -829,23 +828,29 @@ $app->post('/input_insert', function () use ($app) {
     }
 
     //全角カタカナ 全角スペースチェック
-    $kana = $cond['werer_name_kana'];
-    if (kana_check($kana) === false){
-        array_push($error_list, '着用者名（カナ）に全角カタカナまたは全角スペース以外が入力されています');
+    if(!empty($cond['werer_name_kana'])){
+        $kana = $cond['werer_name_kana'];
+        if (kana_check($kana) === false){
+            array_push($error_list, '着用者名（カナ）に全角カタカナまたは全角スペース以外が入力されています');
+        }
     }
     //SJISにない文字を?に変換
     //着用者名
-    $str_utf8 = $cond['werer_name'];
-    if (convert_not_sjis($str_utf8) !== true){
-        $output_text = convert_not_sjis($str_utf8);
-        array_push($error_list, '着用者名に使用できない文字が含まれています。'."$output_text");
-    };
+    if(!empty($cond['werer_name'])) {
+        $str_utf8 = $cond['werer_name'];
+        if (convert_not_sjis($str_utf8) !== true) {
+            $output_text = convert_not_sjis($str_utf8);
+            array_push($error_list, '着用者名に使用できない文字が含まれています。' . "$output_text");
+        };
+    }
     //着用者カナ
-    $str_utf8 = $cond['werer_name_kana'];
-    if (convert_not_sjis($str_utf8) !== true){
-        $output_text = convert_not_sjis($str_utf8);
-        array_push($error_list, '着用者名（カナ）に使用できない文字が含まれています。'."$output_text");
-    };
+    if(!empty($cond['werer_name_kana'])) {
+        $str_utf8 = $cond['werer_name_kana'];
+        if (convert_not_sjis($str_utf8) !== true) {
+            $output_text = convert_not_sjis($str_utf8);
+            array_push($error_list, '着用者名（カナ）に使用できない文字が含まれています。' . "$output_text");
+        };
+    }
 
 //    DB登録
     if ($error_list) {

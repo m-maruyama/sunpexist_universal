@@ -1384,7 +1384,17 @@ $app->post('/wearer_other_change_insert', function () use ($app) {
             $json_list['error_msg'] = $error_list;
             $json_list["error_code"] = "1";
         }
+        //コメント欄使用不可文字
+        $str_utf8 = $wearer_data_input['comment'];
+        if (convert_not_sjis($str_utf8) !== true) {
+            $output_text = convert_not_sjis($str_utf8);
+            array_push($error_list, 'コメント欄に使用できない文字が含まれています。' . "$output_text");
+            $json_list['error_msg'] = $error_list;
+            $json_list["error_code"] = "1";
+        };
     }
+
+
     if (!$wearer_data_input['return_date']) {
         array_push($error_list,'返却予定日を入力してください。');
         $json_list['error_msg'] = $error_list;

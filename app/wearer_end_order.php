@@ -1112,18 +1112,14 @@ $app->post('/wearer_end_order_insert', function () use ($app) {
         $error_msg = "コメント欄の規定文字数がオーバーしています。";
         array_push($json_list["error_msg"], $error_msg);
       }
-      $get_strs = "";
-      $get_strs = preg_split('//u', $wearer_data_input["comment"], -1, PREG_SPLIT_NO_EMPTY);
-      if (!empty($get_strs)) {
-        foreach ($get_strs as $get_str) {
-          if (mb_convert_variables('SJIS', 'UTF-8', $get_str) == false) {
-            $json_list["error_code"] = "1";
-            $error_msg = "コメント欄にて使用できない文字が含まれています。";
-            array_push($json_list["error_msg"], $error_msg);
-            break;
-          }
-        }
-      }
+      //コメント欄使用不可文字
+      $str_utf8 = $wearer_data_input['comment'];
+      if (convert_not_sjis($str_utf8) !== true) {
+          $output_text = convert_not_sjis($str_utf8);
+          $json_list["error_code"] = "1";
+          $error_msg = 'コメント欄に使用できない文字が含まれています。' . "$output_text";
+          array_push($json_list["error_msg"], $error_msg);
+      };
     }
       // ※発注情報状況・納品状況情報参照
       $query_list = array();

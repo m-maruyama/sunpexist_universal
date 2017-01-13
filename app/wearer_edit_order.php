@@ -626,7 +626,6 @@ $app->post('/wearer_edit_complete', function ()use($app){
    // DB更新エラーコード 0:正常 その他:要因エラー
    $json_list["error_code"] = "0";
    $json_list["error_msg"] = array();
-
    if ($mode == "check") {
      //--入力内容確認--//
      // 社員コード
@@ -706,6 +705,14 @@ $app->post('/wearer_edit_complete', function ()use($app){
           $error_msg = "着用者名が規定の文字数をオーバーしています。";
           array_push($json_list["error_msg"], $error_msg);
         }
+         //SJISにない文字を?に変換
+         //着用者名
+        $str_utf8 = $wearer_data_input['member_name'];
+        if (convert_not_sjis($str_utf8) !== true) {
+            $output_text = convert_not_sjis($str_utf8);
+            $error_msg = '着用者名に使用できない文字が含まれています。' . "$output_text";
+            array_push($json_list["error_msg"], $error_msg);
+        };
      }
      // 着用者名（カナ）
      if (mb_strlen($wearer_data_input['member_name_kana']) > 0) {
@@ -714,8 +721,21 @@ $app->post('/wearer_edit_complete', function ()use($app){
           $error_msg = "着用者名(カナ)が規定の文字数をオーバーしています。";
           array_push($json_list["error_msg"], $error_msg);
         }
+         //着用者カナ
+         $str_utf8 = $wearer_data_input['member_name_kana'];
+         if (convert_not_sjis($str_utf8) !== true) {
+             $output_text = convert_not_sjis($str_utf8);
+             $json_list["error_code"] = "1";
+             $error_msg = '着用者名（カナ）に使用できない文字が含まれています。' . "$output_text";
+             array_push($json_list["error_msg"], $error_msg);
+         };
+         $kana = $wearer_data_input['member_name_kana'];
+         if (kana_check($kana) === false){
+             $json_list["error_code"] = "1";
+             $error_msg = '着用者名（カナ）に全角カタカナまたは全角スペース以外が入力されています';
+             array_push($json_list["error_msg"], $error_msg);
+         }
      }
-
      echo json_encode($json_list);
    } else if ($mode == "update") {
      //--発注NGパターンチェック--//
