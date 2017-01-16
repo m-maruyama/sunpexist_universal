@@ -1809,6 +1809,10 @@ $app->post('/wearer_change/info', function ()use($app){
          );
          $paginator = $paginator_model->getPaginate();
          $results = $paginator->items;
+          //未選択
+         $element["size"] = "";
+         $element["selected"] = "";
+         $list["size_cd"][] = $element;
          foreach ($results as $result) {
            $element["size"] = $result->size_cd;
            //$element["size_sort"] = $result->size_cd_display_order;
