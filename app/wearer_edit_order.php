@@ -1301,7 +1301,6 @@ $app->post('/wearer_edit_send', function ()use($app){
           $error_msg = "着用者名を入力してください。";
           array_push($json_list["error_msg"], $error_msg);
       }
-      ChromePhp::log(mb_strlen($wearer_data_input['member_name']));
       if (mb_strlen($wearer_data_input['member_name']) > 0) {
           if (strlen(mb_convert_encoding($wearer_data_input['member_name'], "SJIS")) > 22) {
               $json_list["error_code"] = "1";
@@ -1313,6 +1312,7 @@ $app->post('/wearer_edit_send', function ()use($app){
           $str_utf8 = $wearer_data_input['member_name'];
           if (convert_not_sjis($str_utf8) !== true) {
               $output_text = convert_not_sjis($str_utf8);
+              $json_list["error_code"] = "1";
               $error_msg = '着用者名に使用できない文字が含まれています。' . "$output_text";
               array_push($json_list["error_msg"], $error_msg);
           };
