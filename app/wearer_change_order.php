@@ -1788,12 +1788,13 @@ $app->post('/wearer_change/info', function ()use($app){
        $query = implode(' AND ', $query_list);
        $arg_str = "";
        $arg_str = "SELECT ";
-       $arg_str .= "size_cd";
+       $arg_str .= "size_cd,";
+       $arg_str .= "size_cd_display_order";
        $arg_str .= " FROM ";
        $arg_str .= "m_item";
        $arg_str .= " WHERE ";
        $arg_str .= $query;
-       $arg_str .= " ORDER BY size_cd ASC";
+       $arg_str .= " ORDER BY size_cd_display_order ASC";//サイズコード表示順
        $m_item = new MItem();
        $results = new Resultset(NULL, $m_item, $m_item->getReadConnection()->query($arg_str));
        $result_obj = (array)$results;
@@ -1808,10 +1809,9 @@ $app->post('/wearer_change/info', function ()use($app){
          );
          $paginator = $paginator_model->getPaginate();
          $results = $paginator->items;
-         //ChromePhp::LOG($results);
          foreach ($results as $result) {
            $element["size"] = $result->size_cd;
-
+           //$element["size_sort"] = $result->size_cd_display_order;
            $query_list = array();
            $query_list[] = "corporate_id = '".$auth['corporate_id']."'";
            $query_list[] = "job_type_cd = '".$chk_map['job_type_cd']."'";
@@ -1828,11 +1828,12 @@ $app->post('/wearer_change/info', function ()use($app){
            $arg_str .= "t_order_tran";
            $arg_str .= " WHERE ";
            $arg_str .= $query;
+             //ChromePhp::log($arg_str);
            $t_order_tran = new TOrderTran();
            $results = new Resultset(NULL, $t_order_tran, $t_order_tran->getReadConnection()->query($arg_str));
            $result_obj = (array)$results;
            $results_cnt = $result_obj["\0*\0_count"];
-           if ($results_cnt > 0) {
+             if ($results_cnt > 0) {
              $element["selected"] = "selected";
            } else {
              $element["selected"] = "";
@@ -1840,6 +1841,7 @@ $app->post('/wearer_change/info', function ()use($app){
            $list["size_cd"][] = $element;
          }
        }
+
        // 発注数(単一選択=入力不可、複数選択=入力可)
        if ($list["choice_type"] == "1") {
          $list["order_num_disable"] = "disabled";
@@ -1920,7 +1922,6 @@ $app->post('/wearer_change/info', function ()use($app){
    $json_list["add_list_cnt"] = count($add_list);
    $json_list["add_list"] = $add_list;
    //ChromePhp::LOG('新たに追加するアイテム一覧リスト');
-   //ChromePhp::LOG(count($add_list));
 
    //--現在貸与中アイテム一覧リストの生成--//
    $chk_list = array();
@@ -2441,7 +2442,7 @@ $app->post('/wearer_change/complete', function ()use($app){
    $mode = $params["mode"];
    $wearer_data_input = $params["wearer_data"];
    $now_item_input = $params["now_item"];
-
+   $add_item_input = $params["add_item"];
 
    $json_list = array();
    // DB更新エラーコード 0:正常 その他:要因エラー
@@ -3365,6 +3366,7 @@ $app->post('/wearer_change/complete', function ()use($app){
        $results = new Resultset(NULL, $t_order_tran, $t_order_tran->getReadConnection()->query($arg_str));
        $results_cnt = $result_obj["\0*\0_count"];
        //ChromePhp::LOG($results_cnt);
+         //ChromePhp::log($add_item_input);
        if (!empty($add_item_input)) {
          // 現発注Noの発注情報トランをクリーン
          //ChromePhp::LOG("発注情報トラン登録");

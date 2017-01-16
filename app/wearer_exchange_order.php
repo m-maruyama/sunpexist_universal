@@ -919,18 +919,18 @@ $app->post('/wearer_exchange/list', function ()use($app){
         $query = implode(' AND ', $query_list);
         $arg_str = "";
         $arg_str = "SELECT ";
-        $arg_str .= "size_cd";
+        $arg_str .= "size_cd,";
+        $arg_str .= "size_cd_display_order";
         $arg_str .= " FROM ";
         $arg_str .= "m_item";
         $arg_str .= " WHERE ";
         $arg_str .= $query;
-        $arg_str .= " ORDER BY item_cd ASC, color_cd ASC";
+        $arg_str .= " ORDER BY size_cd_display_order ASC";//サイズコード表示順
         $m_item = new MItem();
         $m_item_results = new Resultset(NULL, $m_item, $m_item->getReadConnection()->query($arg_str));
         $result_obj = (array)$m_item_results;
         $results_cnt = $result_obj["\0*\0_count"];
         $results_rows = $result_obj["\0*\0_rows"];
-        //ChromePhp::LOG($results_rows);
         //ChromePhp::LOG($list["order_size_cd"]);
         if (!empty($results_cnt)) {
           $paginator_model = new PaginatorModel(
@@ -1198,18 +1198,18 @@ $app->post('/wearer_exchange/list', function ()use($app){
               $query = implode(' AND ', $query_list);
               $arg_str = "";
               $arg_str = "SELECT ";
-              $arg_str .= "size_cd";
+              $arg_str .= "size_cd,";
+              $arg_str .= "size_cd_display_order";
               $arg_str .= " FROM ";
               $arg_str .= "m_item";
               $arg_str .= " WHERE ";
               $arg_str .= $query;
-              $arg_str .= " ORDER BY item_cd ASC, color_cd ASC";
+              $arg_str .= " ORDER BY size_cd_display_order ASC";//サイズコード表示順
               $m_item = new MItem();
               $m_item_results = new Resultset(NULL, $m_item, $m_item->getReadConnection()->query($arg_str));
               $result_obj = (array)$m_item_results;
               $results_cnt = $result_obj["\0*\0_count"];
               $results_rows = $result_obj["\0*\0_rows"];
-              //ChromePhp::LOG($results_rows);
               //ChromePhp::LOG($add_list["order_size_cd"]);
               if (!empty($results_cnt)) {
                 $paginator_model = new PaginatorModel(
@@ -1390,12 +1390,13 @@ $app->post('/wearer_exchange/list', function ()use($app){
         $query = implode(' AND ', $query_list);
         $arg_str = "";
         $arg_str = "SELECT ";
-        $arg_str .= "size_cd";
+        $arg_str .= "size_cd,";
+        $arg_str .= "size_cd_display_order";
         $arg_str .= " FROM ";
         $arg_str .= "m_item";
         $arg_str .= " WHERE ";
         $arg_str .= $query;
-        $arg_str .= " ORDER BY item_cd ASC, color_cd ASC";
+        $arg_str .= " ORDER BY size_cd_display_order ASC";//サイズコード表示順
         $m_item = new MItem();
         $m_item_results = new Resultset(NULL, $m_item, $m_item->getReadConnection()->query($arg_str));
         $result_obj = (array)$m_item_results;
@@ -1730,12 +1731,13 @@ $app->post('/wearer_exchange/add_size', function ()use($app){
       $query = implode(' AND ', $query_list);
       $arg_str = "";
       $arg_str = "SELECT ";
-      $arg_str .= "size_cd";
+      $arg_str .= "size_cd,";
+      $arg_str .= "size_cd_display_order";
       $arg_str .= " FROM ";
       $arg_str .= "m_item";
       $arg_str .= " WHERE ";
       $arg_str .= $query;
-      $arg_str .= " ORDER BY item_cd ASC, color_cd ASC";
+      $arg_str .= " ORDER BY size_cd_display_order ASC";//サイズコード表示順
       $m_item = new MItem();
       $m_item_results = new Resultset(NULL, $m_item, $m_item->getReadConnection()->query($arg_str));
       $result_obj = (array)$m_item_results;

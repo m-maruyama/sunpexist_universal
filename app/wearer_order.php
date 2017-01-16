@@ -630,7 +630,7 @@ $app->post('/wearer_order_list', function ()use($app){
         //--- クエリー実行・取得 ---//
         $m_item_results = MItem::find(array(
             'conditions' => $query,
-            "columns" => "size_cd"
+            "columns" => array("size_cd","size_cd_display_order")
         ));
         $size_list = array();
         $size_list_to = array();
@@ -663,8 +663,12 @@ $app->post('/wearer_order_list', function ()use($app){
                     $size_list['selected'] = '';
                 }
                 $size_list['size_cd'] = $m_item_result->size_cd;
+                $size_list['size_sort_cd'] = $m_item_result->size_cd_display_order;
                 array_push($size_list_to , $size_list);
             }
+            //配列内のオブジェクト 並び替え
+            array_multisort(array_column($size_list_to, 'size_sort_cd'), $size_list_to);
+
             // 発注数(単一選択=入力不可、複数選択=入力可)
             //「単一選択」の場合は、投入商品マスタ．標準投入数（入力不可）。
             if ($list["choice_type"] == "1") {
