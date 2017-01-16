@@ -689,12 +689,13 @@ $app->post('/wearer_add/info', function ()use($app){
 
            $arg_str = "";
            $arg_str = "SELECT ";
-           $arg_str .= "size_cd";
+           $arg_str .= "size_cd,";
+           $arg_str .= "size_cd_display_order";
            $arg_str .= " FROM ";
            $arg_str .= "m_item";
            $arg_str .= " WHERE ";
            $arg_str .= $query;
-           $arg_str .= " ORDER BY item_cd ASC, color_cd ASC";
+           $arg_str .= " ORDER BY size_cd_display_order ASC";//サイズコード表示順
            $m_item = new MItem();
            $m_item_results = new Resultset(NULL, $m_item, $m_item->getReadConnection()->query($arg_str));
            $result_obj = (array)$m_item_results;
@@ -870,11 +871,13 @@ $app->post('/wearer_add/info', function ()use($app){
          $query = implode(' AND ', $query_list);
          $arg_str = "";
          $arg_str = "SELECT ";
-         $arg_str .= "size_cd";
+         $arg_str .= "size_cd,";
+         $arg_str .= "size_cd_display_order";
          $arg_str .= " FROM ";
          $arg_str .= "m_item";
          $arg_str .= " WHERE ";
          $arg_str .= $query;
+         $arg_str .= " ORDER BY size_cd_display_order ASC";//サイズコード表示順
          $m_item = new MItem();
          $m_item_results = new Resultset(NULL, $m_item, $m_item->getReadConnection()->query($arg_str));
          $result_obj = (array)$m_item_results;
