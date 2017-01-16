@@ -157,7 +157,6 @@ $app->post('/home', function ()use($app){
         }
     }
     $emply_cd_no_regist_cnt = count($all_list);
-    ChromePhp::log($all_list);
 
     //発注未送信件数
     //パターン１とパターン２を足した件数

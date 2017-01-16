@@ -39,7 +39,6 @@ $app->post('/import_csv', function () use ($app) {
 
     //--CSV or Excel形式毎のバリデーション--ここから//
     if ($getFileExt->getExtension() == 'csv') {
-        ChromePhp::log('A');
         try {
             $file = file($_FILES['file']['tmp_name']);
             mb_convert_variables("UTF-8", "SJIS-win", $file);
@@ -743,7 +742,6 @@ $app->post('/import_csv', function () use ($app) {
         $transaction = new Resultset(NULL, $t_import_job, $t_import_job->getReadConnection()->query("commit"));
 
     } catch (Exception $e) {
-        ChromePhp::log($e);
         // トランザクション-ロールバック
         $transaction = new Resultset(NULL, $t_import_job, $t_import_job->getReadConnection()->query("rollback"));
 

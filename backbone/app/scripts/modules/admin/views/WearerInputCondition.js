@@ -244,7 +244,6 @@ define([
                     data: cond,
                     success: function (res) {
                         var res_val = res.attributes;
-                        console.log(res_val);
 
                         if (res_val["errors"]) {
                             var er = res_val["errors"]
@@ -372,7 +371,6 @@ define([
                 },
                 'click @ui.section_btn': function (e) {
                     e.preventDefault();
-                    console.log(this.model);
                     this.triggerMethod('click:section_btn', this.model);
                 },
                 'change @ui.job_type': function () {

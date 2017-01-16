@@ -318,7 +318,6 @@ function data_save($line_list,&$cnt,$no_line,$auth,&$order_no_list){
 	$t_i_job->rgst_user_id = $auth['user_id']; //登録ユーザーID
 	$t_i_job->rgst_date = date( "Y/m/d H:i:s.sss", time() ); //登録日時
 
-	ChromePhp::log($t_i_job);
 
 	if ($t_i_job->create() == false) {
 		$json_list['errors'] = array('csvファイルの登録に失敗しました。');

@@ -3620,13 +3620,11 @@ $app->post('/wearer_exchange/complete', function ()use($app){
             $arg_str .= " WHERE ";
             $arg_str .= $query;
             $arg_str .= " ORDER BY individual_ctrl_no ASC";
-              ChromePhp::log($arg_str);
 
               $t_delivery_goods_state_details = new TDeliveryGoodsStateDetails();
             $t_delivery_goods_state_details_results = new Resultset(null, $t_delivery_goods_state_details, $t_delivery_goods_state_details->getReadConnection()->query($arg_str));
             $result_obj = (array)$t_delivery_goods_state_details_results;
             $results_cnt = $result_obj["\0*\0_count"];
-            ChromePhp::log($t_delivery_goods_state_details_results);
             foreach ($t_delivery_goods_state_details_results as $t_delivery_goods_state_details_result) {
                 $list["individual_ctrl_no"] = $t_delivery_goods_state_details_result->individual_ctrl_no;
             }

@@ -791,7 +791,6 @@ $app->post('/inquiry/complete', function () use ($app) {
     // トランザクションロールバック
     $t_inquiry = new TInquiry();
     $results = new Resultset(NULL, $t_inquiry, $t_inquiry->getReadConnection()->query('rollback'));
-    ChromePhp::LOG($e);
 
     $json_list["err_code"] = "1";
     $err_msg = "登録処理において、予期せぬエラーが発生しました。";
@@ -967,7 +966,6 @@ $app->post('/inquiry/update', function () use ($app) {
     // トランザクションロールバック
     $t_inquiry = new TInquiry();
     $results = new Resultset(NULL, $t_inquiry, $t_inquiry->getReadConnection()->query('rollback'));
-    ChromePhp::LOG($e);
 
     $json_list["err_code"] = "1";
     $err_msg = "更新処理において、予期せぬエラーが発生しました。";
