@@ -141,8 +141,18 @@ define([
                       return;
                     },
                     complete: function (res) {
+                        //拠点と出荷先が同じだったら、拠点と同じに変更
+                        var section_name = $('[name=section] option:selected').text();
+                        var m_shipment_to = $('[name=m_shipment_to] option:selected').text();
+                        if(section_name == m_shipment_to){
+                            $('#m_shipment_to').prop('selectedIndex',0);
+                        }
                     }
                 });
+
+            },
+            onshow: function(){
+                console.log($('#section').val());
             },
             insert_wearer: function (agreement_no) {
                 var that = this;
