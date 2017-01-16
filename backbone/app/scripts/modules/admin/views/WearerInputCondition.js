@@ -195,8 +195,12 @@ define([
                             var er = res_val["errors"]
                             res.attributes["errors"] = null;
                             that.triggerMethod('error_msg', er);
+                        }else{
+                        alert('着用者を登録しました。');
+                        window.sessionStorage.removeItem('wearer_input_ref');
+                        location.href = './wearer_input_complete.html';
                         }
-                    }
+                }
                 });
                 return errors;
             },
