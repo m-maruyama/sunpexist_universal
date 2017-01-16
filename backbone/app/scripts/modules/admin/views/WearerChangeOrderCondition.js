@@ -114,14 +114,12 @@ define([
 
 						if (res_list['order_tran_flg'] == '1') {
 							$('.delete').css('display', '');
-
-
 						}
 
 						var data = {
 							'rntl_cont_no': res_list['rntl_cont_no'],
 							'rntl_sect_cd': res_list['rntl_sect_cd']
-						}
+						};
 						var modelForUpdate2 = that.model;
 						modelForUpdate2.url = App.api.CM0140;
 						var cond = {
@@ -142,6 +140,18 @@ define([
 								if (CM0140_res['order_send_ok_flg'] == "1") {
 									$('.orderSend').css('display', '');
 								}*/
+							},
+							complete: function (res) {
+								console.log('aaaa');
+
+								//拠点と出荷先が同じだったら、拠点と同じに変更
+								var section_name = $('[name=section] option:selected').text();
+								var m_shipment_to = $('[name=shipment] option:selected').text();
+
+
+								if(section_name == m_shipment_to){
+									$('#shipment').prop('selectedIndex',0);
+								}
 							}
 						});
 

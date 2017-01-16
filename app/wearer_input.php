@@ -164,7 +164,7 @@ $app->post('/wearer_item_button', function () use ($app) {
  */
 $app->post('/wearer_input', function () use ($app) {
     $params = json_decode(file_get_contents('php://input'), true);
-
+    //ChromePhp::log($params);
     // アカウントセッション取得
     $auth = $app->session->get('auth');
     //ChromePhp::LOG($auth);
@@ -208,7 +208,6 @@ $app->post('/wearer_input', function () use ($app) {
         );
         $paginator = $paginator_model->getPaginate();
         $results = $paginator->items;
-        //ChromePhp::LOG($results);
         foreach ($results as $result) {
           $wearer_odr_post['cster_emply_cd'] = $result->cster_emply_cd;
           $wearer_odr_post['cster_emply_flg'] = false;
