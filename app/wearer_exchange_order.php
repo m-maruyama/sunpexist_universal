@@ -2018,11 +2018,12 @@ $app->post('/wearer_exchange/complete', function ()use($app){
      }
      //--着用者情報--//
      // 返却予定日
+     /*
      if (empty($wearer_data_input["return_date"])) {
        $json_list["error_code"] = "1";
        $error_msg = "返却予定日を入力してください。";
        array_push($json_list["error_msg"], $error_msg);
-     }
+     }*/
 /*
      // 社員コード
      if ($wearer_data_input['emply_cd_flg']) {
@@ -3478,9 +3479,9 @@ $app->post('/wearer_exchange/complete', function ()use($app){
               array_push($calum_list, "order_date");
               array_push($values_list, "'".date('Y-m-d H:i:s', time())."'");
               // 返却日
-              $return_date = date("Y-m-d 00:00:00", strtotime($wearer_data_input['return_date']));
+              //$return_date = date("Y-m-d 00:00:00", strtotime($wearer_data_input['return_date']));
               array_push($calum_list, "return_date");
-              array_push($values_list, "'".$return_date."'");
+              array_push($values_list, "'".date('Y-m-d H:i:s', time())."'");
               // 返却ステータス(未返却)
               array_push($calum_list, "return_status");
               array_push($values_list, "'1'");
@@ -3580,9 +3581,9 @@ $app->post('/wearer_exchange/complete', function ()use($app){
             array_push($calum_list, "order_date");
             array_push($values_list, "'".date('Y-m-d H:i:s', time())."'");
             // 返却日
-            $return_date = date("Y-m-d 00:00:00", strtotime($wearer_data_input['return_date']));
+            //$return_date = date("Y-m-d 00:00:00", strtotime($wearer_data_input['return_date']));
             array_push($calum_list, "return_date");
-            array_push($values_list, "'".$return_date."'");
+            array_push($values_list, "'".date('Y-m-d H:i:s', time())."'");
             // 返却ステータス(未返却)
             array_push($calum_list, "return_status");
             array_push($values_list, "'1'");
@@ -3758,11 +3759,13 @@ $app->post('/wearer_exchange/send', function ()use($app){
     }
     //--着用者情報--//
     // 返却予定日
+      /*
     if (empty($wearer_data_input["return_date"])) {
       $json_list["error_code"] = "1";
       $error_msg = "返却予定日を入力してください。";
       array_push($json_list["error_msg"], $error_msg);
     }
+      */
 /*
     // 社員コード
     if ($wearer_data_input['emply_cd_flg']) {
@@ -5192,9 +5195,9 @@ $app->post('/wearer_exchange/send', function ()use($app){
              array_push($calum_list, "order_date");
              array_push($values_list, "'".date('Y-m-d H:i:s', time())."'");
              // 返却日
-             $return_date = date("Y-m-d 00:00:00", strtotime($wearer_data_input['return_date']));
+             //$return_date = date("Y-m-d 00:00:00", strtotime($wearer_data_input['return_date']));
              array_push($calum_list, "return_date");
-             array_push($values_list, "'".$return_date."'");
+             array_push($values_list, "'".date('Y-m-d H:i:s', time())."'");
              // 返却ステータス(未返却)
              array_push($calum_list, "return_status");
              array_push($values_list, "'1'");
@@ -5293,9 +5296,9 @@ $app->post('/wearer_exchange/send', function ()use($app){
            array_push($calum_list, "order_date");
            array_push($values_list, "'".date('Y-m-d H:i:s', time())."'");
            // 返却日
-           $return_date = date("Y-m-d 00:00:00", strtotime($wearer_data_input['return_date']));
+           //$return_date = date("Y-m-d 00:00:00", strtotime($wearer_data_input['return_date']));
            array_push($calum_list, "return_date");
-           array_push($values_list, "'".$return_date."'");
+           array_push($values_list, "'".date('Y-m-d H:i:s', time())."'");
            // 返却ステータス(未返却)
            array_push($calum_list, "return_status");
            array_push($values_list, "'1'");
