@@ -842,6 +842,11 @@ $app->post('/wearer_order_insert', function () use ($app) {
         echo json_encode($json_list);
         return true;
     }
+    if($params['mode']=='check'){
+        echo json_encode($json_list);
+        return;
+
+    }
     $transaction = $app->transactionManager->get();
 
 
