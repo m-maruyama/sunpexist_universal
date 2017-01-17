@@ -1248,7 +1248,7 @@ $app->post('/print/search', function ()use($app){
         $arg_str .= " * ";
         $arg_str .= " FROM ";
 //	$arg_str .= "(SELECT ";
-        $arg_str .= "(SELECT distinct on (t_returned_plan_info.item_cd, t_returned_plan_info.color_cd, t_returned_plan_info.size_cd) ";
+        $arg_str .= "(SELECT distinct on (t_returned_plan_info.order_req_no, t_returned_plan_info.item_cd, t_returned_plan_info.color_cd, t_returned_plan_info.size_cd) ";
         $arg_str .= "t_returned_plan_info.order_req_no as as_order_req_no,";
         $arg_str .= "t_returned_plan_info.order_date as as_order_req_ymd,";
         $arg_str .= "t_returned_plan_info.order_sts_kbn as as_order_sts_kbn,";
@@ -1260,6 +1260,7 @@ $app->post('/print/search', function ()use($app){
         $arg_str .= "t_returned_plan_info.item_cd as as_item_cd,";
         $arg_str .= "t_returned_plan_info.color_cd as as_color_cd,";
         $arg_str .= "t_returned_plan_info.size_cd as as_size_cd,";
+        $arg_str .= "t_returned_plan_info.job_type_cd as as_return_job_type_cd,";
         $arg_str .= "t_order.job_type_cd as as_job_type_cd,";
         $arg_str .= "t_order.size_two_cd as as_size_two_cd,";
         $arg_str .= "t_order.order_qty as as_order_qty,";
@@ -1276,15 +1277,6 @@ $app->post('/print/search', function ()use($app){
         $arg_str .= "t_returned_plan_info.return_plan_qty as as_return_plan__qty,";
         $arg_str .= "t_returned_plan_info.rntl_cont_no as as_rntl_cont_no,";
         $arg_str .= "m_contract.rntl_cont_name as as_rntl_cont_name";
-        /*
-        $arg_str .= " FROM t_order LEFT JOIN";
-        $arg_str .= " (t_returned_plan_info LEFT JOIN";
-        $arg_str .= " (t_order_state LEFT JOIN ";
-        $arg_str .= " (t_delivery_goods_state LEFT JOIN t_delivery_goods_state_details ON t_delivery_goods_state.ship_no = t_delivery_goods_state_details.ship_no AND t_delivery_goods_state.ship_line_no = t_delivery_goods_state_details.ship_line_no)";
-        $arg_str .= " ON t_order_state.t_order_state_comb_hkey = t_delivery_goods_state.t_order_state_comb_hkey)";
-        $arg_str .= " ON t_returned_plan_info.order_req_no = t_order_state.order_req_no)";
-        $arg_str .= " ON t_order.order_req_no = t_returned_plan_info.order_req_no";
-        */
         $arg_str .= " FROM t_returned_plan_info LEFT JOIN";
         $arg_str .= " (t_order LEFT JOIN";
         $arg_str .= " (t_order_state LEFT JOIN ";
@@ -1338,6 +1330,7 @@ $app->post('/print/search', function ()use($app){
         $arg_str .= "t_returned_plan_info.order_date as as_re_order_date,";
         $arg_str .= "t_returned_plan_info.return_status as as_return_status,";
         $arg_str .= "t_returned_plan_info.return_date as as_return_date,";
+        $arg_str .= "t_returned_plan_info.job_type_cd as as_return_job_type_cd,";
         $arg_str .= "t_delivery_goods_state.rec_order_no as as_rec_order_no,";
         $arg_str .= "t_delivery_goods_state.ship_no as as_ship_no,";
         $arg_str .= "t_delivery_goods_state.ship_ymd as as_ship_ymd,";
@@ -1492,7 +1485,7 @@ $app->post('/print/search', function ()use($app){
             $query_list = array();
             $query_list[] = "corporate_id = '".$auth['corporate_id']."'";
             $query_list[] = "rntl_cont_no = '".$list['rntl_cont_no']."'";
-            $query_list[] = "job_type_cd = '".$list['job_type_cd']."'";
+            $query_list[] = "job_type_cd = '".$result->as_return_job_type_cd."'";
             $query_list[] = "item_cd = '".$list['item_cd']."'";
             $query_list[] = "color_cd = '".$list['color_cd']."'";
             $query = implode(' AND ', $query_list);
@@ -1686,7 +1679,7 @@ $app->post('/print/search', function ()use($app){
             array_push($query_list, "order_req_no = '".$list['order_req_no']."'");
             array_push($query_list, "item_cd = '".$list['item_cd']."'");
             array_push($query_list, "color_cd = '".$list['color_cd']."'");
-            //rray_push($query_list, "size_cd = '".$list['size_cd']."'");
+            array_push($query_list, "size_cd = '".$list['size_cd']."'");
             $query = implode(' AND ', $query_list);
             $arg_str = "";
             $arg_str .= "SELECT ";

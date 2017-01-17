@@ -441,7 +441,7 @@ $app->post('/unreturn/search', function ()use($app){
         $arg_str .= " * ";
         $arg_str .= " FROM ";
 //	$arg_str .= "(SELECT ";
-        $arg_str .= "(SELECT distinct on (t_returned_plan_info.item_cd, t_returned_plan_info.color_cd, t_returned_plan_info.size_cd) ";
+        $arg_str .= "(SELECT distinct on (t_returned_plan_info.order_req_no, t_returned_plan_info.item_cd, t_returned_plan_info.color_cd, t_returned_plan_info.size_cd) ";
         $arg_str .= "t_returned_plan_info.order_req_no as as_order_req_no,";
         $arg_str .= "t_returned_plan_info.order_date as as_order_req_ymd,";
         $arg_str .= "t_returned_plan_info.order_sts_kbn as as_order_sts_kbn,";
@@ -453,10 +453,10 @@ $app->post('/unreturn/search', function ()use($app){
         $arg_str .= "t_returned_plan_info.item_cd as as_item_cd,";
         $arg_str .= "t_returned_plan_info.color_cd as as_color_cd,";
         $arg_str .= "t_returned_plan_info.size_cd as as_size_cd,";
+        $arg_str .= "t_returned_plan_info.job_type_cd as as_return_job_type_cd,";
         $arg_str .= "t_order.job_type_cd as as_job_type_cd,";
         $arg_str .= "t_order.size_two_cd as as_size_two_cd,";
         $arg_str .= "t_order.order_qty as as_order_qty,";
-        $arg_str .= "m_input_item.input_item_name as as_input_item_name,";
         $arg_str .= "t_returned_plan_info.order_date as as_re_order_date,";
         $arg_str .= "t_returned_plan_info.return_status as as_return_status,";
         $arg_str .= "t_returned_plan_info.return_date as as_return_date,";
@@ -497,16 +497,8 @@ $app->post('/unreturn/search', function ()use($app){
             $arg_str .= " AND m_section.rntl_sect_cd = m_contract_resource.rntl_sect_cd";
             $arg_str .= " ) ON t_order.m_section_comb_hkey = m_section.m_section_comb_hkey";
         }
-        $arg_str .= " LEFT JOIN (m_job_type INNER JOIN m_input_item";
-        $arg_str .= " ON m_job_type.corporate_id = m_input_item.corporate_id";
-        $arg_str .= " AND m_job_type.rntl_cont_no = m_input_item.rntl_cont_no";
-        $arg_str .= " AND m_job_type.job_type_cd = m_input_item.job_type_cd)";
-        $arg_str .= " ON t_order.corporate_id = m_job_type.corporate_id";
-        $arg_str .= " AND t_order.rntl_cont_no = m_job_type.rntl_cont_no";
-        $arg_str .= " AND t_order.job_type_cd = m_job_type.job_type_cd";
-        $arg_str .= " AND t_order.corporate_id = m_input_item.corporate_id";
-        $arg_str .= " AND t_order.item_cd = m_input_item.item_cd";
-        $arg_str .= " AND t_order.color_cd = m_input_item.color_cd";
+        $arg_str .= " INNER JOIN m_job_type";
+        $arg_str .= " ON t_order.m_job_type_comb_hkey = m_job_type.m_job_type_comb_hkey";
         $arg_str .= " INNER JOIN m_wearer_std";
         $arg_str .= " ON t_order.werer_cd = m_wearer_std.werer_cd";
         $arg_str .= " AND t_order.corporate_id = m_wearer_std.corporate_id";
@@ -541,6 +533,7 @@ $app->post('/unreturn/search', function ()use($app){
         $arg_str .= "t_returned_plan_info.order_date as as_re_order_date,";
         $arg_str .= "t_returned_plan_info.return_status as as_return_status,";
         $arg_str .= "t_returned_plan_info.return_date as as_return_date,";
+        $arg_str .= "t_returned_plan_info.job_type_cd as as_return_job_type_cd,";
         $arg_str .= "t_delivery_goods_state.rec_order_no as as_rec_order_no,";
         $arg_str .= "t_delivery_goods_state.ship_no as as_ship_no,";
         $arg_str .= "t_delivery_goods_state.ship_ymd as as_ship_ymd,";
@@ -569,16 +562,8 @@ $app->post('/unreturn/search', function ()use($app){
             $arg_str .= " AND m_section.rntl_sect_cd = m_contract_resource.rntl_sect_cd";
             $arg_str .= " ) ON t_order.m_section_comb_hkey = m_section.m_section_comb_hkey";
         }
-        $arg_str .= " LEFT JOIN (m_job_type INNER JOIN m_input_item";
-        $arg_str .= " ON m_job_type.corporate_id = m_input_item.corporate_id";
-        $arg_str .= " AND m_job_type.rntl_cont_no = m_input_item.rntl_cont_no";
-        $arg_str .= " AND m_job_type.job_type_cd = m_input_item.job_type_cd)";
-        $arg_str .= " ON t_order.corporate_id = m_job_type.corporate_id";
-        $arg_str .= " AND t_order.rntl_cont_no = m_job_type.rntl_cont_no";
-        $arg_str .= " AND t_order.job_type_cd = m_job_type.job_type_cd";
-        $arg_str .= " AND t_order.corporate_id = m_input_item.corporate_id";
-        $arg_str .= " AND t_order.item_cd = m_input_item.item_cd";
-        $arg_str .= " AND t_order.color_cd = m_input_item.color_cd";
+        $arg_str .= " INNER JOIN m_job_type";
+        $arg_str .= " ON t_order.m_job_type_comb_hkey = m_job_type.m_job_type_comb_hkey";
         $arg_str .= " INNER JOIN m_wearer_std";
         $arg_str .= " ON t_order.werer_cd = m_wearer_std.werer_cd";
         $arg_str .= " AND t_order.corporate_id = m_wearer_std.corporate_id";
@@ -593,7 +578,6 @@ $app->post('/unreturn/search', function ()use($app){
             $arg_str .= $q_sort_key . " " . $order;
         }
     }
-
     $t_order = new TOrder();
     $results = new Resultset(null, $t_order, $t_order->getReadConnection()->query($arg_str));
     $result_obj = (array)$results;
@@ -702,7 +686,7 @@ $app->post('/unreturn/search', function ()use($app){
             $query_list = array();
             $query_list[] = "corporate_id = '".$auth['corporate_id']."'";
             $query_list[] = "rntl_cont_no = '".$list['rntl_cont_no']."'";
-            $query_list[] = "job_type_cd = '".$list['job_type_cd']."'";
+            $query_list[] = "job_type_cd = '".$result->as_return_job_type_cd."'";
             $query_list[] = "item_cd = '".$list['item_cd']."'";
             $query_list[] = "color_cd = '".$list['color_cd']."'";
             $query = implode(' AND ', $query_list);
@@ -713,7 +697,6 @@ $app->post('/unreturn/search', function ()use($app){
             $arg_str .= "m_input_item";
             $arg_str .= " WHERE ";
             $arg_str .= $query;
-            //ChromePhp::LOG($arg_str);
             $m_input_item = new MInputItem();
             $m_input_item_results = new Resultset(NULL, $m_input_item, $m_input_item->getReadConnection()->query($arg_str));
             $result_obj = (array)$m_input_item_results;
@@ -903,7 +886,7 @@ $app->post('/unreturn/search', function ()use($app){
             array_push($query_list, "order_req_no = '".$list['order_req_no']."'");
             array_push($query_list, "item_cd = '".$list['item_cd']."'");
             array_push($query_list, "color_cd = '".$list['color_cd']."'");
-            //rray_push($query_list, "size_cd = '".$list['size_cd']."'");
+            array_push($query_list, "size_cd = '".$list['size_cd']."'");
             $query = implode(' AND ', $query_list);
             $arg_str = "";
             $arg_str .= "SELECT ";
