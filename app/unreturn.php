@@ -453,6 +453,7 @@ $app->post('/unreturn/search', function ()use($app){
         $arg_str .= "t_returned_plan_info.item_cd as as_item_cd,";
         $arg_str .= "t_returned_plan_info.color_cd as as_color_cd,";
         $arg_str .= "t_returned_plan_info.size_cd as as_size_cd,";
+        $arg_str .= "t_returned_plan_info.job_type_cd as as_return_job_type_cd,";
         $arg_str .= "t_order.job_type_cd as as_job_type_cd,";
         $arg_str .= "t_order.size_two_cd as as_size_two_cd,";
         $arg_str .= "t_order.order_qty as as_order_qty,";
@@ -532,6 +533,7 @@ $app->post('/unreturn/search', function ()use($app){
         $arg_str .= "t_returned_plan_info.order_date as as_re_order_date,";
         $arg_str .= "t_returned_plan_info.return_status as as_return_status,";
         $arg_str .= "t_returned_plan_info.return_date as as_return_date,";
+        $arg_str .= "t_returned_plan_info.job_type_cd as as_return_job_type_cd,";
         $arg_str .= "t_delivery_goods_state.rec_order_no as as_rec_order_no,";
         $arg_str .= "t_delivery_goods_state.ship_no as as_ship_no,";
         $arg_str .= "t_delivery_goods_state.ship_ymd as as_ship_ymd,";
@@ -693,7 +695,7 @@ $app->post('/unreturn/search', function ()use($app){
             $query_list = array();
             $query_list[] = "corporate_id = '".$auth['corporate_id']."'";
             $query_list[] = "rntl_cont_no = '".$list['rntl_cont_no']."'";
-            $query_list[] = "job_type_cd = '".$list['job_type_cd']."'";
+            $query_list[] = "job_type_cd = '".$result->as_return_job_type_cd."'";
             $query_list[] = "item_cd = '".$list['item_cd']."'";
             $query_list[] = "color_cd = '".$list['color_cd']."'";
             $query = implode(' AND ', $query_list);
