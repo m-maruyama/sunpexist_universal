@@ -1261,6 +1261,7 @@ $app->post('/print/search', function ()use($app){
         $arg_str .= "t_returned_plan_info.color_cd as as_color_cd,";
         $arg_str .= "t_returned_plan_info.size_cd as as_size_cd,";
         $arg_str .= "t_returned_plan_info.job_type_cd as as_return_job_type_cd,";
+        $arg_str .= "m_input_item.input_item_name as as_input_item_name,";
         $arg_str .= "t_order.job_type_cd as as_job_type_cd,";
         $arg_str .= "t_order.size_two_cd as as_size_two_cd,";
         $arg_str .= "t_order.order_qty as as_order_qty,";
@@ -1295,8 +1296,10 @@ $app->post('/print/search', function ()use($app){
             $arg_str .= " AND m_section.rntl_sect_cd = m_contract_resource.rntl_sect_cd";
             $arg_str .= " ) ON t_order.m_section_comb_hkey = m_section.m_section_comb_hkey";
         }
-        $arg_str .= " INNER JOIN m_job_type";
-        $arg_str .= " ON t_order.m_job_type_comb_hkey = m_job_type.m_job_type_comb_hkey";
+        $arg_str .= " LEFT JOIN (m_job_type INNER JOIN m_input_item";
+        $arg_str .= " ON m_job_type.corporate_id = m_input_item.corporate_id";
+        $arg_str .= " AND m_job_type.rntl_cont_no = m_input_item.rntl_cont_no";
+        $arg_str .= " AND m_job_type.job_type_cd = m_input_item.job_type_cd)";
         $arg_str .= " INNER JOIN m_wearer_std";
         $arg_str .= " ON t_order.werer_cd = m_wearer_std.werer_cd";
         $arg_str .= " AND t_order.corporate_id = m_wearer_std.corporate_id";
@@ -1327,6 +1330,7 @@ $app->post('/print/search', function ()use($app){
         $arg_str .= "t_order.job_type_cd as as_job_type_cd,";
         $arg_str .= "t_order.size_two_cd as as_size_two_cd,";
         $arg_str .= "t_order.order_qty as as_order_qty,";
+        $arg_str .= "m_input_item.input_item_name as as_input_item_name,";
         $arg_str .= "t_returned_plan_info.order_date as as_re_order_date,";
         $arg_str .= "t_returned_plan_info.return_status as as_return_status,";
         $arg_str .= "t_returned_plan_info.return_date as as_return_date,";

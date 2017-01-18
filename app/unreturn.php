@@ -450,6 +450,7 @@ $app->post('/unreturn/search', function ()use($app){
         $arg_str .= "m_job_type.job_type_name as as_job_type_name,";
         $arg_str .= "m_wearer_std.cster_emply_cd as as_cster_emply_cd,";
         $arg_str .= "m_wearer_std.werer_name as as_werer_name,";
+        $arg_str .= "m_input_item.input_item_name as as_input_item_name,";
         $arg_str .= "t_returned_plan_info.item_cd as as_item_cd,";
         $arg_str .= "t_returned_plan_info.color_cd as as_color_cd,";
         $arg_str .= "t_returned_plan_info.size_cd as as_size_cd,";
