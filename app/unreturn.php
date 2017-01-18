@@ -562,8 +562,16 @@ $app->post('/unreturn/search', function ()use($app){
             $arg_str .= " AND m_section.rntl_sect_cd = m_contract_resource.rntl_sect_cd";
             $arg_str .= " ) ON t_order.m_section_comb_hkey = m_section.m_section_comb_hkey";
         }
-        $arg_str .= " INNER JOIN m_job_type";
-        $arg_str .= " ON t_order.m_job_type_comb_hkey = m_job_type.m_job_type_comb_hkey";
+        $arg_str .= " LEFT JOIN (m_job_type INNER JOIN m_input_item";
+        $arg_str .= " ON m_job_type.corporate_id = m_input_item.corporate_id";
+        $arg_str .= " AND m_job_type.rntl_cont_no = m_input_item.rntl_cont_no";
+        $arg_str .= " AND m_job_type.job_type_cd = m_input_item.job_type_cd)";
+        $arg_str .= " ON t_order.corporate_id = m_job_type.corporate_id";
+        $arg_str .= " AND t_order.rntl_cont_no = m_job_type.rntl_cont_no";
+        $arg_str .= " AND t_order.job_type_cd = m_job_type.job_type_cd";
+        $arg_str .= " AND t_order.corporate_id = m_input_item.corporate_id";
+        $arg_str .= " AND t_order.item_cd = m_input_item.item_cd";
+        $arg_str .= " AND t_order.color_cd = m_input_item.color_cd";
         $arg_str .= " INNER JOIN m_wearer_std";
         $arg_str .= " ON t_order.werer_cd = m_wearer_std.werer_cd";
         $arg_str .= " AND t_order.corporate_id = m_wearer_std.corporate_id";
