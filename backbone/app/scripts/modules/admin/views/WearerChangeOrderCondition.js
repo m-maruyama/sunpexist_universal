@@ -142,7 +142,6 @@ define([
 								}*/
 							},
 							complete: function (res) {
-								console.log('aaaa');
 
 								//拠点と出荷先が同じだったら、拠点と同じに変更
 								var section_name = $('[name=section] option:selected').text();

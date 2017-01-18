@@ -152,7 +152,6 @@ define([
 
             },
             onshow: function(){
-                console.log($('#section').val());
             },
             insert_wearer: function (agreement_no) {
                 var that = this;
