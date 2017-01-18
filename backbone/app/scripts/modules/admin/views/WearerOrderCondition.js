@@ -338,6 +338,8 @@ define([
 										}
 									});
 								}
+							}else {
+								that.triggerMethod('error_msg', res_val["error_msg"]);
 							}
 						},
 					});
@@ -417,6 +419,8 @@ define([
 										}
 									});
 								}
+							}else {
+								that.triggerMethod('error_msg', res_val["error_msg"]);
 							}
 						},
 					});
