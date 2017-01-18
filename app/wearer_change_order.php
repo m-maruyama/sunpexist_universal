@@ -1679,8 +1679,6 @@ $app->post('/wearer_change/info', function ()use($app){
      //ChromePhp::LOG('【変更後】商品リスト');
      //ChromePhp::LOG(count($chg_wearer_list));
    }
-     //ChromePhp::LOG($chg_wearer_list);
-     //ChromePhp::log($now_wearer_list);
 
    //--新たに追加されるアイテム一覧リストの生成--//
    $chk_list = array();
@@ -1704,7 +1702,6 @@ $app->post('/wearer_change/info', function ()use($app){
                  }
              }
              if ($chg_wearer_list[$i]["overlap_flg"]) {
-
                  $list["item_cd"] = $chg_wearer_list[$i]["item_cd"];
                  $list["color_cd"] = $chg_wearer_list[$i]["color_cd"];
                  $list["size_cd"] = $chg_wearer_list[$i]["size_cd"];
@@ -1715,6 +1712,20 @@ $app->post('/wearer_change/info', function ()use($app){
                  $list["size_two_cd"] = $chg_wearer_list[$i]["size_two_cd"];
                  $list["std_input_qty"] = $chg_wearer_list[$i]["std_input_qty"];
                  $list["input_item_name"] = $chg_wearer_list[$i]["input_item_name"];
+                 $list["add_flg"] = false;//数量追加ではない
+                 for ($m=0; $m<count($now_wearer_list); $m++) {
+                     if (//同じ商品cd、色コードで、交換枚数が増える商品
+                         $chg_wearer_list[$i]["item_cd"] == $now_wearer_list[$m]["item_cd"]
+                         && $chg_wearer_list[$i]["color_cd"] == $now_wearer_list[$m]["color_cd"]
+                         && $chg_wearer_list[$i]["std_input_qty"] > $now_wearer_list[$m]["possible_num"]
+                     ){
+                         ChromePhp::log('aa');
+
+                         $list["add_flg"] = true;
+                         $list["possible_num"] = $chg_wearer_list[$i]["std_input_qty"] - $now_wearer_list[$m]["possible_num"];
+                     }
+                 }
+
 
                  array_push($chk_list, $list);
              }
