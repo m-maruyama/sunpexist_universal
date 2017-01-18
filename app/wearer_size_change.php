@@ -102,6 +102,7 @@ $app->post('/wearer_size_change/search', function ()use($app){
     $arg_str .= " * ";
     $arg_str .= " FROM ";
     $arg_str .= "(SELECT distinct on (m_wearer_std.werer_cd) ";
+    $arg_str .= "m_wearer_std.m_wearer_std_comb_hkey as as_m_wearer_std_comb_hkey,";
     $arg_str .= "m_wearer_std.corporate_id as as_corporate_id,";
     $arg_str .= "m_wearer_std.werer_cd as as_werer_cd,";
     $arg_str .= "m_wearer_std.rntl_cont_no as as_rntl_cont_no,";
@@ -265,7 +266,7 @@ $app->post('/wearer_size_change/search', function ()use($app){
             $tran_result_obj = (array)$tran_results;
             $tran_results_cnt = $tran_result_obj["\0*\0_count"];
 
-            // 着用者基本マスタトラン情報に重複データがある場合、優先させて着用者基本マスタ情報リストを上書きする
+            // 着用者基本マスタトラン情報にサイズ交換の重複データがある場合、優先させて着用者基本マスタ情報リストを上書きする
             if (!empty($tran_results_cnt)) {
                 // 着用者マスタトラン有フラグ
                 $list['wearer_tran_flg'] = '1';
@@ -293,6 +294,109 @@ $app->post('/wearer_size_change/search', function ()use($app){
             } else {
                 // 着用者マスタトラン無
                 $list['wearer_tran_flg'] = '0';
+            }
+
+            //発注種別に関わらず、着用者情報が編集されていたらそれを表示する
+            $arg_str = "";
+            $arg_str .= "SELECT ";
+            $arg_str .= "m_wearer_std_tran.cster_emply_cd as as_cster_emply_cd,";
+            $arg_str .= "m_wearer_std_tran.sex_kbn as as_sex_kbn,";
+            $arg_str .= "m_wearer_std_tran.werer_name as as_werer_name,";
+            $arg_str .= "m_wearer_std_tran.rntl_sect_cd as as_rntl_sect_cd,";
+            $arg_str .= "m_wearer_std_tran.job_type_cd as as_job_type_cd,";
+            $arg_str .= "m_wearer_std_tran.cster_emply_cd as as_cster_emply_cd,";
+            $arg_str .= "m_wearer_std_tran.werer_name as as_werer_name,";
+            $arg_str .= "m_wearer_std_tran.sex_kbn as as_sex_kbn";
+            $arg_str .= " FROM m_wearer_std_tran";
+            $arg_str .= " WHERE ";
+            $arg_str .= " corporate_id = '".$result->as_corporate_id."'";
+            $arg_str .= " AND werer_cd = '".$result->as_werer_cd."'";
+            $arg_str .= " AND rntl_cont_no = '".$result->as_rntl_cont_no."'";
+            $arg_str .= " AND order_sts_kbn = '6'";
+            $m_weare_std_tran = new MWearerStdTran();
+            $tran_results = new Resultset(null, $m_weare_std_tran, $m_weare_std_tran->getReadConnection()->query($arg_str));
+            $tran_result_obj = (array)$tran_results;
+            $tran_results_cnt = $tran_result_obj["\0*\0_count"];
+
+            // 着用者基本マスタトラン情報に重複データがある場合、優先させて着用者基本マスタ情報リストを上書きする
+            if (!empty($tran_results_cnt)) {
+
+                $paginator_model = new PaginatorModel(
+                    array(
+                        "data" => $tran_results,
+                        "limit" => 1,
+                        "page" => 1
+                    )
+                );
+                $paginator = $paginator_model->getPaginate();
+                $tran_results = $paginator->items;
+
+                foreach ($tran_results as $tran_result) {
+                    $result->as_cster_emply_cd = $tran_result->as_cster_emply_cd;
+                    $result->as_sex_kbn = $tran_result->as_sex_kbn;
+                    $result->as_werer_name = $tran_result->as_werer_name;
+                }
+            }
+            //職種変更または異動されていた場合に着用者情報(拠点、貸与パターン)上書き
+            $arg_str = "";
+            $arg_str .= "SELECT ";
+            $arg_str .= "wst.rntl_sect_name as wst_rntl_sect_name,";
+            $arg_str .= "wjt.job_type_name as wjt_job_type_name,";
+            $arg_str .= "m_wearer_std_tran.ship_to_cd as as_ship_to_cd,";
+            $arg_str .= "m_wearer_std_tran.ship_to_brnch_cd as as_ship_to_brnch_cd";
+            $arg_str .= " FROM ";
+            if ($section_all_zero_flg) {
+                $arg_str .= "m_wearer_std_tran INNER JOIN m_section as wst";
+                $arg_str .= " ON m_wearer_std_tran.corporate_id = wst.corporate_id";
+                $arg_str .= " AND m_wearer_std_tran.rntl_cont_no = wst.rntl_cont_no";
+                $arg_str .= " AND m_wearer_std_tran.rntl_sect_cd = wst.rntl_sect_cd";
+                $arg_str .= " INNER JOIN m_job_type as wjt";
+                $arg_str .= " ON m_wearer_std_tran.corporate_id = wjt.corporate_id";
+                $arg_str .= " AND m_wearer_std_tran.rntl_cont_no = wjt.rntl_cont_no";
+                $arg_str .= " AND m_wearer_std_tran.job_type_cd = wjt.job_type_cd";
+            } else {
+                $arg_str .= "m_wearer_std_tran INNER JOIN (m_section as wst";
+                $arg_str .= " INNER JOIN m_contract_resource as wcr";
+                $arg_str .= " ON wst.corporate_id = wcr.corporate_id";
+                $arg_str .= " AND wst.rntl_cont_no = wcr.rntl_cont_no";
+                $arg_str .= " AND wst.rntl_sect_cd = wcr.rntl_sect_cd)";
+                $arg_str .= " ON m_wearer_std_tran.corporate_id = wst.corporate_id";
+                $arg_str .= " AND m_wearer_std_tran.rntl_cont_no = wst.rntl_cont_no";
+                $arg_str .= " AND m_wearer_std_tran.rntl_sect_cd = wst.rntl_sect_cd";
+                $arg_str .= " INNER JOIN m_job_type as wjt";
+                $arg_str .= " ON m_wearer_std_tran.corporate_id = wjt.corporate_id";
+                $arg_str .= " AND m_wearer_std_tran.rntl_cont_no = wjt.rntl_cont_no";
+                $arg_str .= " AND m_wearer_std_tran.job_type_cd = wjt.job_type_cd";
+            }
+            $arg_str .= " WHERE ";
+            $arg_str .= " m_wearer_std_tran.corporate_id = '".$result->as_corporate_id."'";
+            $arg_str .= " AND m_wearer_std_tran.werer_cd = '".$result->as_werer_cd."'";
+            $arg_str .= " AND m_wearer_std_tran.rntl_cont_no = '".$result->as_rntl_cont_no."'";
+            $arg_str .= " AND m_wearer_std_tran.order_sts_kbn = '5'";
+            $m_weare_std_tran = new MWearerStdTran();
+            $tran_results = new Resultset(null, $m_weare_std_tran, $m_weare_std_tran->getReadConnection()->query($arg_str));
+            $tran_result_obj = (array)$tran_results;
+            $tran_results_cnt = $tran_result_obj["\0*\0_count"];
+
+            // 着用者基本マスタトラン情報に重複データがある場合、優先させて着用者基本マスタ情報リストを上書きする
+            if (!empty($tran_results_cnt)) {
+
+                $paginator_model = new PaginatorModel(
+                    array(
+                        "data" => $tran_results,
+                        "limit" => 1,
+                        "page" => 1
+                    )
+                );
+                $paginator = $paginator_model->getPaginate();
+                $tran_results = $paginator->items;
+
+                foreach ($tran_results as $tran_result) {
+                    $result->as_ship_to_cd = $tran_result->as_ship_to_cd;
+                    $result->as_ship_to_brnch_cd = $tran_result->as_ship_to_brnch_cd;
+                    $result->wst_rntl_sect_name = $tran_result->wst_rntl_sect_name;
+                    $result->wjt_job_type_name = $tran_result->wjt_job_type_name;
+                }
             }
 
             // レンタル契約No
