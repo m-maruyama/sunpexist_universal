@@ -4272,6 +4272,14 @@ $app->post('/wearer_change/send', function ()use($app){
         $error_msg = "コメント欄の規定文字数がオーバーしています。";
         array_push($json_list["error_msg"], $error_msg);
       }
+        //コメント欄使用不可文字
+        $str_utf8 = $wearer_data_input['comment'];
+        if (convert_not_sjis($str_utf8) !== true) {
+            $output_text = convert_not_sjis($str_utf8);
+            $json_list["error_code"] = "1";
+            $error_msg = 'コメント欄に使用できない文字が含まれています。' . "$output_text";
+            array_push($json_list["error_msg"], $error_msg);
+        };
     }
     // 現在貸与中のアイテム
     if (!empty($now_item_input)) {
