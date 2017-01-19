@@ -1307,12 +1307,13 @@ $app->post('/wearer_change/info', function ()use($app){
    $arg_str .= "t_delivery_goods_state_details.quantity as as_quantity,";
    $arg_str .= "t_delivery_goods_state_details.return_plan__qty as as_return_plan_qty,";
    $arg_str .= "t_delivery_goods_state_details.returned_qty as as_returned_qty,";
+   $arg_str .= "t_delivery_goods_state_details.werer_cd as as_werer_cd,";
    $arg_str .= "m_item.item_cd as as_item_cd,";
    $arg_str .= "m_item.color_cd as as_color_cd,";
    $arg_str .= "m_item.size_cd as as_size_cd,";
    $arg_str .= "m_item.item_name as as_item_name,";
-     $arg_str .= "m_input_item.job_type_cd as as_job_type_cd,";
-     $arg_str .= "m_input_item.job_type_item_cd as as_job_type_item_cd,";
+   $arg_str .= "m_input_item.job_type_cd as as_job_type_cd,";
+   $arg_str .= "m_input_item.job_type_item_cd as as_job_type_item_cd,";
    $arg_str .= "m_input_item.input_item_name as as_input_item_name,";
    $arg_str .= "m_input_item.size_two_cd as as_size_two_cd,";
    $arg_str .= "m_input_item.std_input_qty as as_std_input_qty";
@@ -1370,6 +1371,40 @@ $app->post('/wearer_change/info', function ()use($app){
        $list["std_input_qty"] = $result->as_std_input_qty;
        // 投入商品名
        $list["input_item_name"] = $result->as_input_item_name;
+
+         //納品状況明細情報に、出荷番号違いで同一商品が複数入ることを想定し、数量を計算
+         //返却予定数と数量の総数を計算する。
+         $parameter = array(
+             "corporate_id" => $auth['corporate_id'],
+             "rntl_cont_no" => $wearer_chg_post['rntl_cont_no'],
+             "werer_cd" => $result->as_werer_cd,
+             "item_cd" => $result->as_item_cd,
+             "size_cd" => $result->as_size_cd);
+         //返却予定数の総数
+         $TDeliveryGoodsStateDetails = TDeliveryGoodsStateDetails::find(array(
+             'conditions'  => "corporate_id = :corporate_id: AND rntl_cont_no = :rntl_cont_no:  AND werer_cd = :werer_cd: AND item_cd = :item_cd: AND size_cd = :size_cd:",
+             "bind" => $parameter
+         ));
+         $each_item_count = $TDeliveryGoodsStateDetails->count();
+         // foreachでまわす
+         $each_item_return_plan_qty = 0;
+         $each_item_quantity = 0;
+         for($i = 0; $i < $each_item_count; $i++){
+             $each_item_return_plan_qty = $each_item_return_plan_qty + $TDeliveryGoodsStateDetails[$i]->return_plan__qty;
+             $each_item_quantity = $each_item_quantity + $TDeliveryGoodsStateDetails[$i]->quantity;
+         }
+         // 数量 納品状況明細情報の商品ごとの数量を合計した数
+         $list["quantity"] = $each_item_quantity;
+         // 返却予定数 納品状況明細情報の商品ごとの返却予定数を合計した数
+         $list["return_plan_qty"] = $each_item_return_plan_qty;
+         // 返却済数
+         $list["returned_qty"] = $result->as_returned_qty;
+         $list["possible_num"] = $list["quantity"] - $list["return_plan_qty"];
+         if($list["possible_num"] > 0){
+            array_push($now_wearer_list, $list);
+         }
+        //ChromePhp::log($now_wearer_list);
+       /*
        // 数量
        $list["quantity"] = $result->as_quantity;
        // 返却予定数
@@ -1378,8 +1413,8 @@ $app->post('/wearer_change/info', function ()use($app){
        $list["returned_qty"] = $result->as_returned_qty;
        // 商品単位の返却可能枚数(所持枚数)
        $list["possible_num"] = $list["quantity"] - $list["return_plan_qty"] - $list["returned_qty"];
-
        array_push($now_wearer_list, $list);
+       */
      }
    }
 
@@ -1558,7 +1593,6 @@ $app->post('/wearer_change/info', function ()use($app){
      }
      //ChromePhp::LOG('【変更後】商品リスト');
      //ChromePhp::LOG(count($chg_wearer_list));
-     //ChromePhp::LOG($chg_wearer_list);
    } else {
      // 着用者基本マスタトランの情報がない場合
      $query_list = array();
@@ -1638,16 +1672,13 @@ $app->post('/wearer_change/info', function ()use($app){
          $list["std_input_qty"] = $result->as_std_input_qty;
          // 投入商品名
          $list["input_item_name"] = $result->as_input_item_name;
-
+           
          array_push($chg_wearer_list, $list);
        }
      }
      //ChromePhp::LOG('【変更後】商品リスト');
      //ChromePhp::LOG(count($chg_wearer_list));
-     //ChromePhp::LOG($chg_wearer_list);
    }
-
-     //ChromePhp::log($now_wearer_list);
 
    //--新たに追加されるアイテム一覧リストの生成--//
    $chk_list = array();
@@ -1663,15 +1694,14 @@ $app->post('/wearer_change/info', function ()use($app){
                  if (
                      $chg_wearer_list[$i]["item_cd"] == $now_wearer_list[$j]["item_cd"]
                      && $chg_wearer_list[$i]["color_cd"] == $now_wearer_list[$j]["color_cd"]
-                     && ($chg_wearer_list[$i]["std_input_qty"] == $now_wearer_list[$j]["std_input_qty"]
-                         || $chg_wearer_list[$i]["std_input_qty"] < $now_wearer_list[$j]["std_input_qty"])
+                     && ($chg_wearer_list[$i]["std_input_qty"] == $now_wearer_list[$j]["possible_num"]
+                         || $chg_wearer_list[$i]["std_input_qty"] < $now_wearer_list[$j]["possible_num"])
                  )
                  {
                      $chg_wearer_list[$i]["overlap_flg"] = false;
                  }
              }
              if ($chg_wearer_list[$i]["overlap_flg"]) {
-
                  $list["item_cd"] = $chg_wearer_list[$i]["item_cd"];
                  $list["color_cd"] = $chg_wearer_list[$i]["color_cd"];
                  $list["size_cd"] = $chg_wearer_list[$i]["size_cd"];
@@ -1682,6 +1712,18 @@ $app->post('/wearer_change/info', function ()use($app){
                  $list["size_two_cd"] = $chg_wearer_list[$i]["size_two_cd"];
                  $list["std_input_qty"] = $chg_wearer_list[$i]["std_input_qty"];
                  $list["input_item_name"] = $chg_wearer_list[$i]["input_item_name"];
+                 $list["add_flg"] = false;//数量追加ではない
+                 for ($m=0; $m<count($now_wearer_list); $m++) {
+                     if (//同じ商品cd、色コードで、交換枚数が増える商品
+                         $chg_wearer_list[$i]["item_cd"] == $now_wearer_list[$m]["item_cd"]
+                         && $chg_wearer_list[$i]["color_cd"] == $now_wearer_list[$m]["color_cd"]
+                         && $chg_wearer_list[$i]["std_input_qty"] > $now_wearer_list[$m]["possible_num"]
+                     ){
+                         $list["add_flg"] = true;
+                         $list["possible_num"] = $chg_wearer_list[$i]["std_input_qty"] - $now_wearer_list[$m]["possible_num"];
+                     }
+                 }
+
 
                  array_push($chk_list, $list);
              }
@@ -1700,15 +1742,14 @@ $app->post('/wearer_change/info', function ()use($app){
                  if (
                      $chg_wearer_list[$i]["item_cd"] == $now_wearer_list[$j]["item_cd"]
                      && $chg_wearer_list[$i]["color_cd"] == $now_wearer_list[$j]["color_cd"]
-                     && ($chg_wearer_list[$i]["std_input_qty"] == $now_wearer_list[$j]["quantity"]
-                         || $chg_wearer_list[$i]["std_input_qty"] < $now_wearer_list[$j]["quantity"])
+                     && ($chg_wearer_list[$i]["std_input_qty"] == $now_wearer_list[$j]["possible_num"]
+                         || $chg_wearer_list[$i]["std_input_qty"] < $now_wearer_list[$j]["possible_num"])
                  )
                  {
                      $chg_wearer_list[$i]["overlap_flg"] = false;
                  }
              }
              if ($chg_wearer_list[$i]["overlap_flg"]) {
-
                  $list["item_cd"] = $chg_wearer_list[$i]["item_cd"];
                  $list["color_cd"] = $chg_wearer_list[$i]["color_cd"];
                  $list["size_cd"] = $chg_wearer_list[$i]["size_cd"];
@@ -1719,7 +1760,17 @@ $app->post('/wearer_change/info', function ()use($app){
                  $list["size_two_cd"] = $chg_wearer_list[$i]["size_two_cd"];
                  $list["std_input_qty"] = $chg_wearer_list[$i]["std_input_qty"];
                  $list["input_item_name"] = $chg_wearer_list[$i]["input_item_name"];
-
+                 $list["add_flg"] = false;//数量追加ではない
+                 for ($k=0; $k<count($now_wearer_list); $k++) {
+                     if (//同じ商品cd、色コードで、交換枚数が増える商品
+                         $chg_wearer_list[$i]["item_cd"] == $now_wearer_list[$k]["item_cd"]
+                         && $chg_wearer_list[$i]["color_cd"] == $now_wearer_list[$k]["color_cd"]
+                         && $chg_wearer_list[$i]["std_input_qty"] > $now_wearer_list[$k]["possible_num"]
+                     ){
+                         $list["add_flg"] = true;
+                         $list["possible_num"] = $chg_wearer_list[$i]["std_input_qty"] - $now_wearer_list[$k]["possible_num"];
+                     }
+                 }
                  array_push($chk_list, $list);
              }
          }
@@ -1727,7 +1778,7 @@ $app->post('/wearer_change/info', function ()use($app){
 
    //ChromePhp::LOG('発注後のみ商品リスト');
    //ChromePhp::LOG(count($chk_list));
-   //ChromePhp::LOG($chk_list);
+     //ChromePhp::LOG($chk_list);
 
    // 上記比較リストをベースに、新たに追加されるアイテム一覧リストを生成する
    if (!empty($chk_list)) {
@@ -1809,7 +1860,8 @@ $app->post('/wearer_change/info', function ()use($app){
          );
          $paginator = $paginator_model->getPaginate();
          $results = $paginator->items;
-          //未選択
+
+          //未選択のサイズを追加
          $element["size"] = "";
          $element["selected"] = "";
          $list["size_cd"][] = $element;
@@ -1849,8 +1901,16 @@ $app->post('/wearer_change/info', function ()use($app){
        // 発注数(単一選択=入力不可、複数選択=入力可)
        if ($list["choice_type"] == "1") {
          $list["order_num_disable"] = "disabled";
-         $list["order_num"] = $chk_map['std_input_qty'];
+         //返却枚数の計算、新しい商品は標準貸与枚数、同じ商品で数量が増える場合は、異動先の標準貸与枚数引く、現在貸与中アイテムの数量
+         if($chk_map['add_flg'] == true){
+             $list["order_num"] = $chk_map["possible_num"];
+         } elseif ($chk_map['add_flg'] == false) {
+             $list["order_num"] = $chk_map['std_input_qty'];
+         }
        } else {
+
+
+
          // 発注情報トラン参照
          $query_list = array();
          array_push($query_list, "t_order_tran.corporate_id = '".$auth['corporate_id']."'");
@@ -1898,7 +1958,12 @@ $app->post('/wearer_change/info', function ()use($app){
            }
          } else {
            $list["order_num_disable"] = "";
-           $list["order_num"] = "";
+             //返却枚数の計算、新しい商品は標準貸与枚数、同じ商品で数量が増える場合は、異動先の標準貸与枚数引く、現在貸与中アイテムの数量
+             if($chk_map['add_flg'] == true){
+                 $list["order_num"] = $chk_map["possible_num"];
+             } elseif ($chk_map['add_flg'] == false) {
+                 $list["order_num"] = $chk_map['std_input_qty'];
+             }
          }
        }
 
@@ -1937,14 +2002,14 @@ $app->post('/wearer_change/info', function ()use($app){
        $list = array();
 
        // 発注前後商品の比較チェック
-       // ※商品の「標準投入数」が前後で=の場合は表示しない
+       // 現在のアイテムと異動先の職種のアイテムを比較
        $overlap = true;
        for ($i=0; $i<count($chg_wearer_list); $i++) {
          if (
           $now_wearer_map['item_cd'] == $chg_wearer_list[$i]['item_cd']
           && $now_wearer_map['color_cd'] == $chg_wearer_list[$i]['color_cd']
-          && ($now_wearer_map['std_input_qty'] == $chg_wearer_list[$i]['std_input_qty']
-          || $now_wearer_map['std_input_qty'] < $chg_wearer_list[$i]['std_input_qty'])
+          && ($now_wearer_map['possible_num'] == $chg_wearer_list[$i]['std_input_qty']
+          || $now_wearer_map['possible_num'] < $chg_wearer_list[$i]['std_input_qty'])
          )
          {
            $overlap = false;
@@ -2117,23 +2182,29 @@ $app->post('/wearer_change/info', function ()use($app){
            $list["individual_ctrl_no"] = implode("<br>", $individual_ctrl_no);
          }
        }
-       // 返却枚数
-       $list["return_num"] = "";
-       for ($i=0; $i<count($chg_wearer_list); $i++) {
-         if (
-          $now_wearer_map['item_cd'] == $chg_wearer_list[$i]['item_cd']
-          && $now_wearer_map['color_cd'] == $chg_wearer_list[$i]['color_cd']
-         )
-         {
-           if ($chg_wearer_list[$i]['std_input_qty'] < $now_wearer_map['std_input_qty']) {
-             $list["return_num"] =$now_wearer_map['possible_num'];
-           }
-         } else {
-           $list["return_num"] = $now_wearer_map['possible_num'];
-         }
-       }
 
-       $list["return_num_disable"] = "disabled";
+
+         // 返却枚数
+
+         //異動先の職種には、無いアイテムの数を設定
+         $list["possible_num"] = $now_wearer_map['possible_num'];
+         $list["return_num"] = $now_wearer_map['possible_num'];
+         //次に異動先の職種に同じアイテムがあり、数が少ないので、返すアイテムの数を設定
+         for ($i=0; $i<count($chg_wearer_list); $i++) {
+             if (
+                 $now_wearer_map['item_cd'] == $chg_wearer_list[$i]['item_cd']
+                 && $now_wearer_map['color_cd'] == $chg_wearer_list[$i]['color_cd']
+
+             ) {
+                 if($chg_wearer_list[$i]['std_input_qty'] < $now_wearer_map['possible_num']){$list["add_flg"] = true;
+                     $list["return_num"] = $now_wearer_map['possible_num'] - $chg_wearer_list[$i]['std_input_qty'];
+                     $list["possible_num"] = $list["return_num"];
+                     $same_item_flg = '1';
+                 }
+             }
+         }
+
+         $list["return_num_disable"] = "disabled";
          $same_item_flg = "";
          $return_qty = "";
          //返却可能枚数の条件分岐
@@ -2157,10 +2228,9 @@ $app->post('/wearer_change/info', function ()use($app){
                 $list["possible_num"] = $list["individual_cnt"];
             }
 
-         }else{
-             // 返却可能枚数（所持数）
-             $list["possible_num"] = $now_wearer_map['possible_num'];
          }
+
+
 
        //--その他の必要hiddenパラメータ--//
        // 部門コード
@@ -2174,7 +2244,11 @@ $app->post('/wearer_change/info', function ()use($app){
        // 職種アイテムコード
        $list["job_type_item_cd"] = $now_wearer_map['job_type_item_cd'];
 
-       array_push($now_list, $list);
+       //返す商品が１以上だったら追加
+       if($list["return_num"] > 0){
+            array_push($now_list, $list);
+       }
+         //ChromePhp::log($now_list);
      }
    }
    // 現在貸与中アイテム一覧内容の表示フラグ

@@ -142,7 +142,6 @@ define([
 								}*/
 							},
 							complete: function (res) {
-								console.log('aaaa');
 
 								//拠点と出荷先が同じだったら、拠点と同じに変更
 								var section_name = $('[name=section] option:selected').text();
@@ -537,7 +536,6 @@ define([
 						now_item[i]["now_return_num"] = $("input[name='now_return_num"+i+"']").val();
 						now_item[i]["now_return_num_disable"] = $("input[name='now_return_num_disable"+i+"']").val();
 					}
-
 					var add_list_cnt = $("input[name='add_list_cnt']").val();
 					var add_item = new Object();
 					for (var i=0; i<add_list_cnt; i++) {
