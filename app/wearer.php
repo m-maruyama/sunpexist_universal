@@ -164,6 +164,9 @@ $app->post('/wearer/search', function ()use($app){
 		if($sort_key == 'rntl_sect_name'){
 			$q_sort_key = 'as_rntl_sect_name';
 		}
+      if($sort_key == 'werer_sts_kbn') {
+          $q_sort_key = 'as_werer_sts_kbn';
+    }
 	} else {
 		// デフォルトソート
 		$q_sort_key = "as_cster_emply_cd";
@@ -174,13 +177,14 @@ $app->post('/wearer/search', function ()use($app){
 	$arg_str = "SELECT ";
 	$arg_str .= " * ";
 	$arg_str .= " FROM ";
-	$arg_str .= "(SELECT distinct on (m_wearer_std.werer_cd) ";
+	$arg_str .= "(SELECT distinct on (m_wearer_std.werer_cd,m_wearer_std.werer_sts_kbn,m_wearer_std.rntl_cont_no,m_wearer_std.rntl_sect_cd,m_wearer_std.job_type_cd) ";
 	$arg_str .= "m_wearer_std.werer_cd as as_werer_cd,";
 	$arg_str .= "m_wearer_std.cster_emply_cd as as_cster_emply_cd,";
 	$arg_str .= "m_wearer_std.werer_name as as_werer_name,";
-	$arg_str .= "m_section.rntl_sect_name as as_rntl_sect_name,";
+  $arg_str .= "m_wearer_std.werer_sts_kbn as as_werer_sts_kbn,";
+  $arg_str .= "m_section.rntl_sect_name as as_rntl_sect_name,";
 	$arg_str .= "m_job_type.job_type_name as as_job_type_name";
-	$arg_str .= " FROM m_wearer_std LEFT JOIN";
+	$arg_str .= " FROM m_wearer_std INNER JOIN";
 	$arg_str .= " ((t_order";
 	if($rntl_sect_cd_zero_flg == 1){
 		$arg_str .= " INNER JOIN m_section";
@@ -196,7 +200,7 @@ $app->post('/wearer/search', function ()use($app){
 	$arg_str .= " LEFT JOIN (t_order_state LEFT JOIN (t_delivery_goods_state LEFT JOIN t_delivery_goods_state_details ON t_delivery_goods_state.ship_no = t_delivery_goods_state_details.ship_no)";
 	$arg_str .= " ON t_order_state.t_order_state_comb_hkey = t_delivery_goods_state.t_order_state_comb_hkey)";
 	$arg_str .= " ON t_order.t_order_comb_hkey = t_order_state.t_order_comb_hkey)";
-	$arg_str .= " ON m_wearer_std.werer_cd = t_order.werer_cd";
+	$arg_str .= " ON m_wearer_std.m_wearer_std_comb_hkey = t_order.m_wearer_std_comb_hkey";
 	$arg_str .= " WHERE ";
 	$arg_str .= $query;
 	$arg_str .= ") as distinct_table";
@@ -204,7 +208,6 @@ $app->post('/wearer/search', function ()use($app){
 		$arg_str .= " ORDER BY ";
 		$arg_str .= $q_sort_key." ".$order;
 	}
-
 	$m_wearer_std = new MWearerStd();
 	$results = new Resultset(null, $m_wearer_std, $m_wearer_std->getReadConnection()->query($arg_str));
 	$result_obj = (array)$results;
@@ -261,7 +264,44 @@ $app->post('/wearer/search', function ()use($app){
 				$list['job_type_name'] = "-";
 			}
 
-			array_push($all_list,$list);
+			//着用者状況区分
+        // 貸与パターン
+        if (!empty($result->as_job_type_name)) {
+            $list['werer_sts_kbn'] = $result->as_werer_sts_kbn;
+
+            //---着用者状況区分名称---//
+            $query_list = array();
+            array_push($query_list, "cls_cd = '009'");
+            array_push($query_list, "gen_cd = '".$list['werer_sts_kbn']."'");
+            $query = implode(' AND ', $query_list);
+
+            $arg_str = "";
+            $arg_str = 'SELECT ';
+            $arg_str .= ' * ';
+            $arg_str .= ' FROM ';
+            $arg_str .= 'm_gencode ';
+            $arg_str .= ' WHERE ';
+            $arg_str .= $query;
+
+            $m_gencode = new MGencode();
+            $results = new Resultset(null, $m_gencode, $m_gencode->getReadConnection()->query($arg_str));
+            $results_array = (array) $results;
+            $results_cnt = $results_array["\0*\0_count"];
+            if (!empty($results_cnt)) {
+                foreach ($results as $result) {
+                    $list['order_sts_name'] = $result->gen_name;
+                }
+            } else {
+                $list['order_sts_name'] = "";
+            }
+        } else {
+            $list['werer_sts_kbn'] = "-";
+        }
+
+
+
+
+        array_push($all_list,$list);
 		}
 	}
 
