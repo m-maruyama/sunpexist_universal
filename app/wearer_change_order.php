@@ -1719,8 +1719,6 @@ $app->post('/wearer_change/info', function ()use($app){
                          && $chg_wearer_list[$i]["color_cd"] == $now_wearer_list[$m]["color_cd"]
                          && $chg_wearer_list[$i]["std_input_qty"] > $now_wearer_list[$m]["possible_num"]
                      ){
-                         ChromePhp::log('aa');
-
                          $list["add_flg"] = true;
                          $list["possible_num"] = $chg_wearer_list[$i]["std_input_qty"] - $now_wearer_list[$m]["possible_num"];
                      }
