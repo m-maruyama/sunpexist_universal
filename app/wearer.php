@@ -625,7 +625,7 @@ $app->post('/wearer/detail', function ()use($app){
         $arg_str .= " ORDER BY ";
         $arg_str .= $q_sort_key." ".$order;
     }
-    //ChromePhp::log($arg_str);
+    ChromePhp::log($arg_str);
     $t_order = new TOrder();
     $results = new Resultset(null, $t_order, $t_order->getReadConnection()->query($arg_str));
     $result_obj = (array)$results;
@@ -790,23 +790,48 @@ $app->post('/wearer/detail', function ()use($app){
                     $del_gd_results = $paginator->items;
 
                     $num_list = array();
+                    $return_plan_qty_list = array();
+                    $rental_qty_list = array();
                     //$day_list = array();
                     foreach ($del_gd_results as $del_gd_result) {
-                        array_push($num_list, $del_gd_result->individual_ctrl_no);
-                        /*
-                        if (!empty($del_gd_result->receipt_date)) {
-                            array_push($day_list, date('Y/m/d',strtotime($del_gd_result->receipt_date)));
-                        } else {
-                            array_push($day_list, "-");
+                        if (individual_flg($auth['corporate_id'], $cond['agreement_no']) == 1) {
+                            //返却予定数と数量の総数を計算する。
+                            $parameter = array(
+                                "corporate_id" => $auth['corporate_id'],
+                                "rntl_cont_no" => $cond['agreement_no'],
+                                "individual_ctrl_no" => $del_gd_result->individual_ctrl_no
+                            );
+                            //返却予定数の総数
+                            $TDeliveryGoodsStateDetails = TDeliveryGoodsStateDetails::find(array(
+                                'conditions'  => "corporate_id = :corporate_id: AND rntl_cont_no = :rntl_cont_no: AND individual_ctrl_no = :individual_ctrl_no:",
+                                "bind" => $parameter
+                            ));
+                            if($TDeliveryGoodsStateDetails->count() > 0){
+                                foreach ($TDeliveryGoodsStateDetails as $TDeliveryGoodsStateDetailsResult) {
+                                    //返却予定数
+                                    if ($TDeliveryGoodsStateDetailsResult->return_plan__qty !== null) {
+                                        array_push($return_plan_qty_list,  $TDeliveryGoodsStateDetailsResult->return_plan__qty);
+                                    } else {
+                                        array_push($return_plan_qty_list, "-");
+                                    }
+                                    //貸与枚数
+                                    array_push($rental_qty_list, $TDeliveryGoodsStateDetails->count());
+                                }
+                            }
                         }
-                        */
+
+                        array_push($num_list, $del_gd_result->individual_ctrl_no);
                     }
                     // 個体管理番号
                     $individual_ctrl_no = implode("<br>", $num_list);
                     $list['individual_num'] = $individual_ctrl_no;
-                    // 受領日
-                    //$receipt_date = implode("<br>", $day_list);
-                    //$list['order_res_ymd'] = $receipt_date;
+                    // 返却予定数
+                    $return_plan_qty = implode("<br>", $return_plan_qty_list);
+                    $list['return_plan_qty'] = (string) $return_plan_qty;
+                    //貸与枚数
+                    $rental_qty = implode("<br>", $rental_qty_list);
+                    $list['rental_qty'] = $rental_qty;
+                    
                 }
 
 

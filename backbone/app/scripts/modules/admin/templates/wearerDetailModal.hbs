@@ -97,7 +97,10 @@
 												<th>商品-色(サイズ-サイズ2)</th>
 												<th>商品名</th>
 												<th class="individual_flg" style="display:none;">バーコード</th>
-											</tr>
+                                                <th>貸与枚数</th>
+                                                <th>返却予定数</th>
+
+                                            </tr>
 										</thead>
 										{{#each taiyo_list}}
 										<tr>
@@ -105,7 +108,9 @@
 											<td>{{shin_item_code}}</td>
 											<td>{{item_name}}</td>
 											<td class="individual_flg" style="display:none;">{{{individual_num}}}</td>
-										</tr>
+                                            <td>{{{rental_qty}}}</td>
+                                            <td>{{{return_plan_qty}}}</td>
+                                        </tr>
 										{{/each}}
 									</table>
 								</div>
