@@ -256,6 +256,12 @@ class TOrderTran extends \Phalcon\Mvc\Model
     protected $m_wearer_item_comb_hkey;
 
     /**
+     *
+     * @var string
+     */
+    protected $order_rntl_sect_cd;
+
+    /**
      * Method to set the value of field t_order_comb_hkey
      *
      * @param string $t_order_comb_hkey
@@ -1221,6 +1227,28 @@ class TOrderTran extends \Phalcon\Mvc\Model
         return $this->m_wearer_item_comb_hkey;
     }
 
+    /**
+     * Method to set the value of field order_kbn
+     *
+     * @param string $order_rntl_sect_cd
+     * @return $this
+     */
+    public function setOrderRntlSectKbn($order_rntl_sect_cd)
+    {
+        $this->order_rntl_sect_cd = $order_rntl_sect_cd;
+
+        return $this;
+    }
+
+    /**
+     * Returns the value of field order_rntl_sect_cd
+     *
+     * @return string
+     */
+    public function getOrderRntlSectKbn()
+    {
+        return $this->order_rntl_sect_cd;
+    }
     /**
      * Initialize method for model.
      */

@@ -2521,7 +2521,6 @@ $app->post('/wearer_change/complete', function ()use($app){
    $wearer_data_input = $params["wearer_data"];
    $now_item_input = $params["now_item"];
    $add_item_input = $params["add_item"];
-
    $json_list = array();
    // DB更新エラーコード 0:正常 その他:要因エラー
    $json_list["error_code"] = "0";
@@ -3629,6 +3628,9 @@ $app->post('/wearer_change/complete', function ()use($app){
            // 発注ステータス(未出荷)
            array_push($calum_list, "order_status");
            array_push($values_list, "'1'");
+           // 発注時レンタル部門コード
+           array_push($calum_list, "order_rntl_sect_cd");
+           array_push($values_list, "'".$before_rntl_sect_cd."'");
            // 理由区分
            //変更後の職種コード
            $job_type_cd = explode(':', $wearer_data_input['job_type']);
@@ -3871,6 +3873,9 @@ $app->post('/wearer_change/complete', function ()use($app){
         // 発注ステータス(未出荷)
         array_push($calum_list, "order_status");
         array_push($values_list, "'1'");
+        // 発注時レンタル部門コード
+        array_push($calum_list, "order_rntl_sect_cd");
+        array_push($values_list, "'".$before_rntl_sect_cd."'");
         // 理由区分
         array_push($calum_list, "order_reason_kbn");
            //変更後の職種コード
@@ -5351,6 +5356,9 @@ $app->post('/wearer_change/send', function ()use($app){
           // 発注ステータス(未出荷)
           array_push($calum_list, "order_status");
           array_push($values_list, "'1'");
+          // 発注時レンタル部門コード
+          array_push($calum_list, "order_rntl_sect_cd");
+          array_push($values_list, "'".$before_rntl_sect_cd."'");
           // 理由区分
           //変更後の職種コード
           $job_type_cd = explode(':', $wearer_data_input['job_type']);
@@ -5594,6 +5602,9 @@ $app->post('/wearer_change/send', function ()use($app){
        // 発注ステータス(未出荷)
        array_push($calum_list, "order_status");
        array_push($values_list, "'1'");
+       // 発注時レンタル部門コード
+       array_push($calum_list, "order_rntl_sect_cd");
+       array_push($values_list, "'".$before_rntl_sect_cd."'");
        // 理由区分
        //変更後の職種コード
        $job_type_cd = explode(':', $wearer_data_input['job_type']);
