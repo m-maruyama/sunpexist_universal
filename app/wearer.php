@@ -649,8 +649,7 @@ $app->post('/wearer/detail', function ()use($app){
 		//表No用
 		$no_num = 1;
 		foreach($results as $result) {
-			// 表No
-			$list['list_no'] = $no_num++;
+
 			// 商品コード
 			if (!empty($result->as_item_cd)) {
 				$list['item_cd'] = $result->as_item_cd;
@@ -816,7 +815,6 @@ $app->post('/wearer/detail', function ()use($app){
                                         //返却予定数
                                         array_push($return_plan_qty_list, $TDeliveryGoodsStateDetailsResult->return_plan__qty);
                                     }
-
                                 }
                             }
                         }
@@ -824,7 +822,6 @@ $app->post('/wearer/detail', function ()use($app){
                         if($del_gd_result->quantity - $del_gd_result->returned_qty > 0){
                             array_push($num_list, $del_gd_result->individual_ctrl_no);
                         }
-
                     }
                     if(count($num_list) > 0){
                         // 個体管理番号
@@ -846,6 +843,8 @@ $app->post('/wearer/detail', function ()use($app){
 
 
                 if($list['item_exist_flg']) {
+                    // 表No
+                    $list['list_no'] = $no_num++;
                     array_push($wearer_item_list, $list);
                 }
       }
