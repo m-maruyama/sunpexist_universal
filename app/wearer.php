@@ -768,6 +768,8 @@ $app->post('/wearer/detail', function ()use($app){
                 $query = implode(' AND ', $query_list);
                 $arg_str = "";
                 $arg_str .= "SELECT ";
+                $arg_str .= "quantity,";
+                $arg_str .= "returned_qty,";
                 $arg_str .= "individual_ctrl_no,";
                 $arg_str .= "receipt_date";
                 $arg_str .= " FROM ";
@@ -808,38 +810,45 @@ $app->post('/wearer/detail', function ()use($app){
                             ));
                             if($TDeliveryGoodsStateDetails->count() > 0){
                                 foreach ($TDeliveryGoodsStateDetails as $TDeliveryGoodsStateDetailsResult) {
-                                    //返却予定数
-                                    if ($TDeliveryGoodsStateDetailsResult->return_plan__qty !== null) {
-                                        array_push($return_plan_qty_list,  $TDeliveryGoodsStateDetailsResult->return_plan__qty);
-                                    } else {
-                                        array_push($return_plan_qty_list, "-");
+                                    if($TDeliveryGoodsStateDetailsResult->quantity - $TDeliveryGoodsStateDetailsResult->returned_qty > 0) {
+                                        //貸与枚数
+                                        array_push($rental_qty_list, $TDeliveryGoodsStateDetails->count());
+                                        //返却予定数
+                                        array_push($return_plan_qty_list, $TDeliveryGoodsStateDetailsResult->return_plan__qty);
                                     }
-                                    //貸与枚数
-                                    array_push($rental_qty_list, $TDeliveryGoodsStateDetails->count());
+
                                 }
                             }
                         }
+                        //返却済み数
+                        if($del_gd_result->quantity - $del_gd_result->returned_qty > 0){
+                            array_push($num_list, $del_gd_result->individual_ctrl_no);
+                        }
 
-                        array_push($num_list, $del_gd_result->individual_ctrl_no);
                     }
-                    // 個体管理番号
-                    $individual_ctrl_no = implode("<br>", $num_list);
-                    $list['individual_num'] = $individual_ctrl_no;
-                    // 返却予定数
-                    $return_plan_qty = implode("<br>", $return_plan_qty_list);
-                    $list['return_plan_qty'] = (string) $return_plan_qty;
-                    //貸与枚数
-                    $rental_qty = implode("<br>", $rental_qty_list);
-                    $list['rental_qty'] = $rental_qty;
-                    
+                    if(count($num_list) > 0){
+                        // 個体管理番号
+                        $individual_ctrl_no = implode("<br>", $num_list);
+                        $list['individual_num'] = $individual_ctrl_no;
+                        // 返却予定数
+                        $return_plan_qty = implode("<br>", $return_plan_qty_list);
+                        $list['return_plan_qty'] = (string) $return_plan_qty;
+                        //貸与枚数
+                        $rental_qty = implode("<br>", $rental_qty_list);
+                        $list['rental_qty'] = $rental_qty;
+
+                        $list['item_exist_flg'] = true;
+                    }else{
+                        $list['item_exist_flg'] = false;
+                    }
                 }
 
 
 
-
-
-			array_push($wearer_item_list, $list);
-		}
+                if($list['item_exist_flg']) {
+                    array_push($wearer_item_list, $list);
+                }
+      }
 	}
 
 	// 未返却情報抽出
