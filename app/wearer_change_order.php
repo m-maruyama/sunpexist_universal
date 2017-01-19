@@ -2447,7 +2447,6 @@ $app->post('/wearer_change/complete', function ()use($app){
    $wearer_data_input = $params["wearer_data"];
    $now_item_input = $params["now_item"];
    $add_item_input = $params["add_item"];
-
    $json_list = array();
    // DB更新エラーコード 0:正常 その他:要因エラー
    $json_list["error_code"] = "0";
@@ -2618,6 +2617,12 @@ $app->post('/wearer_change/complete', function ()use($app){
                array_push($json_list["error_msg"], $error_msg);
              }
            }
+             //サイズチェック
+             if (empty($add_item_input_map['add_size_cd'])) {
+                 $json_list["error_code"] = "1";
+                 $error_msg = "サイズが未選択な商品があります。";
+                 array_push($json_list["error_msg"], $error_msg);
+             }
          }
          // 発注枚数チェック
          //※単一選択の場合
@@ -4336,6 +4341,12 @@ $app->post('/wearer_change/send', function ()use($app){
               array_push($json_list["error_msg"], $error_msg);
             }
           }
+            //サイズチェック
+            if (empty($add_item_input_map['add_size_cd'])) {
+                $json_list["error_code"] = "1";
+                $error_msg = "サイズが未選択な商品があります。";
+                array_push($json_list["error_msg"], $error_msg);
+            }
         }
         // 発注枚数チェック
         //※単一選択の場合
