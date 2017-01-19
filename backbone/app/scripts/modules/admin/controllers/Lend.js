@@ -65,7 +65,7 @@ define([
 				var paginationView = new App.Admin.Views.Pagination({model: pagerModel});
 				var paginationView2 = new App.Admin.Views.Pagination({model: pagerModel});
 				var paginationSectionView = new App.Admin.Views.Pagination({model: pagerModel2});
-				var csvDownloadView = new App.Admin.Views.CsvDownload();
+				var csvDownloadView = new App.Admin.Views.CsvDownload({model: pagerModel});
 
 				var fetchList = function(pageNumber,sortKey,order){
 					if(pageNumber){

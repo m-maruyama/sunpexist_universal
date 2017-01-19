@@ -873,7 +873,6 @@ $app->post('/input_insert', function () use ($app) {
         $wearer_odr_post = $app->session->get("wearer_odr_post");
 
         //着用者基本情報トラン
-        $m_wearer_std_tran = new MWearerStdTran();
         $now = date('Y/m/d H:i:s.sss');
         $m_wearer_std_tran = new MWearerStdTran();
         $results = new Resultset(null, $m_wearer_std_tran, $m_wearer_std_tran->getReadConnection()->query("select nextval('werer_cd_seq')"));
@@ -926,139 +925,168 @@ $app->post('/input_insert', function () use ($app) {
 
         // 着用者登録
         if ($wearer_odr_post) {
-            // 現発注Noの発注情報トランをクリーン
-//            if ($wearer_odr_post['order_tran_flg'] == '1') {
+            // 着用者登録済み(編集)の場合は更新
             $query_list = array();
-            array_push($query_list, "corporate_id = '" . $auth['corporate_id'] . "'");
-            array_push($query_list, "m_wearer_std_comb_hkey = '" . $wearer_odr_post['m_wearer_std_comb_hkey'] . "'");
-            array_push($query_list, "werer_sts_kbn = '7'");
-            array_push($query_list, "order_sts_kbn = '1'");
-            $query = implode(' AND ', $query_list);
+            array_push($query_list, "m_wearer_std_tran.m_wearer_std_comb_hkey = '".$wearer_odr_post['m_wearer_std_comb_hkey']."'");
+            $src_query = implode(' AND ', $query_list);
+
+            //更新値のセット
+            $up_query_list = array();
+            // レンタル契約No
+            array_push($up_query_list, "rntl_cont_no = '" . $rntl_cont_no . "'");
+            // 客先社員コード
+            array_push($up_query_list, "cster_emply_cd = '" . $cster_emply_cd . "'");
+            // 着用者名
+            array_push($up_query_list, "werer_name = '" . $werer_name . "'");
+            // 着用者名（カナ）
+            array_push($up_query_list, "werer_name_kana = '" . $werer_name_kana . "'");
+            // 性別
+            array_push($up_query_list, "sex_kbn = '" . $sex_kbn . "'");
+            // 着用開始日
+            array_push($up_query_list, "resfl_ymd = '" . $resfl_ymd . "'");
+            // レンタル部門コード(拠点)
+            array_push($up_query_list, "rntl_sect_cd = '" . $rntl_sect_cd . "'");
+            // 出荷先コード
+            array_push($up_query_list, "ship_to_cd = '" . $ship_to_cd . "'");
+            // 出荷先支店コード
+            array_push($up_query_list, "ship_to_brnch_cd = '" . $ship_to_brnch_cd . "'");
+            // 職種コード
+            array_push($up_query_list, "job_type_cd = '" . $job_type_cd . "'");
+            // 更新日時
+            array_push($up_query_list, "upd_date = '" . $upd_date . "'");
+            // 更新ユーザーID
+            array_push($up_query_list, "upd_user_id = '" . $upd_user_id . "'");
+            // 更新プログラムID
+            array_push($up_query_list, "upd_pg_id = '" . $upd_pg_id . "'");
+            $up_query = implode(',', $up_query_list);
+
             $arg_str = "";
-            $arg_str = "DELETE FROM ";
-            $arg_str .= "m_wearer_std_tran";
+            $arg_str = "UPDATE m_wearer_std_tran SET ";
+            $arg_str .= $up_query;
             $arg_str .= " WHERE ";
-            $arg_str .= $query;
-            $m_wearer_std = new MWearerStdTran();
-            $results = new Resultset(NULL, $m_wearer_std, $m_wearer_std->getReadConnection()->query($arg_str));
-        }
-        //更新もしくは新規追加
+            $arg_str .= $src_query;
+            //ChromePhp::LOG($arg_str);
+            $m_wearer_std_tran = new MWearerStdTran();
+            $results = new Resultset(NULL, $m_wearer_std_tran, $m_wearer_std_tran->getReadConnection()->query($arg_str));
 
-        $calum_list = array();
-        $values_list = array();
+        }else{
+            //新規追加
+            $calum_list = array();
+            $values_list = array();
 
-        array_push($calum_list, "m_wearer_std_comb_hkey");
-        array_push($values_list, "'" . $m_wearer_std_comb_hkey . "'");
-        // 企業ID
-        array_push($calum_list, "corporate_id");
-        array_push($values_list, "'" . $corporate_id . "'");
-        // 発注依頼No.
-        array_push($calum_list, "order_req_no");
-        array_push($values_list, "'" . $order_req_no . "'");
-        // レンタル契約No
-        array_push($calum_list, "rntl_cont_no");
-        array_push($values_list, "'" . $rntl_cont_no . "'");
-        // 着用者コード
-        array_push($calum_list, "werer_cd");
-        array_push($values_list, "'" . $werer_cd . "'");
-        // レンタル契約No.（前）
-        array_push($calum_list, "rntl_cont_no_bef");
-        array_push($values_list, "'" . $rntl_cont_no_bef . "'");
-        // レンタル部門コード（前）
-        array_push($calum_list, "rntl_sect_cd_bef");
-        array_push($values_list, "'" . $rntl_sect_cd_bef . "'");
-        // 職種コード（前）
-        array_push($calum_list, "job_type_cd_bef");
-        array_push($values_list, "'" . $job_type_cd_bef . "'");
-        // 着用者状況区分（前）
-        array_push($calum_list, "werer_sts_kbn_bef");
-        array_push($values_list, "'" . $werer_sts_kbn_bef . "'");
-        // 異動日（前）
-        array_push($calum_list, "resfl_ymd_bef");
-        array_push($values_list, "'" . $resfl_ymd_bef . "'");
-        // 発注状況区分 汎用コード：貸与
-        array_push($calum_list, "order_sts_kbn");
-        array_push($values_list, "'" . $order_sts_kbn . "'");
-        // 更新区分　汎用コード：web発注システム（新規登録）
-        array_push($calum_list, "upd_kbn");
-        array_push($values_list, "'" . $upd_kbn . "'");
-        // WEB更新日付
-        array_push($calum_list, "web_upd_date");
-        array_push($values_list, "'" . $web_upd_date . "'");
-        // 送信区分
-        array_push($calum_list, "snd_kbn");
-        array_push($values_list, "'" . $snd_kbn . "'");
-        // 送信日時
-        array_push($calum_list, "snd_date");
-        array_push($values_list, "'" . $snd_date . "'");
-        // 削除区分
-        array_push($calum_list, "del_kbn");
-        array_push($values_list, "'" . $del_kbn . "'");
-        // 登録日時
-        array_push($calum_list, "rgst_date");
-        array_push($values_list, "'" . $rgst_date . "'");
-        // 登録ユーザーID
-        array_push($calum_list, "rgst_user_id");
-        array_push($values_list, "'" . $rgst_user_id . "'");
-        // レンタル部門コード
-        array_push($calum_list, "rntl_sect_cd");
-        array_push($values_list, "'" . $rntl_sect_cd . "'");
-        // 職種コード
-        array_push($calum_list, "job_type_cd");
-        array_push($values_list, "'" . $job_type_cd . "'");
-        // 客先社員コード
-        array_push($calum_list, "cster_emply_cd");
-        array_push($values_list, "'" . $cster_emply_cd . "'");
-        // 着用者名
-        array_push($calum_list, "werer_name");
-        array_push($values_list, "'" . $werer_name . "'");
-        // 着用者名（カナ）
-        array_push($calum_list, "werer_name_kana");
-        array_push($values_list, "'" . $werer_name_kana . "'");
-        // 性別区分
-        array_push($calum_list, "sex_kbn");
-        array_push($values_list, "'" . $sex_kbn . "'");
-        // 着用者状況区分
-        array_push($calum_list, "werer_sts_kbn");
-        array_push($values_list, "'" . $werer_sts_kbn . "'");
-        // 発令日
+            array_push($calum_list, "m_wearer_std_comb_hkey");
+            array_push($values_list, "'" . $m_wearer_std_comb_hkey . "'");
+            // 企業ID
+            array_push($calum_list, "corporate_id");
+            array_push($values_list, "'" . $corporate_id . "'");
+            // 発注依頼No.
+            array_push($calum_list, "order_req_no");
+            array_push($values_list, "'" . $order_req_no . "'");
+            // レンタル契約No
+            array_push($calum_list, "rntl_cont_no");
+            array_push($values_list, "'" . $rntl_cont_no . "'");
+            // 着用者コード
+            array_push($calum_list, "werer_cd");
+            array_push($values_list, "'" . $werer_cd . "'");
+            // レンタル契約No.（前）
+            array_push($calum_list, "rntl_cont_no_bef");
+            array_push($values_list, "'" . $rntl_cont_no_bef . "'");
+            // レンタル部門コード（前）
+            array_push($calum_list, "rntl_sect_cd_bef");
+            array_push($values_list, "'" . $rntl_sect_cd_bef . "'");
+            // 職種コード（前）
+            array_push($calum_list, "job_type_cd_bef");
+            array_push($values_list, "'" . $job_type_cd_bef . "'");
+            // 着用者状況区分（前）
+            array_push($calum_list, "werer_sts_kbn_bef");
+            array_push($values_list, "'" . $werer_sts_kbn_bef . "'");
+            // 異動日（前）
+            array_push($calum_list, "resfl_ymd_bef");
+            array_push($values_list, "'" . $resfl_ymd_bef . "'");
+            // 発注状況区分 汎用コード：貸与
+            array_push($calum_list, "order_sts_kbn");
+            array_push($values_list, "'" . $order_sts_kbn . "'");
+            // 更新区分　汎用コード：web発注システム（新規登録）
+            array_push($calum_list, "upd_kbn");
+            array_push($values_list, "'" . $upd_kbn . "'");
+            // WEB更新日付
+            array_push($calum_list, "web_upd_date");
+            array_push($values_list, "'" . $web_upd_date . "'");
+            // 送信区分
+            array_push($calum_list, "snd_kbn");
+            array_push($values_list, "'" . $snd_kbn . "'");
+            // 送信日時
+            array_push($calum_list, "snd_date");
+            array_push($values_list, "'" . $snd_date . "'");
+            // 削除区分
+            array_push($calum_list, "del_kbn");
+            array_push($values_list, "'" . $del_kbn . "'");
+            // 登録日時
+            array_push($calum_list, "rgst_date");
+            array_push($values_list, "'" . $rgst_date . "'");
+            // 登録ユーザーID
+            array_push($calum_list, "rgst_user_id");
+            array_push($values_list, "'" . $rgst_user_id . "'");
+            // レンタル部門コード
+            array_push($calum_list, "rntl_sect_cd");
+            array_push($values_list, "'" . $rntl_sect_cd . "'");
+            // 職種コード
+            array_push($calum_list, "job_type_cd");
+            array_push($values_list, "'" . $job_type_cd . "'");
+            // 客先社員コード
+            array_push($calum_list, "cster_emply_cd");
+            array_push($values_list, "'" . $cster_emply_cd . "'");
+            // 着用者名
+            array_push($calum_list, "werer_name");
+            array_push($values_list, "'" . $werer_name . "'");
+            // 着用者名（カナ）
+            array_push($calum_list, "werer_name_kana");
+            array_push($values_list, "'" . $werer_name_kana . "'");
+            // 性別区分
+            array_push($calum_list, "sex_kbn");
+            array_push($values_list, "'" . $sex_kbn . "'");
+            // 着用者状況区分
+            array_push($calum_list, "werer_sts_kbn");
+            array_push($values_list, "'" . $werer_sts_kbn . "'");
+            // 発令日
 //        array_push($calum_list, "appointment_ymd");
 //        array_push($values_list, "'" . $appointment_ymd . "'");
-        // 着用開始日
-        array_push($calum_list, "resfl_ymd");
-        array_push($values_list, "'" . $resfl_ymd . "'");
-        // 出荷先コード
-        array_push($calum_list, "ship_to_cd");
-        array_push($values_list, "'" . $ship_to_cd . "'");
-        // 出荷先支店コード
-        array_push($calum_list, "ship_to_brnch_cd");
-        array_push($values_list, "'" . $ship_to_brnch_cd . "'");
-        // 更新日時
-        array_push($calum_list, "upd_date");
-        array_push($values_list, "'" . $upd_date . "'");
-        // 更新ユーザーID
-        array_push($calum_list, "upd_user_id");
-        array_push($values_list, "'" . $upd_user_id . "'");
-        // 更新プログラムID
-        array_push($calum_list, "upd_pg_id");
-        array_push($values_list, "'" . $upd_pg_id . "'");
-        // 職種マスタ_統合ハッシュキー
-        array_push($calum_list, "m_job_type_comb_hkey");
-        array_push($values_list, "'" . $m_job_type_comb_hkey . "'");
-        // 部門マスタ_統合ハッシュキー
-        array_push($calum_list, "m_section_comb_hkey");
-        array_push($values_list, "'" . $m_section_comb_hkey . "'");
+            // 着用開始日
+            array_push($calum_list, "resfl_ymd");
+            array_push($values_list, "'" . $resfl_ymd . "'");
+            // 出荷先コード
+            array_push($calum_list, "ship_to_cd");
+            array_push($values_list, "'" . $ship_to_cd . "'");
+            // 出荷先支店コード
+            array_push($calum_list, "ship_to_brnch_cd");
+            array_push($values_list, "'" . $ship_to_brnch_cd . "'");
+            // 更新日時
+            array_push($calum_list, "upd_date");
+            array_push($values_list, "'" . $upd_date . "'");
+            // 更新ユーザーID
+            array_push($calum_list, "upd_user_id");
+            array_push($values_list, "'" . $upd_user_id . "'");
+            // 更新プログラムID
+            array_push($calum_list, "upd_pg_id");
+            array_push($values_list, "'" . $upd_pg_id . "'");
+            // 職種マスタ_統合ハッシュキー
+            array_push($calum_list, "m_job_type_comb_hkey");
+            array_push($values_list, "'" . $m_job_type_comb_hkey . "'");
+            // 部門マスタ_統合ハッシュキー
+            array_push($calum_list, "m_section_comb_hkey");
+            array_push($values_list, "'" . $m_section_comb_hkey . "'");
 
-        $calum_query = implode(',', $calum_list);
-        $values_query = implode(',', $values_list);
+            $calum_query = implode(',', $calum_list);
+            $values_query = implode(',', $values_list);
 
-        $arg_str = "";
-        $arg_str = "INSERT INTO m_wearer_std_tran";
-        $arg_str .= "(" . $calum_query . ")";
-        $arg_str .= " VALUES ";
-        $arg_str .= "(" . $values_query . ")";
-        $m_wearer_std_tran = new MWearerStdTran();
-        $results = new Resultset(NULL, $m_wearer_std_tran, $m_wearer_std_tran->getReadConnection()->query($arg_str));
+            $arg_str = "";
+            $arg_str = "INSERT INTO m_wearer_std_tran";
+            $arg_str .= "(" . $calum_query . ")";
+            $arg_str .= " VALUES ";
+            $arg_str .= "(" . $values_query . ")";
+            $m_wearer_std_tran = new MWearerStdTran();
+            $results = new Resultset(NULL, $m_wearer_std_tran, $m_wearer_std_tran->getReadConnection()->query($arg_str));
+        }
     } catch (Exception $e) {
         // トランザクションロールバック
         $m_wearer_std_tran = new MWearerStdTran();

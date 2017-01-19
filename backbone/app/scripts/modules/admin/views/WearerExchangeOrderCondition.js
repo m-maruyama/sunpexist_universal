@@ -27,7 +27,6 @@ define([
 			ui: {
 				'agreement_no': '#agreement_no',
 				'reason_kbn': '#reason_kbn',
-				'return_date': '#return_date',
 				'sex_kbn': '#sex_kbn',
 				//'emply_cd_flg': '#emply_cd_flg',
 				'member_no': '#member_no',
@@ -41,13 +40,10 @@ define([
 				"delete": '.delete',
 				"complete": '.complete',
 				"orderSend": '.orderSend',
-				'datepicker': '.datepicker',
-				'timepicker': '.timepicker'
 			},
 			bindings: {
 				'#agreement_no': 'agreement_no',
 				'#reason_kbn': 'reason_kbn',
-				'#return_date': 'return_date',
 				'#sex_kbn': 'sex_kbn',
 				//'#emply_cd_flg': 'emply_cd_flg',
 				'#member_no': 'member_no',
@@ -60,8 +56,6 @@ define([
 				"#delete": 'delete',
 				"#complete": 'complete',
 				"#orderSend": 'orderSend',
-				'#datepicker': 'datepicker',
-				'#timepicker': 'timepicker'
 			},
 			onRender: function() {
 				var that = this;
@@ -148,32 +142,6 @@ define([
 								document.getElementById('reason_kbn').appendChild(option);
 							}
 						}
-						var maxTime = new Date();
-						maxTime.setHours(15);
-						maxTime.setMinutes(59);
-						maxTime.setSeconds(59);
-						var minTime = new Date();
-						minTime.setHours(9);
-						minTime.setMinutes(0);
-						var return_date = "";
-						if (res_list['wearer_info'][0]) {
-							var return_date = res_list['wearer_info'][0]['return_date'];
-						}
-						that.ui.return_date.val(return_date);
-						that.ui.datepicker.datetimepicker({
-							format: 'YYYY/MM/DD',
-							//useCurrent: 'day',
-							//defaultDate: appointment_ymd,
-							//maxDate: yesterday,
-							locale: 'ja',
-							sideBySide:true,
-							useCurrent: false,
-							// daysOfWeekDisabled:[0,6]
-						});
-						that.ui.datepicker.on('dp.change', function(){
-							$(this).data('DateTimePicker').hide();
-							//$(this).find('input').trigger('input');
-						});
 						if (res_list['sex_kbn_list']) {
 							for (var i=0; i<res_list['sex_kbn_list'].length; i++) {
 								var option = document.createElement('option');
@@ -366,7 +334,6 @@ define([
 					var tran_req_no = $("button[name='complete_param']").val();
 					var agreement_no = $("select[name='agreement_no']").val();
 					var reason_kbn = $("select[name='reason_kbn']").val();
-					var return_date = $("input[name='return_date']").val();
 					var emply_cd_flg = $("#emply_cd_flg").prop("checked");
 					var member_no = $("input[name='member_no']").val();
 					var member_name = $("input[name='member_name']").val();
@@ -380,7 +347,6 @@ define([
 						'tran_req_no': tran_req_no,
 						'agreement_no': agreement_no,
 						'reason_kbn': reason_kbn,
-						'return_date': return_date,
 						//'emply_cd_flg': emply_cd_flg,
 						'member_no': member_no,
 						'member_name': member_name,
@@ -486,7 +452,6 @@ define([
 					var tran_req_no = $("button[name='send_param']").val();
 					var agreement_no = $("select[name='agreement_no']").val();
 					var reason_kbn = $("select[name='reason_kbn']").val();
-					var return_date = $("input[name='return_date']").val();
 					var emply_cd_flg = $("#emply_cd_flg").prop("checked");
 					var member_no = $("input[name='member_no']").val();
 					var member_name = $("input[name='member_name']").val();
@@ -500,7 +465,6 @@ define([
 						'tran_req_no': tran_req_no,
 						'agreement_no': agreement_no,
 						'reason_kbn': reason_kbn,
-						'return_date': return_date,
 						//'emply_cd_flg': emply_cd_flg,
 						'member_no': member_no,
 						'member_name': member_name,
