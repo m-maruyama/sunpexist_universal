@@ -595,6 +595,7 @@ $app->post('/unreturn/search', function ()use($app){
             $arg_str .= $q_sort_key . " " . $order;
         }
     }
+    ChromePhp::log($arg_str);
     $t_order = new TOrder();
     $results = new Resultset(null, $t_order, $t_order->getReadConnection()->query($arg_str));
     $result_obj = (array)$results;
@@ -936,9 +937,25 @@ $app->post('/unreturn/search', function ()use($app){
                 $t_returned_results = $paginator->items;
 
                 $num_list = array();
+                $i = 0;
+                $each_item_return_plan_qty = 0;
+                $each_item_quantity = 0;
+                $each_item_returned_qty = 0;
                 foreach ($t_returned_results as $t_returned_result) {
                     array_push($num_list, $t_returned_result->individual_ctrl_no);
+
+                    //返却予定数の合計
+                    $each_item_return_plan_qty = $each_item_return_plan_qty + $t_returned_result[$i]->return_plan_qty;
+                    //数量の合計
+                    $each_item_quantity = $each_item_quantity + $t_returned_result[$i]->quantity;
+                    //返却済み数の合計
+                    $each_item_returned_qty = $each_item_returned_qty + $t_returned_result[$i]->returned_qty;
+
+
+                    $i++;
                 }
+
+
                 // 個体管理番号
                 $individual_ctrl_no = implode("<br>", $num_list);
                 $list['individual_num'] = $individual_ctrl_no;
