@@ -1017,6 +1017,7 @@ $app->post('/wearer/detail', function ()use($app){
                if (!empty($cnt)) {
                    foreach ($input_item as $input_item_map) {
                        $list['item_name'] = $input_item_map->input_item_name;
+                       //$list['rental_qty'] = $input_item_map->std_input_qty;
                    }
                } else {
                    $list['item_name'] = "-";
