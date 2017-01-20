@@ -1911,6 +1911,9 @@ $app->post('/wearer_end_order_insert', function () use ($app) {
         // 理由区分
         array_push($calum_list, "order_reason_kbn");
         array_push($values_list, "'".$wearer_data_input['reason_kbn']."'");
+          // 発注時レンタル部門コード
+          array_push($calum_list, "order_rntl_sect_cd");
+          array_push($values_list, "'".$wearer_data_input['section']."'");
         // 商品マスタ_統合ハッシュキー(企業ID、商品コード、色コード、サイズコード)
         $m_item_comb_hkey = "1";
         array_push($calum_list, "m_item_comb_hkey");
