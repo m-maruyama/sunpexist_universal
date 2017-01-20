@@ -344,7 +344,6 @@ $app->post('/wearer_input', function () use ($app) {
     }
     $json_list['job_type_list'] = $job_type_list;
     //貸与パターン--ここまで
-
     //出荷先--ここから
     $list = array();
     $m_shipment_to_list = array();
@@ -803,7 +802,6 @@ $app->post('/input_insert', function () use ($app) {
 
         //着用者基本マスタ_統合ハッシュキー(企業ID、着用者コード、レンタル契約No.、レンタル部門コード、職種コード)
         $wearer_odr_post = $app->session->get("wearer_odr_post");
-
         //着用者基本情報トラン
         $m_wearer_std_tran = new MWearerStdTran();
         $now = date('Y/m/d H:i:s.sss');
@@ -820,8 +818,13 @@ $app->post('/input_insert', function () use ($app) {
                 $m_wearer_std_tran = MWearerStdTran::find(array(
                     'conditions' => 'm_wearer_std_comb_hkey = '."'".$m_wearer_std_comb_hkey."'"
                 ));
-                $m_wearer_std_tran = $m_wearer_std_tran[0];
-                $order_req_no = $m_wearer_std_tran->getOrderReqNo();//発注No
+                if($m_wearer_std_tran->count()==0){
+                    $m_wearer_std_comb_hkey = md5($auth['corporate_id'] .  '-' . str_pad($results[0]->nextval, 10, '0', STR_PAD_LEFT) .  '-' . $cond['agreement_no'] . '-' . $cond['rntl_sect_cd'] .  '-' . $deli_job[0]);
+                    $order_req_no = ''; //発注No
+                }else{
+                    $m_wearer_std_tran = $m_wearer_std_tran[0];
+                    $order_req_no = $m_wearer_std_tran->getOrderReqNo();//発注No
+                }
             }
         }
         $corporate_id = $auth['corporate_id']; //企業ID
