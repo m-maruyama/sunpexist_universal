@@ -268,7 +268,6 @@ define([
                     e.preventDefault();
                     var that = this;
                     var modelForUpdate = this.model;
-                    if(confirm("発注を保存しますが、よろしいですか？")){
                         modelForUpdate.url = App.api.WO0014;
                         if(this.ui.shipment_to.val()){
                             var m_shipment_to_array = this.ui.shipment_to.val().split(',');
@@ -322,7 +321,6 @@ define([
                                 }
                             }
                         });
-                    };
                 },
                 // 「発注送信」ボタン
                 'click @ui.orderSend': function(e){
