@@ -36,6 +36,10 @@ define([
 				var agreement_no = this.options.agreement_no;
 				var wearer_cd = this.options.wearer_cd;
 				var cster_emply_cd = this.options.cster_emply_cd;
+				var rntl_sect_cd = this.options.rntl_sect_cd;
+				var job_type_cd = this.options.job_type_cd;
+				var werer_sts_kbn = this.options.werer_sts_kbn;
+
 				var that = this;
 
 				var modelForUpdate = this.model;
@@ -45,6 +49,9 @@ define([
 					"agreement_no": agreement_no,
 					"wearer_cd": wearer_cd,
 					"cster_emply_cd": cster_emply_cd,
+					"rntl_sect_cd": rntl_sect_cd,
+					"job_type_cd": job_type_cd,
+					"werer_sts_kbn": werer_sts_kbn
 				};
 
 				modelForUpdate.fetchMx({

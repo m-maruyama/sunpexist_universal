@@ -60,11 +60,14 @@ define([
 				});
 
 				// 着用者詳細モーダル --ここから
-				this.listenTo(wearerListListView, 'childview:click:a', function(view, agreement_no, wearer_cd, cster_emply_cd){
+				this.listenTo(wearerListListView, 'childview:click:a', function(view, agreement_no, wearer_cd, cster_emply_cd, rntl_sect_cd, job_type_cd, werer_sts_kbn){
 					var wearerDetailModalView = new App.Admin.Views.WearerDetailModal({
 						agreement_no: agreement_no,
 						wearer_cd: wearer_cd,
 						cster_emply_cd: cster_emply_cd,
+						rntl_sect_cd: rntl_sect_cd,
+						job_type_cd: job_type_cd,
+						werer_sts_kbn: werer_sts_kbn
 					});
 					wearerDetailModalView.fetchDetail();
 
