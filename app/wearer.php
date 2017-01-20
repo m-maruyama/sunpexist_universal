@@ -683,10 +683,6 @@ $app->post('/wearer/detail', function ()use($app){
         $arg_str .= $query;
         $arg_str .= ") as distinct_table";
 
-        if (!empty($q_sort_key)) {
-            $arg_str .= " ORDER BY ";
-            $arg_str .= $q_sort_key . " " . $order;
-        }
         $t_order = new TOrder();
         $results = new Resultset(null, $t_order, $t_order->getReadConnection()->query($arg_str));
         $result_obj = (array)$results;
@@ -894,7 +890,7 @@ $app->post('/wearer/detail', function ()use($app){
                    $list["returned_qty"] = $each_item_returned_qty;
 
                    //返却済み数
-                   if ($list['rental_qty'] - $list["returned_qty"] > 0) {
+                   if ($list['rental_qty'] > 0) {
                        // 表No
                        $list['list_no'] = $no_num++;
                        array_push($wearer_item_list, $list);
