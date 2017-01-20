@@ -151,23 +151,26 @@ $app->post('/history/search', function ()use($app){
 
     //ゼロ埋めがない場合、ログインアカウントの条件追加
     if($rntl_sect_cd_zero_flg == 0){
-        if($all_list > 0){
-            $order_section = array();
-            $all_list_count = count($all_list);
-            for($i=0; $i < $all_list_count; $i++){
-                //着用者区分
-                array_push($order_section,$all_list[$i]);
+        if(empty($cond['section'])) {
+            if ($all_list > 0) {
+                $order_section = array();
+                $all_list_count = count($all_list);
+                for ($i = 0; $i < $all_list_count; $i++) {
+                    //着用者区分
+                    array_push($order_section, $all_list[$i]);
+                }
+                if (!empty($order_section)) {
+                    $order_section_str = implode("','", $order_section);
+                    $order_section_query = "t_order.order_rntl_sect_cd IN ('" . $order_section_str . "')";
+                }
+                $rntl_accnt_no = "m_contract_resource.accnt_no = '$accnt_no'";
+                $accnt_no_and_order_section = $rntl_accnt_no . " OR " . $order_section_query;
             }
-            if(!empty($order_section)){
-                $order_section_str = implode("','",$order_section);
-                $order_section_query = "t_order.order_rntl_sect_cd IN ('".$order_section_str."')";
-            }
-            $rntl_accnt_no = "m_contract_resource.accnt_no = '$accnt_no'";
-            $accnt_no_and_order_section = $rntl_accnt_no . " OR " . $order_section_query;
+            array_push($query_list, "$accnt_no_and_order_section");
+        }else{
+            //array_push($query_list,"m_contract_resource.accnt_no = '$accnt_no'");
         }
-        array_push($query_list,"$accnt_no_and_order_section");
     }
-
 	//ステータス
 	$status_list = array();
 	if($cond['status0']){
