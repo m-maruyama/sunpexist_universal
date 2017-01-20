@@ -303,51 +303,51 @@ define([
 						add_item[i]["add_order_num_disable"] = $("input[name='add_order_num_disable" + i + "']").val();
 					}
 
-					var cond = {
-						"scr": '貸与開始-入力完了-check',
-						"cond": data,
-						"snd_kbn": '0',
-						"add_item": add_item,
-						"mode": "check",
-					};
-					modelForUpdate.fetchMx({
-						data: cond,
-						success: function (res) {
-							var res_val = res.attributes;
-							if (res_val["error_code"] == "0") {
-								var msg = "入力を完了しますが、よろしいですか？";
-								if (window.confirm(msg)) {
-									var cond = {
-										"scr": '貸与開始-入力完了-update',
-										"cond": data,
-										"snd_kbn": '0',
-										"add_item": add_item,
-										"mode": "update",
-									};
-									modelForUpdate.fetchMx({
-										data: cond,
-										success: function (res) {
-											var res_val = res.attributes;
-											if (res_val["error_code"] == '1') {
-												that.triggerMethod('error_msg', res_val["error_msg"]);
-											} else {
-												window.sessionStorage.setItem('referrer', 'wearer_order');
-												window.sessionStorage.removeItem('wearer_input_ref');
-												location.href = "wearer_order_complete.html";
-											}
-										}
-									});
-								}
-							}else {
-								that.triggerMethod('error_msg', res_val["error_msg"]);
-							}
-						},
-					});
-				},
-				// 「発注送信」ボタン
-				'click @ui.orderSend': function(e){
-					e.preventDefault();
-					// if(confirm('発注内容を送信します。よろしいですか？')){
+                    var cond = {
+                        "scr": '貸与開始-入力完了-check',
+                        "cond": data,
+                        "snd_kbn": '0',
+                        "add_item": add_item,
+                        "mode": "check",
+                    };
+                    modelForUpdate.fetchMx({
+                        data: cond,
+                        success: function (res) {
+                            var res_val = res.attributes;
+                            if (res_val["error_code"] == "0") {
+                                var msg = "入力を完了しますが、よろしいですか？";
+                                if (window.confirm(msg)) {
+                                    var cond = {
+                                        "scr": '貸与開始-入力完了-update',
+                                        "cond": data,
+                                        "snd_kbn": '0',
+                                        "add_item": add_item,
+                                        "mode": "update",
+                                    };
+                                    modelForUpdate.fetchMx({
+                                        data: cond,
+                                        success: function (res) {
+                                            var res_val = res.attributes;
+                                            if (res_val["error_code"] == '1') {
+                                                that.triggerMethod('error_msg', res_val["error_msg"]);
+                                            } else {
+                                                window.sessionStorage.setItem('referrer', 'wearer_order');
+                                                window.sessionStorage.removeItem('wearer_input_ref');
+                                                location.href = "wearer_order_complete.html";
+                                            }
+                                        }
+                                    });
+                                }
+                            }else{
+                                that.triggerMethod('error_msg', res_val["error_msg"]);
+                            }
+                        },
+                    });
+                },
+                // 「発注送信」ボタン
+                'click @ui.orderSend': function(e){
+                    e.preventDefault();
+                    // if(confirm('発注内容を送信します。よろしいですか？')){
 
 						var that = this;
 
@@ -384,50 +384,50 @@ define([
 							add_item[i]["add_order_num_disable"] = $("input[name='add_order_num_disable"+i+"']").val();
 						}
 
-					var cond = {
-						"scr": '貸与開始-発注送信-check',
-						"cond": data,
-						"snd_kbn": '1',
-						"add_item": add_item,
-						"mode": "check",
-					};
-					modelForUpdate.fetchMx({
-						data: cond,
-						success: function (res) {
-							var res_val = res.attributes;
-							if (res_val["error_code"] == "0") {
-								var msg = "発注内容を送信します。よろしいですか？";
-								if (window.confirm(msg)) {
-									var cond = {
-										"scr": '貸与開始-発注送信-update',
-										"cond": data,
-										"snd_kbn": '1',
-										"add_item": add_item,
-										"mode": "update",
-									};
-									modelForUpdate.fetchMx({
-										data: cond,
-										success: function (res) {
-											var res_val = res.attributes;
-											if(res_val["error_code"]=='1') {
-												that.triggerMethod('error_msg', res_val["error_msg"]);
-											}else{
-												window.sessionStorage.setItem('referrer', 'wearer_order_send');
-												window.sessionStorage.removeItem('wearer_input_ref');
-												location.href="wearer_order_complete.html";
-											}
-										}
-									});
-								}
-							}else {
-								that.triggerMethod('error_msg', res_val["error_msg"]);
-							}
-						},
-					});
-				},
-			},
-			onShow: function(val, type) {
-			},
-		});
-	});
+                    var cond = {
+                        "scr": '貸与開始-発注送信-check',
+                        "cond": data,
+                        "snd_kbn": '1',
+                        "add_item": add_item,
+                        "mode": "check",
+                    };
+                    modelForUpdate.fetchMx({
+                        data: cond,
+                        success: function (res) {
+                            var res_val = res.attributes;
+                            if (res_val["error_code"] == "0") {
+                                var msg = "発注内容を送信します。よろしいですか？";
+                                if (window.confirm(msg)) {
+                                    var cond = {
+                                        "scr": '貸与開始-発注送信-update',
+                                        "cond": data,
+                                        "snd_kbn": '1',
+                                        "add_item": add_item,
+                                        "mode": "update",
+                                    };
+                                    modelForUpdate.fetchMx({
+                                        data: cond,
+                                        success: function (res) {
+                                            var res_val = res.attributes;
+                                            if(res_val["error_code"]=='1') {
+                                                that.triggerMethod('error_msg', res_val["error_msg"]);
+                                            }else{
+                                                window.sessionStorage.setItem('referrer', 'wearer_order_send');
+                                                window.sessionStorage.removeItem('wearer_input_ref');
+                                                location.href="wearer_order_complete.html";
+                                            }
+                                        }
+                                    });
+                                }
+                            }else{
+                                that.triggerMethod('error_msg', res_val["error_msg"]);
+                            }
+                        },
+                    });
+                },
+            },
+            onShow: function(val, type) {
+            },
+        });
+    });
 });
