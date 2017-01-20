@@ -1657,6 +1657,40 @@ $app->post('/import_csv', function () use ($app) {
                 );
                 $values_list[] = "'" . $m_wearer_item_comb_hkey . "'";
                 $values_list[] = "'" . date("Ymd", time()) . "'";
+
+                //異動の場合
+                if($result->order_kbn=='5'){
+                    // 着用者基本マスタ参照 元々の職種コード、拠点コードの確認
+                    $query_list = array();
+                    array_push($query_list, "corporate_id = '".$auth['corporate_id']."'");
+                    array_push($query_list, "rntl_cont_no = '".$agreement_no."'");
+                    array_push($query_list, "werer_cd = '".$result->werer_cd."'");
+                    // 着用者状況区分(稼働)
+                    array_push($query_list, "werer_sts_kbn = '1'");
+                    $query = implode(' AND ', $query_list);
+
+                    $arg_str = "";
+                    $arg_str = "SELECT ";
+                    $arg_str .= "*";
+                    $arg_str .= " FROM ";
+                    $arg_str .= "m_wearer_std";
+                    $arg_str .= " WHERE ";
+                    $arg_str .= $query;
+                    //ChromePhp::LOG($arg_str);
+                    $m_wearer_std = new MWearerStd();
+                    $results = new Resultset(NULL, $m_wearer_std, $m_wearer_std->getReadConnection()->query($arg_str));
+                    $result_obj = (array)$results;
+                    $results_cnt = $result_obj["\0*\0_count"];
+                    if (!empty($results_cnt)) {
+                        foreach ($results as $result) {
+                            $before_rntl_sect_cd = $result->rntl_sect_cd;
+                        }
+                    }
+                }else{
+                    $before_rntl_sect_cd = $result->rntl_sect_cd;
+                }
+
+                $values_list[] = "'".$before_rntl_sect_cd. "'";
                 $values = implode(",", $values_list);
                 $values = "(" . $values . ")";
                 $values_querys[] = $values;
@@ -1719,7 +1753,8 @@ $app->post('/import_csv', function () use ($app) {
                 "m_section_comb_hkey",
                 "m_wearer_std_comb_hkey",
                 "m_wearer_item_comb_hkey",
-                "appointment_ymd"
+                "appointment_ymd",
+                "order_rntl_sect_cd"
             );
             $calum_query = implode(",", $calum_list);
 
