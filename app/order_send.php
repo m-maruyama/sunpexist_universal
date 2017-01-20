@@ -61,7 +61,6 @@ $app->post('/order_send/search', function () use ($app) {
     } else {
       $section_all_zero_flg = false;
     }
-
     $query_list = array();
     $query_list[] = "m_wearer_std_tran.corporate_id = '".$auth['corporate_id']."'";
     if (!empty($cond['agreement_no'])) {
@@ -77,7 +76,7 @@ $app->post('/order_send/search', function () use ($app) {
       $query_list[] = "m_wearer_std_tran.sex_kbn = '".$cond['sex_kbn']."'";
     }
     if (!empty($cond['section'])) {
-      $query_list[] = "m_wearer_std_tran.rntl_sect_cd = '".$cond['section']."'";
+      $query_list[] = "(t_order_tran.rntl_sect_cd = '".$cond['section']."' OR t_order_tran.order_rntl_sect_cd = '".$cond['section']."')";
     }
     if (!empty($cond['job_type'])) {
       $query_list[] = "m_wearer_std_tran.job_type_cd = '".$cond['job_type']."'";
@@ -86,9 +85,27 @@ $app->post('/order_send/search', function () use ($app) {
       $query_list[] = "m_wearer_std_tran.snd_kbn = '".$cond['snd_kbn']."'";
     }
     if (!$section_all_zero_flg) {
-      $query_list[] = "m_contract_resource.corporate_id = '".$auth['corporate_id']."'";
-      $query_list[] = "m_contract_resource.rntl_cont_no = '".$cond['agreement_no']."'";
-      $query_list[] = "m_contract_resource.accnt_no = '".$auth['accnt_no']."'";
+        //ゼロ埋めがない場合、ログインアカウントの条件追加
+            if(empty($cond['section'])) {
+                if ($all_list > 0) {
+                    $order_section = array();
+                    $all_list_count = count($all_list);
+                    for ($i = 0; $i < $all_list_count; $i++) {
+                        //着用者区分
+                        array_push($order_section, $all_list[$i]);
+                    }
+                    if (!empty($order_section)) {
+                        $order_section_str = implode("','", $order_section);
+                        $order_section_query = "t_order_tran.order_rntl_sect_cd IN ('" . $order_section_str . "')";
+                    }
+                    $rntl_accnt_no = "m_contract_resource.accnt_no = '".$auth['accnt_no']."'";
+                    $accnt_no_and_order_section = $rntl_accnt_no . " OR " . $order_section_query;
+                }
+                array_push($query_list, "$accnt_no_and_order_section");
+            }else{
+                //array_push($query_list,"m_contract_resource.accnt_no = '$accnt_no'");
+            }
+    //$query_list[] = "m_contract_resource.accnt_no = '".$auth['accnt_no']."'";
     }
     $query = implode(' AND ', $query_list);
 
