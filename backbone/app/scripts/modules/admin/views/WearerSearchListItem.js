@@ -33,7 +33,8 @@ define([
 						'order_tran_flg': we_val[9],
 						'wst_order_req_no': we_val[10],
 						'order_req_no': we_val[11],
-						'm_wearer_std_comb_hkey': we_val[12]
+						'm_wearer_std_comb_hkey': we_val[12],
+						'comment': we_val[13],
 					};
 					var modelForUpdate = this.model;
 					modelForUpdate.url = App.api.WS0011;

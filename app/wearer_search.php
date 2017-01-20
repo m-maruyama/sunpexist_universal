@@ -382,7 +382,8 @@ $app->post('/wearer_search/search', function ()use($app){
             $list['param'] .= $list['order_tran_flg'].':';
             $list['param'] .= $result->as_wst_order_req_no.':';
             $list['param'] .= $list['order_req_no'].':';
-            $list['param'] .= $result->as_m_wearer_std_comb_hkey;
+            $list['param'] .= $result->as_m_wearer_std_comb_hkey.':';
+            $list['param'] .= $list['comment'];
 
             $all_list[] = $list;
         }

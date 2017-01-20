@@ -671,6 +671,9 @@ $app->post('/wearer_order_list', function ()use($app){
                 $list["order_num"] = $result->as_std_input_qty;
                 $list["order_num_disable"] = "disabled";
             } else {
+                if(isset($result->as_order_qty_tran)){
+                    $list["order_num"] = $result->as_order_qty_tran;
+                }
                 $list["order_num_disable"] = "";
             }
         }
@@ -827,6 +830,11 @@ $app->post('/wearer_order_insert', function () use ($app) {
         $json_list['error_msg'] = $error_list;
         echo json_encode($json_list);
         return true;
+    }
+    if($params['mode']=='check'){
+        echo json_encode($json_list);
+        return;
+
     }
 
     $transaction = $app->transactionManager->get();
