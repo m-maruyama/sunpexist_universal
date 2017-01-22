@@ -199,8 +199,8 @@ $app->post('/csv_download', function ()use($app){
                           $order_section_str = implode("','", $order_section);
                           $order_section_query = "t_order.order_rntl_sect_cd IN ('" . $order_section_str . "')";
                       }
-                      $rntl_accnt_no = "m_contract_resource.accnt_no = '$accnt_no'";
-                      $accnt_no_and_order_section = $rntl_accnt_no . " OR " . $order_section_query;
+                      $rntl_accnt_no = "(m_contract_resource.accnt_no = '$accnt_no'";
+                      $accnt_no_and_order_section = $rntl_accnt_no . " OR " . $order_section_query . ")";
                   }
                   array_push($query_list, "$accnt_no_and_order_section");
               }else{
