@@ -98,8 +98,8 @@ $app->post('/order_send/search', function () use ($app) {
                         $order_section_str = implode("','", $order_section);
                         $order_section_query = "t_order_tran.order_rntl_sect_cd IN ('" . $order_section_str . "')";
                     }
-                    $rntl_accnt_no = "m_contract_resource.accnt_no = '".$auth['accnt_no']."'";
-                    $accnt_no_and_order_section = $rntl_accnt_no . " OR " . $order_section_query;
+                    $rntl_accnt_no = "(m_contract_resource.accnt_no = '".$auth['accnt_no']."'";
+                    $accnt_no_and_order_section = $rntl_accnt_no . " OR " . $order_section_query. ")";
                 }
                 array_push($query_list, "$accnt_no_and_order_section");
             }else{
@@ -167,6 +167,7 @@ $app->post('/order_send/search', function () use ($app) {
     $arg_str .= $query;
     $arg_str .= ") as distinct_table";
     $arg_str .= " ORDER BY as_wst_order_req_no ASC";
+    ChromePhp::log($arg_str);
     $m_wearer_std_tran = new MWearerStdTran();
     $results = new Resultset(null, $m_wearer_std_tran, $m_wearer_std_tran->getReadConnection()->query($arg_str));
     $result_obj = (array)$results;
