@@ -167,7 +167,7 @@ $app->post('/order_send/search', function () use ($app) {
     $arg_str .= $query;
     $arg_str .= ") as distinct_table";
     $arg_str .= " ORDER BY as_wst_order_req_no ASC";
-    ChromePhp::log($arg_str);
+    //ChromePhp::log($arg_str);
     $m_wearer_std_tran = new MWearerStdTran();
     $results = new Resultset(null, $m_wearer_std_tran, $m_wearer_std_tran->getReadConnection()->query($arg_str));
     $result_obj = (array)$results;
