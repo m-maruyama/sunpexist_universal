@@ -137,15 +137,15 @@ $app->post('/order_send/search', function () use ($app) {
     $arg_str .= " FROM ";
     $arg_str .= "(m_wearer_std_tran";
     if ($section_all_zero_flg) {
-      $arg_str .= " INNER JOIN ";
+      $arg_str .= " LEFT JOIN ";
       $arg_str .= "m_section";
       $arg_str .= " ON (m_wearer_std_tran.corporate_id = m_section.corporate_id";
       $arg_str .= " AND m_wearer_std_tran.rntl_cont_no = m_section.rntl_cont_no";
       $arg_str .= " AND m_wearer_std_tran.rntl_sect_cd = m_section.rntl_sect_cd)";
     } else {
-      $arg_str .= " INNER JOIN ";
+      $arg_str .= " LEFT JOIN ";
       $arg_str .= "(m_section";
-      $arg_str .= " INNER JOIN m_contract_resource";
+      $arg_str .= " LEFT JOIN m_contract_resource";
       $arg_str .= " ON m_section.corporate_id = m_contract_resource.corporate_id";
       $arg_str .= " AND m_section.rntl_cont_no = m_contract_resource.rntl_cont_no";
       $arg_str .= " AND m_section.rntl_sect_cd = m_contract_resource.rntl_sect_cd)";
