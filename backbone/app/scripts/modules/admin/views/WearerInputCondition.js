@@ -262,7 +262,6 @@ define([
                             var er = res_val["errors"]
                             res.attributes["errors"] = null;
                             that.triggerMethod('error_msg', er);
-                            return true;
                         }
                     }
                 });
