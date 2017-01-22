@@ -15,7 +15,7 @@
 		<li class="dropdown">
 		<a href="#" class="dropdown-toggle" data-toggle="dropdown">入力 <span class="caret"></span></a>
 		<ul class="dropdown-menu">
-            {{#if button1_use_flg}}<li><a href="wearer_input.html" title="貸与開始" onclick="window.sessionStorage.removeItem('referrer');">貸与開始</a></li>{{/if}}
+            {{#if button1_use_flg}}<li><a href="wearer_input.html" title="貸与開始" onclick="window.sessionStorage.removeItem('referrer');window.sessionStorage.setItem('wearer_input_ref', 'home');">貸与開始</a></li>{{/if}}
             {{#if button2_use_flg}}<li><a href="wearer_size_change.html" title="交換">交換</a></li>{{/if}}
             {{#if button3_use_flg}}<li><a href="wearer_change.html" title="職種変更または異動">職種変更または異動</a></li>{{/if}}
             {{#if button4_use_flg}}<li><a href="wearer_end.html" title="貸与終了">貸与終了</a></li>{{/if}}
