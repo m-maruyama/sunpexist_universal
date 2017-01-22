@@ -64,6 +64,8 @@ $app->post('/history/search', function ()use($app){
 			$rntl_sect_cd_zero_flg = 0;
 	}
 
+
+
 	//---検索条件---//
 	//企業ID
 	array_push($query_list,"t_order.corporate_id = '".$auth['corporate_id']."'");
@@ -89,7 +91,7 @@ $app->post('/history/search', function ()use($app){
 	}
 	//拠点
 	if(!empty($cond['section'])){
-		array_push($query_list,"t_order.rntl_sect_cd = '".$cond['section']."'");
+		array_push($query_list,"(t_order.rntl_sect_cd = '".$cond['section']."' OR t_order.order_rntl_sect_cd = '".$cond['section']."')");
 	}
 	//貸与パターン
 	if(!empty($cond['job_type'])){
@@ -149,11 +151,26 @@ $app->post('/history/search', function ()use($app){
 
     //ゼロ埋めがない場合、ログインアカウントの条件追加
     if($rntl_sect_cd_zero_flg == 0){
-        array_push($query_list,"m_contract_resource.accnt_no = '$accnt_no'");
+        if(empty($cond['section'])) {
+            if ($all_list > 0) {
+                $order_section = array();
+                $all_list_count = count($all_list);
+                for ($i = 0; $i < $all_list_count; $i++) {
+                    //着用者区分
+                    array_push($order_section, $all_list[$i]);
+                }
+                if (!empty($order_section)) {
+                    $order_section_str = implode("','", $order_section);
+                    $order_section_query = "t_order.order_rntl_sect_cd IN ('" . $order_section_str . "')";
+                }
+                $rntl_accnt_no = "m_contract_resource.accnt_no = '$accnt_no'";
+                $accnt_no_and_order_section = $rntl_accnt_no . " OR " . $order_section_query;
+            }
+            array_push($query_list, "$accnt_no_and_order_section");
+        }else{
+            //array_push($query_list,"m_contract_resource.accnt_no = '$accnt_no'");
+        }
     }
-
-	$status_kbn_list = array();
-
 	//ステータス
 	$status_list = array();
 	if($cond['status0']){
@@ -573,10 +590,10 @@ $app->post('/history/search', function ()use($app){
 		$arg_str .= " ORDER BY ";
 		$arg_str .= $q_sort_key." ".$order;
 	}
-    $t_order = new TOrder();
+  $t_order = new TOrder();
 	$results = new Resultset(null, $t_order, $t_order->getReadConnection()->query($arg_str));
 	$result_obj = (array)$results;
-    $results_cnt_history = $result_obj["\0*\0_count"];
+  $results_cnt_history = $result_obj["\0*\0_count"];
 
 	$paginator_model = new PaginatorModel(
 		array(
