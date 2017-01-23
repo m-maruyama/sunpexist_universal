@@ -387,11 +387,11 @@ $app->post('/lend/search', function ()use($app){
       $arg_str .= " FROM ";
       $arg_str .= "t_delivery_goods_state_details";
       $arg_str .= " INNER JOIN (t_delivery_goods_state";
-        $arg_str .= " INNER JOIN (t_order_state";
-        $arg_str .= " INNER JOIN t_order";
-        $arg_str .= " ON t_order.t_order_comb_hkey = t_order_state.t_order_comb_hkey)";
-        $arg_str .= " ON t_order_state.t_order_state_comb_hkey = t_delivery_goods_state.t_order_state_comb_hkey)";
-        $arg_str .= " ON t_delivery_goods_state.corporate_id = t_delivery_goods_state_details.corporate_id";
+      $arg_str .= " INNER JOIN (t_order_state";
+      $arg_str .= " INNER JOIN t_order";
+      $arg_str .= " ON t_order.t_order_comb_hkey = t_order_state.t_order_comb_hkey)";
+      $arg_str .= " ON t_order_state.t_order_state_comb_hkey = t_delivery_goods_state.t_order_state_comb_hkey)";
+      $arg_str .= " ON t_delivery_goods_state.corporate_id = t_delivery_goods_state_details.corporate_id";
       $arg_str .= " AND t_delivery_goods_state.ship_no = t_delivery_goods_state_details.ship_no";
       $arg_str .= " AND t_delivery_goods_state.ship_line_no = t_delivery_goods_state_details.ship_line_no";
       $arg_str .= " WHERE ";
