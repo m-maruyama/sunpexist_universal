@@ -165,7 +165,7 @@ $app->post('/lend/search', function ()use($app){
 		$q_sort_key = "as_cster_emply_cd";
 		$order = 'asc';
 	}
-    //商品cd、色cd単位でdistinct
+  //商品cd、色cd、着用者cd単位でdistinct
 	//---SQLクエリー実行---//
   $arg_str = "SELECT ";
   $arg_str .= " * ";
@@ -509,11 +509,6 @@ $app->post('/lend/search', function ()use($app){
                       array_push($order_kbn_list, $gencode_map->gen_name);
                   }
               }
-
-
-
-
-
           }
 
           // 個体管理番号
