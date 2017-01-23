@@ -3417,36 +3417,12 @@ $app->post('/csv_download', function ()use($app){
 				array_multisort(array_column($all_list, 'input_item_name'), SORT_ASC, $all_list);
 			}
 		}
-
         // 個体管理番号表示/非表示フラグ設定
         if (individual_flg($auth['corporate_id'], $cond['agreement_no']) == 1) {
             $individual_flg = true;
         } else {
             $individual_flg = false;
         }
-/*
-		$query_list = array();
-		array_push($query_list, "corporate_id = '".$auth['corporate_id']."'");
-		array_push($query_list, "rntl_cont_no = '".$cond['agreement_no']."'");
-		$query = implode(' AND ', $query_list);
-		$m_contract = MContract::query()
-			->where($query)
-			->columns('*')
-			->execute();
-		$m_contract_obj = (array)$m_contract;
-		$cnt = $m_contract_obj["\0*\0_count"];
-		$individual_flg = "";
-		if (!empty($cnt)) {
-			foreach ($m_contract as $m_contract_map) {
-				$individual_flg = $m_contract_map->individual_flg;
-			}
-			if ($individual_flg == 1) {
-				$individual_flg = true;
-			} else {
-				$individual_flg = false;
-			}
-		}
-*/
 
 		//---CSV出力---//
 		$csv_datas = array();
@@ -3471,9 +3447,10 @@ $app->post('/csv_download', function ()use($app){
 		array_push($header_2, "出荷日");
 		array_push($header_2, "返却予定数");
 		array_push($header_2, "発注No");
-    array_push($header_2, "納品時の貸与パターン");
+    array_push($header_2, "発注区分");
     array_push($header_2, "納品時の拠点");
-		array_push($header_2, "伝票番号");
+    array_push($header_2, "納品時の貸与パターン");
+    array_push($header_2, "伝票番号");
 		array_push($csv_datas, $header_2);
 
 		// ボディ作成
@@ -3488,34 +3465,29 @@ $app->post('/csv_download', function ()use($app){
 				array_push($csv_body_list, $all_map["now_rntl_sect_name"]);
 				// 現在の貸与パターン
 				array_push($csv_body_list, $all_map["now_job_type_name"]);
-				// 納品時の拠点
-				array_push($csv_body_list, $all_map["old_rntl_sect_name"]);
-				// 納品時の貸与パターン
-				array_push($csv_body_list, $all_map["old_job_type_name"]);
 				// 商品-色(サイズ-サイズ2)
 				array_push($csv_body_list, $all_map["shin_item_code"]);
 				// 商品名
 				array_push($csv_body_list, $all_map["input_item_name"]);
-				// 個体管理番号
-                /*
-				if ($individual_flg) {
-					array_push($csv_body_list, '="'.$all_map["individual_ctrl_no"].'"');
-				}*/
-                // 個体管理番号
-                if ($individual_flg) {
-                    array_push($csv_body_list, $all_map["individual_num"]);
-                }
-				// 出荷数
-				array_push($csv_body_list, $all_map["ship_qty"]);
+        // 個体管理番号
+        if ($individual_flg) {
+            array_push($csv_body_list, $all_map["individual_num"]);
+        }
+				// 貸与数
+				array_push($csv_body_list, $all_map["quantity"]);
 				// 出荷日
 				array_push($csv_body_list, $all_map["ship_ymd"]);
-				// 返却予定日
-				array_push($csv_body_list, $all_map["re_order_date"]);
+				// 返却予定数
+				array_push($csv_body_list, $all_map["return_plan__qty"]);
 				// 発注No
 				array_push($csv_body_list, $all_map["order_req_no"]);
-				// 受注番号
-				array_push($csv_body_list, $all_map["rec_order_no"]);
-				// 伝票番号
+				// 発注区分
+				array_push($csv_body_list, $all_map["order_kbn"]);
+        // 納品時の拠点
+        array_push($csv_body_list, $all_map["old_rntl_sect_name"]);
+        // 納品時の貸与パターン
+        array_push($csv_body_list, $all_map["old_job_type_name"]);
+        // 伝票番号
 				array_push($csv_body_list, $all_map["ship_no"]);
 
 				// CSVレコード配列にマージ
