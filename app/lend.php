@@ -170,7 +170,7 @@ $app->post('/lend/search', function ()use($app){
   $arg_str = "SELECT ";
   $arg_str .= " * ";
   $arg_str .= " FROM ";
-	$arg_str .= "(SELECT distinct on (t_delivery_goods_state_details.item_cd,t_delivery_goods_state_details.color_cd,t_delivery_goods_state_details.size_cd) ";
+	$arg_str .= "(SELECT distinct on (t_delivery_goods_state_details.werer_cd,t_delivery_goods_state_details.item_cd,t_delivery_goods_state_details.color_cd,t_delivery_goods_state_details.size_cd) ";
 	$arg_str .= "m_wearer_std.cster_emply_cd as as_cster_emply_cd,";
 	$arg_str .= "m_wearer_std.werer_name as as_werer_name,";
 	$arg_str .= "m_wearer_std.rntl_sect_cd as as_now_rntl_sect_cd,";
@@ -263,10 +263,7 @@ $app->post('/lend/search', function ()use($app){
 			$list['now_rntl_sect_cd'] = $result->as_now_rntl_sect_cd;
 			// 現在の貸与パターン
 			$list['now_job_type_cd'] = $result->as_now_job_type_cd;
-			// 納品時の拠点コード
-			$list['old_rntl_sect_cd'] = $result->as_old_rntl_sect_cd;
-			// 納品時の貸与パターン
-			$list['old_job_type_cd'] = $result->as_old_job_type_cd;
+
 			// 商品コード
 			$list['item_cd'] = $result->as_item_cd;
 			// 色コード
@@ -283,48 +280,8 @@ $app->post('/lend/search', function ()use($app){
 			} else {
 				$list['individual_ctrl_no'] = "-";
 			}
-			// 出荷数
-			if (!empty($result->as_ship_qty)) {
-				$list['ship_qty'] = $result->as_ship_qty;
-			} else {
-				$list['ship_qty'] = "-";
-			}
-			// 出荷日
-			$list['ship_ymd'] = $result->as_ship_ymd;
-			// 返却予定日
-			$list['re_order_date'] = $result->as_re_order_date;
-			// 発注No
-			if (!empty($result->as_order_req_no)) {
-				$list['order_req_no'] = $result->as_order_req_no;
-			} else {
-				$list['order_req_no'] = "-";
-			}
-			// メーカー受注番号
-			if (!empty($result->as_rec_order_no)) {
-				$list['rec_order_no'] = $result->as_rec_order_no;
-			} else {
-				$list['rec_order_no'] = "-";
-			}
-			// メーカー伝票番号
-			if (!empty($result->as_ship_no)) {
-				$list['ship_no'] = $result->as_ship_no;
-			} else {
-				$list['ship_no'] = "-";
-			}
 
-			//---日付設定---//
-			// 出荷日
-			if(!empty($list['ship_ymd'])){
-				$list['ship_ymd'] = date('Y/m/d',strtotime($list['ship_ymd']));
-			}else{
-				$list['ship_ymd'] = '-';
-			}
-			// 返却予定日
-			if(!empty($list['re_order_date'])){
-				$list['re_order_date'] =  date('Y/m/d',strtotime($list['re_order_date']));
-			}else{
-				$list['re_order_date'] = '-';
-			}
+
 
 			// 商品-色(サイズ-サイズ2)表示変換
 			$list['shin_item_code'] = $list['item_cd']."-".$list['color_cd']."(".$list['size_cd']."-".$list['size_two_cd'].")";
@@ -379,8 +336,8 @@ $app->post('/lend/search', function ()use($app){
 			$search_q = array();
 			array_push($search_q, "corporate_id = '".$auth['corporate_id']."'");
 			array_push($search_q, "rntl_cont_no = '".$cond['agreement_no']."'");
-			array_push($search_q, "job_type_cd = '".$list['old_job_type_cd']."'");
-			array_push($search_q, "job_type_item_cd = '".$list['job_type_item_cd']."'");
+			array_push($search_q, "job_type_cd = '".$result->as_old_job_type_cd."'");
+			array_push($search_q, "job_type_item_cd = '".$result->as_job_type_item_cd."'");
 			array_push($search_q, "item_cd = '".$list['item_cd']."'");
 			array_push($search_q, "color_cd = '".$list['color_cd']."'");
         //サイズ2が空だったらサイズ2を検索条件に入れない
@@ -420,6 +377,7 @@ $app->post('/lend/search', function ()use($app){
       $arg_str .= "t_delivery_goods_state_details.individual_ctrl_no as as_individual_ctrl_no,";
       $arg_str .= "t_delivery_goods_state_details.quantity as as_quantity,";
       $arg_str .= "t_delivery_goods_state_details.return_plan__qty as as_return_plan__qty,";
+      $arg_str .= "t_delivery_goods_state_details.returned_qty as as_returned_qty,";
       $arg_str .= "t_delivery_goods_state_details.ship_no as as_ship_no,";
       $arg_str .= "t_delivery_goods_state.ship_ymd as as_ship_ymd,";
       $arg_str .= "t_order.order_req_no as as_order_req_no,";
@@ -463,76 +421,93 @@ $app->post('/lend/search', function ()use($app){
           $old_job_type_list = array();
           $order_kbn_list = array();
           foreach ($del_gd_results as $del_gd_result) {
-              array_push($num_list, $del_gd_result->as_individual_ctrl_no);
-              array_push($ship_list, $del_gd_result->as_ship_no);
-              array_push($quantity_list, $del_gd_result->as_quantity);
-              array_push($return_plan_qty_list, $del_gd_result->as_return_plan__qty);
-              array_push($order_req_no_list, $del_gd_result->as_order_req_no);
-
-              //出荷no
-              if ($del_gd_result->as_ship_ymd !== null) {
-                  array_push($ship_ymd_list, date('Y/m/d',strtotime($del_gd_result->as_ship_ymd)));
-              } else {
-                  array_push($ship_ymd_list, "-");
+              //数量計算 : 数量 - 返却済み数
+              $quantity = $del_gd_result->as_quantity - $del_gd_result->as_returned_qty;
+              if($quantity > 0) {
+                  $not_display_flg = true;
+              }
+              else{
+                  $not_display_flg = false;
               }
 
-              // 納品時の拠点
-              $search_q = array();
-              array_push($search_q, "corporate_id = '".$auth['corporate_id']."'");
-              array_push($search_q, "rntl_cont_no = '".$cond['agreement_no']."'");
-              array_push($search_q, "rntl_sect_cd = '".$del_gd_result->as_rntl_sect_cd."'");
-              //sql文字列を' AND 'で結合
-              $query = implode(' AND ', $search_q);
-              $section = MSection::query()
-                  ->where($query)
-                  ->columns('*')
-                  ->execute();
-              // 取得オブジェクトを配列化→クラス内propety：protected値を取得する→リストカウント
-              $section_obj = (array)$section;
-              $cnt = $section_obj["\0*\0_count"];
-              if (!empty($cnt)) {
-                  foreach ($section as $section_map) {
-                      array_push($old_sect_no_list, $section_map->rntl_sect_name);
+              if($not_display_flg){
+
+                  //個体管理番号
+                  array_push($num_list, $del_gd_result->as_individual_ctrl_no);
+                  //出荷no
+                  array_push($ship_list, $del_gd_result->as_ship_no);
+                  //数量
+                  array_push($quantity_list, $quantity);
+                  //返却予定数計算  : 返却予定数 - 返却済み数
+                  $return_plan__qty = $del_gd_result->as_return_plan__qty - $del_gd_result->as_returned_qty;
+                  array_push($return_plan_qty_list, $return_plan__qty);
+                  array_push($order_req_no_list, $del_gd_result->as_order_req_no);
+
+                  //出荷no
+                  if ($del_gd_result->as_ship_ymd !== null) {
+                      array_push($ship_ymd_list, date('Y/m/d',strtotime($del_gd_result->as_ship_ymd)));
+                  } else {
+                      array_push($ship_ymd_list, "-");
                   }
-              } else {
-                  $list['old_rntl_sect_name'] = "-";
-              }
-              // 納品時の貸与パターン
-              $search_q = array();
-              array_push($search_q, "corporate_id = '".$auth['corporate_id']."'");
-              array_push($search_q, "rntl_cont_no = '".$cond['agreement_no']."'");
-              array_push($search_q, "job_type_cd = '".$del_gd_result->as_job_type_cd."'");
-              //sql文字列を' AND 'で結合
-              $query = implode(' AND ', $search_q);
-              $job_type = MJobType::query()
-                  ->where($query)
-                  ->columns('*')
-                  ->execute();
-              // 取得オブジェクトを配列化→クラス内propety：protected値を取得する→リストカウント
-              $job_type_obj = (array)$job_type;
-              $cnt = $job_type_obj["\0*\0_count"];
-              if (!empty($cnt)) {
-                  foreach ($job_type as $job_type_map) {
-                      array_push($old_job_type_list, $job_type_map->job_type_name);
-                  }
-              } else {
-                  $list['old_job_type_name'] = "-";
-              }
 
-              //---発注区分名称---//
-              $search_q = array();
-              // 汎用コードマスタ.分類コード
-              array_push($search_q, "cls_cd = '001'");
-              // 汎用コードマスタ. レンタル契約No
-              array_push($search_q, "gen_cd = '".$del_gd_result->as_order_sts_kbn."'");
-              //sql文字列を' AND 'で結合
-              $query = implode(' AND ', $search_q);
-              $gencode = MGencode::query()
-                  ->where($query)
-                  ->columns('*')
-                  ->execute();
-              foreach ($gencode as $gencode_map) {
-                  array_push($order_kbn_list, $gencode_map->gen_name);
+                  // 納品時の拠点
+                  $search_q = array();
+                  array_push($search_q, "corporate_id = '".$auth['corporate_id']."'");
+                  array_push($search_q, "rntl_cont_no = '".$cond['agreement_no']."'");
+                  array_push($search_q, "rntl_sect_cd = '".$del_gd_result->as_rntl_sect_cd."'");
+                  //sql文字列を' AND 'で結合
+                  $query = implode(' AND ', $search_q);
+                  $section = MSection::query()
+                      ->where($query)
+                      ->columns('*')
+                      ->execute();
+                  // 取得オブジェクトを配列化→クラス内propety：protected値を取得する→リストカウント
+                  $section_obj = (array)$section;
+                  $cnt = $section_obj["\0*\0_count"];
+                  if (!empty($cnt)) {
+                      foreach ($section as $section_map) {
+                          array_push($old_sect_no_list, $section_map->rntl_sect_name);
+                      }
+                  } else {
+                      $list['old_rntl_sect_name'] = "-";
+                  }
+                  // 納品時の貸与パターン
+                  $search_q = array();
+                  array_push($search_q, "corporate_id = '".$auth['corporate_id']."'");
+                  array_push($search_q, "rntl_cont_no = '".$cond['agreement_no']."'");
+                  array_push($search_q, "job_type_cd = '".$del_gd_result->as_job_type_cd."'");
+                  //sql文字列を' AND 'で結合
+                  $query = implode(' AND ', $search_q);
+                  $job_type = MJobType::query()
+                      ->where($query)
+                      ->columns('*')
+                      ->execute();
+                  // 取得オブジェクトを配列化→クラス内propety：protected値を取得する→リストカウント
+                  $job_type_obj = (array)$job_type;
+                  $cnt = $job_type_obj["\0*\0_count"];
+                  if (!empty($cnt)) {
+                      foreach ($job_type as $job_type_map) {
+                          array_push($old_job_type_list, $job_type_map->job_type_name);
+                      }
+                  } else {
+                      $list['old_job_type_name'] = "-";
+                  }
+
+                  //---発注区分名称---//
+                  $search_q = array();
+                  // 汎用コードマスタ.分類コード
+                  array_push($search_q, "cls_cd = '001'");
+                  // 汎用コードマスタ. レンタル契約No
+                  array_push($search_q, "gen_cd = '".$del_gd_result->as_order_sts_kbn."'");
+                  //sql文字列を' AND 'で結合
+                  $query = implode(' AND ', $search_q);
+                  $gencode = MGencode::query()
+                      ->where($query)
+                      ->columns('*')
+                      ->execute();
+                  foreach ($gencode as $gencode_map) {
+                      array_push($order_kbn_list, $gencode_map->gen_name);
+                  }
               }
 
 
@@ -540,6 +515,7 @@ $app->post('/lend/search', function ()use($app){
 
 
           }
+
           // 個体管理番号
           $individual_ctrl_no = implode("<br>", $num_list);
           $list['individual_num'] = $individual_ctrl_no;
@@ -568,14 +544,9 @@ $app->post('/lend/search', function ()use($app){
           $order_kbn = implode("<br>", $order_kbn_list);
           $list['order_kbn'] = $order_kbn;
 
-
-          /*
-          // 受領日
-          $receipt_date = implode("<br>", $day_list);
-          $list['order_res_ymd'] = $receipt_date;
-          */
       }
-      array_push($all_list,$list);
+      //数量 - 返却済み数 の合計が 0 になる場合は、表示をしない
+        array_push($all_list,$list);
 		}
 	}
 
