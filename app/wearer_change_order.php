@@ -919,7 +919,7 @@ $app->post('/wearer_change/info', function ()use($app){
       $json_list['wearer_info'] = $all_list;
     }
 
-    //以前の職種取得//
+    //以前の職種取得 // 以前の拠点取得//
     $query_list = array();
     array_push($query_list, "m_wearer_std.corporate_id = '".$auth['corporate_id']."'");
     array_push($query_list, "m_wearer_std.rntl_cont_no = '".$wearer_chg_post['rntl_cont_no']."'");
@@ -928,7 +928,8 @@ $app->post('/wearer_change/info', function ()use($app){
 
     $arg_str = "";
     $arg_str = "SELECT ";
-    $arg_str .= "m_wearer_std.job_type_cd as as_job_type_cd";
+    $arg_str .= "m_wearer_std.job_type_cd as as_job_type_cd,";
+    $arg_str .= "m_wearer_std.rntl_sect_cd as as_rntl_sect_cd";
     $arg_str .= " FROM ";
     $arg_str .= "m_wearer_std";
     $arg_str .= " WHERE ";
@@ -951,6 +952,9 @@ $app->post('/wearer_change/info', function ()use($app){
         $results = $paginator->items;
         foreach ($results as $result) {
             $bef_job_type_cd = $result->as_job_type_cd;
+            $bef_rntl_sect_cd = $result->as_rntl_sect_cd;
+            $json_list['bef_job_type_cd'] = $bef_job_type_cd;
+            $json_list['bef_rntl_sect_cd'] = $bef_rntl_sect_cd;
         }
     }
 
@@ -1077,7 +1081,7 @@ $app->post('/wearer_change/info', function ()use($app){
     $json_list['werer_cd'] = $wearer_chg_post["werer_cd"];
     // 着用者基本情報トランフラグ
     $json_list['wearer_tran_flg'] = $wearer_chg_post["wearer_tran_flg"];
-
+    //ChromePhp::log($json_list);
     echo json_encode($json_list);
 });
 
@@ -2229,8 +2233,6 @@ $app->post('/wearer_change/info', function ()use($app){
             }
 
          }
-
-
 
        //--その他の必要hiddenパラメータ--//
        // 部門コード

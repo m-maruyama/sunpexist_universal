@@ -47,6 +47,26 @@ define([
 				var wearer_data = data["wearer_data"];
 				var now_item = data["now_item"];
 				var add_item = data["add_item"];
+				var add_item_length = Object.keys(data["add_item"]).length;
+				//メッセージ出しわけ
+
+				if(data["wearer_data"].reason_kbn == '09'){
+					if(add_item_length > 0){
+						//職種変更のみ 発注あり
+						$(".explanation2").css('display', 'none');
+					}else{
+						//職種変更のみ 発注なし
+						$(".explanation1").css('display', 'none');
+					}
+				}
+				if(data["wearer_data"].reason_kbn == '10'){
+					//職種のみ異動
+					$(".explanation1").css('display', 'none');
+				}
+				if(data["wearer_data"].reason_kbn == '11'){
+					//職種変更及び拠点異動
+					$(".explanation2").css('display', 'none');
+				}
 
 				// 入力内容登録処理
 				var modelForUpdate = this.model;

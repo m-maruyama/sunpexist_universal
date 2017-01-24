@@ -98,7 +98,10 @@ define([
 							that.triggerMethod('showAlerts', errorMessages);
 						}
 						var res_list = res.attributes;
-						//console.log(res_list);
+						//以前の拠点画面に埋め込み
+						$("#bef_rntl_sect_cd").val(res_list['bef_rntl_sect_cd']);
+						//以前の職種画面に埋め込み
+						$("#bef_job_type_cd").val(res_list['bef_job_type_cd']);
 
 						var delete_param =
 							res_list['rntl_cont_no'] + ":"
@@ -289,6 +292,7 @@ define([
 					//更新可否フラグ絞り込み用 セレクトボックスの拠点cd取得
 					var rntl_sect_cd = $("select[name='section']").val();
 					var rntl_cont_no = $("select[name='agreement_no']").val();
+
 					var modelForUpdate = this.model;
 					modelForUpdate.url = App.api.CM0130;
 					var cond = {
@@ -597,9 +601,27 @@ define([
 					});
 				}
 				if (type == "WC0022_req") {
+					//以前の職種と拠点
+					var	bef_rntl_sect_cd = $("#bef_rntl_sect_cd").val();
+					var bef_job_type_cd = $("#bef_job_type_cd").val();
+					//変更ごの職種と拠点
+					var section = $("select[name='section']").val();
+					var job_type = $("select[name='job_type']").val();
+					var job_type_result = job_type.split(':');
+
+					if(bef_job_type_cd !== job_type_result[0] && bef_rntl_sect_cd == section){
+						var reason_kbn = '09'; //職種変更
+					}
+					if(bef_job_type_cd == job_type_result[0] && bef_rntl_sect_cd !== section){
+						var reason_kbn = '10'; //拠点異動
+					}
+					if(bef_job_type_cd !== job_type_result[0] && bef_rntl_sect_cd !== section) {
+						var reason_kbn = '11'; //貸与パターン変更&拠点異動
+					}
+
 					var tran_req_no = $("button[name='send_param']").val();
 					var agreement_no = $("select[name='agreement_no']").val();
-					var reason_kbn = $("select[name='reason_kbn']").val();
+					var reason_kbn = reason_kbn;
 					//var emply_cd_flg = $("#emply_cd_flg").prop("checked");
 					var member_no = $("input[name='member_no']").val();
 					var member_name = $("input[name='member_name']").val();
@@ -607,8 +629,6 @@ define([
 					var sex_kbn = $("select[name='sex_kbn']").val();
 					var appointment_ymd = $("input[name='appointment_ymd']").val();
 					var resfl_ymd = $("input[name='resfl_ymd']").val();
-					var section = $("select[name='section']").val();
-					var job_type = $("select[name='job_type']").val();
 					var shipment = $("select[name='shipment']").val();
 					var comment = $("#comment").val();
 					var wearer_data = {
