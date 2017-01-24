@@ -1052,5 +1052,32 @@ $app->post('/receive/check', function ()use($app) {
         echo json_encode($json_list);
         return;
     }
+    //--発注情報トラン検索--//
+    $query_list = array();
+    //発注情報
+    array_push($query_list, "t_order_tran.corporate_id = '".$auth['corporate_id']."'");
+    array_push($query_list, "t_order_tran.rntl_cont_no = '".$cond['rntl_cont_no']."'");
+    array_push($query_list, "t_order_tran.werer_cd = '".$cond['werer_cd']."'");
+    array_push($query_list, "t_order_tran.order_sts_kbn = '5'");
+    $query = implode(' AND ', $query_list);
+
+    $arg_str = 'SELECT order_sts_kbn FROM';
+    $arg_str .= ' t_order_tran';
+    $arg_str .= ' WHERE ';
+    $arg_str .= $query;
+    $t_order_tran = new TOrderTran();
+    $results = new Resultset(NULL, $t_order_tran, $t_order_tran->getReadConnection()->query($arg_str));
+    $result_obj = (array)$results;
+    $results_cnt = $result_obj["\0*\0_count"];
+    if($results_cnt>0){
+        $kbn_name = '';
+        foreach ($results as $result){
+            $kbn_name = get_kbn_name($result->order_sts_kbn);
+        }
+        $json_list["error_code"] = "1";
+        $json_list["error_msg"] = $kbn_name.'の発注があるため、受領更新出来ません。';
+        echo json_encode($json_list);
+        return;
+    }
     echo json_encode($json_list);
 });
