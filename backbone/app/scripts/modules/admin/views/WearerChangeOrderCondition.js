@@ -413,6 +413,15 @@ define([
 					this.shipment.show(shipmentConditionChangeView);
 				},
 			},
+			go_change: function () {
+				this.ui.shipment = $('#shipment');
+				var section = $("select[name='section']").val();
+				var shipment_vals = $("select[name='shipment']").val();
+				var val = shipment_vals.split(':');
+				var ship_to_cd = val[0];
+				var ship_to_brnch_cd = val[1];
+				change_select(section,ship_to_cd,ship_to_brnch_cd,this.shipment);
+			},
 			onShow: function(val, type, transition, data) {
 				var that = this;
 
@@ -714,4 +723,13 @@ define([
 			},
 		});
 	});
+	function change_select(section, m_shipment_to, ship_to_brnch_cd,shipment_obj) {
+		var shipmentConditionChangeView = new App.Admin.Views.ShipmentConditionChange({
+			section: section,
+			ship_to_cd: m_shipment_to,
+			ship_to_brnch_cd: ship_to_brnch_cd,
+			chg_flg: 'shipment',
+		});
+		shipment_obj.show(shipmentConditionChangeView);
+	}
 });
