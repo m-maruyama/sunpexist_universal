@@ -5779,7 +5779,7 @@ $app->post('/wearer_change/send', function ()use($app){
              array_push($values_list, "'5'");
              // 返却予定数
              array_push($calum_list, "return_plan_qty");
-             array_push($values_list, "'".$individual_data['return_num']."'");
+             array_push($values_list, "'1'");
              // 返却数
              array_push($calum_list, "return_qty");
              array_push($values_list, "'0'");
