@@ -177,9 +177,9 @@ $app->post('/lend/search', function ()use($app){
 	$arg_str .= "m_wearer_std.job_type_cd as as_now_job_type_cd,";
 	$arg_str .= "t_order.rntl_sect_cd as as_old_rntl_sect_cd,";
 	$arg_str .= "t_order.job_type_cd as as_old_job_type_cd,";
-	$arg_str .= "m_wearer_item.item_cd as as_item_cd,";
-	$arg_str .= "m_wearer_item.color_cd as as_color_cd,";
-	$arg_str .= "m_wearer_item.size_cd as as_size_cd,";
+	$arg_str .= "t_delivery_goods_state_details.item_cd as as_item_cd,";
+	$arg_str .= "t_delivery_goods_state_details.color_cd as as_color_cd,";
+	$arg_str .= "t_delivery_goods_state_details.size_cd as as_size_cd,";
 	$arg_str .= "m_wearer_item.size_two_cd as as_size_two_cd,";
 	$arg_str .= "m_wearer_item.job_type_item_cd as as_job_type_item_cd,";
 	$arg_str .= "t_delivery_goods_state_details.individual_ctrl_no as as_individual_ctrl_no,";
@@ -219,7 +219,7 @@ $app->post('/lend/search', function ()use($app){
 	$arg_str .= " ON t_order.corporate_id = m_wearer_std.corporate_id";
   $arg_str .= " AND t_order.rntl_cont_no = m_wearer_std.rntl_cont_no";
   $arg_str .= " AND t_order.werer_cd = m_wearer_std.werer_cd";
-  $arg_str .= " INNER JOIN m_wearer_item";
+  $arg_str .= " LEFT JOIN m_wearer_item";
 	$arg_str .= " ON t_order.m_wearer_item_comb_hkey = m_wearer_item.m_wearer_item_comb_hkey";
 	$arg_str .= " WHERE ";
 	$arg_str .= $query;
@@ -228,6 +228,7 @@ $app->post('/lend/search', function ()use($app){
 		$arg_str .= " ORDER BY ";
 		$arg_str .= $q_sort_key." ".$order;
 	}
+	//ChromePhp::log($arg_str);
 	$t_order = new TOrder();
 	$results = new Resultset(null, $t_order, $t_order->getReadConnection()->query($arg_str));
 	$result_obj = (array)$results;
@@ -337,16 +338,17 @@ $app->post('/lend/search', function ()use($app){
 			array_push($search_q, "corporate_id = '".$auth['corporate_id']."'");
 			array_push($search_q, "rntl_cont_no = '".$cond['agreement_no']."'");
 			array_push($search_q, "job_type_cd = '".$result->as_old_job_type_cd."'");
-			array_push($search_q, "job_type_item_cd = '".$result->as_job_type_item_cd."'");
+			//array_push($search_q, "job_type_item_cd = '".$result->as_job_type_item_cd."'");
 			array_push($search_q, "item_cd = '".$list['item_cd']."'");
 			array_push($search_q, "color_cd = '".$list['color_cd']."'");
         //サイズ2が空だったらサイズ2を検索条件に入れない
-      if($list['size_two_cd'] !== '') {
+      if($list['size_two_cd'] != null) {
           array_push($search_q, "size_two_cd = '".$list['size_two_cd']."'");
       }
 			//sql文字列を' AND 'で結合
 			$query = implode(' AND ', $search_q);
-            //ChromePhp::log($query);
+        //ChromePhp::log($query);
+        //ChromePhp::log($query);
 			$input_item = MInputItem::query()
 				->where($query)
 				->columns('*')
@@ -354,6 +356,7 @@ $app->post('/lend/search', function ()use($app){
 			// 取得オブジェクトを配列化→クラス内propety：protected値を取得する→リストカウント
 			$input_item_obj = (array)$input_item;
 			$cnt = $input_item_obj["\0*\0_count"];
+        //ChromePhp::log($cnt);
 			if (!empty($cnt)) {
 				foreach ($input_item as $input_item_map) {
 					$list['input_item_name'] = $input_item_map->input_item_name;
