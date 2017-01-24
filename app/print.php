@@ -1224,9 +1224,6 @@ $app->post('/print/search', function ()use($app){
         if($sort_key == 'individual_num'){
             $q_sort_key = 'as_individual_ctrl_no';
         }
-        if($sort_key == 'order_res_ymd'){
-            $q_sort_key = 'as_receipt_date';
-        }
         if($sort_key == 'rental_no'){
             $q_sort_key = 'as_rntl_cont_no';
         }
@@ -1300,18 +1297,18 @@ $app->post('/print/search', function ()use($app){
         $arg_str .= " ON m_job_type.corporate_id = m_input_item.corporate_id";
         $arg_str .= " AND m_job_type.rntl_cont_no = m_input_item.rntl_cont_no";
         $arg_str .= " AND m_job_type.job_type_cd = m_input_item.job_type_cd)";
-        $arg_str .= " ON t_order.corporate_id = m_job_type.corporate_id";
-        $arg_str .= " AND t_order.rntl_cont_no = m_job_type.rntl_cont_no";
-        $arg_str .= " AND t_order.job_type_cd = m_job_type.job_type_cd";
-        $arg_str .= " AND t_order.corporate_id = m_input_item.corporate_id";
-        $arg_str .= " AND t_order.item_cd = m_input_item.item_cd";
-        $arg_str .= " AND t_order.color_cd = m_input_item.color_cd";
+        $arg_str .= " ON t_returned_plan_info.corporate_id = m_job_type.corporate_id";
+        $arg_str .= " AND t_returned_plan_info.rntl_cont_no = m_job_type.rntl_cont_no";
+        $arg_str .= " AND t_returned_plan_info.job_type_cd = m_job_type.job_type_cd";
+        $arg_str .= " AND t_returned_plan_info.corporate_id = m_input_item.corporate_id";
+        $arg_str .= " AND t_returned_plan_info.item_cd = m_input_item.item_cd";
+        $arg_str .= " AND t_returned_plan_info.color_cd = m_input_item.color_cd";
         $arg_str .= " INNER JOIN m_wearer_std";
-        $arg_str .= " ON t_order.werer_cd = m_wearer_std.werer_cd";
-        $arg_str .= " AND t_order.corporate_id = m_wearer_std.corporate_id";
-        $arg_str .= " AND t_order.rntl_cont_no = m_wearer_std.rntl_cont_no";
+        $arg_str .= " ON t_returned_plan_info.werer_cd = m_wearer_std.werer_cd";
+        $arg_str .= " AND t_returned_plan_info.corporate_id = m_wearer_std.corporate_id";
+        $arg_str .= " AND t_returned_plan_info.rntl_cont_no = m_wearer_std.rntl_cont_no";
         $arg_str .= " INNER JOIN m_contract";
-        $arg_str .= " ON t_order.rntl_cont_no = m_contract.rntl_cont_no";
+        $arg_str .= " ON t_returned_plan_info.rntl_cont_no = m_contract.rntl_cont_no";
         $arg_str .= " WHERE ";
         $arg_str .= $query;
         $arg_str .= ") as distinct_table";
@@ -1373,18 +1370,18 @@ $app->post('/print/search', function ()use($app){
         $arg_str .= " ON m_job_type.corporate_id = m_input_item.corporate_id";
         $arg_str .= " AND m_job_type.rntl_cont_no = m_input_item.rntl_cont_no";
         $arg_str .= " AND m_job_type.job_type_cd = m_input_item.job_type_cd)";
-        $arg_str .= " ON t_order.corporate_id = m_job_type.corporate_id";
-        $arg_str .= " AND t_order.rntl_cont_no = m_job_type.rntl_cont_no";
-        $arg_str .= " AND t_order.job_type_cd = m_job_type.job_type_cd";
-        $arg_str .= " AND t_order.corporate_id = m_input_item.corporate_id";
-        $arg_str .= " AND t_order.item_cd = m_input_item.item_cd";
-        $arg_str .= " AND t_order.color_cd = m_input_item.color_cd";
+        $arg_str .= " ON t_returned_plan_info.corporate_id = m_job_type.corporate_id";
+        $arg_str .= " AND t_returned_plan_info.rntl_cont_no = m_job_type.rntl_cont_no";
+        $arg_str .= " AND t_returned_plan_info.job_type_cd = m_job_type.job_type_cd";
+        $arg_str .= " AND t_returned_plan_info.corporate_id = m_input_item.corporate_id";
+        $arg_str .= " AND t_returned_plan_info.item_cd = m_input_item.item_cd";
+        $arg_str .= " AND t_returned_plan_info.color_cd = m_input_item.color_cd";
         $arg_str .= " INNER JOIN m_wearer_std";
-        $arg_str .= " ON t_order.werer_cd = m_wearer_std.werer_cd";
-        $arg_str .= " AND t_order.corporate_id = m_wearer_std.corporate_id";
-        $arg_str .= " AND t_order.rntl_cont_no = m_wearer_std.rntl_cont_no";
+        $arg_str .= " ON t_returned_plan_info.werer_cd = m_wearer_std.werer_cd";
+        $arg_str .= " AND t_returned_plan_info.corporate_id = m_wearer_std.corporate_id";
+        $arg_str .= " AND t_returned_plan_info.rntl_cont_no = m_wearer_std.rntl_cont_no";
         $arg_str .= " INNER JOIN m_contract";
-        $arg_str .= " ON t_order.rntl_cont_no = m_contract.rntl_cont_no";
+        $arg_str .= " ON t_returned_plan_info.rntl_cont_no = m_contract.rntl_cont_no";
         $arg_str .= " WHERE ";
         $arg_str .= $query;
         //$arg_str .= ") as distinct_table";
@@ -1539,11 +1536,6 @@ $app->post('/print/search', function ()use($app){
             } else {
                 $list['shin_item_code'] = "-";
             }
-            // 返却予定数
-            $list['order_qty'] = '0';
-            if($result->as_return_plan__qty){
-                $list['order_qty'] = $result->as_return_plan__qty;
-            }
 
             // メーカー受注番号
             if (!empty($result->as_rec_order_no)) {
@@ -1553,10 +1545,6 @@ $app->post('/print/search', function ()use($app){
             }
             // 返却日
             $list['re_order_date'] = $result->as_re_order_date;
-            // 返却ステータス
-            $list['return_status'] = $result->as_return_status;
-            // 返却数
-            $list['return_qty'] = $result->as_return_qty;
             // メーカー伝票番号
             if (!empty($result->as_ship_no)) {
                 $list['ship_no'] = $result->as_ship_no;
@@ -1625,71 +1613,6 @@ $app->post('/print/search', function ()use($app){
                 $list['order_reason_name'] = $gencode_map->gen_name;
             }
 
-            //---返却ステータス名称---//
-            $query_list = array();
-            // 汎用コードマスタ.分類コード
-            array_push($query_list, "cls_cd = '008'");
-            // 汎用コードマスタ. レンタル契約No
-            array_push($query_list, "gen_cd = '".$list['return_status']."'");
-            //sql文字列を' AND 'で結合
-            $query = implode(' AND ', $query_list);
-            $gencode = MGencode::query()
-                ->where($query)
-                ->columns('*')
-                ->execute();
-            foreach ($gencode as $gencode_map) {
-                $list['return_status_name'] = $gencode_map->gen_name;
-            }
-
-            //---受領日時の取得---//
-            $list['individual_num'] = "-";
-            $list['order_res_ymd'] = "-";
-            $query_list = array();
-            array_push($query_list, "corporate_id = '".$auth['corporate_id']."'");
-            array_push($query_list, "ship_no = '".$list['ship_no']."'");
-            array_push($query_list, "item_cd = '".$list['item_cd']."'");
-            array_push($query_list, "color_cd = '".$list['color_cd']."'");
-            //rray_push($query_list, "size_cd = '".$list['size_cd']."'");
-            $query = implode(' AND ', $query_list);
-            $arg_str = "";
-            $arg_str .= "SELECT ";
-            $arg_str .= "receipt_date";
-            $arg_str .= " FROM ";
-            $arg_str .= "t_delivery_goods_state_details";
-            $arg_str .= " WHERE ";
-            $arg_str .= $query;
-            $t_delivery_goods_state_details = new TDeliveryGoodsStateDetails();
-            $del_gd_results = new Resultset(null, $t_delivery_goods_state_details, $t_delivery_goods_state_details->getReadConnection()->query($arg_str));
-            $result_obj = (array)$del_gd_results;
-            $results_cnt2 = $result_obj["\0*\0_count"];
-            if ($results_cnt2 > 0) {
-                $paginator_model = new PaginatorModel(
-                    array(
-                        "data"  => $del_gd_results,
-                        "limit" => $results_cnt2,
-                        "page" => 1
-                    )
-                );
-                $paginator = $paginator_model->getPaginate();
-                $del_gd_results = $paginator->items;
-
-                $num_list = array();
-                $day_list = array();
-                foreach ($del_gd_results as $del_gd_result) {
-                    if ($del_gd_result->receipt_date !== null) {
-                        array_push($day_list,  date('Y/m/d',strtotime($del_gd_result->receipt_date)));
-                    } else {
-                        array_push($day_list, "-");
-                    }
-                }
-                // 受領日
-                //ChromePhp::log($day_list);
-                $receipt_date = implode("<br>", $day_list);
-                //ChromePhp::log($receipt_date);
-                $list['order_res_ymd'] = $receipt_date;
-            }
-
-
             //---個体管理番号---//
             $list['individual_num'] = "-";
             $query_list = array();
@@ -1701,7 +1624,7 @@ $app->post('/print/search', function ()use($app){
             $query = implode(' AND ', $query_list);
             $arg_str = "";
             $arg_str .= "SELECT ";
-            $arg_str .= "individual_ctrl_no";
+            $arg_str .= "*";
             $arg_str .= " FROM ";
             $arg_str .= "t_returned_plan_info";
             $arg_str .= " WHERE ";
@@ -1728,9 +1651,47 @@ $app->post('/print/search', function ()use($app){
                 $t_returned_results = $paginator->items;
 
                 $num_list = array();
+                $return_status_list = array();
+                $i = 0;
+                $each_item_return_plan_qty = 0;
+                $each_item_returned_qty = 0;
                 foreach ($t_returned_results as $t_returned_result) {
+                    //個体管理番号
                     array_push($num_list, $t_returned_result->individual_ctrl_no);
+                    //返却予定数の合計
+                    $each_item_return_plan_qty = $each_item_return_plan_qty + $t_returned_result->return_plan_qty;
+                    //返却済み数の合計
+                    $each_item_returned_qty = $each_item_returned_qty + $t_returned_result->return_qty;
+                    //返却ステータス
+                    array_push($return_status_list, $t_returned_result->return_status);
+
+                    $i++;
                 }
+                if(in_array('1', $return_status_list, true)){
+                    // 返却ステータス
+                    $list['return_status'] = '1';
+                }else{
+                    $list['return_status'] = '2';
+                }
+                //---返却ステータス名称---//
+                $query_list = array();
+                // 汎用コードマスタ.分類コード
+                array_push($query_list, "cls_cd = '008'");
+                // 汎用コードマスタ. レンタル契約No
+                array_push($query_list, "gen_cd = '".$list['return_status']."'");
+                //sql文字列を' AND 'で結合
+                $query = implode(' AND ', $query_list);
+                $gencode = MGencode::query()
+                    ->where($query)
+                    ->columns('*')
+                    ->execute();
+                foreach ($gencode as $gencode_map) {
+                    $list['return_status_name'] = $gencode_map->gen_name;
+                }
+                //返却予定数
+                $list['order_qty'] = $each_item_return_plan_qty;
+                // 返却数
+                $list['return_qty'] = $each_item_returned_qty;
                 // 個体管理番号
                 $individual_ctrl_no = implode("<br>", $num_list);
                 $list['individual_num'] = $individual_ctrl_no;
@@ -1739,54 +1700,12 @@ $app->post('/print/search', function ()use($app){
         }
     }
 
-    /*
-foreach ($del_gd_std as $del_gd_std_map) {
-    array_push($num_list, $del_gd_std_map->individual_ctrl_no);
-    array_push($day_list, date('Y/m/d',strtotime($del_gd_std_map->receipt_date)));
-}
-*/
-
-    //ソート設定(配列ソート)
-    // 商品-色(サイズ-サイズ2)
-    /*
-	if($sort_key == 'item_code'){
-		if ($order == 'asc') {
-			array_multisort(array_column($all_list, 'shin_item_code'), SORT_DESC, $all_list);
-		} else {
-			array_multisort(array_column($all_list, 'shin_item_code'), SORT_ASC, $all_list);
-		}
-	}
-    */
-
     // 個体管理番号表示/非表示フラグ設定
     if (individual_flg($auth['corporate_id'], $cond['agreement_no']) == 1) {
         $individual_flg = true;
     } else {
         $individual_flg = false;
     }
-    /*
-        $query_list = array();
-        array_push($query_list, "corporate_id = '".$auth['corporate_id']."'");
-        array_push($query_list, "rntl_cont_no = '".$cond['agreement_no']."'");
-        $query = implode(' AND ', $query_list);
-        $m_contract = MContract::query()
-            ->where($query)
-            ->columns('*')
-            ->execute();
-        $m_contract_obj = (array)$m_contract;
-        $cnt = $m_contract_obj["\0*\0_count"];
-        $individual_flg = "";
-        if (!empty($cnt)) {
-            foreach ($m_contract as $m_contract_map) {
-                $individual_flg = $m_contract_map->individual_flg;
-            }
-            if ($individual_flg == 1) {
-                $individual_flg = true;
-            } else {
-                $individual_flg = false;
-            }
-        }
-    */
 
     $page_list['records_per_page'] = $page['records_per_page'];
     $page_list['page_number'] = $page['page_number'];
