@@ -144,18 +144,19 @@ $app->post('/lend/search', function ()use($app){
 		if($sort_key == 'send_ymd'){
 			$q_sort_key = 'as_ship_ymd';
 		}
-		// 返却予定日
-		if($sort_key == 'return_shd_ymd'){
-			$q_sort_key = 'as_re_order_date';
+		// 返却予定数
+		if($sort_key == 'return_plan_qty'){
+			$q_sort_key = 'as_return_plan__qty';
 		}
 		// 発注No
 		if($sort_key == 'order_req_no'){
 			$q_sort_key = 'as_order_req_no';
 		}
-		// メーカー受注番号
-		if($sort_key == 'maker_rec_no'){
-			$q_sort_key = 'as_rec_order_no';
-		}
+		//発注区分 order_kbn
+    if($sort_key == 'order_kbn'){
+        $q_sort_key = 'as_order_sts_kbn';
+    }
+
 		// メーカー伝票番号
 		if($sort_key == 'maker_send_no'){
 			$q_sort_key = 'as_ship_no';
@@ -184,12 +185,14 @@ $app->post('/lend/search', function ()use($app){
 	$arg_str .= "m_wearer_item.job_type_item_cd as as_job_type_item_cd,";
 	$arg_str .= "t_delivery_goods_state_details.individual_ctrl_no as as_individual_ctrl_no,";
   $arg_str .= "t_delivery_goods_state_details.quantity as as_quantity,";
+  $arg_str .= "t_delivery_goods_state_details.return_plan__qty as as_return_plan__qty,";
   $arg_str .= "t_delivery_goods_state_details.returned_qty as as_returned_qty,";
   $arg_str .= "t_delivery_goods_state_details.werer_cd as as_werer_cd,";
   $arg_str .= "t_delivery_goods_state.ship_qty as as_ship_qty,";
 	$arg_str .= "t_delivery_goods_state.ship_ymd as as_ship_ymd,";
 	$arg_str .= "t_returned_plan_info.order_date as as_re_order_date,";
-	$arg_str .= "t_order.order_req_no as as_order_req_no,";
+  $arg_str .= "t_order.order_sts_kbn as as_order_sts_kbn,";
+  $arg_str .= "t_order.order_req_no as as_order_req_no,";
 	$arg_str .= "t_delivery_goods_state.rec_order_no as as_rec_order_no,";
 	$arg_str .= "t_delivery_goods_state.ship_no as as_ship_no";
 	$arg_str .= " FROM t_order LEFT JOIN";
