@@ -91,6 +91,13 @@ $app->post('/reason_kbn_order', function ()use($app){
 
         $results = $paginator->items;
 
+
+        //理由区分未選択追加
+        $all_list[] = array(
+          'reason_kbn' => '',
+          'reason_kbn_name' => '',
+          'selected' => ''
+        );
         foreach ($results as $result) {
             if($result->gen_cd!='03'){
                 $list['reason_kbn'] = $result->gen_cd;
