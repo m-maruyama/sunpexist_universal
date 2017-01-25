@@ -1015,7 +1015,6 @@ $app->post('/wearer_end_order_insert', function () use ($app) {
   $wearer_data_input = $params["wearer_data"];
   $item_list = $params["item"];
   //ChromePhp::LOG($mode);
-  //ChromePhp::LOG($wearer_data_input);
   //ChromePhp::LOG($item_list);
 
   $query_list = array();
@@ -1035,6 +1034,11 @@ $app->post('/wearer_end_order_insert', function () use ($app) {
       array_push($json_list["error_msg"], $error_msg);
       echo json_encode($json_list);
       return;
+    }
+    if (!$wearer_data_input['resfl_ymd']) {
+        $json_list["error_code"] = "1";
+        $error_msg = "異動日を入力してください。";
+        array_push($json_list["error_msg"], $error_msg);
     }
 /*
     // 社員コード

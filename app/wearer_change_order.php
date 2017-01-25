@@ -774,7 +774,6 @@ $app->post('/wearer_change/info', function ()use($app){
     $arg_str .= "t_order_tran";
     $arg_str .= " WHERE ";
     $arg_str .= $query;
-    //ChromePhp::LOG($arg_str);
     $t_order_tran = new TOrderTran();
     $results = new Resultset(NULL, $t_order_tran, $t_order_tran->getReadConnection()->query($arg_str));
     $result_obj = (array)$results;
@@ -807,7 +806,6 @@ $app->post('/wearer_change/info', function ()use($app){
       $arg_str .= " WHERE ";
       $arg_str .= $query;
       $arg_str .= " ORDER BY m_wearer_std_tran.upd_date DESC";
-
       $m_weare_std_tran = new MWearerStdTran();
       $results = new Resultset(NULL, $m_weare_std_tran, $m_weare_std_tran->getReadConnection()->query($arg_str));
       $result_obj = (array)$results;
@@ -905,7 +903,7 @@ $app->post('/wearer_change/info', function ()use($app){
 //            $list['appointment_ymd'] = '';
 //          }
           // 異動日
-          $list['resfl_ymd'] = $result->as_resfl_ymd;
+          //$list['resfl_ymd'] = $result->as_resfl_ymd;
           if (!empty($list['resfl_ymd'])) {
             $list['resfl_ymd'] = date('Y/m/d', strtotime($list['resfl_ymd']));
           } else {
