@@ -2326,6 +2326,8 @@ $app->post('/wearer_other_change_insert', function () use ($app) {
                         // 返却日
 //                        array_push($calum_list, "return_date");
 //                        array_push($values_list, "'".date("Ymd", strtotime($wearer_data_input['return_date']))."'");
+                        array_push($calum_list, "return_date");
+                        array_push($values_list, "'".date('Y-m-d H:i:s', time())."'");
                         // 返却ステータス(未返却)
                         array_push($calum_list, "return_status");
                         array_push($values_list, "'1'");
@@ -2434,6 +2436,8 @@ $app->post('/wearer_other_change_insert', function () use ($app) {
                     // 返却日
 //                    array_push($calum_list, "return_date");
 //                    array_push($values_list, "'".date("Ymd", strtotime($wearer_data_input['return_date']))."'");
+                    array_push($calum_list, "return_date");
+                    array_push($values_list, "'".date('Y-m-d H:i:s', time())."'");
                     // 返却ステータス(未返却)
                     array_push($calum_list, "return_status");
                     array_push($values_list, "'1'");
