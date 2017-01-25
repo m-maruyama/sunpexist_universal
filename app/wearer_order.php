@@ -801,6 +801,12 @@ $app->post('/wearer_order_insert', function () use ($app) {
         $json_list["error_code"] = "1";
         return;
     }
+    //理由区分
+    if (empty($cond["reason_kbn"])) {
+      array_push($error_list,'理由区分を選択してください。');
+      $json_list['error_msg'] = $error_list;
+      $json_list["error_code"] = "1";
+    }
     if (!empty($cond["comment"])) {
         if (mb_strlen($cond["comment"]) > 100) {
             array_push($error_list,'コメント欄は100文字以内で入力してください。');
