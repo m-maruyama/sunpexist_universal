@@ -29,7 +29,7 @@ define([
 				'reason_kbn': '#reason_kbn',
 				'dynam_msg': '#dynam_msg',
 				'sex_kbn': '#sex_kbn',
-				'return_date': '#return_date',
+				// 'return_date': '#return_date',
 				'cster_emply_cd': '#cster_emply_cd',
 				'member_name': '#member_name',
 				'member_name_kana': '#member_name_kana',
@@ -48,7 +48,7 @@ define([
 				'#agreement_no': 'agreement_no',
 				'#reason_kbn': 'reason_kbn',
 				'#sex_kbn': 'sex_kbn',
-				'#return_date': 'return_date',
+				// '#return_date': 'return_date',
 				'#cster_emply_cd': 'cster_emply_cd',
 				'#member_name': 'member_name',
 				'#member_name_kana': 'member_name_kana',
@@ -64,27 +64,27 @@ define([
 			},
 			onRender: function() {
 				var that = this;
-				var maxTime = new Date();
-				maxTime.setHours(15);
-				maxTime.setMinutes(59);
-				maxTime.setSeconds(59);
-				var minTime = new Date();
-				minTime.setHours(9);
-				minTime.setMinutes(0);
-				this.ui.datepicker.datetimepicker({
-					format: 'YYYY/MM/DD',
-					//useCurrent: 'day',
-					//defaultDate: yesterday,
-					//maxDate: yesterday,
-					locale: 'ja',
-					sideBySide: true,
-					useCurrent: false,
-					// daysOfWeekDisabled:[0,6]
-				});
-				this.ui.datepicker.on('dp.change', function () {
-					$(this).data('DateTimePicker').hide();
-					//$(this).find('input').trigger('input');
-				});
+				// var maxTime = new Date();
+				// maxTime.setHours(15);
+				// maxTime.setMinutes(59);
+				// maxTime.setSeconds(59);
+				// var minTime = new Date();
+				// minTime.setHours(9);
+				// minTime.setMinutes(0);
+				// this.ui.datepicker.datetimepicker({
+				// 	format: 'YYYY/MM/DD',
+				// 	//useCurrent: 'day',
+				// 	//defaultDate: yesterday,
+				// 	//maxDate: yesterday,
+				// 	locale: 'ja',
+				// 	sideBySide: true,
+				// 	useCurrent: false,
+				// 	// daysOfWeekDisabled:[0,6]
+				// });
+				// this.ui.datepicker.on('dp.change', function () {
+				// 	$(this).data('DateTimePicker').hide();
+				// 	//$(this).find('input').trigger('input');
+				// });
 
 				// 着用者情報
 				var modelForUpdate = this.model;
@@ -163,7 +163,7 @@ define([
 							}
 							that.ui.member_name.val(res_list['wearer_info'][0]['werer_name']);
 							that.ui.member_name_kana.val(res_list['wearer_info'][0]['werer_name_kana']);
-							that.ui.return_date.val(res_list['wearer_info'][0]['return_date']);
+							// that.ui.return_date.val(res_list['wearer_info'][0]['return_date']);
 							that.ui.comment.val(res_list['wearer_info'][0]['comment']);
 						}
 						// 理由区分
@@ -446,7 +446,7 @@ define([
 					var section = $("select[name='section']").val();
 					var job_type = $("select[name='job_type']").val();
 					var comment = $("#comment").val();
-					var return_date = $("#return_date").val();
+					// var return_date = $("#return_date").val();
 					var order_count = $("#order_count").val();
 					var wearer_data = {
 						'agreement_no': agreement_no,
@@ -457,7 +457,7 @@ define([
 						'sex_kbn': sex_kbn,
 						'section': section,
 						'job_type': job_type,
-						'return_date': return_date,
+						// 'return_date': return_date,
 						'order_count': order_count,
 						'comment': comment
 					}

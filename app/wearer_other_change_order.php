@@ -144,19 +144,19 @@ $app->post('/wearer_other_change_info', function ()use($app){
     // コメント欄
     $comment = "";
     //返却日
-    $return_date = null;
-    $list['return_date'] = null;
+//    $return_date = null;
+//    $list['return_date'] = null;
     if (!empty($results_cnt)) {
         foreach ($results as $result) {
             $comment = $result->memo;
-            if($result->order_req_no){
-                //返却日が返却予定情報トランにあれば取得する
-                $t_returned_plan_info_trans = TReturnedPlanInfoTran::find(array('conditions' => 'order_req_no = '."'".$result->order_req_no."'"));
-
-                foreach ($t_returned_plan_info_trans as $t_returned_plan_info_tran) {
-                    $return_date = $t_returned_plan_info_tran->return_date;
-                }
-            }
+//            if($result->order_req_no){
+//                //返却日が返却予定情報トランにあれば取得する
+//                $t_returned_plan_info_trans = TReturnedPlanInfoTran::find(array('conditions' => 'order_req_no = '."'".$result->order_req_no."'"));
+//
+//                foreach ($t_returned_plan_info_trans as $t_returned_plan_info_tran) {
+//                    $return_date = $t_returned_plan_info_tran->return_date;
+//                }
+//            }
         }
     }
 
@@ -211,9 +211,9 @@ $app->post('/wearer_other_change_info', function ()use($app){
             // 性別
             $sex_kbn = $result->as_sex_kbn;
             $list['comment'] = $comment;
-            if($return_date){
-                $list['return_date'] = date("Y/m/d",strtotime($return_date));
-            }
+//            if($return_date){
+//                $list['return_date'] = date("Y/m/d",strtotime($return_date));
+//            }
         }
         array_push($all_list, $list);
     }
@@ -270,9 +270,9 @@ $app->post('/wearer_other_change_info', function ()use($app){
                 // 性別
                 $sex_kbn = $result->as_sex_kbn;
                 $list['comment'] = $comment;
-                if($return_date){
-                    $list['return_date'] = date("Y/m/d",strtotime($return_date));
-                }
+//                if($return_date){
+//                    $list['return_date'] = date("Y/m/d",strtotime($return_date));
+//                }
             }
             array_push($all_list, $list);
 
@@ -324,7 +324,7 @@ $app->post('/wearer_other_change_info', function ()use($app){
                     // 性別
                     $sex_kbn = $result->as_sex_kbn;
                     $list['comment'] = $comment;
-                    $list['return_date'] = null;
+//                    $list['return_date'] = null;
                 }
 
                 array_push($all_list, $list);
@@ -1395,12 +1395,12 @@ $app->post('/wearer_other_change_insert', function () use ($app) {
     }
 
 
-    if (!$wearer_data_input['return_date']) {
-        array_push($error_list,'返却予定日を入力してください。');
-        $json_list['error_msg'] = $error_list;
-        $json_list["error_code"] = "1";
-
-    }
+//    if (!$wearer_data_input['return_date']) {
+//        array_push($error_list,'返却予定日を入力してください。');
+//        $json_list['error_msg'] = $error_list;
+//        $json_list["error_code"] = "1";
+//
+//    }
     if (!$wearer_data_input['member_name']) {
         array_push($error_list,'着用者名を入力してください。');
         $json_list['error_msg'] = $error_list;
@@ -2324,8 +2324,8 @@ $app->post('/wearer_other_change_insert', function () use ($app) {
                         array_push($calum_list, "order_date");
                         array_push($values_list, "'".date('Y-m-d H:i:s', time())."'");
                         // 返却日
-                        array_push($calum_list, "return_date");
-                        array_push($values_list, "'".date("Ymd", strtotime($wearer_data_input['return_date']))."'");
+//                        array_push($calum_list, "return_date");
+//                        array_push($values_list, "'".date("Ymd", strtotime($wearer_data_input['return_date']))."'");
                         // 返却ステータス(未返却)
                         array_push($calum_list, "return_status");
                         array_push($values_list, "'1'");
@@ -2432,8 +2432,8 @@ $app->post('/wearer_other_change_insert', function () use ($app) {
                     array_push($calum_list, "order_date");
                     array_push($values_list, "'".date('Y-m-d H:i:s', time())."'");
                     // 返却日
-                    array_push($calum_list, "return_date");
-                    array_push($values_list, "'".date("Ymd", strtotime($wearer_data_input['return_date']))."'");
+//                    array_push($calum_list, "return_date");
+//                    array_push($values_list, "'".date("Ymd", strtotime($wearer_data_input['return_date']))."'");
                     // 返却ステータス(未返却)
                     array_push($calum_list, "return_status");
                     array_push($values_list, "'1'");
