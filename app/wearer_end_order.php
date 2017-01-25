@@ -1015,7 +1015,6 @@ $app->post('/wearer_end_order_insert', function () use ($app) {
   $wearer_data_input = $params["wearer_data"];
   $item_list = $params["item"];
   //ChromePhp::LOG($mode);
-  ChromePhp::LOG($wearer_data_input);
   //ChromePhp::LOG($item_list);
 
   $query_list = array();
