@@ -469,6 +469,13 @@ $app->post('/print/pdf', function ()use($app){
                     $pdf->Text(13, 192, $results[0]->as_corporate_id."-".$results[0]->as_rntl_cont_no."-".$results[0]->as_rntl_sect_cd."-".$results[0]->as_job_type_cd."-".$results[0]->as_werer_cd);
                     //着用者コード
 
+                    //返却先住所
+                    $pdf -> SetFontSize(8);
+                    $pdf -> Text(195, 187, return_address00);
+                    $pdf -> Text(197, 191.5, return_address01);
+                    $pdf -> Text(197, 196, return_address02);
+                    $pdf -> Text(197, 200.5, return_address03);
+
                     //2ページ目を作成
                     $pdf->AddPage();
                     //既存のテンプレート用PDFを読み込む
@@ -512,32 +519,7 @@ $app->post('/print/pdf', function ()use($app){
                     //部門名 + 部門コード
                     $pdf->SetFontSize(10);
                     $pdf->Text($headerX, 37, $results[0]->as_job_type_name);
-                    /*
-                    //企業名
-                    $pdf->SetFontSize(10);
-                    $pdf->Text($headerX, 14, $results[0]->as_corporate_name . " 様");
-                    //$pdf -> Text(72, 21, "１２３４５６７８９０１２３４５６７８９０１");
 
-                    //契約no (企業id)
-                    $pdf->SetFontSize(10);
-                    $pdf->Text($headerX, 22, $results[0]->as_rntl_cont_no . "     ( " . $results[0]->as_corporate_id . " )");
-
-                    //拠点名 + 拠点cd
-                    $pdf->SetFontSize(10);
-                    $pdf->Text($headerX, 29, $results[0]->as_rntl_sect_name . "    ( " . $results[0]->as_rntl_sect_cd . " )");
-
-                    //着用者名
-                    $pdf->SetFontSize(10);
-                    $pdf->Text($headerX, 37, $results[0]->as_werer_name);
-
-                    //客先社員コード
-                    $pdf->SetFontSize(10);
-                    $pdf->Text(105, 37, $results[0]->as_cster_emply_cd);
-
-                    //部門名 + 部門コード
-                    $pdf->SetFontSize(10);
-                    $pdf->Text($headerX, 45, $results[0]->as_job_type_name . "    ( " . $results[0]->as_job_type_cd . " )");
-                       */
                     //HEADERエリア
 
 
@@ -675,6 +657,13 @@ $app->post('/print/pdf', function ()use($app){
                     $pdf->Text(13, 192, $results[0]->as_corporate_id."-".$results[0]->as_rntl_cont_no."-".$results[0]->as_rntl_sect_cd."-".$results[0]->as_job_type_cd."-".$results[0]->as_werer_cd);
                     //着用者コード
 
+                    //返却先住所
+                    $pdf -> SetFontSize(8);
+                    $pdf -> Text(195, 187, return_address00);
+                    $pdf -> Text(197, 191.5, return_address01);
+                    $pdf -> Text(197, 196, return_address02);
+                    $pdf -> Text(197, 200.5, return_address03);
+
                     //2ページ目を作成
                     $pdf->AddPage();
                     //既存のテンプレート用PDFを読み込む
@@ -716,27 +705,7 @@ $app->post('/print/pdf', function ()use($app){
                     //部門名 + 部門コード
                     $pdf->SetFontSize(10);
                     $pdf->Text($headerX, 37, $results[0]->as_job_type_name);
-                    /*
-                    //契約no (企業id)
-                    $pdf->SetFontSize(10);
-                    $pdf->Text($headerX, 22, $results[0]->as_rntl_cont_no . "     ( " . $results[0]->as_corporate_id . " )");
 
-                    //拠点名 + 拠点cd
-                    $pdf->SetFontSize(10);
-                    $pdf->Text($headerX, 29, $results[0]->as_rntl_sect_name . "    ( " . $results[0]->as_rntl_sect_cd . " )");
-
-                    //着用者名
-                    $pdf->SetFontSize(10);
-                    $pdf->Text($headerX, 37, $results[0]->as_werer_name);
-
-                    //客先社員コード
-                    $pdf->SetFontSize(10);
-                    $pdf->Text(105, 37, $results[0]->as_cster_emply_cd);
-
-                    //部門名 + 部門コード
-                    $pdf->SetFontSize(10);
-                    $pdf->Text($headerX, 45, $results[0]->as_job_type_name . "    ( " . $results[0]->as_job_type_cd . " )");
-                    */
                     //HEADERエリア
 
 
@@ -800,6 +769,14 @@ $app->post('/print/pdf', function ()use($app){
     $pdf -> SetFontSize(8);
     $pdf -> Text(13, 192, $results[0]->as_corporate_id."-".$results[0]->as_rntl_cont_no."-".$results[0]->as_rntl_sect_cd."-".$results[0]->as_job_type_cd."-".$results[0]->as_werer_cd);
     //着用者コード
+
+    //返却先住所
+    $pdf -> SetFontSize(8);
+    $pdf -> Text(195, 187, return_address00);
+    $pdf -> Text(197, 191.5, return_address01);
+    $pdf -> Text(197, 196, return_address02);
+    $pdf -> Text(197, 200.5, return_address03);
+    //返却先住所
 
     //作成したPDFをダウンロードする I:ブラウザ D:ダウンロード
     ob_end_clean();
