@@ -68,20 +68,41 @@ $app->post('/wearer_edit/search', function ()use($app){
   if(!empty($cond['agreement_no'])){
     $query_list[] = "m_wearer_std.rntl_cont_no = '".$cond['agreement_no']."'";
   }
-  if(!empty($cond['cster_emply_cd'])){
-    $query_list[] = "m_wearer_std.cster_emply_cd LIKE '".$cond['cster_emply_cd']."%'";
+  if (!empty($cond['cster_emply_cd'])) {
+    //$query_list[] = "m_wearer_std.cster_emply_cd LIKE '".$cond['cster_emply_cd']."%'";
+    $query_list[] = "CASE
+             WHEN m_wearer_std_tran.cster_emply_cd IS NULL THEN m_wearer_std.cster_emply_cd
+             ELSE m_wearer_std_tran.cster_emply_cd
+             END LIKE '%" . $cond['cster_emply_cd'] . "%'";
   }
-  if(!empty($cond['werer_name'])){
-    $query_list[] = "m_wearer_std.werer_name LIKE '%".$cond['werer_name']."%'";
+
+  if (!empty($cond['werer_name'])) {
+    //$query_list[] = "m_wearer_std.werer_name LIKE '%".$cond['werer_name']."%'";
+    $query_list[] = "CASE
+             WHEN m_wearer_std_tran.werer_name IS NULL THEN m_wearer_std.werer_name
+             ELSE m_wearer_std_tran.werer_name
+             END LIKE '%" . $cond['werer_name'] . "%'";
   }
-  if(!empty($cond['sex_kbn'])){
-    $query_list[] = "m_wearer_std.sex_kbn = '".$cond['sex_kbn']."'";
+  if (!empty($cond['sex_kbn'])) {
+    //$query_list[] = "m_wearer_std.sex_kbn = '".$cond['sex_kbn']."'";
+    $query_list[] = "CASE
+             WHEN m_wearer_std_tran.sex_kbn IS NULL THEN m_wearer_std.sex_kbn
+             ELSE m_wearer_std_tran.sex_kbn
+             END = '" . $cond['sex_kbn'] . "'";
   }
-  if(!empty($cond['section'])){
-    $query_list[] = "m_wearer_std.rntl_sect_cd = '".$cond['section']."'";
+  if (!empty($cond['section'])) {
+    //$query_list[] = "m_wearer_std.rntl_sect_cd = '".$cond['section']."'";
+    $query_list[] = "CASE
+             WHEN m_wearer_std_tran.rntl_sect_cd IS NULL THEN m_wearer_std.rntl_sect_cd
+             ELSE m_wearer_std_tran.rntl_sect_cd
+             END = '" . $cond['section'] . "'";
   }
-  if(!empty($cond['job_type'])){
-    $query_list[] = "m_wearer_std.job_type_cd = '".$cond['job_type']."'";
+  if (!empty($cond['job_type'])) {
+    //$query_list[] = "m_wearer_std.job_type_cd = '".$cond['job_type']."'";
+    $query_list[] = "CASE
+             WHEN m_wearer_std_tran.job_type_cd IS NULL THEN m_wearer_std.job_type_cd
+             ELSE m_wearer_std_tran.job_type_cd
+             END = '" . $cond['job_type'] . "'";
   }
   $query_list[] = "m_wearer_std.werer_sts_kbn = '1'";
   if (!$section_all_zero_flg) {
@@ -107,6 +128,11 @@ $app->post('/wearer_edit/search', function ()use($app){
   $arg_str .= "m_wearer_std.ship_to_cd as as_ship_to_cd,";
   $arg_str .= "m_wearer_std.ship_to_brnch_cd as as_ship_to_brnch_cd,";
   $arg_str .= "m_wearer_std.upd_date as as_upd_date,";
+  $arg_str .= "m_wearer_std_tran.werer_name as as_tran_werer_name,";
+  $arg_str .= "m_wearer_std_tran.cster_emply_cd as as_tran_cster_emply_cd,";
+  $arg_str .= "m_wearer_std_tran.sex_kbn as as_tran_sex_kbn,";
+  $arg_str .= "m_wearer_std_tran.job_type_cd as as_tran_job_type_cd,";
+  $arg_str .= "m_wearer_std_tran.rntl_sect_cd as as_tran_rntl_sect_cd,";
   $arg_str .= "m_section.rntl_sect_name as as_rntl_sect_name,";
   $arg_str .= "m_job_type.job_type_name as as_job_type_name";
   $arg_str .= " FROM ";
@@ -133,6 +159,11 @@ $app->post('/wearer_edit/search', function ()use($app){
   $arg_str .= " ON (m_wearer_std.corporate_id = m_job_type.corporate_id";
   $arg_str .= " AND m_wearer_std.rntl_cont_no = m_job_type.rntl_cont_no";
   $arg_str .= " AND m_wearer_std.job_type_cd = m_job_type.job_type_cd)";
+  $arg_str .= " LEFT JOIN m_wearer_std_tran";
+  $arg_str .= " ON m_wearer_std.corporate_id = m_wearer_std_tran.corporate_id";
+  $arg_str .= " AND m_wearer_std.rntl_cont_no = m_wearer_std_tran.rntl_cont_no";
+  $arg_str .= " AND m_wearer_std.werer_cd = m_wearer_std_tran.werer_cd";
+  $arg_str .= " AND m_wearer_std.werer_sts_kbn = m_wearer_std_tran.werer_sts_kbn";
   $arg_str .= " WHERE ";
   $arg_str .= $query;
   $arg_str .= ") as distinct_table";
