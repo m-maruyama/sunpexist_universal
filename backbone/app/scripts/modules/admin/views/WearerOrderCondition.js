@@ -426,7 +426,8 @@ define([
                     });
                 },
             },
-            onShow: function(val, type) {
+				onShow: function(val, type) {
+
             },
         });
     });

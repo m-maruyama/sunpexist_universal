@@ -90,27 +90,33 @@ $app->post('/wearer_other_change_info', function ()use($app){
     $results_array = (array) $results;
     $results_cnt = $results_array["\0*\0_count"];
 
-    if ($results_cnt > 0) {
+  if ($results_cnt > 0) {
 
-        foreach ($results as $result) {
-            $list['reason_kbn'] = $result->gen_cd;
-            $list['reason_kbn_name'] = $result->gen_name;
+    //理由区分未選択追加
+    $all_list[] = array(
+      'reason_kbn' => '',
+      'reason_kbn_name' => '',
+      'selected' => ''
+    );
+    foreach ($results as $result) {
+      $list['reason_kbn'] = $result->gen_cd;
+      $list['reason_kbn_name'] = $result->gen_name;
 
-            // 発注情報トランフラグ有の場合は初期選択状態版を生成
-            if ($wearer_size_change_post['order_req_no']) {
-                if ($list['reason_kbn'] == $wearer_size_change_post['order_reason_kbn']) {
-                    $list['selected'] = 'selected';
-                    $json_list['disabled'] = 'disabled';
-                } else {
-                    $list['selected'] = '';
-                }
-            } else {
-                $list['selected'] = '';
-            }
-
-            array_push($all_list, $list);
+      // 発注情報トランフラグ有の場合は初期選択状態版を生成
+      if ($wearer_size_change_post['order_req_no']) {
+        if ($list['reason_kbn'] == $wearer_size_change_post['order_reason_kbn']) {
+          $list['selected'] = 'selected';
+          $json_list['disabled'] = 'disabled';
+        } else {
+          $list['selected'] = '';
         }
-    } else {
+      } else {
+        $list['selected'] = '';
+      }
+
+      array_push($all_list, $list);
+    }
+  } else {
         $list['reason_kbn'] = null;
         $list['reason_kbn_name'] = '';
         $list['selected'] = '';
@@ -1377,6 +1383,12 @@ $app->post('/wearer_other_change_insert', function () use ($app) {
         $json_list['error_msg'] = $error_list;
         $json_list["error_code"] = "1";
         return;
+    }
+    if (!$wearer_data_input['reason_kbn']) {
+      array_push($error_list,'理由区分を選択してください。');
+      $json_list['error_msg'] = $error_list;
+      $json_list["error_code"] = "1";
+
     }
     if (!empty($wearer_data_input["comment"])) {
         if (mb_strlen($wearer_data_input["comment"]) > 100) {

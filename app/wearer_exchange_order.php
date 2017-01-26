@@ -364,24 +364,29 @@ $app->post('/wearer_exchange/info', function ()use($app){
 
     if ($results_cnt > 0) {
 
-        foreach ($results as $result) {
-            $list['reason_kbn'] = $result->gen_cd;
-            $list['reason_kbn_name'] = $result->gen_name;
+      //理由区分未選択追加
+      $all_list[] = array(
+      'reason_kbn' => '',
+      'reason_kbn_name' => '',
+      'selected' => ''
+      );
+      foreach ($results as $result) {
+        $list['reason_kbn'] = $result->gen_cd;
+        $list['reason_kbn_name'] = $result->gen_name;
 
-            // 発注情報トランフラグ有の場合は初期選択状態版を生成
-            if ($wearer_size_change_post['order_req_no']) {
-                if ($list['reason_kbn'] == $wearer_size_change_post['order_reason_kbn']) {
-                    $list['selected'] = 'selected';
-                    $json_list['disabled'] = 'disabled';
-                } else {
-                    $list['selected'] = '';
-                }
-            } else {
-                $list['selected'] = '';
-            }
-
-            array_push($all_list, $list);
+        // 発注情報トランフラグ有の場合は初期選択状態版を生成
+        if ($wearer_size_change_post['order_req_no']) {
+          if ($list['reason_kbn'] == $wearer_size_change_post['order_reason_kbn']) {
+            $list['selected'] = 'selected';
+            $json_list['disabled'] = 'disabled';
+          } else {
+            $list['selected'] = '';
+          }
+        } else {
+          $list['selected'] = '';
         }
+        array_push($all_list, $list);
+      }
     } else {
         $list['reason_kbn'] = null;
         $list['reason_kbn_name'] = '';
@@ -2041,6 +2046,13 @@ $app->post('/wearer_exchange/complete', function ()use($app){
        }
      }
 */
+    //理由区分
+     if (empty($wearer_data_input["reason_kbn"])) {
+       $json_list["error_code"] = "1";
+       $error_msg = "理由区分を選択してください。";
+       array_push($json_list["error_msg"], $error_msg);
+     }
+
      // 着用者名
      if (empty($wearer_data_input["member_name"])) {
        $json_list["error_code"] = "1";

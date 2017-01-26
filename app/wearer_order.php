@@ -91,6 +91,13 @@ $app->post('/reason_kbn_order', function ()use($app){
 
         $results = $paginator->items;
 
+
+        //理由区分未選択追加
+        $all_list[] = array(
+          'reason_kbn' => '',
+          'reason_kbn_name' => '',
+          'selected' => ''
+        );
         foreach ($results as $result) {
             if($result->gen_cd!='03'){
                 $list['reason_kbn'] = $result->gen_cd;
@@ -793,6 +800,12 @@ $app->post('/wearer_order_insert', function () use ($app) {
         $json_list['error_msg'] = $error_list;
         $json_list["error_code"] = "1";
         return;
+    }
+    //理由区分
+    if (empty($cond["reason_kbn"])) {
+      array_push($error_list,'理由区分を選択してください。');
+      $json_list['error_msg'] = $error_list;
+      $json_list["error_code"] = "1";
     }
     if (!empty($cond["comment"])) {
         if (mb_strlen($cond["comment"]) > 100) {

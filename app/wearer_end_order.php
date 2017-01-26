@@ -84,6 +84,13 @@ $app->post('/wearer_end/reason_kbn', function ()use($app){
         );
         $paginator = $paginator_model->getPaginate();
         $results = $paginator->items;
+
+      //理由区分未選択追加
+      $all_list[] = array(
+      'reason_kbn' => '',
+      'reason_kbn_name' => '',
+      'selected' => ''
+      );
         foreach ($results as $result) {
             if($result->gen_cd!='07'){
                 $list['reason_kbn'] = $result->gen_cd;
@@ -1040,6 +1047,17 @@ $app->post('/wearer_end_order_insert', function () use ($app) {
         $error_msg = "異動日を入力してください。";
         array_push($json_list["error_msg"], $error_msg);
     }
+    //理由区分
+    if (empty($wearer_data_input["reason_kbn"])) {
+      $json_list["error_code"] = "1";
+      $error_msg = "理由区分を選択してください。";
+      array_push($json_list["error_msg"], $error_msg);
+    }
+
+
+
+
+
 /*
     // 社員コード
     if ($wearer_data_input['emply_cd_flg']) {

@@ -37,8 +37,14 @@ define([
 								that.triggerMethod('showAlerts', errorMessages);
 							}
 							that.render();
-						}
+							if(path=='/universal/wearer_end_order.html') {
+								$('.reason_require_mark').css('display', 'inline');
+							}
+							if(path=='/universal/wearer_order.html') {
+								$('.reason_require_mark').css('display', 'inline');
+							}						}
 					});
+
 			},
 			events: {
 			}
