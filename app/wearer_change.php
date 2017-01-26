@@ -110,9 +110,6 @@ $app->post('/wearer_change/search', function ()use($app){
     $query_list[] = "wcr.rntl_cont_no = '".$cond['agreement_no']."'";
     $query_list[] = "wcr.accnt_no = '".$auth['accnt_no']."'";
   }
-
-
-
   $query = implode(' AND ', $query_list);
 
   $arg_str = "";
@@ -130,6 +127,11 @@ $app->post('/wearer_change/search', function ()use($app){
   $arg_str .= "m_wearer_std.sex_kbn as as_sex_kbn,";
   $arg_str .= "m_wearer_std.ship_to_cd as as_ship_to_cd,";
   $arg_str .= "m_wearer_std.ship_to_brnch_cd as as_ship_to_brnch_cd,";
+  $arg_str .= "m_wearer_std_tran.werer_name as as_tran_werer_name,";
+  $arg_str .= "m_wearer_std_tran.cster_emply_cd as as_tran_cster_emply_cd,";
+  $arg_str .= "m_wearer_std_tran.sex_kbn as as_tran_sex_kbn,";
+  $arg_str .= "m_wearer_std_tran.job_type_cd as as_tran_job_type_cd,";
+  $arg_str .= "m_wearer_std_tran.rntl_sect_cd as as_tran_rntl_sect_cd,";
   $arg_str .= "wst.rntl_sect_name as wst_rntl_sect_name,";
   $arg_str .= "wjt.job_type_name as wjt_job_type_name";
   $arg_str .= " FROM ";
@@ -156,6 +158,11 @@ $app->post('/wearer_change/search', function ()use($app){
     $arg_str .= " AND m_wearer_std.rntl_cont_no = wjt.rntl_cont_no";
     $arg_str .= " AND m_wearer_std.job_type_cd = wjt.job_type_cd";
   }
+  $arg_str .= " LEFT JOIN m_wearer_std_tran";
+  $arg_str .= " ON m_wearer_std.corporate_id = m_wearer_std_tran.corporate_id";
+  $arg_str .= " AND m_wearer_std.rntl_cont_no = m_wearer_std_tran.rntl_cont_no";
+  $arg_str .= " AND m_wearer_std.werer_cd = m_wearer_std_tran.werer_cd";
+  $arg_str .= " AND m_wearer_std.werer_sts_kbn = m_wearer_std_tran.werer_sts_kbn";
   $arg_str .= " WHERE ";
   $arg_str .= $query;
   $arg_str .= ") as distinct_table";
