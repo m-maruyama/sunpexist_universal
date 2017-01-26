@@ -1015,6 +1015,7 @@ $app->post('/wearer_end_order_insert', function () use ($app) {
   $wearer_data_input = $params["wearer_data"];
   $item_list = $params["item"];
   //ChromePhp::LOG($mode);
+  //ChromePhp::LOG($item_list);
 
   $query_list = array();
   $list = array();
@@ -2242,7 +2243,6 @@ $app->post('/wearer_end_order_insert', function () use ($app) {
     $json_list['param'] = '';
     $json_list['param'] .= $wearer_end_post['rntl_cont_no'].':';
     $json_list['param'] .= $shin_order_req_no;
-    $json_list['return_item_num'] = count($item_list);
 
     echo json_encode($json_list);
   }
