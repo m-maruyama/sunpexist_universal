@@ -42,7 +42,7 @@ $app->post('/csv_download', function ()use($app){
 
 	//--フロント側パラメータ取得--//
 	$cond = $params['cond'];
-    $page = $params['page'];
+  $page = $params['page'];
 
 	//--レスポンス配列生成--//
 	$result = array();
@@ -2916,51 +2916,52 @@ $app->post('/csv_download', function ()use($app){
 		$sort_key ='';
 		$order ='';
 
-		//第一ソート設定
-		if(!empty($page['sort_key'])){
-			$sort_key = $page['sort_key'];
-			$order = $page['order'];
-			// 社員番号
-			if($sort_key == 'cster_emply_cd'){
-				$q_sort_key = 'as_cster_emply_cd';
-			}
-			// 着用者名
-			if($sort_key == 'werer_name'){
-				$q_sort_key = 'as_werer_name';
-			}
-			// 商品コード
-			if($sort_key == 'item_code'){
-				$q_sort_key = 'as_item_cd';
-			}
-			// 個体管理番号
-			if($sort_key == 'individual_num'){
-				$q_sort_key = 'as_individual_ctrl_no';
-			}
-			// 出荷日
-			if($sort_key == 'send_ymd'){
-				$q_sort_key = 'as_ship_ymd';
-			}
-			// 返却予定日
-			if($sort_key == 'return_shd_ymd'){
-				$q_sort_key = 'as_re_order_date';
-			}
-			// 発注No
-			if($sort_key == 'order_req_no'){
-				$q_sort_key = 'as_order_req_no';
-			}
-			// 受注番号
-			if($sort_key == 'maker_rec_no'){
-				$q_sort_key = 'as_rec_order_no';
-			}
-			// 伝票番号
-			if($sort_key == 'maker_send_no'){
-				$q_sort_key = 'as_ship_no';
-			}
-		} else {
-			//指定がなければ社員番号
-			$q_sort_key = "as_cster_emply_cd";
-			$order = 'asc';
-		}
+    //第一ソート設定
+    if(!empty($page['sort_key'])){
+      $sort_key = $page['sort_key'];
+      $order = $page['order'];
+      // 社員番号
+      if($sort_key == 'cster_emply_cd'){
+        $q_sort_key = 'as_cster_emply_cd';
+      }
+      // 着用者名
+      if($sort_key == 'werer_name'){
+        $q_sort_key = 'as_werer_name';
+      }
+      // 商品コード
+      if($sort_key == 'item_code'){
+        $q_sort_key = 'as_item_cd';
+      }
+      // 個体管理番号
+      if($sort_key == 'individual_num'){
+        $q_sort_key = 'as_individual_ctrl_no';
+      }
+      // 出荷日
+      if($sort_key == 'send_ymd'){
+        $q_sort_key = 'as_ship_ymd';
+      }
+      // 返却予定数
+      if($sort_key == 'return_plan_qty'){
+        $q_sort_key = 'as_return_plan__qty';
+      }
+      // 発注No
+      if($sort_key == 'order_req_no'){
+        $q_sort_key = 'as_order_req_no';
+      }
+      //発注区分 order_kbn
+      if($sort_key == 'order_kbn'){
+        $q_sort_key = 'as_order_sts_kbn';
+      }
+
+      // メーカー伝票番号
+      if($sort_key == 'maker_send_no'){
+        $q_sort_key = 'as_ship_no';
+      }
+    } else {
+      //指定がなければ社員番号
+      $q_sort_key = "as_cster_emply_cd";
+      $order = 'asc';
+    }
 
       //商品cd、色cd、着用者cd単位でdistinct
       //---SQLクエリー実行---//
