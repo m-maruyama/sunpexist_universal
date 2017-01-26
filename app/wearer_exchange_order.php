@@ -3801,6 +3801,13 @@ $app->post('/wearer_exchange/send', function ()use($app){
       }
     }
 */
+    //理由区分
+    if (empty($wearer_data_input["reason_kbn"])) {
+        $json_list["error_code"] = "1";
+        $error_msg = "理由区分を選択してください。";
+        array_push($json_list["error_msg"], $error_msg);
+    }
+
     // 着用者名
     if (empty($wearer_data_input["member_name"])) {
       $json_list["error_code"] = "1";
