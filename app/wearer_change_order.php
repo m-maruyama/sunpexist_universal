@@ -4492,6 +4492,7 @@ $app->post('/wearer_change/complete', function ()use($app){
     $json_list['param'] = '';
     $json_list['param'] .= $wearer_data_input['agreement_no'].':';
     $json_list['param'] .= $shin_order_req_no;
+    $json_list['return_item_num'] = count($now_item_input);
 
     echo json_encode($json_list);
   }
@@ -6357,7 +6358,8 @@ $app->post('/wearer_change/send', function ()use($app){
    $json_list['param'] = '';
    $json_list['param'] .= $wearer_data_input['agreement_no'].':';
    $json_list['param'] .= $shin_order_req_no;
+   $json_list['return_item_num'] = count($now_item_input);
 
-   echo json_encode($json_list);
+    echo json_encode($json_list);
  }
 });
