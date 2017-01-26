@@ -639,7 +639,7 @@ $app->post('/wearer_other_change_info', function ()use($app){
 
     //ダイナム様専用仕様
     if($auth['corporate_id'] == CORPORATE_ID_DYNAM){
-        $json_list['dynam_msg'] = '※紛失・破損は個人請求となります。';
+        $json_list['dynam_msg'] = '（紛失・破損は個人請求となります。）';
     }
 
     echo json_encode($json_list);
