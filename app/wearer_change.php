@@ -251,8 +251,7 @@ $app->post('/wearer_change/search', function ()use($app){
         $arg_str .= " ON m_wearer_std_tran.corporate_id = t_returned_plan_info_tran.corporate_id";
         $arg_str .= " AND m_wearer_std_tran.rntl_cont_no = t_returned_plan_info_tran.rntl_cont_no";
         $arg_str .= " AND m_wearer_std_tran.werer_cd = t_returned_plan_info_tran.werer_cd";
-        $arg_str .= " AND m_wearer_std_tran.rntl_sect_cd = t_returned_plan_info_tran.rntl_sect_cd";
-        $arg_str .= " AND m_wearer_std_tran.job_type_cd = t_returned_plan_info_tran.job_type_cd";
+        $arg_str .= " AND m_wearer_std_tran.order_req_no = t_returned_plan_info_tran.order_req_no";
         $arg_str .= " WHERE ";
         $arg_str .= $query;
         $arg_str .= " ORDER BY m_wearer_std_tran.upd_date DESC";
