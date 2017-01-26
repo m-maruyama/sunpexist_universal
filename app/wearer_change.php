@@ -68,6 +68,7 @@ $app->post('/wearer_change/search', function ()use($app){
   if(!empty($cond['agreement_no'])){
     $query_list[] = "m_wearer_std.rntl_cont_no = '".$cond['agreement_no']."'";
   }
+  /*
   if(!empty($cond['cster_emply_cd'])){
     $query_list[] = "m_wearer_std.cster_emply_cd LIKE '".$cond['cster_emply_cd']."%'";
   }
@@ -83,6 +84,7 @@ $app->post('/wearer_change/search', function ()use($app){
   if(!empty($cond['job_type'])){
     $query_list[] = "m_wearer_std.job_type_cd = '".$cond['job_type']."'";
   }
+  */
   $query_list[] = "m_wearer_std.werer_sts_kbn = '1'";
   if (!$section_all_zero_flg) {
     $query_list[] = "wcr.corporate_id = '".$auth['corporate_id']."'";
@@ -680,7 +682,52 @@ $app->post('/wearer_change/search', function ()use($app){
         $list['param'] .= $list['order_req_no'].':';
         $list['param'] .= $list['return_req_no'];
 
-        array_push($all_list,$list);
+        //表示側のデータの検索絞り込み
+        $list['display_flg'] = array();
+        //ChromePhp::log($cond);
+        if(!empty($cond['werer_name'])) {
+          if(strstr($list['werer_name'], $cond['werer_name'])){
+            $list['display_flg'][] = true;
+          }else{
+            $list['display_flg'][] = false;
+          }
+        }
+        if(!empty($cond['cster_emply_cd'])) {
+          if(strstr($list['cster_emply_cd'], $cond['cster_emply_cd'])){
+            $list['display_flg'][] = true;
+          }else{
+            $list['display_flg'][] = false;
+          }
+        }
+        if(!empty($cond['sex_kbn'])) {
+          if($list['sex_kbn'] == $cond['sex_kbn']){
+            $list['display_flg'][] = true;
+          }else{
+            $list['display_flg'][] = false;
+          }
+        }
+        if(!empty($cond['section'])) {
+          if($list['rntl_sect_cd'] == $cond['section']){
+            $list['display_flg'][] = true;
+          }else{
+            $list['display_flg'][] = false;
+          }
+        }
+
+        if(!empty($cond['job_type'])) {
+          if($list['job_type_cd'] == $cond['job_type']){
+            $list['display_flg'][] = true;
+          }else{
+            $list['display_flg'][] = false;
+          }
+        }
+
+        $check_false = array_search(false,$list['display_flg']);
+
+        //falseがないものが表に出力
+        if($check_false === false){
+          array_push($all_list,$list);
+        }
       }
   }
 
