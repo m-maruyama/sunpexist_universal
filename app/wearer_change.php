@@ -930,6 +930,7 @@ $app->post('/wearer_change/order_check', function ()use($app){
   array_push($query_list, "corporate_id = '".$auth['corporate_id']."'");
   array_push($query_list, "rntl_cont_no = '".$cond['rntl_cont_no']."'");
   array_push($query_list, "werer_cd = '".$cond['werer_cd']."'");
+  array_push($query_list, "item_cd IS NOT null");
   $query = implode(' AND ', $query_list);
   $arg_str = "";
   $arg_str = "SELECT ";
