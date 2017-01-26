@@ -69,19 +69,40 @@ $app->post('/wearer_change/search', function ()use($app){
     $query_list[] = "m_wearer_std.rntl_cont_no = '".$cond['agreement_no']."'";
   }
   if(!empty($cond['cster_emply_cd'])){
-    $query_list[] = "m_wearer_std.cster_emply_cd LIKE '".$cond['cster_emply_cd']."%'";
+    //$query_list[] = "m_wearer_std.cster_emply_cd LIKE '".$cond['cster_emply_cd']."%'";
+    $query_list[] = "CASE
+           WHEN m_wearer_std_tran.cster_emply_cd IS NULL THEN m_wearer_std.cster_emply_cd
+           ELSE m_wearer_std_tran.cster_emply_cd
+           END LIKE '%".$cond['cster_emply_cd']."%'";
   }
+
   if(!empty($cond['werer_name'])){
-    $query_list[] = "m_wearer_std.werer_name LIKE '%".$cond['werer_name']."%'";
+    //$query_list[] = "m_wearer_std.werer_name LIKE '%".$cond['werer_name']."%'";
+    $query_list[] = "CASE
+           WHEN m_wearer_std_tran.werer_name IS NULL THEN m_wearer_std.werer_name
+           ELSE m_wearer_std_tran.werer_name
+           END LIKE '%".$cond['werer_name']."%'";
   }
   if(!empty($cond['sex_kbn'])){
-    $query_list[] = "m_wearer_std.sex_kbn = '".$cond['sex_kbn']."'";
+    //$query_list[] = "m_wearer_std.sex_kbn = '".$cond['sex_kbn']."'";
+    $query_list[] = "CASE
+           WHEN m_wearer_std_tran.sex_kbn IS NULL THEN m_wearer_std.sex_kbn
+           ELSE m_wearer_std_tran.sex_kbn
+           END = '".$cond['sex_kbn']."'";
   }
   if(!empty($cond['section'])){
-    $query_list[] = "m_wearer_std.rntl_sect_cd = '".$cond['section']."'";
+    //$query_list[] = "m_wearer_std.rntl_sect_cd = '".$cond['section']."'";
+    $query_list[] = "CASE
+           WHEN m_wearer_std_tran.rntl_sect_cd IS NULL THEN m_wearer_std.rntl_sect_cd
+           ELSE m_wearer_std_tran.rntl_sect_cd
+           END = '".$cond['section']."'";
   }
   if(!empty($cond['job_type'])){
-    $query_list[] = "m_wearer_std.job_type_cd = '".$cond['job_type']."'";
+    //$query_list[] = "m_wearer_std.job_type_cd = '".$cond['job_type']."'";
+    $query_list[] = "CASE
+           WHEN m_wearer_std_tran.job_type_cd IS NULL THEN m_wearer_std.job_type_cd
+           ELSE m_wearer_std_tran.job_type_cd
+           END = '".$cond['job_type']."'";
   }
   $query_list[] = "m_wearer_std.werer_sts_kbn = '1'";
   if (!$section_all_zero_flg) {
@@ -89,6 +110,9 @@ $app->post('/wearer_change/search', function ()use($app){
     $query_list[] = "wcr.rntl_cont_no = '".$cond['agreement_no']."'";
     $query_list[] = "wcr.accnt_no = '".$auth['accnt_no']."'";
   }
+
+
+
   $query = implode(' AND ', $query_list);
 
   $arg_str = "";
