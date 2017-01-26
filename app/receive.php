@@ -953,6 +953,7 @@ $app->post('/receive/update', function ()use($app) {
                 $up_query_list = array();
                 $up_query_list[] = "receipt_status = '1'";
                 $up_query_list[] = "receipt_date = NULL";
+                $up_query_list[] = "snd_kbn = '0'";
                 $up_query = implode(',', $up_query_list);
 
                 $arg_str = "";
@@ -981,6 +982,7 @@ $app->post('/receive/update', function ()use($app) {
                 $up_query_list = array();
                 $up_query_list[] = "receipt_status = '2'";
                 $up_query_list[] = "receipt_date = '".date('Y-m-d H:i:s.sss', time())."'";
+                $up_query_list[] = "snd_kbn = '1'";
                 $up_query = implode(',', $up_query_list);
 
                 $arg_str = "";
