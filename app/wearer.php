@@ -105,7 +105,7 @@ $app->post('/wearer/search', function ()use($app){
 	}
 	//個体管理番号
 	if(!empty($cond['individual_number'])){
-		array_push($query_list,"t_delivery_goods_state_details.individual_ctrl_no LIKE '".$cond['individual_number']."%'");
+		array_push($query_list,"t_delivery_goods_state_details.individual_ctrl_no LIKE '%".$cond['individual_number']."%'");
 	}
 
     //ゼロ埋めがない場合、ログインアカウントの条件追加
