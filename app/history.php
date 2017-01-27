@@ -146,7 +146,7 @@ $app->post('/history/search', function ()use($app){
 	}
 	//個体管理番号
 	if(!empty($cond['individual_number'])){
-		array_push($query_list,"t_delivery_goods_state_details.individual_ctrl_no LIKE '".$cond['individual_number']."%'");
+		array_push($query_list,"t_delivery_goods_state_details.individual_ctrl_no LIKE '%".$cond['individual_number']."%'");
 	}
 
     //ゼロ埋めがない場合、ログインアカウントの条件追加
@@ -553,8 +553,9 @@ $app->post('/history/search', function ()use($app){
     $arg_str .= "t_order.ship_plan_ymd as as_ship_plan_ymd,";
 	$arg_str .= "m_contract.rntl_cont_name as as_rntl_cont_name";
 	$arg_str .= " FROM t_order LEFT JOIN";
-	$arg_str .= " (t_order_state LEFT JOIN (t_delivery_goods_state LEFT JOIN t_delivery_goods_state_details ON t_delivery_goods_state.ship_no = t_delivery_goods_state_details.ship_no)";
-	$arg_str .= " ON t_order_state.t_order_state_comb_hkey = t_delivery_goods_state.t_order_state_comb_hkey)";
+  $arg_str .= " (t_order_state LEFT JOIN (t_delivery_goods_state LEFT JOIN t_delivery_goods_state_details";
+  $arg_str .= " ON t_delivery_goods_state.corporate_id = t_delivery_goods_state_details.corporate_id AND t_delivery_goods_state.ship_no = t_delivery_goods_state_details.ship_no AND t_delivery_goods_state.ship_line_no = t_delivery_goods_state_details.ship_line_no)";
+  $arg_str .= " ON t_order_state.t_order_state_comb_hkey = t_delivery_goods_state.t_order_state_comb_hkey)";
 	$arg_str .= " ON t_order.t_order_comb_hkey = t_order_state.t_order_comb_hkey";
 	if($rntl_sect_cd_zero_flg == 1){
 		$arg_str .= " INNER JOIN m_section";
