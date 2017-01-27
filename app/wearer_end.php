@@ -954,7 +954,7 @@ $app->post('/wearer_end/order_check', function ()use($app){
   //出荷情報が0な時点で未出荷があるとみなし、未出荷エラー
   if($results_cnt_ship_item == 0){
     $json_list["err_cd"] = "1";
-    $error_msg = "対象の方は未出荷の商品がある為、職種変更または異動の発注はできません。";
+    $error_msg = "対象の方は未出荷の商品がある為、貸与終了の発注はできません。";
     $json_list["err_msg"] = $error_msg;
   }
   //出荷情報が1以上あった場合に、下記の処理に移行
@@ -976,7 +976,7 @@ $app->post('/wearer_end/order_check', function ()use($app){
       //未出荷商品が0以上または、発注情報があるのに、出荷情報（発注状況）がない場合はエラー
       if($order_item_list[$i]['unshipped_qty'] > 0 || is_null($order_item_list[$i]['unshipped_qty'])){
         $json_list["err_cd"] = "1";
-        $error_msg = "対象の方は未出荷の商品がある為、職種変更または異動の発注はできません。";
+        $error_msg = "対象の方は未出荷の商品がある為、貸与終了の発注はできません。";
         $json_list["err_msg"] = $error_msg;
       }
     }
