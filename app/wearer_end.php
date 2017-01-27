@@ -825,32 +825,166 @@ $app->post('/wearer_end/order_check', function ()use($app){
         $error_msg = "交換の発注が入力されています。".PHP_EOL."貸与終了を行う場合は交換の発注をキャンセルしてください。";
         $json_list["err_msg"] = $error_msg;
       }
-    }   // ※発注情報状況・納品状況情報参照
+    }
+    // ※発注情報状況の商品レコード取得
     $query_list = array();
     array_push($query_list, "corporate_id = '".$auth['corporate_id']."'");
     array_push($query_list, "rntl_cont_no = '".$cond['rntl_cont_no']."'");
     array_push($query_list, "werer_cd = '".$cond['werer_cd']."'");
-    array_push($query_list, "ship_qty = 0");
-    array_push($query_list, "ship_ymd = '00000000'");
     $query = implode(' AND ', $query_list);
     $arg_str = "";
-    $arg_str .= "SELECT ";
-    $arg_str .= "*";
+    $arg_str = "SELECT ";
+    $arg_str .= " * ";
+    $arg_str .= " FROM ";
+    $arg_str .= "(SELECT distinct on (t_order_state.item_cd, t_order_state.color_cd, t_order_state.size_cd) ";
+    $arg_str .= "t_order_state.ship_qty as as_ship_qty,";
+    $arg_str .= "t_order_state.ship_ymd as as_ship_ymd,";
+    $arg_str .= "t_order_state.item_cd as as_item_cd,";
+    $arg_str .= "t_order_state.color_cd as as_color_cd,";
+    $arg_str .= "t_order_state.size_cd as as_size_cd,";
+    $arg_str .= "t_order_state.werer_cd as as_werer_cd";
     $arg_str .= " FROM ";
     $arg_str .= "t_order_state";
     $arg_str .= " WHERE ";
     $arg_str .= $query;
+    $arg_str .= ") as distinct_table";
     //ChromePhp::LOG($arg_str);
     $t_order_state = new TOrderState();
     $results = new Resultset(NULL, $t_order_state, $t_order_state->getReadConnection()->query($arg_str));
     $result_obj = (array)$results;
+    $results_cnt_ship_item = $result_obj["\0*\0_count"];
+    if ($results_cnt_ship_item > 0) {
+      $list = array();
+      $ship_item_list = array();
+      foreach ($results as $result) {
+        $list['ship_ymd'] = $result->as_ship_ymd;
+        $list['item_cd'] = $result->as_item_cd;
+        $list['color_cd'] = $result->as_color_cd;
+        $list['size_cd'] = $result->as_size_cd;
+
+        //商品ごとの発注数合計を計算
+        $parameter = array(
+        "corporate_id" => $auth['corporate_id'],
+        "rntl_cont_no" => $cond['rntl_cont_no'],
+        "werer_cd" => $result->as_werer_cd,
+        "item_cd" => $result->as_item_cd,
+        "color_cd" => $result->as_color_cd,
+        "size_cd" => $result->as_size_cd);
+        $TOrderState = TOrderState::find(array(
+        'conditions'  => "corporate_id = :corporate_id: AND rntl_cont_no = :rntl_cont_no:  AND werer_cd = :werer_cd: AND item_cd = :item_cd: AND color_cd = :color_cd: AND size_cd = :size_cd:",
+        "bind" => $parameter
+        ));
+        //商品数
+        $each_item_count = $TOrderState->count();
+        //商品ごとの発注数サマリ
+        $each_item_ship = 0;
+        for($i = 0; $i < $each_item_count; $i++){
+          $each_item_ship = $each_item_ship + $TOrderState[$i]->ship_qty;
+          //ChromePhp::log($TOrderState[$i]->item_cd);
+          //ChromePhp::log($each_item_ship);
+        }
+        $list['ship_qty'] = $each_item_ship;
+
+        array_push($ship_item_list, $list);
+      }
+    }
+
+    // ※発注情報の商品レコード数を取得
+    $query_list = array();
+    array_push($query_list, "corporate_id = '".$auth['corporate_id']."'");
+    array_push($query_list, "rntl_cont_no = '".$cond['rntl_cont_no']."'");
+    array_push($query_list, "werer_cd = '".$cond['werer_cd']."'");
+    array_push($query_list, "item_cd IS NOT null");
+    $query = implode(' AND ', $query_list);
+    $arg_str = "";
+    $arg_str = "SELECT ";
+    $arg_str .= " * ";
+    $arg_str .= " FROM ";
+    $arg_str .= "(SELECT distinct on (t_order.item_cd, t_order.color_cd, t_order.size_cd) ";
+    $arg_str .= "t_order.order_qty as as_order_qty,";
+    $arg_str .= "t_order.item_cd as as_item_cd,";
+    $arg_str .= "t_order.color_cd as as_color_cd,";
+    $arg_str .= "t_order.size_cd as as_size_cd,";
+    $arg_str .= "t_order.werer_cd as as_werer_cd";
+    $arg_str .= " FROM ";
+    $arg_str .= "t_order";
+    $arg_str .= " WHERE ";
+    $arg_str .= $query;
+    $arg_str .= ") as distinct_table";
+    //ChromePhp::LOG($arg_str);
+    $t_order = new TOrder();
+    $results = new Resultset(NULL, $t_order, $t_order->getReadConnection()->query($arg_str));
+    $result_obj = (array)$results;
     $results_cnt = $result_obj["\0*\0_count"];
     if ($results_cnt > 0) {
-        $json_list["err_cd"] = "1";
-        $error_msg = "対象の方は未出荷の商品がある為、貸与終了の発注はできません。";
-        $json_list["err_msg"] = $error_msg;
+      $list = array();
+      $order_item_list = array();
+      foreach ($results as $result) {
+        $list['item_cd'] = $result->as_item_cd;
+        $list['color_cd'] = $result->as_color_cd;
+        $list['size_cd'] = $result->as_size_cd;
+
+        //商品ごとの発注数合計を計算
+        $parameter = array(
+        "corporate_id" => $auth['corporate_id'],
+        "rntl_cont_no" => $cond['rntl_cont_no'],
+        "werer_cd" => $result->as_werer_cd,
+        "item_cd" => $result->as_item_cd,
+        "color_cd" => $result->as_color_cd,
+        "size_cd" => $result->as_size_cd);
+        $TOrder = TOrder::find(array(
+        'conditions'  => "corporate_id = :corporate_id: AND rntl_cont_no = :rntl_cont_no:  AND werer_cd = :werer_cd: AND item_cd = :item_cd: AND color_cd = :color_cd: AND size_cd = :size_cd:",
+        "bind" => $parameter
+        ));
+        //商品数
+        $each_item_count = $TOrder->count();
+        //商品ごとの発注数サマリ
+        $each_item_order = 0;
+        for($i = 0; $i < $each_item_count; $i++){
+          $each_item_order = $each_item_order + $TOrder[$i]->order_qty;
+          //ChromePhp::log($TOrder[$i]->item_cd);
+          //hromePhp::log($each_item_order);
+        }
+        $list['order_qty'] = $each_item_order;
+        $list['unshipped_qty'] = null;
+
+        array_push($order_item_list, $list);
+      }
     }
-    $query_list = array();
+  //出荷情報が0な時点で未出荷があるとみなし、未出荷エラー
+  if($results_cnt_ship_item == 0){
+    $json_list["err_cd"] = "1";
+    $error_msg = "対象の方は未出荷の商品がある為、職種変更または異動の発注はできません。";
+    $json_list["err_msg"] = $error_msg;
+  }
+  //出荷情報が1以上あった場合に、下記の処理に移行
+  //ChromePhp::log($order_item_list);
+  //ChromePhp::log($ship_item_list);
+  if($results_cnt_ship_item > 0) {
+    $count_ship = count($ship_item_list);
+    $count_order = count($order_item_list);
+    //発注情報と、出荷商品の比較 同じ商品cd,色cd,サイズcdだったらお互いのサマリ数を比較
+    for($i = 0; $i < $count_order; $i++){
+      for($s = 0; $s < $count_ship; $s++){
+        if($order_item_list[$i]['item_cd'] == $ship_item_list[$s]['item_cd']
+        && $order_item_list[$i]['color_cd'] == $ship_item_list[$s]['color_cd']
+        && $order_item_list[$i]['size_cd'] == $ship_item_list[$s]['size_cd'])
+        {
+          $order_item_list[$i]['unshipped_qty'] = $order_item_list[$i]['order_qty'] - $ship_item_list[$s]['ship_qty'];
+        }
+      }
+      //未出荷商品が0以上または、発注情報があるのに、出荷情報（発注状況）がない場合はエラー
+      if($order_item_list[$i]['unshipped_qty'] > 0 || is_null($order_item_list[$i]['unshipped_qty'])){
+        $json_list["err_cd"] = "1";
+        $error_msg = "対象の方は未出荷の商品がある為、職種変更または異動の発注はできません。";
+        $json_list["err_msg"] = $error_msg;
+      }
+    }
+  }
+
+
+  //未受領の確認
+  $query_list = array();
     array_push($query_list, "corporate_id = '".$auth['corporate_id']."'");
     array_push($query_list, "rntl_cont_no = '".$cond['rntl_cont_no']."'");
     array_push($query_list, "werer_cd = '".$cond['werer_cd']."'");

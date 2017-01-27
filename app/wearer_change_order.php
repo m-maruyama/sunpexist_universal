@@ -2796,9 +2796,9 @@ $app->post('/wearer_change/complete', function ()use($app){
          //商品数
          $each_item_count = $TOrderState->count();
          //商品ごとの発注数サマリ
-         $each_item_order = 0;
+         $each_item_ship = 0;
          for($i = 0; $i < $each_item_count; $i++){
-           $each_item_ship = $each_item_order + $TOrderState[$i]->ship_qty;
+           $each_item_ship = $each_item_ship + $TOrderState[$i]->ship_qty;
          }
          $list['ship_qty'] = $each_item_ship;
 
@@ -3087,9 +3087,9 @@ $app->post('/wearer_change/complete', function ()use($app){
            //商品数
            $each_item_count = $TOrderState->count();
            //商品ごとの発注数サマリ
-           $each_item_order = 0;
+           $each_item_ship = 0;
            for($i = 0; $i < $each_item_count; $i++){
-             $each_item_ship = $each_item_order + $TOrderState[$i]->ship_qty;
+             $each_item_ship = $each_item_ship + $TOrderState[$i]->ship_qty;
            }
            $list['ship_qty'] = $each_item_ship;
 
@@ -4787,9 +4787,9 @@ $app->post('/wearer_change/send', function ()use($app){
         //商品数
         $each_item_count = $TOrderState->count();
         //商品ごとの発注数サマリ
-        $each_item_order = 0;
+        $each_item_ship = 0;
         for($i = 0; $i < $each_item_count; $i++){
-          $each_item_ship = $each_item_order + $TOrderState[$i]->ship_qty;
+          $each_item_ship = $each_item_ship + $TOrderState[$i]->ship_qty;
         }
         $list['ship_qty'] = $each_item_ship;
 

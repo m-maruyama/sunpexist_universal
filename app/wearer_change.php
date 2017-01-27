@@ -900,7 +900,7 @@ $app->post('/wearer_change/order_check', function ()use($app){
 
 
 
-  // ※発注情報状況・納品状況情報参照
+  // ※発注情報状況の商品レコード取得
   $query_list = array();
   array_push($query_list, "corporate_id = '".$auth['corporate_id']."'");
   array_push($query_list, "rntl_cont_no = '".$cond['rntl_cont_no']."'");
@@ -951,9 +951,9 @@ $app->post('/wearer_change/order_check', function ()use($app){
       //商品数
       $each_item_count = $TOrderState->count();
       //商品ごとの発注数サマリ
-      $each_item_order = 0;
+      $each_item_ship = 0;
       for($i = 0; $i < $each_item_count; $i++){
-        $each_item_ship = $each_item_order + $TOrderState[$i]->ship_qty;
+        $each_item_ship = $each_item_ship + $TOrderState[$i]->ship_qty;
       }
       $list['ship_qty'] = $each_item_ship;
 
@@ -961,7 +961,7 @@ $app->post('/wearer_change/order_check', function ()use($app){
     }
   }
 
-  // ※発注情報状況・納品状況情報参照
+  // ※発注情報の商品レコード数を取得
   $query_list = array();
   array_push($query_list, "corporate_id = '".$auth['corporate_id']."'");
   array_push($query_list, "rntl_cont_no = '".$cond['rntl_cont_no']."'");
@@ -1049,7 +1049,7 @@ $app->post('/wearer_change/order_check', function ()use($app){
       }
     }
   }
-
+  //受領済み確認
     $query_list = array();
     array_push($query_list, "corporate_id = '".$auth['corporate_id']."'");
     array_push($query_list, "rntl_cont_no = '".$cond['rntl_cont_no']."'");
