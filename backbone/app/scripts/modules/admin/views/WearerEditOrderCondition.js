@@ -119,11 +119,11 @@ define([
 						if (res_list['wearer_info'][0]) {
 							that.ui.complete.val(res_list['wearer_info'][0]['order_req_no']);
 							that.ui.orderSend.val(res_list['wearer_info'][0]['order_req_no']);
-							console.log(res_list['wearer_info'][0]['cster_emply_cd']);
 							if (res_list['wearer_info'][0]['cster_emply_cd']) {
 								that.ui.emply_cd_flg.prop('checked', true);
 							} else {
 								that.ui.emply_cd_flg.prop('checked', false);
+								that.ui.member_no.prop('disabled', true);
 							}
 							that.ui.member_no.val(res_list['wearer_info'][0]['cster_emply_cd']);
 							that.ui.member_name.val(res_list['wearer_info'][0]['werer_name']);
@@ -179,6 +179,13 @@ define([
 				});
 			},
 			events: {
+				'change @ui.emply_cd_flg': function(e){
+					if(e.target.checked){
+						this.ui.member_no.prop('disabled',false);
+					}else{
+						this.ui.member_no.prop('disabled',true);
+					}
+				},
 				'click @ui.back': function(){
 					var cond = window.sessionStorage.getItem("wearer_edit_cond");
 					window.sessionStorage.setItem("back_wearer_edit_cond", cond);
