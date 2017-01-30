@@ -3009,20 +3009,20 @@ $app->post('/csv_download', function ()use($app){
       $arg_str .= " ON t_order.corporate_id = t_returned_plan_info.corporate_id";
       $arg_str .= " AND t_order.order_req_no = t_returned_plan_info.order_req_no";
       $arg_str .= " AND t_order.order_req_line_no = t_returned_plan_info.order_req_line_no";
+      $arg_str .= " INNER JOIN m_wearer_std";
+      $arg_str .= " ON t_order.corporate_id = m_wearer_std.corporate_id";
+      $arg_str .= " AND t_order.rntl_cont_no = m_wearer_std.rntl_cont_no";
+      $arg_str .= " AND t_order.werer_cd = m_wearer_std.werer_cd";
       if($rntl_sect_cd_zero_flg == 1){
           $arg_str .= " INNER JOIN m_section";
-          $arg_str .= " ON t_order.m_section_comb_hkey = m_section.m_section_comb_hkey";
+          $arg_str .= " ON m_wearer_std.m_section_comb_hkey = m_section.m_section_comb_hkey";
       }elseif($rntl_sect_cd_zero_flg == 0){
           $arg_str .= " INNER JOIN (m_section INNER JOIN m_contract_resource";
           $arg_str .= " ON m_section.corporate_id = m_contract_resource.corporate_id";
           $arg_str .= " AND m_section.rntl_cont_no = m_contract_resource.rntl_cont_no";
           $arg_str .= " AND m_section.rntl_sect_cd = m_contract_resource.rntl_sect_cd";
-          $arg_str .= " ) ON t_order.m_section_comb_hkey = m_section.m_section_comb_hkey";
+          $arg_str .= " ) ON m_wearer_std.m_section_comb_hkey = m_section.m_section_comb_hkey";
       }
-      $arg_str .= " INNER JOIN m_wearer_std";
-      $arg_str .= " ON t_order.corporate_id = m_wearer_std.corporate_id";
-      $arg_str .= " AND t_order.rntl_cont_no = m_wearer_std.rntl_cont_no";
-      $arg_str .= " AND t_order.werer_cd = m_wearer_std.werer_cd";
       $arg_str .= " LEFT JOIN m_wearer_item";
       $arg_str .= " ON t_order.m_wearer_item_comb_hkey = m_wearer_item.m_wearer_item_comb_hkey";
       $arg_str .= " WHERE ";
