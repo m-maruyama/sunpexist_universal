@@ -182,6 +182,9 @@ $app->post('/history/search', function ()use($app){
 		array_push($status_list,"2");
 	}
 	if(!empty($status_list)) {
+        // 貸与終了検索用
+        array_push($status_list,"3");
+
 		$status_str = implode("','",$status_list);
 		array_push($query_list,"t_order.order_status IN ('".$status_str."')");
 	}
