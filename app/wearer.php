@@ -103,10 +103,11 @@ $app->post('/wearer/search', function ()use($app){
 	if(!empty($cond['item_size'])){
 		array_push($query_list,"t_order.size_cd = '".$cond['item_size']."'");
 	}
-	//個体管理番号
-	if(!empty($cond['individual_number'])){
-		array_push($query_list,"t_delivery_goods_state_details.individual_ctrl_no LIKE '".$cond['individual_number']."%'");
-	}
+  //個体管理番号
+  if(!empty($cond['individual_number'])){
+    array_push($query_list,"t_delivery_goods_state_details.individual_ctrl_no LIKE '%".$cond['individual_number']."%'");
+    array_push($query_list,"m_wearer_std.werer_sts_kbn ='1'");
+  }
 
     //ゼロ埋めがない場合、ログインアカウントの条件追加
     if($rntl_sect_cd_zero_flg == 0){
@@ -188,22 +189,24 @@ $app->post('/wearer/search', function ()use($app){
 	$arg_str .= "m_job_type.job_type_name as as_job_type_name";
 	$arg_str .= " FROM m_wearer_std INNER JOIN";
 	$arg_str .= " ((t_order";
-	if($rntl_sect_cd_zero_flg == 1){
-		$arg_str .= " INNER JOIN m_section";
-		$arg_str .= " ON t_order.m_section_comb_hkey = m_section.m_section_comb_hkey";
-	}elseif($rntl_sect_cd_zero_flg == 0){
-		$arg_str .= " INNER JOIN (m_section INNER JOIN m_contract_resource";
-		$arg_str .= " ON m_section.corporate_id = m_contract_resource.corporate_id";
-		$arg_str .= " AND m_section.rntl_cont_no = m_contract_resource.rntl_cont_no";
-		$arg_str .= " AND m_section.rntl_sect_cd = m_contract_resource.rntl_sect_cd";
-		$arg_str .= " ) ON t_order.m_section_comb_hkey = m_section.m_section_comb_hkey";
-	}
-	$arg_str .= " INNER JOIN m_job_type ON t_order.m_job_type_comb_hkey = m_job_type.m_job_type_comb_hkey)";
-	$arg_str .= " LEFT JOIN (t_order_state LEFT JOIN (t_delivery_goods_state LEFT JOIN t_delivery_goods_state_details ON t_delivery_goods_state.ship_no = t_delivery_goods_state_details.ship_no)";
-	$arg_str .= " ON t_order_state.t_order_state_comb_hkey = t_delivery_goods_state.t_order_state_comb_hkey)";
-	$arg_str .= " ON t_order.t_order_comb_hkey = t_order_state.t_order_comb_hkey)";
-	$arg_str .= " ON m_wearer_std.m_wearer_std_comb_hkey = t_order.m_wearer_std_comb_hkey";
-	$arg_str .= " WHERE ";
+  $arg_str .= " LEFT JOIN (t_order_state LEFT JOIN (t_delivery_goods_state LEFT JOIN t_delivery_goods_state_details ON t_delivery_goods_state.corporate_id = t_delivery_goods_state_details.corporate_id AND t_delivery_goods_state.ship_no = t_delivery_goods_state_details.ship_no AND t_delivery_goods_state.ship_line_no = t_delivery_goods_state_details.ship_line_no)";
+  $arg_str .= " ON t_order_state.t_order_state_comb_hkey = t_delivery_goods_state.t_order_state_comb_hkey)";
+  $arg_str .= " ON t_order.t_order_comb_hkey = t_order_state.t_order_comb_hkey)";
+  $arg_str .= " INNER JOIN m_job_type ON t_order.m_job_type_comb_hkey = m_job_type.m_job_type_comb_hkey)";
+  $arg_str .= " ON t_order.werer_cd = m_wearer_std.werer_cd";
+  $arg_str .= " AND t_order.corporate_id = m_wearer_std.corporate_id";
+  $arg_str .= " AND t_order.rntl_cont_no = m_wearer_std.rntl_cont_no";
+  if($rntl_sect_cd_zero_flg == 1){
+    $arg_str .= " INNER JOIN m_section";
+    $arg_str .= " ON m_wearer_std.m_section_comb_hkey = m_section.m_section_comb_hkey";
+  }elseif($rntl_sect_cd_zero_flg == 0){
+    $arg_str .= " INNER JOIN (m_section INNER JOIN m_contract_resource";
+    $arg_str .= " ON m_section.corporate_id = m_contract_resource.corporate_id";
+    $arg_str .= " AND m_section.rntl_cont_no = m_contract_resource.rntl_cont_no";
+    $arg_str .= " AND m_section.rntl_sect_cd = m_contract_resource.rntl_sect_cd";
+    $arg_str .= " ) ON m_wearer_std.m_section_comb_hkey = m_section.m_section_comb_hkey";
+  }
+  $arg_str .= " WHERE ";
 	$arg_str .= $query;
 	$arg_str .= ") as distinct_table";
 	if (!empty($q_sort_key)) {

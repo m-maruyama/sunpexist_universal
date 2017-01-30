@@ -182,7 +182,7 @@ $app->post('/csv_download', function ()use($app){
         }
         //個体管理番号
         if(!empty($cond['individual_number'])){
-            array_push($query_list,"t_delivery_goods_state_details.individual_ctrl_no LIKE '".$cond['individual_number']."%'");
+            array_push($query_list,"t_delivery_goods_state_details.individual_ctrl_no LIKE '%".$cond['individual_number']."%'");
         }
 
           //ゼロ埋めがない場合、ログインアカウントの条件追加
@@ -584,18 +584,19 @@ $app->post('/csv_download', function ()use($app){
         $arg_str .= "t_order.rntl_cont_no as as_rntl_cont_no,";
         $arg_str .= "m_contract.rntl_cont_name as as_rntl_cont_name";
         $arg_str .= " FROM t_order LEFT JOIN";
-        $arg_str .= " (t_order_state LEFT JOIN (t_delivery_goods_state LEFT JOIN t_delivery_goods_state_details ON t_delivery_goods_state.ship_no = t_delivery_goods_state_details.ship_no)";
+        $arg_str .= " (t_order_state LEFT JOIN (t_delivery_goods_state LEFT JOIN t_delivery_goods_state_details";
+        $arg_str .= " ON t_delivery_goods_state.corporate_id = t_delivery_goods_state_details.corporate_id AND t_delivery_goods_state.ship_no = t_delivery_goods_state_details.ship_no AND t_delivery_goods_state.ship_line_no = t_delivery_goods_state_details.ship_line_no)";
         $arg_str .= " ON t_order_state.t_order_state_comb_hkey = t_delivery_goods_state.t_order_state_comb_hkey)";
         $arg_str .= " ON t_order.t_order_comb_hkey = t_order_state.t_order_comb_hkey";
         if($rntl_sect_cd_zero_flg == 1){
-            $arg_str .= " INNER JOIN m_section";
-            $arg_str .= " ON t_order.m_section_comb_hkey = m_section.m_section_comb_hkey";
+          $arg_str .= " INNER JOIN m_section";
+          $arg_str .= " ON t_order.m_section_comb_hkey = m_section.m_section_comb_hkey";
         }elseif($rntl_sect_cd_zero_flg == 0){
-            $arg_str .= " INNER JOIN (m_section INNER JOIN m_contract_resource";
-            $arg_str .= " ON m_section.corporate_id = m_contract_resource.corporate_id";
-            $arg_str .= " AND m_section.rntl_cont_no = m_contract_resource.rntl_cont_no";
-            $arg_str .= " AND m_section.rntl_sect_cd = m_contract_resource.rntl_sect_cd";
-            $arg_str .= " ) ON t_order.m_section_comb_hkey = m_section.m_section_comb_hkey";
+          $arg_str .= " INNER JOIN (m_section INNER JOIN m_contract_resource";
+          $arg_str .= " ON m_section.corporate_id = m_contract_resource.corporate_id";
+          $arg_str .= " AND m_section.rntl_cont_no = m_contract_resource.rntl_cont_no";
+          $arg_str .= " AND m_section.rntl_sect_cd = m_contract_resource.rntl_sect_cd";
+          $arg_str .= " ) ON t_order.m_section_comb_hkey = m_section.m_section_comb_hkey";
         }
         //$arg_str .= " INNER JOIN m_job_type";
         //$arg_str .= " ON t_order.m_job_type_comb_hkey = m_job_type.m_job_type_comb_hkey";
@@ -1099,7 +1100,7 @@ $app->post('/csv_download', function ()use($app){
         }
         //個体管理番号
         if(!empty($cond['individual_number'])){
-            array_push($query_list,"t_returned_plan_info.individual_ctrl_no LIKE '".$cond['individual_number']."%'");
+            array_push($query_list,"t_returned_plan_info.individual_ctrl_no LIKE '%".$cond['individual_number']."%'");
         }
         // 着用者状況区分
         //array_push($query_list,"m_wearer_std.werer_sts_kbn = '1'");
@@ -2061,7 +2062,7 @@ $app->post('/csv_download', function ()use($app){
         }
 		//個体管理番号
 		if(!empty($cond['individual_number'])){
-			array_push($query_list,"t_delivery_goods_state_details.individual_ctrl_no LIKE '".$cond['individual_number']."%'");
+			array_push($query_list,"t_delivery_goods_state_details.individual_ctrl_no LIKE '%".$cond['individual_number']."%'");
 		}
 
         //ゼロ埋めがない場合、ログインアカウントの条件追加
@@ -2898,7 +2899,7 @@ $app->post('/csv_download', function ()use($app){
 		}
 		//個体管理番号
 		if(!empty($cond['individual_number'])){
-			array_push($query_list,"t_delivery_goods_state_details.individual_ctrl_no LIKE '".$cond['individual_number']."%'");
+			array_push($query_list,"t_delivery_goods_state_details.individual_ctrl_no LIKE '%".$cond['individual_number']."%'");
 		}
 		// 着用者状況区分(稼働)
 		array_push($query_list,"m_wearer_std.werer_sts_kbn = '1'");

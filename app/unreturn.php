@@ -134,7 +134,7 @@ $app->post('/unreturn/search', function ()use($app){
 
     //個体管理番号
     if(!empty($cond['individual_number'])){
-        array_push($query_list,"t_returned_plan_info.individual_ctrl_no LIKE '".$cond['individual_number']."%'");
+        array_push($query_list,"t_returned_plan_info.individual_ctrl_no LIKE '%".$cond['individual_number']."%'");
     }
     // 着用者状況区分
     //array_push($query_list,"m_wearer_std.werer_sts_kbn = '1'");
