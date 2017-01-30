@@ -355,6 +355,7 @@ $app->post('/receive/search', function ()use($app){
         }
     }
     //貸与終了
+    /*
     $reason_kbn_4 = array();
     if($cond['order_kbn3']) {
         //貸与終了にチェックがついてたら
@@ -420,7 +421,7 @@ $app->post('/receive/search', function ()use($app){
             array_push($query_list, $order_kbn);
         }
     }
-
+    */
     //その他
     if($cond['order_kbn4']){
         array_push($kbn_list,"t_order.order_sts_kbn = '9' AND m_wearer_std.werer_sts_kbn = '1'");

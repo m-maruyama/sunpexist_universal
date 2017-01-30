@@ -2282,6 +2282,7 @@ $app->post('/csv_download', function ()use($app){
                 array_push($query_list, $order_kbn);
             }
         }
+        /*
         //貸与終了
         $reason_kbn_4 = array();
         if($cond['order_kbn3']) {
@@ -2345,6 +2346,7 @@ $app->post('/csv_download', function ()use($app){
                 array_push($query_list, $order_kbn);
             }
         }
+        */
 
         //その他
         if($cond['order_kbn4']){
