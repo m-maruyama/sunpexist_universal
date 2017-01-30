@@ -21,7 +21,7 @@ $app->post('/wearer_change/search', function ()use($app){
   //ChromePhp::LOG($cond);
 
   //（前処理）契約リソースマスタ参照、拠点コード「0」埋めデータ確認
-    /*
+
   $query_list = array();
   $list = array();
   $all_list = array();
@@ -59,8 +59,7 @@ $app->post('/wearer_change/search', function ()use($app){
     $section_all_zero_flg = true;
   } else {
     $section_all_zero_flg = false;
-  }*/
-  $section_all_zero_flg = true;
+  }
 
   //---既存着用者基本マスタ情報リスト取得---//
   $query_list = array();
