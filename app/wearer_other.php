@@ -203,11 +203,13 @@ $app->post('/wearer_other/search', function ()use($app){
         $query_list[] = "m_wearer_std_tran.corporate_id = '".$result->as_corporate_id."'";
         $query_list[] = "m_wearer_std_tran.rntl_cont_no = '".$result->as_rntl_cont_no."'";
         $query_list[] = "m_wearer_std_tran.werer_cd = '".$result->as_werer_cd."'";
+        /*
         if (!$section_all_zero_flg) {
           $query_list[] = "wcr.corporate_id = '".$result->as_corporate_id."'";
           $query_list[] = "wcr.rntl_cont_no = '".$result->as_rntl_cont_no."'";
           $query_list[] = "wcr.accnt_no = '".$auth['accnt_no']."'";
         }
+        */
         $or_query = "";
         $or_query .= "(t_order_tran.order_sts_kbn = '1' AND ";
         $or_query .= "(t_order_tran.order_reason_kbn = '03' OR t_order_tran.order_reason_kbn = '27'))";
@@ -255,11 +257,7 @@ $app->post('/wearer_other/search', function ()use($app){
           $arg_str .= " AND m_wearer_std_tran.rntl_cont_no = wjt.rntl_cont_no";
           $arg_str .= " AND m_wearer_std_tran.job_type_cd = wjt.job_type_cd)";
         } else {
-          $arg_str .= "(m_wearer_std_tran INNER JOIN (m_section as wst";
-          $arg_str .= " INNER JOIN m_contract_resource as wcr";
-          $arg_str .= " ON wst.corporate_id = wcr.corporate_id";
-          $arg_str .= " AND wst.rntl_cont_no = wcr.rntl_cont_no";
-          $arg_str .= " AND wst.rntl_sect_cd = wcr.rntl_sect_cd)";
+          $arg_str .= "(m_wearer_std_tran INNER JOIN m_section as wst";
           $arg_str .= " ON m_wearer_std_tran.corporate_id = wst.corporate_id";
           $arg_str .= " AND m_wearer_std_tran.rntl_cont_no = wst.rntl_cont_no";
           $arg_str .= " AND m_wearer_std_tran.rntl_sect_cd = wst.rntl_sect_cd";
@@ -396,18 +394,14 @@ $app->post('/wearer_other/search', function ()use($app){
               $arg_str .= " AND m_wearer_std_tran.rntl_cont_no = wjt.rntl_cont_no";
               $arg_str .= " AND m_wearer_std_tran.job_type_cd = wjt.job_type_cd";
           } else {
-              $arg_str .= "m_wearer_std_tran INNER JOIN (m_section as wst";
-              $arg_str .= " INNER JOIN m_contract_resource as wcr";
-              $arg_str .= " ON wst.corporate_id = wcr.corporate_id";
-              $arg_str .= " AND wst.rntl_cont_no = wcr.rntl_cont_no";
-              $arg_str .= " AND wst.rntl_sect_cd = wcr.rntl_sect_cd)";
-              $arg_str .= " ON m_wearer_std_tran.corporate_id = wst.corporate_id";
-              $arg_str .= " AND m_wearer_std_tran.rntl_cont_no = wst.rntl_cont_no";
-              $arg_str .= " AND m_wearer_std_tran.rntl_sect_cd = wst.rntl_sect_cd";
-              $arg_str .= " INNER JOIN m_job_type as wjt";
-              $arg_str .= " ON m_wearer_std_tran.corporate_id = wjt.corporate_id";
-              $arg_str .= " AND m_wearer_std_tran.rntl_cont_no = wjt.rntl_cont_no";
-              $arg_str .= " AND m_wearer_std_tran.job_type_cd = wjt.job_type_cd";
+            $arg_str .= "m_wearer_std_tran INNER JOIN m_section as wst";
+            $arg_str .= " ON m_wearer_std_tran.corporate_id = wst.corporate_id";
+            $arg_str .= " AND m_wearer_std_tran.rntl_cont_no = wst.rntl_cont_no";
+            $arg_str .= " AND m_wearer_std_tran.rntl_sect_cd = wst.rntl_sect_cd";
+            $arg_str .= " INNER JOIN m_job_type as wjt";
+            $arg_str .= " ON m_wearer_std_tran.corporate_id = wjt.corporate_id";
+            $arg_str .= " AND m_wearer_std_tran.rntl_cont_no = wjt.rntl_cont_no";
+            $arg_str .= " AND m_wearer_std_tran.job_type_cd = wjt.job_type_cd";
           }
           $arg_str .= " WHERE ";
           $arg_str .= " m_wearer_std_tran.corporate_id = '".$result->as_corporate_id."'";
