@@ -26,6 +26,7 @@ define([
 				'agreement_no': '#agreement_no',
 				'reason_kbn': '#reason_kbn',
 				'sex_kbn': '#sex_kbn',
+				'emply_cd_flg': '#emply_cd_flg',
 				'member_no': '#member_no',
 				'member_name': '#member_name',
 				'member_name_kana': '#member_name_kana',
@@ -118,6 +119,12 @@ define([
 						if (res_list['wearer_info'][0]) {
 							that.ui.complete.val(res_list['wearer_info'][0]['order_req_no']);
 							that.ui.orderSend.val(res_list['wearer_info'][0]['order_req_no']);
+							console.log(res_list['wearer_info'][0]['cster_emply_cd']);
+							if (res_list['wearer_info'][0]['cster_emply_cd']) {
+								that.ui.emply_cd_flg.prop('checked', true);
+							} else {
+								that.ui.emply_cd_flg.prop('checked', false);
+							}
 							that.ui.member_no.val(res_list['wearer_info'][0]['cster_emply_cd']);
 							that.ui.member_name.val(res_list['wearer_info'][0]['werer_name']);
 							that.ui.member_name_kana.val(res_list['wearer_info'][0]['werer_name_kana']);
