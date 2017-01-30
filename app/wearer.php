@@ -1022,7 +1022,7 @@ $app->post('/wearer/detail', function ()use($app){
                    $list['item_name'] = "-";
                }
                // 商品-色(サイズ-サイズ2)変換
-               $list['shin_item_code'] = $list['item_cd'] . "-" . $list['color_cd'] . "(" . $list['size_cd'] . "-" . $list['size_two_cd'] . ")";
+               $list['shin_item_code'] = $list['item_cd'] . "-" . $list['color_cd'];
 
                // 表No
                $list['list_no'] = $no_num++;
