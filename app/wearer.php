@@ -778,7 +778,8 @@ $app->post('/wearer/detail', function ()use($app){
                    $list['order_res_ymd'] = "-";
                    $query_list = array();
                    array_push($query_list, "corporate_id = '" . $auth['corporate_id'] . "'");
-                   array_push($query_list, "ship_no = '" . $result->as_ship_no . "'");
+                   //array_push($query_list, "ship_no = '" . $result->as_ship_no . "'");
+                   array_push($query_list, "werer_cd = '" . $result->as_werer_cd . "'");
                    array_push($query_list, "item_cd = '" . $list['item_cd'] . "'");
                    array_push($query_list, "color_cd = '" . $list['color_cd'] . "'");
                    array_push($query_list, "size_cd = '" . $list['size_cd'] . "'");
@@ -817,11 +818,12 @@ $app->post('/wearer/detail', function ()use($app){
                            $parameter = array(
                                "corporate_id" => $auth['corporate_id'],
                                "rntl_cont_no" => $cond['agreement_no'],
+                                "werer_cd" => $result->as_werer_cd,
                                "individual_ctrl_no" => $del_gd_result->individual_ctrl_no
                            );
                            //返却予定数の総数
                            $TDeliveryGoodsStateDetails = TDeliveryGoodsStateDetails::find(array(
-                               'conditions' => "corporate_id = :corporate_id: AND rntl_cont_no = :rntl_cont_no: AND individual_ctrl_no = :individual_ctrl_no:",
+                               'conditions' => "corporate_id = :corporate_id: AND rntl_cont_no = :rntl_cont_no: AND werer_cd = :werer_cd: AND individual_ctrl_no = :individual_ctrl_no:",
                                "bind" => $parameter
                            ));
                            if ($TDeliveryGoodsStateDetails->count() > 0) {
