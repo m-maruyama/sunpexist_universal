@@ -167,7 +167,7 @@ $app->post('/receive/search', function ()use($app){
     if($cond['order_kbn0']) {
         $chk_flg = '1';
         //貸与開始にチェックがついてたら
-        $order_kbn = "t_order.order_sts_kbn = '1' AND (t_order.werer_sts_kbn = '1' OR t_order.werer_sts_kbn = '7')";        //$order_kbn = "t_order.order_sts_kbn = '1' AND (t_order.werer_sts_kbn = '1' OR t_order.werer_sts_kbn = '7')";
+        $order_kbn = "t_order.order_sts_kbn = '1' AND (t_order.werer_sts_kbn = '1' OR t_order.werer_sts_kbn = '7')";
       //$order_kbn = "t_order.order_sts_kbn = '1' AND m_wearer_std.werer_sts_kbn = '1'";
 
       if ($cond['reason_kbn0']) {
