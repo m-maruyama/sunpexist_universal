@@ -217,11 +217,12 @@ $app->post('/lend/search', function ()use($app){
      $arg_str .= " INNER JOIN m_section";
      $arg_str .= " ON m_wearer_std.m_section_comb_hkey = m_section.m_section_comb_hkey";
   }elseif($rntl_sect_cd_zero_flg == 0){
-     $arg_str .= " INNER JOIN (m_section INNER JOIN m_contract_resource";
-     $arg_str .= " ON m_section.corporate_id = m_contract_resource.corporate_id";
-     $arg_str .= " AND m_section.rntl_cont_no = m_contract_resource.rntl_cont_no";
-     $arg_str .= " AND m_section.rntl_sect_cd = m_contract_resource.rntl_sect_cd";
-     $arg_str .= " ) ON m_wearer_std.m_section_comb_hkey = m_section.m_section_comb_hkey";
+     $arg_str .= " INNER JOIN m_section";
+     $arg_str .= " ON m_wearer_std.m_section_comb_hkey = m_section.m_section_comb_hkey";
+     $arg_str .= " INNER JOIN m_contract_resource";
+     $arg_str .= " ON m_wearer_std.corporate_id = m_contract_resource.corporate_id";
+     $arg_str .= " AND m_wearer_std.rntl_cont_no = m_contract_resource.rntl_cont_no";
+     $arg_str .= " AND m_wearer_std.rntl_sect_cd = m_contract_resource.rntl_sect_cd";
   }
   $arg_str .= " LEFT JOIN m_wearer_item";
 	$arg_str .= " ON t_order.m_wearer_item_comb_hkey = m_wearer_item.m_wearer_item_comb_hkey";
@@ -232,8 +233,7 @@ $app->post('/lend/search', function ()use($app){
 		$arg_str .= " ORDER BY ";
 		$arg_str .= $q_sort_key." ".$order;
 	}
-
-	$t_order = new TOrder();
+  $t_order = new TOrder();
 	$results = new Resultset(null, $t_order, $t_order->getReadConnection()->query($arg_str));
 	$result_obj = (array)$results;
 	$results_cnt = $result_obj["\0*\0_count"];
