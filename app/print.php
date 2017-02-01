@@ -910,11 +910,11 @@ $app->post('/print/search', function ()use($app){
             AS DATE) <= CAST('".$cond['order_day_to']."' AS DATE)");
     }
     //返却日from
-    if(!empty($cond['receipt_day_from'])){
+    if(!empty($cond['return_day_from'])){
         array_push($query_list,"CAST(t_returned_plan_info.return_date AS DATE) >= CAST('".$cond['return_day_from']."' AS DATE)");
     }
     //返却日to
-    if(!empty($cond['receipt_day_to'])) {
+    if(!empty($cond['return_day_to'])) {
         array_push($query_list, "CAST(t_returned_plan_info.return_date AS DATE) <= CAST('" . $cond['return_day_to'] . "' AS DATE)");
     }
 
