@@ -167,8 +167,10 @@ $app->post('/receive/search', function ()use($app){
     if($cond['order_kbn0']) {
         $chk_flg = '1';
         //貸与開始にチェックがついてたら
-        $order_kbn = "t_order.order_sts_kbn = '1' AND m_wearer_std.werer_sts_kbn = '1'";
-        if ($cond['reason_kbn0']) {
+        $order_kbn = "t_order.order_sts_kbn = '1' AND (t_order.werer_sts_kbn = '1' OR t_order.werer_sts_kbn = '7')";        //$order_kbn = "t_order.order_sts_kbn = '1' AND (t_order.werer_sts_kbn = '1' OR t_order.werer_sts_kbn = '7')";
+      //$order_kbn = "t_order.order_sts_kbn = '1' AND m_wearer_std.werer_sts_kbn = '1'";
+
+      if ($cond['reason_kbn0']) {
             array_push($reason_kbn_1, "t_order.order_reason_kbn = '01'");
         }
         if ($cond['reason_kbn1']) {
@@ -232,7 +234,7 @@ $app->post('/receive/search', function ()use($app){
     $reason_kbn_2 = array();
     if($cond['order_kbn1']) {
         //交換にチェックがついてたら
-        $order_kbn = "(t_order.order_sts_kbn = '3' OR t_order.order_sts_kbn = '4') AND m_wearer_std.werer_sts_kbn = '1'";
+        $order_kbn = "(t_order.order_sts_kbn = '3' OR t_order.order_sts_kbn = '4') AND t_order.werer_sts_kbn = '1'";
         if($cond['reason_kbn5']){
             array_push($reason_kbn_2, "t_order.order_reason_kbn = '14'");
         }
@@ -585,6 +587,7 @@ $app->post('/receive/search', function ()use($app){
         $arg_str .= " ORDER BY ";
         $arg_str .= $q_sort_key." ".$order;
     }
+    //ChromePhp::log($arg_str);
     $t_delivery_goods_state_details = new TDeliveryGoodsStateDetails();
     $results = new Resultset(null, $t_delivery_goods_state_details, $t_delivery_goods_state_details->getReadConnection()->query($arg_str));
     $result_obj = (array)$results;
