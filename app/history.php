@@ -194,7 +194,7 @@ $app->post('/history/search', function ()use($app){
 	if($cond['order_kbn0']) {
         $chk_flg = '1';
         //貸与開始にチェックがついてたら
-        $order_kbn = "t_order.order_sts_kbn = '1' AND m_wearer_std.werer_sts_kbn = '1'";
+        $order_kbn = "t_order.order_sts_kbn = '1' AND (t_order.werer_sts_kbn = '1' OR t_order.werer_sts_kbn = '7')";
         if ($cond['reason_kbn0']) {
             array_push($reason_kbn_1, "t_order.order_reason_kbn = '01'");
         }
@@ -258,7 +258,7 @@ $app->post('/history/search', function ()use($app){
     $reason_kbn_2 = array();
     if($cond['order_kbn1']) {
         //交換にチェックがついてたら
-        $order_kbn = "(t_order.order_sts_kbn = '3' OR t_order.order_sts_kbn = '4') AND m_wearer_std.werer_sts_kbn = '1'";
+        $order_kbn = "(t_order.order_sts_kbn = '3' OR t_order.order_sts_kbn = '4') AND t_order.werer_sts_kbn = '1'";
         if($cond['reason_kbn5']){
             array_push($reason_kbn_2, "t_order.order_reason_kbn = '14'");
         }
