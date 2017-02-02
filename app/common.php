@@ -1867,3 +1867,17 @@ function kana_check($kana){
     mb_regex_encoding("UTF-8");
     return mb_ereg("^[ァ-ヶー　]*$", $kana);
 }
+//正しい日付かをチェック
+function date_check($value){
+  //年を取り出し
+  $year = substr($value, 0, 4);
+  //月を取り出し
+  $month = substr($value, 4, 2);
+  //日を取り出し
+  $date = substr($value, 6, 2);
+  if(checkdate($month, $date, $year)){
+    return true;
+  }else{
+    return false;
+  }
+}

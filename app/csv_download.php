@@ -764,24 +764,39 @@ $app->post('/csv_download', function ()use($app){
 				} else {
 					$list['rntl_cont_name'] = "-";
 				}
-				// 日付設定
-				if($list['order_req_ymd']){
-					$list['order_req_ymd'] = date('Y/m/d',strtotime($list['order_req_ymd']));
-					// 出荷予定日
-					$list['send_shd_ymd'] = date('Y/m/d',strtotime($list['order_req_ymd'].' +7 day'));
-				}else{
-					$list['order_req_ymd'] = '-';
-					$list['send_shd_ymd'] = '-';
-				}
-				if($list['ship_ymd']){
-					if ($list['ship_ymd'] !== "00000000") {
-						$list['ship_ymd'] = date('Y/m/d',strtotime($list['ship_ymd']));
-					} else {
-						$list['ship_ymd'] = "-";
-					}
-				}else{
-					$list['ship_ymd'] = '-';
-				}
+        //---日付設定---//
+        // 発注依頼日、
+        if($list['order_req_ymd']){
+          if(date_check($list['order_req_ymd'])){
+            $list['order_req_ymd'] = date('Y/m/d',strtotime($list['order_req_ymd']));
+          }else{
+            $list['order_req_ymd'] = '-';
+          }
+        }else{
+          $list['order_req_ymd'] = '-';
+        }
+
+        //出荷予定日
+        if(!empty($result->as_ship_plan_ymd)) {
+          if (date_check($result->as_ship_plan_ymd)) {
+            $list['send_shd_ymd'] = date('Y/m/d', strtotime($result->as_ship_plan_ymd));
+          } else {
+            $list['send_shd_ymd'] = '-';
+          }
+        }else{
+          $list['send_shd_ymd'] = '-';
+        }
+
+        // 出荷日
+        if(!empty($list['ship_ymd'])){
+          if (date_check($list['ship_ymd'])) {
+            $list['ship_ymd'] = date('Y/m/d',strtotime($list['ship_ymd']));
+          } else {
+            $list['ship_ymd'] = "-";
+          }
+        }else{
+          $list['ship_ymd'] = '-';
+        }
 				//---発注区分名称---//
 				$query_list = array();
 				// 汎用コードマスタ.分類コード
