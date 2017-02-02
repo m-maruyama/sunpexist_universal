@@ -449,9 +449,14 @@ $app->post('/lend/search', function ()use($app){
                   array_push($return_plan_qty_list, $return_plan__qty);
                   array_push($order_req_no_list, $del_gd_result->as_order_req_no);
 
-                  //出荷no
+                  //出荷日
                   if ($del_gd_result->as_ship_ymd !== null) {
+                    //日付フォーマットチェック
+                    if (date_check($del_gd_result->as_ship_ymd)) {
                       array_push($ship_ymd_list, date('Y/m/d',strtotime($del_gd_result->as_ship_ymd)));
+                    } else {
+                      array_push($ship_ymd_list, "-");
+                    }
                   } else {
                       array_push($ship_ymd_list, "-");
                   }
