@@ -62,7 +62,6 @@ $app->post('/import_csv', function () use ($app) {
             //csvの１行を配列に変換する
             $line_list = str_getcsv($line, ',', '"');
             // 項目数チェック: 行単位の項目数が、仕様通りの項目数(15)かをチェックする。
-            //ChromePhp::log($line_list);
             if (count($line_list) != 15) {
                 $cnt_list = array();
                 //項目数が不正な場合、エラーメッセージを配列に格納
@@ -88,7 +87,8 @@ $app->post('/import_csv', function () use ($app) {
                     exit;
                 }
             }
-            if (empty($line_list[1])) {
+
+          if (empty($line_list[1])) {
                 if (count($error_list) < 20) {
                     $error_list[] = $line_cnt . '行目の着用者名を入力してください。';
                 } else {
@@ -98,6 +98,23 @@ $app->post('/import_csv', function () use ($app) {
                     exit;
                 }
             }
+
+            //着用者名 SJISにない文字を?に変換
+            if(!empty($line_list[1])) {
+              $str_utf8 = $line_list[1];
+              if (convert_not_sjis($str_utf8) !== true) {
+                if (count($error_list) < 20) {
+                  $output_text = convert_not_sjis($str_utf8);
+                  $error_list[] = "$line_cnt" . '行目の着用者名に使用できない文字が含まれています。' . "$output_text";
+                }else {
+                  $json_list['errors'] = $error_list;
+                  $json_list["error_code"] = "1";
+                  echo json_encode($json_list);
+                  exit;
+                }
+              }
+            }
+            /*
             if (empty($line_list[2])) {
                 if (count($error_list) < 20) {
                     $error_list[] = $line_cnt . '行目の着用者名(カナ)を入力してください。';
@@ -108,6 +125,23 @@ $app->post('/import_csv', function () use ($app) {
                     exit;
                 }
             }
+            */
+            //全角カナ 全角スペースチェック
+            if(!empty($line_list[2])) {
+                $kana = $line_list[2];
+                if (kana_check($kana) === false) {
+                  if (count($error_list) < 20) {
+                    $error_list[] = $line_cnt . '行目の着用者名（カナ）に全角カタカナまたは全角スペース以外が入力されています。';
+                  }else{
+                      $json_list['errors'] = $error_list;
+                      $json_list["error_code"] = "1";
+                      echo json_encode($json_list);
+                      exit;
+                  }
+                }
+            }
+
+
             if ($line_list[3] == '') {
                 if (count($error_list) < 20) {
                     $error_list[] = $line_cnt . '行目の性別区分を入力してください。';
@@ -345,6 +379,23 @@ $app->post('/import_csv', function () use ($app) {
                     exit;
                 }
             }
+
+            //着用者名 SJISにない文字を?に変換
+            if(!empty($line_list[1])) {
+              $str_utf8 = $line_list[1];
+              if (convert_not_sjis($str_utf8) !== true) {
+                if (count($error_list) < 20) {
+                  $output_text = convert_not_sjis($str_utf8);
+                  $error_list[] = "$line_cnt" . '行目の着用者名に使用できない文字が含まれています。' . "$output_text";
+                }else {
+                  $json_list['errors'] = $error_list;
+                  $json_list["error_code"] = "1";
+                  echo json_encode($json_list);
+                  exit;
+                }
+              }
+            }
+            /*
             if (empty($line_list[2])) {
                 if (count($error_list) < 20) {
                     $error_list[] = $line_cnt . '行目の着用者名(カナ)を入力してください。';
@@ -354,6 +405,21 @@ $app->post('/import_csv', function () use ($app) {
                     echo json_encode($json_list);
                     exit;
                 }
+            }
+            */
+            //全角カナ 全角スペースチェック
+            if(!empty($line_list[2])) {
+              $kana = $line_list[2];
+              if (kana_check($kana) === false) {
+                if (count($error_list) < 20) {
+                  $error_list[] = $line_cnt . '行目の着用者名（カナ）に全角カタカナまたは全角スペース以外が入力されています。';
+                }else{
+                  $json_list['errors'] = $error_list;
+                  $json_list["error_code"] = "1";
+                  echo json_encode($json_list);
+                  exit;
+                }
+              }
             }
             if ($line_list[3] == '') {
                 if (count($error_list) < 20) {
@@ -742,6 +808,7 @@ $app->post('/import_csv', function () use ($app) {
         $transaction = new Resultset(NULL, $t_import_job, $t_import_job->getReadConnection()->query("commit"));
 
     } catch (Exception $e) {
+        ChromePhp::log($e);
         // トランザクション-ロールバック
         $transaction = new Resultset(NULL, $t_import_job, $t_import_job->getReadConnection()->query("rollback"));
 
@@ -1753,7 +1820,7 @@ $app->post('/import_csv', function () use ($app) {
                 "m_section_comb_hkey",
                 "m_wearer_std_comb_hkey",
                 "m_wearer_item_comb_hkey",
-                "appointment_ymd",
+                "ship_plan_ymd",
                 "order_rntl_sect_cd"
             );
             $calum_query = implode(",", $calum_list);
@@ -1773,7 +1840,7 @@ $app->post('/import_csv', function () use ($app) {
         // トランザクション-ロールバック
         $transaction = new Resultset(NULL, $t_import_job, $t_import_job->getReadConnection()->query("rollback"));
 
-        //ChromePhp::log($e);
+        ChromePhp::log($e);
         $error_list[] = 'E002 取込処理中に予期せぬエラーが発生しました。';
         $json_list['errors'] = $error_list;
         $json_list["error_code"] = "1";
