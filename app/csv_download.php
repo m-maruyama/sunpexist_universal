@@ -2907,7 +2907,7 @@ $app->post('/csv_download', function ()use($app){
 			array_push($query_list,"t_delivery_goods_state_details.individual_ctrl_no LIKE '%".$cond['individual_number']."%'");
 		}
 		// 着用者状況区分(稼働)
-		array_push($query_list,"m_wearer_std.werer_sts_kbn = '1'");
+		//array_push($query_list,"m_wearer_std.werer_sts_kbn = '1'");
 
         //納品状況明細情報 数量　<> 納品状況明細情報 返却済数
         array_push($query_list,"NOT EXISTS (SELECT * FROM t_delivery_goods_state_details as TS WHERE t_delivery_goods_state_details.quantity = t_delivery_goods_state_details.returned_qty)");
@@ -2965,7 +2965,7 @@ $app->post('/csv_download', function ()use($app){
       }
     } else {
       //指定がなければ社員番号
-      $q_sort_key = "as_cster_emply_cd";
+      $q_sort_key = "as_werer_name";
       $order = 'asc';
     }
 
@@ -3012,9 +3012,9 @@ $app->post('/csv_download', function ()use($app){
     $arg_str .= " AND t_order.size_cd = t_delivery_goods_state_details.size_cd";
 
     $arg_str .= " INNER JOIN m_wearer_std";
-    $arg_str .= " ON t_order.corporate_id = m_wearer_std.corporate_id";
-    $arg_str .= " AND t_order.rntl_cont_no = m_wearer_std.rntl_cont_no";
-    $arg_str .= " AND t_order.werer_cd = m_wearer_std.werer_cd";
+    $arg_str .= " ON t_delivery_goods_state_details.corporate_id = m_wearer_std.corporate_id";
+    $arg_str .= " AND t_delivery_goods_state_details.rntl_cont_no = m_wearer_std.rntl_cont_no";
+    $arg_str .= " AND t_delivery_goods_state_details.werer_cd = m_wearer_std.werer_cd";
     if($rntl_sect_cd_zero_flg == 1){
       $arg_str .= " INNER JOIN m_section";
       $arg_str .= " ON m_wearer_std.m_section_comb_hkey = m_section.m_section_comb_hkey";
