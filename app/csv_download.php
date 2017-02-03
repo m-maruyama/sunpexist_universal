@@ -2908,6 +2908,7 @@ $app->post('/csv_download', function ()use($app){
 		}
 		// 着用者状況区分(稼働)
 		//array_push($query_list,"m_wearer_std.werer_sts_kbn = '1'");
+    array_push($query_list,"(m_wearer_std.werer_sts_kbn = '1' OR m_wearer_std.werer_sts_kbn = '4' OR  m_wearer_std.werer_sts_kbn = '2' OR m_wearer_std.werer_sts_kbn = '3' OR m_wearer_std.werer_sts_kbn = '5'  OR m_wearer_std.werer_sts_kbn = '6' OR m_wearer_std.werer_sts_kbn = '7')");
 
         //納品状況明細情報 数量　<> 納品状況明細情報 返却済数
         array_push($query_list,"NOT EXISTS (SELECT * FROM t_delivery_goods_state_details as TS WHERE t_delivery_goods_state_details.quantity = t_delivery_goods_state_details.returned_qty)");
