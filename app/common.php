@@ -6,7 +6,6 @@ use Phalcon\Paginator\Adapter\NativeArray as PaginatorArray;
 use Phalcon\Paginator\Adapter\QueryBuilder as PaginatorQueryBuilder;
 
 // 共通処理（操作ログ登録）
-// テスト
 $app->before(function () use ($app) {
     $params = json_decode(file_get_contents('php://input'), true);
     if (!$params && isset($_FILES['file'])) {
