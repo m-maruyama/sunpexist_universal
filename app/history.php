@@ -579,9 +579,6 @@ $app->post('/history/search', function ()use($app){
     $arg_str .= " ON t_order.corporate_id = m_job_type.corporate_id";
     $arg_str .= " AND t_order.rntl_cont_no = m_job_type.rntl_cont_no";
     $arg_str .= " AND t_order.job_type_cd = m_job_type.job_type_cd";
-    $arg_str .= " AND t_order.corporate_id = m_input_item.corporate_id";
-    $arg_str .= " AND t_order.item_cd = m_input_item.item_cd";
-    $arg_str .= " AND t_order.color_cd = m_input_item.color_cd";
 	$arg_str .= " INNER JOIN m_wearer_std";
 	$arg_str .= " ON t_order.werer_cd = m_wearer_std.werer_cd";
     $arg_str .= " AND t_order.corporate_id = m_wearer_std.corporate_id";
@@ -591,6 +588,7 @@ $app->post('/history/search', function ()use($app){
 	$arg_str .= " WHERE ";
 	$arg_str .= $query;
 	$arg_str .= ") as distinct_table";
+  //ChromePhp::log($arg_str);
 	if (!empty($q_sort_key)) {
 		$arg_str .= " ORDER BY ";
 		$arg_str .= $q_sort_key." ".$order;
