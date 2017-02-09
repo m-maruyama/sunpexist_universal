@@ -191,8 +191,7 @@ $app->post('/wearer/search', function ()use($app){
 	$arg_str .= " ((t_order";
   $arg_str .= " LEFT JOIN (t_order_state LEFT JOIN (t_delivery_goods_state LEFT JOIN t_delivery_goods_state_details ON t_delivery_goods_state.corporate_id = t_delivery_goods_state_details.corporate_id AND t_delivery_goods_state.ship_no = t_delivery_goods_state_details.ship_no AND t_delivery_goods_state.ship_line_no = t_delivery_goods_state_details.ship_line_no)";
   $arg_str .= " ON t_order_state.t_order_state_comb_hkey = t_delivery_goods_state.t_order_state_comb_hkey)";
-  $arg_str .= " ON t_order.t_order_comb_hkey = t_order_state.t_order_comb_hkey)";
-  $arg_str .= " INNER JOIN m_job_type ON t_order.m_job_type_comb_hkey = m_job_type.m_job_type_comb_hkey)";
+  $arg_str .= " ON t_order.t_order_comb_hkey = t_order_state.t_order_comb_hkey))";
   $arg_str .= " ON t_order.werer_cd = m_wearer_std.werer_cd";
   $arg_str .= " AND t_order.corporate_id = m_wearer_std.corporate_id";
   $arg_str .= " AND t_order.rntl_cont_no = m_wearer_std.rntl_cont_no";
@@ -206,6 +205,7 @@ $app->post('/wearer/search', function ()use($app){
     $arg_str .= " AND m_section.rntl_sect_cd = m_contract_resource.rntl_sect_cd";
     $arg_str .= " ) ON m_wearer_std.m_section_comb_hkey = m_section.m_section_comb_hkey";
   }
+  $arg_str .= " INNER JOIN m_job_type ON m_wearer_std.m_job_type_comb_hkey = m_job_type.m_job_type_comb_hkey";
   $arg_str .= " WHERE ";
 	$arg_str .= $query;
 	$arg_str .= ") as distinct_table";
