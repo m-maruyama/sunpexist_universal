@@ -2075,10 +2075,10 @@ $app->post('/csv_download', function ()use($app){
             array_push($query_list,"CAST(t_delivery_goods_state_details.receipt_date AS DATE) <= CAST('".$cond['receipt_day_to']."' AS DATE)");
 
         }
-		//個体管理番号
-		if(!empty($cond['individual_number'])){
-			array_push($query_list,"t_delivery_goods_state_details.individual_ctrl_no LIKE '%".$cond['individual_number']."%'");
-		}
+        //個体管理番号
+        if(!empty($cond['individual_number'])){
+          array_push($query_list,"t_delivery_goods_state_details.individual_ctrl_no LIKE '%".$cond['individual_number']."%'");
+        }
 
         //ゼロ埋めがない場合、ログインアカウントの条件追加
         if($rntl_sect_cd_zero_flg == 0){
@@ -2109,7 +2109,8 @@ $app->post('/csv_download', function ()use($app){
         if($cond['order_kbn0']) {
             $chk_flg = '1';
             //貸与開始にチェックがついてたら
-            $order_kbn = "t_order.order_sts_kbn = '1' AND m_wearer_std.werer_sts_kbn = '1'";
+            $order_kbn = "t_order.order_sts_kbn = '1' AND (t_order.werer_sts_kbn = '1' OR t_order.werer_sts_kbn = '7')";
+            //$order_kbn = "t_order.order_sts_kbn = '1' AND m_wearer_std.werer_sts_kbn = '1'";
             if ($cond['reason_kbn0']) {
                 array_push($reason_kbn_1, "t_order.order_reason_kbn = '01'");
             }
@@ -2172,7 +2173,7 @@ $app->post('/csv_download', function ()use($app){
         $reason_kbn_2 = array();
         if($cond['order_kbn1']) {
             //交換にチェックがついてたら
-            $order_kbn = "(t_order.order_sts_kbn = '3' OR t_order.order_sts_kbn = '4') AND m_wearer_std.werer_sts_kbn = '1'";
+            $order_kbn = "(t_order.order_sts_kbn = '3' OR t_order.order_sts_kbn = '4') AND t_order.werer_sts_kbn = '1'";
             if($cond['reason_kbn5']){
                 array_push($reason_kbn_2, "t_order.order_reason_kbn = '14'");
             }
