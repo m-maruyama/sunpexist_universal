@@ -21,7 +21,7 @@ $app->post('/wearer_change/search', function ()use($app){
   //ChromePhp::LOG($cond);
 
   //（前処理）契約リソースマスタ参照、拠点コード「0」埋めデータ確認
-    /*
+
   $query_list = array();
   $list = array();
   $all_list = array();
@@ -59,8 +59,7 @@ $app->post('/wearer_change/search', function ()use($app){
     $section_all_zero_flg = true;
   } else {
     $section_all_zero_flg = false;
-  }*/
-  $section_all_zero_flg = true;
+  }
 
   //---既存着用者基本マスタ情報リスト取得---//
   $query_list = array();
@@ -207,11 +206,13 @@ $app->post('/wearer_change/search', function ()use($app){
         $query_list[] = "m_wearer_std_tran.rntl_cont_no = '".$result->as_rntl_cont_no."'";
         $query_list[] = "m_wearer_std_tran.werer_cd = '".$result->as_werer_cd."'";
         $query_list[] = "t_order_tran.werer_cd = '".$result->as_werer_cd."'";
+        /*
         if (!$section_all_zero_flg) {
           $query_list[] = "wcr.corporate_id = '".$result->as_corporate_id."'";
           $query_list[] = "wcr.rntl_cont_no = '".$result->as_rntl_cont_no."'";
           $query_list[] = "wcr.accnt_no = '".$auth['accnt_no']."'";
         }
+        */
         $tran_query_list[] = "t_order_tran.order_sts_kbn = '5'";
         $tran_query_list[] = "t_returned_plan_info_tran.order_sts_kbn = '5'";
         $tran_query = implode(' OR ', $tran_query_list);
@@ -249,11 +250,7 @@ $app->post('/wearer_change/search', function ()use($app){
           $arg_str .= " AND m_wearer_std_tran.rntl_cont_no = wjt.rntl_cont_no";
           $arg_str .= " AND m_wearer_std_tran.job_type_cd = wjt.job_type_cd)";
         } else {
-          $arg_str .= "(m_wearer_std_tran INNER JOIN (m_section as wst";
-          $arg_str .= " INNER JOIN m_contract_resource as wcr";
-          $arg_str .= " ON wst.corporate_id = wcr.corporate_id";
-          $arg_str .= " AND wst.rntl_cont_no = wcr.rntl_cont_no";
-          $arg_str .= " AND wst.rntl_sect_cd = wcr.rntl_sect_cd)";
+          $arg_str .= "(m_wearer_std_tran INNER JOIN m_section as wst";
           $arg_str .= " ON m_wearer_std_tran.corporate_id = wst.corporate_id";
           $arg_str .= " AND m_wearer_std_tran.rntl_cont_no = wst.rntl_cont_no";
           $arg_str .= " AND m_wearer_std_tran.rntl_sect_cd = wst.rntl_sect_cd";
@@ -390,18 +387,14 @@ $app->post('/wearer_change/search', function ()use($app){
               $arg_str .= " AND m_wearer_std_tran.rntl_cont_no = wjt.rntl_cont_no";
               $arg_str .= " AND m_wearer_std_tran.job_type_cd = wjt.job_type_cd";
           } else {
-              $arg_str .= "m_wearer_std_tran INNER JOIN (m_section as wst";
-              $arg_str .= " INNER JOIN m_contract_resource as wcr";
-              $arg_str .= " ON wst.corporate_id = wcr.corporate_id";
-              $arg_str .= " AND wst.rntl_cont_no = wcr.rntl_cont_no";
-              $arg_str .= " AND wst.rntl_sect_cd = wcr.rntl_sect_cd)";
-              $arg_str .= " ON m_wearer_std_tran.corporate_id = wst.corporate_id";
-              $arg_str .= " AND m_wearer_std_tran.rntl_cont_no = wst.rntl_cont_no";
-              $arg_str .= " AND m_wearer_std_tran.rntl_sect_cd = wst.rntl_sect_cd";
-              $arg_str .= " INNER JOIN m_job_type as wjt";
-              $arg_str .= " ON m_wearer_std_tran.corporate_id = wjt.corporate_id";
-              $arg_str .= " AND m_wearer_std_tran.rntl_cont_no = wjt.rntl_cont_no";
-              $arg_str .= " AND m_wearer_std_tran.job_type_cd = wjt.job_type_cd";
+            $arg_str .= "m_wearer_std_tran INNER JOIN m_section as wst";
+            $arg_str .= " ON m_wearer_std_tran.corporate_id = wst.corporate_id";
+            $arg_str .= " AND m_wearer_std_tran.rntl_cont_no = wst.rntl_cont_no";
+            $arg_str .= " AND m_wearer_std_tran.rntl_sect_cd = wst.rntl_sect_cd";
+            $arg_str .= " INNER JOIN m_job_type as wjt";
+            $arg_str .= " ON m_wearer_std_tran.corporate_id = wjt.corporate_id";
+            $arg_str .= " AND m_wearer_std_tran.rntl_cont_no = wjt.rntl_cont_no";
+            $arg_str .= " AND m_wearer_std_tran.job_type_cd = wjt.job_type_cd";
           }
           $arg_str .= " WHERE ";
           $arg_str .= " m_wearer_std_tran.corporate_id = '".$result->as_corporate_id."'";
