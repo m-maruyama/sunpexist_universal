@@ -264,13 +264,8 @@ $app->post('/wearer_order_info', function ()use($app){
     $list = array();
     $all_list = array();
     if($wearer_odr_post){
-        if(!$wearer_odr_post['cster_emply_cd']){
-            $cster_emply_cd = '-';
-        }else{
-            $cster_emply_cd = $wearer_odr_post['cster_emply_cd'];
-        }
         // 社員コード
-        $list['cster_emply_cd'] = $cster_emply_cd;
+        $list['cster_emply_cd'] = $wearer_odr_post['cster_emply_cd'];
         // 着用者名
         $list['werer_name'] = $wearer_odr_post['werer_name'];
         // 着用者名（カナ）
@@ -323,11 +318,7 @@ $app->post('/wearer_order_info', function ()use($app){
 
             foreach ($results as $result) {
                 // 社員コード
-                if($result->as_cster_emply_cd){
-                    $list['cster_emply_cd'] = $result->as_cster_emply_cd;
-                }else{
-                    $list['cster_emply_cd'] = '-';
-                }
+                $list['cster_emply_cd'] = $result->as_cster_emply_cd;
                 // 着用者名
                 $list['werer_name'] = $result->as_werer_name;
                 // 着用者名（カナ）
@@ -383,11 +374,6 @@ $app->post('/wearer_order_info', function ()use($app){
 
             foreach ($results as $result) {
                 // 社員コード
-                if($result->as_cster_emply_cd){
-                    $list['cster_emply_cd'] = $result->as_cster_emply_cd;
-                }else{
-                    $list['cster_emply_cd'] = '-';
-                }
                 $list['cster_emply_cd'] = $result->as_cster_emply_cd;
                 // 着用者名
                 $list['werer_name'] = $result->as_werer_name;
