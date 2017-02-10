@@ -79,7 +79,7 @@ $app->post('/wearer_search/search', function ()use($app){
         $query_list[] = "m_wearer_std_tran.job_type_cd = '".$cond['job_type']."'";
     }
     $query_list[] = "(t_order_tran.order_sts_kbn = '1' OR m_wearer_std_tran.order_sts_kbn = '1')";
-    $query_list[] = "(t_order_tran.order_reason_kbn <> '03' or t_order_tran.order_reason_kbn IS NULL)";
+    $query_list[] = "((t_order_tran.order_reason_kbn <> '03' and t_order_tran.order_reason_kbn <> '27') or t_order_tran.order_reason_kbn IS NULL)";
     if (!$section_all_zero_flg) {
         $query_list[] = "wcr.corporate_id = '".$auth['corporate_id']."'";
         $query_list[] = "wcr.rntl_cont_no = '".$cond['agreement_no']."'";
@@ -139,7 +139,11 @@ $app->post('/wearer_search/search', function ()use($app){
         $arg_str .= " AND m_wearer_std_tran.job_type_cd = wjt.job_type_cd)";
     }
     $arg_str .= " LEFT JOIN t_order_tran";
-    $arg_str .= " ON m_wearer_std_tran.m_wearer_std_comb_hkey = t_order_tran.m_wearer_std_comb_hkey";
+    $arg_str .= " ON m_wearer_std_tran.corporate_id = t_order_tran.corporate_id";
+    $arg_str .= " AND m_wearer_std_tran.rntl_cont_no = t_order_tran.rntl_cont_no";
+    $arg_str .= " AND m_wearer_std_tran.werer_cd = t_order_tran.werer_cd";
+    $arg_str .= " AND m_wearer_std_tran.rntl_sect_cd = t_order_tran.rntl_sect_cd";
+    $arg_str .= " AND m_wearer_std_tran.job_type_cd = t_order_tran.job_type_cd";
     $arg_str .= " WHERE ";
     $arg_str .= $query;
     $arg_str .= ") as distinct_table";
@@ -162,6 +166,7 @@ $app->post('/wearer_search/search', function ()use($app){
     if(!empty($results_cnt)){
         $paginator = $paginator_model->getPaginate();
         $results = $paginator->items;
+        ChromePhp::LOG($results);
         foreach($results as $result) {
             $list = array();
             $list['werer_cd'] = $result->as_werer_cd;
