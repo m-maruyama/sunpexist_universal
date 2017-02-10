@@ -1476,7 +1476,6 @@ $app->post('/update_possible_chk', function ()use($app) {
                 array_push($query_list, "m_contract.rntl_cont_flg = '1'");
                 array_push($query_list, "m_contract_resource.corporate_id = '".$auth['corporate_id']."'");
                 array_push($query_list, "m_contract_resource.accnt_no = '".$auth['accnt_no']."'");
-                array_push($query_list, "m_contract_resource.rntl_sect_cd = '" . $cond['rntl_sect_cd'] . "'");
                 $query = implode(' AND ', $query_list);
                 $arg_str = '';
                 $arg_str = 'SELECT ';
@@ -1881,3 +1880,12 @@ function date_check($value){
     return false;
   }
 }
+function is_alnum($text) {
+    if (preg_match("/^[a-zA-Z0-9]+$/",$text)) {
+        return TRUE;
+    } else {
+        return FALSE;
+    }
+}
+
+?>

@@ -691,6 +691,9 @@ $app->post('/input_insert', function () use ($app) {
     if ($mc_count == 0) {
         array_push($error_list, '契約Noの値が不正です。');
     }
+    if ($cond['cster_emply_cd']&&!is_alnum($cond['cster_emply_cd'])) {
+        array_push($error_list, '社員コードは半角英数字で入力してください。');
+    }
     // 社員コード
     if ($cond['cster_emply_cd_chk']) {
         if (mb_strlen($cond['cster_emply_cd']) == 0) {
@@ -748,46 +751,101 @@ $app->post('/input_insert', function () use ($app) {
 
         }
     }
-    //拠点のマスタチェック
-    $query_list = array();
-    // 部門マスタ．企業ID　＝　ログインしているアカウントの企業ID　AND
-    array_push($query_list, "corporate_id = '" . $auth['corporate_id'] . "'");
-    // 部門マスタ．レンタル契約No.　＝　画面で選択されている契約No.
-    array_push($query_list, "rntl_cont_no = '" . $cond['agreement_no'] . "'");
-    // 部門マスタ．レンタル部門コード　＝　画面で選択されている拠点
-    array_push($query_list, "rntl_sect_cd = '" . $cond['rntl_sect_cd'] . "'");
-
-    //sql文字列を' AND 'で結合
-    $query = implode(' AND ', $query_list);
-    //--- クエリー実行・取得 ---//
-    $m_section = MSection::find(array(
-        'conditions' => $query
-    ));
-    $m_section_count = $m_section->count();
-    //存在しない場合NG
-    if ($m_section_count == 0) {
-        array_push($error_list, '拠点の値が不正です。');
+    if (byte_cnt($cond['cster_emply_cd']) > 10) {
+        array_push($error_list, '社員コードの文字数が多すぎます。（最大半角10文字）');
     }
-    //貸与パターンのマスタチェック
-    $query_list = array();
-    // 職種マスタ．企業ID　＝　ログインしているアカウントの企業ID　AND
-    array_push($query_list, "corporate_id = '" . $auth['corporate_id'] . "'");
-    // 職種マスタ．レンタル契約No.　＝　画面で選択されている契約No.
-    array_push($query_list, "rntl_cont_no = '" . $cond['agreement_no'] . "'");
-    $deli_job = explode(',', $cond['job_type']);
-    // 職種マスタ．レンタル部門コード　＝　画面で選択されている貸与パターン
-    array_push($query_list, "job_type_cd = '" . $deli_job[0] . "'");
 
-    //sql文字列を' AND 'で結合
-    $query = implode(' AND ', $query_list);
-    //--- クエリー実行・取得 ---//
-    $m_job_type = MJobType::find(array(
-        'conditions' => $query
-    ));
-    $m_job_type_cnt = $m_job_type->count();
-    //存在しない場合NG
-    if ($m_job_type_cnt == 0) {
-        array_push($error_list, '貸与パターンの値が不正です。');
+    if (!$cond['werer_name']) {
+        array_push($error_list, '着用者名が未入力です。');
+    }
+    if (byte_cnt($cond['werer_name']) > 22) {
+        array_push($error_list, '着用者名の文字数が多すぎます。（最大全角11文字）');
+    }
+    //SJISにない文字を?に変換
+    //着用者名
+    if(!empty($cond['werer_name'])) {
+        $str_utf8 = $cond['werer_name'];
+        if (convert_not_sjis($str_utf8) !== true) {
+            $output_text = convert_not_sjis($str_utf8);
+            array_push($error_list, '着用者名に使用できない文字が含まれています。' . "$output_text");
+        };
+    }
+
+    if (byte_cnt($cond['werer_name_kana']) > 25) {
+        array_push($error_list, '着用者名(カナ)の文字数が多すぎます。（最大全角12文字）');
+    }
+
+    //全角カタカナ 全角スペースチェック
+    if(!empty($cond['werer_name_kana'])){
+        $kana = $cond['werer_name_kana'];
+        if (kana_check($kana) === false){
+            array_push($error_list, '着用者名（カナ）に全角カタカナまたは全角スペース以外が入力されています');
+        }
+    }
+    //SJISにない文字を?に変換
+    //着用者カナ
+    if(!empty($cond['werer_name_kana'])) {
+        $str_utf8 = $cond['werer_name_kana'];
+        if (convert_not_sjis($str_utf8) !== true) {
+            $output_text = convert_not_sjis($str_utf8);
+            array_push($error_list, '着用者名（カナ）に使用できない文字が含まれています。' . "$output_text");
+        };
+    }
+    if (!$cond['sex_kbn']) {
+        array_push($error_list, '性別が未選択です。');
+    }
+    if (!$cond['resfl_ymd']) {
+        array_push($error_list, '着用開始日が未入力です。');
+    }
+    $m_section_count = 0;
+    if (!$cond['rntl_sect_cd']) {
+        array_push($error_list, '拠点が未選択です。');
+    }else{
+        //拠点のマスタチェック
+        $query_list = array();
+        // 部門マスタ．企業ID　＝　ログインしているアカウントの企業ID　AND
+        array_push($query_list, "corporate_id = '" . $auth['corporate_id'] . "'");
+        // 部門マスタ．レンタル契約No.　＝　画面で選択されている契約No.
+        array_push($query_list, "rntl_cont_no = '" . $cond['agreement_no'] . "'");
+        // 部門マスタ．レンタル部門コード　＝　画面で選択されている拠点
+        array_push($query_list, "rntl_sect_cd = '" . $cond['rntl_sect_cd'] . "'");
+
+        //sql文字列を' AND 'で結合
+        $query = implode(' AND ', $query_list);
+        //--- クエリー実行・取得 ---//
+        $m_section = MSection::find(array(
+            'conditions' => $query
+        ));
+        $m_section_count = $m_section->count();
+        //存在しない場合NG
+        if ($m_section_count == 0) {
+            array_push($error_list, '拠点の値が不正です。');
+        }
+    }
+    if (!$cond['job_type']) {
+        array_push($error_list, '貸与パターンが未選択です。');
+    }else{
+        //貸与パターンのマスタチェック
+        $query_list = array();
+        // 職種マスタ．企業ID　＝　ログインしているアカウントの企業ID　AND
+        array_push($query_list, "corporate_id = '" . $auth['corporate_id'] . "'");
+        // 職種マスタ．レンタル契約No.　＝　画面で選択されている契約No.
+        array_push($query_list, "rntl_cont_no = '" . $cond['agreement_no'] . "'");
+        $deli_job = explode(',', $cond['job_type']);
+        // 職種マスタ．レンタル部門コード　＝　画面で選択されている貸与パターン
+        array_push($query_list, "job_type_cd = '" . $deli_job[0] . "'");
+
+        //sql文字列を' AND 'で結合
+        $query = implode(' AND ', $query_list);
+        //--- クエリー実行・取得 ---//
+        $m_job_type = MJobType::find(array(
+            'conditions' => $query
+        ));
+        $m_job_type_cnt = $m_job_type->count();
+        //存在しない場合NG
+        if ($m_job_type_cnt == 0) {
+            array_push($error_list, '貸与パターンの値が不正です。');
+        }
     }
     //出荷先のマスタチェック
     $query_list = array();
@@ -800,12 +858,14 @@ $app->post('/input_insert', function () use ($app) {
         // 出荷先マスタ．出荷先支店コード　＝　画面で選択されている出荷先支店コード
         array_push($query_list, "ship_to_brnch_cd = '" . $cond['ship_to_brnch_cd'] . "'");
     } else {
-        // 部門マスタ．標準出荷先コード
-        array_push($query_list, "ship_to_cd = '" . $m_section[0]->std_ship_to_cd . "'");
-        // 部門マスタ．標準出荷先支店コード
-        array_push($query_list, "ship_to_brnch_cd = '" . $m_section[0]->std_ship_to_brnch_cd . "'");
-        $cond['ship_to_cd'] = $m_section[0]->std_ship_to_cd;
-        $cond['ship_to_brnch_cd'] = $m_section[0]->std_ship_to_brnch_cd;
+        if($m_section_count > 0){
+            // 部門マスタ．標準出荷先コード
+            array_push($query_list, "ship_to_cd = '" . $m_section[0]->std_ship_to_cd . "'");
+            // 部門マスタ．標準出荷先支店コード
+            array_push($query_list, "ship_to_brnch_cd = '" . $m_section[0]->std_ship_to_brnch_cd . "'");
+            $cond['ship_to_cd'] = $m_section[0]->std_ship_to_cd;
+            $cond['ship_to_brnch_cd'] = $m_section[0]->std_ship_to_brnch_cd;
+        }
     }
     //sql文字列を' AND 'で結合
     $query = implode(' AND ', $query_list);
@@ -817,43 +877,6 @@ $app->post('/input_insert', function () use ($app) {
     //存在しない場合NG
     if ($m_shipment_to_cnt == 0) {
         array_push($error_list, '出荷先の値が不正です。');
-    }
-
-    if (byte_cnt($cond['cster_emply_cd']) > 10) {
-        array_push($error_list, '社員コードの文字数が多すぎます。');
-    }
-
-    if (byte_cnt($cond['werer_name']) > 22) {
-        array_push($error_list, '着用者名の文字数が多すぎます。');
-    }
-
-    if (byte_cnt($cond['werer_name_kana']) > 22) {
-        array_push($error_list, '着用者名(カナ)の文字数が多すぎます。');
-    }
-
-    //全角カタカナ 全角スペースチェック
-    if(!empty($cond['werer_name_kana'])){
-        $kana = $cond['werer_name_kana'];
-        if (kana_check($kana) === false){
-            array_push($error_list, '着用者名（カナ）に全角カタカナまたは全角スペース以外が入力されています');
-        }
-    }
-    //SJISにない文字を?に変換
-    //着用者名
-    if(!empty($cond['werer_name'])) {
-        $str_utf8 = $cond['werer_name'];
-        if (convert_not_sjis($str_utf8) !== true) {
-            $output_text = convert_not_sjis($str_utf8);
-            array_push($error_list, '着用者名に使用できない文字が含まれています。' . "$output_text");
-        };
-    }
-    //着用者カナ
-    if(!empty($cond['werer_name_kana'])) {
-        $str_utf8 = $cond['werer_name_kana'];
-        if (convert_not_sjis($str_utf8) !== true) {
-            $output_text = convert_not_sjis($str_utf8);
-            array_push($error_list, '着用者名（カナ）に使用できない文字が含まれています。' . "$output_text");
-        };
     }
 
 //    DB登録

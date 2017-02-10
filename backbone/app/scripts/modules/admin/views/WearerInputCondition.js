@@ -176,10 +176,6 @@ define([
                 }
                 model.set('zip_no', this.ui.zip_no.val());
                 model.set('address', this.ui.address.val());
-                var errors = model.validator(model);
-                if(errors) {
-                    return errors;
-                }
                 if(window.sessionStorage.getItem('referrer')=='wearer_search'||
                     window.sessionStorage.getItem('referrer')=='wearer_order'||
                     window.sessionStorage.getItem('referrer')=='wearer_order_search'){
@@ -211,7 +207,6 @@ define([
                         }
                 }
                 });
-                return errors;
             },
             input_item: function (rntl_cont_no) {
                 var that = this;
@@ -239,10 +234,6 @@ define([
                 model.set('ship_to_brnch_cd', ship_to_brnch_cd);
                 model.set('zip_no', this.ui.zip_no.val());
                 model.set('address', this.ui.address.val());
-                var errors = model.validator(model);
-                if(errors) {
-                    return errors;
-                }
                 //console.log(model.getReq());
 
                 var cond = {
