@@ -37,7 +37,7 @@ $app->post('/agreement_no_input', function () use ($app) {
     $arg_str .= ' FROM ';
     $arg_str .= '(SELECT distinct on (m_contract.rntl_cont_no) ';
     $arg_str .= 'm_contract.rntl_cont_no as as_rntl_cont_no,';
-    $arg_str .= 'm_contract.rntl_cont_name as as_rntl_cont_name';
+    $arg_str .= 'm_contract.rntl_emply_cont_name as as_rntl_cont_name';
     $arg_str .= ' FROM ';
     $arg_str .= 'm_contract';
     $arg_str .= ' INNER JOIN m_contract_resource';
