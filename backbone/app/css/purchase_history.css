@@ -351,10 +351,7 @@ fieldset[disabled] .form-control {
 }
 .pagination.grad a,
 .pagination.grad a:focus,
-.pagination.grad a:hover,
-.pagination.grad span,
-.pagination.grad span:focus,
-.pagination.grad span:hover {
+.pagination.grad a:hover{
 	border-color: #999;
 	background-image: -webkit-linear-gradient(top,#cfcfcf 0,#fefefe 100%);
 	background-image: -o-linear-gradient(top,#cfcfcf 0,#fefefe 100%);
