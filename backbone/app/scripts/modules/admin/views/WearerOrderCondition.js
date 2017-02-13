@@ -130,14 +130,19 @@ define([
 			events: {
 				// 「キャンセル」ボタン
 				'click @ui.cancel': function(){
-					if(confirm('入力された情報が削除されますが、よろしいでしょうか？')){
+					// JavaScript モーダルで表示
+					$('#myModal').modal(); //追加
+					//メッセージの修正
+					document.getElementById("confirm_txt").innerHTML=App.cancel_msg; //追加　このメッセージはapp.jsで定義
+					$("#btn_ok").on('click',function() { //追加
+						hideModal();
 						// 検索画面以外から遷移してきた場合はホーム画面に戻る
 						if(window.sessionStorage.getItem('referrer')=='wearer_search'||window.sessionStorage.getItem('referrer')=='wearer_order'){
 							location.href = './wearer_search.html';
 						}else{
 							location.href = './home.html';
 						}
-					}
+					});
 				},
 				// 「戻る」ボタン
 				'click @ui.back': function(e) {
@@ -200,70 +205,62 @@ define([
 				'click @ui.delete': function(){
 					var that = this;
 					var model = this.model;
-					if(confirm("発注を削除しますが、よろしいですか？")){
-						var cond = {
-							"scr": '発注取消',
-						};
-						model.url = App.api.WO0015;
 
-						model.fetchMx({
-							data:cond,
-							success:function(res){
-								var res_val = res.attributes;
-								if(res_val["error_cd"]=='1') {
-									that.triggerMethod('error_msg', res_val["error_msg"]);
-								}else{
-									window.sessionStorage.setItem('referrer', 'wearer_delete');
-									location.href = './wearer_input.html';
-								}
-							}
-						});
+					var rntl_cont_no = $("select[name='agreement_no']").val();
+					this.ui.section = $('#section');
+					var section = $("select[name='section']").val();
+					var modelForUpdate = this.model;
+					modelForUpdate.url = App.api.CM0130;
+					var cond = {
+						"scr": '貸与開始-発注取消-更新可否チェック',
+						"log_type": '1',
+						"rntl_sect_cd": section,
+						"rntl_cont_no": rntl_cont_no
 					};
+					modelForUpdate.fetchMx({
+						data:cond,
+						success:function(res){
+							var type = "cm0130_res";
+							var res_val = res.attributes;
+							if(res_val.chk_flg == false){
+								$('#btn_cancel').css('display', 'none');
+								$('#btn_ok').css('display', 'none');
+								// JavaScript モーダルで表示
+								$('#myModalAlert').modal('show'); //追加
+								//メッセージの修正
+								document.getElementById("alert_txt").innerHTML=res_val["error_msg"]; //追加　このメッセージはapp.jsで定義
+								// alert(res_val["error_msg"]);
+							}else {
+								// JavaScript モーダルで表示
+								$('#myModal').modal('show'); //追加
+								//メッセージの修正
+								document.getElementById("confirm_txt").innerHTML = App.delete_msg; //追加　このメッセージはapp.jsで定義
+								$("#btn_ok").on('click', function () { //追加
+									hideModal();
+									var cond = {
+										"scr": '発注取消',
+									};
+									model.url = App.api.WO0015;
 
+									model.fetchMx({
+										data: cond,
+										success: function (res) {
+											var res_val = res.attributes;
+											if (res_val["error_cd"] == '1') {
+												that.triggerMethod('error_msg', res_val["error_msg"]);
+											} else {
+												window.sessionStorage.setItem('referrer', 'wearer_delete');
+												location.href = './wearer_input.html';
+											}
+										}
+									});
+								});
+							}
+						}
+
+					});
 				},
-				// 'change @ui.section': function(){
-				// 	this.ui.section = $('#section');
-				// 	var section = $("select[name='section']").val();
-				// 	// 入力完了、発注送信ボタン表示/非表示制御
-				// 	var data = {
-				// 		'rntl_sect_cd': section
-				// 	};
-				// 	var modelForUpdate = this.model;
-				// 	modelForUpdate.url = App.api.CM0140;
-				// 	var cond = {
-				// 		"scr": '貸与開始-発注入力・送信可否チェック',
-				// 		"log_type": '3',
-				// 		"data": data,
-				// 	};
-				// 	modelForUpdate.fetchMx({
-				// 		data:cond,
-				// 		success:function(res) {
-				// 			var CM0140_res = res.attributes;
-				// 			//「入力完了」ボタン表示制御
-				// 			if (CM0140_res['order_input_ok_flg'] == "1" && CM0140_res['order_send_ok_flg'] == "1") {
-				// 				$('.inputButton').css('display', '');
-				// 				$('.orderSend').css('display', '');
-				// 			}
-				// 			if (CM0140_res['order_input_ok_flg'] == "0" && CM0140_res['order_send_ok_flg'] == "0") {
-				// 				$('.inputButton').css('display', 'none');
-				// 				$('.orderSend').css('display', 'none');
-				// 			}
-				// 			if (CM0140_res['order_input_ok_flg'] == "0" && CM0140_res['order_send_ok_flg'] == "1") {
-				// 				$('.inputButton').css('display', 'none');
-				// 				$('.orderSend').css('display', '');
-				// 			}
-				// 			if (CM0140_res['order_input_ok_flg'] == "1" && CM0140_res['order_send_ok_flg'] == "0") {
-				// 				$('.inputButton').css('display', '');
-				// 				$('.orderSend').css('display', 'none');
-				// 			}
-				// 		}
-				// 	});
-				// },
-				// 'click @ui.section_btn': function (e) {
-				// 	e.preventDefault();
-				// 	this.triggerMethod('click:section_btn', this.model);
-				// },
-				// // 「保存」ボタン
+				// 「保存」ボタン
 				'click @ui.inputButton': function(e) {
 					e.preventDefault();
 					var that = this;
@@ -285,8 +282,14 @@ define([
 							var type = "cm0130_res";
 							var res_val = res.attributes;
 							if(res_val.chk_flg == false){
-								alert(res_val["error_msg"]);
-								return true;
+								$('#btn_cancel').css('display', 'none');
+								$('#btn_ok').css('display', 'none');
+								// JavaScript モーダルで表示
+								$('#myModalAlert').modal('show'); //追加
+								//メッセージの修正
+								document.getElementById("alert_txt").innerHTML=res_val["error_msg"]; //追加　このメッセージはapp.jsで定義
+								// alert(res_val["error_msg"]);
+
 							}else{
 								if (that.ui.shipment_to.val()) {
 									var m_shipment_to_array = that.ui.shipment_to.val().split(',');
@@ -321,7 +324,7 @@ define([
 								}
 
 								var cond = {
-									"scr": '貸与開始-入力完了-check',
+									"scr": '貸与開始-保存（後で送信）-check',
 									"cond": data,
 									"snd_kbn": '0',
 									"add_item": add_item,
@@ -334,8 +337,12 @@ define([
 									success: function (res) {
 										var res_val = res.attributes;
 										if (res_val["error_code"] == "0") {
-											var msg = "入力を完了しますが、よろしいですか？";
-											if (window.confirm(msg)) {
+											// JavaScript モーダルで表示
+											$('#myModal').modal('show'); //追加
+											//メッセージの修正
+											document.getElementById("confirm_txt").innerHTML=App.input_insert_msg; //追加　このメッセージはapp.jsで定義
+											$("#btn_ok").on('click',function() { //追加
+												hideModal();
 												var cond = {
 													"scr": '貸与開始-保存（後で送信）-update',
 													"cond": data,
@@ -356,7 +363,7 @@ define([
 														}
 													}
 												});
-											}
+											});
 										}else{
 											that.triggerMethod('error_msg', res_val["error_msg"]);
 										}
@@ -390,8 +397,12 @@ define([
 							var type = "cm0130_res";
 							var res_val = res.attributes;
 							if(res_val.chk_flg == false){
-								alert(res_val["error_msg"]);
-								return true;
+								$('#btn_cancel').css('display', 'none');
+								$('#btn_ok').css('display', 'none');
+								// JavaScript モーダルで表示
+								$('#myModalAlert').modal('show'); //追加
+								//メッセージの修正
+								document.getElementById("alert_txt").innerHTML=res_val["error_msg"];
 							}else{
 								var modelForUpdate = that.model;
 								modelForUpdate.url = App.api.WO0014;
@@ -436,8 +447,12 @@ define([
 									success: function (res) {
 										var res_val = res.attributes;
 										if (res_val["error_code"] == "0") {
-											var msg = "発注内容を送信します。よろしいですか？";
-											if (window.confirm(msg)) {
+											// JavaScript モーダルで表示
+											$('#myModal').modal(); //追加
+											//メッセージの修正
+											document.getElementById("confirm_txt").innerHTML=App.complete_msg; //追加　このメッセージはapp.jsで定義
+											$("#btn_ok").on('click',function() { //追加
+												hideModal();
 												var cond = {
 													"scr": '貸与開始-発注送信-update',
 													"cond": data,
@@ -458,7 +473,7 @@ define([
 														}
 													}
 												});
-											}
+											});
 										}else{
 											that.triggerMethod('error_msg', res_val["error_msg"]);
 										}
