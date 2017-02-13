@@ -728,65 +728,6 @@ $app->post('/wearer_order_insert', function () use ($app) {
     $json_list["error_code"] = "0";
     $json_list['error_msg'] = array();
 
-    //更新可否チェック（更新可否チェック仕様書）
-
-    //  入力された内容を元に、着用者基本マスタトラン、着用者商品マスタトラン、発注情報トランに登録を行う。
-    //--- 検索条件 ---//
-    //  アカウントマスタ．企業ID　＝　ログインしているアカウントの企業ID　AND
-    array_push($query_list, "MAccount.corporate_id = '".$auth['corporate_id']."'");
-    //  アカウントマスタ．ユーザーID　＝　ログインしているアカウントのユーザーID　AND
-    array_push($query_list, "MAccount.user_id = '".$auth['user_id']."'");
-    //　契約マスタ．企業ID　＝　ログインしているアカウントの企業ID　AND
-    array_push($query_list, "MContract.corporate_id = '".$auth['corporate_id']."'");
-    //　契約マスタ．レンタル契約フラグ　＝　契約対象 AND
-    array_push($query_list, "MContract.rntl_cont_flg = '1'");
-    //  契約リソースマスタ．企業ID　＝　ログインしているアカウントの企業ID　AND
-    array_push($query_list, "MContractResource.corporate_id = '".$auth['corporate_id']."'");
-
-    //sql文字列を' AND 'で結合
-    $query = implode(' AND ', $query_list);
-
-    //--- クエリー実行・取得 ---//
-    $results = MContract::query()
-        ->where($query)
-        ->columns(array('MContractResource.*'))
-        ->innerJoin('MContractResource','MContract.corporate_id = MContractResource.corporate_id')
-        ->join('MAccount','MAccount.accnt_no = MContractResource.accnt_no')
-        ->execute();
-    if($results[0]->update_ok_flg == '0'){
-        array_push($error_list,'こちらの契約リソースは更新出来ません。');
-        $json_list['error_msg'] = $error_list;
-        $json_list["error_code"] = "1";
-        return;
-    }
-    //汎用コードマスタから更新不可時間を取得
-    // 汎用コードマスタ．分類コード　＝　更新不可時間
-
-    //--- クエリー実行・取得 ---//
-    $m_gencode_results = MGencode::query()
-        ->where("cls_cd = '015'")
-        ->columns('*')
-        ->execute();
-    foreach ($m_gencode_results as $m_gencode_result) {
-        if($m_gencode_result->gen_cd =='1'){
-            //更新不可開始時間
-            $start = $m_gencode_result->gen_name;
-        }elseif($m_gencode_result->gen_cd =='2'){
-            //経過時間
-            $hour = $m_gencode_result->gen_name;
-
-        }
-    }
-    $now_datetime = date("YmdHis");
-    $now_date = date("Ymd");
-    $start_datetime = $now_date.$start;
-    $end_datetime = date("YmdHis", strtotime($start_datetime." + ".$hour." hour"));
-    if(strtotime($start_datetime) <= strtotime($now_datetime)||strtotime($now_datetime) >= strtotime($end_datetime)){
-        array_push($error_list,'現在の時間は更新出来ません。');
-        $json_list['error_msg'] = $error_list;
-        $json_list["error_code"] = "1";
-        return;
-    }
     //理由区分
     if (empty($cond["reason_kbn"])) {
       array_push($error_list,'理由区分を選択してください。');

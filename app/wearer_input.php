@@ -86,15 +86,21 @@ $app->post('/agreement_no_input', function () use ($app) {
               $json_list['ship_to_brnch_cd'] = $wearer_odr_post['ship_to_brnch_cd'];
             }
         }else{
-            foreach ($results as $result) {
-                $list['rntl_cont_no'] = $result->as_rntl_cont_no;
-                $list['rntl_cont_name'] = $result->as_rntl_cont_name;
-                if(count($results)==1){
-                  $json_list['disp_flg'] = true;
-                  $json_list['rntl_cont_no'] = $result->as_rntl_cont_no;
-                  $list['selected'] = 'selected';
-                }
+            if(count($results)==1){
+                $json_list['disp_flg'] = true;
+                $json_list['rntl_cont_no'] = $results[0]->as_rntl_cont_no;
+                $list['rntl_cont_no'] = $results[0]->as_rntl_cont_no;
+                $list['rntl_cont_name'] = $results[0]->as_rntl_cont_name;
+                $list['selected'] = 'selected';
                 array_push($all_list, $list);
+            }else{
+                //先頭に未選択値をセット
+                array_push($all_list,array());
+                foreach ($results as $result) {
+                    $list['rntl_cont_no'] = $result->as_rntl_cont_no;
+                    $list['rntl_cont_name'] = $result->as_rntl_cont_name;
+                    array_push($all_list, $list);
+                }
             }
             $app->session->remove("wearer_odr_post");
         }
@@ -108,55 +114,6 @@ $app->post('/agreement_no_input', function () use ($app) {
     $json_list['agreement_no_list'] = $all_list;
     echo json_encode($json_list);
 });
-
-
-
-/*
- * 商品明細入力を押下時のエラーチェック
- *
- * @param disp_type
- * wearer_search 検索一覧画面
- * wearer_order 商品明細情報入力画面
- * wearer_order_search
- */
-
-$app->post('/wearer_item_button', function () use ($app) {
-    $params = json_decode(file_get_contents('php://input'), true);
-    $cond = $params['cond'];
-    $json_list = array();
-    $error_list = array();
-    //全角カタカナ 全角スペースチェック
-
-    //全角カタカナ 全角スペースチェック
-    $kana = $cond['werer_name_kana'];
-    if (kana_check($kana) === false){
-        array_push($error_list, '着用者名（カナ）に全角カタカナまたは全角スペース以外が入力されています');
-    }
-    //SJISにない文字を?に変換
-    //着用者名
-    $str_utf8 = $cond['werer_name'];
-    if (convert_not_sjis($str_utf8) !== true){
-        $output_text = convert_not_sjis($str_utf8);
-        array_push($error_list, '着用者名に使用できない文字が含まれています。'."$output_text");
-    };
-    //着用者カナ
-    $str_utf8 = $cond['werer_name_kana'];
-    if (convert_not_sjis($str_utf8) !== true){
-        $output_text = convert_not_sjis($str_utf8);
-        array_push($error_list, '着用者名（カナ）に使用できない文字が含まれています。'."$output_text");
-    };
-
-    $json_list['cond'] = $cond;
-    if ($error_list) {
-        $json_list['errors'] = $error_list;
-        echo json_encode($json_list);
-        return true;
-    }
-
-    echo json_encode($json_list);
-});
-
-
 
 /*
  * 着用者入力各フォーム
@@ -616,64 +573,7 @@ $app->post('/input_insert', function () use ($app) {
     $list = array();
     $json_list = array();
     $error_list = array();
-    //更新可否チェック（更新可否チェック仕様書）
 
-    //  入力された内容を元に、着用者基本マスタトラン、着用者商品マスタトラン、発注情報トランに登録を行う。
-    //--- 検索条件 ---//
-    //  アカウントマスタ．企業ID　＝　ログインしているアカウントの企業ID　AND
-    array_push($query_list, "MAccount.corporate_id = '" . $auth['corporate_id'] . "'");
-    //  アカウントマスタ．ユーザーID　＝　ログインしているアカウントのユーザーID　AND
-    array_push($query_list, "MAccount.user_id = '" . $auth['user_id'] . "'");
-    //　契約マスタ．企業ID　＝　ログインしているアカウントの企業ID　AND
-    array_push($query_list, "MContract.corporate_id = '" . $auth['corporate_id'] . "'");
-    //　契約マスタ．レンタル契約フラグ　＝　契約対象 AND
-    array_push($query_list, "MContract.rntl_cont_flg = '1'");
-    //  契約リソースマスタ．企業ID　＝　ログインしているアカウントの企業ID　AND
-    array_push($query_list, "MContractResource.corporate_id = '" . $auth['corporate_id'] . "'");
-
-    //sql文字列を' AND 'で結合
-    $query = implode(' AND ', $query_list);
-
-    //--- クエリー実行・取得 ---//
-    $results = MContract::query()
-        ->where($query)
-        ->columns(array('MContractResource.*'))
-        ->innerJoin('MContractResource', 'MContract.corporate_id = MContractResource.corporate_id')
-        ->join('MAccount', 'MAccount.accnt_no = MContractResource.accnt_no')
-        ->execute();
-    if ($results[0]->update_ok_flg == '0') {
-        array_push($error_list, 'こちらの契約リソースは更新出来ません。');
-        $json_list['errors'] = $error_list;
-        return;
-    }
-    //汎用コードマスタから更新不可時間を取得
-    // 汎用コードマスタ．分類コード　＝　更新不可時間
-
-    //--- クエリー実行・取得 ---//
-    $m_gencode_results = MGencode::query()
-        ->where("cls_cd = '015'")
-        ->columns('*')
-        ->execute();
-    foreach ($m_gencode_results as $m_gencode_result) {
-        if ($m_gencode_result->gen_cd == '1') {
-            //更新不可開始時間
-            $start = $m_gencode_result->gen_name;
-        } elseif ($m_gencode_result->gen_cd == '2') {
-            //経過時間
-            $hour = $m_gencode_result->gen_name;
-
-        }
-    }
-    $now_datetime = date("YmdHis");
-    $now_date = date("Ymd");
-    $start_datetime = $now_date . $start;
-    $end_datetime = date("YmdHis", strtotime($start_datetime . " + " . $hour . " hour"));
-    if (strtotime($start_datetime) <= strtotime($now_datetime) || strtotime($now_datetime) >= strtotime($end_datetime)) {
-        array_push($error_list, '現在の時間は更新出来ません。');
-        $json_list['errors'] = $error_list;
-        echo json_encode($json_list);
-        return;
-    }
     //契約Noのマスタチェック
     $query_list = array();
     // 契約マスタ．企業ID　＝　ログインしているアカウントの企業ID　AND
@@ -878,7 +778,6 @@ $app->post('/input_insert', function () use ($app) {
     if ($m_shipment_to_cnt == 0) {
         array_push($error_list, '出荷先の値が不正です。');
     }
-
 //    DB登録
     if ($error_list) {
         $json_list['errors'] = $error_list;
@@ -888,7 +787,7 @@ $app->post('/input_insert', function () use ($app) {
     if ($params['mode'] == 'check') {
         $json_list['ok'] = 'ok';
         echo json_encode($json_list);
-        return;
+        return true;
     }
     $transaction = $app->transactionManager->get();
     try {

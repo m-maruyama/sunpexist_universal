@@ -267,82 +267,104 @@ define([
 				'click @ui.inputButton': function(e) {
 					e.preventDefault();
 					var that = this;
-					var modelForUpdate = this.model;
-					modelForUpdate.url = App.api.WO0014;
-					if (this.ui.shipment_to.val()) {
-						var m_shipment_to_array = this.ui.shipment_to.val().split(',');
-					}
+
+					var rntl_cont_no = $("select[name='agreement_no']").val();
 					this.ui.section = $('#section');
 					var section = $("select[name='section']").val();
-					var job_types = $('#job_type').val().split(':');
-					this.ui.comment = $('#comment');
-
-					var data = {
-						'reason_kbn': $("select[name='reason_kbn']").val(),
-						'rntl_sect_cd': section,
-						'job_type': job_types[0],
-						'order_count': that.ui.order_count.val(),
-						'm_job_type_comb_hkey': that.ui.m_job_type_comb_hkey.val(),
-						'm_section_comb_hkey': that.ui.m_section_comb_hkey.val(),
-						'comment': this.ui.comment.val()
+					var modelForUpdate = this.model;
+					modelForUpdate.url = App.api.CM0130;
+					var cond = {
+						"scr": '貸与開始-保存（後で送信）-更新可否チェック',
+						"log_type": '1',
+						"rntl_sect_cd": section,
+						"rntl_cont_no": rntl_cont_no
 					};
-					// 追加されるアイテム
-					var add_list_cnt = $("input[name='add_list_cnt']").val();
-					var add_item = new Object();
-					for (var i = 0; i < add_list_cnt; i++) {
-						add_item[i] = new Object();
-						add_item[i]["add_rntl_sect_cd"] = $("input[name='add_rntl_sect_cd" + i + "']").val();
-						add_item[i]["add_job_type_cd"] = $("input[name='add_job_type_cd" + i + "']").val();
-						add_item[i]["add_job_type_item_cd"] = $("input[name='add_job_type_item_cd" + i + "']").val();
-						add_item[i]["add_item_cd"] = $("input[name='add_item_cd" + i + "']").val();
-						add_item[i]["add_color_cd"] = $("input[name='add_color_cd" + i + "']").val();
-						add_item[i]["add_choice_type"] = $("input[name='add_choice_type" + i + "']").val();
-						add_item[i]["add_std_input_qty"] = $("input[name='add_std_input_qty" + i + "']").val();
-						add_item[i]["add_size_cd"] = $("select[name='add_size_cd" + i + "']").val();
-						add_item[i]["add_order_num"] = $("input[name='add_order_num" + i + "']").val();
-						add_item[i]["add_order_num_disable"] = $("input[name='add_order_num_disable" + i + "']").val();
-					}
+					modelForUpdate.fetchMx({
+						data:cond,
+						success:function(res){
+							var type = "cm0130_res";
+							var res_val = res.attributes;
+							if(res_val.chk_flg == false){
+								alert(res_val["error_msg"]);
+								return true;
+							}else{
+								if (that.ui.shipment_to.val()) {
+									var m_shipment_to_array = that.ui.shipment_to.val().split(',');
+								}
+								var job_types = $('#job_type').val().split(':');
+								that.ui.comment = $('#comment');
 
-                    var cond = {
-                        "scr": '貸与開始-入力完了-check',
-                        "cond": data,
-                        "snd_kbn": '0',
-                        "add_item": add_item,
-                        "mode": "check",
-                    };
-                    modelForUpdate.fetchMx({
-                        data: cond,
-                        success: function (res) {
-                            var res_val = res.attributes;
-                            if (res_val["error_code"] == "0") {
-                                var msg = "入力を完了しますが、よろしいですか？";
-                                if (window.confirm(msg)) {
-                                    var cond = {
-                                        "scr": '貸与開始-入力完了-update',
-                                        "cond": data,
-                                        "snd_kbn": '0',
-                                        "add_item": add_item,
-                                        "mode": "update",
-                                    };
-                                    modelForUpdate.fetchMx({
-                                        data: cond,
-                                        success: function (res) {
-                                            var res_val = res.attributes;
-                                            if (res_val["error_code"] == '1') {
-                                                that.triggerMethod('error_msg', res_val["error_msg"]);
-                                            } else {
-                                                window.sessionStorage.setItem('referrer', 'wearer_order');
-                                                window.sessionStorage.removeItem('wearer_input_ref');
-                                                location.href = "wearer_order_complete.html";
-                                            }
-                                        }
-                                    });
-                                }
-                            }else{
-                                that.triggerMethod('error_msg', res_val["error_msg"]);
-                            }
-                        },
-                    });
+								var data = {
+									'reason_kbn': $("select[name='reason_kbn']").val(),
+									'rntl_sect_cd': section,
+									'job_type': job_types[0],
+									'order_count': that.ui.order_count.val(),
+									'm_job_type_comb_hkey': that.ui.m_job_type_comb_hkey.val(),
+									'm_section_comb_hkey': that.ui.m_section_comb_hkey.val(),
+									'comment': that.ui.comment.val()
+								};
+								// 追加されるアイテム
+								var add_list_cnt = $("input[name='add_list_cnt']").val();
+								var add_item = new Object();
+								for (var i = 0; i < add_list_cnt; i++) {
+									add_item[i] = new Object();
+									add_item[i]["add_rntl_sect_cd"] = $("input[name='add_rntl_sect_cd" + i + "']").val();
+									add_item[i]["add_job_type_cd"] = $("input[name='add_job_type_cd" + i + "']").val();
+									add_item[i]["add_job_type_item_cd"] = $("input[name='add_job_type_item_cd" + i + "']").val();
+									add_item[i]["add_item_cd"] = $("input[name='add_item_cd" + i + "']").val();
+									add_item[i]["add_color_cd"] = $("input[name='add_color_cd" + i + "']").val();
+									add_item[i]["add_choice_type"] = $("input[name='add_choice_type" + i + "']").val();
+									add_item[i]["add_std_input_qty"] = $("input[name='add_std_input_qty" + i + "']").val();
+									add_item[i]["add_size_cd"] = $("select[name='add_size_cd" + i + "']").val();
+									add_item[i]["add_order_num"] = $("input[name='add_order_num" + i + "']").val();
+									add_item[i]["add_order_num_disable"] = $("input[name='add_order_num_disable" + i + "']").val();
+								}
+
+								var cond = {
+									"scr": '貸与開始-入力完了-check',
+									"cond": data,
+									"snd_kbn": '0',
+									"add_item": add_item,
+									"mode": "check",
+								};
+								var modelForUpdate = that.model;
+								modelForUpdate.url = App.api.WO0014;
+								modelForUpdate.fetchMx({
+									data: cond,
+									success: function (res) {
+										var res_val = res.attributes;
+										if (res_val["error_code"] == "0") {
+											var msg = "入力を完了しますが、よろしいですか？";
+											if (window.confirm(msg)) {
+												var cond = {
+													"scr": '貸与開始-保存（後で送信）-update',
+													"cond": data,
+													"snd_kbn": '0',
+													"add_item": add_item,
+													"mode": "update",
+												};
+												modelForUpdate.fetchMx({
+													data: cond,
+													success: function (res) {
+														var res_val = res.attributes;
+														if (res_val["error_code"] == '1') {
+															that.triggerMethod('error_msg', res_val["error_msg"]);
+														} else {
+															window.sessionStorage.setItem('referrer', 'wearer_order');
+															window.sessionStorage.removeItem('wearer_input_ref');
+															location.href = "wearer_order_complete.html";
+														}
+													}
+												});
+											}
+										}else{
+											that.triggerMethod('error_msg', res_val["error_msg"]);
+										}
+									},
+								});
+							}
+						}
+					});
                 },
                 // 「発注送信」ボタン
                 'click @ui.orderSend': function(e){
@@ -351,82 +373,104 @@ define([
 
 						var that = this;
 
-						var modelForUpdate = this.model;
-						modelForUpdate.url = App.api.WO0014;
-						if(this.ui.shipment_to.val()){
-							var m_shipment_to_array = this.ui.shipment_to.val().split(',');
-						}
-						this.ui.section = $('#section');
-						var section = $("select[name='section']").val();
-						var job_types = $('#job_type').val().split(':');
-						this.ui.comment = $('#comment');
-						var data = {
-							'reason_kbn': $("select[name='reason_kbn']").val(),
-							'rntl_sect_cd': section,
-							'job_type': job_types[0],
-							'order_count': that.ui.order_count.val(),
-							'comment': this.ui.comment.val()
-						};
-						// 追加されるアイテム
-						var add_list_cnt = $("input[name='add_list_cnt']").val();
-						var add_item = new Object();
-						for (var i=0; i<add_list_cnt; i++) {
-							add_item[i] = new Object();
-							add_item[i]["add_rntl_sect_cd"] = $("input[name='add_rntl_sect_cd"+i+"']").val();
-							add_item[i]["add_job_type_cd"] = $("input[name='add_job_type_cd"+i+"']").val();
-							add_item[i]["add_job_type_item_cd"] = $("input[name='add_job_type_item_cd"+i+"']").val();
-							add_item[i]["add_item_cd"] = $("input[name='add_item_cd"+i+"']").val();
-							add_item[i]["add_color_cd"] = $("input[name='add_color_cd"+i+"']").val();
-							add_item[i]["add_choice_type"] = $("input[name='add_choice_type"+i+"']").val();
-							add_item[i]["add_std_input_qty"] = $("input[name='add_std_input_qty"+i+"']").val();
-							add_item[i]["add_size_cd"] = $("select[name='add_size_cd"+i+"']").val();
-							add_item[i]["add_order_num"] = $("input[name='add_order_num"+i+"']").val();
-							add_item[i]["add_order_num_disable"] = $("input[name='add_order_num_disable"+i+"']").val();
-						}
+					var rntl_cont_no = $("select[name='agreement_no']").val();
+					this.ui.section = $('#section');
+					var section = $("select[name='section']").val();
+					var modelForUpdate = this.model;
+					modelForUpdate.url = App.api.CM0130;
+					var cond = {
+						"scr": '貸与開始-発注送信-更新可否チェック',
+						"log_type": '1',
+						"rntl_sect_cd": section,
+						"rntl_cont_no": rntl_cont_no
+					};
+					modelForUpdate.fetchMx({
+						data:cond,
+						success:function(res){
+							var type = "cm0130_res";
+							var res_val = res.attributes;
+							if(res_val.chk_flg == false){
+								alert(res_val["error_msg"]);
+								return true;
+							}else{
+								var modelForUpdate = that.model;
+								modelForUpdate.url = App.api.WO0014;
+								if(that.ui.shipment_to.val()){
+									var m_shipment_to_array = that.ui.shipment_to.val().split(',');
+								}
+								var job_types = $('#job_type').val().split(':');
+								that.ui.comment = $('#comment');
+								var data = {
+									'reason_kbn': $("select[name='reason_kbn']").val(),
+									'rntl_sect_cd': section,
+									'job_type': job_types[0],
+									'order_count': that.ui.order_count.val(),
+									'comment': that.ui.comment.val()
+								};
+								// 追加されるアイテム
+								var add_list_cnt = $("input[name='add_list_cnt']").val();
+								var add_item = new Object();
+								for (var i=0; i<add_list_cnt; i++) {
+									add_item[i] = new Object();
+									add_item[i]["add_rntl_sect_cd"] = $("input[name='add_rntl_sect_cd"+i+"']").val();
+									add_item[i]["add_job_type_cd"] = $("input[name='add_job_type_cd"+i+"']").val();
+									add_item[i]["add_job_type_item_cd"] = $("input[name='add_job_type_item_cd"+i+"']").val();
+									add_item[i]["add_item_cd"] = $("input[name='add_item_cd"+i+"']").val();
+									add_item[i]["add_color_cd"] = $("input[name='add_color_cd"+i+"']").val();
+									add_item[i]["add_choice_type"] = $("input[name='add_choice_type"+i+"']").val();
+									add_item[i]["add_std_input_qty"] = $("input[name='add_std_input_qty"+i+"']").val();
+									add_item[i]["add_size_cd"] = $("select[name='add_size_cd"+i+"']").val();
+									add_item[i]["add_order_num"] = $("input[name='add_order_num"+i+"']").val();
+									add_item[i]["add_order_num_disable"] = $("input[name='add_order_num_disable"+i+"']").val();
+								}
 
-                    var cond = {
-                        "scr": '貸与開始-発注送信-check',
-                        "cond": data,
-                        "snd_kbn": '1',
-                        "add_item": add_item,
-                        "mode": "check",
-                    };
-                    modelForUpdate.fetchMx({
-                        data: cond,
-                        success: function (res) {
-                            var res_val = res.attributes;
-                            if (res_val["error_code"] == "0") {
-                                var msg = "発注内容を送信します。よろしいですか？";
-                                if (window.confirm(msg)) {
-                                    var cond = {
-                                        "scr": '貸与開始-発注送信-update',
-                                        "cond": data,
-                                        "snd_kbn": '1',
-                                        "add_item": add_item,
-                                        "mode": "update",
-                                    };
-                                    modelForUpdate.fetchMx({
-                                        data: cond,
-                                        success: function (res) {
-                                            var res_val = res.attributes;
-                                            if(res_val["error_code"]=='1') {
-                                                that.triggerMethod('error_msg', res_val["error_msg"]);
-                                            }else{
-                                                window.sessionStorage.setItem('referrer', 'wearer_order_send');
-                                                window.sessionStorage.removeItem('wearer_input_ref');
-                                                location.href="wearer_order_complete.html";
-                                            }
-                                        }
-                                    });
-                                }
-                            }else{
-                                that.triggerMethod('error_msg', res_val["error_msg"]);
-                            }
-                        },
-                    });
+								var cond = {
+									"scr": '貸与開始-発注送信-check',
+									"cond": data,
+									"snd_kbn": '1',
+									"add_item": add_item,
+									"mode": "check",
+								};
+								modelForUpdate.fetchMx({
+									data: cond,
+									success: function (res) {
+										var res_val = res.attributes;
+										if (res_val["error_code"] == "0") {
+											var msg = "発注内容を送信します。よろしいですか？";
+											if (window.confirm(msg)) {
+												var cond = {
+													"scr": '貸与開始-発注送信-update',
+													"cond": data,
+													"snd_kbn": '1',
+													"add_item": add_item,
+													"mode": "update",
+												};
+												modelForUpdate.fetchMx({
+													data: cond,
+													success: function (res) {
+														var res_val = res.attributes;
+														if(res_val["error_code"]=='1') {
+															that.triggerMethod('error_msg', res_val["error_msg"]);
+														}else{
+															window.sessionStorage.setItem('referrer', 'wearer_order_send');
+															window.sessionStorage.removeItem('wearer_input_ref');
+															location.href="wearer_order_complete.html";
+														}
+													}
+												});
+											}
+										}else{
+											that.triggerMethod('error_msg', res_val["error_msg"]);
+										}
+									},
+								});
+							}
+						},
+					});
                 },
-            },
 				onShow: function(val, type) {
+
+				}
 
             },
         });

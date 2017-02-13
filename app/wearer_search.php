@@ -166,7 +166,6 @@ $app->post('/wearer_search/search', function ()use($app){
     if(!empty($results_cnt)){
         $paginator = $paginator_model->getPaginate();
         $results = $paginator->items;
-        ChromePhp::LOG($results);
         foreach($results as $result) {
             $list = array();
             $list['werer_cd'] = $result->as_werer_cd;

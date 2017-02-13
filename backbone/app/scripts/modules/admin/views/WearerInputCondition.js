@@ -242,21 +242,6 @@ define([
                     "cond": model.getReq()
                 };
 
-                //商品明細入力へボタンを押下時のSIJSにない文字変換と、全角カナ、全角スペースチェックを行う
-                model.url = App.api.WI0015;
-                model.fetchMx({
-                    data: cond,
-                    success: function (res) {
-                        var res_val = res.attributes;
-
-                        if (res_val["errors"]) {
-                            var er = res_val["errors"]
-                            res.attributes["errors"] = null;
-                            that.triggerMethod('error_msg', er);
-                        }
-                    }
-                });
-
                 //商品詳細入力へ
                 model.url = App.api.WI0012;
                 model.fetchMx({
@@ -268,28 +253,6 @@ define([
                             res.attributes["errors"] = null;
                             that.triggerMethod('error_msg', er);
                         }else{
-                            var rntl_cont_no = $("select[name='agreement_no']").val();
-                            var rntl_sect_cd = $("select[name='section']").val();
-                            model.url = App.api.CM0130;
-                            var cond = {
-                                "scr": '貸与開始-着用者を登録して終了-更新可否チェック',
-                                "log_type": '1',
-                                "rntl_sect_cd": rntl_sect_cd,
-                                "rntl_cont_no": rntl_cont_no
-                            };
-                            model.fetchMx({
-                                data:cond,
-                                success:function(res){
-                                    var type = "cm0130_res";
-                                    var res_val = res.attributes;
-                                    if(res_val.chk_flg == false){
-                                        alert(res_val["error_msg"]);
-                                        return true;
-                                    }else{
-                                        that.triggerMethod('click:input_insert',rntl_cont_no);
-                                    }
-                                }
-                            });
                             model.set('rntl_cont_no', rntl_cont_no);
                             var cond = {
                                 "scr": '商品詳細入力へ',
@@ -302,7 +265,6 @@ define([
                                     location.href = './wearer_order.html';
                                 }
                             });
-                            return errors;
                         }
                     }
                 });
