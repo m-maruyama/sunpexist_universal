@@ -214,7 +214,14 @@ $app->post('/agreement_no', function () use ($app) {
 
   // 初期表示時契約No保持
   $app->session->set("first_rntl_cont_no", $all_list[0]['rntl_cont_no']);
+  //もし結果が１件だったらdisabled返す
+  if(count($all_list)==1){
+    $json_list['agreement_no_disabled'] = 'disabled';
 
+  }else{
+    $json_list['agreement_no_disabled'] = '';
+
+  }
   $json_list['agreement_no_list'] = $all_list;
   echo json_encode($json_list);
 });
