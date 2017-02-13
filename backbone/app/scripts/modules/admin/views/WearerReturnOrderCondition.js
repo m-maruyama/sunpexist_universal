@@ -85,13 +85,13 @@ define([
 						//console.log(res_list);
 
 						var delete_param =
-							res_list['rntl_cont_no'] + ":"
-							+ res_list['rntl_sect_cd'] + ":"
-							+ res_list['job_type_cd'] + ":"
-							+ res_list['werer_cd'] + ":"
-							+ res_list['order_req_no'] + ":"
-							+ res_list['return_req_no']
-						;
+								res_list['rntl_cont_no'] + ":"
+								+ res_list['rntl_sect_cd'] + ":"
+								+ res_list['job_type_cd'] + ":"
+								+ res_list['werer_cd'] + ":"
+								+ res_list['order_req_no'] + ":"
+								+ res_list['return_req_no']
+							;
 						that.ui.delete.val(delete_param);
 						that.ui.complete.val(res_list['order_req_no']);
 						that.ui.orderSend.val(res_list['order_req_no']);
@@ -300,10 +300,13 @@ define([
 					}
 				}
 				if (type == "WR0021_req") {
-					var msg = "削除しますが、よろしいですか？";
-					if (window.confirm(msg)) {
+					// JavaScript モーダルで表示
+					$('#myModal').modal();
+					//メッセージの修正い
+					document.getElementById("confirm_txt").innerHTML=App.delete_msg;
+					$("#btn_ok").on('click',function() {
 						$.blockUI({ message: '<p><img src="ajax-loader.gif" style="margin: 0 auto;" /> 発注取消中...</p>' });
-						var modelForUpdate = this.model;
+						var modelForUpdate = that.model;
 						modelForUpdate.url = App.api.WR0021;
 						var cond = {
 							"scr": '不要品返却-発注取消',
@@ -317,18 +320,20 @@ define([
 
 								if (res_val["error_code"] == "0") {
 									$.unblockUI();
-									alert('発注取消が完了しました。このまま検索画面へ移行します。');
-
+									$('#myModal').modal('hide');
+									//alert('発注取消が完了しました。このまま検索画面へ移行します。');
 									var cond = window.sessionStorage.getItem("wearer_other_cond");
 									window.sessionStorage.setItem("back_wearer_other_cond", cond);
 									location.href="wearer_other.html";
 								} else {
 									$.unblockUI();
-									alert('発注取消中にエラーが発生しました');
+									$('#myModal').modal('hide');
+									//alert('発注取消中にエラーが発生しました');
+									return;
 								}
 							}
 						});
-					}
+					});
 				}
 				if (type == "WR0022_req") {
 					var tran_req_no = $("button[name='complete_param']").val();
@@ -422,8 +427,6 @@ define([
 							} else if (res_val["error_code"] == "1") {
 								that.triggerMethod('showAlerts', res_val["error_msg"]);
 								return;
-							} else {
-								alert("予期せぬエラーが発生しました。");
 							}
 						}
 					});

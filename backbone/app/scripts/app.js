@@ -303,6 +303,17 @@ define([
 				target.spin(preset);
 			},10);
 		};
+
+		/**
+		 * メッセージ定義
+		 *
+		 *
+		 */
+		App.delete_msg = '削除しますが、よろしいですか？';
+		App.input_msg = '入力を完了しますが、よろしいですか？';
+		App.complete_msg = '発注送信を行いますが、よろしいですか？';
+
+
 		return App;
 
 	}
