@@ -426,12 +426,11 @@ define([
 										"mode": "update",
 										"wearer_data": wearer_data,
 										"item": item
-										};
+									};
 									that.triggerMethod('inputComplete', data);
 								});
 
 							} else if (res_val["error_code"] == "1") {
-								hideModal();
 								that.triggerMethod('showAlerts', res_val["error_msg"]);
 								return;
 							}
@@ -517,8 +516,14 @@ define([
 						success:function(res){
 							var res_val = res.attributes;
 							if (res_val["error_code"] == "0") {
-								var msg = "発注送信を行いますが、よろしいですか？";
-								if (window.confirm(msg)) {
+								//var msg = "発注送信を行いますが、よろしいですか？";
+								//if (window.confirm(msg)) {
+								// JavaScript モーダルで表示
+								$('#myModal').modal('show');
+								//メッセージの修正
+								document.getElementById("confirm_txt").innerHTML=App.complete_msg;
+								$("#btn_ok").on('click',function() {
+									hideModal();
 									var data = {
 										"scr": '不要品返却-発注送信-update',
 										"mode": "update",
@@ -528,7 +533,7 @@ define([
 									//console.log(data);
 
 									that.triggerMethod('sendComplete', data);
-								}
+								});
 							} else {
 								that.triggerMethod('showAlerts', res_val["error_msg"]);
 								return;
