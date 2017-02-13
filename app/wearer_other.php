@@ -466,7 +466,7 @@ $app->post('/wearer_other/search', function ()use($app){
         if (isset($result->as_cster_emply_cd)) {
             $list['cster_emply_cd'] = $result->as_cster_emply_cd;
         } else {
-            $list['cster_emply_cd'] = null;
+            $list['cster_emply_cd'] = '-';
         }
         // 性別区分
         $list['sex_kbn'] = $result->as_sex_kbn;
