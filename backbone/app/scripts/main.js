@@ -27,6 +27,19 @@ function Sleep( T ){
 	}
 	return;
 }
+
+/*
+* モーダル削除用
+ */
+function hideModal(){
+	$("#myModal").removeClass("in");
+	$(".modal-backdrop").remove();
+	$("#myModal").hide();
+}
+
+
+
+
 require([
 		'jquery',
 		'backbone',
@@ -40,6 +53,8 @@ require([
 		//PUTとDELETEの代わりにPOST
 		Backbone.emulateHTTP = true;
 		App.container.networkFailure = false;
+
+
 
 		var fetchMx = function(options) {
 			if (!options) {
@@ -227,6 +242,7 @@ require([
 			return result;
 		});
 		App.start();
+
 
 
 

@@ -413,18 +413,27 @@ define([
 						success:function(res){
 							var res_val = res.attributes;
 							if (res_val["error_code"] == "0") {
-								var msg = "入力を完了しますが、よろしいですか？";
-								if (window.confirm(msg)) {
+								// JavaScript モーダルで表示
+								$('#myModal').modal('show');
+								//メッセージの修正い
+								document.getElementById("confirm_txt").innerHTML=App.input_msg;
+								//var msg = "入力を完了しますが、よろしいですか？";
+								//if (window.confirm(msg)) {
+								$("#btn_ok").on('click',function() {
+									hideModal();
 									var data = {
 										"scr": '不要品返却-入力完了-update',
 										"mode": "update",
 										"wearer_data": wearer_data,
 										"item": item
-									};
-
+										};
 									that.triggerMethod('inputComplete', data);
-								}
+								});
+
 							} else if (res_val["error_code"] == "1") {
+								$("#myModal").removeClass("in");
+								$(".modal-backdrop").remove();
+								$("#myModal").hide();
 								that.triggerMethod('showAlerts', res_val["error_msg"]);
 								return;
 							}
