@@ -320,14 +320,14 @@ define([
 
 								if (res_val["error_code"] == "0") {
 									$.unblockUI();
-									$('#myModal').modal('hide');
+									hideModal();
 									//alert('発注取消が完了しました。このまま検索画面へ移行します。');
 									var cond = window.sessionStorage.getItem("wearer_other_cond");
 									window.sessionStorage.setItem("back_wearer_other_cond", cond);
 									location.href="wearer_other.html";
 								} else {
 									$.unblockUI();
-									$('#myModal').modal('hide');
+									hideModal();
 									//alert('発注取消中にエラーが発生しました');
 									return;
 								}
