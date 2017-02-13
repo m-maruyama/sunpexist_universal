@@ -104,8 +104,11 @@ define([
 								var data = cond["data"];
 								that.onShow(res_val, type, transition, data);
 							} else {
+								// JavaScript モーダルで表示
+								$('#myModal').modal('show');
+								document.getElementById("confirm_txt").innerHTML=res_val["err_msg"];
 								// NGエラーアラート表示
-								alert(res_val["err_msg"]);
+								//alert(res_val["err_msg"]);
 							}
 						}
 					});
