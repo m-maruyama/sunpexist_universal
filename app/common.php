@@ -220,7 +220,6 @@ $app->post('/agreement_no', function () use ($app) {
 
   }else{
     $json_list['agreement_no_disabled'] = '';
-
   }
   $json_list['agreement_no_list'] = $all_list;
   echo json_encode($json_list);
@@ -454,12 +453,12 @@ $app->post('/section', function () use ($app) {
     $results = new Resultset(null, $m_section, $m_section->getReadConnection()->query($arg_str));
     $results_array = (array) $results;
     $results_cnt = $results_array["\0*\0_count"];
-
     if ($results_cnt > 0) {
-      $list['rntl_sect_cd'] = null;
-      $list['rntl_sect_name'] = '全て';
-      $all_list[] = $list;
-
+      if ($results_cnt > 2){
+        $list['rntl_sect_cd'] = null;
+        $list['rntl_sect_name'] = '全て';
+        $all_list[] = $list;
+      }
       $paginator_model = new PaginatorModel(
         array(
           "data"  => $results,
@@ -529,11 +528,12 @@ $app->post('/section', function () use ($app) {
     $results = new Resultset(null, $m_contract_resource, $m_contract_resource->getReadConnection()->query($arg_str));
     $results_array = (array) $results;
     $results_cnt = $results_array["\0*\0_count"];
-
     if ($results_cnt > 0) {
-      $list['rntl_sect_cd'] = null;
-      $list['rntl_sect_name'] = '全て';
-      $all_list[] = $list;
+      if ($results_cnt > 2) {
+        $list['rntl_sect_cd'] = null;
+        $list['rntl_sect_name'] = '全て';
+        $all_list[] = $list;
+      }
 
       $paginator_model = new PaginatorModel(
         array(
@@ -567,7 +567,13 @@ $app->post('/section', function () use ($app) {
       $all_list[] = $list;
     }
   }
+  //もし結果が１件だったらdisabled返す
+  if(count($all_list)==1){
+    $json_list['section_disabled'] = 'disabled';
 
+  }else{
+    $json_list['section_disabled'] = '';
+  }
   $json_list['section_list'] = $all_list;
   echo json_encode($json_list);
 });
@@ -607,10 +613,11 @@ $app->post('/job_type', function () use ($app) {
   $results_cnt = $results_array["\0*\0_count"];
 
   if ($results_cnt > 0) {
-    $list['job_type_cd'] = null;
-    $list['job_type_name'] = '全て';
-    array_push($all_list, $list);
-
+    if ($results_cnt > 2) {
+      $list['job_type_cd'] = null;
+      $list['job_type_name'] = '全て';
+      array_push($all_list, $list);
+    }
     $paginator_model = new PaginatorModel(
       array(
         "data"  => $results,
@@ -640,6 +647,13 @@ $app->post('/job_type', function () use ($app) {
     $list['job_type_name'] = '';
     $list['selected'] = "";
     array_push($all_list, $list);
+  }
+  //もし結果が１件だったらdisabled返す
+  if(count($all_list)==1){
+    $json_list['job_type_disabled'] = 'disabled';
+
+  }else{
+    $json_list['job_type_disabled'] = '';
   }
 
   $json_list['job_type_list'] = $all_list;
