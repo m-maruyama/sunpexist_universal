@@ -312,6 +312,9 @@ define([
 		App.delete_msg = '削除しますが、よろしいですか？';
 		App.input_msg = '入力を完了しますが、よろしいですか？';
 		App.complete_msg = '発注送信を行いますが、よろしいですか？';
+		App.input_insert_msg = '入力を保存しますが、よろしいですか？';
+		App.cancel_msg = '入力がある場合、入力された情報が破棄されますが、よろしいですか？';
+		App.wearer_delete_msg = '着用者入力を削除しますが、よろしいですか？';
 
 
 		return App;

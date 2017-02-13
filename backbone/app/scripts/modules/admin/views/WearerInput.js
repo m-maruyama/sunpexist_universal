@@ -68,21 +68,28 @@ define([
 					//window.sessionStorage.setItem('referrer', 'wearer_input');
 					//console.log(window.sessionStorage.getItem('wearer_input_ref'));
 
-					// ホームから遷移してきた場合
-					if(window.sessionStorage.getItem('wearer_input_ref') == 'home'){
-						window.sessionStorage.removeItem('wearer_input_ref');
+					// JavaScript モーダルで表示
+					$('#myModal').modal(); //追加
+					//メッセージの修正
+					document.getElementById("confirm_txt").innerHTML=App.cancel_msg; //追加　このメッセージはapp.jsで定義
+					$("#btn_ok").on('click',function() { //追加
+						hideModal();
+						// ホームから遷移してきた場合
+						if(window.sessionStorage.getItem('wearer_input_ref') == 'home'){
+							window.sessionStorage.removeItem('wearer_input_ref');
+							location.href = './home.html';
+							return;
+						}
+						// 検索画面から遷移してきた場合
+						if(window.sessionStorage.getItem('wearer_input_ref') == 'wearer_search'){
+							window.sessionStorage.removeItem('wearer_input_ref');
+							location.href = './wearer_search.html';
+							return;
+						}
+
 						location.href = './home.html';
 						return;
-					}
-					// 検索画面から遷移してきた場合
-					if(window.sessionStorage.getItem('wearer_input_ref') == 'wearer_search'){
-						window.sessionStorage.removeItem('wearer_input_ref');
-						location.href = './wearer_search.html';
-						return;
-					}
-
-					location.href = './home.html';
-					return;
+					});
 				},
 				'click @ui.input_insert': function(){
 					var that = this;
@@ -102,8 +109,10 @@ define([
 							var type = "cm0130_res";
 							var res_val = res.attributes;
 							if(res_val.chk_flg == false){
-								alert(res_val["error_msg"]);
-								return true;
+								// JavaScript モーダルで表示
+								$('#myModalAlert').modal(); //追加
+								//メッセージの修正
+								document.getElementById("alert_txt").innerHTML=res_val["error_msg"]; //追加　このメッセージはapp.jsで定義
 							}else{
 								that.triggerMethod('click:input_insert',rntl_cont_no);
 							}
@@ -113,14 +122,39 @@ define([
 				'click @ui.input_item': function(e) {
 					e.preventDefault();
 					var rntl_cont_no = $("select[name='agreement_no']").val();
-								this.triggerMethod('click:input_item',rntl_cont_no);
+					this.triggerMethod('click:input_item',rntl_cont_no);
 
 					//this.ui.agreement_no = $('#agreement_no');
 					//this.triggerMethod('click:input_item', this.ui.agreement_no.val());
 				},
 				'click @ui.input_delete': function(e) {
 					e.preventDefault();
-					this.triggerMethod('click:input_delete');
+					var that = this;
+					var rntl_cont_no = $("select[name='agreement_no']").val();
+					var rntl_sect_cd = $("select[name='section']").val();
+					var modelForUpdate = this.model;
+					modelForUpdate.url = App.api.CM0130;
+					var cond = {
+						"scr": '貸与開始-着用者を登録して終了-更新可否チェック',
+						"log_type": '1',
+						"rntl_sect_cd": rntl_sect_cd,
+						"rntl_cont_no": rntl_cont_no
+					};
+					modelForUpdate.fetchMx({
+						data:cond,
+						success:function(res){
+							var type = "cm0130_res";
+							var res_val = res.attributes;
+							if(res_val.chk_flg == false){
+								// JavaScript モーダルで表示
+								$('#myModalAlert').modal(); //追加
+								//メッセージの修正
+								document.getElementById("alert_txt").innerHTML=res_val["error_msg"]; //追加　このメッセージはapp.jsで定義
+							}else{
+								that.triggerMethod('click:input_delete');
+							}
+						}
+					});
 				}
 			}
 		});

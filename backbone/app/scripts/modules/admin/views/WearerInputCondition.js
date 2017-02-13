@@ -284,7 +284,12 @@ define([
                         if(res_val["error_msg"]) {
                             that.triggerMethod('error_msg', res_val["error_msg"]);
                         }else{
-                            if(confirm("着用者入力を削除しますが、よろしいですか？")){
+                            // JavaScript モーダルで表示
+                            $('#myModal').modal('show'); //追加
+                            //メッセージの修正
+                            document.getElementById("confirm_txt").innerHTML=App.wearer_delete_msg; //追加　このメッセージはapp.jsで定義
+                            $("#btn_ok").on('click',function() { //追加
+                                hideModal();
                                 var cond = {
                                     "scr": '着用者取消',
                                 };
@@ -305,7 +310,7 @@ define([
                                         }
                                     }
                                 });
-                            };
+                            });
                         }
                     }
                 });
