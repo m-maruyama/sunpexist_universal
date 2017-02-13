@@ -431,9 +431,7 @@ define([
 								});
 
 							} else if (res_val["error_code"] == "1") {
-								$("#myModal").removeClass("in");
-								$(".modal-backdrop").remove();
-								$("#myModal").hide();
+								hideModal();
 								that.triggerMethod('showAlerts', res_val["error_msg"]);
 								return;
 							}
