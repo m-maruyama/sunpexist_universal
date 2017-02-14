@@ -348,7 +348,7 @@ $app->post('/wearer_search/search', function ()use($app){
                     }
                     if (!$patarn_flg) {
                         $list['wearer_input_button'] = "貸与開始";
-                        $list['wearer_input_red'] = "";
+                        $list['wearer_input_red'] = "[済]";
                         $list['disabled'] = "disabled";
                         $list['btnPattern'] = "D";
                     }
