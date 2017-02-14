@@ -61,54 +61,58 @@ define([
                 window.sessionStorage.setItem('we_array', we_array);
                 var we_val = window.sessionStorage.getItem('we_array').split(',');
                   if (!we_val[0]) {
-                  alert('発注送信を行う場合は選択欄の何れかにチェックを入れてください。');
+                  //alert('発注送信を行う場合は選択欄の何れかにチェックを入れてください。');
+                  // JavaScript モーダルで表示
+                  $('#myModal_alert').modal('show');
+                  document.getElementById("alert_txt").innerHTML=App.order_send_check_msg;
                   return;
                 }
-
-                if (window.confirm('選択されているデータの発注送信を行います。\nよろしいですか？')) {
-                  $.blockUI({message: '<p><img src="ajax-loader.gif" style="margin: 0 auto;" />発注送信処理中...</p>'});
-                  var we_length = we_val.length;
-                  var item = new Object();
-                  var data = new Object();
-                  for (var i = 0; i < we_length; i++) {
-                    item[i] = new Object();
-                    item[i] = we_val[i].split(':');
-                    data[i] = {
-                      "corporate_id": item[i][0],
-                      "rntl_cont_no": item[i][1],
-                      "werer_cd": item[i][2],
-                      "rntl_sect_cd": item[i][3],
-                      "job_type_cd": item[i][4],
-                      "order_sts_kbn": item[i][5],
-                      "order_reason_kbn": item[i][6],
-                      "wst_order_req_no": item[i][7],
-                      "order_req_no": item[i][8],
-                      "rtn_order_req_no": item[i][9]
-                    };
-                  }
-                  //console.log(data);
-                  var modelForUpdate = this.model;
-                  modelForUpdate.url = App.api.OS0011;
-                  var cond = {
-                      "scr": '発注送信処理-発注送信',
-                      "log_type": '2',
-                      "data": data
-                  };
-                  modelForUpdate.fetchMx({
-                    data: cond,
-                    success: function (res) {
-                      var res_list = res.attributes;
-                      sessionStorage.clear();
-                      if (res_list["error_code"] == "0") {
-                        that.triggerMethod('reload');
-                        $.unblockUI();
-                      } else {
-                        $.unblockUI();
-                        alert("更新処理中にエラーが発生しました。");
+                  $('#myModal').modal('show');
+                  document.getElementById("confirm_txt").innerHTML=App.order_send_confirm_msg; //追加 このメッセージはapp.jsで定義
+                  $("#btn_ok").off();//モーダルボタンイベントのリセット
+                  $("#btn_ok").on('click',function() {//追加
+                    //if (window.confirm('選択されているデータの発注送信を行います。\nよろしいですか？')) {
+                      $.blockUI({message: '<p><img src="ajax-loader.gif" style="margin: 0 auto;" />発注送信処理中...</p>'});
+                      var we_length = we_val.length;
+                      var item = new Object();
+                      var data = new Object();
+                      for (var i = 0; i < we_length; i++) {
+                        item[i] = new Object();
+                        item[i] = we_val[i].split(':');
+                        data[i] = {
+                          "corporate_id": item[i][0],
+                          "rntl_cont_no": item[i][1],
+                          "werer_cd": item[i][2],
+                          "rntl_sect_cd": item[i][3],
+                          "job_type_cd": item[i][4],
+                          "order_sts_kbn": item[i][5],
+                          "order_reason_kbn": item[i][6],
+                          "wst_order_req_no": item[i][7],
+                          "order_req_no": item[i][8],
+                          "rtn_order_req_no": item[i][9]
+                        };
                       }
-                    }
+                      var modelForUpdate = that.model;
+                      modelForUpdate.url = App.api.OS0011;
+                      var cond = {
+                          "scr": '発注送信処理-発注送信',
+                          "log_type": '2',
+                          "data": data
+                      };
+                      modelForUpdate.fetchMx({
+                        data: cond,
+                        success: function (res) {
+                            var res_list = res.attributes;
+                              sessionStorage.clear();
+                                $('#myModal').modal('hide');
+                              if (res_list["error_code"] == "0") {
+                                that.triggerMethod('reload');
+                                $.unblockUI();
+                              }
+                        }
+                      });
+                //}
                   });
-                }
               }
             },
             fetch: function (orderSendListConditionModel) {

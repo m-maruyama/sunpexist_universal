@@ -317,6 +317,8 @@ define([
 		App.wearer_delete_msg = '着用者入力を削除しますが、よろしいですか？';
 		App.dl_msg = 'データ量により、ダウンロード処理に時間がかかる可能性があります。ダウンロードを実施してよろしいですか？';
 
+		App.order_send_check_msg = '発注送信を行う場合は選択欄の何れかにチェックを入れてください。';
+		App.order_send_confirm_msg = '選択されているデータの発注送信を行います。よろしいですか？';
 
 		return App;
 

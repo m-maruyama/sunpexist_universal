@@ -54,10 +54,15 @@ define([
 								var type = "cm0130_res";
 								var res_val = res.attributes;
 								if(res_val.chk_flg == false){
-									alert(res_val["error_msg"]);
+									$('#myModal_alert').modal('show');
+									document.getElementById("alert_txt").innerHTML=res_val["error_msg"];
 									return true;
 								}else{
-									if(window.confirm('発注No.' + data["wst_order_req_no"] + 'の発注送信キャンセルを実行します。\nよろしいですか？')) {
+									$('#myModal').modal('show');
+									document.getElementById("confirm_txt").innerHTML='発注No.' + data["wst_order_req_no"] + 'の発注送信キャンセルを実行します。\nよろしいですか？';
+									$("#btn_ok").off();
+									$("#btn_ok").on('click',function() {//追加
+									//if(window.confirm('発注No.' + data["wst_order_req_no"] + 'の発注送信キャンセルを実行します。\nよろしいですか？')) {
 										var modelForUpdate = that.model;
 										modelForUpdate.url = App.api.OS0012;
 										var cond = {
@@ -69,16 +74,15 @@ define([
 											data:cond,
 											success:function(res){
 												var res_list = res.attributes;
+												$('#myModal').modal('hide');
 												if (res_list["error_code"] == "0") {
 													that.triggerMethod('reload');
 													$.unblockUI();
-												}else {
-													$.unblockUI();
-													alert("更新処理中にエラーが発生しました。");
 												}
 											}
 										});
-									}
+									});
+									//}
 								}
 							}
 					});
@@ -173,10 +177,10 @@ define([
 			},
 			onShow: function(val, type, transition, data) {
 				var that = this;
-
 				if (type == "cm0130_res") {
 					if (!val["chk_flg"]) {
-						alert(val["error_msg"]);
+						$('#myModal_alert').modal('show');
+						document.getElementById("alert_txt").innerHTML=val["error_msg"];
 					} else {
 						var type = transition;
 						var res_val = "";
@@ -184,17 +188,21 @@ define([
 				}
 				// 貸与開始-発注取消
 				if (type == "WO0015_req") {
-					if(window.confirm('発注No.' + data["wst_order_req_no"] + 'の発注取消を実行します。\nよろしいですか？')) {
-						$.blockUI({ message: '<p><img src="ajax-loader.gif" style="margin: 0 auto;" /> 発注取消中...</p>' });
-						var data = {
-							"rntl_cont_no": data["rntl_cont_no"],
-							"werer_cd": data["werer_cd"],
-							"rntl_sect_cd": data["rntl_sect_cd"],
-							"job_type_cd": data["job_type_cd"],
-							"order_req_no": data["order_req_no"]
-						};
 
-						var modelForUpdate = this.model;
+					$('#myModal').modal('show');
+					document.getElementById("confirm_txt").innerHTML='発注No.' + data["wst_order_req_no"] + 'の発注取消を実行します。よろしいですか？';
+					$("#btn_ok").off();
+					var data = {
+						"rntl_cont_no": data["rntl_cont_no"],
+						"werer_cd": data["werer_cd"],
+						"rntl_sect_cd": data["rntl_sect_cd"],
+						"job_type_cd": data["job_type_cd"],
+						"order_req_no": data["order_req_no"]
+					};
+					$("#btn_ok").on('click',function() {//追加
+						//if(window.confirm()) {
+						$.blockUI({ message: '<p><img src="ajax-loader.gif" style="margin: 0 auto;" /> 発注取消中...</p>' });
+						var modelForUpdate = that.model;
 						modelForUpdate.url = App.api.WO0015;
 						var cond = {
 							"scr": '貸与開始-発注取消',
@@ -205,21 +213,21 @@ define([
 							data:cond,
 							success:function(res){
 								var res_list = res.attributes;
+								$.unblockUI();
+								$('#myModal').modal('hide');
 								if (res_list["error_code"] == "0") {
 									that.triggerMethod('reload');
-									$.unblockUI();
-								} else {
-									$.unblockUI();
-									alert('発注取消中にエラーが発生しました。');
 								}
 							}
 						});
-					}
+					});
+					//}
 				}
 				// 追加貸与-発注取消
 				if (type == "WR0016_req") {
-					if(window.confirm('発注No.' + data["wst_order_req_no"] + 'の発注取消を実行します。\nよろしいですか？')) {
-						$.blockUI({ message: '<p><img src="ajax-loader.gif" style="margin: 0 auto;" /> 発注取消中...</p>' });
+					$('#myModal').modal('show');
+					document.getElementById("confirm_txt").innerHTML='発注No.' + data["wst_order_req_no"] + 'の発注取消を実行します。よろしいですか？';
+						$("#btn_ok").off();
 						var data = {
 							"rntl_cont_no": data["rntl_cont_no"],
 							"werer_cd": data["werer_cd"],
@@ -227,8 +235,10 @@ define([
 							"job_type_cd": data["job_type_cd"],
 							"order_req_no": data["order_req_no"]
 						};
-
-						var modelForUpdate = this.model;
+						$("#btn_ok").on('click',function() {//追加
+						//if(window.confirm('発注No.' + data["wst_order_req_no"] + 'の発注取消を実行します。\nよろしいですか？')) {
+						$.blockUI({ message: '<p><img src="ajax-loader.gif" style="margin: 0 auto;" /> 発注取消中...</p>' });
+						var modelForUpdate = that.model;
 						modelForUpdate.url = App.api.WR0016;
 						var cond = {
 							"scr": '追加貸与-発注取消',
@@ -239,30 +249,33 @@ define([
 							data:cond,
 							success:function(res){
 								var res_list = res.attributes;
+								$.unblockUI();
+								$('#myModal').modal('hide');
 								if (res_list["error_code"] == "0") {
 									that.triggerMethod('reload');
-									$.unblockUI();
-								} else {
-									$.unblockUI();
-									alert('発注取消中にエラーが発生しました。');
+									//$.unblockUI();
 								}
 							}
 						});
-					}
+					});
+					//}
 				}
 				// 貸与終了-発注取消
 				if (type == "WN0018_req") {
-					if(window.confirm('発注No.' + data["wst_order_req_no"] + 'の発注取消を実行します。\nよろしいですか？')) {
+					$('#myModal').modal('show');
+					document.getElementById("confirm_txt").innerHTML='発注No.' + data["wst_order_req_no"] + 'の発注取消を実行します。よろしいですか？';
+					$("#btn_ok").off();
+					var data = {
+						"rntl_cont_no": data["rntl_cont_no"],
+						"werer_cd": data["werer_cd"],
+						"rntl_sect_cd": data["rntl_sect_cd"],
+						"job_type_cd": data["job_type_cd"],
+						"order_req_no": data["order_req_no"]
+					};
+					$("#btn_ok").on('click',function() {//追加
+						//if(window.confirm('発注No.' + data["wst_order_req_no"] + 'の発注取消を実行します。\nよろしいですか？')) {
 						$.blockUI({ message: '<p><img src="ajax-loader.gif" style="margin: 0 auto;" /> 発注取消中...</p>' });
-						var data = {
-							"rntl_cont_no": data["rntl_cont_no"],
-							"werer_cd": data["werer_cd"],
-							"rntl_sect_cd": data["rntl_sect_cd"],
-							"job_type_cd": data["job_type_cd"],
-							"order_req_no": data["order_req_no"]
-						};
-
-						var modelForUpdate = this.model;
+						var modelForUpdate = that.model;
 						modelForUpdate.url = App.api.WN0018;
 						var cond = {
 							"scr": '貸与終了-発注取消',
@@ -273,31 +286,32 @@ define([
 							data:cond,
 							success:function(res){
 								var res_list = res.attributes;
+								$.unblockUI();
+								$('#myModal').modal('hide');
 								if (res_list["error_code"] == "0") {
 									that.triggerMethod('reload');
-									$.unblockUI();
-								} else {
-									$.unblockUI();
-									alert('発注取消中にエラーが発生しました。');
 								}
 							}
 						});
-					}
+					});
 				}
 				// 不要品返却-発注取消
 				if (type == "WR0021_req") {
-					if(window.confirm('発注No.' + data["wst_order_req_no"] + 'の発注取消を実行します。\nよろしいですか？')) {
+					$('#myModal').modal('show');
+					document.getElementById("confirm_txt").innerHTML='発注No.' + data["wst_order_req_no"] + 'の発注取消を実行します。よろしいですか？';
+					$("#btn_ok").off();
+					var data = {
+						"rntl_cont_no": data["rntl_cont_no"],
+						"werer_cd": data["werer_cd"],
+						"rntl_sect_cd": data["rntl_sect_cd"],
+						"job_type_cd": data["job_type_cd"],
+						"order_req_no": data["order_req_no"],
+						"return_req_no": data["rtn_order_req_no"]
+					};
+					$("#btn_ok").on('click',function() {//追加
+					//if(window.confirm('発注No.' + data["wst_order_req_no"] + 'の発注取消を実行します。\nよろしいですか？')) {
 						$.blockUI({ message: '<p><img src="ajax-loader.gif" style="margin: 0 auto;" /> 発注取消中...</p>' });
-						var data = {
-							"rntl_cont_no": data["rntl_cont_no"],
-							"werer_cd": data["werer_cd"],
-							"rntl_sect_cd": data["rntl_sect_cd"],
-							"job_type_cd": data["job_type_cd"],
-							"order_req_no": data["order_req_no"],
-							"return_req_no": data["rtn_order_req_no"]
-						};
-
-						var modelForUpdate = this.model;
+						var modelForUpdate = that.model;
 						modelForUpdate.url = App.api.WR0021;
 						var cond = {
 							"scr": '不要品返却-発注取消',
@@ -308,31 +322,33 @@ define([
 							data:cond,
 							success:function(res){
 								var res_list = res.attributes;
+								$.unblockUI();
+								$('#myModal').modal('hide');
 								if (res_list["error_code"] == "0") {
 									that.triggerMethod('reload');
-									$.unblockUI();
-								} else {
-									$.unblockUI();
-									alert('発注取消中にエラーが発生しました。');
 								}
 							}
 						});
-					}
+					});
 				}
+
 				// 職種変更または異動-発注取消
 				if (type == "WC0020_req") {
-					if(window.confirm('発注No.' + data["wst_order_req_no"] + 'の発注取消を実行します。\nよろしいですか？')) {
+					$('#myModal').modal('show');
+					document.getElementById("confirm_txt").innerHTML='発注No.' + data["wst_order_req_no"] + 'の発注取消を実行します。よろしいですか？';
+					$("#btn_ok").off();
+					var data = {
+						"rntl_cont_no": data["rntl_cont_no"],
+						"werer_cd": data["werer_cd"],
+						"rntl_sect_cd": data["rntl_sect_cd"],
+						"job_type_cd": data["job_type_cd"],
+						"order_req_no": data["order_req_no"],
+						"return_req_no": data["rtn_order_req_no"]
+					};
+					$("#btn_ok").on('click',function() {//追加
+					//if(window.confirm('発注No.' + data["wst_order_req_no"] + 'の発注取消を実行します。\nよろしいですか？')) {
 						$.blockUI({ message: '<p><img src="ajax-loader.gif" style="margin: 0 auto;" /> 発注取消中...</p>' });
-						var data = {
-							"rntl_cont_no": data["rntl_cont_no"],
-							"werer_cd": data["werer_cd"],
-							"rntl_sect_cd": data["rntl_sect_cd"],
-							"job_type_cd": data["job_type_cd"],
-							"order_req_no": data["order_req_no"],
-							"return_req_no": data["rtn_order_req_no"]
-						};
-
-						var modelForUpdate = this.model;
+						var modelForUpdate = that.model;
 						modelForUpdate.url = App.api.WC0020;
 						var cond = {
 							"scr": '職種変更または異動-発注取消',
@@ -343,31 +359,34 @@ define([
 							data:cond,
 							success:function(res){
 								var res_list = res.attributes;
+								$.unblockUI();
+								$('#myModal').modal('hide');
 								if (res_list["error_code"] == "0") {
 									that.triggerMethod('reload');
-									$.unblockUI();
-								} else {
-									$.unblockUI();
-									alert('発注取消中にエラーが発生しました。');
+									//$.unblockUI();
 								}
 							}
 						});
-					}
+					});
 				}
 				// サイズ交換-発注取消
 				if (type == "WX0012_req") {
-					if(window.confirm('発注No.' + data["wst_order_req_no"] + 'の発注取消を実行します。\nよろしいですか？')) {
+					$('#myModal').modal('show');
+					document.getElementById("confirm_txt").innerHTML='発注No.' + data["wst_order_req_no"] + 'の発注取消を実行します。よろしいですか？';
+					$("#btn_ok").off();
+					var data = {
+						"rntl_cont_no": data["rntl_cont_no"],
+						"werer_cd": data["werer_cd"],
+						"rntl_sect_cd": data["rntl_sect_cd"],
+						"job_type_cd": data["job_type_cd"],
+						"order_req_no": data["order_req_no"],
+						"return_req_no": data["rtn_order_req_no"]
+					};
+					$("#btn_ok").on('click',function() {//追加
+					//if(window.confirm('発注No.' + data["wst_order_req_no"] + 'の発注取消を実行します。\nよろしいですか？')) {
 						$.blockUI({ message: '<p><img src="ajax-loader.gif" style="margin: 0 auto;" /> 発注取消中...</p>' });
-						var data = {
-							"rntl_cont_no": data["rntl_cont_no"],
-							"werer_cd": data["werer_cd"],
-							"rntl_sect_cd": data["rntl_sect_cd"],
-							"job_type_cd": data["job_type_cd"],
-							"order_req_no": data["order_req_no"],
-							"return_req_no": data["rtn_order_req_no"]
-						};
 
-						var modelForUpdate = this.model;
+						var modelForUpdate = that.model;
 						modelForUpdate.url = App.api.WX0012;
 						var cond = {
 							"scr": 'サイズ交換-発注取消',
@@ -378,31 +397,32 @@ define([
 							data:cond,
 							success:function(res){
 								var res_list = res.attributes;
+								$.unblockUI();
+								$('#myModal').modal('hide');
 								if (res_list["error_code"] == "0") {
 									that.triggerMethod('reload');
-									$.unblockUI();
-								} else {
-									$.unblockUI();
-									alert('発注取消中にエラーが発生しました。');
 								}
 							}
 						});
-					}
+					});
 				}
 				// その他 交換-発注取消
 				if (type == "WOC0030_req") {
-					if(window.confirm('発注No.' + data["wst_order_req_no"] + 'の発注取消を実行します。\nよろしいですか？')) {
+					$('#myModal').modal('show');
+					document.getElementById("confirm_txt").innerHTML='発注No.' + data["wst_order_req_no"] + 'の発注取消を実行します。よろしいですか？';
+					$("#btn_ok").off();
+					var data = {
+						"rntl_cont_no": data["rntl_cont_no"],
+						"werer_cd": data["werer_cd"],
+						"rntl_sect_cd": data["rntl_sect_cd"],
+						"job_type_cd": data["job_type_cd"],
+						"order_req_no": data["order_req_no"],
+						"return_req_no": data["rtn_order_req_no"]
+					};
+					$("#btn_ok").on('click',function() {//追加
+						//if(window.confirm('発注No.' + data["wst_order_req_no"] + 'の発注取消を実行します。\nよろしいですか？')) {
 						$.blockUI({ message: '<p><img src="ajax-loader.gif" style="margin: 0 auto;" /> 発注取消中...</p>' });
-						var data = {
-							"rntl_cont_no": data["rntl_cont_no"],
-							"werer_cd": data["werer_cd"],
-							"rntl_sect_cd": data["rntl_sect_cd"],
-							"job_type_cd": data["job_type_cd"],
-							"order_req_no": data["order_req_no"],
-							"return_req_no": data["rtn_order_req_no"]
-						};
-
-						var modelForUpdate = this.model;
+						var modelForUpdate = that.model;
 						modelForUpdate.url = App.api.WOC0030;
 						var cond = {
 							"scr": 'その他交換-発注取消',
@@ -413,30 +433,31 @@ define([
 							data:cond,
 							success:function(res){
 								var res_list = res.attributes;
+								$.unblockUI();
+								$('#myModal').modal('hide');
 								if (res_list["error_code"] == "0") {
 									that.triggerMethod('reload');
-									$.unblockUI();
-								} else {
-									$.unblockUI();
-									alert('発注取消中にエラーが発生しました。');
 								}
 							}
 						});
-					}
+					});
 				}
 				// 着用者編集-発注取消
 				if (type == "WU0013_req") {
-					if(window.confirm('発注No.' + data["wst_order_req_no"] + 'の発注取消を実行します。\nよろしいですか？')) {
+					$('#myModal').modal('show');
+					document.getElementById("confirm_txt").innerHTML='発注No.' + data["wst_order_req_no"] + 'の発注取消を実行します。よろしいですか？';
+					$("#btn_ok").off();
+					var data = {
+						"rntl_cont_no": data["rntl_cont_no"],
+						"werer_cd": data["werer_cd"],
+						"rntl_sect_cd": data["rntl_sect_cd"],
+						"job_type_cd": data["job_type_cd"],
+						"order_req_no": data["wst_order_req_no"],
+						"return_req_no": data["rtn_order_req_no"]
+					};
+					$("#btn_ok").on('click',function() {//追加
+					//if(window.confirm('発注No.' + data["wst_order_req_no"] + 'の発注取消を実行します。\nよろしいですか？')) {
 						$.blockUI({ message: '<p><img src="ajax-loader.gif" style="margin: 0 auto;" /> 発注取消中...</p>' });
-						var data = {
-							"rntl_cont_no": data["rntl_cont_no"],
-							"werer_cd": data["werer_cd"],
-							"rntl_sect_cd": data["rntl_sect_cd"],
-							"job_type_cd": data["job_type_cd"],
-							"order_req_no": data["wst_order_req_no"],
-							"return_req_no": data["rtn_order_req_no"]
-						};
-
 						var modelForUpdate = this.model;
 						modelForUpdate.url = App.api.WU0013;
 						var cond = {
@@ -448,16 +469,14 @@ define([
 							data:cond,
 							success:function(res){
 								var res_list = res.attributes;
+								$.unblockUI();
+								$('#myModal').modal('hide');
 								if (res_list["error_code"] == "0") {
 									that.triggerMethod('reload');
-									$.unblockUI();
-								} else {
-									$.unblockUI();
-									alert('発注取消中にエラーが発生しました。');
 								}
 							}
 						});
-					}
+					});
 				}
 			}
 		});
