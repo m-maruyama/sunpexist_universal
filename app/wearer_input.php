@@ -307,6 +307,14 @@ $app->post('/wearer_input', function () use ($app) {
     $results = new Resultset(null, $m_section, $m_section->getReadConnection()->query($arg_str));
     $results_array = (array) $results;
     $results_cnt = $results_array["\0*\0_count"];
+    if(count($results)>1){
+        $list['rntl_sect_cd'] = '';
+        $list['rntl_sect_name'] ='';
+        $json_list['section_disabled'] = '';
+        array_push($all_list, $list);
+    }else{
+        $json_list['section_disabled'] = 'disabled';
+    }
     foreach ($results as $result) {
       $list['rntl_sect_cd'] = $result->rntl_sect_cd;
       $list['rntl_sect_name'] = $result->rntl_sect_name;
@@ -336,6 +344,16 @@ $app->post('/wearer_input', function () use ($app) {
         ->columns('*')
         ->orderby('CAST(job_type_cd AS INTEGER) asc')
         ->execute();
+    if(count($m_job_type_results)>1){
+        $list['job_type_cd'] = '';
+        $list['job_type_name'] = '';
+        $list['sp_job_type_flg'] = '';
+        $json_list['job_type_cd_disabled'] = '';
+        array_push($job_type_list, $list);
+    }else{
+        $json_list['job_type_cd_disabled'] = 'disabled';
+
+    }
     foreach ($m_job_type_results as $m_job_type_result) {
       $list['job_type_cd'] = $m_job_type_result->job_type_cd;
       $list['job_type_name'] = $m_job_type_result->job_type_name;
@@ -350,6 +368,7 @@ $app->post('/wearer_input', function () use ($app) {
     }
     $json_list['job_type_list'] = $job_type_list;
     //貸与パターン--ここまで
+
     //出荷先--ここから
     $list = array();
     $m_shipment_to_list = array();
@@ -364,9 +383,21 @@ $app->post('/wearer_input', function () use ($app) {
         ->columns('*')
         ->execute();
     //一件目に「拠点と同じ:部門マスタ.標準出荷先コード:部門マスタ.標準出荷先支店コード」という選択肢とセレクトボックスを表示。
+    if(count($m_shipment_to_results)>1){
+        $list['ship_to_cd'] = '';
+        $list['cust_to_brnch_name1'] = '拠点と同じ';
+        $list['cust_to_brnch_name2'] = '';
+        array_push($m_shipment_to_list, $list);
+        $json_list['ship_to_cd_disabled'] = '';
+    }else{
+        $wearer_odr_post['rntl_cont_no'] = $cond['agreement_no'];
+        $wearer_odr_post['ship_to_cd'] = $m_shipment_to_results[0]->ship_to_cd;
+        $wearer_odr_post['ship_to_brnch_cd'] = $m_shipment_to_results[0]->ship_to_brnch_cd;
+        $json_list['ship_to_cd_disabled'] = 'disabled';
+
+    }
     foreach ($m_shipment_to_results as $m_shipment_to_result) {
-        $list['ship_to_cd'] = $m_shipment_to_result->ship_to_cd;
-        $list['ship_to_brnch_cd'] = $m_shipment_to_result->ship_to_brnch_cd;
+        $list['ship_to_cd'] = $m_shipment_to_result->ship_to_cd.','.$m_shipment_to_result->ship_to_brnch_cd;
         $list['cust_to_brnch_name1'] = $m_shipment_to_result->cust_to_brnch_name1;
         $list['cust_to_brnch_name2'] = $m_shipment_to_result->cust_to_brnch_name2;
         $list['zip_no'] = preg_replace('/^(\d{3})(\d{4})$/', '$1-$2', $m_shipment_to_result->zip_no);
@@ -374,7 +405,7 @@ $app->post('/wearer_input', function () use ($app) {
         $list['address2'] = $m_shipment_to_result->address2;
         $list['address3'] = $m_shipment_to_result->address3;
         $list['address4'] = $m_shipment_to_result->address4;
-        if (($list['ship_to_cd'] == $wearer_odr_post['ship_to_cd']) && ($list['ship_to_brnch_cd'] == $wearer_odr_post['ship_to_brnch_cd'])) {
+        if (($list['ship_to_cd'] == $wearer_odr_post['ship_to_cd'].','.$wearer_odr_post['ship_to_brnch_cd'])) {
             $list['ship_to_cd_selected'] = 'selected';
         } else {
             $list['ship_to_cd_selected'] = '';
@@ -473,7 +504,6 @@ $app->post('/change_section', function () use ($app) {
     $m_shipment_to_list = array();
     if(!$cond['rntl_sect_cd']&&!$cond['m_shipment_to']){
         $list['ship_to_cd'] = '';
-        $list['ship_to_brnch_cd'] = '';
         $list['cust_to_brnch_name1'] = '';
         $list['cust_to_brnch_name2'] = '';
         $list['zip_no'] = '';
@@ -542,8 +572,7 @@ $app->post('/change_section', function () use ($app) {
     $results = $q_str->execute();
 
     foreach ($results as $result) {
-        $list['ship_to_cd'] = $result->ship_to_cd;
-        $list['ship_to_brnch_cd'] = $result->ship_to_brnch_cd;
+        $list['ship_to_cd'] = $result->ship_to_cd.','.$result->ship_to_brnch_cd;
         $list['cust_to_brnch_name1'] = $result->cust_to_brnch_name1;
         $list['cust_to_brnch_name2'] = $result->cust_to_brnch_name2;
         $list['zip_no'] = $result->zip_no;

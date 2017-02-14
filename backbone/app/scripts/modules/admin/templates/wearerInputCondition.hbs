@@ -58,8 +58,7 @@
 			<div class="form-group">
 				<label class="col-md-3 control-label" for="section">拠点<span style="color:red">＊</span></label>
 				<div class="col-md-5 dspilb">
-					<select class="form-control input-sm" id="section" name="section">
-						<option selected="selected"></option>
+					<select class="form-control input-sm" id="section" name="section" {{section_disabled}}>
 						{{#each m_section_list}}<option value="{{rntl_sect_cd}}" {{rntl_sect_cd_selected}}>{{rntl_sect_name}}</option>{{/each}}
 					</select>
 				</div>
@@ -70,8 +69,7 @@
 			<div class="form-group">
 				<label class="col-md-3 control-label" for="job_type">貸与パターン<span style="color:red">＊</span></label>
 				<div class="col-md-5">
-					<select class="form-control input-sm" id="job_type" name="job_type">
-						<option selected="selected"></option>
+					<select class="form-control input-sm" id="job_type" name="job_type"  {{job_type_cd_disabled}}>
 						{{#each job_type_list}}<option value="{{job_type_cd}},{{sp_job_type_flg}}" {{job_type_cd_selected}}>{{job_type_name}}</option>{{/each}}
 					</select>
 				</div>
@@ -79,9 +77,8 @@
 			<div class="form-group">
 				<label class="col-md-3 control-label" for="m_shipment_to">出荷先</label>
 				<div class="col-md-5">
-					<select class="form-control input-sm" id="m_shipment_to" name="m_shipment_to">
-						<option selected="selected" value="">拠点と同じ</option>
-						{{#each m_shipment_to_list}}<option value="{{ship_to_cd}},{{ship_to_brnch_cd}}" {{ship_to_cd_selected}}>{{cust_to_brnch_name1}}{{cust_to_brnch_name2}}</option>{{/each}}
+					<select class="form-control input-sm" id="m_shipment_to" name="m_shipment_to" {{ship_to_cd_disabled}}>
+						{{#each m_shipment_to_list}}<option value="{{ship_to_cd}}" {{ship_to_cd_selected}}>{{cust_to_brnch_name1}}{{cust_to_brnch_name2}}</option>{{/each}}
 					</select>
 				</div>
 			</div>
