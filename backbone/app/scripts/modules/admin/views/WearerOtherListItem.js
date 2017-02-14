@@ -86,7 +86,6 @@ define([
 						'order_req_no': we_val[11],
 						'return_req_no': we_val[12],
 					};
-
 					// 発注入力遷移前に発注NGパターンチェック実施
 					var modelForUpdate = this.model;
 					modelForUpdate.url = App.api.WR0013;

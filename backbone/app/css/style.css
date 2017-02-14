@@ -115,6 +115,9 @@
 #section_modal .modal-dialog {
     position: relative;
 }
+#wearer_detail_modal .modal-dialog{
+    position: relative;
+}
 .modal-dialog .modal-header {
     border-bottom: 0;
     background: #ccc;

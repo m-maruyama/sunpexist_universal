@@ -33,6 +33,21 @@
                     </div>
                 </div>
             </div>
+            <!-- アラートモーダル -->
+            <div class="modal fade modal-dialog" id="myModal_alert" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                        </div>
+                        <div class="modal-body">
+                            <p id="alert_txt"></p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" id="btn_cancel" class="btn btn-default" data-dismiss="modal">OK</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
             <form class="form-horizontal">
                 <div class="col-md-10 box_purple">
                     <div class="form-group">
@@ -61,6 +76,7 @@
                         <label class="col-md-3 control-label" for="">着用者名</label>
                         <div class="col-md-7">
                             <input type="text" class="form-control input-sm" id="member_name" name="member_name" value="" disabled="disabled">
+                            <input type="hidden" class="form-control input-sm" id="werer_cd" name="werer_cd" value="">
                         </div>
                     </div>
                     <div class="form-group">
