@@ -28,15 +28,15 @@ $app->post('/account/search', function () use ($app) {
     }
     //sql文字列を' AND 'で結合
     $query = implode(' AND ', $query_list);
-    $sort_key = '';
-    $order = '';
-
+    $sort_key ='';
+    $order ='';
     //第一ソート設定
     if (!empty($page['sort_key'])) {
         $sort_key = $page['sort_key'];
-        if (!empty($page['order'])) {
-            $order = $page['order'];
+        if(!empty($page['order'])){
+          $order = $page['order'];
         }
+
       //ChromePhp::log($page['order']);
         // 社員番号
         if ($sort_key == 'accnt_no') {
@@ -54,10 +54,16 @@ $app->post('/account/search', function () use ($app) {
         if ($sort_key == 'user_id') {
             $q_sort_key = 'user_id';
         }
-        // 返却予定日
+        // ユーザー名称
         if ($sort_key == 'user_name') {
             $q_sort_key = 'user_name';
         }
+        // ログイン表示名
+        if ($sort_key == 'login_disp_name') {
+          $q_sort_key = 'login_disp_name';
+        }
+
+
         // 発注No
         if ($sort_key == 'login_name') {
             $q_sort_key = 'login_name';
@@ -80,9 +86,10 @@ $app->post('/account/search', function () use ($app) {
       }
     } else {
         //指定がなければ社員番号
-        $sort_key = 'accnt_no';
+        $q_sort_key = 'accnt_no';
         $order = 'asc';
     }
+  ChromePhp::log($order);
 
     $all_list = array();
     $json_list = array();
@@ -103,7 +110,7 @@ $app->post('/account/search', function () use ($app) {
 
     //全検索
     $results = MAccount::find(array(
-        'order' => "$sort_key $order",
+        'order' => "$q_sort_key $order",
         'conditions' => "$search_corporate AND user_name LIKE '%$user_name_val%' AND user_id LIKE '$user_id_val%' AND mail_address LIKE '$mail_address%' AND del_flg LIKE '0'",
         //'conditions'  => "'$user_name_val%"
     ));
