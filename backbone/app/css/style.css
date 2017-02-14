@@ -110,9 +110,11 @@
 ダイアログモーダル
 */
 .modal-dialog {
+    position: absolute;
+}
+#section_modal .modal-dialog {
     position: relative;
 }
-
 .modal-dialog .modal-header {
     border-bottom: 0;
     background: #ccc;
