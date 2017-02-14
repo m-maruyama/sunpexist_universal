@@ -1482,9 +1482,12 @@ $app->post('/wearer_exchange/list', function ()use($app){
             $element["name_no"] = $list["arr_num"];
             $element["individual_ctrl_no"] = $t_delivery_goods_state_details_result->individual_ctrl_no;
             if ($result->as_size_add_flg == "1") {
+                $list["order_num_text_disp"] = false;
               $element["checked"] = "";
               $element["disabled"] = "";
             } else {
+                $list["order_num"] = $list["exchange_possible_num"];
+                $list["order_num_text_disp"] = true;
               $element["checked"] = "checked";
               $element["disabled"] = "disabled";
             }
@@ -1507,8 +1510,8 @@ $app->post('/wearer_exchange/list', function ()use($app){
         }
           // 個体管理番号表示フラグ
           if (individual_flg($auth['corporate_id'], $wearer_size_change_post['rntl_cont_no']) == "1") {
+
               $list["order_num"] = 0;
-              $list["order_num_text_disp"] = true;
               $list["return_num"] = 0;
               $list["return_num_text_disp"] = true;
 
@@ -1994,6 +1997,7 @@ $app->post('/wearer_exchange/complete', function ()use($app){
        $json_list["error_code"] = "1";
        $error_msg = "対象商品がない為、サイズ交換発注を行うことができません。";
        array_push($json_list["error_msg"], $error_msg);
+       echo json_encode($json_list);
        return;
      }
      $item_cnt = 0;
