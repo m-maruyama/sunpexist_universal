@@ -134,6 +134,7 @@ define([
 					$('#myModal').modal(); //追加
 					//メッセージの修正
 					document.getElementById("confirm_txt").innerHTML=App.cancel_msg; //追加　このメッセージはapp.jsで定義
+					$("#btn_ok").off();
 					$("#btn_ok").on('click',function() { //追加
 						hideModal();
 						// 検索画面以外から遷移してきた場合はホーム画面に戻る
@@ -223,8 +224,6 @@ define([
 							var type = "cm0130_res";
 							var res_val = res.attributes;
 							if(res_val.chk_flg == false){
-								$('#btn_cancel').css('display', 'none');
-								$('#btn_ok').css('display', 'none');
 								// JavaScript モーダルで表示
 								$('#myModalAlert').modal('show'); //追加
 								//メッセージの修正
@@ -235,6 +234,7 @@ define([
 								$('#myModal').modal('show'); //追加
 								//メッセージの修正
 								document.getElementById("confirm_txt").innerHTML = App.delete_msg; //追加　このメッセージはapp.jsで定義
+								$("#btn_ok").off();
 								$("#btn_ok").on('click', function () { //追加
 									hideModal();
 									var cond = {
@@ -282,8 +282,6 @@ define([
 							var type = "cm0130_res";
 							var res_val = res.attributes;
 							if(res_val.chk_flg == false){
-								$('#btn_cancel').css('display', 'none');
-								$('#btn_ok').css('display', 'none');
 								// JavaScript モーダルで表示
 								$('#myModalAlert').modal('show'); //追加
 								//メッセージの修正
@@ -341,6 +339,7 @@ define([
 											$('#myModal').modal('show'); //追加
 											//メッセージの修正
 											document.getElementById("confirm_txt").innerHTML=App.input_insert_msg; //追加　このメッセージはapp.jsで定義
+											$("#btn_ok").off();
 											$("#btn_ok").on('click',function() { //追加
 												hideModal();
 												var cond = {
@@ -397,8 +396,6 @@ define([
 							var type = "cm0130_res";
 							var res_val = res.attributes;
 							if(res_val.chk_flg == false){
-								$('#btn_cancel').css('display', 'none');
-								$('#btn_ok').css('display', 'none');
 								// JavaScript モーダルで表示
 								$('#myModalAlert').modal('show'); //追加
 								//メッセージの修正
@@ -451,6 +448,7 @@ define([
 											$('#myModal').modal(); //追加
 											//メッセージの修正
 											document.getElementById("confirm_txt").innerHTML=App.complete_msg; //追加　このメッセージはapp.jsで定義
+											$("#btn_ok").off();
 											$("#btn_ok").on('click',function() { //追加
 												hideModal();
 												var cond = {

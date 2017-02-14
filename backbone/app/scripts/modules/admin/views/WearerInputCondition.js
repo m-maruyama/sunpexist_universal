@@ -288,6 +288,7 @@ define([
                             $('#myModal').modal('show'); //追加
                             //メッセージの修正
                             document.getElementById("confirm_txt").innerHTML=App.wearer_delete_msg; //追加　このメッセージはapp.jsで定義
+                            $("#btn_ok").off();
                             $("#btn_ok").on('click',function() { //追加
                                 hideModal();
                                 var cond = {

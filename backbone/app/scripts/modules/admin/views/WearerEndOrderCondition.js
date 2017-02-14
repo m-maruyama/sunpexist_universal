@@ -255,7 +255,10 @@ define([
 
 				if (type == "cm0130_res") {
 					if (!val["chk_flg"]) {
-						alert(val["error_msg"]);
+						// JavaScript モーダルで表示
+						$('#myModalAlert').modal('show'); //追加
+						//メッセージの修正
+						document.getElementById("alert_txt").innerHTML=val["error_msg"];
 					} else {
 						if (transition == "WN0017_input_req") {
 							var type = transition;
@@ -356,15 +359,18 @@ define([
 							var res_val = res.attributes;
 
 							if(res_val["error_code"] == '0') {
-								var msg = "入力を完了しますが、よろしいですか？";
-								if (window.confirm(msg)) {
+								// JavaScript モーダルで表示
+								$('#myModal').modal('show'); //追加
+								//メッセージの修正
+								document.getElementById("confirm_txt").innerHTML=App.input_insert_msg; //追加　このメッセージはapp.jsで定義
+								$("#btn_ok").off();
+								$("#btn_ok").on('click',function() { //追加
+									hideModal();
 									that.triggerMethod('inputComplete', cond);
-								}
+								});
 							}else if(res_val["error_code"] == '1') {
 								that.triggerMethod('showAlerts', res_val["error_msg"]);
 								return;
-							}else{
-								alert("予期せぬエラーが発生しました。");
 							}
 						}
 					});
@@ -457,22 +463,30 @@ define([
 							//console.log(res_val["param"]);
 
 							if(res_val["error_code"] == '0') {
-								var msg = "発注送信を行いますが、よろしいですか？";
-								if (window.confirm(msg)) {
+								// JavaScript モーダルで表示
+								$('#myModal').modal('show'); //追加
+								//メッセージの修正
+								document.getElementById("confirm_txt").innerHTML=App.complete_msg; //追加　このメッセージはapp.jsで定義
+								$("#btn_ok").off();
+								$("#btn_ok").on('click',function() { //追加
+									hideModal();
 									that.triggerMethod('sendComplete', cond);
-								}
+								});
 							}else if(res_val["error_code"] == '1') {
 								that.triggerMethod('showAlerts', res_val["error_msg"]);
 								return;
-							}else{
-								alert("予期せぬエラーが発生しました。");
 							}
 						}
 					});
 				}
 				if (type == "WN0018_req") {
-					var msg = "削除しますが、よろしいですか？";
-					if (window.confirm(msg)) {
+					// JavaScript モーダルで表示
+					$('#myModal').modal('show'); //追加
+					//メッセージの修正
+					document.getElementById("confirm_txt").innerHTML=App.delete_msg; //追加　このメッセージはapp.jsで定義
+					$("#btn_ok").off();
+					$("#btn_ok").on('click',function() { //追加
+						hideModal();
 						$.blockUI({ message: '<p><img src="ajax-loader.gif" style="margin: 0 auto;" /> 発注取消中...</p>' });
 						var modelForUpdate = this.model;
 						modelForUpdate.url = App.api.WN0018;
@@ -486,19 +500,19 @@ define([
 							success:function(res){
 								var res_val = res.attributes;
 
-								if (res_val["error_code"] == "0") {
-									$.unblockUI();
-									alert('発注取消が完了しました。このまま検索画面へ移行します。');
+								// if (res_val["error_code"] == "0") {
+								// 	$.unblockUI();
+								// 	alert('発注取消が完了しました。このまま検索画面へ移行します。');
 									var cond = window.sessionStorage.getItem("wearer_end_cond");
 									window.sessionStorage.setItem("back_wearer_end_cond", cond);
 									location.href="wearer_end.html";
-								} else {
-									$.unblockUI();
-									alert('発注取消中にエラーが発生しました');
-								}
+								// } else {
+								// 	$.unblockUI();
+								// 	alert('発注取消中にエラーが発生しました');
+								// }
 							}
 						});
-					}
+					});
 				}
 			}
 		});
