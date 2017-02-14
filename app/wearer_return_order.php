@@ -824,7 +824,15 @@ $app->post('/wearer_return/info', function ()use($app){
            $i = 0;
            $item_add_flg = true;
            $t_rtn_tran_count = 0;
-           foreach ($t_delivery_goods_state_details_results as $t_delivery_goods_state_details_result) {
+           $quantity = 0;
+           $return_plan__qty = 0;
+
+           foreach ($t_delivery_goods_state_details_results as $items) {
+             //個なしの数量
+             if (individual_flg($auth['corporate_id'], $wearer_other_post['rntl_cont_no']) == "0") {
+               $quantity += $items->quantity;
+               $return_plan__qty += $items->return_plan__qty;
+             }
              //個体管理番号他のその他交換、サイズ交換、発注チェック
              if (individual_flg($auth['corporate_id'], $wearer_other_post['rntl_cont_no']) == "1") {
                $query_list = array();
@@ -834,7 +842,7 @@ $app->post('/wearer_return/info', function ()use($app){
                //商品情報
                array_push($query_list, "item_cd = '" . $list['item_cd'] . "'");
                array_push($query_list, "color_cd = '" . $list['color_cd'] . "'");
-               array_push($query_list, "individual_ctrl_no = '" . $t_delivery_goods_state_details_result->individual_ctrl_no . "'");
+               array_push($query_list, "individual_ctrl_no = '" . $items->individual_ctrl_no . "'");
                //発注状況区分
                array_push($query_list, "(order_sts_kbn = '3' OR order_sts_kbn = '4')");//サイズ交換のトラン
                //sql文字列を' AND 'で結合
@@ -844,6 +852,9 @@ $app->post('/wearer_return/info', function ()use($app){
                'conditions' => $query
                ))->count();
              }
+             //個体管理番号ごとの数量-返却予定数計算
+             $individual_possible_qty = $items->quantity - $items->return_plan__qty;
+             if($individual_possible_qty > 0){
              if($t_rtn_tran_count == 0){
                // name属性用カウント値
               // $list["arr_num"] = $arr_num++;
@@ -851,14 +862,14 @@ $app->post('/wearer_return/info', function ()use($app){
              $element["checked"] = "";
              if (!empty($individual_list)) {
                foreach ($individual_list as $tran_individual_ctrl_no) {
-                 if ($t_delivery_goods_state_details_result->individual_ctrl_no == $tran_individual_ctrl_no) {
+                 if ($items->individual_ctrl_no == $tran_individual_ctrl_no) {
                    $element["checked"] = "checked";
                  }
                }
              }
-             array_push($list["individual_ctrl_no"], $t_delivery_goods_state_details_result->individual_ctrl_no);
+             array_push($list["individual_ctrl_no"], $items->individual_ctrl_no);
              $element["name_no"] = $arr_num;
-             $element["individual_ctrl_no"] = $t_delivery_goods_state_details_result->individual_ctrl_no;
+             $element["individual_ctrl_no"] = $items->individual_ctrl_no;
              if ($results_cnt - 1 !== $i) {
                $element["br"] = "<br/>";
              } else {
@@ -867,6 +878,7 @@ $app->post('/wearer_return/info', function ()use($app){
              array_push($list["individual_chk"], $element);
              }else{
                $item_add_flg = false;
+             }
              }
            }
            // 個体管理番号数
@@ -907,6 +919,8 @@ $app->post('/wearer_return/info', function ()use($app){
          } else {
            $list["arr_num"] = $arr_num++;
            $list["individual_flg"] = false;
+           // 所持枚数 数量 - 返却予定数のサマリ
+           $list["possible_num"] = $quantity - $return_plan__qty;
 
          }
          //--その他の必要hiddenパラメータ--//
@@ -936,21 +950,25 @@ $app->post('/wearer_return/info', function ()use($app){
            'conditions' => $query
            ));
            $t_order_tran_count = $t_order_tran_items->count();
+
+           //個なしのサイズ交換、その他交換の発注があった場合の計算
            if($t_order_tran_count > 0) {
              foreach ($t_order_tran_items as $t_order_tran_item) {
                // 所持枚数
-               $list["possible_num"] = $list["quantity"] - $t_order_tran_item->order_qty;
+               $list["possible_num"] = $list["possible_num"] - $t_order_tran_item->order_qty;
              }
-             if ($list["possible_num"] == 0) {
+             //ChromePhp::log($list["possible_num"]);
+             if ($list["possible_num"] < 1) {
                $list['item_add_flg'] = false;
              }
            }else{
-             //個なし、トラン発注あり、入力完了
+             //個なしのサイズ交換、その他交換の発注がない場合の計算 所持枚数が０以上だったら表示
              if($list["possible_num"] > 0){
                $list['item_add_flg'] = true;
+             }else{
+               $list['item_add_flg'] = false;
              }
            }
-
          }
           //その他交換、サイズ交換の発注が入ってないこと。
          if($list['item_add_flg']) {
@@ -1063,6 +1081,8 @@ $app->post('/wearer_return/info', function ()use($app){
            array_push($query_list, "t_delivery_goods_state_details.color_cd = '".$list["color_cd"]."'");
            array_push($query_list, "t_delivery_goods_state_details.size_cd = '".$list["size_cd"]."'");
            array_push($query_list, "t_delivery_goods_state_details.rtn_ok_flg = '1'");
+           array_push($query_list, "t_delivery_goods_state_details.receipt_status = '2'");
+
            $query = implode(' AND ', $query_list);
 
            $arg_str = "";
@@ -1073,7 +1093,6 @@ $app->post('/wearer_return/info', function ()use($app){
            $arg_str .= " WHERE ";
            $arg_str .= $query;
            $arg_str .= " ORDER BY individual_ctrl_no ASC";
-           //ChromePhp::LOG($arg_str);
            $t_delivery_goods_state_details = new TDeliveryGoodsStateDetails();
            $t_delivery_goods_state_details_results = new Resultset(null, $t_delivery_goods_state_details, $t_delivery_goods_state_details->getReadConnection()->query($arg_str));
            $result_obj = (array)$t_delivery_goods_state_details_results;
@@ -1091,8 +1110,16 @@ $app->post('/wearer_return/info', function ()use($app){
            $i = 0;
            $t_rtn_tran_count = 0;
            $list['item_add_flg'] = true;
-           foreach ($t_delivery_goods_state_details_results as $t_delivery_goods_state_details_result) {
-             //個体管理番号他のその他交換、サイズ交換、発注チェック
+           $quantity = 0;
+           $return_plan__qty = 0;
+
+           foreach ($t_delivery_goods_state_details_results as $items) {
+             //個なしの数量
+             if (individual_flg($auth['corporate_id'], $wearer_other_post['rntl_cont_no']) == "0") {
+                  $quantity += $items->quantity;
+                  $return_plan__qty += $items->return_plan__qty;
+             }
+               //個体管理番号他のその他交換、サイズ交換、発注チェック
              if (individual_flg($auth['corporate_id'], $wearer_other_post['rntl_cont_no']) == "1") {
                $query_list = array();
                array_push($query_list, "corporate_id = '" . $auth['corporate_id'] . "'");
@@ -1101,7 +1128,7 @@ $app->post('/wearer_return/info', function ()use($app){
                //商品情報
                array_push($query_list, "item_cd = '" . $list['item_cd'] . "'");
                array_push($query_list, "color_cd = '" . $list['color_cd'] . "'");
-               array_push($query_list, "individual_ctrl_no = '" . $t_delivery_goods_state_details_result->individual_ctrl_no . "'");
+               array_push($query_list, "individual_ctrl_no = '" . $items->individual_ctrl_no . "'");
                //発注状況区分
                array_push($query_list, "(order_sts_kbn = '3' OR order_sts_kbn = '4')");//サイズ交換のトラン
                //sql文字列を' AND 'で結合
@@ -1111,23 +1138,26 @@ $app->post('/wearer_return/info', function ()use($app){
                'conditions' => $query
                ))->count();
              }
-             //各個体管理番号
-             if($t_rtn_tran_count == 0) {
-               // name属性用カウント値
-               $element["name_no"] = $arr_num;
-               array_push($list["individual_ctrl_no"], $t_delivery_goods_state_details_result->individual_ctrl_no);
-               $element["individual_ctrl_no"] = $t_delivery_goods_state_details_result->individual_ctrl_no;
-               if ($results_cnt - 1 !== $i) {
-                 $element["br"] = "<br/>";
-               } else {
-                 $element["br"] = "";
+             //個体管理番号ごとの数量-返却予定数計算
+             $individual_possible_qty = $items->quantity - $items->return_plan__qty;
+             if($individual_possible_qty > 0) {
+               //各個体管理番号
+               if ($t_rtn_tran_count == 0) {
+                 // name属性用カウント値
+                 $element["name_no"] = $arr_num;
+                 array_push($list["individual_ctrl_no"], $items->individual_ctrl_no);
+                 $element["individual_ctrl_no"] = $items->individual_ctrl_no;
+                 if ($results_cnt - 1 !== $i) {
+                   $element["br"] = "<br/>";
+                 } else {
+                   $element["br"] = "";
+                 }
+                 array_push($list["individual_chk"], $element);
                }
-               array_push($list["individual_chk"], $element);
              }
            }
            // 個体管理番号数
            $list["individual_cnt"] = count($list["individual_ctrl_no"]);
-
            // 個体管理番号(表示用)
            $list["individual_ctrl_no"] = implode("<br/>", $list["individual_ctrl_no"]);
          }
@@ -1148,6 +1178,9 @@ $app->post('/wearer_return/info', function ()use($app){
            $list["possible_num"] = $list["individual_cnt"];
          } else {
            $list["individual_flg"] = false;
+           // 所持枚数 数量 - 返却予定数のサマリ
+           $list["possible_num"] = $quantity - $return_plan__qty;
+
          }
          //--その他の必要hiddenパラメータ--//
          // 部門コード
