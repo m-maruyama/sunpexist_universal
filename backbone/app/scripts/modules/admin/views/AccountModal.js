@@ -84,7 +84,6 @@ define([
 					model.set('mail_address', this.ui.mail_address.val());
 					model.set('password', this.ui.password.val());
 					model.set('password_confirm', this.ui.password_confirm.val());
-					$("#corporate_id_modal").attr('disabled',true);
 					$(".errors").css("display", "block");
 
 					var that = this;
@@ -93,6 +92,8 @@ define([
 						this.triggerMethod('showAlerts', errors);
 						return;
 					}
+					$("#corporate_id_modal").attr('disabled',true);
+
 					model.url = App.api.AC0020;
 					var cond = {
 						"scr": this.ui.display.text(),
