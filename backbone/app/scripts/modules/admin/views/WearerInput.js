@@ -72,6 +72,7 @@ define([
 					$('#myModal').modal(); //追加
 					//メッセージの修正
 					document.getElementById("confirm_txt").innerHTML=App.cancel_msg; //追加　このメッセージはapp.jsで定義
+					$("#btn_ok").off();
 					$("#btn_ok").on('click',function() { //追加
 						hideModal();
 						// ホームから遷移してきた場合
