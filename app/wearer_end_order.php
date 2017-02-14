@@ -1559,8 +1559,6 @@ $app->post('/wearer_end_order_insert', function () use ($app) {
         $each_item_order = 0;
         for($i = 0; $i < $each_item_count; $i++){
           $each_item_order = $each_item_order + $TOrder[$i]->order_qty;
-          //ChromePhp::log($TOrder[$i]->item_cd);
-          //hromePhp::log($each_item_order);
         }
         $list['order_qty'] = $each_item_order;
         $list['unshipped_qty'] = null;
