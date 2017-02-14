@@ -87,9 +87,6 @@ define([
 									var individual_cnt = $("input[name='individual_cnt" + i + "']").val();
 									$("#order_num" + i).val(individual_cnt);
 									$("#return_num" + i).val(individual_cnt);
-								} else {
-									$("#order_num" + i).val('0');
-									$("#return_num" + i).val('0');
 								}
 							}
 						}else{
@@ -98,9 +95,6 @@ define([
 									var exchange_possible_num = $("input[name='exchange_possible_num" + i + "']").val();
 									$("#order_num" + i).val(exchange_possible_num);
 									$("#return_num" + i).val(exchange_possible_num);
-								} else {
-									$("#order_num" + i).val('0');
-									$("#return_num" + i).val('0');
 								}
 							}
 						}
