@@ -283,6 +283,7 @@ define([
 			onShow: function(val, type, transition, data) {
 				var that = this;
 
+
 				if (type == "cm0130_res") {
 					if (!val["chk_flg"]) {
 						alert(val["error_msg"]);
@@ -300,18 +301,20 @@ define([
 					}
 				}
 				if (type == "WR0021_req") {
+					$("#btn_ok").off();
+					//メッセージの修正い
+					var modelForUpdate = this.model;
+					modelForUpdate.url = App.api.WR0021;
 					// JavaScript モーダルで表示
 					$('#myModal').modal();
-					//メッセージの修正い
 					document.getElementById("confirm_txt").innerHTML=App.delete_msg;
-					$("#btn_ok").on('click',function() {
-						$.blockUI({ message: '<p><img src="ajax-loader.gif" style="margin: 0 auto;" /> 発注取消中...</p>' });
-						var modelForUpdate = that.model;
-						modelForUpdate.url = App.api.WR0021;
+
 						var cond = {
 							"scr": '不要品返却-発注取消',
-							"data": data,
+							"data": data
 						};
+					$("#btn_ok").on('click',function() {
+						$.blockUI({ message: '<p><img src="ajax-loader.gif" style="margin: 0 auto;" /> 発注取消中...</p>' });
 						modelForUpdate.fetchMx({
 							data:cond,
 							success:function(res){
@@ -336,6 +339,7 @@ define([
 					});
 				}
 				if (type == "WR0022_req") {
+					$("#btn_ok").off();
 					var tran_req_no = $("button[name='complete_param']").val();
 					var agreement_no = $("select[name='agreement_no']").val();
 					var reason_kbn = $("select[name='reason_kbn']").val();
@@ -429,15 +433,16 @@ define([
 									};
 									that.triggerMethod('inputComplete', data);
 								});
-
 							} else if (res_val["error_code"] == "1") {
 								that.triggerMethod('showAlerts', res_val["error_msg"]);
-								return;
+							//	return;
 							}
+
 						}
 					});
 				}
 				if (type == "WR0023_req") {
+					$("#btn_ok").off();
 					var tran_req_no = $("button[name='send_param']").val();
 					var agreement_no = $("select[name='agreement_no']").val();
 					var reason_kbn = $("select[name='reason_kbn']").val();
@@ -516,8 +521,6 @@ define([
 						success:function(res){
 							var res_val = res.attributes;
 							if (res_val["error_code"] == "0") {
-								//var msg = "発注送信を行いますが、よろしいですか？";
-								//if (window.confirm(msg)) {
 								// JavaScript モーダルで表示
 								$('#myModal').modal('show');
 								//メッセージの修正
@@ -531,12 +534,11 @@ define([
 										"item": item
 									};
 									//console.log(data);
-
 									that.triggerMethod('sendComplete', data);
 								});
+								//$("#btn_ok").off();
 							} else {
 								that.triggerMethod('showAlerts', res_val["error_msg"]);
-								return;
 							}
 						}
 					});
