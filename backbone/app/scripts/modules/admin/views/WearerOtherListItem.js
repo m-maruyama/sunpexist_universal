@@ -57,8 +57,9 @@ define([
 								var data = cond["data"];
 								that.onShow(res_val, type, transition, data);
 							} else {
-								// NGエラーアラート表示
-								alert(res_val["err_msg"]);
+								// JavaScript モーダルで表示
+								$('#myModal_alert').modal('show');
+								document.getElementById("alert_txt").innerHTML=res_val["err_msg"];
 							}
 						}
 					});
@@ -105,8 +106,8 @@ define([
 								that.onShow(res_val, type, transition, data);
 							} else {
 								// JavaScript モーダルで表示
-								$('#myModal').modal('show');
-								document.getElementById("confirm_txt").innerHTML=res_val["err_msg"];
+								$('#myModal_alert').modal('show');
+								document.getElementById("alert_txt").innerHTML=res_val["err_msg"];
 								// NGエラーアラート表示
 								//alert(res_val["err_msg"]);
 							}
@@ -125,8 +126,12 @@ define([
 					printData["rntl_cont_no"] = pdf_val[0];
 					printData["order_req_no"] = pdf_val[1];
 
-					var msg = "データ量により、ダウンロード処理に時間がかかる可能性があります。ダウンロードを実施してよろしいですか？";
-					if (window.confirm(msg)) {
+					$('#myModal').modal();
+					document.getElementById("confirm_txt").innerHTML=App.dl_msg;
+					$("#btn_ok").off();
+					$("#btn_ok").on('click',function() {
+					//var msg = "データ量により、ダウンロード処理に時間がかかる可能性があります。ダウンロードを実施してよろしいですか？";
+					//if (window.confirm(msg)) {
 						var cond = {
 							"scr": 'PDFダウンロード',
 							"cond": printData
@@ -140,8 +145,8 @@ define([
 						data.remove();
 						form.remove();
 						form=null;
-						return;
-					}
+						$('#myModal').modal('hide'); //追加
+					});
 				}
 			},
 			onShow: function(val, type, transition, data) {
