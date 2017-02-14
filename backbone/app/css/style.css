@@ -110,7 +110,7 @@
 ダイアログモーダル
 */
 .modal-dialog {
-    position: absolute;
+    position: relative;
 }
 
 .modal-dialog .modal-header {
