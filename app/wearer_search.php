@@ -282,30 +282,16 @@ $app->post('/wearer_search/search', function ()use($app){
             // 「貸与開始」パターンチェックスタート
             $list['btnPattern'] = "";
             $patarn_flg = true;
+            $order_sts_kbn =$result-> as_wearer_order_sts_kbn;
+            $snd_kbn = $result->as_snd_kbn;
             if (!empty($t_order_tran_cnt)) {
-                $paginator_model = new PaginatorModel(
-                    array(
-                        "data"  => $t_order_tran_results,
-                        "limit" => $t_order_tran_cnt,
-                        "page" => 1
-                    )
-                );
-                $paginator = $paginator_model->getPaginate();
-                $t_order_tran_results = $paginator->items;
 
                 if ($list['btnPattern'] == "") {
                     //パターンB： 発注情報トラン．発注状況区分 = 貸与 かつ、発注情報トラン．理由区分 = 追加貸与以外のデータがある場合、かつ、着用者基本マスタトラン．送信区分 = 未送信の場合、ボタンの文言は「貸与開始[済]」で表示する。
                     $patarn_flg = true;
-                    foreach ($t_order_tran_results as $t_order_tran_result) {
-                        $order_req_no = $t_order_tran_result->order_req_no;
-                        $order_sts_kbn = $t_order_tran_result->order_sts_kbn;
-                        $order_reason_kbn = $t_order_tran_result->order_reason_kbn;
-                        $snd_kbn = $t_order_tran_result->snd_kbn;
-                        if ($order_sts_kbn == '1' && $snd_kbn == '0' && $order_reason_kbn != '03') {
+                        if ($order_sts_kbn == '1' && $snd_kbn == '0') {
                             $patarn_flg = false;
-                            break;
                         }
-                    }
                     if (!$patarn_flg) {
                         $list['wearer_input_button'] = "貸与開始";
                         $list['wearer_input_red'] = "[済]";
@@ -316,16 +302,9 @@ $app->post('/wearer_search/search', function ()use($app){
                 if ($list['btnPattern'] == "") {
                     //パターンC： 発注情報トラン．発注状況区分 = 貸与 かつ、発注情報トラン．理由区分 = 追加貸与以外のデータがある場合、かつ、着用者基本マスタトラン．送信区分 = 送信済の場合、ボタンの文言は「貸与開始[済]」で非活性表示する。
                     $patarn_flg = true;
-                    foreach ($t_order_tran_results as $t_order_tran_result) {
-                        $order_req_no = $t_order_tran_result->order_req_no;
-                        $order_sts_kbn = $t_order_tran_result->order_sts_kbn;
-                        $order_reason_kbn = $t_order_tran_result->order_reason_kbn;
-                        $snd_kbn = $t_order_tran_result->snd_kbn;
-                        if ($order_sts_kbn == '1' && $snd_kbn == '1' && $order_reason_kbn != '03') {
+                        if ($order_sts_kbn == '1' && $snd_kbn == '1') {
                             $patarn_flg = false;
-                            break;
                         }
-                    }
                     if (!$patarn_flg) {
                         $list['wearer_input_button'] = "貸与開始";
                         $list['wearer_input_red'] = "[済]";
@@ -336,15 +315,8 @@ $app->post('/wearer_search/search', function ()use($app){
                 if ($list['btnPattern'] == "") {
                     //パターンD： 発注情報トラン．発注状況区分 = 貸与 かつ、発注情報トラン．理由区分 = 追加貸与以外のデータがある場合、かつ、着用者基本マスタトラン．送信区分 = 送信中の場合、ボタンの文言は「貸与開始[済]」で非活性表示する。
                     $patarn_flg = true;
-                    foreach ($t_order_tran_results as $t_order_tran_result) {
-                        $order_req_no = $t_order_tran_result->order_req_no;
-                        $order_sts_kbn = $t_order_tran_result->order_sts_kbn;
-                        $order_reason_kbn = $t_order_tran_result->order_reason_kbn;
-                        $snd_kbn = $t_order_tran_result->snd_kbn;
-                        if ($order_sts_kbn == '1' && $snd_kbn == '9' && $order_reason_kbn != '03') {
+                        if ($order_sts_kbn == '1' && $snd_kbn == '9') {
                             $patarn_flg = false;
-                            break;
-                        }
                     }
                     if (!$patarn_flg) {
                         $list['wearer_input_button'] = "貸与開始";
@@ -353,13 +325,18 @@ $app->post('/wearer_search/search', function ()use($app){
                         $list['btnPattern'] = "D";
                     }
                 }
-            }
-            if ($list['btnPattern'] == "") {
-                $list['wearer_input_button'] = "貸与開始";
-                $list['wearer_input_red'] = "";
-                $list['disabled'] = "";
-                $list['btnPattern'] = "A";
-                $list['return_reciept_button'] = false;
+            }elseif($order_sts_kbn == '1' && $snd_kbn == '9'){
+
+                    $list['wearer_input_button'] = "貸与開始";
+                    $list['wearer_input_red'] = "[済]";
+                    $list['disabled'] = "disabled";
+                    $list['btnPattern'] = "D";
+            }else{
+                    $list['wearer_input_button'] = "貸与開始";
+                    $list['wearer_input_red'] = "";
+                    $list['disabled'] = "";
+                    $list['btnPattern'] = "A";
+                    $list['return_reciept_button'] = false;
             }
 
             // 発注入力へのパラメータ設定
