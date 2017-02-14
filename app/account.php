@@ -231,7 +231,7 @@ $app->post('/account/modal', function () use ($app) {
             $error_list['user_id_preg'] = 'ログインIDは半角英数字混合で入力してください。';
         }
         //user_id_preg
-        if((strlen($cond['user_id']) > 20) || (strlen($cond['user_id']) < 8)){
+        if((mb_strlen($cond['user_id']) > 20) || (strlen($cond['user_id']) < 8)){
             $error_list['user_id_strlen'] = 'ログインIDは8文字以上20文字以下で入力してください。';
         }
 
@@ -239,7 +239,7 @@ $app->post('/account/modal', function () use ($app) {
             $error_list['password_preg'] = 'パスワードは半角英数字、半角記号(!#$%&*+@?)混合で入力してください。';
         }
         //user_id_preg
-        if((strlen($cond['password']) > 16) || (strlen($cond['password']) < 8)){
+        if((mb_strlen($cond['password']) > 16) || (strlen($cond['password']) < 8)){
             $error_list['password_strlen'] = 'パスワードは8文字以上16文字以下で入力してください。';
         }
 
@@ -255,19 +255,20 @@ $app->post('/account/modal', function () use ($app) {
         $error_list['mail_address_preg'] = 'メールアドレスの形式が不正です。';
     }
     //メールアドレス文字数
-    if(strlen($cond['user_name']) > 100){
+    if(mb_strlen($cond['user_name']) > 100){
         $error_list['user_name_strlen'] = 'メールアドレスは半角100文字以下で入力してください。';
     }
     //ユーザー名称文字数
-    if(strlen($cond['user_name']) > 22){
+    if(mb_strlen($cond['user_name']) > 22){
         $error_list['user_name_strlen'] = 'ユーザー名称は22文字以下(全角11文字)で入力してください。';
     }
     //所属名文字数
-    if(strlen($cond['position_name']) > 22){
+    if(mb_strlen($cond['position_name']) > 22){
         $error_list['position_name_strlen'] = '所属名は22文字以下(全角11文字)で入力してください。';
     }
+    ChromePhp::log(mb_strlen($cond['login_disp_name']));
     //ログイン表示名文字数
-    if(strlen($cond['login_disp_name']) > 22){
+    if(mb_strlen($cond['login_disp_name']) > 22){
         $error_list['login_disp_name_strlen'] = 'ログイン表示名は22文字以下(全角11文字)で入力してください。';
     }
 

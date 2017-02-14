@@ -169,7 +169,8 @@ $app->post('/unreturn/search', function ()use($app){
     $reason_kbn_2 = array();
     if($cond['order_kbn0']) {
         //交換にチェックがついてたら
-        $order_kbn = "(t_order.order_sts_kbn = '3' OR t_order.order_sts_kbn = '4') AND m_wearer_std.werer_sts_kbn = '1'";
+        //$order_kbn = "(t_order.order_sts_kbn = '3' OR t_order.order_sts_kbn = '4') AND m_wearer_std.werer_sts_kbn = '1'";
+        $order_kbn = "(t_order.order_sts_kbn = '3' OR t_order.order_sts_kbn = '4')";
         if($cond['reason_kbn0']){
             array_push($reason_kbn_2, "t_order.order_reason_kbn = '14'");
         }
@@ -360,7 +361,7 @@ $app->post('/unreturn/search', function ()use($app){
 
     //その他
     if($cond['order_kbn3']){
-        array_push($kbn_list,"t_order.order_sts_kbn = '9' AND m_wearer_std.werer_sts_kbn = '1'");
+        array_push($kbn_list,"t_order.order_sts_kbn = '9'");
     }
 
     //区分を検索条件に追加

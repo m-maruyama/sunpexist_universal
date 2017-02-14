@@ -319,6 +319,15 @@ define([
 
 		App.order_send_check_msg = '発注送信を行う場合は選択欄の何れかにチェックを入れてください。';
 		App.order_send_confirm_msg = '選択されているデータの発注送信を行います。よろしいですか？';
+		App.account_edit_msg = 'アカウントを編集しました。';
+		App.account_del_msg = 'アカウントを削除しました。';
+		App.account_lock_msg = 'アカウントロックを解除しました。';
+		App.account_add_msg = 'アカウントを登録しました。';
+
+
+
+
+
 
 		return App;
 

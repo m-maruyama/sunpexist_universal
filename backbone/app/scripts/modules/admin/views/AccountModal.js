@@ -86,11 +86,6 @@ define([
 					model.set('password_confirm', this.ui.password_confirm.val());
 					$("#corporate_id_modal").attr('disabled',true);
 					$(".errors").css("display", "block");
-					//if(this.ui.password.val() == this.ui.password_confirm.val()){
-					//	console.log('same');
-					//}else{
-					//	console.log('diffrent');
-					//}
 
 					var that = this;
 					var errors = model.validate();
@@ -116,13 +111,25 @@ define([
 							that.ui.modal.modal('hide');
 							var type = that.ui.display_type.val();
 							if( type == '1'){
-								alert('アカウントを編集しました。');
+								// JavaScript モーダルで表示
+								$('#myModal_alert').modal('show');
+								document.getElementById("alert_txt").innerHTML=App.account_edit_msg;
+								//alert('アカウントを編集しました。');
 							}else if(type == '2'){
-								alert('アカウントを削除しました。');
+								// JavaScript モーダルで表示
+								$('#myModal_alert').modal('show');
+								document.getElementById("alert_txt").innerHTML=App.account_del_msg;
+								//alert('アカウントを削除しました。');
 							}else if(type == '3'){
-								alert('アカウントロックを解除しました。');
+								// JavaScript モーダルで表示
+								$('#myModal_alert').modal('show');
+								document.getElementById("alert_txt").innerHTML=App.account_lock_msg;
+								//alert('アカウントロックを解除しました。');
 							}else {
-								alert('アカウントを登録しました。');
+								// JavaScript モーダルで表示
+								$('#myModal_alert').modal('show');
+								document.getElementById("alert_txt").innerHTML=App.account_add_msg;
+								//alert('アカウントを登録しました。');
 								$(".listTable").css('display', 'block');
 							}
 							that.reset();
@@ -213,8 +220,6 @@ define([
 				} else {
 					var display_str = 'アカウント追加';
 					var button_str = '追加';
-					
-
 				}
 				this.ui.display.text(display_str);
 				this.ui.upBtn.text(button_str);
