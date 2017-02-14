@@ -316,6 +316,8 @@ define([
 		App.cancel_msg = '入力がある場合、入力された情報が破棄されますが、よろしいですか？';
 		App.wearer_delete_msg = '着用者入力を削除しますが、よろしいですか？';
 
+		App.order_send_check_msg = '発注送信を行う場合は選択欄の何れかにチェックを入れてください。';
+		App.order_send_confirm_msg = '選択されているデータの発注送信を行います。よろしいですか？';
 
 		return App;
 
