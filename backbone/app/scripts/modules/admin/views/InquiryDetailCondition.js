@@ -73,8 +73,8 @@ define([
 						if (res_list["detail_cnt"] == 0) {
 							var cond = window.sessionStorage.getItem("inquiry_cond");
 							window.sessionStorage.setItem("back_inquiry_cond", cond);
-
-							alert("詳細データが存在しません。");
+							$('#myModal_alert').modal('show');
+							document.getElementById("alert_txt").innerHTML=App.inquiry_nothing_msg;
 							location.href="inquiry.html";
 						}
 
@@ -174,7 +174,6 @@ define([
 							} else {
 								// 正常完了の場合は検索画面へ遷移
 								$.unblockUI();
-								alert("お問い合わせ回答の更新が完了しました。このまま検索画面へ移行します。");
 
 								// 検索画面の条件項目を取得
 								var cond = window.sessionStorage.getItem("inquiry_cond");

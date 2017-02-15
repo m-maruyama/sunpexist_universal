@@ -174,6 +174,10 @@ define([
 							if (res_list['agreement_no_list'][i]['selected'] != "") {
 								option.setAttribute('selected', res_list['agreement_no_list'][i]['selected']);
 							}
+							//1件だったらdisabled
+							if(res_list.agreement_no_disabled == 'disabled'){
+								$("#agreement_no").attr("disabled", "disabled");
+							}
 							option.appendChild(text);
 							document.getElementById('agreement_no').appendChild(option);
 						}
