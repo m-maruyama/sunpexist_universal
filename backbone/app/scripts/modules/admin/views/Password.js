@@ -61,6 +61,10 @@ define([
 
 						}else if(getHash[1] == 'login') {
 							this.ui.content.removeClass("none");
+							var corporate_id = window.sessionStorage.getItem('corporate_id');
+							if(corporate_id == null){
+								location.href = "login.html";
+							}
 						}
 					}else{
 
