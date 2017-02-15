@@ -51,6 +51,7 @@ define([
 						data: cond,
 						success: function(model){
 							if(model.get('status') === 0){
+								window.sessionStorage.removeItem("corporate_id");
 								that.triggerMethod('success');
 							} else if(model.get('status') === 1){
 								that.triggerMethod('showAlerts', ['企業名、ログイン名、パスワードのいずれかが正しくありません。']);
