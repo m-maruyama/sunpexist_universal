@@ -735,7 +735,7 @@ $app->post('/wearer_order_insert', function () use ($app) {
       $json_list["error_code"] = "1";
     }
     if (!empty($cond["comment"])) {
-        if (mb_strlen($cond["comment"]) > 100) {
+        if (strlen(mb_convert_encoding($cond['comment'], "SJIS")) > 100) {
             array_push($error_list,'コメント欄は100文字以内で入力してください。');
             $json_list['error_msg'] = $error_list;
             $json_list["error_code"] = "1";

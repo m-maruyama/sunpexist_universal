@@ -2575,26 +2575,26 @@ $app->post('/wearer_change/complete', function ()use($app){
        }
      }
 */
-     // 着用者名
-     if (empty($wearer_data_input["member_name"])) {
-       $json_list["error_code"] = "1";
-       $error_msg = "着用者名を入力してください。";
-       array_push($json_list["error_msg"], $error_msg);
-     }
-     if (mb_strlen($wearer_data_input['member_name']) > 0) {
-        if (strlen(mb_convert_encoding($wearer_data_input['member_name'], "SJIS")) > 22) {
-          $json_list["error_code"] = "1";
-          $error_msg = "着用者名が規定の文字数をオーバーしています。";
-          array_push($json_list["error_msg"], $error_msg);
-        }
-     }
-     if (mb_strlen($wearer_data_input['member_name_kana']) > 0) {
-        if (strlen(mb_convert_encoding($wearer_data_input['member_name_kana'], "SJIS")) > 25) {
-          $json_list["error_code"] = "1";
-          $error_msg = "着用者名(カナ)が規定の文字数をオーバーしています。";
-          array_push($json_list["error_msg"], $error_msg);
-        }
-     }
+//     // 着用者名
+//     if (empty($wearer_data_input["member_name"])) {
+//       $json_list["error_code"] = "1";
+//       $error_msg = "着用者名を入力してください。";
+//       array_push($json_list["error_msg"], $error_msg);
+//     }
+//     if (mb_strlen($wearer_data_input['member_name']) > 0) {
+//        if (strlen(mb_convert_encoding($wearer_data_input['member_name'], "SJIS")) > 22) {
+//          $json_list["error_code"] = "1";
+//          $error_msg = "着用者名が規定の文字数をオーバーしています。";
+//          array_push($json_list["error_msg"], $error_msg);
+//        }
+//     }
+//     if (mb_strlen($wearer_data_input['member_name_kana']) > 0) {
+//        if (strlen(mb_convert_encoding($wearer_data_input['member_name_kana'], "SJIS")) > 25) {
+//          $json_list["error_code"] = "1";
+//          $error_msg = "着用者名(カナ)が規定の文字数をオーバーしています。";
+//          array_push($json_list["error_msg"], $error_msg);
+//        }
+//     }
      // 着用開始日
      if (empty($wearer_data_input["resfl_ymd"])) {
        $json_list["error_code"] = "1";
@@ -2605,7 +2605,7 @@ $app->post('/wearer_change/complete', function ()use($app){
      if (mb_strlen($wearer_data_input['comment']) > 0) {
          if (strlen(mb_convert_encoding($wearer_data_input['comment'], "SJIS")) > 100) {
              $json_list["error_code"] = "1";
-             $error_msg = "コメント欄の規定文字数がオーバーしています。";
+             $error_msg = "コメント欄は100文字以内で入力してください。";
              array_push($json_list["error_msg"], $error_msg);
          }
          //コメント欄使用不可文字
@@ -4576,27 +4576,27 @@ $app->post('/wearer_change/send', function ()use($app){
       }
     }
 */
-    // 着用者名
-    if (empty($wearer_data_input["member_name"])) {
-      $json_list["error_code"] = "1";
-      $error_msg = "着用者名を入力してください。";
-      array_push($json_list["error_msg"], $error_msg);
-    }
-    if (mb_strlen($wearer_data_input['member_name']) > 0) {
-       if (strlen(mb_convert_encoding($wearer_data_input['member_name'], "SJIS")) > 22) {
-         $json_list["error_code"] = "1";
-         $error_msg = "着用者名が規定の文字数をオーバーしています。";
-         array_push($json_list["error_msg"], $error_msg);
-       }
-    }
-
-    if (mb_strlen($wearer_data_input['member_name_kana']) > 0) {
-       if (strlen(mb_convert_encoding($wearer_data_input['member_name_kana'], "SJIS")) > 25) {
-         $json_list["error_code"] = "1";
-         $error_msg = "着用者名(カナ)が規定の文字数をオーバーしています。";
-         array_push($json_list["error_msg"], $error_msg);
-       }
-    }
+//    // 着用者名
+//    if (empty($wearer_data_input["member_name"])) {
+//      $json_list["error_code"] = "1";
+//      $error_msg = "着用者名を入力してください。";
+//      array_push($json_list["error_msg"], $error_msg);
+//    }
+//    if (mb_strlen($wearer_data_input['member_name']) > 0) {
+//       if (strlen(mb_convert_encoding($wearer_data_input['member_name'], "SJIS")) > 22) {
+//         $json_list["error_code"] = "1";
+//         $error_msg = "着用者名が規定の文字数をオーバーしています。";
+//         array_push($json_list["error_msg"], $error_msg);
+//       }
+//    }
+//
+//    if (mb_strlen($wearer_data_input['member_name_kana']) > 0) {
+//       if (strlen(mb_convert_encoding($wearer_data_input['member_name_kana'], "SJIS")) > 25) {
+//         $json_list["error_code"] = "1";
+//         $error_msg = "着用者名(カナ)が規定の文字数をオーバーしています。";
+//         array_push($json_list["error_msg"], $error_msg);
+//       }
+//    }
     // 着用開始日
     if (empty($wearer_data_input["resfl_ymd"])) {
       $json_list["error_code"] = "1";
@@ -4607,7 +4607,7 @@ $app->post('/wearer_change/send', function ()use($app){
     if (mb_strlen($wearer_data_input['comment']) > 0) {
       if (strlen(mb_convert_encoding($wearer_data_input['comment'], "SJIS")) > 100) {
         $json_list["error_code"] = "1";
-        $error_msg = "コメント欄の規定文字数がオーバーしています。";
+        $error_msg = "コメント欄は100文字以内で入力してください。";
         array_push($json_list["error_msg"], $error_msg);
       }
         //コメント欄使用不可文字
