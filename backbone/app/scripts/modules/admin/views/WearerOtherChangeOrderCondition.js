@@ -410,7 +410,7 @@ define([
 					$("#btn_ok").on('click',function() { //追加
                         hideModal();
 						$.blockUI({ message: '<p><img src="ajax-loader.gif" style="margin: 0 auto;" /> 発注取消中...</p>' });
-						var modelForUpdate = this.model;
+						var modelForUpdate = that.model;
 						modelForUpdate.url = App.api.WOC0030;
 						var cond = {
 							"scr": 'その他交換-発注取消',
@@ -515,7 +515,7 @@ define([
 							item[i]["return_num"] = $("input[name='return_num"+i+"']").val();
 						}
 					}
-					var modelForUpdate = this.model;
+					var modelForUpdate = that.model;
 					modelForUpdate.url = App.api.WOC0050;
 					var data = {
 							"scr": scr,
@@ -528,6 +528,13 @@ define([
 						data: data,
 						success: function (res) {
 							var res_val = res.attributes;
+							var data = {
+								"scr": scr,
+								"wearer_data": wearer_data,
+								"snd_kbn": send,
+								"mode": 'input',
+								"item": item
+							};
 							if(res_val["error_code"]=='1') {
 								that.triggerMethod('error_msg', res_val["error_msg"]);
 							}else if(res_val["error_code"]=='2') {
@@ -537,13 +544,6 @@ define([
 								that.triggerMethod('inputComplete', data);
 							}else{
 								window.sessionStorage.setItem('referrer', 'wearer_other_change_order');
-								var data = {
-									"scr": scr,
-									"wearer_data": wearer_data,
-									"snd_kbn": send,
-									"mode": 'input',
-									"item": item
-								};
 								if(send=='1'){
 									//発注送信の場合
 									// JavaScript モーダルで表示
