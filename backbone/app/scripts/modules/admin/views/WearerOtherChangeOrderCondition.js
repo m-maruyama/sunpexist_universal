@@ -376,8 +376,12 @@ define([
 				// 更新可否チェック結果処理
 				if (type == "cm0130_res") {
 					if (!val["chk_flg"]) {
-						// 更新可否フラグ=更新不可の場合はアラートメッセージ表示
-						alert(val["error_msg"]);
+                        // JavaScript モーダルで表示
+                        $('#myModalAlert').modal('show'); //追加
+                        //メッセージの修正
+                        document.getElementById("alert_txt").innerHTML=res_val["error_msg"];
+						// // 更新可否フラグ=更新不可の場合はアラートメッセージ表示
+						// alert(val["error_msg"]);
 					} else {
 						// エラーがない場合は各対応処理へ移行
 						if (transition == "WOC0030_req") {

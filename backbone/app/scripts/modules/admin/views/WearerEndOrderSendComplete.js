@@ -68,8 +68,6 @@ define([
 							$("#h").text('');
 							$(".explanation").text('');
 							that.triggerMethod('showAlerts', res_val["error_msg"]);
-						} else {
-							alert("予期せぬエラーが発生しました。")
 						}
 					}
 				});

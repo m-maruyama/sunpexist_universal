@@ -431,7 +431,11 @@ define([
 
 				if (type == "cm0130_res") {
 					if (!val["chk_flg"]) {
-						alert(val["error_msg"]);
+                        // JavaScript モーダルで表示
+                        $('#myModalAlert').modal('show'); //追加
+                        //メッセージの修正
+                        document.getElementById("alert_txt").innerHTML=res_val["error_msg"];
+						// alert(val["error_msg"]);
 					} else {
 						if (transition == "WC0020_req") {
 							var type = transition;
@@ -461,17 +465,17 @@ define([
 								var type = "WC0020_res";
 								var res_val = res.attributes;
 
-								if (res_val["error_code"] == "0") {
+								// if (res_val["error_code"] == "0") {
 									$.unblockUI();
-									alert('発注取消が完了しました。このまま検索画面へ移行します。');
+									// alert('発注取消が完了しました。このまま検索画面へ移行します。');
 
 									var cond = window.sessionStorage.getItem("wearer_change_cond");
 									window.sessionStorage.setItem("back_wearer_change_cond", cond);
 									location.href="wearer_change.html";
-								} else {
-									$.unblockUI();
-									alert('発注取消中にエラーが発生しました');
-								}
+								// } else {
+								// 	$.unblockUI();
+								// 	alert('発注取消中にエラーが発生しました');
+								// }
 							}
 						});
 					}
