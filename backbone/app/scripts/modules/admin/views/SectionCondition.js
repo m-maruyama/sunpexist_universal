@@ -12,6 +12,7 @@ define([
 			},
 			initialize: function(options) {
 			    this.options = options || {};
+			    console.log(this.options);
 			    this.options = _.extend(this.defaults, this.options);
 			},
 			template: App.Admin.Templates.sectionCondition,
@@ -28,6 +29,8 @@ define([
 				var that = this;
 				var agreement_no = this.options.agreement_no;
 				var section = this.options.section;
+				var window_name = this.options.window_name;
+
 				var not_all_flg = this.options.not_all_flg;
 				if (not_all_flg != '') {
 					var corporate_flg = true;
@@ -37,14 +40,18 @@ define([
 					var corporate = "";
 				}
 				var modelForUpdate = this.model;
-				modelForUpdate.url = App.api.CM0020;
+				if(window_name == 'inquiry'){
+					modelForUpdate.url = App.api.CU0013;//お問い合わせの拠点用
+				}else{
+					modelForUpdate.url = App.api.CM0020;
+				}
 				var cond = {
 					"scr": '拠点',
 					"agreement_no": agreement_no,
 					"section": section,
 					"not_all_flg": not_all_flg,
 					"corporate_flg": corporate_flg,
-					"corporate": corporate
+					"corporate": corporate,
 				};
 				modelForUpdate.fetchMx({
 					data:cond,
@@ -59,6 +66,10 @@ define([
 						that.render();
 					}
 				});
+
+
+
+
 			},
 			events: {
 				'click @ui.section_btn': function(e){

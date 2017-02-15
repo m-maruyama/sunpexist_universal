@@ -365,7 +365,7 @@ $app->post('/corporate_id', function () use ($app) {
  */
 $app->post('/section', function () use ($app) {
   $params = json_decode(file_get_contents('php://input'), true);
-  //ChromePhp::log($params);
+
 
   $json_list = array();
 
@@ -392,7 +392,6 @@ $app->post('/section', function () use ($app) {
   }
   $query_list[] = "accnt_no = '".$auth["accnt_no"]."'";
   $query = implode(' AND ', $query_list);
-
   $arg_str = '';
   $arg_str .= 'SELECT ';
   $arg_str .= ' distinct on (rntl_sect_cd) *';
@@ -418,27 +417,28 @@ $app->post('/section', function () use ($app) {
       $all_list[] = $result->rntl_sect_cd;
     }
   }
+
   // ※0埋めチェック後、それぞれ検索処理分岐
   if (in_array("0000000000", $all_list)) {
     $query_list = array();
     $list = array();
     $all_list = array();
-    if (!empty($params["corporate_flg"])) {
-      if (!empty($params["corporate"])) {
-        $query_list[] = "corporate_id = '".$params["corporate"]."'";
+      if (!empty($params["corporate_flg"])) {
+        if (!empty($params["corporate"])) {
+          $query_list[] = "corporate_id = '".$params["corporate"]."'";
+        }
+      } else {
+        $query_list[] = "corporate_id = '".$auth["corporate_id"]."'";
       }
-    } else {
-      $query_list[] = "corporate_id = '".$auth["corporate_id"]."'";
-    }
-    if (!empty($params['agreement_no'])) {
-      $query_list[] = "rntl_cont_no = '".$params['agreement_no']."'";
-    } else {
-      if (empty($params["corporate_flg"])) {
-        $query_list[] = "rntl_cont_no = '".$app->session->get('first_rntl_cont_no')."'";
+      if (!empty($params['agreement_no'])) {
+        $query_list[] = "rntl_cont_no = '".$params['agreement_no']."'";
+      } else {
+        if (empty($params["corporate_flg"])) {
+          $query_list[] = "rntl_cont_no = '".$app->session->get('first_rntl_cont_no')."'";
+        }
       }
-    }
-    $query = implode(' AND ', $query_list);
 
+    $query = implode(' AND ', $query_list);
     $arg_str = '';
     $arg_str .= 'SELECT ';
     $arg_str .= ' distinct on (rntl_sect_cd) *';
@@ -575,6 +575,7 @@ $app->post('/section', function () use ($app) {
     $json_list['section_disabled'] = '';
   }
   $json_list['section_list'] = $all_list;
+  //ChromePhp::log($json_list);
   echo json_encode($json_list);
 });
 
@@ -1046,8 +1047,9 @@ $app->post('/zaiko_item_color', function () use ($app) {
 /*
  * 拠点絞り込み検索
  */
-$app->post('/section_modal', function () use ($app) {
+$app->post('/inquiry/section_modal', function () use ($app) {
     $params = json_decode(file_get_contents('php://input'), true);
+    ChromePhp::log($params);
     $query_list = array();
     $cond = $params['cond'];
     $page = $params['page'];

@@ -37,7 +37,8 @@ define([
 				var sectionListListCollection = new App.Entities.Collections.AdminSectionModalListList();
 
 				var sectionConditionView = new App.Admin.Views.SectionCondition({
-					not_all_flg: "1"
+					not_all_flg: "1",
+					window_name: "inquiry"
 				});
 
 				var inquiryListConditionModel = new App.Entities.Models.AdminInquiryListCondition();
