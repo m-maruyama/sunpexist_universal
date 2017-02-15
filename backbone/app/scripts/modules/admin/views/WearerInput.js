@@ -136,7 +136,7 @@ define([
 					var modelForUpdate = this.model;
 					modelForUpdate.url = App.api.CM0130;
 					var cond = {
-						"scr": '貸与開始-着用者を登録して終了-更新可否チェック',
+						"scr": '貸与開始-着用者入力取消-更新可否チェック',
 						"log_type": '1',
 						"rntl_sect_cd": rntl_sect_cd,
 						"rntl_cont_no": rntl_cont_no

@@ -398,8 +398,13 @@ define([
 				}
 				// 発注取消処理
 				if (type == "WOC0030_req") {
-					var msg = "削除しますが、よろしいですか？";
-					if (window.confirm(msg)) {
+					// JavaScript モーダルで表示
+					$('#myModal').modal('show'); //追加
+					//メッセージの修正
+					document.getElementById("confirm_txt").innerHTML=App.delete_msg; //追加　このメッセージはapp.jsで定義
+					$("#btn_ok").off();
+					$("#btn_ok").on('click',function() { //追加
+                        hideModal();
 						$.blockUI({ message: '<p><img src="ajax-loader.gif" style="margin: 0 auto;" /> 発注取消中...</p>' });
 						var modelForUpdate = this.model;
 						modelForUpdate.url = App.api.WOC0030;
@@ -413,23 +418,23 @@ define([
 								var type = "WOC0030_req";
 								var res_val = res.attributes;
 
-								if (res_val["error_code"] == "0") {
-									// 発注取消完了後、検索一覧へ遷移
+								// if (res_val["error_code"] == "0") {
+								// 	// 発注取消完了後、検索一覧へ遷移
 									$.unblockUI();
-									alert('発注取消が完了しました。このまま検索画面へ移行します。');
+								// 	alert('発注取消が完了しました。このまま検索画面へ移行します。');
 
 									// 検索画面の条件項目を取得
 									var cond = window.sessionStorage.getItem("wearer_size_change_cond");
 									window.sessionStorage.setItem("back_wearer_size_change_cond", cond);
 									// 検索一覧画面へ遷移
 									location.href="wearer_size_change.html";
-								} else {
-									$.unblockUI();
-									alert('発注取消中にエラーが発生しました');
-								}
+								// } else {
+								// 	$.unblockUI();
+								// 	alert('発注取消中にエラーが発生しました');
+								// }
 							}
 						});
-					}
+					});
 				}
 				// 入力完了、発注送信処理
 				if (type == "WOC0050_req") {
@@ -537,17 +542,27 @@ define([
 								};
 								if(send=='1'){
 									//発注送信の場合
-									var msg = "発注送信を行いますが、よろしいですか？";
-									if (window.confirm(msg)) {
+									// JavaScript モーダルで表示
+									$('#myModal').modal('show'); //追加
+									//メッセージの修正
+									document.getElementById("confirm_txt").innerHTML=App.complete_msg; //追加　このメッセージはapp.jsで定義
+									$("#btn_ok").off();
+									$("#btn_ok").on('click',function() { //追加
+                                        hideModal();
 										// 入力完了画面処理へ移行
 										that.triggerMethod('sendComplete', data);
-									}
+									});
 								}else{
-									var msg = "入力を完了しますが、よろしいですか？";
-									if (window.confirm(msg)) {
+									// JavaScript モーダルで表示
+									$('#myModal').modal('show'); //追加
+									//メッセージの修正
+									document.getElementById("confirm_txt").innerHTML=App.input_msg; //追加　このメッセージはapp.jsで定義
+									$("#btn_ok").off();
+									$("#btn_ok").on('click',function() { //追加
+                                        hideModal();
 										// 入力完了画面処理へ移行
 										that.triggerMethod('inputComplete', data);
-									}
+									});
 								}
 							}
 						}

@@ -568,7 +568,7 @@ $app->post('/wearer_end/search', function ()use($app){
               $order_sts_kbn = $t_order_tran_result->order_sts_kbn;
               $order_reason_kbn = $t_order_tran_result->order_reason_kbn;
               $snd_kbn = $t_order_tran_result->snd_kbn;
-              if ($order_sts_kbn == '2' && $snd_kbn == '1' && $order_reason_kbn != '07') {
+              if ($order_sts_kbn == '2' && $snd_kbn == '1' && ($order_reason_kbn != '07' && $order_reason_kbn != '28')) {
                 $patarn_flg = false;
                 break;
               }
@@ -590,7 +590,7 @@ $app->post('/wearer_end/search', function ()use($app){
               $order_sts_kbn = $t_order_tran_result->order_sts_kbn;
               $order_reason_kbn = $t_order_tran_result->order_reason_kbn;
               $snd_kbn = $t_order_tran_result->snd_kbn;
-              if ($order_sts_kbn == '2' && $order_reason_kbn == '07') {
+              if ($order_sts_kbn == '2' && $order_reason_kbn == '07' && ($order_reason_kbn != '07' && $order_reason_kbn != '28')) {
                 $patarn_flg = false;
                 break;
               }
@@ -950,6 +950,8 @@ $app->post('/wearer_end/order_check', function ()use($app){
     $json_list["err_cd"] = "1";
     $error_msg = "対象の方は未出荷の商品がある為、貸与終了の発注はできません。";
     $json_list["err_msg"] = $error_msg;
+    echo json_encode($json_list);
+    return;
   }
   //出荷情報が1以上あった場合に、下記の処理に移行
   //ChromePhp::log($order_item_list);
@@ -969,9 +971,12 @@ $app->post('/wearer_end/order_check', function ()use($app){
       }
       //未出荷商品が0以上または、発注情報があるのに、出荷情報（発注状況）がない場合はエラー
       if($order_item_list[$i]['unshipped_qty'] > 0 || is_null($order_item_list[$i]['unshipped_qty'])){
+          ChromePhp::LOG(2);
         $json_list["err_cd"] = "1";
         $error_msg = "対象の方は未出荷の商品がある為、貸与終了の発注はできません。";
         $json_list["err_msg"] = $error_msg;
+        echo json_encode($json_list);
+        return;
       }
     }
   }
@@ -1000,6 +1005,8 @@ $app->post('/wearer_end/order_check', function ()use($app){
         $json_list["err_cd"] = "1";
         $error_msg = "対象の方は未受領の商品がある為、貸与終了の発注はできません。";
         $json_list["err_msg"] = $error_msg;
+        echo json_encode($json_list);
+        return;
     }
     //--発注パターンNGチェック ここまで--//
 

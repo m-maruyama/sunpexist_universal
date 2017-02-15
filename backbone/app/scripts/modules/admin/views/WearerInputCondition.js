@@ -201,9 +201,16 @@ define([
                             res.attributes["errors"] = null;
                             that.triggerMethod('error_msg', er);
                         }else{
-                        alert('着用者を登録しました。');
-                        window.sessionStorage.removeItem('wearer_input_ref');
-                        location.href = './wearer_input_complete.html';
+                            // JavaScript モーダルで表示
+                            $('#myModal').modal('show'); //追加
+                            //メッセージの修正
+                            document.getElementById("confirm_txt").innerHTML=App.wearer_input_msg; //追加　このメッセージはapp.jsで定義
+                            $("#btn_ok").off();
+                            $("#btn_ok").on('click',function() { //追加
+                                hideModal();
+                                window.sessionStorage.removeItem('wearer_input_ref');
+                                location.href = './wearer_input_complete.html';
+                            });
                         }
                 }
                 });
@@ -348,8 +355,10 @@ define([
                     //貸与パターン」のセレクトボックス変更時に、職種マスタ．特別職種フラグ＝ありの貸与パターンだった場合、アラートメッセージを表示する。
                     var sp_flg = this.ui.job_type.val().split(',');
                     if (sp_flg[1] === '1') {
-                        alert('社内申請手続きを踏んでますか？');
-                        return;
+                        // JavaScript モーダルで表示
+                        $('#myModalAlert').modal(); //追加
+                        //メッセージの修正
+                        document.getElementById("alert_txt").innerHTML=App.apply_msg;
                     }
                 },
             },

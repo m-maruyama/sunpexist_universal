@@ -285,7 +285,10 @@ define([
 
 				if (type == "cm0130_res") {
 					if (!val["chk_flg"]) {
-						alert(val["error_msg"]);
+						// JavaScript モーダルで表示
+						$('#myModalAlert').modal(); //追加
+						//メッセージの修正
+						document.getElementById("alert_txt").innerHTML=val["error_msg"];
 					} else {
 						if (transition == "WX0012_req") {
 							var type = transition;
@@ -300,10 +303,15 @@ define([
 					}
 				}
 				if (type == "WX0012_req") {
-					var msg = "削除しますが、よろしいですか？";
-					if (window.confirm(msg)) {
+					// JavaScript モーダルで表示
+					$('#myModal').modal('show'); //追加
+					//メッセージの修正
+					document.getElementById("confirm_txt").innerHTML=App.delete_msg; //追加　このメッセージはapp.jsで定義
+					$("#btn_ok").off();
+					$("#btn_ok").on('click',function() { //追加
+						hideModal();
 						$.blockUI({ message: '<p><img src="ajax-loader.gif" style="margin: 0 auto;" /> 発注取消中...</p>' });
-						var modelForUpdate = this.model;
+						var modelForUpdate = that.model;
 						modelForUpdate.url = App.api.WX0012;
 						var cond = {
 							"scr": 'サイズ交換-発注取消',
@@ -315,20 +323,20 @@ define([
 								var type = "WX0012_res";
 								var res_val = res.attributes;
 
-								if (res_val["error_code"] == "0") {
-									$.unblockUI();
-									alert('発注取消が完了しました。このまま検索画面へ移行します。');
+								// if (res_val["error_code"] == "0") {
+								// 	$.unblockUI();
+								// 	alert('発注取消が完了しました。このまま検索画面へ移行します。');
 
 									var cond = window.sessionStorage.getItem("wearer_size_change_cond");
 									window.sessionStorage.setItem("back_wearer_size_change_cond", cond);
 									location.href="wearer_size_change.html";
-								} else {
-									$.unblockUI();
-									alert('発注取消中にエラーが発生しました');
-								}
+								// } else {
+								// 	$.unblockUI();
+								// 	alert('発注取消中にエラーが発生しました');
+								// }
 							}
 						});
-					}
+					});
 				}
 				if (type == "WX0013_req") {
 					var tran_req_no = $("button[name='complete_param']").val();
@@ -431,8 +439,13 @@ define([
 						success:function(res){
 							var res_val = res.attributes;
 							if (res_val["error_code"] == "0") {
-								var msg = "入力を完了しますが、よろしいですか？";
-								if (window.confirm(msg)) {
+								// JavaScript モーダルで表示
+								$('#myModal').modal('show'); //追加
+								//メッセージの修正
+								document.getElementById("confirm_txt").innerHTML=App.input_msg; //追加　このメッセージはapp.jsで定義
+								$("#btn_ok").off();
+								$("#btn_ok").on('click',function() { //追加
+									hideModal();
 									var data = {
 										"scr": 'サイズ交換-入力完了-update',
 										"mode": "update",
@@ -440,7 +453,7 @@ define([
 										"item": item
 									};
 									that.triggerMethod('inputComplete', data);
-								}
+								});
 							} else {
 								that.triggerMethod('showAlerts', res_val["error_msg"]);
 								return;
@@ -549,8 +562,13 @@ define([
 						success:function(res){
 							var res_val = res.attributes;
 							if (res_val["error_code"] == "0") {
-								var msg = "発注送信を行いますが、よろしいですか？";
-								if (window.confirm(msg)) {
+								// JavaScript モーダルで表示
+								$('#myModal').modal('show'); //追加
+								//メッセージの修正
+								document.getElementById("confirm_txt").innerHTML=App.complete_msg; //追加　このメッセージはapp.jsで定義
+								$("#btn_ok").off();
+								$("#btn_ok").on('click',function() { //追加
+									hideModal();
 									var data = {
 										"scr": 'サイズ交換-発注送信-update',
 										"mode": "update",
@@ -560,7 +578,7 @@ define([
 									//console.log(data);
 
 									that.triggerMethod('sendComplete', data);
-								}
+								});
 							} else {
 								that.triggerMethod('showAlerts', res_val["error_msg"]);
 								return;

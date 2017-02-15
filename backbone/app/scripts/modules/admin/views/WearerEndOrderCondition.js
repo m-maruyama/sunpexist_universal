@@ -362,7 +362,7 @@ define([
 								// JavaScript モーダルで表示
 								$('#myModal').modal('show'); //追加
 								//メッセージの修正
-								document.getElementById("confirm_txt").innerHTML=App.input_insert_msg; //追加　このメッセージはapp.jsで定義
+								document.getElementById("confirm_txt").innerHTML=App.input_msg; //追加　このメッセージはapp.jsで定義
 								$("#btn_ok").off();
 								$("#btn_ok").on('click',function() { //追加
 									hideModal();
@@ -488,7 +488,7 @@ define([
 					$("#btn_ok").on('click',function() { //追加
 						hideModal();
 						$.blockUI({ message: '<p><img src="ajax-loader.gif" style="margin: 0 auto;" /> 発注取消中...</p>' });
-						var modelForUpdate = this.model;
+						var modelForUpdate = that.model;
 						modelForUpdate.url = App.api.WN0018;
 						var cond = {
 							"scr": '貸与終了-発注取消',
@@ -501,7 +501,7 @@ define([
 								var res_val = res.attributes;
 
 								// if (res_val["error_code"] == "0") {
-								// 	$.unblockUI();
+									$.unblockUI();
 								// 	alert('発注取消が完了しました。このまま検索画面へ移行します。');
 									var cond = window.sessionStorage.getItem("wearer_end_cond");
 									window.sessionStorage.setItem("back_wearer_end_cond", cond);

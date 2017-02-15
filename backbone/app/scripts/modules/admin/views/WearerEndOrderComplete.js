@@ -109,7 +109,7 @@ define([
 						data.remove();
 						form.remove();
 						form = null;
-						$('#myModal').modal('hide'); //追加
+						hideModal();
 					});
 				}
 			}
