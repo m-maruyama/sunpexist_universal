@@ -1263,17 +1263,17 @@ $app->post('/wearer_other_change_insert', function () use ($app) {
         echo json_encode($json_list);
         return;
     }
-    if (byte_cnt($wearer_data_input['cster_emply_cd']) > 10) {
-        array_push($error_list, '社員コードの文字数が多すぎます。');
-    }
-
-    if (byte_cnt($wearer_data_input['member_name']) > 22) {
-        array_push($error_list, '着用者名の文字数が多すぎます。');
-    }
-
-    if (byte_cnt($wearer_data_input['member_name_kana']) > 22) {
-        array_push($error_list, '着用者名(カナ)の文字数が多すぎます。');
-    }
+//    if (byte_cnt($wearer_data_input['cster_emply_cd']) > 10) {
+//        array_push($error_list, '社員コードの文字数が多すぎます。');
+//    }
+//
+//    if (byte_cnt($wearer_data_input['member_name']) > 22) {
+//        array_push($error_list, '着用者名の文字数が多すぎます。');
+//    }
+//
+//    if (byte_cnt($wearer_data_input['member_name_kana']) > 22) {
+//        array_push($error_list, '着用者名(カナ)の文字数が多すぎます。');
+//    }
     //※発注情報トラン参照
     $query_list = array();
     array_push($query_list, "corporate_id = '".$auth['corporate_id']."'");
@@ -1391,7 +1391,7 @@ $app->post('/wearer_other_change_insert', function () use ($app) {
 
     }
     if (!empty($wearer_data_input["comment"])) {
-        if (mb_strlen($wearer_data_input["comment"]) > 100) {
+        if (strlen(mb_convert_encoding($wearer_data_input['comment'], "SJIS")) > 100) {
             array_push($error_list,'コメント欄は100文字以内で入力してください。');
             $json_list['error_msg'] = $error_list;
             $json_list["error_code"] = "1";
@@ -1413,12 +1413,12 @@ $app->post('/wearer_other_change_insert', function () use ($app) {
 //        $json_list["error_code"] = "1";
 //
 //    }
-    if (!$wearer_data_input['member_name']) {
-        array_push($error_list,'着用者名を入力してください。');
-        $json_list['error_msg'] = $error_list;
-        $json_list["error_code"] = "1";
-
-    }
+//    if (!$wearer_data_input['member_name']) {
+//        array_push($error_list,'着用者名を入力してください。');
+//        $json_list['error_msg'] = $error_list;
+//        $json_list["error_code"] = "1";
+//
+//    }
     // 社員コード
 //    if ($wearer_data_input['cster_emply_cd_chk']) {
 //        if (mb_strlen($wearer_data_input['cster_emply_cd']) == 0) {

@@ -1493,7 +1493,7 @@ $app->post('/wearer_return/complete', function ()use($app){
      if (mb_strlen($wearer_data_input['comment']) > 0) {
        if (strlen(mb_convert_encoding($wearer_data_input['comment'], "SJIS")) > 100) {
          $json_list["error_code"] = "1";
-         $error_msg = "コメント欄の規定文字数がオーバーしています。";
+         $error_msg = "コメント欄は100文字以内で入力してください。";
          array_push($json_list["error_msg"], $error_msg);
        }
        //コメント欄使用不可文字
@@ -2744,7 +2744,7 @@ $app->post('/wearer_return/send', function ()use($app){
     if (mb_strlen($wearer_data_input['comment']) > 0) {
       if (strlen(mb_convert_encoding($wearer_data_input['comment'], "SJIS")) > 100) {
         $json_list["error_code"] = "1";
-        $error_msg = "コメント欄の規定文字数がオーバーしています。";
+        $error_msg = "コメント欄は100文字以内で入力してください。";
         array_push($json_list["error_msg"], $error_msg);
       }
       //コメント欄使用不可文字
