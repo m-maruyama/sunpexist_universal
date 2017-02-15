@@ -267,16 +267,16 @@ $app->post('/account/modal', function () use ($app) {
     }
     //ユーザー名称文字数
     if(mb_strlen($cond['user_name']) > 22){
-        $error_list['user_name_strlen'] = 'ユーザー名称は22文字以下(全角11文字)で入力してください。';
+        $error_list['user_name_strlen'] = 'ユーザー名称の文字数が多すぎます。（最大全角11文字）';
     }
     //所属名文字数
     if(mb_strlen($cond['position_name']) > 22){
-        $error_list['position_name_strlen'] = '所属名は22文字以下(全角11文字)で入力してください。';
+        $error_list['position_name_strlen'] = '所属名の文字数が多すぎます。（最大全角11文字）';
     }
     ChromePhp::log(mb_strlen($cond['login_disp_name']));
     //ログイン表示名文字数
     if(mb_strlen($cond['login_disp_name']) > 22){
-        $error_list['login_disp_name_strlen'] = 'ログイン表示名は22文字以下(全角11文字)で入力してください。';
+        $error_list['login_disp_name_strlen'] = 'ログイン表示名の文字数が多すぎます。（最大全角11文字）';
     }
 
 
