@@ -34,6 +34,7 @@ function Sleep( T ){
 function hideModal(){
 	$("#myModal").removeClass("in");
 	$(".modal-backdrop").remove();
+	$("body").removeClass("modal-open");
 	$("#myModal").hide();
 }
 
