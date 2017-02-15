@@ -63,6 +63,12 @@ define([
 					});
 					wearerOtherChangeOrderView.complete.show(wearerOtherChangeOrderSendComplete);
 				});
+				//エラーメッセージ
+				this.listenTo(wearerOtherChangeOrderConditionView, 'error_msg', function(errors){
+					if(errors){
+						wearerOtherChangeOrderConditionView.triggerMethod('showAlerts', errors);
+					}
+				});
 
 				App.main.show(wearerOtherChangeOrderView);
 				wearerOtherChangeOrderView.condition.show(wearerOtherChangeOrderConditionView);
