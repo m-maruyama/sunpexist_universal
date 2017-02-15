@@ -222,6 +222,7 @@ $app->post('/agreement_no', function () use ($app) {
     $json_list['agreement_no_disabled'] = '';
   }
   $json_list['agreement_no_list'] = $all_list;
+
   echo json_encode($json_list);
 });
 
@@ -1047,9 +1048,8 @@ $app->post('/zaiko_item_color', function () use ($app) {
 /*
  * 拠点絞り込み検索
  */
-$app->post('/inquiry/section_modal', function () use ($app) {
+$app->post('/section_modal', function () use ($app) {
     $params = json_decode(file_get_contents('php://input'), true);
-    ChromePhp::log($params);
     $query_list = array();
     $cond = $params['cond'];
     $page = $params['page'];
@@ -1092,6 +1092,12 @@ $app->post('/inquiry/section_modal', function () use ($app) {
     if($cond['url'] == 'wearer_change_order.html'){
         $all_zero = true;
     }
+    //お問い合わせの入力画面、拠点モーダル内の検索ボタンの場合はゼロ埋めと同じ
+    if($cond['url'] == 'inquiry.html'){
+      if($auth['user_type'] != '1'){
+        $all_zero = true;
+      }
+     }
 
     $list = array();
     $all_list = array();
@@ -1128,7 +1134,6 @@ $app->post('/inquiry/section_modal', function () use ($app) {
         $arg_str .= $query;
     }
     $arg_str .= ' ORDER BY rntl_sect_cd asc';
-
     $m_section = new MSection();
     $results_all = new Resultset(null, $m_section, $m_section->getReadConnection()->query($arg_str));
     $result_obj = (array)$results_all;

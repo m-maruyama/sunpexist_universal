@@ -176,7 +176,6 @@ define([
 			"CU0011": host + "/inquiry/agreement_no",
 			"CU0012": host + "/inquiry/genre",
 			"CU0013": host + "/inquiry/section",
-			"CU0014": host + "/inquiry/section_modal",
 			"CU0020": host + "/inquiry/search",
 			"CU0030": host + "/inquiry/input",
 			"CU0031": host + "/inquiry/complete",
@@ -325,7 +324,8 @@ define([
 		App.account_del_msg = 'アカウントを削除しました。';
 		App.account_lock_msg = 'アカウントロックを解除しました。';
 		App.account_add_msg = 'アカウントを登録しました。';
-
+		App.inquiry_nothing_msg = '詳細データが存在しません。';
+		App.inquiry_complete_msg = 'お問い合わせ回答の更新が完了しました。このまま検索画面へ移行します。';
 
 
 

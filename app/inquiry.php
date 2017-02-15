@@ -86,7 +86,6 @@ $app->post('/inquiry/corporate', function () use ($app) {
 		$json_list["user_type"] = "0";
 	}
   $json_list['corporate_list'] = $all_list;
-  ChromePhp::log($json_list['corporate_list']);
   echo json_encode($json_list);
 });
 
@@ -99,7 +98,6 @@ $app->post('/inquiry/agreement_no', function () use ($app) {
 
   // アカウントセッション取得
   $auth = $app->session->get('auth');
-
   // フロントパラメータ取得
   if (!empty($params['data'])) {
     $cond = $params['data'];
@@ -118,6 +116,9 @@ $app->post('/inquiry/agreement_no', function () use ($app) {
     array_push($query_list, "m_contract_resource.corporate_id = '".$cond['corporate']."'");
     array_push($query_list, "m_account.corporate_id = '".$cond['corporate']."'");
     //array_push($query_list, "m_account.user_id = '".$cond['corporate']."'");
+  }
+  if($auth['user_type'] == '1'){
+    array_push($query_list, "m_contract_resource.accnt_no = '".$auth['accnt_no']."'");
   }
   array_push($query_list, "m_contract.rntl_cont_flg = '1'");
   $query = implode(' AND ', $query_list);
@@ -202,13 +203,10 @@ $app->post('/inquiry/agreement_no', function () use ($app) {
  */
 $app->post('/inquiry/section', function () use ($app) {
   $params = json_decode(file_get_contents('php://input'), true);
-
-
   $json_list = array();
 
   // アカウントセッション取得
   $auth = $app->session->get('auth');
-
 
   // 契約リソースマスタ参照
   $query_list = array();
@@ -271,7 +269,9 @@ $app->post('/inquiry/section', function () use ($app) {
       $query_list[] = "rntl_cont_no = '".$params['agreement_no']."'";
     } else {
       if (empty($params["corporate"])) {
-        $query_list[] = "rntl_cont_no = '".$app->session->get('first_rntl_cont_no')."'";
+        if($auth['user_type'] == '1') {//一般ユーザ
+          $query_list[] = "rntl_cont_no = '" . $app->session->get('first_rntl_cont_no') . "'";
+        }
       }
     }
 
@@ -286,7 +286,6 @@ $app->post('/inquiry/section', function () use ($app) {
       $arg_str .= $query;
     }
     $arg_str .= ' ORDER BY rntl_sect_cd asc';
-    ChromePhp::log($arg_str);
     $m_section = new MSection();
     $results = new Resultset(null, $m_section, $m_section->getReadConnection()->query($arg_str));
     $results_array = (array) $results;
@@ -333,7 +332,7 @@ $app->post('/inquiry/section', function () use ($app) {
     $list = array();
     $all_list = array();
 
-    ChromePhp::log($params["corporate"]);
+
     if (!empty($params["corporate"])) {
       $query_list[] = "m_section.corporate_id = '".$params["corporate"]."'";
     } else {
@@ -341,29 +340,44 @@ $app->post('/inquiry/section', function () use ($app) {
     }
     if (!empty($params['agreement_no'])) {
       $query_list[] = "m_section.rntl_cont_no = '".$params['agreement_no']."'";
-    } else {
-      if (empty($params["corporate"])) {
-        $query_list[] = "m_section.rntl_cont_no = '".$app->session->get('first_rntl_cont_no')."'";
+    }else{
+      if($auth['user_type'] == '1') {//一般ユーザ
+        $query_list[] = "m_section.rntl_cont_no = '" . $app->session->get('first_rntl_cont_no') . "'";
       }
+    }
+    if($auth['user_type'] == '1') {//一般ユーザ
+      $query_list[] = "m_contract_resource.accnt_no = '" . $auth["accnt_no"] . "'";
     }
     //$query_list[] = "m_contract_resource.accnt_no = '".$auth["accnt_no"]."'";
     $query = implode(' AND ', $query_list);
-    ChromePhp::log($query);
 
-    $arg_str = '';
-    $arg_str .= 'SELECT ';
-    $arg_str .= 'm_section.rntl_sect_cd as rntl_sect_cd,';
-    $arg_str .= 'm_section.rntl_sect_name as rntl_sect_name';
-    $arg_str .= ' FROM ';
-    $arg_str .= 'm_contract_resource';
-    $arg_str .= ' INNER JOIN m_section';
-    $arg_str .= ' ON m_contract_resource.corporate_id = m_section.corporate_id';
-    $arg_str .= ' AND m_contract_resource.rntl_cont_no = m_section.rntl_cont_no';
-    $arg_str .= ' AND m_contract_resource.rntl_sect_cd = m_section.rntl_sect_cd';
-    $arg_str .= ' WHERE ';
-    $arg_str .= $query;
-    $arg_str .= ' ORDER BY m_section.rntl_sect_cd asc';
-    ChromePhp::log($arg_str);
+    if($auth['user_type'] == '1') {//一般ユーザ
+      $arg_str = '';
+      $arg_str .= 'SELECT ';
+      $arg_str .= 'm_section.rntl_sect_cd as rntl_sect_cd,';
+      $arg_str .= 'm_section.rntl_sect_name as rntl_sect_name';
+      $arg_str .= ' FROM ';
+      $arg_str .= 'm_contract_resource';
+      $arg_str .= ' INNER JOIN m_section';
+      $arg_str .= ' ON m_contract_resource.corporate_id = m_section.corporate_id';
+      $arg_str .= ' AND m_contract_resource.rntl_cont_no = m_section.rntl_cont_no';
+      $arg_str .= ' AND m_contract_resource.rntl_sect_cd = m_section.rntl_sect_cd';
+      $arg_str .= ' WHERE ';
+      $arg_str .= $query;
+      $arg_str .= ' ORDER BY m_section.rntl_sect_cd asc';
+    }else{//管理者、システム管理者
+      $arg_str = '';
+      $arg_str .= 'SELECT ';
+      $arg_str .= 'm_section.rntl_sect_cd as rntl_sect_cd,';
+      $arg_str .= 'm_section.rntl_sect_name as rntl_sect_name';
+      $arg_str .= ' FROM ';
+      $arg_str .= 'm_section';
+      if (!empty($query)){
+      $arg_str .= ' WHERE ';
+      $arg_str .= $query;
+      }
+      $arg_str .= ' ORDER BY m_section.rntl_sect_cd asc';
+    }
     $m_contract_resource = new MContractResource();
     $results = new Resultset(null, $m_contract_resource, $m_contract_resource->getReadConnection()->query($arg_str));
     $results_array = (array) $results;
@@ -418,127 +432,6 @@ $app->post('/inquiry/section', function () use ($app) {
   //ChromePhp::log($json_list);
   echo json_encode($json_list);
 });
-
-
-/*
- * 拠点絞り込み検索 お問い合わせ
- */
-$app->post('/inquiry/section_modal', function () use ($app) {
-  $params = json_decode(file_get_contents('php://input'), true);
-  $query_list = array();
-  $cond = $params['cond'];
-  $page = $params['page'];
-  // アカウントセッション取得
-  $auth = $app->session->get('auth');
-  //拠点
-  //--- 検索条件 ---//
-  $query_list = array();
-  //--- 検索条件 ---//
-  // 契約マスタ. 企業ID
-  array_push($query_list, "MContract.corporate_id = '".$auth['corporate_id']."'");
-  // 契約リソースマスタ. 企業ID
-  array_push($query_list, "MContractResource.corporate_id = '".$auth['corporate_id']."'");
-  // 契約リソースマスタ. レンタル契約No = 画面で選択されている契約No.
-  array_push($query_list, "MContractResource.rntl_cont_no = '".$cond['agreement_no']."'");
-  // アカウントマスタ.企業ID
-  array_push($query_list, "MAccount.corporate_id = '".$auth['corporate_id']."'");
-  // アカウントマスタ. ユーザーID
-  array_push($query_list, "MAccount.user_id = '".$auth['user_id']."'");
-
-  //sql文字列を' AND 'で結合
-  $query = implode(' AND ', $query_list);
-  //--- クエリー実行・取得 ---//
-  $m_contract_resources = MContract::query()
-  ->where($query)
-  ->columns(array('MContractResource.rntl_sect_cd'))
-  ->innerJoin('MContractResource', 'MContract.corporate_id = MContractResource.corporate_id')
-  ->join('MAccount', 'MAccount.accnt_no = MContractResource.accnt_no')
-  ->execute();
-  $rntl_sect_cd = null;
-  $all_zero = false;
-  $sect_arr = array();
-  foreach ($m_contract_resources as $m_contract_resource) {
-    array_push($sect_arr,"'".$m_contract_resource->rntl_sect_cd."'");
-    if($m_contract_resource->rntl_sect_cd == '0000000000'){
-      $all_zero = true;
-    }
-  }
-  //職種変更または異動の入力画面、拠点モーダル内の検索ボタンの場合はゼロ埋めと同じ
-  if($cond['url'] == 'wearer_change_order.html'){
-    $all_zero = true;
-  }
-
-  $list = array();
-  $all_list = array();
-  $query_list = array();
-  //【前処理】で取得したレコードの中に、レンタル部門コード＝オール０「ゼロ」がセットされているレコードが存在しない場合、部門コードをセット
-  if(!$all_zero){
-    array_push($query_list, "rntl_sect_cd in(".implode(',',$sect_arr).")");
-  }
-  // 部門マスタ. 企業ID
-  if (!empty($cond["corporate_flg"])) {
-    if (!empty($cond["corporate"])) {
-      array_push($query_list, "corporate_id = '".$cond["corporate"]."'");
-    }
-  } else {
-    array_push($query_list, "corporate_id = '".$auth["corporate_id"]."'");
-  }
-  // 部門マスタ. レンタル契約No
-  if (!empty($cond['agreement_no'])) {
-    array_push($query_list, "rntl_cont_no = '".$cond['agreement_no']."'");
-  }
-  if (isset($cond['rntl_sect_cd'])) {
-    array_push($query_list, "rntl_sect_cd LIKE '%".$cond['rntl_sect_cd']."'");
-  }
-  if (isset($cond['rntl_sect_name'])) {
-    array_push($query_list, "rntl_sect_name LIKE '%".$cond['rntl_sect_name']."%'");
-  }
-  $query = implode(' AND ', $query_list);
-
-  $arg_str = 'SELECT ';
-  $arg_str .= ' distinct on (rntl_sect_cd) *';
-  $arg_str .= ' FROM m_section';
-  if (!empty($query)) {
-    $arg_str .= ' WHERE ';
-    $arg_str .= $query;
-  }
-  $arg_str .= ' ORDER BY rntl_sect_cd asc';
-
-  $m_section = new MSection();
-  $results_all = new Resultset(null, $m_section, $m_section->getReadConnection()->query($arg_str));
-  $result_obj = (array)$results_all;
-  $results_cnt = $result_obj["\0*\0_count"];
-  $all_list = array();
-  $json_list = array();
-  if (!empty($results_cnt)) {
-    $paginator_model = new PaginatorModel(
-    array(
-    "data" => $results_all,
-    'limit' => $page['records_per_page'],
-    'page' => $page['page_number'],
-    )
-    );
-    if ($paginator_model) {
-      $paginator = $paginator_model->getPaginate();
-      $results = $paginator->items;
-    }
-    $i = 0;
-    foreach ($results as $result) {
-      $all_list[$i]['rntl_sect_cd'] = $result->rntl_sect_cd;
-      $all_list[$i]['rntl_sect_name'] = $result->rntl_sect_name;
-      ++$i;
-    }
-  }
-  $json_list['list'] = $all_list;
-  $page_list['records_per_page'] = $page['records_per_page'];
-  $page_list['page_number'] = $page['page_number'];
-  $page_list['total_records'] = count($results_all);
-  $json_list['page'] = $page_list;
-  echo json_encode($json_list);
-});
-
-
-
 
 
 /*

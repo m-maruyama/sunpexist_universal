@@ -12,7 +12,6 @@ define([
 			},
 			initialize: function(options) {
 			    this.options = options || {};
-			    console.log(this.options);
 			    this.options = _.extend(this.defaults, this.options);
 			},
 			template: App.Admin.Templates.sectionCondition,
@@ -66,10 +65,6 @@ define([
 						that.render();
 					}
 				});
-
-
-
-
 			},
 			events: {
 				'click @ui.section_btn': function(e){

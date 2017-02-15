@@ -74,6 +74,9 @@ define([
 							that.ui.corporate_id.val(res_list["corporate_list"][0]["corporate_id"]);
 						}
 						// 契約No
+						if(res_list['agreement_no_list'].length == 1){
+							$("#agreement_no").attr("disabled", "disabled");
+						}
 						for (var i=0; i<res_list['agreement_no_list'].length; i++) {
 							var option = document.createElement('option');
 							var str = res_list['agreement_no_list'][i]['rntl_cont_no'] + ' ' + res_list['agreement_no_list'][i]['rntl_cont_name'];
@@ -196,8 +199,7 @@ define([
 							} else {
 								// 正常完了の場合は検索画面へ遷移
 								$.unblockUI();
-								alert("お問い合わせ内容の登録が完了しました。このまま検索画面へ移行します。");
-
+								//alert("お問い合わせ内容の登録が完了しました。このまま検索画面へ移行します。");
 								// 検索画面の条件項目を取得
 								var cond = window.sessionStorage.getItem("inquiry_cond");
 								window.sessionStorage.setItem("back_inquiry_cond", cond);
