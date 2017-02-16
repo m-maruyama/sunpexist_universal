@@ -982,7 +982,7 @@ $app->post('/wearer_exchange/list', function ()use($app){
           $query_list[] = "t_returned_plan_info_tran.color_cd = '".$list["color_cd"]."'";
           $query_list[] = "t_returned_plan_info_tran.size_cd = '".$list["now_size_cd"]."'";
           //発注状況区分
-          array_push($query_list, "(order_sts_kbn = '4' OR (order_sts_kbn = '2' AND (order_reason_kbn = '28' OR order_reason_kbn = '07')))");//サイズ交換のトラン
+            array_push($query_list, "order_sts_kbn = '3'");
           $query = implode(' AND ', $query_list);
 
           $arg_str = "";
@@ -1244,6 +1244,7 @@ $app->post('/wearer_exchange/list', function ()use($app){
             )
             {
               $list["exchange_possible_num"] = $tran_map["return_plan_qty"];
+              $list["return_num"] = $tran_map["return_plan_qty"];
             }
           }
         } else {

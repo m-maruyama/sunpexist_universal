@@ -77,7 +77,6 @@ define([
 							$('.exchange_possible_num').css('display','');
 						}
 						var item_array = res_list.item_list;
-
 						if (res_list["individual_flg"] == '1') {
 
 							for (var i = 0; i < item_array.length; i++) {
