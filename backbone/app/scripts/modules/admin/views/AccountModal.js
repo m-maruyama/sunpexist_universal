@@ -92,7 +92,7 @@ define([
 						this.triggerMethod('showAlerts', errors);
 						return;
 					}
-					$("#corporate_id_modal").attr('disabled',true);
+					//$("#corporate_id_modal").attr('disabled',true);
 
 					model.url = App.api.AC0020;
 					var cond = {
