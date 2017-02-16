@@ -577,7 +577,9 @@ $app->post('/history/search', function ()use($app){
   $arg_str .= " ON m_job_type.corporate_id = m_input_item.corporate_id";
   $arg_str .= " AND m_job_type.rntl_cont_no = m_input_item.rntl_cont_no";
   $arg_str .= " AND m_job_type.job_type_cd = m_input_item.job_type_cd)";
-  $arg_str .= " ON t_order.m_job_type_comb_hkey = m_job_type.m_job_type_comb_hkey";
+  $arg_str .= " ON t_order.corporate_id = m_job_type.corporate_id";
+  $arg_str .= " AND t_order.rntl_cont_no = m_job_type.rntl_cont_no";
+  $arg_str .= " ON t_order.job_type_cd = m_job_type.job_type_cd";
 	$arg_str .= " INNER JOIN m_wearer_std";
 	$arg_str .= " ON t_order.m_wearer_std_comb_hkey = m_wearer_std.m_wearer_std_comb_hkey";
   $arg_str .= " INNER JOIN m_contract";
