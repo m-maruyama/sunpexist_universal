@@ -51,8 +51,10 @@ define([
 								var data = cond["data"];
 								that.onShow(res_val, type, transition, data);
 							} else {
-								// エラーアラート表示
-								alert(res_val["err_msg"]);
+								// JavaScript モーダルで表示
+								$('#myModalAlert').modal('show'); //追加
+								//メッセージの修正
+								document.getElementById("alert_txt").innerHTML=res_val["err_msg"];
 							}
 						}
 					});
