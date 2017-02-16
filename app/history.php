@@ -347,6 +347,7 @@ $app->post('/history/search', function ()use($app){
         }
         if ($reason_kbn_3) {
             //理由区分と発注区分
+            array_push($reason_kbn_3, "t_order.order_reason_kbn = '24'");
             $reason_kbn_3_str = implode(' OR ', $reason_kbn_3);
             array_push($kbn_list, "(" . $order_kbn . " AND (" . $reason_kbn_3_str . "))");
         } else {
@@ -354,7 +355,7 @@ $app->post('/history/search', function ()use($app){
             array_push($reason_kbn_3, "t_order.order_reason_kbn = '09'");
             array_push($reason_kbn_3, "t_order.order_reason_kbn = '10'");
             array_push($reason_kbn_3, "t_order.order_reason_kbn = '11'");
-
+            array_push($reason_kbn_3, "t_order.order_reason_kbn = '24'");
             $reason_kbn_3_str = implode(' OR ', $reason_kbn_3);
             array_push($kbn_list, "(" . $order_kbn . " AND (" . $reason_kbn_3_str . "))");
         }
@@ -388,21 +389,27 @@ $app->post('/history/search', function ()use($app){
         $order_kbn = "t_order.order_sts_kbn = '2'";
         if($cond['reason_kbn15']){
             //貸与終了、かつ、理由区分＝05：退職の場合、着用者基本マスタ.着用者状況区分＝4：退社の着用者を検索する。
-            array_push($reason_kbn_4, "(t_order.order_reason_kbn = '05' AND m_wearer_std.werer_sts_kbn = '4')");
+            //array_push($reason_kbn_4, "(t_order.order_reason_kbn = '05' AND m_wearer_std.werer_sts_kbn = '4')");
+          array_push($reason_kbn_4, "(t_order.order_reason_kbn = '05')");
         }
         if($cond['reason_kbn16']){
             //貸与終了、かつ、理由区分＝06：休職の場合、着用者基本マスタ.着用者状況区分＝2:休職の着用者を検索する。
-            array_push($reason_kbn_4, "(t_order.order_reason_kbn = '06' AND m_wearer_std.werer_sts_kbn = '2')");
+            //array_push($reason_kbn_4, "(t_order.order_reason_kbn = '06' AND m_wearer_std.werer_sts_kbn = '2')");
+          array_push($reason_kbn_4, "(t_order.order_reason_kbn = '06')");
         }
         if($cond['reason_kbn17']){
-            array_push($reason_kbn_4, "t_order.order_reason_kbn = '07' AND m_wearer_std.werer_sts_kbn = '1'");
-            array_push($reason_kbn_4, "t_order.order_reason_kbn = '28' AND m_wearer_std.werer_sts_kbn = '1'");
+            //array_push($reason_kbn_4, "t_order.order_reason_kbn = '07' AND m_wearer_std.werer_sts_kbn = '1'");
+            //array_push($reason_kbn_4, "t_order.order_reason_kbn = '28' AND m_wearer_std.werer_sts_kbn = '1'");
+          array_push($reason_kbn_4, "t_order.order_reason_kbn = '07'");
+          array_push($reason_kbn_4, "t_order.order_reason_kbn = '28'");
         }
         if($cond['reason_kbn18']){
-            array_push($reason_kbn_4, "t_order.order_reason_kbn = '08' AND m_wearer_std.werer_sts_kbn = '1'");
+            //array_push($reason_kbn_4, "t_order.order_reason_kbn = '08' AND m_wearer_std.werer_sts_kbn = '1'");
+          array_push($reason_kbn_4, "t_order.order_reason_kbn = '08'");
         }
         if($cond['reason_kbn19']){
-            array_push($reason_kbn_4, "t_order.order_reason_kbn = '24' AND m_wearer_std.werer_sts_kbn = '1'");
+            //array_push($reason_kbn_4, "t_order.order_reason_kbn = '24' AND m_wearer_std.werer_sts_kbn = '1'");
+          array_push($reason_kbn_4, "t_order.order_reason_kbn = '20'");
         }
         if ($reason_kbn_4) {
             //理由区分と発注区分
@@ -410,12 +417,18 @@ $app->post('/history/search', function ()use($app){
             array_push($kbn_list, "(" . $order_kbn . " AND (" . $reason_kbn_4_str . "))");
         } else {
             //発注区分のみ
-            array_push($reason_kbn_4, "(t_order.order_reason_kbn = '05' AND m_wearer_std.werer_sts_kbn = '4')");
-            array_push($reason_kbn_4, "(t_order.order_reason_kbn = '06' AND m_wearer_std.werer_sts_kbn = '2')");
-            array_push($reason_kbn_4, "t_order.order_reason_kbn = '07' AND m_wearer_std.werer_sts_kbn = '1'");
-            array_push($reason_kbn_4, "t_order.order_reason_kbn = '28' AND m_wearer_std.werer_sts_kbn = '1'");
-            array_push($reason_kbn_4, "t_order.order_reason_kbn = '08' AND m_wearer_std.werer_sts_kbn = '1'");
-            array_push($reason_kbn_4, "t_order.order_reason_kbn = '24' AND m_wearer_std.werer_sts_kbn = '1'");
+            //array_push($reason_kbn_4, "(t_order.order_reason_kbn = '05' AND m_wearer_std.werer_sts_kbn = '4')");
+            //array_push($reason_kbn_4, "(t_order.order_reason_kbn = '06' AND m_wearer_std.werer_sts_kbn = '2')");
+            //array_push($reason_kbn_4, "t_order.order_reason_kbn = '07' AND m_wearer_std.werer_sts_kbn = '1'");
+            //array_push($reason_kbn_4, "t_order.order_reason_kbn = '28' AND m_wearer_std.werer_sts_kbn = '1'");
+            //array_push($reason_kbn_4, "t_order.order_reason_kbn = '08' AND m_wearer_std.werer_sts_kbn = '1'");
+            //array_push($reason_kbn_4, "t_order.order_reason_kbn = '24' AND m_wearer_std.werer_sts_kbn = '1'");
+          array_push($reason_kbn_4, "(t_order.order_reason_kbn = '05')");
+          array_push($reason_kbn_4, "(t_order.order_reason_kbn = '06')");
+          array_push($reason_kbn_4, "t_order.order_reason_kbn = '07'");
+          array_push($reason_kbn_4, "t_order.order_reason_kbn = '28'");
+          array_push($reason_kbn_4, "t_order.order_reason_kbn = '08'");
+          array_push($reason_kbn_4, "t_order.order_reason_kbn = '20'");
             $reason_kbn_4_str = implode(' OR ', $reason_kbn_4);
             array_push($kbn_list, "(" . $order_kbn . " AND (" . $reason_kbn_4_str . "))");
         }
@@ -423,20 +436,26 @@ $app->post('/history/search', function ()use($app){
     }else{
         //貸与終了にチェックがついてない
         if($cond['reason_kbn15']){
-            array_push($reason_kbn_4, "(t_order.order_reason_kbn = '05' AND m_wearer_std.werer_sts_kbn = '4')");
+          array_push($reason_kbn_4, "(t_order.order_reason_kbn = '05')");
+            //array_push($reason_kbn_4, "(t_order.order_reason_kbn = '05' AND m_wearer_std.werer_sts_kbn = '4')");
         }
         if($cond['reason_kbn16']){
-            array_push($reason_kbn_4, "(t_order.order_reason_kbn = '06' AND m_wearer_std.werer_sts_kbn = '2')");
+          array_push($reason_kbn_4, "(t_order.order_reason_kbn = '06')");
+            //array_push($reason_kbn_4, "(t_order.order_reason_kbn = '06' AND m_wearer_std.werer_sts_kbn = '2')");
         }
         if($cond['reason_kbn17']){
-            array_push($reason_kbn_4, "t_order.order_reason_kbn = '07' AND m_wearer_std.werer_sts_kbn = '1'");
-            array_push($reason_kbn_4, "t_order.order_reason_kbn = '28' AND m_wearer_std.werer_sts_kbn = '1'");
+          array_push($reason_kbn_4, "t_order.order_reason_kbn = '07'");
+          array_push($reason_kbn_4, "t_order.order_reason_kbn = '28'");
+            //array_push($reason_kbn_4, "t_order.order_reason_kbn = '07' AND m_wearer_std.werer_sts_kbn = '1'");
+            //array_push($reason_kbn_4, "t_order.order_reason_kbn = '28' AND m_wearer_std.werer_sts_kbn = '1'");
         }
         if($cond['reason_kbn18']){
-            array_push($reason_kbn_4, "t_order.order_reason_kbn = '08' AND m_wearer_std.werer_sts_kbn = '1'");
+          array_push($reason_kbn_4, "t_order.order_reason_kbn = '08'");
+            //array_push($reason_kbn_4, "t_order.order_reason_kbn = '08' AND m_wearer_std.werer_sts_kbn = '1'");
         }
         if($cond['reason_kbn19']){
-            array_push($reason_kbn_4, "t_order.order_reason_kbn = '24' AND m_wearer_std.werer_sts_kbn = '1'");
+          array_push($reason_kbn_4, "t_order.order_reason_kbn = '20'");
+            //array_push($reason_kbn_4, "t_order.order_reason_kbn = '24' AND m_wearer_std.werer_sts_kbn = '1'");
         }
         if ($reason_kbn_4) {
             //理由区分のみ
@@ -451,7 +470,7 @@ $app->post('/history/search', function ()use($app){
 
     //その他
 	if($cond['order_kbn4']){
-		array_push($kbn_list,"t_order.order_sts_kbn = '9' AND m_wearer_std.werer_sts_kbn = '1'");
+		array_push($kbn_list,"t_order.order_sts_kbn = '9'");
 	}
 
 	//区分を検索条件に追加
@@ -587,7 +606,6 @@ $app->post('/history/search', function ()use($app){
 	$arg_str .= " WHERE ";
 	$arg_str .= $query;
 	$arg_str .= ") as distinct_table";
-  //ChromePhp::log($arg_str);
 	if (!empty($q_sort_key)) {
 		$arg_str .= " ORDER BY ";
 		$arg_str .= $q_sort_key." ".$order;
@@ -849,7 +867,6 @@ $app->post('/history/search', function ()use($app){
 			foreach ($gencode as $gencode_map) {
 				$list['order_status_name'] = $gencode_map->gen_name;
 			}
-
 			//---個体管理番号・受領日時の取得---//
 			$list['individual_num'] = "-";
 			$list['order_res_ymd'] = "-";

@@ -231,262 +231,285 @@ $app->post('/csv_download', function ()use($app){
         $reason_kbn_1 = array();
         $kbn_list = array();
         if($cond['order_kbn0']) {
-            $chk_flg = '1';
-            //貸与開始にチェックがついてたら
-            $order_kbn = "t_order.order_sts_kbn = '1' AND m_wearer_std.werer_sts_kbn = '1'";
-            if ($cond['reason_kbn0']) {
-                array_push($reason_kbn_1, "t_order.order_reason_kbn = '01'");
-            }
-            if ($cond['reason_kbn1']) {
-                array_push($reason_kbn_1, "t_order.order_reason_kbn = '02'");
-            }
-            if ($cond['reason_kbn2']) {
-                array_push($reason_kbn_1, "t_order.order_reason_kbn = '03'");
-            }
-            if ($cond['reason_kbn3']) {
-                array_push($reason_kbn_1, "t_order.order_reason_kbn = '04'");
-            }
-            if ($cond['reason_kbn4']) {
-                array_push($reason_kbn_1, "t_order.order_reason_kbn = '19'");
-            }
-            if ($reason_kbn_1) {
-                //理由区分と発注区分
-                $reason_kbn_1_str = implode(' OR ', $reason_kbn_1);
-                array_push($kbn_list, "(" . $order_kbn . " AND (" . $reason_kbn_1_str . "))");
-            } else {
-                //発注区分のみ
-                array_push($reason_kbn_1, "t_order.order_reason_kbn = '01'");
-                array_push($reason_kbn_1, "t_order.order_reason_kbn = '02'");
-                array_push($reason_kbn_1, "t_order.order_reason_kbn = '03'");
-                array_push($reason_kbn_1, "t_order.order_reason_kbn = '03'");
-                array_push($reason_kbn_1, "t_order.order_reason_kbn = '04'");
-                array_push($reason_kbn_1, "t_order.order_reason_kbn = '19'");
-                $reason_kbn_1_str = implode(' OR ', $reason_kbn_1);
-                array_push($kbn_list, "(" . $order_kbn . " AND (" . $reason_kbn_1_str . "))");
-            }
+          $chk_flg = '1';
+          //貸与開始にチェックがついてたら
+          $order_kbn = "t_order.order_sts_kbn = '1' AND (t_order.werer_sts_kbn = '1' OR t_order.werer_sts_kbn = '7')";
+          if ($cond['reason_kbn0']) {
+            array_push($reason_kbn_1, "t_order.order_reason_kbn = '01'");
+          }
+          if ($cond['reason_kbn1']) {
+            array_push($reason_kbn_1, "t_order.order_reason_kbn = '02'");
+          }
+          if ($cond['reason_kbn2']) {
+            array_push($reason_kbn_1, "t_order.order_reason_kbn = '03'");
+            array_push($reason_kbn_1, "t_order.order_reason_kbn = '27'");
+          }
+          if ($cond['reason_kbn3']) {
+            array_push($reason_kbn_1, "t_order.order_reason_kbn = '04'");
+          }
+          if ($cond['reason_kbn4']) {
+            array_push($reason_kbn_1, "t_order.order_reason_kbn = '19'");
+          }
+          if ($reason_kbn_1) {
+            //理由区分と発注区分
+            $reason_kbn_1_str = implode(' OR ', $reason_kbn_1);
+            array_push($kbn_list, "(" . $order_kbn . " AND (" . $reason_kbn_1_str . "))");
+          } else {
+            //発注区分のみ
+            array_push($reason_kbn_1, "t_order.order_reason_kbn = '01'");
+            array_push($reason_kbn_1, "t_order.order_reason_kbn = '02'");
+            array_push($reason_kbn_1, "t_order.order_reason_kbn = '03'");
+            array_push($reason_kbn_1, "t_order.order_reason_kbn = '27'");
+            array_push($reason_kbn_1, "t_order.order_reason_kbn = '04'");
+            array_push($reason_kbn_1, "t_order.order_reason_kbn = '19'");
+            $reason_kbn_1_str = implode(' OR ', $reason_kbn_1);
+            array_push($kbn_list, "(" . $order_kbn . " AND (" . $reason_kbn_1_str . "))");
+          }
         }else{
-            //貸与開始にチェックが付いてない
-            if ($cond['reason_kbn0']) {
-                array_push($reason_kbn_1, "t_order.order_reason_kbn = '01'");
-            }
-            if ($cond['reason_kbn1']) {
-                array_push($reason_kbn_1, "t_order.order_reason_kbn = '02'");
-            }
-            if ($cond['reason_kbn2']) {
-                array_push($reason_kbn_1, "t_order.order_reason_kbn = '03'");
-            }
-            if ($cond['reason_kbn3']) {
-                array_push($reason_kbn_1, "t_order.order_reason_kbn = '04'");
-            }
-            if ($cond['reason_kbn4']) {
-                array_push($reason_kbn_1, "t_order.order_reason_kbn = '19'");
-            }
-            if ($reason_kbn_1) {
-                //理由区分のみ
-                $reason_kbn_1_str = implode(' OR ', $reason_kbn_1);
-                array_push($kbn_list, "(".$reason_kbn_1_str .")");
-            }else{
-                //何もチェックなければ貸与開始を除く
-                $order_kbn = "t_order.order_sts_kbn != '1'";
-                array_push($query_list, $order_kbn);
-            }
+          //貸与開始にチェックが付いてない
+          if ($cond['reason_kbn0']) {
+            array_push($reason_kbn_1, "t_order.order_reason_kbn = '01'");
+          }
+          if ($cond['reason_kbn1']) {
+            array_push($reason_kbn_1, "t_order.order_reason_kbn = '02'");
+          }
+          if ($cond['reason_kbn2']) {
+            array_push($reason_kbn_1, "t_order.order_reason_kbn = '03'");
+            array_push($reason_kbn_1, "t_order.order_reason_kbn = '27'");
+          }
+          if ($cond['reason_kbn3']) {
+            array_push($reason_kbn_1, "t_order.order_reason_kbn = '04'");
+          }
+          if ($cond['reason_kbn4']) {
+            array_push($reason_kbn_1, "t_order.order_reason_kbn = '19'");
+          }
+          if ($reason_kbn_1) {
+            //理由区分のみ
+            $reason_kbn_1_str = implode(' OR ', $reason_kbn_1);
+            array_push($kbn_list, "(".$reason_kbn_1_str .")");
+          }else{
+            //何もチェックなければ貸与開始を除く
+            $order_kbn = "t_order.order_sts_kbn != '1'";
+            array_push($query_list, $order_kbn);
+          }
         }
-
         //交換
         $reason_kbn_2 = array();
         if($cond['order_kbn1']) {
-            //交換にチェックがついてたら
-            $order_kbn = "(t_order.order_sts_kbn = '3' OR t_order.order_sts_kbn = '4') AND m_wearer_std.werer_sts_kbn = '1'";
-            if($cond['reason_kbn5']){
-                array_push($reason_kbn_2, "t_order.order_reason_kbn = '14'");
-            }
-            if($cond['reason_kbn6']){
-                array_push($reason_kbn_2, "t_order.order_reason_kbn = '15'");
-            }
-            if($cond['reason_kbn7']){
-                array_push($reason_kbn_2, "t_order.order_reason_kbn = '16'");
-            }
-            if($cond['reason_kbn8']){
-                array_push($reason_kbn_2, "t_order.order_reason_kbn = '17'");
-            }
-            if($cond['reason_kbn9']){
-                array_push($reason_kbn_2, "t_order.order_reason_kbn = '12'");
-            }
-            if($cond['reason_kbn10']){
-                array_push($reason_kbn_2, "t_order.order_reason_kbn = '13'");
-            }
-            if($cond['reason_kbn11']){
-                array_push($reason_kbn_2, "t_order.order_reason_kbn = '23'");
-            }
-            if ($reason_kbn_2) {
-                //理由区分と発注区分
-                $reason_kbn_2_str = implode(' OR ', $reason_kbn_2);
-                array_push($kbn_list, "(" . $order_kbn . " AND (" . $reason_kbn_2_str . "))");
-            } else {
-                //発注区分のみ
-                array_push($reason_kbn_2, "t_order.order_reason_kbn = '14'");
-                array_push($reason_kbn_2, "t_order.order_reason_kbn = '15'");
-                array_push($reason_kbn_2, "t_order.order_reason_kbn = '16'");
-                array_push($reason_kbn_2, "t_order.order_reason_kbn = '17'");
-                array_push($reason_kbn_2, "t_order.order_reason_kbn = '12'");
-                array_push($reason_kbn_2, "t_order.order_reason_kbn = '13'");
-                array_push($reason_kbn_2, "t_order.order_reason_kbn = '23'");
-                $reason_kbn_2_str = implode(' OR ', $reason_kbn_2);
-                array_push($kbn_list, "(" . $order_kbn . " AND (" . $reason_kbn_2_str . "))");
-            }
+          //交換にチェックがついてたら
+          $order_kbn = "(t_order.order_sts_kbn = '3' OR t_order.order_sts_kbn = '4') AND t_order.werer_sts_kbn = '1'";
+          if($cond['reason_kbn5']){
+            array_push($reason_kbn_2, "t_order.order_reason_kbn = '14'");//消耗交換
+          }
+          if($cond['reason_kbn6']){
+            array_push($reason_kbn_2, "t_order.order_reason_kbn = '15'");//破損
+          }
+          if($cond['reason_kbn7']){
+            array_push($reason_kbn_2, "t_order.order_reason_kbn = '16'");//紛失
+          }
+          if($cond['reason_kbn8']){
+            array_push($reason_kbn_2, "t_order.order_reason_kbn = '17'");//不良品
+          }
+          if($cond['reason_kbn9']){
+            array_push($reason_kbn_2, "t_order.order_reason_kbn = '12'");//着用前
+          }
+          if($cond['reason_kbn10']){
+            array_push($reason_kbn_2, "t_order.order_reason_kbn = '13'");//着用後
+          }
+          if($cond['reason_kbn11']){
+            array_push($reason_kbn_2, "t_order.order_reason_kbn = '23'");//なし
+          }
+          if ($reason_kbn_2) {
+            //理由区分と発注区分
+            $reason_kbn_2_str = implode(' OR ', $reason_kbn_2);
+            array_push($kbn_list, "(" . $order_kbn . " AND (" . $reason_kbn_2_str . "))");
+          } else {
+            //発注区分のみ
+            array_push($reason_kbn_2, "t_order.order_reason_kbn = '14'");
+            array_push($reason_kbn_2, "t_order.order_reason_kbn = '15'");
+            array_push($reason_kbn_2, "t_order.order_reason_kbn = '16'");
+            array_push($reason_kbn_2, "t_order.order_reason_kbn = '17'");
+            array_push($reason_kbn_2, "t_order.order_reason_kbn = '12'");
+            array_push($reason_kbn_2, "t_order.order_reason_kbn = '13'");
+            array_push($reason_kbn_2, "t_order.order_reason_kbn = '23'");
+            $reason_kbn_2_str = implode(' OR ', $reason_kbn_2);
+            array_push($kbn_list, "(" . $order_kbn . " AND (" . $reason_kbn_2_str . "))");
+          }
         }else{
-            //交換にチェックがついてない
-            if($cond['reason_kbn5']){
-                array_push($reason_kbn_2, "t_order.order_reason_kbn = '14'");
-            }
-            if($cond['reason_kbn6']){
-                array_push($reason_kbn_2, "t_order.order_reason_kbn = '15'");
-            }
-            if($cond['reason_kbn7']){
-                array_push($reason_kbn_2, "t_order.order_reason_kbn = '16'");
-            }
-            if($cond['reason_kbn8']){
-                array_push($reason_kbn_2, "t_order.order_reason_kbn = '17'");
-            }
-            if($cond['reason_kbn9']){
-                array_push($reason_kbn_2, "t_order.order_reason_kbn = '12'");
-            }
-            if($cond['reason_kbn10']){
-                array_push($reason_kbn_2, "t_order.order_reason_kbn = '13'");
-            }
-            if($cond['reason_kbn11']){
-                array_push($reason_kbn_2, "t_order.order_reason_kbn = '23'");
-            }
-            if ($reason_kbn_2) {
-                //理由区分のみ
-                $reason_kbn_2_str = implode(' OR ', $reason_kbn_2);
-                array_push($kbn_list, "(".$reason_kbn_2_str .")");
-            }else{
-                $order_kbn = "(t_order.order_sts_kbn != '3' AND t_order.order_sts_kbn != '4')";
-                //何もチェックなければ交換を除く
-                array_push($query_list, $order_kbn);
-            }
+          //交換にチェックがついてない
+          if($cond['reason_kbn5']){
+            array_push($reason_kbn_2, "t_order.order_reason_kbn = '14'");
+          }
+          if($cond['reason_kbn6']){
+            array_push($reason_kbn_2, "t_order.order_reason_kbn = '15'");
+          }
+          if($cond['reason_kbn7']){
+            array_push($reason_kbn_2, "t_order.order_reason_kbn = '16'");
+          }
+          if($cond['reason_kbn8']){
+            array_push($reason_kbn_2, "t_order.order_reason_kbn = '17'");
+          }
+          if($cond['reason_kbn9']){
+            array_push($reason_kbn_2, "t_order.order_reason_kbn = '12'");
+          }
+          if($cond['reason_kbn10']){
+            array_push($reason_kbn_2, "t_order.order_reason_kbn = '13'");
+          }
+          if($cond['reason_kbn11']){
+            array_push($reason_kbn_2, "t_order.order_reason_kbn = '23'");
+          }
+          if ($reason_kbn_2) {
+            //理由区分のみ
+            $reason_kbn_2_str = implode(' OR ', $reason_kbn_2);
+            array_push($kbn_list, "(".$reason_kbn_2_str .")");
+          }else{
+            $order_kbn = "(t_order.order_sts_kbn != '3' AND t_order.order_sts_kbn != '4')";
+            //何もチェックなければ交換を除く
+            array_push($query_list, $order_kbn);
+          }
         }
 
         //職種変更または異動
         $reason_kbn_3 = array();
         if($cond['order_kbn2']) {
-            //異動の場合、着用者基本マスタ.着用者状況区分＝8：異動の着用者を検索する。
-            //職種変更または異動にチェックがついてたら
-            $order_kbn = "(t_order.order_sts_kbn = '5' AND m_wearer_std.werer_sts_kbn = '8')";
-            if($cond['reason_kbn12']){
-                array_push($reason_kbn_3, "t_order.order_reason_kbn = '09'");
-            }
-            if($cond['reason_kbn13']){
-                array_push($reason_kbn_3, "t_order.order_reason_kbn = '10'");
-            }
-            if($cond['reason_kbn14']){
-                array_push($reason_kbn_3, "t_order.order_reason_kbn = '11'");
-            }
-            if ($reason_kbn_3) {
-                //理由区分と発注区分
-                $reason_kbn_3_str = implode(' OR ', $reason_kbn_3);
-                array_push($kbn_list, "(" . $order_kbn . " AND (" . $reason_kbn_3_str . "))");
-            } else {
-                //発注区分のみ
-                array_push($reason_kbn_3, "t_order.order_reason_kbn = '09'");
-                array_push($reason_kbn_3, "t_order.order_reason_kbn = '10'");
-                array_push($reason_kbn_3, "t_order.order_reason_kbn = '11'");
-                $reason_kbn_3_str = implode(' OR ', $reason_kbn_3);
-                array_push($kbn_list, "(" . $order_kbn . " AND (" . $reason_kbn_3_str . "))");
-            }
+          //異動の場合、着用者基本マスタ.着用者状況区分＝8：異動の着用者を検索する。
+          //職種変更または異動にチェックがついてたら
+          $order_kbn = "(t_order.order_sts_kbn = '5' AND m_wearer_std.werer_sts_kbn = '8')";
+          if($cond['reason_kbn12']){
+            array_push($reason_kbn_3, "t_order.order_reason_kbn = '09'");
+          }
+          if($cond['reason_kbn13']){
+            array_push($reason_kbn_3, "t_order.order_reason_kbn = '10'");
+          }
+          if($cond['reason_kbn14']){
+            array_push($reason_kbn_3, "t_order.order_reason_kbn = '11'");
+          }
+          if ($reason_kbn_3) {
+            //理由区分と発注区分
+            array_push($reason_kbn_3, "t_order.order_reason_kbn = '24'");
+            $reason_kbn_3_str = implode(' OR ', $reason_kbn_3);
+            array_push($kbn_list, "(" . $order_kbn . " AND (" . $reason_kbn_3_str . "))");
+          } else {
+            //発注区分のみ
+            array_push($reason_kbn_3, "t_order.order_reason_kbn = '09'");
+            array_push($reason_kbn_3, "t_order.order_reason_kbn = '10'");
+            array_push($reason_kbn_3, "t_order.order_reason_kbn = '11'");
+            array_push($reason_kbn_3, "t_order.order_reason_kbn = '24'");
+            $reason_kbn_3_str = implode(' OR ', $reason_kbn_3);
+            array_push($kbn_list, "(" . $order_kbn . " AND (" . $reason_kbn_3_str . "))");
+          }
         }else{
-            //職種変更または異動にチェックがついてない
-            if($cond['reason_kbn12']){
-                array_push($reason_kbn_3, "t_order.order_reason_kbn = '09'");
-            }
-            if($cond['reason_kbn13']){
-                array_push($reason_kbn_3, "t_order.order_reason_kbn = '10'");
-            }
-            if($cond['reason_kbn14']){
-                array_push($reason_kbn_3, "t_order.order_reason_kbn = '11'");
-            }
-            if ($reason_kbn_3) {
-                $order_kbn = "(t_order.order_sts_kbn = '5' AND m_wearer_std.werer_sts_kbn = '8')";
-                //理由区分のみ
-                //異動の場合、着用者基本マスタ.着用者状況区分＝8：異動の着用者を検索する。
-                $reason_kbn_3_str = implode(' OR ', $reason_kbn_3);
-                array_push($kbn_list, "(" . $order_kbn . " AND (" . $reason_kbn_3_str . "))");
-            }else{
-                $order_kbn = "t_order.order_sts_kbn != '5'";
-                //何もチェックなければ交換を除く
-                array_push($query_list, $order_kbn);
-            }
+          //職種変更または異動にチェックがついてない
+          if($cond['reason_kbn12']){
+            array_push($reason_kbn_3, "t_order.order_reason_kbn = '09'");//貸与パターン変更
+          }
+          if($cond['reason_kbn13']){
+            array_push($reason_kbn_3, "t_order.order_reason_kbn = '10'");//拠点変更
+          }
+          if($cond['reason_kbn14']){
+            array_push($reason_kbn_3, "t_order.order_reason_kbn = '11'");//拠点と貸与パターン変更
+          }
+          if ($reason_kbn_3) {
+            $order_kbn = "(t_order.order_sts_kbn = '5' AND m_wearer_std.werer_sts_kbn = '8')";
+            //理由区分のみ
+            //異動の場合、着用者基本マスタ.着用者状況区分＝8：異動の着用者を検索する。
+            $reason_kbn_3_str = implode(' OR ', $reason_kbn_3);
+            array_push($kbn_list, "(" . $order_kbn . " AND (" . $reason_kbn_3_str . "))");
+          }else{
+            $order_kbn = "t_order.order_sts_kbn != '5'";
+            //何もチェックなければ交換を除く
+            array_push($query_list, $order_kbn);
+          }
         }
         //貸与終了
         $reason_kbn_4 = array();
         if($cond['order_kbn3']) {
-            //貸与終了にチェックがついてたら
-            $order_kbn = "t_order.order_sts_kbn = '2'";
-            if($cond['reason_kbn15']){
-                //貸与終了、かつ、理由区分＝05：退職の場合、着用者基本マスタ.着用者状況区分＝4：退社の着用者を検索する。
-                array_push($reason_kbn_4, "(t_order.order_reason_kbn = '05' AND m_wearer_std.werer_sts_kbn = '4')");
-            }
-            if($cond['reason_kbn16']){
-                //貸与終了、かつ、理由区分＝06：休職の場合、着用者基本マスタ.着用者状況区分＝2:休職の着用者を検索する。
-                array_push($reason_kbn_4, "(t_order.order_reason_kbn = '06' AND m_wearer_std.werer_sts_kbn = '2')");
-            }
-            if($cond['reason_kbn17']){
-                array_push($reason_kbn_4, "t_order.order_reason_kbn = '07' AND m_wearer_std.werer_sts_kbn = '1'");
-            }
-            if($cond['reason_kbn18']){
-                array_push($reason_kbn_4, "t_order.order_reason_kbn = '08' AND m_wearer_std.werer_sts_kbn = '1'");
-            }
-            if($cond['reason_kbn19']){
-                array_push($reason_kbn_4, "t_order.order_reason_kbn = '24' AND m_wearer_std.werer_sts_kbn = '1'");
-            }
-            if ($reason_kbn_4) {
-                //理由区分と発注区分
-                $reason_kbn_4_str = implode(' OR ', $reason_kbn_4);
-                array_push($kbn_list, "(" . $order_kbn . " AND (" . $reason_kbn_4_str . "))");
-            } else {
-                //発注区分のみ
-                array_push($reason_kbn_4, "(t_order.order_reason_kbn = '05' AND m_wearer_std.werer_sts_kbn = '4')");
-                array_push($reason_kbn_4, "(t_order.order_reason_kbn = '06' AND m_wearer_std.werer_sts_kbn = '2')");
-                array_push($reason_kbn_4, "t_order.order_reason_kbn = '07' AND m_wearer_std.werer_sts_kbn = '1'");
-                array_push($reason_kbn_4, "t_order.order_reason_kbn = '08' AND m_wearer_std.werer_sts_kbn = '1'");
-                array_push($reason_kbn_4, "t_order.order_reason_kbn = '24' AND m_wearer_std.werer_sts_kbn = '1'");
-                $reason_kbn_4_str = implode(' OR ', $reason_kbn_4);
-                array_push($kbn_list, "(" . $order_kbn . " AND (" . $reason_kbn_4_str . "))");
-            }
+          //貸与終了にチェックがついてたら
+          $order_kbn = "t_order.order_sts_kbn = '2'";
+          if($cond['reason_kbn15']){
+            //貸与終了、かつ、理由区分＝05：退職の場合、着用者基本マスタ.着用者状況区分＝4：退社の着用者を検索する。
+            //array_push($reason_kbn_4, "(t_order.order_reason_kbn = '05' AND m_wearer_std.werer_sts_kbn = '4')");
+            array_push($reason_kbn_4, "(t_order.order_reason_kbn = '05')");
+          }
+          if($cond['reason_kbn16']){
+            //貸与終了、かつ、理由区分＝06：休職の場合、着用者基本マスタ.着用者状況区分＝2:休職の着用者を検索する。
+            //array_push($reason_kbn_4, "(t_order.order_reason_kbn = '06' AND m_wearer_std.werer_sts_kbn = '2')");
+            array_push($reason_kbn_4, "(t_order.order_reason_kbn = '06')");
+          }
+          if($cond['reason_kbn17']){
+            //array_push($reason_kbn_4, "t_order.order_reason_kbn = '07' AND m_wearer_std.werer_sts_kbn = '1'");
+            //array_push($reason_kbn_4, "t_order.order_reason_kbn = '28' AND m_wearer_std.werer_sts_kbn = '1'");
+            array_push($reason_kbn_4, "t_order.order_reason_kbn = '07'");
+            array_push($reason_kbn_4, "t_order.order_reason_kbn = '28'");
+          }
+          if($cond['reason_kbn18']){
+            //array_push($reason_kbn_4, "t_order.order_reason_kbn = '08' AND m_wearer_std.werer_sts_kbn = '1'");
+            array_push($reason_kbn_4, "t_order.order_reason_kbn = '08'");
+          }
+          if($cond['reason_kbn19']){
+            //array_push($reason_kbn_4, "t_order.order_reason_kbn = '24' AND m_wearer_std.werer_sts_kbn = '1'");
+            array_push($reason_kbn_4, "t_order.order_reason_kbn = '20'");
+          }
+          if ($reason_kbn_4) {
+            //理由区分と発注区分
+            $reason_kbn_4_str = implode(' OR ', $reason_kbn_4);
+            array_push($kbn_list, "(" . $order_kbn . " AND (" . $reason_kbn_4_str . "))");
+          } else {
+            //発注区分のみ
+            //array_push($reason_kbn_4, "(t_order.order_reason_kbn = '05' AND m_wearer_std.werer_sts_kbn = '4')");
+            //array_push($reason_kbn_4, "(t_order.order_reason_kbn = '06' AND m_wearer_std.werer_sts_kbn = '2')");
+            //array_push($reason_kbn_4, "t_order.order_reason_kbn = '07' AND m_wearer_std.werer_sts_kbn = '1'");
+            //array_push($reason_kbn_4, "t_order.order_reason_kbn = '28' AND m_wearer_std.werer_sts_kbn = '1'");
+            //array_push($reason_kbn_4, "t_order.order_reason_kbn = '08' AND m_wearer_std.werer_sts_kbn = '1'");
+            //array_push($reason_kbn_4, "t_order.order_reason_kbn = '24' AND m_wearer_std.werer_sts_kbn = '1'");
+            array_push($reason_kbn_4, "(t_order.order_reason_kbn = '05')");
+            array_push($reason_kbn_4, "(t_order.order_reason_kbn = '06')");
+            array_push($reason_kbn_4, "t_order.order_reason_kbn = '07'");
+            array_push($reason_kbn_4, "t_order.order_reason_kbn = '28'");
+            array_push($reason_kbn_4, "t_order.order_reason_kbn = '08'");
+            array_push($reason_kbn_4, "t_order.order_reason_kbn = '20'");
+            $reason_kbn_4_str = implode(' OR ', $reason_kbn_4);
+            array_push($kbn_list, "(" . $order_kbn . " AND (" . $reason_kbn_4_str . "))");
+          }
+          //ChromePhp::log($kbn_list);
         }else{
-            //貸与終了にチェックがついてない
-            if($cond['reason_kbn15']){
-                array_push($reason_kbn_4, "(t_order.order_reason_kbn = '05' AND m_wearer_std.werer_sts_kbn = '4')");
-            }
-            if($cond['reason_kbn16']){
-                array_push($reason_kbn_4, "(t_order.order_reason_kbn = '06' AND m_wearer_std.werer_sts_kbn = '2')");
-            }
-            if($cond['reason_kbn17']){
-                array_push($reason_kbn_4, "t_order.order_reason_kbn = '07' AND m_wearer_std.werer_sts_kbn = '1'");
-            }
-            if($cond['reason_kbn18']){
-                array_push($reason_kbn_4, "t_order.order_reason_kbn = '08' AND m_wearer_std.werer_sts_kbn = '1'");
-            }
-            if($cond['reason_kbn19']){
-                array_push($reason_kbn_4, "t_order.order_reason_kbn = '24' AND m_wearer_std.werer_sts_kbn = '1'");
-            }
-            if ($reason_kbn_4) {
-                //理由区分のみ
-                $reason_kbn_4_str = implode(' OR ', $reason_kbn_4);
-                array_push($kbn_list, "(".$reason_kbn_4_str .")");
-            }else{
-                $order_kbn = "t_order.order_sts_kbn != '2'";
-                //何もチェックなければ交換を除く
-                array_push($query_list, $order_kbn);
-            }
+          //貸与終了にチェックがついてない
+          if($cond['reason_kbn15']){
+            array_push($reason_kbn_4, "(t_order.order_reason_kbn = '05')");
+            //array_push($reason_kbn_4, "(t_order.order_reason_kbn = '05' AND m_wearer_std.werer_sts_kbn = '4')");
+          }
+          if($cond['reason_kbn16']){
+            array_push($reason_kbn_4, "(t_order.order_reason_kbn = '06')");
+            //array_push($reason_kbn_4, "(t_order.order_reason_kbn = '06' AND m_wearer_std.werer_sts_kbn = '2')");
+          }
+          if($cond['reason_kbn17']){
+            array_push($reason_kbn_4, "t_order.order_reason_kbn = '07'");
+            array_push($reason_kbn_4, "t_order.order_reason_kbn = '28'");
+            //array_push($reason_kbn_4, "t_order.order_reason_kbn = '07' AND m_wearer_std.werer_sts_kbn = '1'");
+            //array_push($reason_kbn_4, "t_order.order_reason_kbn = '28' AND m_wearer_std.werer_sts_kbn = '1'");
+          }
+          if($cond['reason_kbn18']){
+            array_push($reason_kbn_4, "t_order.order_reason_kbn = '08'");
+            //array_push($reason_kbn_4, "t_order.order_reason_kbn = '08' AND m_wearer_std.werer_sts_kbn = '1'");
+          }
+          if($cond['reason_kbn19']){
+            array_push($reason_kbn_4, "t_order.order_reason_kbn = '20'");
+            //array_push($reason_kbn_4, "t_order.order_reason_kbn = '24' AND m_wearer_std.werer_sts_kbn = '1'");
+          }
+          if ($reason_kbn_4) {
+            //理由区分のみ
+            $reason_kbn_4_str = implode(' OR ', $reason_kbn_4);
+            array_push($kbn_list, "(".$reason_kbn_4_str .")");
+          }else{
+            $order_kbn = "t_order.order_sts_kbn != '2'";
+            //何もチェックなければ交換を除く
+            array_push($query_list, $order_kbn);
+          }
         }
-
         //その他
         if($cond['order_kbn4']){
-            array_push($kbn_list,"t_order.order_sts_kbn = '9' AND m_wearer_std.werer_sts_kbn = '1'");
+          array_push($kbn_list,"t_order.order_sts_kbn = '9'");
         }
-
         //区分を検索条件に追加
         if($kbn_list){
             array_push($query_list,'('.implode(' OR ', $kbn_list).')');
@@ -622,7 +645,7 @@ $app->post('/csv_download', function ()use($app){
             $arg_str .= " ORDER BY ";
             $arg_str .= $q_sort_key." ".$order;
         }
-        $t_order = new TOrder();
+    $t_order = new TOrder();
 		$results = new Resultset(null, $t_order, $t_order->getReadConnection()->query($arg_str));
 		$result_obj = (array)$results;
 		$results_cnt = $result_obj["\0*\0_count"];
