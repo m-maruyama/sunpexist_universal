@@ -535,40 +535,38 @@ define([
 								"mode": 'input',
 								"item": item
 							};
-							if(res_val["error_code"]=='1') {
-								that.triggerMethod('error_msg', res_val["error_msg"]);
-							}else if(res_val["error_code"]=='2') {
-								window.sessionStorage.setItem('error_msg', res_val["error_msg"]);
-								window.sessionStorage.setItem('referrer', 'wearer_other_change_order_err');
-								// 入力完了画面処理へ移行
-								that.triggerMethod('inputComplete', data);
+							// JavaScript モーダルで表示
+							$('#myModal').modal('show'); //追加
+							if(send == '1') {
+								//メッセージの修正
+								document.getElementById("confirm_txt").innerHTML=App.complete_msg; //追加　このメッセージはapp.jsで定義
 							}else{
-								window.sessionStorage.setItem('referrer', 'wearer_other_change_order');
-								if(send=='1'){
-									//発注送信の場合
-									// JavaScript モーダルで表示
-									$('#myModal').modal('show'); //追加
-									//メッセージの修正
-									document.getElementById("confirm_txt").innerHTML=App.complete_msg; //追加　このメッセージはapp.jsで定義
-									$("#btn_ok").off();
-									$("#btn_ok").on('click',function() { //追加
-                                        hideModal();
+								//メッセージの修正
+								document.getElementById("confirm_txt").innerHTML = App.input_msg; //追加　このメッセージはapp.jsで定義
+
+							}
+							$("#btn_ok").off();
+							$("#btn_ok").on('click',function() { //追加
+								hideModal();
+								if (res_val["error_code"] == '1') {
+									that.triggerMethod('error_msg', res_val["error_msg"]);
+								} else if (res_val["error_code"] == '2') {
+									window.sessionStorage.setItem('error_msg', res_val["error_msg"]);
+									window.sessionStorage.setItem('referrer', 'wearer_other_change_order_err');
+									// 入力完了画面処理へ移行
+									that.triggerMethod('inputComplete', data);
+								} else {
+									window.sessionStorage.setItem('referrer', 'wearer_other_change_order');
+									if (send == '1') {
+										//発注送信の場合
 										// 入力完了画面処理へ移行
 										that.triggerMethod('sendComplete', data);
-									});
-								}else{
-									// JavaScript モーダルで表示
-									$('#myModal').modal('show'); //追加
-									//メッセージの修正
-									document.getElementById("confirm_txt").innerHTML=App.input_msg; //追加　このメッセージはapp.jsで定義
-									$("#btn_ok").off();
-									$("#btn_ok").on('click',function() { //追加
-                                        hideModal();
-										// 入力完了画面処理へ移行
-										that.triggerMethod('inputComplete', data);
-									});
+									} else {
+											// 入力完了画面処理へ移行
+											that.triggerMethod('inputComplete', data);
+									}
 								}
-							}
+							});
 						}
 					});
 				}
