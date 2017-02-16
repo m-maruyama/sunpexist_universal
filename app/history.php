@@ -83,11 +83,11 @@ $app->post('/history/search', function ()use($app){
 	}
 	//社員番号
 	if(!empty($cond['member_no'])){
-		array_push($query_list,"m_wearer_std.cster_emply_cd LIKE '".$cond['member_no']."%'");
+		array_push($query_list,"t_order.cster_emply_cd LIKE '".$cond['member_no']."%'");
 	}
 	//着用者名
 	if(!empty($cond['member_name'])){
-		array_push($query_list,"m_wearer_std.werer_name LIKE '%".$cond['member_name']."%'");
+		array_push($query_list,"t_order.werer_name LIKE '%".$cond['member_name']."%'");
 	}
 	//拠点
 	if(!empty($cond['section'])){
@@ -571,8 +571,6 @@ $app->post('/history/search', function ()use($app){
 		$arg_str .= " AND m_section.rntl_sect_cd = m_contract_resource.rntl_sect_cd";
 		$arg_str .= " ) ON t_order.m_section_comb_hkey = m_section.m_section_comb_hkey";
 	}
-	//$arg_str .= " INNER JOIN m_job_type";
-	//$arg_str .= " ON t_order.m_job_type_comb_hkey = m_job_type.m_job_type_comb_hkey";
   $arg_str .= " LEFT JOIN (m_job_type INNER JOIN m_input_item";
   $arg_str .= " ON m_job_type.corporate_id = m_input_item.corporate_id";
   $arg_str .= " AND m_job_type.rntl_cont_no = m_input_item.rntl_cont_no";
@@ -580,14 +578,16 @@ $app->post('/history/search', function ()use($app){
   $arg_str .= " ON t_order.corporate_id = m_job_type.corporate_id";
   $arg_str .= " AND t_order.rntl_cont_no = m_job_type.rntl_cont_no";
   $arg_str .= " AND t_order.job_type_cd = m_job_type.job_type_cd";
-	$arg_str .= " INNER JOIN m_wearer_std";
-	$arg_str .= " ON t_order.m_wearer_std_comb_hkey = m_wearer_std.m_wearer_std_comb_hkey";
+  $arg_str .= " INNER JOIN m_wearer_std";
+  $arg_str .= " ON t_order.werer_cd = m_wearer_std.werer_cd";
+  $arg_str .= " AND t_order.corporate_id = m_wearer_std.corporate_id";
+  $arg_str .= " AND t_order.rntl_cont_no = m_wearer_std.rntl_cont_no";
   $arg_str .= " INNER JOIN m_contract";
 	$arg_str .= " ON t_order.rntl_cont_no = m_contract.rntl_cont_no";
-  $arg_str .= " AND t_order.corporate_id = m_contract.corporate_id";
-  $arg_str .= " WHERE ";
+	$arg_str .= " WHERE ";
 	$arg_str .= $query;
 	$arg_str .= ") as distinct_table";
+  //ChromePhp::log($arg_str);
 	if (!empty($q_sort_key)) {
 		$arg_str .= " ORDER BY ";
 		$arg_str .= $q_sort_key." ".$order;
