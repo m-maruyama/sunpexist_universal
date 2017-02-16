@@ -118,7 +118,7 @@
 #account_modal .modal-dialog {
     position: relative;
 }
-#wearer_detail_modal .modal-dialog{
+.wearer_detail_modal .modal-dialog{
     position: relative;
 }
 .modal-dialog .modal-header {

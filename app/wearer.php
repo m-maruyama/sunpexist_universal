@@ -365,6 +365,7 @@ $app->post('/wearer/detail', function ()use($app){
 
 	$params = json_decode(file_get_contents("php://input"), true);
 
+
 	// アカウントセッション取得
 	$auth = $app->session->get("auth");
 	//ChromePhp::log($auth);
@@ -638,7 +639,7 @@ $app->post('/wearer/detail', function ()use($app){
         $arg_str = "SELECT ";
         $arg_str .= " * ";
         $arg_str .= " FROM ";
-        $arg_str .= "(SELECT distinct on (m_wearer_item.item_cd,m_wearer_item.color_cd,m_wearer_item.size_cd,t_delivery_goods_state_details.werer_cd) ";
+        $arg_str .= "(SELECT distinct on (t_delivery_goods_state_details.item_cd,t_delivery_goods_state_details.color_cd,t_delivery_goods_state_details.size_cd,t_delivery_goods_state_details.werer_cd) ";
         $arg_str .= "m_wearer_std.cster_emply_cd as as_cster_emply_cd,";
         $arg_str .= "m_wearer_std.werer_name as as_werer_name,";
         $arg_str .= "m_wearer_std.werer_cd as as_werer_cd,";
@@ -648,9 +649,9 @@ $app->post('/wearer/detail', function ()use($app){
         $arg_str .= "t_order.rntl_sect_cd as as_old_rntl_sect_cd,";
         $arg_str .= "t_order.job_type_cd as as_old_job_type_cd,";
         $arg_str .= "t_order.order_req_no as as_order_req_no,";
-        $arg_str .= "m_wearer_item.item_cd as as_item_cd,";
-        $arg_str .= "m_wearer_item.color_cd as as_color_cd,";
-        $arg_str .= "m_wearer_item.size_cd as as_size_cd,";
+        $arg_str .= "t_delivery_goods_state_details.item_cd as as_item_cd,";
+        $arg_str .= "t_delivery_goods_state_details.color_cd as as_color_cd,";
+        $arg_str .= "t_delivery_goods_state_details.size_cd as as_size_cd,";
         $arg_str .= "m_wearer_item.size_two_cd as as_size_two_cd,";
         $arg_str .= "m_wearer_item.job_type_item_cd as as_job_type_item_cd,";
         $arg_str .= "t_delivery_goods_state_details.individual_ctrl_no as as_individual_ctrl_no,";
@@ -664,17 +665,17 @@ $app->post('/wearer/detail', function ()use($app){
         $arg_str .= "t_delivery_goods_state.rec_order_no as as_rec_order_no,";
         $arg_str .= "t_delivery_goods_state_details.ship_no as as_ship_no";
         $arg_str .= " FROM t_delivery_goods_state_details";
-       $arg_str .= " LEFT JOIN t_delivery_goods_state";
-       $arg_str .= " ON t_delivery_goods_state.ship_no = t_delivery_goods_state_details.ship_no";
-       $arg_str .= " AND t_delivery_goods_state.ship_line_no = t_delivery_goods_state_details.ship_line_no";
-       $arg_str .= " LEFT JOIN t_order_state";
-       $arg_str .= " ON t_delivery_goods_state.t_order_state_comb_hkey = t_order_state.t_order_state_comb_hkey";
-       $arg_str .= " LEFT JOIN t_order";
-       $arg_str .= " ON t_order.order_req_no = t_delivery_goods_state_details.order_req_no";
-       $arg_str .= " AND t_order.rntl_cont_no = t_delivery_goods_state_details.rntl_cont_no";
-       $arg_str .= " AND t_order.item_cd = t_delivery_goods_state_details.item_cd";
-       $arg_str .= " AND t_order.color_cd = t_delivery_goods_state_details.color_cd";
-       $arg_str .= " AND t_order.size_cd = t_delivery_goods_state_details.size_cd";
+        $arg_str .= " LEFT JOIN t_delivery_goods_state";
+        $arg_str .= " ON t_delivery_goods_state.ship_no = t_delivery_goods_state_details.ship_no";
+        $arg_str .= " AND t_delivery_goods_state.ship_line_no = t_delivery_goods_state_details.ship_line_no";
+        $arg_str .= " LEFT JOIN t_order_state";
+        $arg_str .= " ON t_delivery_goods_state.t_order_state_comb_hkey = t_order_state.t_order_state_comb_hkey";
+        $arg_str .= " LEFT JOIN t_order";
+        $arg_str .= " ON t_order.order_req_no = t_delivery_goods_state_details.order_req_no";
+        $arg_str .= " AND t_order.rntl_cont_no = t_delivery_goods_state_details.rntl_cont_no";
+        $arg_str .= " AND t_order.item_cd = t_delivery_goods_state_details.item_cd";
+        $arg_str .= " AND t_order.color_cd = t_delivery_goods_state_details.color_cd";
+        $arg_str .= " AND t_order.size_cd = t_delivery_goods_state_details.size_cd";
         $arg_str .= " LEFT JOIN t_returned_plan_info";
         $arg_str .= " ON t_delivery_goods_state_details.corporate_id = t_returned_plan_info.corporate_id";
         $arg_str .= " AND t_delivery_goods_state_details.rntl_cont_no = t_returned_plan_info.rntl_cont_no";
@@ -684,16 +685,16 @@ $app->post('/wearer/detail', function ()use($app){
         $arg_str .= " ON t_delivery_goods_state_details.corporate_id = m_wearer_std.corporate_id";
         $arg_str .= " AND t_delivery_goods_state_details.rntl_cont_no = m_wearer_std.rntl_cont_no";
         $arg_str .= " AND t_delivery_goods_state_details.werer_cd = m_wearer_std.werer_cd";
-        $arg_str .= " INNER JOIN m_wearer_item";
+        $arg_str .= " LEFT JOIN m_wearer_item";
         $arg_str .= " ON t_order.m_wearer_item_comb_hkey = m_wearer_item.m_wearer_item_comb_hkey";
         $arg_str .= " WHERE ";
         $arg_str .= $query;
         $arg_str .= ") as distinct_table";
-        $t_order = new TOrder();
+
+     $t_order = new TOrder();
         $results = new Resultset(null, $t_order, $t_order->getReadConnection()->query($arg_str));
         $result_obj = (array)$results;
         $results_cnt = $result_obj["\0*\0_count"];
-
        //$json_list = array();
        $wearer_item_list = array();
        $list = array();
@@ -712,7 +713,6 @@ $app->post('/wearer/detail', function ()use($app){
            //表No用
            $no_num = 1;
            foreach($results as $result) {
-
                // 商品コード
                if (!empty($result->as_item_cd)) {
                    $list['item_cd'] = $result->as_item_cd;
@@ -743,13 +743,13 @@ $app->post('/wearer/detail', function ()use($app){
                array_push($search_q, "corporate_id = '".$auth['corporate_id']."'");
                array_push($search_q, "rntl_cont_no = '".$result->as_rntl_cont_no."'");
                array_push($search_q, "job_type_cd = '".$result->as_old_job_type_cd."'");
-               array_push($search_q, "job_type_item_cd = '".$result->as_job_type_item_cd."'");
+               //array_push($search_q, "job_type_item_cd = '".$result->as_job_type_item_cd."'");
                array_push($search_q, "item_cd = '".$list['item_cd']."'");
                array_push($search_q, "color_cd = '".$list['color_cd']."'");
                //サイズ2が空だったらサイズ2を検索条件に入れない
-               if($list['size_two_cd'] !== '') {
-                   array_push($search_q, "size_two_cd = '".$list['size_two_cd']."'");
-               }
+               //if($list['size_two_cd'] !== '') {
+               //    array_push($search_q, "size_two_cd = '".$list['size_two_cd']."'");
+               //}
                //sql文字列を' AND 'で結合
                $query = implode(' AND ', $search_q);
                $input_item = MInputItem::query()
@@ -794,7 +794,7 @@ $app->post('/wearer/detail', function ()use($app){
                    $arg_str .= "t_delivery_goods_state_details";
                    $arg_str .= " WHERE ";
                    $arg_str .= $query;
-                   $t_delivery_goods_state_details = new TDeliveryGoodsStateDetails();
+                 $t_delivery_goods_state_details = new TDeliveryGoodsStateDetails();
                    $del_gd_results = new Resultset(null, $t_delivery_goods_state_details, $t_delivery_goods_state_details->getReadConnection()->query($arg_str));
                    $result_obj = (array)$del_gd_results;
                    $results_cnt = $result_obj["\0*\0_count"];
