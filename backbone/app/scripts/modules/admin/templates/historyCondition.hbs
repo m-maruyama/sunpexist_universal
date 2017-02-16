@@ -143,7 +143,7 @@
 						<label class="checkbox-inline allCheck"><input type="checkbox" id="order_kbn3" name="order_kbn[]" value="2" class="checkbox-inline" checked="1">貸与終了</label>
 						<p class="btn btn-default plus" data-toggle="collapse" data-target="#end" aria-expanded="false"></p>
 						<ul id="end" class="sub_checkbox collapse">
-							<li><label class="checkbox-block"><input type="checkbox" id="reason_kbn15" name="reason_kbn[]" value="05" checked>退社</label></li>
+							<li><label class="checkbox-block"><input type="checkbox" id="reason_kbn15" name="reason_kbn[]" value="05" checked>退職</label></li>
 							<li><label class="checkbox-block"><input type="checkbox" id="reason_kbn16" name="reason_kbn[]" value="06" checked>休職</label></li>
 							<li><label class="checkbox-block"><input type="checkbox" id="reason_kbn17" name="reason_kbn[]" value="07" checked>不要品返却</label></li>
 							<li><label class="checkbox-block"><input type="checkbox" id="reason_kbn18" name="reason_kbn[]" value="08" checked>非着用部門への異動</label></li>
@@ -166,5 +166,19 @@
 				</div>
 			</form>
 			<!-- end フォーム -->
-
+            <!-- アラートモーダル -->
+            <div class="modal fade modal-dialog" id="myModal_alert" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                        </div>
+                        <div class="modal-body">
+                            <p id="alert_txt"></p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" id="btn_ok"  class="btn btn-primary">OK</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
 			<hr>

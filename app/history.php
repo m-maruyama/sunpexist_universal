@@ -260,25 +260,25 @@ $app->post('/history/search', function ()use($app){
         //交換にチェックがついてたら
         $order_kbn = "(t_order.order_sts_kbn = '3' OR t_order.order_sts_kbn = '4') AND t_order.werer_sts_kbn = '1'";
         if($cond['reason_kbn5']){
-            array_push($reason_kbn_2, "t_order.order_reason_kbn = '14'");
+            array_push($reason_kbn_2, "t_order.order_reason_kbn = '14'");//消耗交換
         }
         if($cond['reason_kbn6']){
-            array_push($reason_kbn_2, "t_order.order_reason_kbn = '15'");
+            array_push($reason_kbn_2, "t_order.order_reason_kbn = '15'");//破損
         }
         if($cond['reason_kbn7']){
-            array_push($reason_kbn_2, "t_order.order_reason_kbn = '16'");
+            array_push($reason_kbn_2, "t_order.order_reason_kbn = '16'");//紛失
         }
         if($cond['reason_kbn8']){
-            array_push($reason_kbn_2, "t_order.order_reason_kbn = '17'");
+            array_push($reason_kbn_2, "t_order.order_reason_kbn = '17'");//不良品
         }
         if($cond['reason_kbn9']){
-            array_push($reason_kbn_2, "t_order.order_reason_kbn = '12'");
+            array_push($reason_kbn_2, "t_order.order_reason_kbn = '12'");//着用前
         }
         if($cond['reason_kbn10']){
-            array_push($reason_kbn_2, "t_order.order_reason_kbn = '13'");
+            array_push($reason_kbn_2, "t_order.order_reason_kbn = '13'");//着用後
         }
         if($cond['reason_kbn11']){
-            array_push($reason_kbn_2, "t_order.order_reason_kbn = '23'");
+            array_push($reason_kbn_2, "t_order.order_reason_kbn = '23'");//なし
         }
         if ($reason_kbn_2) {
             //理由区分と発注区分
@@ -354,19 +354,20 @@ $app->post('/history/search', function ()use($app){
             array_push($reason_kbn_3, "t_order.order_reason_kbn = '09'");
             array_push($reason_kbn_3, "t_order.order_reason_kbn = '10'");
             array_push($reason_kbn_3, "t_order.order_reason_kbn = '11'");
+
             $reason_kbn_3_str = implode(' OR ', $reason_kbn_3);
             array_push($kbn_list, "(" . $order_kbn . " AND (" . $reason_kbn_3_str . "))");
         }
     }else{
         //職種変更または異動にチェックがついてない
         if($cond['reason_kbn12']){
-            array_push($reason_kbn_3, "t_order.order_reason_kbn = '09'");
+            array_push($reason_kbn_3, "t_order.order_reason_kbn = '09'");//貸与パターン変更
         }
         if($cond['reason_kbn13']){
-            array_push($reason_kbn_3, "t_order.order_reason_kbn = '10'");
+            array_push($reason_kbn_3, "t_order.order_reason_kbn = '10'");//拠点変更
         }
         if($cond['reason_kbn14']){
-            array_push($reason_kbn_3, "t_order.order_reason_kbn = '11'");
+            array_push($reason_kbn_3, "t_order.order_reason_kbn = '11'");//拠点と貸与パターン変更
         }
         if ($reason_kbn_3) {
             $order_kbn = "(t_order.order_sts_kbn = '5' AND m_wearer_std.werer_sts_kbn = '8')";
@@ -536,12 +537,12 @@ $app->post('/history/search', function ()use($app){
 	$arg_str .= "t_order.order_reason_kbn as as_order_reason_kbn,";
 	$arg_str .= "m_section.rntl_sect_name as as_rntl_sect_name,";
 	$arg_str .= "m_job_type.job_type_name as as_job_type_name,";
-	$arg_str .= "m_wearer_std.cster_emply_cd as as_cster_emply_cd,";
-	$arg_str .= "m_wearer_std.werer_name as as_werer_name,";
+	$arg_str .= "t_order.cster_emply_cd as as_cster_emply_cd,";
+	$arg_str .= "t_order.werer_name as as_werer_name,";
 	$arg_str .= "t_order.job_type_cd as as_job_type_cd,";
 	$arg_str .= "t_order.item_cd as as_item_cd,";
-    $arg_str .= "m_input_item.input_item_name as as_input_item_name,";
-    $arg_str .= "t_order.color_cd as as_color_cd,";
+  $arg_str .= "m_input_item.input_item_name as as_input_item_name,";
+  $arg_str .= "t_order.color_cd as as_color_cd,";
 	$arg_str .= "t_order.size_cd as as_size_cd,";
 	$arg_str .= "t_order.size_two_cd as as_size_two_cd,";
 	$arg_str .= "t_order.order_qty as as_order_qty,";
@@ -553,7 +554,7 @@ $app->post('/history/search', function ()use($app){
 	$arg_str .= "t_delivery_goods_state_details.individual_ctrl_no as as_individual_ctrl_no,";
 	$arg_str .= "t_delivery_goods_state_details.receipt_date as as_receipt_date,";
 	$arg_str .= "t_order.rntl_cont_no as as_rntl_cont_no,";
-    $arg_str .= "t_order.ship_plan_ymd as as_ship_plan_ymd,";
+  $arg_str .= "t_order.ship_plan_ymd as as_ship_plan_ymd,";
 	$arg_str .= "m_contract.rntl_cont_name as as_rntl_cont_name";
 	$arg_str .= " FROM t_order LEFT JOIN";
   $arg_str .= " (t_order_state LEFT JOIN (t_delivery_goods_state LEFT JOIN t_delivery_goods_state_details";
@@ -572,23 +573,19 @@ $app->post('/history/search', function ()use($app){
 	}
 	//$arg_str .= " INNER JOIN m_job_type";
 	//$arg_str .= " ON t_order.m_job_type_comb_hkey = m_job_type.m_job_type_comb_hkey";
-    $arg_str .= " LEFT JOIN (m_job_type INNER JOIN m_input_item";
-    $arg_str .= " ON m_job_type.corporate_id = m_input_item.corporate_id";
-    $arg_str .= " AND m_job_type.rntl_cont_no = m_input_item.rntl_cont_no";
-    $arg_str .= " AND m_job_type.job_type_cd = m_input_item.job_type_cd)";
-    $arg_str .= " ON t_order.corporate_id = m_job_type.corporate_id";
-    $arg_str .= " AND t_order.rntl_cont_no = m_job_type.rntl_cont_no";
-    $arg_str .= " AND t_order.job_type_cd = m_job_type.job_type_cd";
+  $arg_str .= " LEFT JOIN (m_job_type INNER JOIN m_input_item";
+  $arg_str .= " ON m_job_type.corporate_id = m_input_item.corporate_id";
+  $arg_str .= " AND m_job_type.rntl_cont_no = m_input_item.rntl_cont_no";
+  $arg_str .= " AND m_job_type.job_type_cd = m_input_item.job_type_cd)";
+  $arg_str .= " ON t_order.m_job_type_comb_hkey = m_job_type.m_job_type_comb_hkey";
 	$arg_str .= " INNER JOIN m_wearer_std";
-	$arg_str .= " ON t_order.werer_cd = m_wearer_std.werer_cd";
-    $arg_str .= " AND t_order.corporate_id = m_wearer_std.corporate_id";
-    $arg_str .= " AND t_order.rntl_cont_no = m_wearer_std.rntl_cont_no";
-    $arg_str .= " INNER JOIN m_contract";
+	$arg_str .= " ON t_order.m_wearer_std_comb_hkey = m_wearer_std.m_wearer_std_comb_hkey";
+  $arg_str .= " INNER JOIN m_contract";
 	$arg_str .= " ON t_order.rntl_cont_no = m_contract.rntl_cont_no";
-	$arg_str .= " WHERE ";
+  $arg_str .= " AND t_order.corporate_id = m_contract.corporate_id";
+  $arg_str .= " WHERE ";
 	$arg_str .= $query;
 	$arg_str .= ") as distinct_table";
-  //ChromePhp::log($arg_str);
 	if (!empty($q_sort_key)) {
 		$arg_str .= " ORDER BY ";
 		$arg_str .= $q_sort_key." ".$order;
