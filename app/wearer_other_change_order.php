@@ -1379,7 +1379,7 @@ $app->post('/wearer_other_change_list', function ()use($app){
                     array_push($query_list, "item_cd = '" . $list['item_cd'] . "'");
                     array_push($query_list, "color_cd = '" . $list['color_cd'] . "'");
                     //発注状況区分
-                    array_push($query_list, "(order_sts_kbn = '4' OR (order_sts_kbn = '2' AND (order_reason_kbn = '28' OR order_reason_kbn = '07')))");//サイズ交換のトラン
+                    array_push($query_list, "(order_sts_kbn = '3' OR (order_sts_kbn = '2' AND (order_reason_kbn = '28' OR order_reason_kbn = '07')))");//サイズ交換のトラン
 
                     //sql文字列を' AND 'で結合
                     $query = implode(' AND ', $query_list);
