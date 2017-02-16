@@ -458,7 +458,7 @@ define([
 					$("#btn_ok").on('click',function() {//追加
 					//if(window.confirm('発注No.' + data["wst_order_req_no"] + 'の発注取消を実行します。\nよろしいですか？')) {
 						$.blockUI({ message: '<p><img src="ajax-loader.gif" style="margin: 0 auto;" /> 発注取消中...</p>' });
-						var modelForUpdate = this.model;
+						var modelForUpdate = that.model;
 						modelForUpdate.url = App.api.WU0013;
 						var cond = {
 							"scr": '着用者編集-発注取消',
