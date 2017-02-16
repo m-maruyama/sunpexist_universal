@@ -786,9 +786,9 @@ $app->post('/wearer_size_change/search', function ()use($app){
 });
 
 /**
- * サイズ交換/その他交換
- * 「サイズ交換」もしくは「その他交換」ボタンの押下時のパラメータのセッション保持
- * →発注入力（サイズ交換/その他交換）にてパラメータ利用
+ * サイズ交換
+ * 「サイズ交換」ボタンの押下時のパラメータのセッション保持
+ * →発注入力（サイズ交換）にてパラメータ利用
  */
 $app->post('/wearer_size_change/req_param', function ()use($app){
     $params = json_decode(file_get_contents("php://input"), true);
@@ -818,6 +818,42 @@ $app->post('/wearer_size_change/req_param', function ()use($app){
 
     $json_list = array();
     $json_list = $app->session->get("wearer_size_change_post");
+
+    echo json_encode($json_list);
+});
+/**
+ * その他交換
+ * 「その他交換」ボタンの押下時のパラメータのセッション保持
+ * →発注入力（その他交換）にてパラメータ利用
+ */
+$app->post('/wearer_other_change/req_param', function ()use($app){
+    $params = json_decode(file_get_contents("php://input"), true);
+
+    // アカウントセッション取得
+    $auth = $app->session->get("auth");
+
+    // パラメータ取得
+    $cond = $params['data'];
+
+    // POSTパラメータのセッション格納
+    $app->session->set("wearer_other_change_post", array(
+        'rntl_cont_no' => $cond["rntl_cont_no"],
+        'werer_cd' => $cond["werer_cd"],
+        'cster_emply_cd' => $cond["cster_emply_cd"],
+        'sex_kbn' => $cond["sex_kbn"],
+        'rntl_sect_cd' => $cond["rntl_sect_cd"],
+        'job_type_cd' => $cond["job_type_cd"],
+        'order_reason_kbn' => $cond["order_reason_kbn"],
+        'ship_to_cd' => $cond["ship_to_cd"],
+        'ship_to_brnch_cd' => $cond["ship_to_brnch_cd"],
+        'order_tran_flg' => $cond["order_tran_flg"],
+        'wearer_tran_flg' => $cond["wearer_tran_flg"],
+        'order_req_no' => $cond["order_req_no"],
+        'return_req_no' => $cond["return_req_no"],
+    ));
+
+    $json_list = array();
+    $json_list = $app->session->get("wearer_other_change_post");
 
     echo json_encode($json_list);
 });
