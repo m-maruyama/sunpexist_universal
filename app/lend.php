@@ -194,7 +194,7 @@ $app->post('/lend/search', function ()use($app){
   $arg_str .= "t_delivery_goods_state_details.returned_qty as as_returned_qty,";
   $arg_str .= "t_delivery_goods_state_details.werer_cd as as_werer_cd,";
   $arg_str .= "t_order.order_sts_kbn as as_order_sts_kbn,";
-  $arg_str .= "t_order.order_req_no as as_order_req_no";
+  $arg_str .= "t_delivery_goods_state_details.order_req_no as as_order_req_no";
 
   $arg_str .= " FROM t_delivery_goods_state_details LEFT JOIN";
   $arg_str .= " t_delivery_goods_state";
@@ -388,8 +388,8 @@ $app->post('/lend/search', function ()use($app){
       $arg_str .= "t_delivery_goods_state_details.returned_qty as as_returned_qty,";
       $arg_str .= "t_delivery_goods_state_details.ship_no as as_ship_no,";
       $arg_str .= "t_delivery_goods_state.ship_ymd as as_ship_ymd,";
-      $arg_str .= "t_order.order_req_no as as_order_req_no,";
-      $arg_str .= "t_order.order_sts_kbn as as_order_sts_kbn,";
+      $arg_str .= "t_delivery_goods_state_details.order_req_no as as_order_req_no,";
+      $arg_str .= "t_delivery_goods_state_details.order_sts_kbn as as_order_sts_kbn,";
       $arg_str .= "t_order.job_type_cd as as_job_type_cd,";
       $arg_str .= "t_order.rntl_sect_cd as as_rntl_sect_cd";
       $arg_str .= " FROM ";
