@@ -320,6 +320,8 @@ define([
 		App.dl_msg = 'データ量により、ダウンロード処理に時間がかかる可能性があります。ダウンロードを実施してよろしいですか？';
 		App.apply_msg = '社内申請手続きを踏んでますか？';
 		App.wearer_input_msg = '着用者を登録しますが、よろしいですか？';
+		App.receipt_msg = "受領ステータスを更新してよろしいですか？";
+		App.receipt_alt_msg = "受領更新に失敗しました。";
 
 		App.order_send_check_msg = '発注送信を行う場合は選択欄の何れかにチェックを入れてください。';
 		App.order_send_confirm_msg = '選択されているデータの発注送信を行います。よろしいですか？';

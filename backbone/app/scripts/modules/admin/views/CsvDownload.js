@@ -72,8 +72,12 @@ define([
 					page["order"] = this.options.model.attributes.order;
 
 
-					var msg = "データ量により、ダウンロード処理に時間がかかる可能性があります。ダウンロードを実施してよろしいですか？";
-					if (window.confirm(msg)) {
+					// JavaScript モーダルで表示
+					$('#myModal').modal('show'); //追加
+					//メッセージの修正
+					document.getElementById("confirm_txt").innerHTML=App.dl_msg; //追加　このメッセージはapp.jsで定義
+					$("#btn_ok").off();
+					$("#btn_ok").on('click',function() { //追加
 						var cond = {
 							"scr": 'CSVダウンロード',
 							"cond": cond_map,
@@ -88,8 +92,8 @@ define([
 						data.remove();
 						form.remove();
 						form=null;
-						return;
-					}
+						hideModal();
+					});
 				}
 			},
 /*

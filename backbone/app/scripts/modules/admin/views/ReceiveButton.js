@@ -46,9 +46,13 @@ define([
 					if (!val["chk_flg"]) {
 						alert(val["error_msg"]);
 					} else {
-						var msg = "受領ステータスを更新してよろしいですか？";
-						if (window.confirm(msg)) {
-							var that = this;
+						// JavaScript モーダルで表示
+						$('#myModal').modal('show'); //追加
+						//メッセージの修正
+						document.getElementById("confirm_txt").innerHTML=App.receipt_msg; //追加　このメッセージはapp.jsで定義
+						$("#btn_ok").off();
+						$("#btn_ok").on('click',function() { //追加
+							hideModal();
 							var receive_chk_box = 'receive_check[]';
 							var receive_chk_arr = new Array();
 
@@ -85,11 +89,14 @@ define([
 										var page = res_val["page"];
 										that.triggerMethod('research',that.model.get('sort_key'),that.model.get('order'),page['page_number']);
 									}else{
-										alert("受領更新に失敗しました。");
+										// JavaScript モーダルで表示
+										$('#myModalAlert').modal('show'); //追加
+										//メッセージの修正
+										document.getElementById("alert_txt").innerHTML=App.receipt_alt_msg;
 									}
 								}
 							});
-						}
+						});
 					}
 				}
 			}
