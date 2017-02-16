@@ -291,7 +291,7 @@ $app->post('/wearer_exchange/info', function ()use($app){
     $results = $paginator->items;
     foreach ($results as $result) {
       $list['rntl_cont_no'] = $result->rntl_cont_no;
-      $list['rntl_cont_name'] = $result->rntl_cont_name;
+      $list['rntl_cont_name'] = $result->rntl_emply_cont_name;
       $all_list[] = $list;
     }
   } else {
