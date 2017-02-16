@@ -72,8 +72,7 @@ $app->post('/login', function ()use($app) {
         // PWが間違っている場合
         // アカウントマスタのログインエラー回数をチェックする。
         // ログインエラー回数＋１＜５の場合
-        if($account[0]->mAccount->login_err_count + 1 < 6 ){
-
+        if($account[0]->mAccount->login_err_count + 1 < 5 ){
             // 当該ユーザーのアカウントマスタをログインエラー回数を＋１した値で更新し、画面に下記エラーメッセージを表示して処理を終了する。
             $account[0]->mAccount->login_err_count = $account[0]->mAccount->login_err_count + 1;
             $account[0]->mAccount->save();
@@ -93,7 +92,7 @@ $app->post('/login', function ()use($app) {
 
 
         //アカウントマスタに企業IDログインID、パスワードが一致するデータが存在する場合
-        if($account[0]->mAccount->login_err_count + 1 >= 6 ){
+        if($account[0]->mAccount->login_err_count  >= 5 ){
             // 当該ユーザーのアカウントマスタをログインエラー回数を＋１した値で更新し、画面に下記エラーメッセージを表示して処理を終了する。
             $account[0]->mAccount->login_err_count = $account[0]->mAccount->login_err_count + 1;
             $json_list['status'] = 2;
