@@ -1267,6 +1267,27 @@ $app->post('/wearer_other_change_list', function ()use($app){
                         if(($t_delivery_goods_state_details_result->quantity - $t_delivery_goods_state_details_result->return_plan__qty) <= 0){
                             continue;
                         }
+                        //個体管理番号他のサイズ交換、不要品返却、発注チェック
+                        $query_list = array();
+                        array_push($query_list, "corporate_id = '" . $auth['corporate_id'] . "'");
+                        array_push($query_list, "rntl_cont_no = '" . $wearer_other_change_post['rntl_cont_no'] . "'");
+                        array_push($query_list, "werer_cd = '" . $wearer_other_change_post['werer_cd'] . "'");
+
+                        //商品情報
+                        array_push($query_list, "item_cd = '" . $list['item_cd'] . "'");
+                        array_push($query_list, "color_cd = '" . $list['color_cd'] . "'");
+                        array_push($query_list, "individual_ctrl_no = '" . $t_delivery_goods_state_details_result->individual_ctrl_no . "'");
+                        //発注状況区分
+                        array_push($query_list, "(order_sts_kbn = '3' OR (order_sts_kbn = '2' AND (order_reason_kbn = '28' OR order_reason_kbn = '07')))");//サイズ交換のトラン
+                        //sql文字列を' AND 'で結合
+                        $query = implode(' AND ', $query_list);
+                        //--- クエリー実行・取得 ---//
+                        $t_rtn_tran_count = TReturnedPlanInfoTran::find(array(
+                            'conditions' => $query
+                        ))->count();
+                        if($t_rtn_tran_count > 0){
+                            continue;
+                        }
                         $individual_cnt += 1;
                         array_push($list["individual_ctrl_no"], $t_delivery_goods_state_details_result->individual_ctrl_no);
                         $element["name_no"] = $list["arr_num"];

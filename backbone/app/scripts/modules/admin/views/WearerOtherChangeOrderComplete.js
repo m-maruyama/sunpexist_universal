@@ -69,7 +69,6 @@ define([
 						} else {
 							$("#h").text('');
 							$(".explanation").text('');
-							console.log(res_val);
 							that.triggerMethod('showAlerts', res_val["error_msg"]);
 						}
 					}
