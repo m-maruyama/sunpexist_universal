@@ -1703,19 +1703,19 @@ $app->post('/btn_possible_chk', function ()use($app) {
       $all_list[] = $result->rntl_sect_cd;
     }
   }
-  // 拠点コード「0」埋めがある場合は、可否フラグを無視とする
-  if (in_array("0000000000", $all_list)) {
-    $json_list["order_input_ok_flg"]= "1";
-    $json_list["order_send_ok_flg"]= "1";
-    echo json_encode($json_list);
-    return;
-  }
+//  // 拠点コード「0」埋めがある場合は、可否フラグを無視とする
+//  if (in_array("0000000000", $all_list)) {
+//    $json_list["order_input_ok_flg"]= "1";
+//    $json_list["order_send_ok_flg"]= "1";
+//    echo json_encode($json_list);
+//    return;
+//  }
 
   $query_list = array();
   array_push($query_list, "m_contract_resource.corporate_id = '".$auth['corporate_id']."'");
   array_push($query_list, "m_contract_resource.accnt_no = '".$auth['accnt_no']."'");
   array_push($query_list, "m_contract_resource.rntl_cont_no = '".$cond['rntl_cont_no']."'");
-  array_push($query_list, "m_contract_resource.rntl_sect_cd = '".$cond['rntl_sect_cd']."'");
+//  array_push($query_list, "m_contract_resource.rntl_sect_cd = '".$cond['rntl_sect_cd']."'");
   $query = implode(' AND ', $query_list);
 
   $arg_str = '';
