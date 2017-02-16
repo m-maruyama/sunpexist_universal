@@ -268,6 +268,7 @@ define([
 			"WSC0011": host + "/wearer_size_change/req_param",
 			"WSC0012": host + "/wearer_size_change/order_check",
 			"WSC0013": host + "/wearer_other_change/order_check",
+			"WSC0014": host + "/wearer_other_change/req_param",
 			"WX0010": host + "/wearer_exchange/info",
 			"WX0011": host + "/wearer_exchange/list",
 			"WX0012": host + "/wearer_exchange/delete",

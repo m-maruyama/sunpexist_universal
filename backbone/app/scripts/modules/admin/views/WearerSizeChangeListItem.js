@@ -56,7 +56,7 @@ define([
 								var type = "WSC0010_req";
 								var transition = "size_change";
 								var data = cond["data"];
-								that.onShow(res_val, type, transition, data);
+								that.onShow(res_val, type, transition, data, 'size');
 							} else {
 								// JavaScript モーダルで表示
 								$('#myModalAlert').modal(); //追加
@@ -105,7 +105,7 @@ define([
 								var type = "WSC0010_req";
 								var transition = "other_change";
 								var data = cond["data"];
-								that.onShow(res_val, type, transition, data);
+								that.onShow(res_val, type, transition, data,'other');
 							} else {
 								// JavaScript モーダルで表示
 								$('#myModalAlert').modal(); //追加
@@ -183,13 +183,19 @@ define([
 				}
 			},
 
-			onShow: function(val, type, transition, data) {
+			onShow: function(val, type, transition, data, change) {
 				var that = this;
 				// 交換発注入力遷移
 				if (type == "WSC0010_req") {
 					// 遷移時のPOSTパラメータ代行処理
 					var modelForUpdate = this.model;
-					modelForUpdate.url = App.api.WSC0011;
+					if(change == 'size'){
+						//サイズ交換の場合
+						modelForUpdate.url = App.api.WSC0011;
+					}else{
+						//その他交換の場合
+						modelForUpdate.url = App.api.WSC0014;
+					}
 					var cond = {
 						"scr": '発注入力（サイズ交換/その他交換）POST値保持',
 						"data": data

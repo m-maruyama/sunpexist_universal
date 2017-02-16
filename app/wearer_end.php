@@ -971,7 +971,6 @@ $app->post('/wearer_end/order_check', function ()use($app){
       }
       //未出荷商品が0以上または、発注情報があるのに、出荷情報（発注状況）がない場合はエラー
       if($order_item_list[$i]['unshipped_qty'] > 0 || is_null($order_item_list[$i]['unshipped_qty'])){
-          ChromePhp::LOG(2);
         $json_list["err_cd"] = "1";
         $error_msg = "対象の方は未出荷の商品がある為、貸与終了の発注はできません。";
         $json_list["err_msg"] = $error_msg;
