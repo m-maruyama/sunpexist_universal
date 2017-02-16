@@ -287,11 +287,13 @@ $app->post('/account/modal', function () use ($app) {
         $old_pass_list = array();
         if ($m_account->pass_word) {
             //if ($app->security->checkHash($cond['password'], $m_account->pass_word)) {
+            /*
             if ($hash_pass == $m_account->pass_word) {
                 //前回と同じパスワードを受け付けない
                 // エラーメッセージを表示して処理を終了する。
                 $error_list['before_pass'] = '前回と同じパスワードは使用出来ません。';
             }
+            */
             if (!$error_list) {
                 $old_pass_list = json_decode($m_account->old_pass_word, true);
                 foreach ($old_pass_list as $old_pass) {
