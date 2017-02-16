@@ -44,7 +44,10 @@ define([
 
 				if (type == "cm0130_res") {
 					if (!val["chk_flg"]) {
-						alert(val["error_msg"]);
+						// JavaScript モーダルで表示
+						$('#myModalAlert').modal('show'); //追加
+						//メッセージの修正
+						document.getElementById("alert_txt").innerHTML=val["error_msg"];
 					} else {
 						// JavaScript モーダルで表示
 						$('#myModal').modal('show'); //追加
@@ -52,7 +55,6 @@ define([
 						document.getElementById("confirm_txt").innerHTML=App.receipt_msg; //追加　このメッセージはapp.jsで定義
 						$("#btn_ok").off();
 						$("#btn_ok").on('click',function() { //追加
-							hideModal();
 							var receive_chk_box = 'receive_check[]';
 							var receive_chk_arr = new Array();
 
@@ -78,6 +80,7 @@ define([
 								"page":that.options.pagerModel.getPageRequest(),
 								"cond": receive_chk_arr
 							};
+							$('#myModal').modal('hide'); //追加
 							var modelForUpdate = new Backbone.Model();
 							modelForUpdate.url = App.api.RE0020;
 							modelForUpdate.fetchMx({

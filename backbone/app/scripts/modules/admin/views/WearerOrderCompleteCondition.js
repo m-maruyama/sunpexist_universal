@@ -70,7 +70,7 @@ define([
                         data.remove();
                         form.remove();
                         form = null;
-                        hideModal();
+                        $('#myModal').modal('hide');
                     });
                 }
             },

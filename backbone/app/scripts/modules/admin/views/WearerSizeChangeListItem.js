@@ -145,7 +145,7 @@ define([
 						data.remove();
 						form.remove();
 						form=null;
-                        hideModal();
+                        $('#myModal').modal('hide');
 					});
 				},
 				// 返却伝票ダウンロードボタン
@@ -178,7 +178,7 @@ define([
 						data.remove();
 						form.remove();
 						form = null;
-                        hideModal();
+                        $('#myModal').modal('hide');
 					});
 				}
 			},
