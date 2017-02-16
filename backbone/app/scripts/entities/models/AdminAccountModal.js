@@ -34,42 +34,7 @@ define(["app"],function(App) {
 				//console.log(password);
 			},
 			validation:  {
-				"user_id": [
-					{
-						required:true,
-						msg: "ログインIDを入力して下さい。"
-					}
-				],
-				"user_name": [
-					{
-						required:true,
-						msg: "ユーザー名称を入力して下さい。"
-					}
-				],
-				"login_disp_name": [
-					{
-						required:true,
-						msg: "ログイン表示名を入力して下さい。"
-					}
-				],
-				"position_name": [
-					{
-						required:true,
-						msg: "所属を入力して下さい。"
-					}
-				],
-				"mail_address": [
-					{
-						required:true,
-						msg: "メールアドレスを入力して下さい。"
-					}
-				],
-				"password": [
-					 {
-						 //required:true,
-						 msg: "パスワードを入力して下さい。"
-					},
-				],
+
 					// {
 						// rangeLength: [8, 9999],
 						// msg: "パスワードは8文字以上で入力して下さい。"

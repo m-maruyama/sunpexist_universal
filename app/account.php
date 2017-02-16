@@ -216,14 +216,68 @@ $app->post('/account/modal', function () use ($app) {
         return true;
     } else {
         //追加の場合
-        //パスワードバリデーション
-        if (!$cond['password']) {
-            $error_list['no_password'] = 'パスワードを入力してください';
-            $json_list['errors'] = $error_list;
-            echo json_encode($json_list);
 
-            return true;
-        }
+//      "user_id": [
+//					{
+//            required:true,
+//						msg: "ログインIDを入力して下さい。"
+//					}
+//				],
+//				"user_name": [
+//					{
+//            required:true,
+//						msg: "ユーザー名称を入力して下さい。"
+//					}
+//				],
+//				"login_disp_name": [
+//					{
+//            required:true,
+//						msg: "ログイン表示名を入力して下さい。"
+//					}
+//				],
+//				"position_name": [
+//					{
+//            required:true,
+//						msg: "所属を入力して下さい。"
+//					}
+//				],
+//				"mail_address": [
+//					{
+//            required:true,
+//						msg: "メールアドレスを入力して下さい。"
+//					}
+//				],
+//				"password": [
+//					 {
+//             //required:true,
+//             msg: "パスワードを入力して下さい。"
+//					},
+//				],
+
+      //パスワードバリデーション
+      if (!$cond['user_id']) {
+        $error_list['user_id'] = 'ログインIDを入力して下さい';
+      }
+      if (!$cond['user_name']) {
+        $error_list['user_name'] = 'ユーザー名称を入力して下さい';
+      }
+      //パスワードバリデーション
+      if (!$cond['login_disp_name']) {
+        $error_list['login_disp_name'] = 'ログイン表示名を入力して下さい';
+      }
+      //パスワードバリデーション
+      if (!$cond['position_name']) {
+        $error_list['position_name'] = '所属を入力して下さい';
+      }
+      //パスワードバリデーション
+      if (!$cond['mail_address']) {
+        $error_list['mail_address'] = 'メールアドレスを入力して下さい';
+      }
+      //パスワードバリデーション
+      if (!$cond['password']) {
+        $error_list['no_password'] = 'パスワードを入力してください';
+      }
+
         //user_idの重複チェック（削除フラグがゼロのレコードがない場合。）
         if (count($ac) > 0) {
             foreach ($ac as $item) {
@@ -237,7 +291,7 @@ $app->post('/account/modal', function () use ($app) {
             $error_list['user_id_preg'] = 'ログインIDは半角英数字混合で入力してください。';
         }
         //user_id_preg
-        if((mb_strlen($cond['user_id']) > 20) || (strlen($cond['user_id']) < 8)){
+        if((strlen($cond['user_id']) > 20) || (strlen($cond['user_id']) < 8)){
             $error_list['user_id_strlen'] = 'ログインIDは8文字以上20文字以下で入力してください。';
         }
 
@@ -245,7 +299,7 @@ $app->post('/account/modal', function () use ($app) {
             $error_list['password_preg'] = 'パスワードは半角英数字、半角記号(!#$%&*+@?)混合で入力してください。';
         }
         //user_id_preg
-        if((mb_strlen($cond['password']) > 16) || (strlen($cond['password']) < 8)){
+        if((strlen($cond['password']) > 16) || (strlen($cond['password']) < 8)){
             $error_list['password_strlen'] = 'パスワードは8文字以上16文字以下で入力してください。';
         }
 
@@ -261,19 +315,20 @@ $app->post('/account/modal', function () use ($app) {
         $error_list['mail_address_preg'] = 'メールアドレスの形式が不正です。';
     }
     //メールアドレス文字数
-    if(mb_strlen($cond['user_name']) > 100){
-        $error_list['user_name_strlen'] = 'メールアドレスは半角100文字以下で入力してください。';
+    if(strlen($cond['mail_address']) > 100){
+        $error_list['mail_address_strlen'] = 'メールアドレスは半角100文字以下で入力してください。';
     }
     //ユーザー名称文字数
-    if(mb_strlen($cond['user_name']) > 22){
+    if(strlen(mb_convert_encoding($cond['user_name'], 'SJIS', 'UTF-8')) > 22){
         $error_list['user_name_strlen'] = 'ユーザー名称の文字数が多すぎます。（最大全角11文字）';
     }
     //所属名文字数
-    if(mb_strlen($cond['position_name']) > 22){
+    if(strlen(mb_convert_encoding($cond['position_name'], 'SJIS', 'UTF-8')) > 22){
         $error_list['position_name_strlen'] = '所属名の文字数が多すぎます。（最大全角11文字）';
     }
+    //ChromePhp::log(mb_strlen($cond['login_disp_name']));
     //ログイン表示名文字数
-    if(mb_strlen($cond['login_disp_name']) > 22){
+    if(strlen(mb_convert_encoding($cond['login_disp_name'], 'SJIS', 'UTF-8')) > 22){
         $error_list['login_disp_name_strlen'] = 'ログイン表示名の文字数が多すぎます。（最大全角11文字）';
     }
 
