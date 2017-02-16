@@ -198,7 +198,6 @@ $app->post('/wearer_edit/search', function ()use($app){
         $query_list[] = "m_wearer_std_tran.corporate_id = '".$result->as_corporate_id."'";
         $query_list[] = "m_wearer_std_tran.rntl_cont_no = '".$result->as_rntl_cont_no."'";
         $query_list[] = "m_wearer_std_tran.werer_cd = '".$result->as_werer_cd."'";
-        $query_list[] = "m_wearer_std_tran.order_sts_kbn = '6'";
         /*
         if (!$section_all_zero_flg) {
           $query_list[] = "m_contract_resource.corporate_id = '".$result->as_corporate_id."'";
