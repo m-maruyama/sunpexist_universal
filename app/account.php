@@ -89,7 +89,6 @@ $app->post('/account/search', function () use ($app) {
         $q_sort_key = 'accnt_no';
         $order = 'asc';
     }
-  ChromePhp::log($order);
 
     $all_list = array();
     $json_list = array();

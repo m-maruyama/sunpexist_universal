@@ -103,7 +103,7 @@ $app->post('/password', function () use ($app) {
             ));
 
         }
-
+        /*
         if (md5($params['password']) == $account[0]->pass_word) {
             //前回と同じパスワードを受け付けない
             // エラーメッセージを表示して処理を終了する。
@@ -111,7 +111,7 @@ $app->post('/password', function () use ($app) {
             echo json_encode($json_list);
             return true;
         }
-
+        */
         //過去のパスワードがあった場合、下記の処理を実施
         if (json_decode($account[0]->old_pass_word, true) !== null){
             $old_pass_list = array();

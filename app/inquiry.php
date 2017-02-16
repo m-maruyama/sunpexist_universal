@@ -204,10 +204,8 @@ $app->post('/inquiry/agreement_no', function () use ($app) {
 $app->post('/inquiry/section', function () use ($app) {
   $params = json_decode(file_get_contents('php://input'), true);
   $json_list = array();
-
   // アカウントセッション取得
   $auth = $app->session->get('auth');
-
   // 契約リソースマスタ参照
   $query_list = array();
   $list = array();
@@ -332,7 +330,6 @@ $app->post('/inquiry/section', function () use ($app) {
     $list = array();
     $all_list = array();
 
-
     if (!empty($params["corporate"])) {
       $query_list[] = "m_section.corporate_id = '".$params["corporate"]."'";
     } else {
@@ -342,7 +339,7 @@ $app->post('/inquiry/section', function () use ($app) {
       $query_list[] = "m_section.rntl_cont_no = '".$params['agreement_no']."'";
     }else{
       if($auth['user_type'] == '1') {//一般ユーザ
-        $query_list[] = "m_section.rntl_cont_no = '" . $app->session->get('first_rntl_cont_no') . "'";
+        $query_list[] = "m_section.rntl_cont_no = '" . $auth["rntl_cont_no"] . "'";
       }
     }
     if($auth['user_type'] == '1') {//一般ユーザ
@@ -350,7 +347,6 @@ $app->post('/inquiry/section', function () use ($app) {
     }
     //$query_list[] = "m_contract_resource.accnt_no = '".$auth["accnt_no"]."'";
     $query = implode(' AND ', $query_list);
-
     if($auth['user_type'] == '1') {//一般ユーザ
       $arg_str = '';
       $arg_str .= 'SELECT ';
