@@ -235,49 +235,22 @@ define([
 					var that = this;
 					var rntl_sect_cd = $("select[name='section']").val();
 					var rntl_cont_no = $("select[name='agreement_no']").val();
-					var data = {
-						"rntl_cont_no": rntl_cont_no,
-						"werer_cd": $("#werer_cd").val(),
-					};
-					// 発注入力遷移前に発注NGパターンチェック実施
-					var modelForUpdate = this.model;
-					modelForUpdate.url = App.api.WR0013;
+					var modelForUpdate = that.model;
+					modelForUpdate.url = App.api.CM0130;
 					var cond = {
-						"scr": 'その他貸与/返却(不要品返却)-発注NGパターンチェック',
-						"log_type": '3',
-						"data": data
+						"scr": '不要品返却-入力完了-更新可否チェック',
+						"log_type": '1',
+						"rntl_sect_cd": rntl_sect_cd,
+						"rntl_cont_no": rntl_cont_no
 					};
 					modelForUpdate.fetchMx({
 						data:cond,
 						success:function(res){
+							var type = "cm0130_res";
 							var res_val = res.attributes;
-							if (res_val["err_cd"] == "0") {
-								var modelForUpdate = that.model;
-								modelForUpdate.url = App.api.CM0130;
-								var cond = {
-									"scr": '不要品返却-入力完了-更新可否チェック',
-									"log_type": '1',
-									"rntl_sect_cd": rntl_sect_cd,
-									"rntl_cont_no": rntl_cont_no
-								};
-								modelForUpdate.fetchMx({
-									data:cond,
-									success:function(res){
-										var type = "cm0130_res";
-										var res_val = res.attributes;
-										var transition = "WR0022_req";
-										var data = "";
-										that.onShow(res_val, type, transition, data);
-									}
-								});
-							} else {
-								// JavaScript モーダルで表示
-								$('#myModal_alert').modal('show');
-								document.getElementById("alert_txt").innerHTML=res_val["err_msg"];
-								// NGエラーアラート表示
-								//alert(res_val["err_msg"]);
-								return true;
-							}
+							var transition = "WR0022_req";
+							var data = "";
+							that.onShow(res_val, type, transition, data);
 						}
 					});
 				},
@@ -323,8 +296,12 @@ define([
 								});
 							} else {
 								// JavaScript モーダルで表示
-								$('#myModal_alert').modal('show');
-								document.getElementById("alert_txt").innerHTML=res_val["err_msg"];
+								//$('#myModal_alert').modal('show');
+								var data = {
+									error_msg:res_val["err_msg"]
+								};
+								that.triggerMethod('inputComplete', data);
+								//document.getElementById("alert_txt").innerHTML=res_val["err_msg"];
 								// NGエラーアラート表示
 								//alert(res_val["err_msg"]);
 								return true;
@@ -410,6 +387,7 @@ define([
 					var job_type = $("select[name='job_type']").val();
 					var shipment = $("input[name='shipment']").val();
 					var comment = $("#comment").val();
+					var werer_cd = $("#werer_cd").val();
 					var wearer_data = {
 						'tran_req_no': tran_req_no,
 						'agreement_no': agreement_no,
@@ -422,7 +400,8 @@ define([
 						'section': section,
 						'job_type': job_type,
 						'shipment': shipment,
-						'comment': comment
+						'comment': comment,
+						'werer_cd': werer_cd
 					}
 
 					var list_cnt = $("input[name='list_cnt']").val();
@@ -513,6 +492,7 @@ define([
 					var job_type = $("select[name='job_type']").val();
 					var shipment = $("input[name='shipment']").val();
 					var comment = $("#comment").val();
+					var werer_cd = $("#werer_cd").val();
 					var wearer_data = {
 						'tran_req_no': tran_req_no,
 						'agreement_no': agreement_no,
@@ -525,7 +505,8 @@ define([
 						'section': section,
 						'job_type': job_type,
 						'shipment': shipment,
-						'comment': comment
+						'comment': comment,
+						'werer_cd': werer_cd
 					}
 
 					var list_cnt = $("input[name='list_cnt']").val();

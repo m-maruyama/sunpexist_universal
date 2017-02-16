@@ -34,40 +34,70 @@ define([
 			},
 			bindings: {
 			},
+
+
 			onShow: function() {
+				this.triggerMethod('hideAlerts');
 				if (window.sessionStorage.getItem("referrer")=='wearer_return_order_complete') {
 					location.href = './wearer_other.html';
 				}else{
 					window.sessionStorage.setItem("referrer","wearer_return_order_complete");
 				}
+
 				var that = this;
 				var data = this.options.data;
+				console.log(data);
 				var scr = data["scr"];
 				var mode = data["mode"];
 				var wearer_data = data["wearer_data"];
 				var item = data["item"];
+				var check = {
+					"rntl_cont_no": data["wearer_data"]["agreement_no"],
+					"werer_cd": data["wearer_data"]["werer_cd"]
+				}
 
+				// 発注入力遷移前に発注NGパターンチェック実施
 				var modelForUpdate = this.model;
-				modelForUpdate.url = App.api.WR0022;
+				modelForUpdate.url = App.api.WR0013;
 				var cond = {
-					"scr": scr,
-					"mode": mode,
-					"wearer_data": wearer_data,
-					"item": item
+					"scr": 'その他貸与/返却(不要品返却)-発注NGパターンチェック',
+					"log_type": '3',
+					"data": check
 				};
-				//console.log(cond);
-
 				modelForUpdate.fetchMx({
 					data:cond,
-					success:function(res){
+					success:function(res) {
 						var res_val = res.attributes;
-						if (res_val["error_code"] == "1") {
+						if (res_val["err_cd"] == "0") {
+							var modelForUpdate = that.model;
+							modelForUpdate.url = App.api.WR0022;
+							var cond = {
+								"scr": scr,
+								"mode": mode,
+								"wearer_data": wearer_data,
+								"item": item
+							};
+							modelForUpdate.fetchMx({
+								data:cond,
+								success:function(res){
+									var res_val = res.attributes;
+									if (res_val["error_code"] == "1") {
+										$("#h").text('');
+										$(".explanation").text('');
+										that.triggerMethod('showAlerts', res_val["error_msg"]);
+									} else {
+										$('.returnSlipDownload').css('display', '');
+										$('#return_slip_dl').val(res_val["param"]);
+									}
+								}
+							});
+						} else {
 							$("#h").text('');
 							$(".explanation").text('');
-							that.triggerMethod('showAlerts', res_val["error_msg"]);
-						} else {
-							$('.returnSlipDownload').css('display', '');
-							$('#return_slip_dl').val(res_val["param"]);
+							that.triggerMethod('showAlerts', res_val.err_msg);
+							$(".list-group").append('<li class="list-group-item list-group-item-danger"><span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span><span class="sr-only">Error:</span><span class="text"></span></li>');
+							$(".text").text(res_val.err_msg);
+							return;
 						}
 					}
 				});

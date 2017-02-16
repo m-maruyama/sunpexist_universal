@@ -273,7 +273,6 @@ $app->post('/account/modal', function () use ($app) {
     if(mb_strlen($cond['position_name']) > 22){
         $error_list['position_name_strlen'] = '所属名の文字数が多すぎます。（最大全角11文字）';
     }
-    ChromePhp::log(mb_strlen($cond['login_disp_name']));
     //ログイン表示名文字数
     if(mb_strlen($cond['login_disp_name']) > 22){
         $error_list['login_disp_name_strlen'] = 'ログイン表示名の文字数が多すぎます。（最大全角11文字）';
