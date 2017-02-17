@@ -394,7 +394,11 @@ define([
 							// that.reason_kbn.show(reasonKbnConditionChangeView);
 							that.triggerMethod('change:job_type', data);
 						});
-						document.getElementById('job_type').value = before_vals;
+						$("#btn_cancel").on('click',function() { //追加
+							hideModal();
+							// that.reason_kbn.show(reasonKbnConditionChangeView);
+							document.getElementById('job_type').value = before_vals;
+						});
 
 					} else {
 						window.sessionStorage.setItem("job_type_sec", after_vals);
