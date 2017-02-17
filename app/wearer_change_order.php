@@ -5830,18 +5830,57 @@ $app->post('/wearer_change/send', function ()use($app){
           array_push($calum_list, "order_rntl_sect_cd");
           array_push($values_list, "'".$before_rntl_sect_cd."'");
           // 理由区分
-          //変更後の職種コード
-          $job_type_cd = explode(':', $wearer_data_input['job_type']);
-          $job_type_cd = $job_type_cd[0];
-          if($before_job_type_cd !== $job_type_cd && $before_rntl_sect_cd == $wearer_data_input["section"]){
-              $reason_kbn = '09'; //貸与パターン変更
-          }
-          if($before_job_type_cd == $job_type_cd && $before_rntl_sect_cd !== $wearer_data_input["section"]){
-              $reason_kbn = '10'; //拠点異動
-          }
-          if($before_job_type_cd !== $job_type_cd && $before_rntl_sect_cd !== $wearer_data_input["section"]) {
-              $reason_kbn = '11'; //貸与パターン変更&拠点異動
-          }
+            //変更後の職種コード
+            $job_type_cd = explode(':', $wearer_data_input['job_type']);
+            $job_type_cd = $job_type_cd[0];
+
+            //--発注管理単位取得--//
+            $query_list = array();
+            array_push($query_list, "corporate_id = '".$auth['corporate_id']."'");
+            array_push($query_list, "rntl_cont_no = '".$wearer_chg_post['rntl_cont_no']."'");
+            if (!empty($cond["job_type_cd"])) {
+                array_push($query_list, "job_type_cd = '".$cond['job_type_cd']."'");
+            } else {
+                array_push($query_list, "job_type_cd = '".$wearer_chg_post['job_type_cd']."'");
+            }
+
+            $query = implode(' AND ', $query_list);
+
+            $arg_str = '';
+            $arg_str = 'SELECT ';
+            $arg_str .= ' * ';
+            $arg_str .= ' FROM ';
+            $arg_str .= 'm_job_type';
+            $arg_str .= ' WHERE ';
+            $arg_str .= $query;
+
+            $m_job_type = new MJobType();
+            $results = new Resultset(NULL, $m_job_type, $m_job_type->getReadConnection()->query($arg_str));
+            $results_array = (array) $results;
+            $results_cnt = $results_array["\0*\0_count"];
+
+            $paginator_model = new PaginatorModel(
+                array(
+                    "data"  => $results,
+                    "limit" => $results_cnt,
+                    "page" => 1
+                )
+            );
+            $paginator = $paginator_model->getPaginate();
+            $results = $paginator->items;
+            foreach ($results as $result) {
+                $order_control_unit = $result->order_control_unit;
+            }
+
+            if($order_control_unit=='2'){
+                $reason_kbn = '24'; //貸与枚数管理
+            }else if($before_job_type_cd !== $job_type_cd && $before_rntl_sect_cd == $wearer_data_input["section"]){
+                $reason_kbn = '09'; //貸与パターン変更
+            }else if($before_job_type_cd == $job_type_cd && $before_rntl_sect_cd !== $wearer_data_input["section"]){
+                $reason_kbn = '10'; //拠点異動
+            }else if($before_job_type_cd !== $job_type_cd && $before_rntl_sect_cd !== $wearer_data_input["section"]) {
+                $reason_kbn = '11'; //貸与パターン変更&拠点異動
+            }
           array_push($calum_list, "order_reason_kbn");
           array_push($values_list, "'".$reason_kbn."'");
           //array_push($values_list, "'".$wearer_data_input['reason_kbn']."'");
@@ -6076,18 +6115,57 @@ $app->post('/wearer_change/send', function ()use($app){
        array_push($calum_list, "order_rntl_sect_cd");
        array_push($values_list, "'".$before_rntl_sect_cd."'");
        // 理由区分
-       //変更後の職種コード
-       $job_type_cd = explode(':', $wearer_data_input['job_type']);
-       $job_type_cd = $job_type_cd[0];
-       if($before_job_type_cd !== $job_type_cd && $before_rntl_sect_cd == $wearer_data_input["section"]){
-           $reason_kbn = '09'; //貸与パターン変更
-       }
-       if($before_job_type_cd == $job_type_cd && $before_rntl_sect_cd !== $wearer_data_input["section"]){
-           $reason_kbn = '10'; //拠点異動
-       }
-       if($before_job_type_cd !== $job_type_cd && $before_rntl_sect_cd !== $wearer_data_input["section"]) {
-           $reason_kbn = '11'; //貸与パターン変更&拠点異動
-       }
+          //変更後の職種コード
+          $job_type_cd = explode(':', $wearer_data_input['job_type']);
+          $job_type_cd = $job_type_cd[0];
+
+          //--発注管理単位取得--//
+          $query_list = array();
+          array_push($query_list, "corporate_id = '".$auth['corporate_id']."'");
+          array_push($query_list, "rntl_cont_no = '".$wearer_chg_post['rntl_cont_no']."'");
+          if (!empty($cond["job_type_cd"])) {
+              array_push($query_list, "job_type_cd = '".$cond['job_type_cd']."'");
+          } else {
+              array_push($query_list, "job_type_cd = '".$wearer_chg_post['job_type_cd']."'");
+          }
+
+          $query = implode(' AND ', $query_list);
+
+          $arg_str = '';
+          $arg_str = 'SELECT ';
+          $arg_str .= ' * ';
+          $arg_str .= ' FROM ';
+          $arg_str .= 'm_job_type';
+          $arg_str .= ' WHERE ';
+          $arg_str .= $query;
+
+          $m_job_type = new MJobType();
+          $results = new Resultset(NULL, $m_job_type, $m_job_type->getReadConnection()->query($arg_str));
+          $results_array = (array) $results;
+          $results_cnt = $results_array["\0*\0_count"];
+
+          $paginator_model = new PaginatorModel(
+              array(
+                  "data"  => $results,
+                  "limit" => $results_cnt,
+                  "page" => 1
+              )
+          );
+          $paginator = $paginator_model->getPaginate();
+          $results = $paginator->items;
+          foreach ($results as $result) {
+              $order_control_unit = $result->order_control_unit;
+          }
+
+          if($order_control_unit=='2'){
+              $reason_kbn = '24'; //貸与枚数管理
+          }else if($before_job_type_cd !== $job_type_cd && $before_rntl_sect_cd == $wearer_data_input["section"]){
+              $reason_kbn = '09'; //貸与パターン変更
+          }else if($before_job_type_cd == $job_type_cd && $before_rntl_sect_cd !== $wearer_data_input["section"]){
+              $reason_kbn = '10'; //拠点異動
+          }else if($before_job_type_cd !== $job_type_cd && $before_rntl_sect_cd !== $wearer_data_input["section"]) {
+              $reason_kbn = '11'; //貸与パターン変更&拠点異動
+          }
        array_push($calum_list, "order_reason_kbn");
        array_push($values_list, "'".$reason_kbn."'");
        //array_push($values_list, "'".$wearer_data_input['reason_kbn']."'");

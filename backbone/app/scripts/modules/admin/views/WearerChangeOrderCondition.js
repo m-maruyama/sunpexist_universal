@@ -379,21 +379,23 @@ define([
 					}
 
 					if (sp_job_type_flg == "1") {
-
 						// JavaScript モーダルで表示
-						$('#myModalAlert').modal('show'); //追加
+						$('#myModal').modal('show'); //追加
 						//メッセージの修正
-						document.getElementById("alert_txt").innerHTML=App.apply_msg;
+						document.getElementById("confirm_txt").innerHTML=App.apply_msg; //追加　このメッセージはapp.jsで定義
+						$("#btn_ok").off();
+						$("#btn_ok").on('click',function() { //追加
+							hideModal();
 						// var msg = "社内申請手続きを踏んでいますか？";
 						// if (window.confirm(msg)) {
-						// 	var reasonKbnConditionChangeView = new App.Admin.Views.ReasonKbnConditionChange({
-						// 		job_type: job_type
-						// 	});
-						// 	this.reason_kbn.show(reasonKbnConditionChangeView);
-						// 	that.triggerMethod('change:job_type', data);
-						// } else {
-						// 	document.getElementById('job_type').value = before_vals;
-						// }
+							var reasonKbnConditionChangeView = new App.Admin.Views.ReasonKbnConditionChange({
+								job_type: job_type
+							});
+							// that.reason_kbn.show(reasonKbnConditionChangeView);
+							that.triggerMethod('change:job_type', data);
+						});
+						document.getElementById('job_type').value = before_vals;
+
 					} else {
 						window.sessionStorage.setItem("job_type_sec", after_vals);
 
@@ -489,6 +491,23 @@ define([
 					});
 				}
 				if (type == "WC0021_req") {
+					//以前の職種と拠点
+					var	bef_rntl_sect_cd = $("#bef_rntl_sect_cd").val();
+					var bef_job_type_cd = $("#bef_job_type_cd").val();
+					//変更ごの職種と拠点
+					var section = $("select[name='section']").val();
+					var job_type = $("select[name='job_type']").val();
+					var job_type_result = job_type.split(':');
+
+					if(bef_job_type_cd == '24'){
+						var reason_kbn = '24'; //
+					} else if(bef_job_type_cd !== job_type_result[0] && bef_rntl_sect_cd == section){
+						var reason_kbn = '09'; //職種変更
+					}else if(bef_job_type_cd == job_type_result[0] && bef_rntl_sect_cd !== section){
+						var reason_kbn = '10'; //拠点異動
+					}else if(bef_job_type_cd !== job_type_result[0] && bef_rntl_sect_cd !== section) {
+						var reason_kbn = '11'; //貸与パターン変更&拠点異動
+					}
 					var tran_req_no = $("button[name='complete_param']").val();
 					var agreement_no = $("select[name='agreement_no']").val();
 					var reason_kbn = $("select[name='reason_kbn']").val();
@@ -499,8 +518,6 @@ define([
 					var sex_kbn = $("select[name='sex_kbn']").val();
 					var appointment_ymd = $("input[name='appointment_ymd']").val();
 					var resfl_ymd = $("input[name='resfl_ymd']").val();
-					var section = $("select[name='section']").val();
-					var job_type = $("select[name='job_type']").val();
 					var shipment = $("select[name='shipment']").val();
 					var comment = $("#comment").val();
 					var wearer_data = {
@@ -626,13 +643,13 @@ define([
 					var job_type = $("select[name='job_type']").val();
 					var job_type_result = job_type.split(':');
 
-					if(bef_job_type_cd !== job_type_result[0] && bef_rntl_sect_cd == section){
+					if(bef_job_type_cd == '24'){
+						var reason_kbn = '24'; //
+					} else if(bef_job_type_cd !== job_type_result[0] && bef_rntl_sect_cd == section){
 						var reason_kbn = '09'; //職種変更
-					}
-					if(bef_job_type_cd == job_type_result[0] && bef_rntl_sect_cd !== section){
+					}else if(bef_job_type_cd == job_type_result[0] && bef_rntl_sect_cd !== section){
 						var reason_kbn = '10'; //拠点異動
-					}
-					if(bef_job_type_cd !== job_type_result[0] && bef_rntl_sect_cd !== section) {
+					}else if(bef_job_type_cd !== job_type_result[0] && bef_rntl_sect_cd !== section) {
 						var reason_kbn = '11'; //貸与パターン変更&拠点異動
 					}
 
