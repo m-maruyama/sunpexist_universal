@@ -145,10 +145,6 @@ $app->post('/lend/search', function ()use($app){
 		if($sort_key == 'send_ymd'){
 			$q_sort_key = 'as_ship_ymd';
 		}
-		// 返却予定数
-		if($sort_key == 'return_plan_qty'){
-			$q_sort_key = 'as_return_plan__qty';
-		}
 		// 発注No
 		if($sort_key == 'order_req_no'){
 			$q_sort_key = 'as_order_req_no';
@@ -287,8 +283,6 @@ $app->post('/lend/search', function ()use($app){
 				$list['individual_ctrl_no'] = "-";
 			}
 
-
-
 			// 商品-色(サイズ-サイズ2)表示変換
 			$list['shin_item_code'] = $list['item_cd']."-".$list['color_cd']."(".$list['size_cd']."-".$list['size_two_cd'].")";
 
@@ -336,7 +330,6 @@ $app->post('/lend/search', function ()use($app){
 			} else {
 				$list['now_job_type_name'] = "-";
 			}
-
 
 			// 投入商品名
 			$search_q = array();

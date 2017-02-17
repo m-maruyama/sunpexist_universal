@@ -3013,10 +3013,6 @@ $app->post('/csv_download', function ()use($app){
       if($sort_key == 'send_ymd'){
         $q_sort_key = 'as_ship_ymd';
       }
-      // 返却予定数
-      if($sort_key == 'return_plan_qty'){
-        $q_sort_key = 'as_return_plan__qty';
-      }
       // 発注No
       if($sort_key == 'order_req_no'){
         $q_sort_key = 'as_order_req_no';

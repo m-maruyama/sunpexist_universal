@@ -73,7 +73,7 @@ define([
 
 
 					// JavaScript モーダルで表示
-					$('#myModal').modal('show'); //追加
+					$('#DownloadModal').modal('show'); //追加
 					//メッセージの修正
 					document.getElementById("confirm_txt").innerHTML=App.dl_msg; //追加　このメッセージはapp.jsで定義
 					$("#btn_ok").off();
