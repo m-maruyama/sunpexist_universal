@@ -555,6 +555,7 @@ $app->post('/wearer_order_list', function ()use($app){
     $arr_cnt = 0;
     $list_cnt = 1;
     $add_item = $wearer_odr_post['add_item'];
+    $rowspan = '';
     foreach ($results as $result) {
         $list = array();
         // name属性用カウント値
@@ -605,11 +606,21 @@ $app->post('/wearer_order_list', function ()use($app){
         $result_obj = (array)$results;
         $results_cnt = $result_obj["\0*\0_count"];
         if ($results_cnt > 1) {
+            if(!$rowspan){
+                $rowspan = 'rowspan='.$results_cnt;
+                $list["rowspan"] = $rowspan;
+            }else{
+                $rowspan = 'style=display:none';
+                $list["rowspan"] = $rowspan;
+
+            }
             $list["choice"] = "複数選択";
             $list["choice_type"] = "2";
         } else {
             $list["choice"] = "単一選択";
             $list["choice_type"] = "1";
+            $list["rowspan"] = null;
+            $rowspan = '';
         }
 
         // 発注商品一覧」の入力項目「サイズ」作成
@@ -754,25 +765,25 @@ $app->post('/wearer_order_insert', function () use ($app) {
     foreach ($add_item_input as $add_item_input_map) {
         // 発注枚数フォーマットチェック
         if (empty($add_item_input_map["add_order_num_disable"])) {
-            if (!$add_item_input_map["add_order_num"]) {
-                array_push($error_list,'発注枚数を入力してください。');
+            if (!$add_item_input_map["add_order_num"]&&$add_item_input_map["add_order_num"] !== '0') {
+                array_push($error_list,$add_item_input_map["add_item_cd"].'-'.$add_item_input_map["add_color_cd"].'の発注枚数を入力してください。');
                 $json_list["error_code"] = "1";
             }
         }
         if (empty($add_item_input_map["add_order_num_disable"])) {
             if (!ctype_digit(strval($add_item_input_map["add_order_num"]))) {
-                array_push($error_list,'発注枚数には半角数字を入力してください。');
+                array_push($error_list,$add_item_input_map["add_item_cd"].'-'.$add_item_input_map["add_color_cd"].'の発注枚数には半角数字を入力してください。');
                 $json_list["error_code"] = "1";
             }
         }
         $order_count = intval($order_count) + intval($add_item_input_map["add_order_num"]);
         if (intval($cond["order_count"])<$order_count) {
-            array_push($error_list,'発注可能枚数を超えています。');
+            array_push($error_list,$add_item_input_map["add_item_cd"].'-'.$add_item_input_map["add_color_cd"].'の発注可能枚数を超えています。');
             $json_list["error_code"] = "1";
         }
         // サイズチェック
         if (!$add_item_input_map["add_size_cd"]) {
-            array_push($error_list,'サイズを入力してください。');
+            array_push($error_list,$add_item_input_map["add_item_cd"].'-'.$add_item_input_map["add_color_cd"].'のサイズを入力してください。');
             $json_list["error_code"] = "1";
         }
     }

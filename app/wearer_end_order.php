@@ -819,6 +819,7 @@ $app->post('/wearer_end_order_list', function ()use($app){
     if (!empty($now_wearer_list)) {
         $arr_cnt = 0;
         $list_cnt = 1;
+        $rowspan = '';
         foreach ($now_wearer_list as $now_wearer_map) {
             $list = array();
             // name属性用カウント値
@@ -852,11 +853,21 @@ $app->post('/wearer_end_order_list', function ()use($app){
             $result_obj = (array)$results;
             $results_cnt = $result_obj["\0*\0_count"];
             if ($results_cnt > 1) {
+                if(!$rowspan){
+                    $rowspan = 'rowspan='.$results_cnt;
+                    $list["rowspan"] = $rowspan;
+                }else{
+                    $rowspan = 'style=display:none';
+                    $list["rowspan"] = $rowspan;
+
+                }
                 $list["choice"] = "複数選択";
                 $list["choice_type"] = "2";
             } else {
                 $list["choice"] = "単一選択";
                 $list["choice_type"] = "1";
+                $list["rowspan"] = null;
+                $rowspan = '';
             }
             // 標準枚数
             $list["std_input_qty"] = $now_wearer_map['std_input_qty'];

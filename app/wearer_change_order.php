@@ -1681,7 +1681,6 @@ $app->post('/wearer_change/info', function ()use($app){
      //ChromePhp::LOG('【変更後】商品リスト');
      //ChromePhp::LOG(count($chg_wearer_list));
    }
-
    //--新たに追加されるアイテム一覧リストの生成--//
    $chk_list = array();
    $add_list = array();
@@ -1786,6 +1785,7 @@ $app->post('/wearer_change/info', function ()use($app){
    if (!empty($chk_list)) {
      $arr_cnt = 0;
      $list_cnt = 1;
+       $rowspan = '';
      foreach ($chk_list as $chk_map) {
        $list = array();
        // name属性用カウント値
@@ -1819,13 +1819,23 @@ $app->post('/wearer_change/info', function ()use($app){
        $results = new Resultset(NULL, $m_input_item, $m_input_item->getReadConnection()->query($arg_str));
        $result_obj = (array)$results;
        $results_cnt = $result_obj["\0*\0_count"];
-       if ($results_cnt > 1) {
-         $list["choice"] = "複数選択";
-         $list["choice_type"] = "2";
-       } else {
-         $list["choice"] = "単一選択";
-         $list["choice_type"] = "1";
-       }
+         if ($results_cnt > 1) {
+             if(!$rowspan){
+                 $rowspan = 'rowspan='.$results_cnt;
+                 $list["rowspan"] = $rowspan;
+             }else{
+                 $rowspan = 'style=display:none';
+                 $list["rowspan"] = $rowspan;
+
+             }
+             $list["choice"] = "複数選択";
+             $list["choice_type"] = "2";
+         } else {
+             $list["choice"] = "単一選択";
+             $list["choice_type"] = "1";
+             $list["rowspan"] = null;
+             $rowspan = '';
+         }
        // 標準枚数
        $list["std_input_qty"] = $chk_map['std_input_qty'];
        // 商品-色
@@ -1960,12 +1970,14 @@ $app->post('/wearer_change/info', function ()use($app){
            }
          } else {
            $list["order_num_disable"] = "";
-             //返却枚数の計算、新しい商品は標準貸与枚数、同じ商品で数量が増える場合は、異動先の標準貸与枚数引く、現在貸与中アイテムの数量
-             if($chk_map['add_flg'] == true){
-                 $list["order_num"] = $chk_map["possible_num"];
-             } elseif ($chk_map['add_flg'] == false) {
-                 $list["order_num"] = $chk_map['std_input_qty'];
-             }
+//             //返却枚数の計算、新しい商品は標準貸与枚数、同じ商品で数量が増える場合は、異動先の標準貸与枚数引く、現在貸与中アイテムの数量
+//             if($chk_map['add_flg'] == true){
+//                 $list["order_num"] = $chk_map["possible_num"];
+//             } elseif ($chk_map['add_flg'] == false) {
+//                 $list["order_num"] = $chk_map['std_input_qty'];
+//             }
+             $list["order_num"] = '0';
+
          }
        }
 
@@ -2000,6 +2012,7 @@ $app->post('/wearer_change/info', function ()use($app){
    if (!empty($now_wearer_list) && empty($first_flg)) {
      $arr_cnt = 0;
      $list_cnt = 1;
+       $rowspan = '';
      foreach ($now_wearer_list as $now_wearer_map) {
        $list = array();
 
@@ -2054,13 +2067,26 @@ $app->post('/wearer_change/info', function ()use($app){
        $results = new Resultset(NULL, $m_input_item, $m_input_item->getReadConnection()->query($arg_str));
        $result_obj = (array)$results;
        $results_cnt = $result_obj["\0*\0_count"];
-       if ($results_cnt > 1) {
-         $list["choice"] = "複数選択";
-         $list["choice_type"] = "2";
-       } else {
-         $list["choice"] = "単一選択";
-         $list["choice_type"] = "1";
-       }
+         if ($results_cnt > 1) {
+             if(!$rowspan){
+                 $rowspan = 'rowspan='.$results_cnt;
+                 $list["rowspan"] = $rowspan;
+//                 if(individual_flg($auth['corporate_id'], $wearer_chg_post['rntl_cont_no'])){
+//                     $list["return_num_rowspan"] = $rowspan;
+//                 }
+             }else{
+                 $rowspan = 'style=display:none';
+                 $list["rowspan"] = $rowspan;
+
+             }
+             $list["choice"] = "複数選択";
+             $list["choice_type"] = "2";
+         } else {
+             $list["choice"] = "単一選択";
+             $list["choice_type"] = "1";
+             $list["rowspan"] = null;
+             $rowspan = '';
+         }
        // 標準枚数
        $list["std_input_qty"] = $now_wearer_map['std_input_qty'];
        // 商品-色

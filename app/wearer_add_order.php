@@ -627,6 +627,7 @@ $app->post('/wearer_add/info', function ()use($app){
          $item_results = $paginator->items;
          //ChromePhp::LOG("発注情報トラン商品一覧仮リスト");
          //ChromePhp::LOG($results);
+           $rowspan = '';
          foreach ($item_results as $item_result) {
            // name属性用カウント値
            $list["arr_num"] = $arr_num++;
@@ -666,13 +667,23 @@ $app->post('/wearer_add/info', function ()use($app){
            $m_input_item_results = new Resultset(NULL, $m_input_item, $m_input_item->getReadConnection()->query($arg_str));
            $result_obj = (array)$m_input_item_results;
            $results_cnt = $result_obj["\0*\0_count"];
-           if ($results_cnt > 1) {
-             $list["choice"] = "複数選択";
-             $list["choice_type"] = "2";
-           } else {
-             $list["choice"] = "単一選択";
-             $list["choice_type"] = "1";
-           }
+             if ($results_cnt > 1) {
+                 if(!$rowspan){
+                     $rowspan = 'rowspan='.$results_cnt;
+                     $list["rowspan"] = $rowspan;
+                 }else{
+                     $rowspan = 'style=display:none';
+                     $list["rowspan"] = $rowspan;
+
+                 }
+                 $list["choice"] = "複数選択";
+                 $list["choice_type"] = "2";
+             } else {
+                 $list["choice"] = "単一選択";
+                 $list["choice_type"] = "1";
+                 $list["rowspan"] = null;
+                 $rowspan = '';
+             }
            // 標準枚数
            $list["std_input_qty"] = $item_result->as_std_input_qty;
            // 商品-色
@@ -811,6 +822,7 @@ $app->post('/wearer_add/info', function ()use($app){
        //ChromePhp::LOG($results);
        $arr_num = 0;
        $list_cnt = 1;
+         $rowspan = '';
        foreach ($results as $result) {
          // name属性用カウント値
          $list["arr_num"] = $arr_num++;
@@ -849,13 +861,23 @@ $app->post('/wearer_add/info', function ()use($app){
          $m_input_item_results = new Resultset(NULL, $m_input_item, $m_input_item->getReadConnection()->query($arg_str));
          $result_obj = (array)$m_input_item_results;
          $results_cnt = $result_obj["\0*\0_count"];
-         if ($results_cnt > 1) {
-           $list["choice"] = "複数選択";
-           $list["choice_type"] = "2";
-         } else {
-           $list["choice"] = "単一選択";
-           $list["choice_type"] = "1";
-         }
+           if ($results_cnt > 1) {
+               if(!$rowspan){
+                   $rowspan = 'rowspan='.$results_cnt;
+                   $list["rowspan"] = $rowspan;
+               }else{
+                   $rowspan = 'style=display:none';
+                   $list["rowspan"] = $rowspan;
+
+               }
+               $list["choice"] = "複数選択";
+               $list["choice_type"] = "2";
+           } else {
+               $list["choice"] = "単一選択";
+               $list["choice_type"] = "1";
+               $list["rowspan"] = null;
+               $rowspan = '';
+           }
          // 標準枚数
          $list["std_input_qty"] = $result->as_std_input_qty;
          // 商品-色

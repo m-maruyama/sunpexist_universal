@@ -26,7 +26,7 @@
             <th rowspan="2">サイズ</th>
             <th rowspan="2" class="individual_flg" style="display:none;">対象</th>
             <th rowspan="2" class="individual_flg" style="display:none;">個体管理番号</th>
-            <th rowspan="2">発注枚数</th>
+            <!--<th rowspan="2">発注枚数</th>-->
             <th rowspan="2">返却枚数</th>
           </tr>
           <tr>
@@ -50,7 +50,7 @@
               {{choice}}
               <input type="hidden" name="now_choice_type{{arr_num}}" value="{{choice_type}}">
             </td>
-            <td>
+            <td {{rowspan}}>
               {{std_input_qty}}
               <input type="hidden" name="now_std_input_qty{{arr_num}}" value="{{std_input_qty}}">
             </td>
@@ -73,11 +73,11 @@
             <td class="individual_flg" style="display:none;">
               {{{individual_ctrl_no}}}
             </td>
-            <td>
+            <!--<td>-->
               <!--input type="text" style="width:4em; font-weight:normal; text-align:center;" class="input-sm" id="now_order_num{{arr_num}}" name="now_order_num{{arr_num}}" value="{{order_num}}" {{order_num_disable}}>
               <input type="hidden" name="now_order_num_disable{{arr_num}}" value="{{order_num_disable}}"-->
-            </td>
-            <td>
+            <!--</td>-->
+            <td {{rowspan}}>
               <input type="text" style="width:4em; font-weight:normal; text-align:center;" class="input-sm" id="now_return_num{{arr_num}}" name="now_return_num{{arr_num}}" value="{{return_num}}" {{return_num_disable}}>
               <input type="hidden" name="now_return_num_disable{{arr_num}}" value="{{return_num_disable}}">
               <input type="hidden" name="possible_num{{arr_num}}" value="{{possible_num}}">
@@ -130,7 +130,7 @@
             {{choice}}
             <input type="hidden" name="add_choice_type{{arr_num}}" value="{{choice_type}}">
           </td>
-          <td>
+          <td  {{rowspan}}>
             {{std_input_qty}}
             <input type="hidden" name="add_std_input_qty{{arr_num}}" value="{{std_input_qty}}">
           </td>

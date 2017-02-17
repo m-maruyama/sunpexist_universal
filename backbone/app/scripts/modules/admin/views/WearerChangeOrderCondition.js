@@ -385,7 +385,7 @@ define([
 						document.getElementById("confirm_txt").innerHTML=App.apply_msg; //追加　このメッセージはapp.jsで定義
 						$("#btn_ok").off();
 						$("#btn_ok").on('click',function() { //追加
-							hideModal();
+							$('#myModal').modal('hide');
 						// var msg = "社内申請手続きを踏んでいますか？";
 						// if (window.confirm(msg)) {
 							var reasonKbnConditionChangeView = new App.Admin.Views.ReasonKbnConditionChange({
@@ -395,7 +395,7 @@ define([
 							that.triggerMethod('change:job_type', data);
 						});
 						$("#btn_cancel").on('click',function() { //追加
-							hideModal();
+							$('#myModal').modal('hide');
 							// that.reason_kbn.show(reasonKbnConditionChangeView);
 							document.getElementById('job_type').value = before_vals;
 						});
