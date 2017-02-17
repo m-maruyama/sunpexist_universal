@@ -48,42 +48,45 @@ $app->post('/stock/search', function ()use($app){
 	$query = implode(' AND ', $query_list);
 	$sort_key ='';
 	$order ='';
-
 	//第一ソート設定
 	if(!empty($page['sort_key'])){
 		$sort_key = $page['sort_key'];
 		$order = $page['order'];
+        // 商品コード
+        if($sort_key == 'item_code'){
+            $q_sort_key = 'as_zkprcd, as_zksize_display_order';
+        }
 		// 商品名
 		if($sort_key == 'item_name'){
-			$q_sort_key = 'as_item_name,';
+			$q_sort_key = 'as_item_name';
 		}
 		// 在庫状態
 		if($sort_key == 'stock_status'){
-			$q_sort_key = 'as_zk_status_cd,';
+			$q_sort_key = 'as_zk_status_cd';
 		}
 		// 倉庫コード
 		if($sort_key == 'zkwhcd'){
-			$q_sort_key = 'as_zkwhcd,';
+			$q_sort_key = 'as_zkwhcd';
 		}
 		// ラベル
 		if($sort_key == 'label'){
-			$q_sort_key = 'as_label,';
+			$q_sort_key = 'as_label';
 		}
-		// 返却処理中
-		if($sort_key == 'rtn_proc_qty'){
-			$q_sort_key = 'as_rtn_proc_qty,';
-		}
-		// 返却予定
-		if($sort_key == 'rtn_plan_qty'){
-			$q_sort_key = 'as_rtn_plan_qty,';
-		}
-		// 貸与中
-		if($sort_key == 'in_use_qty'){
-			$q_sort_key = 'as_in_use_qty,';
-		}
+//		// 返却処理中
+//		if($sort_key == 'rtn_proc_qty'){
+//			$q_sort_key = 'as_rtn_proc_qty,';
+//		}
+//		// 返却予定
+//		if($sort_key == 'rtn_plan_qty'){
+//			$q_sort_key = 'as_rtn_plan_qty,';
+//		}
+//		// 貸与中
+//		if($sort_key == 'in_use_qty'){
+//			$q_sort_key = 'as_in_use_qty,';
+//		}
 		// その他出荷
 		if($sort_key == 'other_ship_qty'){
-			$q_sort_key = 'as_other_ship_qty,';
+			$q_sort_key = 'as_other_ship_qty';
 		}
 	} else {
 		//指定がなければデフォルトソート順
@@ -91,7 +94,10 @@ $app->post('/stock/search', function ()use($app){
 		$order = 'asc';
 	}
 
-	$arg_str = "SELECT ";
+	$arg_str = "SELECT";
+    $arg_str .= " * ";
+    $arg_str .= " FROM ";
+    $arg_str .= "(SELECT distinct on (t_sdmzk.zkwhcd, t_sdmzk.zkprcd, t_sdmzk.zkclor,t_sdmzk.zksize) ";
 	$arg_str .= "t_sdmzk.zkwhcd as as_zkwhcd,";
 	$arg_str .= "t_sdmzk.zkprcd as as_zkprcd,";
 	$arg_str .= "t_sdmzk.zkclor as as_zkclor,";
@@ -108,17 +114,28 @@ $app->post('/stock/search', function ()use($app){
 	$arg_str .= "t_sdmzk.other_ship_qty as as_other_ship_qty,";
 	$arg_str .= "t_sdmzk.discarded_qty as as_discarded_qty,";
 	$arg_str .= "t_sdmzk.rent_pattern_data as as_rent_pattern_data,";
-	$arg_str .= "m_item.item_name as as_item_name";
+	$arg_str .= "m_item.item_name as as_item_name,";
+    $arg_str .= "m_input_item.size_two_cd as as_size_two_cd";
 	$arg_str .= " FROM t_sdmzk";
 	$arg_str .= " INNER JOIN m_item ON t_sdmzk.m_item_comb_hkey = m_item.m_item_comb_hkey";
+    $arg_str .= " INNER JOIN m_input_item";
+    $arg_str .= " ON (m_item.corporate_id = m_input_item.corporate_id";
+    $arg_str .= " AND m_item.item_cd = m_input_item.item_cd";
+    $arg_str .= " AND m_item.color_cd = m_input_item.color_cd)";
 	$arg_str .= " INNER JOIN m_rent_pattern_for_sdmzk ON substring(t_sdmzk.rent_pattern_data, 3) = m_rent_pattern_for_sdmzk.rent_pattern_data";
 	$arg_str .= " WHERE ";
 	$arg_str .= $query;
-	if (!empty($q_sort_key)) {
+    $arg_str .= ") as distinct_table";
+	if ($q_sort_key) {
 		$arg_str .= " ORDER BY ";
-		$arg_str .= $q_sort_key."as_rent_pattern_data,as_zkprcd,as_zkclor,as_zksize_display_order,as_zksize ".$order;
-	}
+		$arg_str .= $q_sort_key." ".$order;
+	}else{
+	    //初期状態：在庫専用貸与パターンコードの昇順、　商品コードの昇順、商品色の昇順、商品サイズ表示順の昇順、商品サイズの昇順
+        $arg_str .= " ORDER BY ";
+        $arg_str .= "as_rent_pattern_data, as_zkprcd, as_zkclor, as_zksize_display_order, as_zksize ".$order;
+    }
   //ChromePhp::log($arg_str);
+    ChromePhp::LOG($arg_str);
 	$t_sdmzk = new TSdmzk();
 	$results = new Resultset(null, $t_sdmzk, $t_sdmzk->getReadConnection()->query($arg_str));
 	$result_obj = (array)$results;
@@ -152,6 +169,8 @@ $app->post('/stock/search', function ()use($app){
 			$list['zkclor'] = $result->as_zkclor;
 			// サイズコード
 			$list['zksize'] = $result->as_zksize;
+            // サイズ2コード
+            $list['size_two_cd'] = $result->as_size_two_cd;
 			// ラベル
 			if (!empty($result->as_label)) {
 				$list['label'] = $result->as_label;
@@ -184,8 +203,7 @@ $app->post('/stock/search', function ()use($app){
 			}
 
 			// 商品-色(サイズ-サイズ2)表示変換
-			$list['shin_item_code'] = $list['zkprcd']."-".$list['zkclor']."(".$list['zksize'].")";
-//			$list['shin_item_code'] = $list['zkprcd']."-".$list['zkclor']."(".$list['zksize']."-".$list['size_two_cd'].")";
+			$list['shin_item_code'] = $list['zkprcd']."-".$list['zkclor']."(".$list['zksize']."-".$list['size_two_cd'].")";
 
 			//---在庫区分名称---//
 			$query_list = array();
@@ -206,13 +224,13 @@ $app->post('/stock/search', function ()use($app){
 
 	//---第二ソートキー(配列ソート)---//
 	// 商品-色(サイズ-サイズ2)
-	if($sort_key == 'item_code'){
-		if ($order == 'asc') {
-			array_multisort(array_column($all_list, 'shin_item_code'), SORT_DESC, $all_list);
-		} else {
-			array_multisort(array_column($all_list, 'shin_item_code'), SORT_ASC, $all_list);
-		}
-	}
+//	if($sort_key == 'item_code'){
+//		if ($order == 'asc') {
+//			array_multisort(array_column($all_list, 'shin_item_code'), SORT_DESC, $all_list);
+//		} else {
+//			array_multisort(array_column($all_list, 'shin_item_code'), SORT_ASC, $all_list);
+//		}
+//	}
 
 	$page_list['records_per_page'] = $page['records_per_page'];
 	$page_list['page_number'] = $page['page_number'];

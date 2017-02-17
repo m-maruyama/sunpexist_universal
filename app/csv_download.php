@@ -3649,18 +3649,18 @@ $app->post('/csv_download', function ()use($app){
 			if($sort_key == 'label'){
 				$q_sort_key = 'as_label,';
 			}
-			// 返却処理中
-			if($sort_key == 'rtn_proc_qty'){
-				$q_sort_key = 'as_rtn_proc_qty,';
-			}
-			// 返却予定
-			if($sort_key == 'rtn_plan_qty'){
-				$q_sort_key = 'as_rtn_plan_qty,';
-			}
-			// 貸与中
-			if($sort_key == 'in_use_qty'){
-				$q_sort_key = 'as_in_use_qty,';
-			}
+//			// 返却処理中
+//			if($sort_key == 'rtn_proc_qty'){
+//				$q_sort_key = 'as_rtn_proc_qty,';
+//			}
+//			// 返却予定
+//			if($sort_key == 'rtn_plan_qty'){
+//				$q_sort_key = 'as_rtn_plan_qty,';
+//			}
+//			// 貸与中
+//			if($sort_key == 'in_use_qty'){
+//				$q_sort_key = 'as_in_use_qty,';
+//			}
 			// その他出荷
 			if($sort_key == 'other_ship_qty'){
 				$q_sort_key = 'as_other_ship_qty,';
@@ -3672,29 +3672,38 @@ $app->post('/csv_download', function ()use($app){
 		}
 
 		//---SQLクエリー実行---//
-		$arg_str = "SELECT ";
-		$arg_str .= "t_sdmzk.zkwhcd as as_zkwhcd,";
-		$arg_str .= "t_sdmzk.zkprcd as as_zkprcd,";
-		$arg_str .= "t_sdmzk.zkclor as as_zkclor,";
-		$arg_str .= "t_sdmzk.zksize as as_zksize,";
-		$arg_str .= "t_sdmzk.label as as_label,";
-		$arg_str .= "t_sdmzk.zksize_display_order as as_zksize_display_order,";
-		$arg_str .= "t_sdmzk.zk_status_cd as as_zk_status_cd,";
-		$arg_str .= "t_sdmzk.total_qty as as_total_qty,";
-		$arg_str .= "t_sdmzk.new_qty as as_new_qty,";
-		$arg_str .= "t_sdmzk.used_qty as as_used_qty,";
-		$arg_str .= "t_sdmzk.rtn_proc_qty as as_rtn_proc_qty,";
-		$arg_str .= "t_sdmzk.rtn_plan_qty as as_rtn_plan_qty,";
-		$arg_str .= "t_sdmzk.in_use_qty as as_in_use_qty,";
-		$arg_str .= "t_sdmzk.other_ship_qty as as_other_ship_qty,";
-		$arg_str .= "t_sdmzk.discarded_qty as as_discarded_qty,";
-		$arg_str .= "t_sdmzk.rent_pattern_data as as_rent_pattern_data,";
-		$arg_str .= "m_item.item_name as as_item_name";
-		$arg_str .= " FROM t_sdmzk";
-		$arg_str .= " INNER JOIN m_item ON t_sdmzk.m_item_comb_hkey = m_item.m_item_comb_hkey";
-    $arg_str .= " INNER JOIN m_rent_pattern_for_sdmzk ON substring(t_sdmzk.rent_pattern_data, 3) = m_rent_pattern_for_sdmzk.rent_pattern_data";
-		$arg_str .= " WHERE ";
-		$arg_str .= $query;
+        $arg_str = "SELECT";
+        $arg_str .= " * ";
+        $arg_str .= " FROM ";
+        $arg_str .= "(SELECT distinct on (t_sdmzk.zkwhcd, t_sdmzk.zkprcd, t_sdmzk.zkclor,t_sdmzk.zksize) ";
+        $arg_str .= "t_sdmzk.zkwhcd as as_zkwhcd,";
+        $arg_str .= "t_sdmzk.zkprcd as as_zkprcd,";
+        $arg_str .= "t_sdmzk.zkclor as as_zkclor,";
+        $arg_str .= "t_sdmzk.zksize as as_zksize,";
+        $arg_str .= "t_sdmzk.label as as_label,";
+        $arg_str .= "t_sdmzk.zksize_display_order as as_zksize_display_order,";
+        $arg_str .= "t_sdmzk.zk_status_cd as as_zk_status_cd,";
+        $arg_str .= "t_sdmzk.total_qty as as_total_qty,";
+        $arg_str .= "t_sdmzk.new_qty as as_new_qty,";
+        $arg_str .= "t_sdmzk.used_qty as as_used_qty,";
+        $arg_str .= "t_sdmzk.rtn_proc_qty as as_rtn_proc_qty,";
+        $arg_str .= "t_sdmzk.rtn_plan_qty as as_rtn_plan_qty,";
+        $arg_str .= "t_sdmzk.in_use_qty as as_in_use_qty,";
+        $arg_str .= "t_sdmzk.other_ship_qty as as_other_ship_qty,";
+        $arg_str .= "t_sdmzk.discarded_qty as as_discarded_qty,";
+        $arg_str .= "t_sdmzk.rent_pattern_data as as_rent_pattern_data,";
+        $arg_str .= "m_item.item_name as as_item_name,";
+        $arg_str .= "m_input_item.size_two_cd as as_size_two_cd";
+        $arg_str .= " FROM t_sdmzk";
+        $arg_str .= " INNER JOIN m_item ON t_sdmzk.m_item_comb_hkey = m_item.m_item_comb_hkey";
+        $arg_str .= " INNER JOIN m_input_item";
+        $arg_str .= " ON (m_item.corporate_id = m_input_item.corporate_id";
+        $arg_str .= " AND m_item.item_cd = m_input_item.item_cd";
+        $arg_str .= " AND m_item.color_cd = m_input_item.color_cd)";
+        $arg_str .= " INNER JOIN m_rent_pattern_for_sdmzk ON substring(t_sdmzk.rent_pattern_data, 3) = m_rent_pattern_for_sdmzk.rent_pattern_data";
+        $arg_str .= " WHERE ";
+        $arg_str .= $query;
+        $arg_str .= ") as distinct_table";
 		if (!empty($q_sort_key)) {
 			$arg_str .= " ORDER BY ";
 			$arg_str .= $q_sort_key."as_rent_pattern_data,as_zkprcd,as_zkclor,as_zksize_display_order,as_zksize ".$order;
@@ -3732,6 +3741,8 @@ $app->post('/csv_download', function ()use($app){
 				$list['zkclor'] = $result->as_zkclor;
 				// サイズコード
 				$list['zksize'] = $result->as_zksize;
+                // サイズ2コード
+                $list['size_two_cd'] = $result->as_size_two_cd;
 				// ラベル
 				if (!empty($result->as_label)) {
 					$list['label'] = $result->as_label;
@@ -3764,8 +3775,8 @@ $app->post('/csv_download', function ()use($app){
 				}
 
 				// 商品-色(サイズ-サイズ2)表示変換
-				$list['shin_item_code'] = $list['zkprcd']."-".$list['zkclor']."(".$list['zksize'].")";
-	//			$list['shin_item_code'] = $list['zkprcd']."-".$list['zkclor']."(".$list['zksize']."-".$list['size_two_cd'].")";
+
+				$list['shin_item_code'] = $list['zkprcd']."-".$list['zkclor']."(".$list['zksize']."-".$list['size_two_cd'].")";
 
 				//---在庫区分名称---//
 				$query_list = array();
