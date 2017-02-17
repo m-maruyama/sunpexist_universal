@@ -34,7 +34,7 @@ define([
       },
       onShow: function () {
         var that = this;
-
+        $("#btn_ok").off();
         // インラインフレーム内の読み込み完了を監視するコンストラクタ
         function IFrameElementObserverContentLoaded (iframe,callback){
           // 初期化
@@ -110,6 +110,7 @@ define([
               // エレメントの内容をテキストとして取得する
               var str_text = ElementGetTextContent(html_element);
               // 処理結果内容を取得(JSONデコード)
+              console.log(str_text);
               var response = JSON.parse(str_text);
 
               if (response["error_code"] == "1") {
@@ -118,13 +119,17 @@ define([
                 that.triggerMethod('showAlerts', response["errors"].slice(0,20));
               } else {
                 $('#fake_input_file').val('');
-                alert('一括データ取込みの処理が正常に完了しました。');
-                location.href = "importCsv.html";
+                $('#ImportModal').modal();
+                document.getElementById("confirm_txt").innerHTML=App.import_csv_complete_msg;//一括データ取込みの処理が正常に完了しました。
+                $("#btn_ok").off();
+                $("#btn_ok").on('click',function() {
+                  location.href = "importCsv.html";
+                });
               }
               $.unblockUI();
             }catch(e){
-              // セキュリティエラー等、予期せぬエラー
-              alert("予期せぬエラーが発生しました。");
+              $('#ImportModal_alert').modal();
+              document.getElementById("alert_txt").innerHTML=App.import_csv_import_error_msg;//予期せぬエラーが発生しました。
               $.unblockUI();
             }
           });
@@ -157,7 +162,7 @@ define([
         'click @ui.import_csv': function() {
           var that = this;
           if ($("#file_input").prop("files")[0]) {
-            // 更新可否チェック
+                    // 更新可否チェック
   					var modelForUpdate = this.model;
   					modelForUpdate.url = App.api.CM0130;
   					var cond = {
@@ -169,19 +174,25 @@ define([
   						data:cond,
   						success:function(res){
   							var res_val = res.attributes;
-                if (!res_val["chk_flg"]) {
-      						// 更新可否フラグ=更新不可の場合はアラートメッセージ表示
-      						alert(res_val["error_msg"]);
-      					} else {
-                  if(confirm('データ量により、処理に時間がかかる場合があります。\n' + $("#file_input").prop("files")[0].name + 'を取り込んでもよろしいですか？')) {
-                    $.blockUI({message: '<p><img src="ajax-loader.gif" style="margin: 0 auto;" /><br/> データ取込み中です。<br/>完了するまではこのままでお待ちください...</p>'});
-                    $('#csv').submit();
-                  }
-                }
-              }
+                            if (!res_val["chk_flg"]) {
+                                $('#ImportModal').modal();
+                                document.getElementById("confirm_txt").innerHTML=res_val["error_msg"];// 更新可否フラグ=更新不可の場合はアラートメッセージ表示
+                            } else {
+                                $('#ImportModal').modal();
+                                document.getElementById("confirm_txt").innerHTML='データ量により、処理に時間がかかる場合があります。\n' + $("#file_input").prop("files")[0].name + 'を取り込んでもよろしいですか？';
+                                $("#btn_ok").off();
+                                $("#btn_ok").on('click',function() {
+                                  console.log('aaa');
+                                hideModal();
+                                $.blockUI({message: '<p><img src="ajax-loader.gif" style="margin: 0 auto;" /><br/> データ取込み中です。<br/>完了するまではこのままでお待ちください...</p>'});
+                                $('#csv').submit();
+                              });
+                            }
+                        }
   					});
           } else {
-            alert("ファイルを選択してください。");
+              $('#ImportModal').modal();
+              document.getElementById("confirm_txt").innerHTML=App.import_csv_no_choose_file_msg;//ファイルを選択してください。
           }
         }
       }

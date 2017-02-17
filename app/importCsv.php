@@ -34,9 +34,10 @@ $app->post('/import_csv', function () use ($app) {
 
     // 画面で選択された契約No、ファイル、処理番号生成
     $agreement_no = $_POST["agreement_no"];
+    ChromePhp::log($_POST);
     $getFileExt = new SplFileInfo($_FILES['file']['name']);
     $job_no = $auth["corporate_id"] . $auth["user_id"];
-
+    ChromePhp::log($job_no);
     //--CSV or Excel形式毎のバリデーション--ここから//
     if ($getFileExt->getExtension() == 'csv') {
         try {
@@ -59,6 +60,7 @@ $app->post('/import_csv', function () use ($app) {
         $line_no = 2;
         $line_cnt = 2;
         foreach ($chk_file as $line) {
+          ChromePhp::log($line);
             //csvの１行を配列に変換する
             $line_list = str_getcsv($line, ',', '"');
             // 項目数チェック: 行単位の項目数が、仕様通りの項目数(15)かをチェックする。
@@ -824,7 +826,6 @@ $app->post('/import_csv', function () use ($app) {
     //echo json_encode($json_list);
     //exit;
     //--インポートログテーブル登録処理--ここまで//
-
     //--マスターチェック処理--ここから//
     $corporate_id = $auth["corporate_id"];
     $t_import_job = new TImportJob();
@@ -1119,7 +1120,8 @@ $app->post('/import_csv', function () use ($app) {
             if (count($error_list) < 20) {
                 $error_list[] = $result->line_no . '行目の発注Noは、既に発注で使用されています。';
             } else {
-                $json_list['errors'] = $error_list;
+
+              $json_list['errors'] = $error_list;
                 $json_list["error_code"] = "1";
                 echo json_encode($json_list);
                 return;

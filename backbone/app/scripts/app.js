@@ -331,7 +331,9 @@ define([
 		App.account_add_msg = 'アカウントを登録しました。';
 		App.inquiry_nothing_msg = '詳細データが存在しません。';
 		App.inquiry_complete_msg = 'お問い合わせ回答の更新が完了しました。このまま検索画面へ移行します。';
-
+		App.import_csv_complete_msg = '一括データ取込みの処理が正常に完了しました。';
+		App.import_csv_import_error_msg = '予期せぬエラーが発生しました。';
+		App.import_csv_no_choose_file_msg = 'ファイルを選択してください。';
 
 
 

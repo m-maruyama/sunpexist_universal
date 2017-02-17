@@ -273,9 +273,11 @@ $app->post('/history/search', function ()use($app){
         }
         if($cond['reason_kbn9']){
             array_push($reason_kbn_2, "t_order.order_reason_kbn = '12'");//着用前
+            array_push($reason_kbn_2, "t_order.order_reason_kbn = '21'");//着用前
         }
         if($cond['reason_kbn10']){
             array_push($reason_kbn_2, "t_order.order_reason_kbn = '13'");//着用後
+            array_push($reason_kbn_2, "t_order.order_reason_kbn = '22'");
         }
         if($cond['reason_kbn11']){
             array_push($reason_kbn_2, "t_order.order_reason_kbn = '23'");//なし
@@ -292,6 +294,8 @@ $app->post('/history/search', function ()use($app){
             array_push($reason_kbn_2, "t_order.order_reason_kbn = '17'");
             array_push($reason_kbn_2, "t_order.order_reason_kbn = '12'");
             array_push($reason_kbn_2, "t_order.order_reason_kbn = '13'");
+            array_push($reason_kbn_2, "t_order.order_reason_kbn = '21'");
+            array_push($reason_kbn_2, "t_order.order_reason_kbn = '22'");
             array_push($reason_kbn_2, "t_order.order_reason_kbn = '23'");
             $reason_kbn_2_str = implode(' OR ', $reason_kbn_2);
             array_push($kbn_list, "(" . $order_kbn . " AND (" . $reason_kbn_2_str . "))");
@@ -312,9 +316,11 @@ $app->post('/history/search', function ()use($app){
         }
         if($cond['reason_kbn9']){
             array_push($reason_kbn_2, "t_order.order_reason_kbn = '12'");
+            array_push($reason_kbn_2, "t_order.order_reason_kbn = '21'");
         }
         if($cond['reason_kbn10']){
             array_push($reason_kbn_2, "t_order.order_reason_kbn = '13'");
+            array_push($reason_kbn_2, "t_order.order_reason_kbn = '22'");
         }
         if($cond['reason_kbn11']){
             array_push($reason_kbn_2, "t_order.order_reason_kbn = '23'");
