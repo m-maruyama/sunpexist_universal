@@ -381,7 +381,7 @@ define([
 					if (sp_job_type_flg == "1") {
 
 						// JavaScript モーダルで表示
-						$('#myModalAlert').modal(); //追加
+						$('#myModalAlert').modal('show'); //追加
 						//メッセージの修正
 						document.getElementById("alert_txt").innerHTML=App.apply_msg;
 						// var msg = "社内申請手続きを踏んでいますか？";
