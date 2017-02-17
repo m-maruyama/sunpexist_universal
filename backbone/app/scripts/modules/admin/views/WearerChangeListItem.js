@@ -77,8 +77,12 @@ define([
 					printData["rntl_cont_no"] = pdf_val[0];
 					printData["order_req_no"] = pdf_val[1];
 
-					var msg = "データ量により、ダウンロード処理に時間がかかる可能性があります。ダウンロードを実施してよろしいですか？";
-					if (window.confirm(msg)) {
+					// JavaScript モーダルで表示
+					$('#myModal').modal('show'); //追加
+					//メッセージの修正
+					document.getElementById("confirm_txt").innerHTML=App.dl_msg; //追加　このメッセージはapp.jsで定義
+					$("#btn_ok").off();
+					$("#btn_ok").on('click',function() { //追加
 						var cond = {
 							"scr": 'PDFダウンロード',
 							"cond": printData
@@ -92,8 +96,8 @@ define([
 						data.remove();
 						form.remove();
 						form=null;
-						return;
-					}
+						$('#myModal').modal('hide');
+					});
 				},
 			},
 			onShow: function(val, type, transition, data) {

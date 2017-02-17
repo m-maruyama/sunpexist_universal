@@ -134,15 +134,13 @@ define([
 							data:cond,
 							success:function(res){
 								var CM0140_res = res.attributes
-								$('.complete').css('display', '');
-								$('.orderSend').css('display', '');
-								/*
+
 								if (CM0140_res['order_input_ok_flg'] == "1" || CM0140_res['order_send_ok_flg'] == "1") {
 									$('.complete').css('display', '');
 								}
 								if (CM0140_res['order_send_ok_flg'] == "1") {
 									$('.orderSend').css('display', '');
-								}*/
+								}
 							},
 							complete: function (res) {
 
@@ -381,16 +379,21 @@ define([
 					}
 
 					if (sp_job_type_flg == "1") {
-						var msg = "社内申請手続きを踏んでいますか？";
-						if (window.confirm(msg)) {
-							var reasonKbnConditionChangeView = new App.Admin.Views.ReasonKbnConditionChange({
-								job_type: job_type
-							});
-							this.reason_kbn.show(reasonKbnConditionChangeView);
-							that.triggerMethod('change:job_type', data);
-						} else {
-							document.getElementById('job_type').value = before_vals;
-						}
+
+						// JavaScript モーダルで表示
+						$('#myModalAlert').modal(); //追加
+						//メッセージの修正
+						document.getElementById("alert_txt").innerHTML=App.apply_msg;
+						// var msg = "社内申請手続きを踏んでいますか？";
+						// if (window.confirm(msg)) {
+						// 	var reasonKbnConditionChangeView = new App.Admin.Views.ReasonKbnConditionChange({
+						// 		job_type: job_type
+						// 	});
+						// 	this.reason_kbn.show(reasonKbnConditionChangeView);
+						// 	that.triggerMethod('change:job_type', data);
+						// } else {
+						// 	document.getElementById('job_type').value = before_vals;
+						// }
 					} else {
 						window.sessionStorage.setItem("job_type_sec", after_vals);
 
@@ -450,8 +453,13 @@ define([
 					}
 				}
 				if (type == "WC0020_req") {
-					var msg = "削除しますが、よろしいですか？";
-					if (window.confirm(msg)) {
+					// JavaScript モーダルで表示
+					$('#myModal').modal('show'); //追加
+					//メッセージの修正
+					document.getElementById("confirm_txt").innerHTML=App.delete_msg; //追加　このメッセージはapp.jsで定義
+					$("#btn_ok").off();
+					$("#btn_ok").on('click',function() { //追加
+						hideModal();
 						$.blockUI({ message: '<p><img src="ajax-loader.gif" style="margin: 0 auto;" /> 発注取消中...</p>' });
 						var modelForUpdate = this.model;
 						modelForUpdate.url = App.api.WC0020;
@@ -478,7 +486,7 @@ define([
 								// }
 							}
 						});
-					}
+					});
 				}
 				if (type == "WC0021_req") {
 					var tran_req_no = $("button[name='complete_param']").val();
@@ -585,8 +593,13 @@ define([
 						success:function(res){
 							var res_val = res.attributes;
 							if (res_val["error_code"] == "0") {
-								var msg = "入力を完了しますが、よろしいですか？";
-								if (window.confirm(msg)) {
+								// JavaScript モーダルで表示
+								$('#myModal').modal('show'); //追加
+								//メッセージの修正
+								document.getElementById("confirm_txt").innerHTML=App.input_msg; //追加　このメッセージはapp.jsで定義
+								$("#btn_ok").off();
+								$("#btn_ok").on('click',function() { //追加
+									hideModal();
 									var data = {
 										"scr": '入力完了',
 										"mode": "update",
@@ -596,7 +609,7 @@ define([
 									};
 									//console.log(data);
 									that.triggerMethod('inputComplete', data);
-								}
+								});
 							} else {
 								that.triggerMethod('showAlerts', res_val["error_msg"]);
 								return;
@@ -724,8 +737,13 @@ define([
 						success:function(res){
 							var res_val = res.attributes;
 							if (res_val["error_code"] == "0") {
-								var msg = "発注送信を行いますが、よろしいですか？";
-								if (window.confirm(msg)) {
+								// JavaScript モーダルで表示
+								$('#myModal').modal('show'); //追加
+								//メッセージの修正
+								document.getElementById("confirm_txt").innerHTML=App.complete_msg; //追加　このメッセージはapp.jsで定義
+								$("#btn_ok").off();
+								$("#btn_ok").on('click',function() { //追加
+									hideModal();
 									var data = {
 										"scr": '発注送信',
 										"mode": "update",
@@ -736,7 +754,7 @@ define([
 									//console.log(data);
 
 									that.triggerMethod('sendComplete', data);
-								}
+								});
 							} else {
 								that.triggerMethod('showAlerts', res_val["error_msg"]);
 								return;
