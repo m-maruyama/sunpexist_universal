@@ -33,11 +33,11 @@ $app->post('/import_csv', function () use ($app) {
     $app->session->remove("chk_werer_cd");
 
     // 画面で選択された契約No、ファイル、処理番号生成
-    $agreement_no = $_POST["agreement_no"];
-    ChromePhp::log($_POST);
+    //if(empty())
+    //$agreement_no = $_POST["agreement_no"];
+    $agreement_no = $auth["rntl_cont_no"];
     $getFileExt = new SplFileInfo($_FILES['file']['name']);
     $job_no = $auth["corporate_id"] . $auth["user_id"];
-    ChromePhp::log($job_no);
     //--CSV or Excel形式毎のバリデーション--ここから//
     if ($getFileExt->getExtension() == 'csv') {
         try {
@@ -53,14 +53,10 @@ $app->post('/import_csv', function () use ($app) {
             return;
         }
 
-        $new_list = array();
-        $no_chk_list = array();
-        $no_list = array();
-
         $line_no = 2;
         $line_cnt = 2;
+
         foreach ($chk_file as $line) {
-          ChromePhp::log($line);
             //csvの１行を配列に変換する
             $line_list = str_getcsv($line, ',', '"');
             // 項目数チェック: 行単位の項目数が、仕様通りの項目数(15)かをチェックする。
@@ -78,235 +74,8 @@ $app->post('/import_csv', function () use ($app) {
                 }
                 continue;
             }
-            //必須チェック
-            if (empty($line_list[0])) {
-                if (count($error_list) < 20) {
-                    $error_list[] = $line_cnt . '行目の社員番号を入力してください。';
-                } else {
-                    $json_list['errors'] = $error_list;
-                    $json_list["error_code"] = "1";
-                    echo json_encode($json_list);
-                    exit;
-                }
-            }
-
-          if (empty($line_list[1])) {
-                if (count($error_list) < 20) {
-                    $error_list[] = $line_cnt . '行目の着用者名を入力してください。';
-                } else {
-                    $json_list['errors'] = $error_list;
-                    $json_list["error_code"] = "1";
-                    echo json_encode($json_list);
-                    exit;
-                }
-            }
-
-            //着用者名 SJISにない文字を?に変換
-            if(!empty($line_list[1])) {
-              $str_utf8 = $line_list[1];
-              if (convert_not_sjis($str_utf8) !== true) {
-                if (count($error_list) < 20) {
-                  $output_text = convert_not_sjis($str_utf8);
-                  $error_list[] = "$line_cnt" . '行目の着用者名に使用できない文字が含まれています。' . "$output_text";
-                }else {
-                  $json_list['errors'] = $error_list;
-                  $json_list["error_code"] = "1";
-                  echo json_encode($json_list);
-                  exit;
-                }
-              }
-            }
-            /*
-            if (empty($line_list[2])) {
-                if (count($error_list) < 20) {
-                    $error_list[] = $line_cnt . '行目の着用者名(カナ)を入力してください。';
-                } else {
-                    $json_list['errors'] = $error_list;
-                    $json_list["error_code"] = "1";
-                    echo json_encode($json_list);
-                    exit;
-                }
-            }
-            */
-            //全角カナ 全角スペースチェック
-            if(!empty($line_list[2])) {
-                $kana = $line_list[2];
-                if (kana_check($kana) === false) {
-                  if (count($error_list) < 20) {
-                    $error_list[] = $line_cnt . '行目の着用者名（カナ）に全角カタカナまたは全角スペース以外が入力されています。';
-                  }else{
-                      $json_list['errors'] = $error_list;
-                      $json_list["error_code"] = "1";
-                      echo json_encode($json_list);
-                      exit;
-                  }
-                }
-            }
-
-
-            if ($line_list[3] == '') {
-                if (count($error_list) < 20) {
-                    $error_list[] = $line_cnt . '行目の性別区分を入力してください。';
-                } else {
-                    $json_list['errors'] = $error_list;
-                    $json_list["error_code"] = "1";
-                    echo json_encode($json_list);
-                    exit;
-                }
-            }
-            if (empty($line_list[4])) {
-                if (count($error_list) < 20) {
-                    $error_list[] = $line_cnt . '行目の支店コードを入力してください。';
-                } else {
-                    $json_list['errors'] = $error_list;
-                    $json_list["error_code"] = "1";
-                    echo json_encode($json_list);
-                    exit;
-                }
-            }
-            if (empty($line_list[5])) {
-                if (count($error_list) < 20) {
-                    $error_list[] = $line_cnt . '行目の貸与パターンを入力してください。';
-                } else {
-                    $json_list['errors'] = $error_list;
-                    $json_list["error_code"] = "1";
-                    echo json_encode($json_list);
-                    exit;
-                }
-            }
-            if ($line_list[7] == '') {
-                if (count($error_list) < 20) {
-                    $error_list[] = $line_cnt . '行目の発注区分を入力してください。';
-                } else {
-                    $json_list['errors'] = $error_list;
-                    $json_list["error_code"] = "1";
-                    echo json_encode($json_list);
-                    exit;
-                }
-            }
-            //発注区分が貸与、異動の場合に必須
-            if ($line_list[7] == '1' || $line_list[7] == '5') {
-                if (empty($line_list[6])) {
-                    if (count($error_list) < 20) {
-                        $error_list[] = $line_cnt . '行目の着用開始日を入力してください。';
-                    } else {
-                        $json_list['errors'] = $error_list;
-                        $json_list["error_code"] = "1";
-                        echo json_encode($json_list);
-                        exit;
-                    }
-                }
-            }
-            if ($line_list[7] == '1') {
-                if (empty($line_list[8])) {
-                    if (count($error_list) < 20) {
-                        $error_list[] = $line_cnt . '行目の商品コードを入力してください。';
-                    } else {
-                        $json_list['errors'] = $error_list;
-                        $json_list["error_code"] = "1";
-                        echo json_encode($json_list);
-                        exit;
-                    }
-                }
-            }elseif ($line_list[7] == '0' || $line_list[7] == '5'){
-
-                $line_list[8] = NULL;
-            }
-
-            if ($line_list[7] == '1') {
-                if (empty($line_list[9])) {
-                    if (count($error_list) < 20) {
-                        $error_list[] = $line_cnt . '行目のサイズコードを入力してください。';
-                    } else {
-                        $json_list['errors'] = $error_list;
-                        $json_list["error_code"] = "1";
-                        echo json_encode($json_list);
-                        exit;
-                    }
-                }
-            }elseif ($line_list[7] == '0' || $line_list[7] == '5'){
-
-                $line_list[9] = NULL;
-            }
-
-            if ($line_list[7] == '1') {
-                if (empty($line_list[10])) {
-                    if (count($error_list) < 20) {
-                        $error_list[] = $line_cnt . '行目の色コードを入力してください。';
-                    } else {
-                        $json_list['errors'] = $error_list;
-                        $json_list["error_code"] = "1";
-                        echo json_encode($json_list);
-                        exit;
-                    }
-                }
-            }elseif ($line_list[7] == '0' || $line_list[7] == '5'){
-
-                $line_list[10] = NULL;
-            }
-
-            if ($line_list[7] == '1') {
-                if (empty($line_list[11])) {
-                    if (count($error_list) < 20) {
-                        $error_list[] = $line_cnt . '行目の数量を入力してください。';
-                    } else {
-                        $json_list['errors'] = $error_list;
-                        $json_list["error_code"] = "1";
-                        echo json_encode($json_list);
-                        exit;
-                    }
-                }
-            }elseif ($line_list[7] == '0' || $line_list[7] == '5'){
-
-                $line_list[11] = 0;
-            }
-
-                if (empty($line_list[13])) {
-                    if (count($error_list) < 20) {
-                        $error_list[] = $line_cnt . '行目の理由区分を入力してください。';
-                    } else {
-                        $json_list['errors'] = $error_list;
-                        $json_list["error_code"] = "1";
-                        echo json_encode($json_list);
-                        exit;
-                    }
-                }
-
-
-            //日本語文字数チェック
-            //着用者漢字
-            if (byte_cnv($line_list[1]) > 100) {
-                if (count($error_list) < 20) {
-                    $error_list[] = '着用者名の文字数が多すぎます。';
-                } else {
-                    $json_list['errors'] = $error_list;
-                    $json_list["error_code"] = "1";
-                    echo json_encode($json_list);
-                    exit;
-                }
-            }
-            //着用者カナ
-            if (byte_cnv($line_list[2]) > 100) {
-                if (count($error_list) < 20) {
-                    $error_list[] = '着用者名(カナ)の文字数が多すぎます。';
-                } else {
-                    $json_list['errors'] = $error_list;
-                    $json_list["error_code"] = "1";
-                    echo json_encode($json_list);
-                    exit;
-                }
-            }
-            //伝言
-            if (byte_cnv($line_list[14]) > 100) {
-                if (count($error_list) < 20) {
-                    $error_list[] = '伝言欄の文字数が多すぎます。';
-                } else {
-                    $json_list['errors'] = $error_list;
-                    $json_list["error_code"] = "1";
-                    echo json_encode($json_list);
-                    exit;
-                }
-            }
+            // csvはココ
+            input_check($line_list, $line_cnt);
             //ChromePhp::log($error_list);
             //フォーマットチェック: 行単位の各項目のフォーマット形式が、それぞれ仕様通りのフォーマットであるかチェックする。
             $error_list = chk_format($error_list, $line_list, $line_cnt);
@@ -316,18 +85,13 @@ $app->post('/import_csv', function () use ($app) {
 
             $line_list[] = $line_no++;
             $new_list[] = $line_list;
+
         }
     } elseif ($getFileExt->getExtension() == 'xlsx' || $getFileExt->getExtension() == 'xls') {
-        $line_cnt = 1; //行数
-        $new_list = array();
-        $no_chk_list = array();
-        $no_list = array(); //発注Noリスト
         $auth = $app->session->get("auth");
-
         // init excel work book as xlsx
         $useXlsxFormat = true;
         setlocale(LC_ALL, 'ja_JP.UTF-8');
-
         $xlBook = new ExcelBook('Taichi Nakamura', 'linux-e4d4157290acad17020f2f384ei1c3od', $useXlsxFormat);
         $xlBook->setLocale('ja_JP.UTF-8');
 
@@ -337,11 +101,10 @@ $app->post('/import_csv', function () use ($app) {
         $sheet = $xlBook->getSheet(0);
         //エクセルの行数を取得
         $lastRow = $sheet->lastRow();
-        //ChromePhp::log($lastRow);
         //配列を初期化
         $new_list = array();
-        $line_no = 1;//行no追加
-
+        $line_no = 2;//行no追加
+        $line_cnt = 2;
         //存在する行数の最初の行を除き、連想配列にする
         for ($i = 1; $i < $lastRow; $i++) {
             $line_list = $sheet->readRow($i, 0);
@@ -351,222 +114,20 @@ $app->post('/import_csv', function () use ($app) {
                 //項目数が不正な場合、エラーメッセージを配列に格納
                 if (count($error_list) < 20) {
                     $error_list[] = $line_cnt . '行目の項目数が不正です';
+                    $line_cnt++;
                 } else {
                     $json_list['errors'] = $error_list;
                     $json_list["error_code"] = "1";
                     echo json_encode($json_list);
                     exit;
                 }
-                $line_cnt++;
                 continue;
             }
-            //必須チェック
-            if (empty($line_list[0])) {
-                if (count($error_list) < 20) {
-                    $error_list[] = $line_cnt . '行目の社員番号を入力してください。';
-                } else {
-                    $json_list['errors'] = $error_list;
-                    $json_list["error_code"] = "1";
-                    echo json_encode($json_list);
-                    exit;
-                }
-            }
-            if (empty($line_list[1])) {
-                if (count($error_list) < 20) {
-                    $error_list[] = $line_cnt . '行目の着用者名を入力してください。';
-                } else {
-                    $json_list['errors'] = $error_list;
-                    $json_list["error_code"] = "1";
-                    echo json_encode($json_list);
-                    exit;
-                }
-            }
 
-            //着用者名 SJISにない文字を?に変換
-            if(!empty($line_list[1])) {
-              $str_utf8 = $line_list[1];
-              if (convert_not_sjis($str_utf8) !== true) {
-                if (count($error_list) < 20) {
-                  $output_text = convert_not_sjis($str_utf8);
-                  $error_list[] = "$line_cnt" . '行目の着用者名に使用できない文字が含まれています。' . "$output_text";
-                }else {
-                  $json_list['errors'] = $error_list;
-                  $json_list["error_code"] = "1";
-                  echo json_encode($json_list);
-                  exit;
-                }
-              }
-            }
-            /*
-            if (empty($line_list[2])) {
-                if (count($error_list) < 20) {
-                    $error_list[] = $line_cnt . '行目の着用者名(カナ)を入力してください。';
-                } else {
-                    $json_list['errors'] = $error_list;
-                    $json_list["error_code"] = "1";
-                    echo json_encode($json_list);
-                    exit;
-                }
-            }
-            */
-            //全角カナ 全角スペースチェック
-            if(!empty($line_list[2])) {
-              $kana = $line_list[2];
-              if (kana_check($kana) === false) {
-                if (count($error_list) < 20) {
-                  $error_list[] = $line_cnt . '行目の着用者名（カナ）に全角カタカナまたは全角スペース以外が入力されています。';
-                }else{
-                  $json_list['errors'] = $error_list;
-                  $json_list["error_code"] = "1";
-                  echo json_encode($json_list);
-                  exit;
-                }
-              }
-            }
-            if ($line_list[3] == '') {
-                if (count($error_list) < 20) {
-                    $error_list[] = $line_cnt . '行目の性別区分を入力してください。';
-                } else {
-                    $json_list['errors'] = $error_list;
-                    $json_list["error_code"] = "1";
-                    echo json_encode($json_list);
-                    exit;
-                }
-            }
-            if (empty($line_list[4])) {
-                if (count($error_list) < 20) {
-                    $error_list[] = $line_cnt . '行目の支店コードを入力してください。';
-                } else {
-                    $json_list['errors'] = $error_list;
-                    $json_list["error_code"] = "1";
-                    echo json_encode($json_list);
-                    exit;
-                }
-            }
-            if (empty($line_list[5])) {
-                if (count($error_list) < 20) {
-                    $error_list[] = $line_cnt . '行目の貸与パターンを入力してください。';
-                } else {
-                    $json_list['errors'] = $error_list;
-                    $json_list["error_code"] = "1";
-                    echo json_encode($json_list);
-                    exit;
-                }
-            }
-            if ($line_list[7] == '') {
-                if (count($error_list) < 20) {
-                    $error_list[] = $line_cnt . '行目の発注区分を入力してください。';
-                } else {
-                    $json_list['errors'] = $error_list;
-                    $json_list["error_code"] = "1";
-                    echo json_encode($json_list);
-                    exit;
-                }
-            }
-            //発注区分が貸与、異動の場合に必須
-            if ($line_list[7] == '1' || $line_list[7] == '5') {
-                if (empty($line_list[6])) {
-                    if (count($error_list) < 20) {
-                        $error_list[] = $line_cnt . '行目の着用開始日を入力してください。';
-                    } else {
-                        $json_list['errors'] = $error_list;
-                        $json_list["error_code"] = "1";
-                        echo json_encode($json_list);
-                        exit;
-                    }
-                }
-                if (empty($line_list[8])) {
-                    if (count($error_list) < 20) {
-                        $error_list[] = $line_cnt . '行目の発注コードを入力してください。';
-                    } else {
-                        $json_list['errors'] = $error_list;
-                        $json_list["error_code"] = "1";
-                        echo json_encode($json_list);
-                        exit;
-                    }
-                }
-                if (empty($line_list[9])) {
-                    if (count($error_list) < 20) {
-                        $error_list[] = $line_cnt . '行目のサイズコードを入力してください。';
-                    } else {
-                        $json_list['errors'] = $error_list;
-                        $json_list["error_code"] = "1";
-                        echo json_encode($json_list);
-                        exit;
-                    }
-                }
-                if (empty($line_list[10])) {
-                    if (count($error_list) < 20) {
-                        $error_list[] = $line_cnt . '行目の色コードを入力してください。';
-                    } else {
-                        $json_list['errors'] = $error_list;
-                        $json_list["error_code"] = "1";
-                        echo json_encode($json_list);
-                        exit;
-                    }
-                }
-                if (empty($line_list[11])) {
-                    if (count($error_list) < 20) {
-                        $error_list[] = $line_cnt . '行目の数量を入力してください。';
-                    } else {
-                        $json_list['errors'] = $error_list;
-                        $json_list["error_code"] = "1";
-                        echo json_encode($json_list);
-                        exit;
-                    }
-                }
-                if (empty($line_list[13])) {
-                    if (count($error_list) < 20) {
-                        $error_list[] = $line_cnt . '行目の理由区分を入力してください。';
-                    } else {
-                        $json_list['errors'] = $error_list;
-                        $json_list["error_code"] = "1";
-                        echo json_encode($json_list);
-                        exit;
-                    }
-                }
-            } elseif ($line_list[7] == '0') {
-
-            }
-            //日本語文字数チェック
-            //着用者漢字
-            if (byte_cnv($line_list[1]) > 100) {
-                if (count($error_list) < 20) {
-                    $error_list[] = '着用者名の文字数が多すぎます。';
-                } else {
-                    $json_list['errors'] = $error_list;
-                    $json_list["error_code"] = "1";
-                    echo json_encode($json_list);
-                    exit;
-                }
-            }
-            //着用者カナ
-            if (byte_cnv($line_list[2]) > 100) {
-                if (count($error_list) < 20) {
-                    $error_list[] = '着用者名(カナ)の文字数が多すぎます。';
-                } else {
-                    $json_list['errors'] = $error_list;
-                    $json_list["error_code"] = "1";
-                    echo json_encode($json_list);
-                    exit;
-                }
-            }
-            //伝言
-            if (byte_cnv($line_list[14]) > 100) {
-                if (count($error_list) < 20) {
-                    $error_list[] = '伝言欄の文字数が多すぎます。';
-                } else {
-                    $json_list['errors'] = $error_list;
-                    $json_list["error_code"] = "1";
-                    echo json_encode($json_list);
-                    exit;
-                }
-            }
-
+            input_check($line_list, $line_cnt);
             //フォーマットチェック: 行単位の各項目のフォーマット形式が、それぞれ仕様通りのフォーマットであるかチェックする。
             $error_list = chk_format($error_list, $line_list, $line_cnt);
             $line_cnt++;
-
             $line_list[] = $line_no++;
             $new_list[] = $line_list;
         }
@@ -620,32 +181,32 @@ $app->post('/import_csv', function () use ($app) {
         $date_time = date("Y-m-d H:i:s.sss", time());
         // CALUM値の設定
         $calum_list = array(
-            "job_no",
-            "line_no",
-            "order_req_no",
-            "order_req_line_no",
-            "cster_emply_cd",
-            "werer_name",
-            "werer_name_kana",
-            "sex_kbn",
-            "rntl_sect_cd",
-            "rent_pattern_code",
-            "wear_start",
-            "order_kbn",
-            "order_reason_kbn",
-            "item_cd",
-            "color_cd",
-            "size_cd",
-            "werer_cd",
-            "quantity",
-            "message",
-            "emply_order_req_no",
-            "user_id",
-            "import_time",
-            "rgst_date",
-            "rgst_user_id",
-            "upd_date",
-            "upd_user_id"
+        "job_no",
+        "line_no",
+        "order_req_no",
+        "order_req_line_no",
+        "cster_emply_cd",
+        "werer_name",
+        "werer_name_kana",
+        "sex_kbn",
+        "rntl_sect_cd",
+        "rent_pattern_code",
+        "wear_start",
+        "order_kbn",
+        "order_reason_kbn",
+        "item_cd",
+        "color_cd",
+        "size_cd",
+        "werer_cd",
+        "quantity",
+        "message",
+        "emply_order_req_no",
+        "user_id",
+        "import_time",
+        "rgst_date",
+        "rgst_user_id",
+        "upd_date",
+        "upd_user_id"
         );
         $calum_query = implode(",", $calum_list);
 
@@ -664,8 +225,8 @@ $app->post('/import_csv', function () use ($app) {
             $values_list[] = $line_new[15];
             // 発注No、発注行No
             if (
-                $app->session->get("chk_cster_emply_cd_1") == $line_new[0] &&
-                $app->session->get("chk_order_kbn") == $line_new[7]
+            $app->session->get("chk_cster_emply_cd_1") == $line_new[0] &&
+            $app->session->get("chk_order_kbn") == $line_new[7]
             ) {
                 $values_list[] = "'" . $app->session->get("chk_order_req_no_1") . "'";
                 $order_line_no = $app->session->get("chk_order_line_no");
@@ -677,9 +238,9 @@ $app->post('/import_csv', function () use ($app) {
                 $app->session->set("chk_order_kbn", $line_new[7]);
                 // 新規の発注No発行
                 $results = new Resultset(
-                    null,
-                    $t_order,
-                    $t_order->getReadConnection()->query("select nextval('t_order_seq')")
+                null,
+                $t_order,
+                $t_order->getReadConnection()->query("select nextval('t_order_seq')")
                 );
                 $shin_order_req_no = "WB" . str_pad($results[0]->nextval, 8, '0', STR_PAD_LEFT);
                 $order_line_no = 1;
@@ -720,9 +281,9 @@ $app->post('/import_csv', function () use ($app) {
                     $app->session->set("chk_cster_emply_cd_2", $line_new[0]);
                     // 新規着用者コード発行
                     $results = new Resultset(
-                        null,
-                        $m_wearer_std,
-                        $m_wearer_std->getReadConnection()->query("select nextval('werer_cd_seq')")
+                    null,
+                    $m_wearer_std,
+                    $m_wearer_std->getReadConnection()->query("select nextval('werer_cd_seq')")
                     );
                     $werer_cd = str_pad($results[0]->nextval, 6, '0', STR_PAD_LEFT);
                     $app->session->set("chk_werer_cd", $werer_cd);
@@ -750,11 +311,11 @@ $app->post('/import_csv', function () use ($app) {
 
                     if (!empty($results_cnt)) {
                         $paginator_model = new PaginatorModel(
-                            array(
-                                "data" => $results,
-                                "limit" => 1,
-                                "page" => 1
-                            )
+                        array(
+                        "data" => $results,
+                        "limit" => 1,
+                        "page" => 1
+                        )
                         );
                         $paginator = $paginator_model->getPaginate();
                         $results = $paginator->items;
@@ -804,7 +365,6 @@ $app->post('/import_csv', function () use ($app) {
         $arg_str .= " VALUES ";
         $arg_str .= $values_query;
         //ChromePhp::LOG("インポートログ登録クエリー");
-        //ChromePhp::log($arg_str);
         $results = new Resultset(NULL, $t_import_job, $t_import_job->getReadConnection()->query($arg_str));
         // トランザクション-コミット
         $transaction = new Resultset(NULL, $t_import_job, $t_import_job->getReadConnection()->query("commit"));
@@ -852,11 +412,11 @@ $app->post('/import_csv', function () use ($app) {
     if (!empty($results_cnt)) {
         $results_count = (count($results));
         $paginator_model = new PaginatorModel(
-            array(
-                'data' => $results,
-                'limit' => $results_count,
-                "page" => 1
-            )
+        array(
+        'data' => $results,
+        'limit' => $results_count,
+        "page" => 1
+        )
         );
         $paginator = $paginator_model->getPaginate();
         $results = $paginator->items;
@@ -895,11 +455,11 @@ $app->post('/import_csv', function () use ($app) {
     if (!empty($results_cnt)) {
         $results_count = (count($results));
         $paginator_model = new PaginatorModel(
-            array(
-                'data' => $results,
-                'limit' => $results_count,
-                "page" => 1
-            )
+        array(
+        'data' => $results,
+        'limit' => $results_count,
+        "page" => 1
+        )
         );
         $paginator = $paginator_model->getPaginate();
         $results = $paginator->items;
@@ -931,11 +491,11 @@ $app->post('/import_csv', function () use ($app) {
     if (!empty($results_cnt2)) {
         $results_count = (count($results2));
         $paginator_model = new PaginatorModel(
-            array(
-                'data' => $results2,
-                'limit' => $results_count,
-                "page" => 1
-            )
+        array(
+        'data' => $results2,
+        'limit' => $results_count,
+        "page" => 1
+        )
         );
         $paginator = $paginator_model->getPaginate();
         $results = $paginator->items;
@@ -966,11 +526,11 @@ $app->post('/import_csv', function () use ($app) {
     if (!empty($results_cnt3)) {
         $results_count = (count($results3));
         $paginator_model = new PaginatorModel(
-            array(
-                'data' => $results3,
-                'limit' => $results_count,
-                "page" => 1
-            )
+        array(
+        'data' => $results3,
+        'limit' => $results_count,
+        "page" => 1
+        )
         );
         $paginator = $paginator_model->getPaginate();
         $results = $paginator->items;
@@ -1002,11 +562,11 @@ $app->post('/import_csv', function () use ($app) {
     if (!empty($results_cnt5)) {
         $results_count = (count($results5));
         $paginator_model = new PaginatorModel(
-            array(
-                'data' => $results5,
-                'limit' => $results_count,
-                "page" => 1
-            )
+        array(
+        'data' => $results5,
+        'limit' => $results_count,
+        "page" => 1
+        )
         );
         $paginator = $paginator_model->getPaginate();
         $results = $paginator->items;
@@ -1038,11 +598,11 @@ $app->post('/import_csv', function () use ($app) {
     if (!empty($results_cnt6)) {
         $results_count = (count($results6));
         $paginator_model = new PaginatorModel(
-            array(
-                'data' => $results6,
-                'limit' => $results_count,
-                "page" => 1
-            )
+        array(
+        'data' => $results6,
+        'limit' => $results_count,
+        "page" => 1
+        )
         );
         $paginator = $paginator_model->getPaginate();
         $results = $paginator->items;
@@ -1072,11 +632,11 @@ $app->post('/import_csv', function () use ($app) {
     if (!empty($results_cnt8)) {
         $results_count = (count($results8));
         $paginator_model = new PaginatorModel(
-            array(
-                'data' => $results8,
-                'limit' => $results_count,
-                "page" => 1
-            )
+        array(
+        'data' => $results8,
+        'limit' => $results_count,
+        "page" => 1
+        )
         );
         $paginator = $paginator_model->getPaginate();
         $results = $paginator->items;
@@ -1108,11 +668,11 @@ $app->post('/import_csv', function () use ($app) {
     if (!empty($results_cnt9)) {
         $results_count = (count($results9));
         $paginator_model = new PaginatorModel(
-            array(
-                'data' => $results9,
-                'limit' => $results_count,
-                "page" => 1
-            )
+        array(
+        'data' => $results9,
+        'limit' => $results_count,
+        "page" => 1
+        )
         );
         $paginator = $paginator_model->getPaginate();
         $results = $paginator->items;
@@ -1121,7 +681,7 @@ $app->post('/import_csv', function () use ($app) {
                 $error_list[] = $result->line_no . '行目の発注Noは、既に発注で使用されています。';
             } else {
 
-              $json_list['errors'] = $error_list;
+                $json_list['errors'] = $error_list;
                 $json_list["error_code"] = "1";
                 echo json_encode($json_list);
                 return;
@@ -1143,11 +703,11 @@ $app->post('/import_csv', function () use ($app) {
     if (!empty($results_cnt10)) {
         $results_count = (count($results10));
         $paginator_model = new PaginatorModel(
-            array(
-                'data' => $results10,
-                'limit' => $results_count,
-                "page" => 1
-            )
+        array(
+        'data' => $results10,
+        'limit' => $results_count,
+        "page" => 1
+        )
         );
         $paginator = $paginator_model->getPaginate();
         $results = $paginator->items;
@@ -1184,17 +744,17 @@ $app->post('/import_csv', function () use ($app) {
     $results_cnt = $result_obj["\0*\0_count"];
     if (!empty($results_cnt)) {
         $paginator_model = new PaginatorModel(
-            array(
-                "data" => $results,
-                "limit" => $results_cnt,
-                "page" => 1
-            )
+        array(
+        "data" => $results,
+        "limit" => $results_cnt,
+        "page" => 1
+        )
         );
         $paginator = $paginator_model->getPaginate();
         $results = $paginator->items;
         $i = 0;
         foreach ($results as $result) {
-            if(isset($check_order_req_no)) {
+            if (isset($check_order_req_no)) {
                 //発注番号が変わったタイミングで発注番号単位の商品数と貸与パターンに対する商品数を比較して異なる場合はエラーメッセージを出力する
                 if ($check_order_req_no !== $result->order_req_no) {
                     $arg_str = "";
@@ -1202,7 +762,7 @@ $app->post('/import_csv', function () use ($app) {
                     //ChromePhp::log($arg_str);
                     $m_job_type_count = new Resultset(null, $t_import_job, $t_import_job->getReadConnection()->query($arg_str));
                     $m_job_type_count_obj = (array)$m_job_type_count;
-                    if(count($list) !== count($m_job_type_count)){
+                    if (count($list) !== count($m_job_type_count)) {
                         $error_list[] = '発注番号' . $check_order_req_no . 'の貸与パターンに対する商品指定数が不正です。';
                     }
                     $i++;
@@ -1218,7 +778,7 @@ $app->post('/import_csv', function () use ($app) {
         $arg_str = "SELECT * FROM  m_input_item WHERE corporate_id = '" . $corporate_id . "' AND rntl_cont_no = '" . $agreement_no . "' AND job_type_cd = '" . $check_job_type_cd . "'";
         //ChromePhp::log($arg_str);
         $m_job_type_count = new Resultset(null, $t_import_job, $t_import_job->getReadConnection()->query($arg_str));
-        if(count($list) !== count($m_job_type_count)){
+        if (count($list) !== count($m_job_type_count)) {
             $error_list[] = '発注番号' . $check_order_req_no . 'の貸与パターンに対する商品指定数が不正です。';
         }
     }
@@ -1232,9 +792,6 @@ $app->post('/import_csv', function () use ($app) {
     }
 
     //--マスターチェック処理--ここまで//
-
-
-
 
 
     //--発注NGパターンチェック--ここから//
@@ -1256,11 +813,11 @@ $app->post('/import_csv', function () use ($app) {
     $results_cnt = $result_obj["\0*\0_count"];
     if (!empty($results_cnt)) {
         $paginator_model = new PaginatorModel(
-            array(
-                "data" => $results,
-                "limit" => $results_cnt,
-                "page" => 1
-            )
+        array(
+        "data" => $results,
+        "limit" => $results_cnt,
+        "page" => 1
+        )
         );
         $paginator = $paginator_model->getPaginate();
         $results = $paginator->items;
@@ -1288,11 +845,11 @@ $app->post('/import_csv', function () use ($app) {
             if ($t_order_cnt > 0) {
                 // 発注情報トランに貸与終了、職種変更または異動のデータが存在する場合
                 $paginator_model = new PaginatorModel(
-                    array(
-                        "data" => $t_order_results,
-                        "limit" => 1,
-                        "page" => 1
-                    )
+                array(
+                "data" => $t_order_results,
+                "limit" => 1,
+                "page" => 1
+                )
                 );
                 $paginator = $paginator_model->getPaginate();
                 $t_order_results = $paginator->items;
@@ -1358,11 +915,11 @@ $app->post('/import_csv', function () use ($app) {
         $results_cnt = $result_obj["\0*\0_count"];
         if (!empty($results_cnt)) {
             $paginator_model = new PaginatorModel(
-                array(
-                    "data" => $results,
-                    "limit" => $results_cnt,
-                    "page" => 1
-                )
+            array(
+            "data" => $results,
+            "limit" => $results_cnt,
+            "page" => 1
+            )
             );
             $paginator = $paginator_model->getPaginate();
             $results = $paginator->items;
@@ -1393,11 +950,11 @@ $app->post('/import_csv', function () use ($app) {
                     $results_cnt = $result_obj["\0*\0_count"];
                     if (!empty($results_cnt)) {
                         $paginator_model = new PaginatorModel(
-                            array(
-                                "data" => $m_section_results,
-                                "limit" => 1,
-                                "page" => 1
-                            )
+                        array(
+                        "data" => $m_section_results,
+                        "limit" => 1,
+                        "page" => 1
+                        )
                         );
                         $paginator = $paginator_model->getPaginate();
                         $m_section_results = $paginator->items;
@@ -1415,17 +972,17 @@ $app->post('/import_csv', function () use ($app) {
                 }
 
                 $m_wearer_std_comb_hkey = md5(
-                    $auth['corporate_id']."-".
-                    $result->werer_cd."-".
-                    $agreement_no."-".
-                    $result->rntl_sect_cd."-".
-                    $result->rent_pattern_code
+                $auth['corporate_id'] . "-" .
+                $result->werer_cd . "-" .
+                $agreement_no . "-" .
+                $result->rntl_sect_cd . "-" .
+                $result->rent_pattern_code
                 );
                 //発注区分前処理
-                if($result->order_kbn == '0') {
+                if ($result->order_kbn == '0') {
                     $order_sts_kbn = '1';
                     $order_req_no = '';
-                } else{
+                } else {
                     $order_sts_kbn = $result->order_kbn;
                     $order_req_no = $result->order_req_no;
                 }
@@ -1456,15 +1013,15 @@ $app->post('/import_csv', function () use ($app) {
                 $values_list[] = "'" . $result->user_id . "'";
                 $values_list[] = "'" . $result->user_id . "'";
                 $m_job_type_comb_hkey = md5(
-                    $auth['corporate_id']."-".
-                    $agreement_no."-".
-                    $result->rent_pattern_code
+                $auth['corporate_id'] . "-" .
+                $agreement_no . "-" .
+                $result->rent_pattern_code
                 );
                 $values_list[] = "'" . $m_job_type_comb_hkey . "'";
                 $m_section_comb_hkey = md5(
-                    $auth['corporate_id']."-".
-                    $agreement_no."-".
-                    $result->rntl_sect_cd
+                $auth['corporate_id'] . "-" .
+                $agreement_no . "-" .
+                $result->rntl_sect_cd
                 );
                 $values_list[] = "'" . $m_section_comb_hkey . "'";
                 $values_list[] = "'" . date("Ymd", time()) . "'";
@@ -1486,35 +1043,35 @@ $app->post('/import_csv', function () use ($app) {
 
         // CALUME設定
         $calum_list = array(
-            "m_wearer_std_comb_hkey",
-            "corporate_id",
-            "werer_cd",
-            "rntl_cont_no",
-            "rntl_sect_cd",
-            "job_type_cd",
-            "cster_emply_cd",
-            "werer_name",
-            "werer_name_kana",
-            "sex_kbn",
-            "werer_sts_kbn",
-            "resfl_ymd",
-            "ship_to_cd",
-            "ship_to_brnch_cd",
-            "order_sts_kbn",
-            "upd_kbn",
-            "web_upd_date",
-            "snd_kbn",
-            "snd_date",
-            "del_kbn",
-            "rgst_date",
-            "rgst_user_id",
-            "upd_date",
-            "upd_user_id",
-            "upd_pg_id",
-            "m_job_type_comb_hkey",
-            "m_section_comb_hkey",
-            "appointment_ymd",
-            "order_req_no",
+        "m_wearer_std_comb_hkey",
+        "corporate_id",
+        "werer_cd",
+        "rntl_cont_no",
+        "rntl_sect_cd",
+        "job_type_cd",
+        "cster_emply_cd",
+        "werer_name",
+        "werer_name_kana",
+        "sex_kbn",
+        "werer_sts_kbn",
+        "resfl_ymd",
+        "ship_to_cd",
+        "ship_to_brnch_cd",
+        "order_sts_kbn",
+        "upd_kbn",
+        "web_upd_date",
+        "snd_kbn",
+        "snd_date",
+        "del_kbn",
+        "rgst_date",
+        "rgst_user_id",
+        "upd_date",
+        "upd_user_id",
+        "upd_pg_id",
+        "m_job_type_comb_hkey",
+        "m_section_comb_hkey",
+        "appointment_ymd",
+        "order_req_no",
         );
         $calum_query = implode(",", $calum_list);
 
@@ -1549,11 +1106,11 @@ $app->post('/import_csv', function () use ($app) {
         $results_cnt = $result_obj["\0*\0_count"];
         if (!empty($results_cnt)) {
             $paginator_model = new PaginatorModel(
-                array(
-                    "data" => $results,
-                    "limit" => $results_cnt,
-                    "page" => 1
-                )
+            array(
+            "data" => $results,
+            "limit" => $results_cnt,
+            "page" => 1
+            )
             );
             $paginator = $paginator_model->getPaginate();
             $results = $paginator->items;
@@ -1581,11 +1138,11 @@ $app->post('/import_csv', function () use ($app) {
                 $results_cnt = $result_obj["\0*\0_count"];
                 if (!empty($results_cnt)) {
                     $paginator_model = new PaginatorModel(
-                        array(
-                            "data" => $m_section_results,
-                            "limit" => 1,
-                            "page" => 1
-                        )
+                    array(
+                    "data" => $m_section_results,
+                    "limit" => 1,
+                    "page" => 1
+                    )
                     );
                     $paginator = $paginator_model->getPaginate();
                     $m_section_results = $paginator->items;
@@ -1617,11 +1174,11 @@ $app->post('/import_csv', function () use ($app) {
                 $results_cnt = $result_obj["\0*\0_count"];
                 if (!empty($results_cnt)) {
                     $paginator_model = new PaginatorModel(
-                        array(
-                            "data" => $m_input_item_results,
-                            "limit" => 1,
-                            "page" => 1
-                        )
+                    array(
+                    "data" => $m_input_item_results,
+                    "limit" => 1,
+                    "page" => 1
+                    )
                     );
                     $paginator = $paginator_model->getPaginate();
                     $m_input_item_results = $paginator->items;
@@ -1633,9 +1190,9 @@ $app->post('/import_csv', function () use ($app) {
                 }
 
                 $t_order_comb_hkey = md5(
-                    $auth['corporate_id']
-                    . $result->order_req_no
-                    . $result->order_req_line_no
+                $auth['corporate_id']
+                . $result->order_req_no
+                . $result->order_req_line_no
                 );
 
                 $values_list[] = "'" . $t_order_comb_hkey . "'";
@@ -1687,53 +1244,53 @@ $app->post('/import_csv', function () use ($app) {
                 $values_list[] = "'" . $result->emply_order_req_no . "'";
                 $values_list[] = "'" . $result->order_reason_kbn . "'";
                 $m_item_comb_hkey = md5(
-                    $auth['corporate_id'] . "-" .
-                    $result->item_cd . "-" .
-                    $result->color_cd . "-" .
-                    $result->size_cd
+                $auth['corporate_id'] . "-" .
+                $result->item_cd . "-" .
+                $result->color_cd . "-" .
+                $result->size_cd
                 );
                 $values_list[] = "'" . $m_item_comb_hkey . "'";
                 $m_job_type_comb_hkey = md5(
-                    $auth['corporate_id'] . "-" .
-                    $agreement_no . "-" .
-                    $result->rent_pattern_code
+                $auth['corporate_id'] . "-" .
+                $agreement_no . "-" .
+                $result->rent_pattern_code
                 );
                 $values_list[] = "'" . $m_job_type_comb_hkey . "'";
                 $m_section_comb_hkey = md5(
-                    $auth['corporate_id'] . "-" .
-                    $agreement_no . "-" .
-                    $result->rntl_sect_cd
+                $auth['corporate_id'] . "-" .
+                $agreement_no . "-" .
+                $result->rntl_sect_cd
                 );
                 $values_list[] = "'" . $m_section_comb_hkey . "'";
                 $m_wearer_std_comb_hkey = md5(
-                    $auth['corporate_id'] . "-" .
-                    $result->werer_cd . "-" .
-                    $agreement_no . "-" .
-                    $result->rntl_sect_cd . "-" .
-                    $result->rent_pattern_code
+                $auth['corporate_id'] . "-" .
+                $result->werer_cd . "-" .
+                $agreement_no . "-" .
+                $result->rntl_sect_cd . "-" .
+                $result->rent_pattern_code
                 );
                 $values_list[] = "'" . $m_wearer_std_comb_hkey . "'";
                 $m_wearer_item_comb_hkey = md5(
-                    $auth['corporate_id'] . "-" .
-                    $result->werer_cd . "-" .
-                    $agreement_no . "-" .
-                    $result->rntl_sect_cd . "-" .
-                    $result->rent_pattern_code . "-" .
-                    $result->job_type_item_cd . "-" .
-                    $result->item_cd . "-" .
-                    $result->color_cd . "-" .
-                    $result->size_cd
+                $auth['corporate_id'] . "-" .
+                $result->werer_cd . "-" .
+                $agreement_no . "-" .
+                $result->rntl_sect_cd . "-" .
+                $result->rent_pattern_code . "-" .
+                $result->job_type_item_cd . "-" .
+                $result->item_cd . "-" .
+                $result->color_cd . "-" .
+                $result->size_cd
                 );
                 $values_list[] = "'" . $m_wearer_item_comb_hkey . "'";
                 $values_list[] = "'" . date("Ymd", time()) . "'";
 
                 //異動の場合
-                if($result->order_kbn=='5'){
+                if ($result->order_kbn == '5') {
                     // 着用者基本マスタ参照 元々の職種コード、拠点コードの確認
                     $query_list = array();
-                    array_push($query_list, "corporate_id = '".$auth['corporate_id']."'");
-                    array_push($query_list, "rntl_cont_no = '".$agreement_no."'");
-                    array_push($query_list, "werer_cd = '".$result->werer_cd."'");
+                    array_push($query_list, "corporate_id = '" . $auth['corporate_id'] . "'");
+                    array_push($query_list, "rntl_cont_no = '" . $agreement_no . "'");
+                    array_push($query_list, "werer_cd = '" . $result->werer_cd . "'");
                     // 着用者状況区分(稼働)
                     array_push($query_list, "werer_sts_kbn = '1'");
                     $query = implode(' AND ', $query_list);
@@ -1755,11 +1312,11 @@ $app->post('/import_csv', function () use ($app) {
                             $before_rntl_sect_cd = $result->rntl_sect_cd;
                         }
                     }
-                }else{
+                } else {
                     $before_rntl_sect_cd = $result->rntl_sect_cd;
                 }
 
-                $values_list[] = "'".$before_rntl_sect_cd. "'";
+                $values_list[] = "'" . $before_rntl_sect_cd . "'";
                 $values = implode(",", $values_list);
                 $values = "(" . $values . ")";
                 $values_querys[] = $values;
@@ -1780,50 +1337,50 @@ $app->post('/import_csv', function () use ($app) {
             // 発注情報トラン登録
             // CALUME設定
             $calum_list = array(
-                "t_order_comb_hkey",
-                "corporate_id",
-                "order_req_no",
-                "order_req_line_no",
-                "order_req_ymd",
-                "order_sts_kbn",
-                "rntl_cont_no",
-                "rntl_sect_cd",
-                "job_type_cd",
-                "job_type_item_cd",
-                "werer_cd",
-                "item_cd",
-                "color_cd",
-                "size_cd",
-                "size_two_cd",
-                "whse_cd",
-                "stk_usr_cd",
-                "stk_usr_brnch_cd",
-                "ship_to_cd",
-                "ship_to_brnch_cd",
-                "order_qty",
-                "memo",
-                "werer_name",
-                "cster_emply_cd",
-                "werer_sts_kbn",
-                "resfl_ymd",
-                "snd_kbn",
-                "snd_date",
-                "del_kbn",
-                "rgst_date",
-                "rgst_user_id",
-                "upd_date",
-                "upd_user_id",
-                "upd_pg_id",
-                "order_status",
-                "emply_order_req_no",
-                "order_reason_kbn",
-                "m_item_comb_hkey",
-                "m_job_type_comb_hkey",
-                "m_section_comb_hkey",
-                "m_wearer_std_comb_hkey",
-                "m_wearer_item_comb_hkey",
-                "ship_plan_ymd",
-                "order_rntl_sect_cd"
+            "t_order_comb_hkey",
+            "corporate_id",
+            "order_req_no",
+            "order_req_line_no",
+            "order_req_ymd",
+            "order_sts_kbn",
+            "rntl_cont_no",
+            "rntl_sect_cd",
+            "job_type_cd",
+            "job_type_item_cd",
+            "werer_cd",
+            "item_cd",
+            "color_cd",
+            "size_cd",
+            "size_two_cd",
+            "whse_cd",
+            "stk_usr_cd",
+            "stk_usr_brnch_cd",
+            "ship_to_cd",
+            "ship_to_brnch_cd",
+            "order_qty",
+            "memo",
+            "werer_name",
+            "cster_emply_cd",
+            "werer_sts_kbn",
+            "resfl_ymd",
+            "snd_kbn",
+            "snd_date",
+            "del_kbn",
+            "rgst_date",
+            "rgst_user_id",
+            "upd_date",
+            "upd_user_id",
+            "upd_pg_id",
+            "order_status",
+            "emply_order_req_no",
+            "order_reason_kbn",
+            "m_item_comb_hkey",
+            "m_job_type_comb_hkey",
+            "m_section_comb_hkey",
+            "m_wearer_std_comb_hkey",
+            "m_wearer_item_comb_hkey",
+            "ship_plan_ymd",
+            "order_rntl_sect_cd"
             );
             $calum_query = implode(",", $calum_list);
 
@@ -1901,94 +1458,98 @@ function error_msg_master($line_cnt, $item_name)
  */
 function chk_format($error_list, $line_list, $line_cnt)
 {
-    if (isset($line_list[0])) {
+    if (!empty($line_list[0])) {
         //社員番号
         if (!chk_pattern($line_list[0], 1)) {
             array_push($error_list, error_msg_format($line_cnt, '社員番号'));
         }
     }
-      if (isset($line_list[1])) {
-          //着用者名
+    if (!empty($line_list[1])) {
+        //着用者名
         if (!chk_pattern($line_list[1], 13)) {
-          array_push($error_list, error_msg_format($line_cnt, '着用者名'));
+            array_push($error_list, error_msg_format($line_cnt, '着用者名'));
         }
-      }
-      if (isset($line_list[2])) {
+    }
+    if (!empty($line_list[2])) {
         //着用者名（カナ）
         if (!chk_pattern($line_list[2], 14)) {
-          array_push($error_list, error_msg_format($line_cnt, '着用者名（カナ）'));
+            array_push($error_list, error_msg_format($line_cnt, '着用者名（カナ）'));
         }
-      }
-    if (isset($line_list[3])) {
+    }
+    if (!empty($line_list[3])) {
         //性別区分
         if (!chk_pattern($line_list[3], 2)) {
             array_push($error_list, error_msg_format($line_cnt, '性別区分'));
         }
     }
-    if (isset($line_list[4])) {
+    if (!empty($line_list[4])) {
         //支店コード
         if (!chk_pattern($line_list[4], 1)) {
             array_push($error_list, error_msg_format($line_cnt, '支店コード'));
         }
     }
-    if (isset($line_list[5])) {
+    if (!empty($line_list[5])) {
         //貸与パターン
         if (!chk_pattern($line_list[5], 4)) {
             array_push($error_list, error_msg_format($line_cnt, '貸与パターン'));
         }
     }
-    if (isset($line_list[6])) {
-        //着用開始日
-        if (!chk_pattern($line_list[6], 3)) {
-            array_push($error_list, error_msg_format($line_cnt, '着用開始日'));
+    if ($line_list[7] == '1' || $line_list[7] == '5') {
+        if (!empty($line_list[6])) {
+            //着用開始日
+            if (!chk_pattern($line_list[6], 3)) {
+                array_push($error_list, error_msg_format($line_cnt, '着用開始日'));
+            }
         }
     }
-    if (isset($line_list[7])) {
+    if (!empty($line_list[7])) {
         //発注区分
         if (!chk_pattern($line_list[7], 5)) {
             array_push($error_list, error_msg_format($line_cnt, '発注区分'));
         }
     }
     //異動と着用者登録のみの場合は必須チェックをskip
-    if($line_list[7] == '1'){
-        if (isset($line_list[8])) {
+    if ($line_list[7] == '1') {
+        if (!empty($line_list[8])) {
             //商品コード
             if (!chk_pattern($line_list[8], 6)) {
                 array_push($error_list, error_msg_format($line_cnt, '商品コード'));
             }
         }
-        if (isset($line_list[9])) {
+        if (!empty($line_list[9])) {
             //サイズコード
             if (!chk_pattern($line_list[9], 7)) {
                 array_push($error_list, error_msg_format($line_cnt, 'サイズコード'));
             }
         }
-        if (isset($line_list[10])) {
+        if (!empty($line_list[10])) {
             //色コード
             if (!chk_pattern($line_list[10], 8)) {
                 array_push($error_list, error_msg_format($line_cnt, '色コード'));
             }
         }
-        if (isset($line_list[11])) {
+        if (!empty($line_list[11])) {
             //数量
             if (!chk_pattern($line_list[11], 9)) {
                 array_push($error_list, error_msg_format($line_cnt, '数量'));
             }
         }
     }
-    if (isset($line_list[12])) {
-        //伝言欄
-        if (!chk_pattern($line_list[12], 10)) {
-            array_push($error_list, error_msg_format($line_cnt, 'お客様発注No'));
+    if ($line_list[7] == '1' || $line_list[7] == '5') {
+        if (!empty($line_list[12])) {
+            //お客様発注No
+            if (!chk_pattern($line_list[12], 10)) {
+                array_push($error_list, error_msg_format($line_cnt, 'お客様発注No'));
+            }
+        }
+        if (!empty($line_list[13])) {
+            //理由区分
+            if (!chk_pattern($line_list[13], 11)) {
+                array_push($error_list, error_msg_format($line_cnt, '理由区分'));
+            }
         }
     }
-    if (isset($line_list[13])) {
-        //伝言欄
-        if (!chk_pattern($line_list[13], 11)) {
-            array_push($error_list, error_msg_format($line_cnt, '理由区分'));
-        }
-    }
-    if (isset($line_list[14])) {
+    if (!empty($line_list[14])) {
         //伝言欄
         if (!chk_pattern($line_list[14], 12)) {
             array_push($error_list, error_msg_format($line_cnt, '伝言欄'));
@@ -2109,7 +1670,7 @@ function chk_pattern($val, $pattaern)
             break;
         case 13:
             //パターン13(22byte) //着用者名
-            if (strlen( mb_convert_encoding($val, 'SJIS', 'UTF-8')) > 22) {
+            if (strlen(mb_convert_encoding($val, 'SJIS', 'UTF-8')) > 22) {
                 return false;
             } else {
                 return true;
@@ -2117,13 +1678,12 @@ function chk_pattern($val, $pattaern)
             break;
         case 14:
             //パターン14(25byte)1か2  //着用者名（カナ）
-            if (strlen( mb_convert_encoding($val, 'SJIS', 'UTF-8')) > 25) {
+            if (strlen(mb_convert_encoding($val, 'SJIS', 'UTF-8')) > 25) {
                 return false;
             } else {
                 return true;
             }
             break;
-
 
 
         default:
@@ -2139,4 +1699,227 @@ function byte_cnv($data)
     $af = 'Shift-JIS';
 
     return strlen(bin2hex(mb_convert_encoding($data, $af, $bf))) / 2;
+}
+
+function input_check($line_list, $line_cnt)
+{
+    $error_list = array();
+
+    //必須チェック
+    if (empty($line_list[0])) {
+        if (count($error_list) < 20) {
+            $error_list[] = $line_cnt . '行目の社員番号を入力してください。';
+        } else {
+            $json_list['errors'] = $error_list;
+            $json_list["error_code"] = "1";
+            echo json_encode($json_list);
+            exit;
+        }
+    }
+    if (empty($line_list[1])) {
+        if (count($error_list) < 20) {
+            $error_list[] = $line_cnt . '行目の着用者名を入力してください。';
+        } else {
+            $json_list['errors'] = $error_list;
+            $json_list["error_code"] = "1";
+            echo json_encode($json_list);
+            exit;
+        }
+    }
+
+    //着用者名 SJISにない文字を?に変換
+    if (!empty($line_list[1])) {
+        $str_utf8 = $line_list[1];
+        if (convert_not_sjis($str_utf8) !== true) {
+            if (count($error_list) < 20) {
+                $output_text = convert_not_sjis($str_utf8);
+                $error_list[] = "$line_cnt" . '行目の着用者名に使用できない文字が含まれています。' . "$output_text";
+            } else {
+                $json_list['errors'] = $error_list;
+                $json_list["error_code"] = "1";
+                echo json_encode($json_list);
+                exit;
+            }
+        }
+    }
+    //全角カナ 全角スペースチェック
+    if (!empty($line_list[2])) {
+        $kana = $line_list[2];
+        if (kana_check($kana) === false) {
+            if (count($error_list) < 20) {
+                $error_list[] = $line_cnt . '行目の着用者名（カナ）に全角カタカナまたは全角スペース以外が入力されています。';
+            } else {
+                $json_list['errors'] = $error_list;
+                $json_list["error_code"] = "1";
+                echo json_encode($json_list);
+                exit;
+            }
+        }
+    }
+    if ($line_list[3] == '') {
+        if (count($error_list) < 20) {
+            $error_list[] = $line_cnt . '行目の性別区分を入力してください。';
+        } else {
+            $json_list['errors'] = $error_list;
+            $json_list["error_code"] = "1";
+            echo json_encode($json_list);
+            exit;
+        }
+    }
+    if (empty($line_list[4])) {
+        if (count($error_list) < 20) {
+            $error_list[] = $line_cnt . '行目の支店コードを入力してください。';
+        } else {
+            $json_list['errors'] = $error_list;
+            $json_list["error_code"] = "1";
+            echo json_encode($json_list);
+            exit;
+        }
+    }
+    if (empty($line_list[5])) {
+        if (count($error_list) < 20) {
+            $error_list[] = $line_cnt . '行目の貸与パターンを入力してください。';
+        } else {
+            $json_list['errors'] = $error_list;
+            $json_list["error_code"] = "1";
+            echo json_encode($json_list);
+            exit;
+        }
+    }
+    if ($line_list[7] == '') {
+        if (count($error_list) < 20) {
+            $error_list[] = $line_cnt . '行目の発注区分を入力してください。';
+        } else {
+            $json_list['errors'] = $error_list;
+            $json_list["error_code"] = "1";
+            echo json_encode($json_list);
+            exit;
+        }
+    }
+    //発注区分が貸与、異動の場合に必須
+    if ($line_list[7] == '1' || $line_list[7] == '5') {
+        ChromePhp::log('koko');
+        if (empty($line_list[6])) {
+            if (count($error_list) < 20) {
+                $error_list[] = $line_cnt . '行目の着用開始日を入力してください。';
+            } else {
+                $json_list['errors'] = $error_list;
+                $json_list["error_code"] = "1";
+                echo json_encode($json_list);
+                exit;
+            }
+        }
+    }
+    if ($line_list[7] == '1') {
+        if (empty($line_list[8])) {
+            if (count($error_list) < 20) {
+                $error_list[] = $line_cnt . '行目の商品コードを入力してください。';
+            } else {
+                $json_list['errors'] = $error_list;
+                $json_list["error_code"] = "1";
+                echo json_encode($json_list);
+                exit;
+            }
+        }
+    } elseif ($line_list[7] == '0' || $line_list[7] == '5') {
+
+        $line_list[8] = NULL;
+    }
+
+
+    if ($line_list[7] == '1') {
+        if (empty($line_list[9])) {
+            if (count($error_list) < 20) {
+                $error_list[] = $line_cnt . '行目のサイズコードを入力してください。';
+            } else {
+                $json_list['errors'] = $error_list;
+                $json_list["error_code"] = "1";
+                echo json_encode($json_list);
+                exit;
+            }
+        }
+    } elseif ($line_list[7] == '0' || $line_list[7] == '5') {
+
+        $line_list[9] = NULL;
+    }
+
+    if ($line_list[7] == '1') {
+        if (empty($line_list[10])) {
+            if (count($error_list) < 20) {
+                $error_list[] = $line_cnt . '行目の色コードを入力してください。';
+            } else {
+                $json_list['errors'] = $error_list;
+                $json_list["error_code"] = "1";
+                echo json_encode($json_list);
+                exit;
+            }
+        }
+    } elseif ($line_list[7] == '0' || $line_list[7] == '5') {
+
+        $line_list[10] = NULL;
+    }
+
+    if ($line_list[7] == '1') {
+        if (empty($line_list[11])) {
+            if (count($error_list) < 20) {
+                $error_list[] = $line_cnt . '行目の数量を入力してください。';
+            } else {
+                $json_list['errors'] = $error_list;
+                $json_list["error_code"] = "1";
+                echo json_encode($json_list);
+                exit;
+            }
+        }
+    } elseif ($line_list[7] == '0' || $line_list[7] == '5') {
+
+        $line_list[11] = 0;
+    }
+
+    if (empty($line_list[13])) {
+        if (count($error_list) < 20) {
+            $error_list[] = $line_cnt . '行目の理由区分を入力してください。';
+        } else {
+            $json_list['errors'] = $error_list;
+            $json_list["error_code"] = "1";
+            echo json_encode($json_list);
+            exit;
+        }
+    }
+
+
+    //日本語文字数チェック
+    //着用者漢字
+    if (byte_cnv($line_list[1]) > 100) {
+        if (count($error_list) < 20) {
+            $error_list[] = '着用者名の文字数が多すぎます。';
+        } else {
+            $json_list['errors'] = $error_list;
+            $json_list["error_code"] = "1";
+            echo json_encode($json_list);
+            exit;
+        }
+    }
+    //着用者カナ
+    if (byte_cnv($line_list[2]) > 100) {
+        if (count($error_list) < 20) {
+            $error_list[] = '着用者名(カナ)の文字数が多すぎます。';
+        } else {
+            $json_list['errors'] = $error_list;
+            $json_list["error_code"] = "1";
+            echo json_encode($json_list);
+            exit;
+        }
+    }
+    //伝言
+    if (byte_cnv($line_list[14]) > 100) {
+        if (count($error_list) < 20) {
+            $error_list[] = '伝言欄の文字数が多すぎます。';
+        } else {
+            $json_list['errors'] = $error_list;
+            $json_list["error_code"] = "1";
+            echo json_encode($json_list);
+            exit;
+        }
+    }
+    ChromePhp::log($error_list);
 }
