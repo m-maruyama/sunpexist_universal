@@ -461,7 +461,7 @@ define([
 					$("#btn_ok").on('click',function() { //追加
 						hideModal();
 						$.blockUI({ message: '<p><img src="ajax-loader.gif" style="margin: 0 auto;" /> 発注取消中...</p>' });
-						var modelForUpdate = this.model;
+						var modelForUpdate = that.model;
 						modelForUpdate.url = App.api.WC0020;
 						var cond = {
 							"scr": '発注取消',
