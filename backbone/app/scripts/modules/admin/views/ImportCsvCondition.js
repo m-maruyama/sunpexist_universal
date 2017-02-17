@@ -118,13 +118,17 @@ define([
                 that.triggerMethod('showAlerts', response["errors"].slice(0,20));
               } else {
                 $('#fake_input_file').val('');
-                alert('一括データ取込みの処理が正常に完了しました。');
-                location.href = "importCsv.html";
+                $('#ImportModal').modal(); //追加 //一括データ取込みの処理が正常に完了しました。
+                document.getElementById("confirm_txt").innerHTML=App.import_csv_complete_msg; //追加 このメッセージはapp.jsで定義
+                $("#btn_ok").on('click',function() { //追加
+                  location.href = "importCsv.html";
+                });
               }
               $.unblockUI();
             }catch(e){
+              $('#ImportModal').modal(); //追加 //予期せぬエラーが発生しました。
+              document.getElementById("confirm_txt").innerHTML=App.import_csv_import_error_msg; //追加 このメッセージはapp.jsで定義
               // セキュリティエラー等、予期せぬエラー
-              alert("予期せぬエラーが発生しました。");
               $.unblockUI();
             }
           });
@@ -181,7 +185,8 @@ define([
               }
   					});
           } else {
-            alert("ファイルを選択してください。");
+            $('#ImportModal').modal(); //追加 //ファイルを選択してください。
+            document.getElementById("confirm_txt").innerHTML=App.import_csv_no_choose_file_msg; //追加 このメッセージはapp.jsで定義
           }
         }
       }
