@@ -133,21 +133,12 @@ define([
 							data:cond,
 							success:function(res) {
 								var CM0140_res = res.attributes;
-								if (CM0140_res['order_input_ok_flg'] == "1" && CM0140_res['order_send_ok_flg'] == "1") {
+
+								if (CM0140_res['order_input_ok_flg'] == "1" || CM0140_res['order_send_ok_flg'] == "1") {
 									$('.complete').css('display', '');
+								}
+								if (CM0140_res['order_send_ok_flg'] == "1") {
 									$('.orderSend').css('display', '');
-								}
-								if (CM0140_res['order_input_ok_flg'] == "0" && CM0140_res['order_send_ok_flg'] == "0") {
-									$('.complete').css('display', 'none');
-									$('.orderSend').css('display', 'none');
-								}
-								if (CM0140_res['order_input_ok_flg'] == "0" && CM0140_res['order_send_ok_flg'] == "1") {
-									$('.complete').css('display', 'none');
-									$('.orderSend').css('display', '');
-								}
-								if (CM0140_res['order_input_ok_flg'] == "1" && CM0140_res['order_send_ok_flg'] == "0") {
-									$('.complete').css('display', '');
-									$('.orderSend').css('display', 'none');
 								}
 							}
 						});
