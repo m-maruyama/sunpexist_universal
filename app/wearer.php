@@ -106,7 +106,7 @@ $app->post('/wearer/search', function () use ($app) {
   //個体管理番号
   if (!empty($cond['individual_number'])) {
     array_push($query_list, "t_delivery_goods_state_details.individual_ctrl_no LIKE '%" . $cond['individual_number'] . "%'");
-    array_push($query_list, "m_wearer_std.werer_sts_kbn ='1'");
+    array_push($query_list, "(m_wearer_std.werer_sts_kbn ='1' OR m_wearer_std.werer_sts_kbn ='2' OR m_wearer_std.werer_sts_kbn ='3' OR m_wearer_std.werer_sts_kbn ='4')");
   }
 
   //ゼロ埋めがない場合、ログインアカウントの条件追加
