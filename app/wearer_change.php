@@ -1021,11 +1021,11 @@ $app->post('/wearer_change/order_check', function ()use($app){
     }
   }
   //出荷情報が0な時点で未出荷があるとみなし、未出荷エラー
-  if($results_cnt_ship_item == 0){
-    $json_list["error_code"] = "1";
-    $error_msg = "対象の方は未出荷の商品がある為、職種変更または異動の発注はできません。";
-    $json_list["error_msg"] = $error_msg;
-  }
+//  if($results_cnt_ship_item == 0){
+//    $json_list["error_code"] = "1";
+//    $error_msg = "対象の方は未出荷の商品がある為、職種変更または異動の発注はできません。";
+//    $json_list["error_msg"] = $error_msg;
+//  }
   //出荷情報が1以上あった場合に、下記の処理に移行
   if($results_cnt_ship_item > 0) {
     $count_ship = count($ship_item_list);
