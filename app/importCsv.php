@@ -14,6 +14,8 @@ $app->post('/import_csv', function () use ($app) {
     ini_set('max_execution_time', 0);
     ini_set('memory_limit', '500M');
     //$start = microtime(true);
+    //画面の契約no
+    $agreement_no = $_REQUEST['agreement_no'];
 
     // アカウントセッション情報取得
     $auth = $app->session->get("auth");
@@ -25,7 +27,7 @@ $app->post('/import_csv', function () use ($app) {
     $list = array();
     $all_list = array();
     $query_list[] = "corporate_id = '".$auth["corporate_id"]."'";
-    $query_list[] = "rntl_cont_no = '".$auth['rntl_cont_no']."'";
+    $query_list[] = "rntl_cont_no = '".$agreement_no."'";
     $query_list[] = "accnt_no = '".$auth["accnt_no"]."'";
     $query = implode(' AND ', $query_list);
 
@@ -60,7 +62,6 @@ $app->post('/import_csv', function () use ($app) {
         $section_all_zero_flg = false;
     }
 
-    ChromePhp::log($section_all_zero_flg);
 
     $json_list = array();
     $error_list = array();
@@ -79,7 +80,7 @@ $app->post('/import_csv', function () use ($app) {
     // 画面で選択された契約No、ファイル、処理番号生成
     //if(empty())
     //$agreement_no = $_POST["agreement_no"];
-    $agreement_no = $auth["rntl_cont_no"];
+    //$agreement_no = $auth["rntl_cont_no"];
     $getFileExt = new SplFileInfo($_FILES['file']['name']);
     $job_no = $auth["corporate_id"] . $auth["user_id"];
     //--CSV or Excel形式毎のバリデーション--ここから//

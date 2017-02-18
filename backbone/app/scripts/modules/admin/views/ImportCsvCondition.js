@@ -161,34 +161,43 @@ define([
         'click @ui.import_csv': function() {
           var that = this;
           if ($("#file_input").prop("files")[0]) {
-                    // 更新可否チェック
-  					var modelForUpdate = this.model;
-  					modelForUpdate.url = App.api.CM0130;
-  					var cond = {
-  						"scr": '一括データ取込-更新可否チェック',
-  						"log_type": '1',
-                        "update_skip_flg": 'importCsv'
-  					};
-  					modelForUpdate.fetchMx({
-  						data:cond,
-  						success:function(res){
-  							var res_val = res.attributes;
-                            if (!res_val["chk_flg"]) {
-                                $('#ImportModal').modal();
-                                document.getElementById("confirm_txt").innerHTML=res_val["error_msg"];// 更新可否フラグ=更新不可の場合はアラートメッセージ表示
-                            } else {
-                                $('#ImportModal').modal();
-                                document.getElementById("confirm_txt").innerHTML='データ量により、処理に時間がかかる場合があります。\n' + $("#file_input").prop("files")[0].name + 'を取り込んでもよろしいですか？';
-                                $("#btn_ok").off();
-                                $("#btn_ok").on('click',function() {
-                                  console.log('aaa');
-                                hideModal();
-                                $.blockUI({message: '<p><img src="ajax-loader.gif" style="margin: 0 auto;" /><br/> データ取込み中です。<br/>完了するまではこのままでお待ちください...</p>'});
-                                $('#csv').submit();
-                              });
-                            }
-                        }
-  					});
+            // 更新可否チェック
+
+            //契約noを送る作業
+            var agreement_no = $('#agreement_no').val();
+            var input_agreement_no = $('<input type="hidden" name="agreement_no" />');
+            input_agreement_no.val(agreement_no);
+            $('#csv').append(input_agreement_no);
+
+            //一括データ取込
+            var modelForUpdate = this.model;
+            modelForUpdate.url = App.api.CM0130;
+            var cond = {
+              "scr": '一括データ取込-更新可否チェック',
+              "log_type": '1',
+              "update_skip_flg": 'importCsv'
+            };
+            modelForUpdate.fetchMx({
+              data: cond,
+              success: function (res) {
+                var res_val = res.attributes;
+                console.log(res_val);
+                if (!res_val["chk_flg"]) {
+                  $('#ImportModal').modal();
+                  document.getElementById("confirm_txt").innerHTML = res_val["error_msg"];// 更新可否フラグ=更新不可の場合はアラートメッセージ表示
+                } else {
+                  $('#ImportModal').modal();
+                  document.getElementById("confirm_txt").innerHTML = 'データ量により、処理に時間がかかる場合があります。\n' + $("#file_input").prop("files")[0].name + 'を取り込んでもよろしいですか？';
+
+                  $("#btn_ok").off();
+                  $("#btn_ok").on('click', function () {
+                    hideModal();
+                    $.blockUI({message: '<p><img src="ajax-loader.gif" style="margin: 0 auto;" /><br/> データ取込み中です。<br/>完了するまではこのままでお待ちください...</p>'});
+                    $('#csv').submit();
+                  });
+                }
+              }
+            });
           } else {
               $('#ImportModal').modal();
               document.getElementById("confirm_txt").innerHTML=App.import_csv_no_choose_file_msg;//ファイルを選択してください。
