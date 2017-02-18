@@ -417,7 +417,7 @@ $app->post('/wearer_order_info', function ()use($app){
 
 /**
  * 発注入力
- * 入力項目：発注送信一覧
+ * 入力項目：発注商品一覧
  */
 $app->post('/wearer_order_list', function ()use($app){
     $params = json_decode(file_get_contents("php://input"), true);
@@ -455,7 +455,7 @@ $app->post('/wearer_order_list', function ()use($app){
     $arg_str = "SELECT ";
     $arg_str .= "*";
     $arg_str .= " FROM ";
-    $arg_str .= "(SELECT distinct on (t_order_tran.item_cd,t_order_tran.color_cd) ";
+    $arg_str .= "(SELECT distinct on (t_order_tran.item_cd,t_order_tran.color_cd,m_input_item.job_type_item_cd) ";
     $arg_str .= "m_input_item.job_type_item_name as as_item_name,";
     $arg_str .= "t_order_tran.item_cd as as_item_cd,";
     $arg_str .= "t_order_tran.color_cd as as_color_cd,";
@@ -487,6 +487,7 @@ $app->post('/wearer_order_list', function ()use($app){
     $result_obj = (array)$results;
     $results_cnt = $result_obj["\0*\0_count"];
     $t_order_tran_flg = false;
+    $results_tran = '';
     if (!empty($results_cnt)) {
         $paginator_model = new PaginatorModel(
             array(
@@ -497,9 +498,9 @@ $app->post('/wearer_order_list', function ()use($app){
         );
 
         $paginator = $paginator_model->getPaginate();
-        $results = $paginator->items;
+        $results_tran = $paginator->items;
         $t_order_tran_flg = true;
-    }else{
+    }
         //発注情報トランにデータが存在しない場合
         //職種マスタを参照し、「発注商品一覧」を生成する。
         $query_list = array();
@@ -516,7 +517,7 @@ $app->post('/wearer_order_list', function ()use($app){
         $arg_str = "SELECT ";
         $arg_str .= "*";
         $arg_str .= " FROM ";
-        $arg_str .= "(SELECT distinct on (m_input_item.item_cd,m_input_item.color_cd) ";
+        $arg_str .= "(SELECT distinct on (m_input_item.item_cd, m_input_item.color_cd, m_input_item.job_type_item_cd) ";
         $arg_str .= "m_input_item.job_type_item_name as as_item_name,";
         $arg_str .= "m_input_item.item_cd as as_item_cd,";
         $arg_str .= "m_input_item.color_cd as as_color_cd,";
@@ -551,7 +552,7 @@ $app->post('/wearer_order_list', function ()use($app){
           $paginator = $paginator_model->getPaginate();
           $results = $paginator->items;
         }
-    }
+
     $arr_cnt = 0;
     $list_cnt = 1;
     $add_item = $wearer_odr_post['add_item'];
@@ -585,6 +586,7 @@ $app->post('/wearer_order_list', function ()use($app){
         array_push($query_list, "m_job_type.job_type_cd = '".$wearer_odr_post['job_type_cd']."'");
         array_push($query_list, "m_input_item.job_type_cd = '".$wearer_odr_post['job_type_cd']."'");
         array_push($query_list, "m_input_item.item_cd = '".$result->as_item_cd."'");
+        array_push($query_list, "m_input_item.job_type_item_cd = '".$list['job_type_item_cd']."'");
 //        array_push($query_list, "m_input_item.color_cd = '".$result->as_color_cd."'");
 //        array_push($query_list, "m_input_item.size_two_cd = '".$result->as_size_two_cd."'");
         $query = implode(' AND ', $query_list);
@@ -659,9 +661,26 @@ $app->post('/wearer_order_list', function ()use($app){
                 $list["order_num"] = $add_item[$arr_cnt - 1]['add_order_num'];
                 $list["order_num_disable"] = "";
             }
-        }else{
+        }else {
+            $size_tran = '';
+            if ($results_tran) {
+                foreach ($results_tran as $resul_tran) {
+                    if (($resul_tran->as_item_cd == $result->as_item_cd) &&
+                        ($resul_tran->as_color_cd == $result->as_color_cd &&
+                            $resul_tran->as_job_type_item_cd == $result->as_job_type_item_cd)
+                    ) {
+                        // 初期選択設定
+                        $size_tran = $resul_tran->as_size_cd_tran;
+
+                        // 発注枚数
+                        if (!empty($resul_tran->as_order_qty_tran)) {
+                            $list["order_num"] = $resul_tran->as_order_qty_tran;
+                        }
+                    }
+                }
+            }
             foreach ($m_item_results as $m_item_result){
-                if((isset($result->as_size_cd_tran)&&$result->as_size_cd_tran == $m_item_result->size_cd)){
+                if ($size_tran==$m_item_result->size_cd) {
                     $size_list['selected'] = 'selected';
                 }else{
                     $size_list['selected'] = '';
@@ -768,10 +787,14 @@ $app->post('/wearer_order_insert', function () use ($app) {
             if (!$add_item_input_map["add_order_num"]&&$add_item_input_map["add_order_num"] !== '0') {
                 array_push($error_list,$add_item_input_map["add_item_cd"].'-'.$add_item_input_map["add_color_cd"].'の発注枚数を入力してください。');
                 $json_list["error_code"] = "1";
+            }elseif ($add_item_input_map["add_size_cd"]&&(!$add_item_input_map["add_order_num"]||$add_item_input_map["add_order_num"] == '0')) {
+                array_push($error_list,$add_item_input_map["add_item_cd"].'-'.$add_item_input_map["add_color_cd"].'の発注枚数を入力してください。');
+                $json_list["error_code"] = "1";
             }
         }
+
         if (empty($add_item_input_map["add_order_num_disable"])) {
-            if (!ctype_digit(strval($add_item_input_map["add_order_num"]))) {
+            if ($add_item_input_map["add_order_num"]&&!ctype_digit(strval($add_item_input_map["add_order_num"]))) {
                 array_push($error_list,$add_item_input_map["add_item_cd"].'-'.$add_item_input_map["add_color_cd"].'の発注枚数には半角数字を入力してください。');
                 $json_list["error_code"] = "1";
             }
@@ -782,10 +805,17 @@ $app->post('/wearer_order_insert', function () use ($app) {
             $json_list["error_code"] = "1";
         }
         // サイズチェック
-        if (!$add_item_input_map["add_size_cd"]) {
+        if (!$add_item_input_map["add_size_cd"]&&$add_item_input_map["add_order_num"]) {
             array_push($error_list,$add_item_input_map["add_item_cd"].'-'.$add_item_input_map["add_color_cd"].'のサイズを入力してください。');
             $json_list["error_code"] = "1";
         }
+    }
+    if (intval($cond["order_count"])>$order_count){
+
+        array_push($error_list,'発注枚数が足りません。');
+        $json_list["error_code"] = "1";
+
+
     }
     //DB登録
     if($json_list["error_code"]=="1"){
