@@ -1300,8 +1300,8 @@ $app->post('/wearer_add/complete', function ()use($app){
      array_push($query_list, "corporate_id = '".$auth['corporate_id']."'");
      array_push($query_list, "rntl_cont_no = '".$wearer_other_post['rntl_cont_no']."'");
      array_push($query_list, "werer_cd = '".$wearer_other_post['werer_cd']."'");
-     array_push($query_list, "rntl_sect_cd = '".$wearer_other_post['rntl_sect_cd']."'");
-     array_push($query_list, "job_type_cd = '".$wearer_other_post['job_type_cd']."'");
+//     array_push($query_list, "rntl_sect_cd = '".$wearer_other_post['rntl_sect_cd']."'");
+//     array_push($query_list, "job_type_cd = '".$wearer_other_post['job_type_cd']."'");
      $query = implode(' AND ', $query_list);
 
      $arg_str = "";
@@ -1317,7 +1317,6 @@ $app->post('/wearer_add/complete', function ()use($app){
      $results = new Resultset(NULL, $t_order_tran, $t_order_tran->getReadConnection()->query($arg_str));
      $result_obj = (array)$results;
      $results_cnt = $result_obj["\0*\0_count"];
-     //ChromePhp::LOG($results_cnt);
      if (!empty($results_cnt)) {
        $paginator_model = new PaginatorModel(
            array(
@@ -1344,6 +1343,7 @@ $app->post('/wearer_add/complete', function ()use($app){
              $json_list["error_code"] = "1";
              $error_msg = "職種変更または異動の発注が登録されていた為、操作を完了できませんでした。職種変更または異動の発注を削除してから再度登録して下さい。";
              array_push($json_list["error_msg"], $error_msg);
+
              echo json_encode($json_list);
              return;
          }
@@ -2255,8 +2255,8 @@ ChromePhp::LOG($item_input);
     array_push($query_list, "corporate_id = '".$auth['corporate_id']."'");
     array_push($query_list, "rntl_cont_no = '".$wearer_other_post['rntl_cont_no']."'");
     array_push($query_list, "werer_cd = '".$wearer_other_post['werer_cd']."'");
-    array_push($query_list, "rntl_sect_cd = '".$wearer_other_post['rntl_sect_cd']."'");
-    array_push($query_list, "job_type_cd = '".$wearer_other_post['job_type_cd']."'");
+//    array_push($query_list, "rntl_sect_cd = '".$wearer_other_post['rntl_sect_cd']."'");
+//    array_push($query_list, "job_type_cd = '".$wearer_other_post['job_type_cd']."'");
     $query = implode(' AND ', $query_list);
 
     $arg_str = "";
