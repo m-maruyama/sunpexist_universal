@@ -49,17 +49,16 @@ define([
 						data:cond,
 						success:function(res){
 							var res_val = res.attributes;
-							if (res_val["err_cd"] == "0") {
+							if (res_val["error_code"] == "0") {
 								var type = "WC0011_req";
 								var transition = "";
 								var data = cond["data"];
 								that.onShow(res_val, type, transition, data);
 							} else {
-
                                 // JavaScript モーダルで表示
                                 $('#myModalAlert').modal('show'); //追加
                                 //メッセージの修正
-                                document.getElementById("alert_txt").innerHTML=res_val["err_msg"];
+                                document.getElementById("alert_txt").innerHTML=res_val["error_msg"];
 								// // エラーアラート表示
 								// alert(res_val["err_msg"]);
 							}

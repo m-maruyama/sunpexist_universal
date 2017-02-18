@@ -778,8 +778,8 @@ $app->post('/wearer_change/order_check', function ()use($app){
   $json_list = array();
 
   // エラーメッセージ、エラーコード 0:正常 その他:要因エラー
-  $json_list["err_cd"] = '0';
-  $json_list["err_msg"] = '';
+  $json_list["error_code"] = '0';
+  $json_list["error_msg"] = '';
 
   //※着用者基本マスタトラン参照
   $query_list = array();
@@ -819,9 +819,9 @@ $app->post('/wearer_change/order_check', function ()use($app){
 
     // 着用者基本マスタトラン.発注状況区分 = 「着用者編集」の情報がある際は発注NG
     if ($order_sts_kbn == "6") {
-      $json_list["err_cd"] = "1";
+      $json_list["error_code"] = "1";
       $error_msg = "着用者編集の発注が入力されています。".PHP_EOL."職種変更または異動を行う場合は着用者編集の発注をキャンセルしてください。";
-      $json_list["err_msg"] = $error_msg;
+      $json_list["error_msg"] = $error_msg;
 
       //ChromePhp::LOG($json_list);
       echo json_encode($json_list);
@@ -866,29 +866,35 @@ $app->post('/wearer_change/order_check', function ()use($app){
       $order_reason_kbn = $result->order_reason_kbn;
     }
 
-    // 発注情報トラン.発注状況区分 = 「異動」以外の情報がある際は発注NG
-    if ($order_sts_kbn !== "5") {
-      if ($order_sts_kbn == "1" && $order_reason_kbn == "03") {
-        $json_list["err_cd"] = "1";
-        $error_msg = "追加貸与の発注が入力されています。".PHP_EOL."職種変更または異動を行う場合は追加貸与の発注をキャンセルしてください。";
-        $json_list["err_msg"] = $error_msg;
+      // 発注情報トラン.発注状況区分 = 「異動」以外の情報がある際は発注NG
+      if ($order_sts_kbn !== "5") {
+          $json_list["error_code"] = "1";
+          if ($order_sts_kbn == "1" && ($order_reason_kbn == "03" || $order_reason_kbn == "27")) {
+              $json_list["error_msg"] = "追加貸与の発注が登録されていた為、操作を完了できませんでした。追加貸与の発注を削除してから再度登録して下さい。";
+//              array_push($json_list["error_msg"], $error_msg);
+              echo json_encode($json_list);
+              return;
+          }
+          if ($order_sts_kbn == "2" && ($order_reason_kbn == "05" || $order_reason_kbn == "06" || $order_reason_kbn == "08" || $order_reason_kbn == "20")) {
+              $json_list["error_msg"] = "貸与終了の発注が登録されていた為、操作を完了できませんでした。貸与終了の発注を削除してから再度登録して下さい。";
+//              array_push($json_list["error_msg"], $error_msg);
+              echo json_encode($json_list);
+              return;
+          }
+
+          if ($order_sts_kbn == "2" && ($order_reason_kbn == "07" || $order_reason_kbn == "28")) {
+              $json_list["error_msg"] = "不要品返却の発注が登録されていた為、操作を完了できませんでした。不要品返却の発注を削除してから再度登録して下さい。";
+//              array_push($json_list["error_msg"], $error_msg);
+              echo json_encode($json_list);
+              return;
+          }
+          if ($order_sts_kbn == "3" || $order_sts_kbn == "4") {
+              $json_list["error_msg"] = "交換の発注が登録されていた為、操作を完了できませんでした。交換の発注を削除してから再度登録して下さい。";
+//              array_push($json_list["error_msg"], $error_msg);
+              echo json_encode($json_list);
+              return;
+          }
       }
-      if ($order_sts_kbn == "2" && ($order_reason_kbn == "05" || $order_reason_kbn == "06" || $order_reason_kbn == "08" || $order_reason_kbn == "20")) {
-        $json_list["err_cd"] = "1";
-        $error_msg = "貸与終了の発注が入力されています。".PHP_EOL."職種変更または異動を行う場合は貸与終了の発注をキャンセルしてください。";
-        $json_list["err_msg"] = $error_msg;
-      }
-      if ($order_sts_kbn == "2" && $order_reason_kbn == "07") {
-        $json_list["err_cd"] = "1";
-        $error_msg = "不要品返却の発注が入力されています。".PHP_EOL."職種変更または異動を行う場合は不要品返却の発注をキャンセルしてください。";
-        $json_list["err_msg"] = $error_msg;
-      }
-      if ($order_sts_kbn == "3" || $order_sts_kbn == "4") {
-        $json_list["err_cd"] = "1";
-        $error_msg = "交換の発注が入力されています。".PHP_EOL."職種変更または異動を行う場合は交換の発注をキャンセルしてください。";
-        $json_list["err_msg"] = $error_msg;
-      }
-    }
   }
 
 
@@ -1015,11 +1021,11 @@ $app->post('/wearer_change/order_check', function ()use($app){
     }
   }
   //出荷情報が0な時点で未出荷があるとみなし、未出荷エラー
-  if($results_cnt_ship_item == 0){
-    $json_list["err_cd"] = "1";
-    $error_msg = "対象の方は未出荷の商品がある為、職種変更または異動の発注はできません。";
-    $json_list["err_msg"] = $error_msg;
-  }
+//  if($results_cnt_ship_item == 0){
+//    $json_list["error_code"] = "1";
+//    $error_msg = "対象の方は未出荷の商品がある為、職種変更または異動の発注はできません。";
+//    $json_list["error_msg"] = $error_msg;
+//  }
   //出荷情報が1以上あった場合に、下記の処理に移行
   if($results_cnt_ship_item > 0) {
     $count_ship = count($ship_item_list);
@@ -1036,9 +1042,9 @@ $app->post('/wearer_change/order_check', function ()use($app){
       }
       //未出荷商品が0以上または、発注情報があるのに、出荷情報（発注状況）がない場合はエラー
       if($order_item_list[$i]['unshipped_qty'] > 0 || is_null($order_item_list[$i]['unshipped_qty'])){
-        $json_list["err_cd"] = "1";
+        $json_list["error_code"] = "1";
         $error_msg = "対象の方は未出荷の商品がある為、職種変更または異動の発注はできません。";
-        $json_list["err_msg"] = $error_msg;
+        $json_list["error_msg"] = $error_msg;
       }
     }
   }
@@ -1062,9 +1068,9 @@ $app->post('/wearer_change/order_check', function ()use($app){
     $result_obj = (array)$results;
     $results_cnt = $result_obj["\0*\0_count"];
     if ($results_cnt > 0) {
-        $json_list["err_cd"] = "1";
+        $json_list["error_code"] = "1";
         $error_msg = "対象の方は未受領の商品がある為、職種変更または異動の発注はできません。";
-        $json_list["err_msg"] = $error_msg;
+        $json_list["error_msg"] = $error_msg;
     }
 
   //ChromePhp::LOG($json_list);

@@ -39,7 +39,7 @@ $app->post('/agreement_no_change', function ()use($app){
     $arg_str .= ' FROM ';
     $arg_str .= '(SELECT distinct on (m_contract.rntl_cont_no) ';
     $arg_str .= 'm_contract.rntl_cont_no as as_rntl_cont_no,';
-    $arg_str .= 'm_contract.rntl_cont_name as as_rntl_cont_name';
+    $arg_str .= 'm_contract.rntl_emply_cont_name as as_rntl_cont_name';
     $arg_str .= ' FROM m_contract LEFT JOIN';
     $arg_str .= ' (m_contract_resource INNER JOIN m_account ON m_contract_resource.accnt_no = m_account.accnt_no)';
     $arg_str .= ' ON m_contract.corporate_id = m_contract_resource.corporate_id';
@@ -466,6 +466,10 @@ $app->post('/section_change', function ()use($app){
         }
     }
 
+    if(count($all_list)==1){
+        //1件だったら非活性
+        $json_list['section_disabled'] = 'disabled';
+    }
     $json_list['section_list'] = $all_list;
     echo json_encode($json_list);
 });
@@ -539,6 +543,10 @@ $app->post('/job_type_change', function ()use($app){
       array_push($all_list, $list);
     }
 
+    if(count($all_list)==1){
+        //1件だったら非活性
+        $json_list['job_type_disabled'] = 'disabled';
+    }
     $json_list['job_type_list'] = $all_list;
     echo json_encode($json_list);
 });
@@ -594,14 +602,18 @@ $app->post('/shipment_change', function ()use($app){
     	);
       $paginator = $paginator_model->getPaginate();
   		$results = $paginator->items;
-
-      // 拠点にあわせる選択肢
-      $list['ship_to_cd'] = "0";
-      $list['ship_to_brnch_cd'] = "0";
-      $list['cust_to_brnch_name1'] = "拠点と同じ";
-      $list['cust_to_brnch_name2'] = "";
-      $list['selected'] = "";
-      array_push($all_list, $list);
+        if($results_cnt > 1){
+            // 拠点にあわせる選択肢
+            $list['ship_to_cd'] = "0";
+            $list['ship_to_brnch_cd'] = "0";
+            $list['cust_to_brnch_name1'] = "拠点と同じ";
+            $list['cust_to_brnch_name2'] = "";
+            $list['selected'] = "";
+            array_push($all_list, $list);
+        }else{
+            //1件だったら非活性
+            $json_list['ship_disabled'] = 'disabled';
+        }
 
       foreach ($results as $result) {
         $list['ship_to_cd'] = $result->ship_to_cd;
