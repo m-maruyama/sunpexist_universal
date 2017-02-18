@@ -365,6 +365,9 @@ define([
 					var list_cnt = $("input[name='list_cnt']").val();
 					var item = new Object();
 					for (var i=0; i<list_cnt; i++) {
+						if($("input[name='order_num"+i+"']").val()==0){
+							continue;
+						}
 						item[i] = new Object();
 						item[i]["rntl_sect_cd"] = $("input[name='rntl_sect_cd"+i+"']").val();
 						item[i]["job_type_cd"] = $("input[name='job_type_cd"+i+"']").val();
@@ -446,6 +449,9 @@ define([
 					var list_cnt = $("input[name='list_cnt']").val();
 					var item = new Object();
 					for (var i=0; i<list_cnt; i++) {
+						if($("input[name='order_num"+i+"']").val()==0){
+							continue;
+						}
 						item[i] = new Object();
 						item[i]["rntl_sect_cd"] = $("input[name='rntl_sect_cd"+i+"']").val();
 						item[i]["job_type_cd"] = $("input[name='job_type_cd"+i+"']").val();

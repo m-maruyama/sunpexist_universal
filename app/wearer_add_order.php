@@ -573,22 +573,21 @@ $app->post('/wearer_add/info', function ()use($app){
      //ChromePhp::LOG($results);
      $arr_num = 0;
      $list_cnt = 1;
-     foreach ($results as $result) {
+       $rowspan = '';
        // 商品情報取得
+       $all_list = array();
+       $list = array();
        $query_list = array();
        array_push($query_list, "m_job_type.corporate_id = '".$auth['corporate_id']."'");
        array_push($query_list, "m_job_type.rntl_cont_no = '".$wearer_other_post['rntl_cont_no']."'");
        array_push($query_list, "m_job_type.job_type_cd = '".$wearer_other_post['job_type_cd']."'");
-       array_push($query_list, "m_item.item_cd = '".$result->as_order_item_cd."'");
-       array_push($query_list, "m_item.color_cd= '".$result->as_order_color_cd."'");
-       array_push($query_list, "m_item.size_cd= '".$result->as_order_size_cd."'");
        $query = implode(' AND ', $query_list);
 
        $arg_str = "";
        $arg_str = "SELECT ";
        $arg_str .= " * ";
        $arg_str .= " FROM ";
-       $arg_str .= "(SELECT distinct on (m_item.item_cd, m_item.color_cd, m_item.size_cd,m_input_item.job_type_item_cd) ";
+       $arg_str .= "(SELECT distinct on (m_item.item_cd, m_item.color_cd, m_input_item.job_type_item_cd) ";
        $arg_str .= "m_item.item_cd as as_item_cd,";
        $arg_str .= "m_item.color_cd as as_color_cd,";
        $arg_str .= "m_item.size_cd as as_size_cd,";
@@ -616,18 +615,7 @@ $app->post('/wearer_add/info', function ()use($app){
        $result_obj = (array)$item_results;
        $results_cnt = $result_obj["\0*\0_count"];
        if (!empty($results_cnt)) {
-         $paginator_model = new PaginatorModel(
-             array(
-                 "data"  => $item_results,
-                 "limit" => 1,
-                 "page" => 1
-             )
-         );
-         $paginator = $paginator_model->getPaginate();
-         $item_results = $paginator->items;
          //ChromePhp::LOG("発注情報トラン商品一覧仮リスト");
-         //ChromePhp::LOG($results);
-           $rowspan = '';
          foreach ($item_results as $item_result) {
            // name属性用カウント値
            $list["arr_num"] = $arr_num++;
@@ -708,49 +696,59 @@ $app->post('/wearer_add/info', function ()use($app){
            $arg_str .= $query;
            $arg_str .= " ORDER BY size_cd_display_order ASC";//サイズコード表示順
            $m_item = new MItem();
-           $m_item_results = new Resultset(NULL, $m_item, $m_item->getReadConnection()->query($arg_str));
-           $result_obj = (array)$m_item_results;
+           $m_size_results = new Resultset(NULL, $m_item, $m_item->getReadConnection()->query($arg_str));
+           $result_obj = (array)$m_size_results;
            $results_cnt = $result_obj["\0*\0_count"];
            $results_rows = $result_obj["\0*\0_rows"];
            //ChromePhp::LOG($results_rows);
            //ChromePhp::LOG($list["order_size_cd"]);
-           if (!empty($results_cnt)) {
+
              $paginator_model = new PaginatorModel(
                  array(
-                     "data"  => $m_item_results,
+                     "data" => $m_size_results,
                      "limit" => $results_cnt,
                      "page" => 1
                  )
              );
              $paginator = $paginator_model->getPaginate();
-             $m_item_results = $paginator->items;
-             foreach ($m_item_results as $m_item_result) {
-               $element["size"] = $m_item_result->size_cd;
-               // 初期選択設定
-               if ($element["size"] === $result->as_order_size_cd) {
-                 $element["selected"] = "selected";
-               } else {
-                 $element["selected"] = "";
-               }
+             $m_size_results = $paginator->items;
 
-               array_push($list["size_cd"], $element);
+             $list["order_num"] = "0";
+             $size_tran = '';
+                 foreach ($results as $result) {
+                     if (($result->as_order_item_cd == $item_result->as_item_cd) &&
+                         ($result->as_order_color_cd == $item_result->as_color_cd)
+                     ) {
+                         // 初期選択設定
+                             $size_tran = $result->as_order_size_cd;
+
+                         // 発注枚数
+                         if (!empty($result->as_order_qty)) {
+                             $list["order_num"] = $result->as_order_qty;
+                         }
+                     }
+                 }
+             array_push($list["size_cd"], '');
+             foreach ($m_size_results as $m_size_result) {
+                 $element["size"] = $m_size_result->size_cd;
+                 // 初期選択設定
+                 if ($size_tran==$element["size"]) {
+                     $element["selected"] = "selected";
+                 } else {
+                     $element["selected"] = "";
+                 }
+                 //トラン情報を上書き
+                 array_push($list["size_cd"], $element);
              }
-           }
-           // 発注枚数
-           if (!empty($result->as_order_qty)) {
-             $list["order_num"] = $result->as_order_qty;
-           } else {
-             $list["order_num"] = "";
-           }
            // 発注枚数（単一選択=入力不可、複数選択=入力可）
-           if ($list["choice_type"] == "1") {
-             $list["order_num_disable"] = "disabled";
-           } else {
-             $list["order_num_disable"] = "";
-           }
-           // 返却枚数
-           $list["return_num"] = "-";
-           $list["return_num_disable"] = "disabled";
+//           if ($list["choice_type"] == "1") {
+//             $list["order_num_disable"] = "disabled";
+//           } else {
+//             $list["order_num_disable"] = "";
+//           }
+//           // 返却枚数
+//           $list["return_num"] = "-";
+//           $list["return_num_disable"] = "disabled";
 
            //--その他の必要hiddenパラメータ--//
            // 部門コード
@@ -760,9 +758,19 @@ $app->post('/wearer_add/info', function ()use($app){
            // 職種アイテムコード
            $list["job_type_item_cd"] = $item_result->as_job_type_item_cd;
 
-           array_push($all_list, $list);
-         }
+
+             array_push($all_list, $list);
        }
+           // 発注総枚数
+           $json_list["sum_num"] = array();
+           $list["sum_order_num"] = '';
+           if (!empty($all_list)) {
+               $list["sum_order_num"] = 0;
+               foreach ($all_list as $all_map) {
+                   $list["sum_order_num"] += $all_map["order_num"];
+               }
+           }
+           array_push($json_list["sum_num"], $list);
      }
    } else {
      // 発注情報トランに情報が存在しない場合、こちらで商品一覧生成
@@ -915,23 +923,25 @@ $app->post('/wearer_add/info', function ()use($app){
            $paginator = $paginator_model->getPaginate();
            $m_item_results = $paginator->items;
            //ChromePhp::LOG($results);
+             array_push($list["size_cd"], '');
            foreach ($m_item_results as $m_item_result) {
              $element["size"] = $m_item_result->size_cd;
              $element["selected"] = "";
              array_push($list["size_cd"], $element);
            }
          }
+         $list["order_num"] = 0;
          // 発注枚数
-         $list["order_num"] = $result->as_std_input_qty;
+//         $list["order_num"] = $result->as_std_input_qty;
          // 発注枚数（単一選択=入力不可、複数選択=入力可）
-         if ($list["choice_type"] == "1") {
-           $list["order_num_disable"] = "disabled";
-         } else {
-           $list["order_num_disable"] = "";
-         }
-         // 返却枚数
-         $list["return_num"] = "-";
-         $list["return_num_disable"] = "disabled";
+//         if ($list["choice_type"] == "1") {
+//           $list["order_num_disable"] = "disabled";
+//         } else {
+//           $list["order_num_disable"] = "";
+//         }
+//         // 返却枚数
+//         $list["return_num"] = "-";
+//         $list["return_num_disable"] = "disabled";
 
          //--その他の必要hiddenパラメータ--//
          // 部門コード
@@ -944,18 +954,19 @@ $app->post('/wearer_add/info', function ()use($app){
          array_push($all_list, $list);
        }
      }
+
+       // 発注総枚数
+       $json_list["sum_num"] = array();
+       $list["sum_order_num"] = '';
+       if (!empty($all_list)) {
+           $list["sum_order_num"] = 0;
+//           foreach ($all_list as $all_map) {
+//               $list["sum_order_num"] += $all_map["std_input_qty"];
+//           }
+       }
+       array_push($json_list["sum_num"], $list);
    }
 
-   // 発注総枚数
-   $json_list["sum_num"] = array();
-   $list["sum_order_num"] = '';
-   if (!empty($all_list)) {
-     $list["sum_order_num"] = 0;
-     foreach ($all_list as $all_map) {
-       $list["sum_order_num"] += $all_map["std_input_qty"];
-     }
-   }
-   array_push($json_list["sum_num"], $list);
 
    // 商品リスト件数による一覧表示制御
    $json_list["list_disp_flg"] = true;

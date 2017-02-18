@@ -29,6 +29,7 @@ define([
 			},
 			ui: {
 				'order_count': '#order_count',
+				'order_num': '.order_num',
 			},
 			bindings: {
 				'#order_count': 'order_count',
@@ -63,6 +64,23 @@ define([
 				});
 			},
 			events: {
+				'change @ui.order_num': function(e) {
+					e.preventDefault();
+					var that = this;
+					var order_num = parseInt(e.target.value);
+					if(isNaN(order_num)){
+						order_num = 0;
+					}
+					$("#"+e.target.id).val(order_num);
+
+					var order_count = parseInt(0);
+					$(".order_num").each(function () {
+						if ($(this).val()) {
+							order_count += parseInt($(this).val());
+						}
+					});
+					$("input[name='order_count']").val(order_count);
+				},
 			},
 		});
 	});
