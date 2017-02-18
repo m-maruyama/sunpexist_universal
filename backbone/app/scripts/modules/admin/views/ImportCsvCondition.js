@@ -110,7 +110,6 @@ define([
               // エレメントの内容をテキストとして取得する
               var str_text = ElementGetTextContent(html_element);
               // 処理結果内容を取得(JSONデコード)
-              console.log(str_text);
               var response = JSON.parse(str_text);
 
               if (response["error_code"] == "1") {
