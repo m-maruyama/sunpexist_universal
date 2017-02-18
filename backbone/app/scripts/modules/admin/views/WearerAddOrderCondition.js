@@ -365,7 +365,7 @@ define([
 					var list_cnt = $("input[name='list_cnt']").val();
 					var item = new Object();
 					for (var i=0; i<list_cnt; i++) {
-						if($("input[name='order_num"+i+"']").val()==0){
+						if($("input[name='order_num"+i+"']").val()==0&&!$("select[name='size_cd"+i+"']").val()){
 							continue;
 						}
 						item[i] = new Object();
