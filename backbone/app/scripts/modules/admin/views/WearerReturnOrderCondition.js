@@ -258,61 +258,24 @@ define([
 					var that = this;
 					var rntl_sect_cd = $("select[name='section']").val();
 					var rntl_cont_no = $("select[name='agreement_no']").val();
-
-					var data = {
-						"rntl_cont_no": rntl_cont_no,
-						"werer_cd": $("#werer_cd").val(),
-					};
-					// 発注入力遷移前に発注NGパターンチェック実施
-					var modelForUpdate = this.model;
-					modelForUpdate.url = App.api.WR0013;
+					var modelForUpdate = that.model;
+					modelForUpdate.url = App.api.CM0130;
 					var cond = {
-						"scr": 'その他貸与/返却(不要品返却)-発注NGパターンチェック',
-						"log_type": '3',
-						"data": data
+						"scr": '不要品返却-発注送信-更新可否チェック',
+						"log_type": '1',
+						"rntl_sect_cd": rntl_sect_cd,
+						"rntl_cont_no": rntl_cont_no
 					};
 					modelForUpdate.fetchMx({
 						data:cond,
 						success:function(res){
+							var type = "cm0130_res";
 							var res_val = res.attributes;
-							if (res_val["err_cd"] == "0") {
-								var modelForUpdate = that.model;
-								modelForUpdate.url = App.api.CM0130;
-								var cond = {
-									"scr": '不要品返却-発注送信-更新可否チェック',
-									"log_type": '1',
-									"rntl_sect_cd": rntl_sect_cd,
-									"rntl_cont_no": rntl_cont_no
-								};
-								modelForUpdate.fetchMx({
-									data:cond,
-									success:function(res){
-										var type = "cm0130_res";
-										var res_val = res.attributes;
-										var transition = "WR0023_req";
-										var data = "";
-										that.onShow(res_val, type, transition, data);
-									}
-								});
-							} else {
-								// JavaScript モーダルで表示
-								//$('#myModal_alert').modal('show');
-								var data = {
-									error_msg:res_val["err_msg"]
-								};
-								that.triggerMethod('inputComplete', data);
-								//document.getElementById("alert_txt").innerHTML=res_val["err_msg"];
-								// NGエラーアラート表示
-								//alert(res_val["err_msg"]);
-								return true;
-							}
+							var transition = "WR0023_req";
+							var data = "";
+							that.onShow(res_val, type, transition, data);
 						}
 					});
-
-
-
-
-
 				}
 			},
 			onShow: function(val, type, transition, data) {

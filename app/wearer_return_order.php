@@ -1552,6 +1552,7 @@ $app->post('/wearer_return/complete', function ()use($app){
          }
        }
      }
+
      if (empty($json_list["error_code"]) && empty($json_list["error_msg"])) {
        $sum_possible_num = 0;
        $sum_return_num = 0;
@@ -1582,14 +1583,76 @@ $app->post('/wearer_return/complete', function ()use($app){
          $error_msg = "１つ以上の商品の返却枚数を指定してから登録を行ってください。";
          array_push($json_list["error_msg"], $error_msg);
        }
-       /*
-       if ($sum_possible_num <= $sum_return_num) {
-         $json_list["error_code"] = "1";
-         $error_msg = "現在所持している商品を全て返却することはできません。";
-         array_push($json_list["error_msg"], $error_msg);
-       }
-       */
      }
+     //サイズ交換 その他交換
+    if (empty($json_list["error_code"]) && empty($json_list["error_msg"])) {
+        if (individual_flg($auth['corporate_id'], $wearer_other_post['rntl_cont_no']) == "1") {
+            foreach ($item_list as $item_map) {
+                foreach ($item_map["individual_data"] as $individual_data) {
+                    if($individual_data['target_flg'] == 1){
+                        $query_list = array();
+                        array_push($query_list, "corporate_id = '" . $auth['corporate_id'] . "'");
+                        array_push($query_list, "rntl_cont_no = '" . $wearer_other_post['rntl_cont_no'] . "'");
+                        array_push($query_list, "werer_cd = '" . $wearer_other_post['werer_cd'] . "'");
+                        //商品情報
+                        array_push($query_list, "item_cd = '" . $item_map['item_cd'] . "'");
+                        array_push($query_list, "color_cd = '" . $item_map['color_cd'] . "'");
+                        array_push($query_list, "individual_ctrl_no = '" . $individual_data['individual_ctrl_no'] . "'");
+                        //発注状況区分
+                        array_push($query_list, "(order_sts_kbn = '3' OR order_sts_kbn = '4')");//サイズ交換のトラン
+                        //sql文字列を' AND 'で結合
+                        $query = implode(' AND ', $query_list);
+                        //--- クエリー実行・取得 ---//
+                        $t_rtn_tran_count = TReturnedPlanInfoTran::find(array(
+                        'conditions' => $query
+                        ))->count();
+
+                        if ($t_rtn_tran_count > 0) {
+                            $json_list["error_code"] = "1";
+                            $error_msg = $item_map['item_cd'] . "-" . $item_map['color_cd'] . "の個体管理番号:" . $individual_data['individual_ctrl_no'] . "は既にサイズ交換またはその他交換の発注がされています。";
+                            array_push($json_list["error_msg"], $error_msg);
+                        }
+                    }
+                }
+            }
+        }
+
+
+        //その他交換、サイズ交換、発注のチェック 個なし
+        if (individual_flg($auth['corporate_id'], $wearer_other_post['rntl_cont_no']) == "0") {
+            foreach ($item_list as $item_map) {
+                $query_list = array();
+                array_push($query_list, "corporate_id = '" . $auth['corporate_id'] . "'");
+                array_push($query_list, "rntl_cont_no = '" . $wearer_other_post['rntl_cont_no'] . "'");
+                array_push($query_list, "werer_cd = '" . $wearer_other_post['werer_cd'] . "'");
+                //商品情報
+                array_push($query_list, "item_cd = '" . $item_map['item_cd'] . "'");
+                array_push($query_list, "color_cd = '" . $item_map['color_cd'] . "'");
+                //発注状況区分
+                array_push($query_list, "(order_sts_kbn = '3' OR order_sts_kbn = '4')");//サイズ交換のトラン
+
+                //sql文字列を' AND 'で結合
+                $query = implode(' AND ', $query_list);
+                //--- クエリー実行・取得 ---//
+                $t_order_tran_items = TOrderTran::find(array(
+                'conditions' => $query
+                ));
+                $t_order_tran_count = $t_order_tran_items->count();
+                if ($t_order_tran_count > 0) {
+                    foreach ($t_order_tran_items as $t_order_tran_item) {
+                        // 所持枚数
+                        $item_map["possible_num"] = $item_map["quantity"] - $t_order_tran_item->order_qty;
+                    }
+                }
+
+                if ($item_map["possible_num"] < 0) {
+                    $json_list["error_code"] = "1";
+                    $error_msg = $item_map['item_cd']."-".$item_map['color_cd']."は既に交換可能枚数を超える、サイズ交換またはその他交換の発注がされています。";
+                    array_push($json_list["error_msg"], $error_msg);
+                }
+            }
+        }
+    }
 
      echo json_encode($json_list);
    } else if ($mode == "update") {

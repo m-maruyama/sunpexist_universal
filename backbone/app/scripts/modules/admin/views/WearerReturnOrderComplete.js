@@ -46,7 +46,6 @@ define([
 
 				var that = this;
 				var data = this.options.data;
-				console.log(data);
 				var scr = data["scr"];
 				var mode = data["mode"];
 				var wearer_data = data["wearer_data"];
@@ -54,7 +53,7 @@ define([
 				var check = {
 					"rntl_cont_no": data["wearer_data"]["agreement_no"],
 					"werer_cd": data["wearer_data"]["werer_cd"]
-				}
+				};
 
 				// 発注入力遷移前に発注NGパターンチェック実施
 				var modelForUpdate = this.model;
@@ -92,12 +91,13 @@ define([
 								}
 							});
 						} else {
+							//職種変更または異動、貸与終了があった時のエラー出力
 							$("#h").text('');
 							$(".explanation").text('');
 							that.triggerMethod('showAlerts', res_val.err_msg);
 							$(".list-group").append('<li class="list-group-item list-group-item-danger"><span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span><span class="sr-only">Error:</span><span class="text"></span></li>');
 							$(".text").text(res_val.err_msg);
-							return;
+							return true;
 						}
 					}
 				});
