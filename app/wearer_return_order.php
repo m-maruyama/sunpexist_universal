@@ -1621,6 +1621,7 @@ $app->post('/wearer_return/complete', function ()use($app){
         //その他交換、サイズ交換、発注のチェック 個なし
         if (individual_flg($auth['corporate_id'], $wearer_other_post['rntl_cont_no']) == "0") {
             foreach ($item_list as $item_map) {
+                ChromePhp::log($item_map);
                 $query_list = array();
                 array_push($query_list, "corporate_id = '" . $auth['corporate_id'] . "'");
                 array_push($query_list, "rntl_cont_no = '" . $wearer_other_post['rntl_cont_no'] . "'");
@@ -1641,10 +1642,9 @@ $app->post('/wearer_return/complete', function ()use($app){
                 if ($t_order_tran_count > 0) {
                     foreach ($t_order_tran_items as $t_order_tran_item) {
                         // 所持枚数
-                        $item_map["possible_num"] = $item_map["quantity"] - $t_order_tran_item->order_qty;
+                        $item_map["possible_num"] = $item_map["possible_num"] - $item_map["return_num"] - $t_order_tran_item->order_qty;
                     }
                 }
-
                 if ($item_map["possible_num"] < 0) {
                     $json_list["error_code"] = "1";
                     $error_msg = $item_map['item_cd']."-".$item_map['color_cd']."は既に交換可能枚数を超える、サイズ交換またはその他交換の発注がされています。";
