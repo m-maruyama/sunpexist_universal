@@ -18,6 +18,50 @@ $app->post('/import_csv', function () use ($app) {
     // アカウントセッション情報取得
     $auth = $app->session->get("auth");
 
+    //契約リソースマスタゼロ埋め
+    //（前処理）契約リソースマスタ参照、拠点コード「0」埋めデータ確認
+
+    $query_list = array();
+    $list = array();
+    $all_list = array();
+    $query_list[] = "corporate_id = '".$auth["corporate_id"]."'";
+    $query_list[] = "rntl_cont_no = '".$auth['rntl_cont_no']."'";
+    $query_list[] = "accnt_no = '".$auth["accnt_no"]."'";
+    $query = implode(' AND ', $query_list);
+
+    $arg_str = '';
+    $arg_str .= 'SELECT ';
+    $arg_str .= ' distinct on (rntl_sect_cd) *';
+    $arg_str .= ' FROM ';
+    $arg_str .= 'm_contract_resource';
+    $arg_str .= ' WHERE ';
+    $arg_str .= $query;
+    $m_contract_resource = new MContractResource();
+    $results = new Resultset(null, $m_contract_resource, $m_contract_resource->getReadConnection()->query($arg_str));
+    $results_array = (array) $results;
+    $results_cnt = $results_array["\0*\0_count"];
+    if ($results_cnt > 0) {
+        $paginator_model = new PaginatorModel(
+        array(
+        "data"  => $results,
+        "limit" => $results_cnt,
+        "page" => 1
+        )
+        );
+        $paginator = $paginator_model->getPaginate();
+        $results = $paginator->items;
+        foreach ($results as $result) {
+            $all_list[] = $result->rntl_sect_cd;
+        }
+    }
+    if (in_array("0000000000", $all_list)) {
+        $section_all_zero_flg = true;
+    } else {
+        $section_all_zero_flg = false;
+    }
+
+    ChromePhp::log($section_all_zero_flg);
+
     $json_list = array();
     $error_list = array();
     $query_list = array();
@@ -510,6 +554,96 @@ $app->post('/import_csv', function () use ($app) {
             }
         }
     }
+    //発注 貸与開始と着用者登録のみは、取込ファイル内の拠点が契約リソースマスタのアカウントに紐づく、データがあるか確認
+    if(!$section_all_zero_flg){
+        $accnt_no = $auth["accnt_no"];
+        $arg_str11 = "";
+        $arg_str11 .= "SELECT *";
+        $arg_str11 .= " FROM ";
+        $arg_str11 .= "(SELECT * FROM t_import_job WHERE job_no = '" . $job_no . "' AND (order_kbn = '1' OR order_kbn = '0')) AS T1";
+        $arg_str11 .= " WHERE NOT EXISTS ";
+        $arg_str11 .= "(SELECT ";
+        $arg_str11 .= " * ";
+        $arg_str11 .= " FROM (SELECT * FROM m_contract_resource WHERE corporate_id = '$corporate_id' AND rntl_cont_no = '$agreement_no' AND accnt_no = '$accnt_no') AS T2 ";
+        $arg_str11 .= "WHERE T2.rntl_sect_cd = T1.rntl_sect_cd)";
+        $results11 = new Resultset(null, $t_import_job, $t_import_job->getReadConnection()->query($arg_str11));
+        $result_obj11 = (array)$results11;
+        $results_cnt11 = $result_obj11["\0*\0_count"];
+        if (!empty($results_cnt11)) {
+            $results_count = (count($results11));
+            $paginator_model = new PaginatorModel(
+            array(
+            'data' => $results11,
+            'limit' => $results_count,
+            "page" => 1
+            )
+            );
+            $paginator = $paginator_model->getPaginate();
+            $results = $paginator->items;
+            foreach ($results as $result) {
+                if (count($error_list) < 20) {
+                    $error_list[] = $result->line_no . '行目の支店コードはログインしているアカウントでは使用できません。';
+                } else {
+                    $json_list['errors'] = $error_list;
+                    $json_list["error_code"] = "1";
+                    echo json_encode($json_list);
+                    return;
+                }
+            }
+        }
+    }
+
+    //発注 貸与開始と着用者登録のみは、取込ファイル内の拠点が契約リソースマスタのアカウントに紐づく、データがあるか確認
+    if(!$section_all_zero_flg){
+        $accnt_no = $auth["accnt_no"];
+        $arg_str11 = "";
+        $arg_str11 .= "SELECT *";
+        $arg_str11 .= " FROM ";
+        $arg_str11 .= "(SELECT rntl_sect_cd FROM m_wearer_std ";
+        $arg_str11 .= "WHERE corporate_id = '$corporate_id' AND rntl_cont_no = '$agreement_no' AND werer_cd = (SELECT werer_cd FROM t_import_job WHERE job_no = '" . $job_no . "' AND order_kbn = '5')) AS T1";
+        $arg_str11 .= " WHERE NOT EXISTS ";
+        $arg_str11 .= "(SELECT ";
+        $arg_str11 .= " * ";
+        $arg_str11 .= " FROM (SELECT * FROM m_contract_resource WHERE corporate_id = '$corporate_id' AND rntl_cont_no = '$agreement_no' AND accnt_no = '$accnt_no') as T2 ";
+        $arg_str11 .= "WHERE T2.rntl_sect_cd = T1.rntl_sect_cd)";
+        $results11 = new Resultset(null, $t_import_job, $t_import_job->getReadConnection()->query($arg_str11));
+        $result_obj11 = (array)$results11;
+        $results_cnt11 = $result_obj11["\0*\0_count"];
+        if (!empty($results_cnt11)) {
+            $results_count = (count($results11));
+            $paginator_model = new PaginatorModel(
+            array(
+            'data' => $results11,
+            'limit' => $results_count,
+            "page" => 1
+            )
+            );
+            $paginator = $paginator_model->getPaginate();
+            $results = $paginator->items;
+            foreach ($results as $result) {
+                if (count($error_list) < 20) {
+                    $error_list[] = $result->line_no . '行目の支店コードはログインしているアカウントでは使用できません。';
+                } else {
+                    $json_list['errors'] = $error_list;
+                    $json_list["error_code"] = "1";
+                    echo json_encode($json_list);
+                    return;
+                }
+            }
+        }
+    }
+
+
+
+
+
+
+
+
+
+
+
+
     //マスターチェック3 職種マスタの検索条件
     $arg_str3 = "SELECT ";
     $arg_str3 .= " * ";
@@ -617,15 +751,17 @@ $app->post('/import_csv', function () use ($app) {
             }
         }
     }
+
     //C-3-5 社員コードごとのお客様発注no(emply_order_req_no)の重複 検索条件
     $arg_str8 = "SELECT ";
     $arg_str8 .= " * ";
-    $arg_str8 .= " FROM t_import_job";
+    $arg_str8 .= " FROM (SELECT * FROM t_import_job WHERE emply_order_req_no != '' AND emply_order_req_no IS NOT NULL) as T1";//お客様発注no
     $arg_str8 .= " WHERE job_no = '" . $job_no . "' AND (cster_emply_cd,emply_order_req_no) IN(";
     $arg_str8 .= "SELECT cster_emply_cd,emply_order_req_no ";
     $arg_str8 .= "FROM t_import_job ";
     $arg_str8 .= "GROUP by cster_emply_cd,emply_order_req_no ";
     $arg_str8 .= "HAVING count(*) > 1 ) ";
+    //ChromePhp::log($arg_str8);
     $results8 = new Resultset(null, $t_import_job, $t_import_job->getReadConnection()->query($arg_str8));
     $result_obj8 = (array)$results8;
     $results_cnt8 = $result_obj8["\0*\0_count"];
@@ -654,8 +790,8 @@ $app->post('/import_csv', function () use ($app) {
     //C-3-9 お客様発注Noが発注情報、発注情報トランに存在しないこと
     $arg_str9 = "SELECT ";
     $arg_str9 .= " * ";
-    $arg_str9 .= " FROM ";
-    $arg_str9 .= "(SELECT * FROM t_import_job WHERE job_no = '" . $job_no . "') AS T1";
+    $arg_str9 .= " FROM ";//(SELECT * FROM t_import_job WHERE emply_order_req_no != '' AND emply_order_req_no IS NOT NULL) as T1
+    $arg_str9 .= "(SELECT * FROM t_import_job WHERE emply_order_req_no != '' AND emply_order_req_no IS NOT NULL AND job_no = '" . $job_no . "') AS T1";
     $arg_str9 .= " WHERE EXISTS ";
     $arg_str9 .= "(SELECT * FROM t_order AS T2 ";
     $arg_str9 .= "WHERE emply_order_req_no = T1.emply_order_req_no) ";
@@ -782,7 +918,7 @@ $app->post('/import_csv', function () use ($app) {
             $error_list[] = '発注番号' . $check_order_req_no . 'の貸与パターンに対する商品指定数が不正です。';
         }
     }
-
+    ChromePhp::log($error_list);
     // マスターチェック処理で異常が発生した場合、以降処理せず終了
     if (!empty($error_list)) {
         $json_list['errors'] = $error_list;
@@ -896,6 +1032,14 @@ $app->post('/import_csv', function () use ($app) {
     //$json_list["time"] = $time;
     //echo json_encode($json_list);
     //exit;
+
+    // マスターチェック処理で異常が発生した場合、以降処理せず終了
+    if (!empty($error_list)) {
+        $json_list['errors'] = $error_list;
+        $json_list["error_code"] = "1";
+        echo json_encode($json_list);
+        return;
+    }
 
     //--各トラン情報登録処理--ここから//
     $t_import_job = new TImportJob();
@@ -1226,7 +1370,13 @@ $app->post('/import_csv', function () use ($app) {
                 $values_list[] = "null";
                 $values_list[] = "'" . $result->ship_to_cd . "'";
                 $values_list[] = "'" . $result->ship_to_brnch_cd . "'";
-                $values_list[] = $result->quantity;
+                if(empty($result->quantity)){
+                    //移動の場合は、0
+                    $values_list[] = 0;
+                }else{
+                    //貸与開始の場合は数字を入れる
+                    $values_list[] = $result->quantity;
+                }
                 $values_list[] = "'" . $result->message . "'";
                 $values_list[] = "'" . $result->werer_name . "'";
                 $values_list[] = "'" . $result->cster_emply_cd . "'";
@@ -1390,6 +1540,7 @@ $app->post('/import_csv', function () use ($app) {
             $arg_str .= "(" . $calum_query . ")";
             $arg_str .= " VALUES ";
             $arg_str .= $values_query;
+            ChromePhp::log($arg_str);
             $results = new Resultset(NULL, $t_import_job, $t_import_job->getReadConnection()->query($arg_str));
         }
 
@@ -1398,7 +1549,6 @@ $app->post('/import_csv', function () use ($app) {
     } catch (Exception $e) {
         // トランザクション-ロールバック
         $transaction = new Resultset(NULL, $t_import_job, $t_import_job->getReadConnection()->query("rollback"));
-
         ChromePhp::log($e);
         $error_list[] = 'E002 取込処理中に予期せぬエラーが発生しました。';
         $json_list['errors'] = $error_list;
@@ -1798,7 +1948,6 @@ function input_check($line_list, $line_cnt)
     }
     //発注区分が貸与、異動の場合に必須
     if ($line_list[7] == '1' || $line_list[7] == '5') {
-        ChromePhp::log('koko');
         if (empty($line_list[6])) {
             if (count($error_list) < 20) {
                 $error_list[] = $line_cnt . '行目の着用開始日を入力してください。';
@@ -1871,21 +2020,22 @@ function input_check($line_list, $line_cnt)
             }
         }
     } elseif ($line_list[7] == '0' || $line_list[7] == '5') {
-
         $line_list[11] = 0;
     }
 
-    if (empty($line_list[13])) {
-        if (count($error_list) < 20) {
-            $error_list[] = $line_cnt . '行目の理由区分を入力してください。';
-        } else {
-            $json_list['errors'] = $error_list;
-            $json_list["error_code"] = "1";
-            echo json_encode($json_list);
-            exit;
+
+    if ($line_list[7] == '1' || $line_list[7] == '5') {
+        if (empty($line_list[13])) {
+            if (count($error_list) < 20) {
+                $error_list[] = $line_cnt . '行目の理由区分を入力してください。';
+            } else {
+                $json_list['errors'] = $error_list;
+                $json_list["error_code"] = "1";
+                echo json_encode($json_list);
+                exit;
+            }
         }
     }
-
 
     //日本語文字数チェック
     //着用者漢字
