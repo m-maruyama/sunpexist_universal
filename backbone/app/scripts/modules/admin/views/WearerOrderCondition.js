@@ -308,6 +308,9 @@ define([
 								var add_list_cnt = $("input[name='add_list_cnt']").val();
 								var add_item = new Object();
 								for (var i = 0; i < add_list_cnt; i++) {
+									if(!$("input[name='add_order_num"+i+"']").val()&&!$("select[name='add_size_cd"+i+"']").val()){
+										continue;
+									}
 									add_item[i] = new Object();
 									add_item[i]["add_rntl_sect_cd"] = $("input[name='add_rntl_sect_cd" + i + "']").val();
 									add_item[i]["add_job_type_cd"] = $("input[name='add_job_type_cd" + i + "']").val();
@@ -419,6 +422,9 @@ define([
 								var add_list_cnt = $("input[name='add_list_cnt']").val();
 								var add_item = new Object();
 								for (var i=0; i<add_list_cnt; i++) {
+									if(!$("input[name='add_order_num"+i+"']").val()&&!$("select[name='add_size_cd"+i+"']").val()){
+										continue;
+									}
 									add_item[i] = new Object();
 									add_item[i]["add_rntl_sect_cd"] = $("input[name='add_rntl_sect_cd"+i+"']").val();
 									add_item[i]["add_job_type_cd"] = $("input[name='add_job_type_cd"+i+"']").val();
