@@ -1811,8 +1811,11 @@ $app->post('/wearer_change/info', function ()use($app){
        $query_list = array();
        array_push($query_list, "m_job_type.corporate_id = '".$auth['corporate_id']."'");
        array_push($query_list, "m_job_type.job_type_cd = '".$chk_map['job_type_cd']."'");
+       array_push($query_list, "m_job_type.rntl_cont_no = '".$wearer_chg_post['rntl_cont_no']."'");
        array_push($query_list, "m_input_item.job_type_cd = '".$chk_map['job_type_cd']."'");
        array_push($query_list, "m_input_item.item_cd = '".$chk_map['item_cd']."'");
+       array_push($query_list, "m_input_item.job_type_item_cd = '".$chk_map['job_type_item_cd']."'");
+
        $query = implode(' AND ', $query_list);
 
        $arg_str = "";
@@ -2061,6 +2064,7 @@ $app->post('/wearer_change/info', function ()use($app){
        array_push($query_list, "m_job_type.job_type_cd = '".$now_wearer_map['job_type_cd']."'");
        array_push($query_list, "m_input_item.job_type_cd = '".$now_wearer_map['job_type_cd']."'");
        array_push($query_list, "m_input_item.item_cd = '".$now_wearer_map['item_cd']."'");
+       array_push($query_list, "m_input_item.job_type_item_cd = '".$now_wearer_map['job_type_item_cd']."'");
        $query = implode(' AND ', $query_list);
 
        $arg_str = "";
@@ -2780,6 +2784,14 @@ $app->post('/wearer_change/complete', function ()use($app){
                array_push($json_list["error_msg"], $error_msg);
              }
            }
+             if ($add_item_input_map["add_std_input_qty"] > $item_sum_num) {
+                 if (empty($add_order_num_err3)) {
+                     $add_order_num_err3 = "err";
+                     $json_list["error_code"] = "1";
+                     $error_msg = "新たに追加されるアイテム：複数選択で発注枚数が足りない商品があります。";
+                     array_push($json_list["error_msg"], $error_msg);
+                 }
+             }
          }
        }
      }
@@ -4848,6 +4860,14 @@ $app->post('/wearer_change/send', function ()use($app){
               array_push($json_list["error_msg"], $error_msg);
             }
           }
+            if ($add_item_input_map["add_std_input_qty"] > $item_sum_num) {
+                if (empty($add_order_num_err3)) {
+                    $add_order_num_err3 = "err";
+                    $json_list["error_code"] = "1";
+                    $error_msg = "新たに追加されるアイテム：複数選択で発注枚数が足りない商品があります。";
+                    array_push($json_list["error_msg"], $error_msg);
+                }
+            }
         }
       }
     }

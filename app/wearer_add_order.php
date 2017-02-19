@@ -595,6 +595,7 @@ $app->post('/wearer_add/info', function ()use($app){
        $arg_str .= "m_input_item.job_type_item_cd as as_job_type_item_cd,";
        $arg_str .= "m_input_item.input_item_name as as_input_item_name,";
        $arg_str .= "m_input_item.std_input_qty as as_std_input_qty,";
+       $arg_str .= "m_input_item.job_type_item_cd as as_job_type_item_cd,";
        $arg_str .= "m_job_type.order_control_unit as as_order_control_unit";
        $arg_str .= " FROM ";
        $arg_str .= "m_job_type INNER JOIN m_input_item";
@@ -636,6 +637,7 @@ $app->post('/wearer_add/info', function ()use($app){
            array_push($query_list, "m_input_item.corporate_id = '".$auth['corporate_id']."'");
            array_push($query_list, "m_input_item.job_type_cd = '".$wearer_other_post["job_type_cd"]."'");
            array_push($query_list, "m_input_item.item_cd = '".$list["item_cd"]."'");
+           array_push($query_list, "m_input_item.job_type_item_cd = '".$item_result->as_job_type_item_cd."'");
            $query = implode(' AND ', $query_list);
 
            $arg_str = "";
@@ -715,19 +717,19 @@ $app->post('/wearer_add/info', function ()use($app){
 
              $list["order_num"] = "0";
              $size_tran = '';
-                 foreach ($results as $result) {
-                     if (($result->as_order_item_cd == $item_result->as_item_cd) &&
-                         ($result->as_order_color_cd == $item_result->as_color_cd)
-                     ) {
-                         // 初期選択設定
-                             $size_tran = $result->as_order_size_cd;
+             foreach ($results as $result) {
+                 if (($result->as_order_item_cd == $item_result->as_item_cd) &&
+                     ($result->as_order_color_cd == $item_result->as_color_cd)
+                 ) {
+                     // 初期選択設定
+                     $size_tran = $result->as_order_size_cd;
 
-                         // 発注枚数
-                         if (!empty($result->as_order_qty)) {
-                             $list["order_num"] = $result->as_order_qty;
-                         }
+                     // 発注枚数
+                     if (!empty($result->as_order_qty)) {
+                         $list["order_num"] = $result->as_order_qty;
                      }
                  }
+             }
              array_push($list["size_cd"], '');
              foreach ($m_size_results as $m_size_result) {
                  $element["size"] = $m_size_result->size_cd;
@@ -794,6 +796,7 @@ $app->post('/wearer_add/info', function ()use($app){
      $arg_str .= "m_input_item.job_type_item_cd as as_job_type_item_cd,";
      $arg_str .= "m_input_item.input_item_name as as_input_item_name,";
      $arg_str .= "m_input_item.std_input_qty as as_std_input_qty,";
+     $arg_str .= "m_input_item.job_type_item_cd as as_job_type_item_cd,";
      $arg_str .= "m_job_type.order_control_unit as as_order_control_unit";
      $arg_str .= " FROM ";
      $arg_str .= "m_job_type INNER JOIN m_input_item";
@@ -850,6 +853,7 @@ $app->post('/wearer_add/info', function ()use($app){
          array_push($query_list, "m_input_item.corporate_id = '".$auth['corporate_id']."'");
          array_push($query_list, "m_input_item.job_type_cd = '".$wearer_other_post["job_type_cd"]."'");
          array_push($query_list, "m_input_item.item_cd = '".$list["item_cd"]."'");
+           array_push($query_list, "m_input_item.job_type_item_cd = '".$result->as_job_type_item_cd."'");
          $query = implode(' AND ', $query_list);
 
          $arg_str = "";
