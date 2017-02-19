@@ -608,13 +608,13 @@ $app->post('/import_csv', function () use ($app) {
         $arg_str11 = "";
         $arg_str11 .= "SELECT *";
         $arg_str11 .= " FROM ";
-        $arg_str11 .= "(SELECT rntl_sect_cd FROM m_wearer_std ";
-        $arg_str11 .= "WHERE corporate_id = '$corporate_id' AND rntl_cont_no = '$agreement_no' AND cster_emply_cd = (SELECT cster_emply_cd FROM t_import_job WHERE job_no = '" . $job_no . "' AND order_kbn = '5')) AS T1";
+        $arg_str11 .= "(SELECT distinct on (m_wearer_std.cster_emply_cd) m_wearer_std.rntl_sect_cd as as_rntl_sect_cd,t_import_job.line_no as as_line_no FROM m_wearer_std INNER JOIN t_import_job ON m_wearer_std.cster_emply_cd = t_import_job.cster_emply_cd  ";
+        $arg_str11 .= "WHERE corporate_id = '$corporate_id' AND rntl_cont_no = '$agreement_no' AND m_wearer_std.cster_emply_cd = (SELECT cster_emply_cd FROM t_import_job WHERE job_no = '" . $job_no . "' AND order_kbn = '5')) AS T1";
         $arg_str11 .= " WHERE NOT EXISTS ";
         $arg_str11 .= "(SELECT ";
         $arg_str11 .= " * ";
         $arg_str11 .= " FROM (SELECT * FROM m_contract_resource WHERE corporate_id = '$corporate_id' AND rntl_cont_no = '$agreement_no' AND accnt_no = '$accnt_no') as T2 ";
-        $arg_str11 .= "WHERE T2.rntl_sect_cd = T1.rntl_sect_cd)";
+        $arg_str11 .= "WHERE T2.rntl_sect_cd = as_rntl_sect_cd)";
         $results11 = new Resultset(null, $t_import_job, $t_import_job->getReadConnection()->query($arg_str11));
         $result_obj11 = (array)$results11;
         $results_cnt11 = $result_obj11["\0*\0_count"];
@@ -631,7 +631,7 @@ $app->post('/import_csv', function () use ($app) {
             $results = $paginator->items;
             foreach ($results as $result) {
                 if (count($error_list) < 20) {
-                    $error_list[] = $result->line_no . '行目の支店コードはログインしているアカウントでは使用できません。';
+                    $error_list[] = $result->as_line_no . '行目の支店コードはログインしているアカウントでは使用できません。';
                 } else {
                     $json_list['errors'] = $error_list;
                     $json_list["error_code"] = "1";
@@ -641,16 +641,6 @@ $app->post('/import_csv', function () use ($app) {
             }
         }
     }
-
-
-
-
-
-
-
-
-
-
 
 
     //マスターチェック3 職種マスタの検索条件
