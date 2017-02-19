@@ -167,12 +167,12 @@ define([
 							document.getElementById('job_type').appendChild(option3);
 							if(res_list['job_type_list'][0]['order_control_unit'] == '1'){
 								//optionの配列を作成
-								$("#reason_kbn").append($('<option value="07">不用品返却</option>'));
+								$("#reason_kbn").append($('<option value="07">不要品返却</option>'));
 								$("#reason_kbn").val("07");
 							}
 							if(res_list['job_type_list'][0]['order_control_unit'] == '2'){
 								//optionの配列を作成
-								$("#reason_kbn").append($('<option value="28">不用品返却</option>'));
+								$("#reason_kbn").append($('<option value="28">不要品返却</option>'));
 								$("#reason_kbn").val("28");
 							}
 						}
