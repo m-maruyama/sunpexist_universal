@@ -91,10 +91,13 @@ $app->post('/wearer_change/search', function ()use($app){
   }
   if(!empty($cond['section'])){
     //$query_list[] = "m_wearer_std.rntl_sect_cd = '".$cond['section']."'";
+      /*
     $query_list[] = "CASE
            WHEN m_wearer_std_tran.rntl_sect_cd IS NULL THEN m_wearer_std.rntl_sect_cd
            ELSE m_wearer_std_tran.rntl_sect_cd
            END = '".$cond['section']."'";
+      */
+      $query_list[] ="(m_wearer_std_tran.rntl_sect_cd = '".$cond['section']."' OR m_wearer_std.rntl_sect_cd = '".$cond['section']."')";
   }
   if(!empty($cond['job_type'])){
     //$query_list[] = "m_wearer_std.job_type_cd = '".$cond['job_type']."'";
@@ -171,8 +174,6 @@ $app->post('/wearer_change/search', function ()use($app){
   $arg_str .= $query;
   $arg_str .= ") as distinct_table";
   $arg_str .= " ORDER BY as_cster_emply_cd ASC";
-
-  //ChromePhp::LOG($arg_str);
   $m_weare_std = new MWearerStd();
   $results = new Resultset(null, $m_weare_std, $m_weare_std->getReadConnection()->query($arg_str));
   $result_obj = (array)$results;
