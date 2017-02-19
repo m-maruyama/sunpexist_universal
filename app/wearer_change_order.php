@@ -2319,11 +2319,12 @@ $app->post('/wearer_change/info', function ()use($app){
          if (in_array($add_map["item_cd"], $multiples)) {
            continue;
          } else {
-           $list["sum_order_num"] += $add_map["std_input_qty"];
+             //複数選択の時
+           $list["sum_order_num"] += $add_map["order_num"];
            array_push($multiples, $add_map["item_cd"]);
          }
        } else {
-         $list["sum_order_num"] += $add_map["std_input_qty"];
+         $list["sum_order_num"] += $add_map["order_num"];
        }
      }
    }
@@ -2742,24 +2743,24 @@ $app->post('/wearer_change/complete', function ()use($app){
          }
          // 発注枚数チェック
          //※単一選択の場合
-         if ($add_item_input_map["add_choice_type"] == "1") {
-           if ($add_item_input_map["add_std_input_qty"] < $add_item_input_map["add_order_num"]) {
-             if (empty($add_order_num_err1)) {
-               $add_order_num_err1 = "err";
-               $json_list["error_code"] = "1";
-               $error_msg = "新たに追加されるアイテム：単一選択で発注枚数が超過している商品があります。";
-               array_push($json_list["error_msg"], $error_msg);
-             }
-           }
-           if ($add_item_input_map["add_std_input_qty"] > $add_item_input_map["add_order_num"]) {
-             if (empty($add_order_num_err2)) {
-               $add_order_num_err2 = "err";
-               $json_list["error_code"] = "1";
-               $error_msg = "新たに追加されるアイテム：単一選択で発注枚数が足りない商品があります。";
-               array_push($json_list["error_msg"], $error_msg);
-             }
-           }
-         }
+//         if ($add_item_input_map["add_choice_type"] == "1") {
+//           if ($add_item_input_map["add_std_input_qty"] < $add_item_input_map["add_order_num"]) {
+//             if (empty($add_order_num_err1)) {
+//               $add_order_num_err1 = "err";
+//               $json_list["error_code"] = "1";
+//               $error_msg = "新たに追加されるアイテム：単一選択で発注枚数が超過している商品があります。";
+//               array_push($json_list["error_msg"], $error_msg);
+//             }
+//           }
+//           if ($add_item_input_map["add_std_input_qty"] > $add_item_input_map["add_order_num"]) {
+//             if (empty($add_order_num_err2)) {
+//               $add_order_num_err2 = "err";
+//               $json_list["error_code"] = "1";
+//               $error_msg = "新たに追加されるアイテム：単一選択で発注枚数が足りない商品があります。";
+//               array_push($json_list["error_msg"], $error_msg);
+//             }
+//           }
+//         }
          // 複数選択の場合
          if ($add_item_input_map["add_choice_type"] == "2") {
            $item_sum_num = 0;
@@ -4818,24 +4819,24 @@ $app->post('/wearer_change/send', function ()use($app){
         }
         // 発注枚数チェック
         //※単一選択の場合
-        if ($add_item_input_map["add_choice_type"] == "1") {
-          if ($add_item_input_map["add_std_input_qty"] < $add_item_input_map["add_order_num"]) {
-            if (empty($add_order_num_err1)) {
-              $add_order_num_err1 = "err";
-              $json_list["error_code"] = "1";
-              $error_msg = "新たに追加されるアイテム：単一選択で発注枚数が超過している商品があります。";
-              array_push($json_list["error_msg"], $error_msg);
-            }
-          }
-          if ($add_item_input_map["add_std_input_qty"] > $add_item_input_map["add_order_num"]) {
-            if (empty($add_order_num_err2)) {
-              $add_order_num_err2 = "err";
-              $json_list["error_code"] = "1";
-              $error_msg = "新たに追加されるアイテム：単一選択で発注枚数が足りない商品があります。";
-              array_push($json_list["error_msg"], $error_msg);
-            }
-          }
-        }
+//        if ($add_item_input_map["add_choice_type"] == "1") {
+//          if ($add_item_input_map["add_std_input_qty"] < $add_item_input_map["add_order_num"]) {
+//            if (empty($add_order_num_err1)) {
+//              $add_order_num_err1 = "err";
+//              $json_list["error_code"] = "1";
+//              $error_msg = "新たに追加されるアイテム：単一選択で発注枚数が超過している商品があります。";
+//              array_push($json_list["error_msg"], $error_msg);
+//            }
+//          }
+//          if ($add_item_input_map["add_std_input_qty"] > $add_item_input_map["add_order_num"]) {
+//            if (empty($add_order_num_err2)) {
+//              $add_order_num_err2 = "err";
+//              $json_list["error_code"] = "1";
+//              $error_msg = "新たに追加されるアイテム：単一選択で発注枚数が足りない商品があります。";
+//              array_push($json_list["error_msg"], $error_msg);
+//            }
+//          }
+//        }
         // 複数選択の場合
         if ($add_item_input_map["add_choice_type"] == "2") {
           $item_sum_num = 0;
