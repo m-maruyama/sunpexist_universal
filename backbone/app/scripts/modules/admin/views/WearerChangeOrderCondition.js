@@ -384,6 +384,7 @@ define([
 						//メッセージの修正
 						document.getElementById("confirm_txt").innerHTML=App.apply_msg; //追加　このメッセージはapp.jsで定義
 						$("#btn_ok").off();
+						$("#btn_cancel").off();
 						$("#btn_ok").on('click',function() { //追加
 							$('#myModal').modal('hide');
 						// var msg = "社内申請手続きを踏んでいますか？";
@@ -464,6 +465,7 @@ define([
 					//メッセージの修正
 					document.getElementById("confirm_txt").innerHTML=App.delete_msg; //追加　このメッセージはapp.jsで定義
 					$("#btn_ok").off();
+					$("#btn_cancel").off();
 					$("#btn_ok").on('click',function() { //追加
 						hideModal();
 						$.blockUI({ message: '<p><img src="ajax-loader.gif" style="margin: 0 auto;" /> 発注取消中...</p>' });
@@ -619,6 +621,7 @@ define([
 								//メッセージの修正
 								document.getElementById("confirm_txt").innerHTML=App.input_msg; //追加　このメッセージはapp.jsで定義
 								$("#btn_ok").off();
+								$("#btn_cancel").off();
 								$("#btn_ok").on('click',function() { //追加
 									hideModal();
 									var data = {
@@ -763,6 +766,7 @@ define([
 								//メッセージの修正
 								document.getElementById("confirm_txt").innerHTML=App.complete_msg; //追加　このメッセージはapp.jsで定義
 								$("#btn_ok").off();
+								$("#btn_cancel").off();
 								$("#btn_ok").on('click',function() { //追加
 									hideModal();
 									var data = {
