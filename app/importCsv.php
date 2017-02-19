@@ -120,8 +120,9 @@ $app->post('/import_csv', function () use ($app) {
                 continue;
             }
             // csvはココ
-            input_check($line_list, $line_cnt);
-            //ChromePhp::log($error_list);
+             if(input_check($line_list, $line_cnt) !== null){
+                 $error_list[] = input_check($line_list, $line_cnt);
+             }
             //フォーマットチェック: 行単位の各項目のフォーマット形式が、それぞれ仕様通りのフォーマットであるかチェックする。
             $error_list = chk_format($error_list, $line_list, $line_cnt);
             //ChromePhp::log($error_list);
@@ -169,7 +170,9 @@ $app->post('/import_csv', function () use ($app) {
                 continue;
             }
 
-            input_check($line_list, $line_cnt);
+            if(input_check($line_list, $line_cnt) !== null){
+                $error_list[] = input_check($line_list, $line_cnt);
+            }
             //フォーマットチェック: 行単位の各項目のフォーマット形式が、それぞれ仕様通りのフォーマットであるかチェックする。
             $error_list = chk_format($error_list, $line_list, $line_cnt);
             $line_cnt++;
@@ -187,8 +190,13 @@ $app->post('/import_csv', function () use ($app) {
             exit;
         }
     }
+
+
+
+    //ChromePhp::log($error_list);
     // バリデーション処理で異常が発生した場合、以降処理せず終了
     if (!empty($error_list)) {
+
         $json_list['errors'] = $error_list;
         $json_list["error_code"] = "1";
         echo json_encode($json_list);
@@ -594,14 +602,14 @@ $app->post('/import_csv', function () use ($app) {
         }
     }
 
-    //発注 貸与開始と着用者登録のみは、取込ファイル内の拠点が契約リソースマスタのアカウントに紐づく、データがあるか確認
+    //発注 異動の場合、
     if(!$section_all_zero_flg){
         $accnt_no = $auth["accnt_no"];
         $arg_str11 = "";
         $arg_str11 .= "SELECT *";
         $arg_str11 .= " FROM ";
         $arg_str11 .= "(SELECT rntl_sect_cd FROM m_wearer_std ";
-        $arg_str11 .= "WHERE corporate_id = '$corporate_id' AND rntl_cont_no = '$agreement_no' AND werer_cd = (SELECT werer_cd FROM t_import_job WHERE job_no = '" . $job_no . "' AND order_kbn = '5')) AS T1";
+        $arg_str11 .= "WHERE corporate_id = '$corporate_id' AND rntl_cont_no = '$agreement_no' AND cster_emply_cd = (SELECT cster_emply_cd FROM t_import_job WHERE job_no = '" . $job_no . "' AND order_kbn = '5')) AS T1";
         $arg_str11 .= " WHERE NOT EXISTS ";
         $arg_str11 .= "(SELECT ";
         $arg_str11 .= " * ";
@@ -919,7 +927,7 @@ $app->post('/import_csv', function () use ($app) {
             $error_list[] = '発注番号' . $check_order_req_no . 'の貸与パターンに対する商品指定数が不正です。';
         }
     }
-    ChromePhp::log($error_list);
+    //ChromePhp::log($error_list);
     // マスターチェック処理で異常が発生した場合、以降処理せず終了
     if (!empty($error_list)) {
         $json_list['errors'] = $error_list;
@@ -1541,7 +1549,7 @@ $app->post('/import_csv', function () use ($app) {
             $arg_str .= "(" . $calum_query . ")";
             $arg_str .= " VALUES ";
             $arg_str .= $values_query;
-            ChromePhp::log($arg_str);
+            //ChromePhp::log($arg_str);
             $results = new Resultset(NULL, $t_import_job, $t_import_job->getReadConnection()->query($arg_str));
         }
 
@@ -2035,6 +2043,31 @@ function input_check($line_list, $line_cnt)
                 echo json_encode($json_list);
                 exit;
             }
+        }else{
+            if($line_list[7] == '1'){
+                if(!($line_list[13] == '01' || $line_list[13] == '02' || $line_list[13] == '04' || $line_list[13] == '19')){
+                    if (count($error_list) < 20) {
+                        $error_list[] = $line_cnt . '行目の理由区分のフォーマットが不正です。';
+                    } else {
+                        $json_list['errors'] = $error_list;
+                        $json_list["error_code"] = "1";
+                        echo json_encode($json_list);
+                        exit;
+                    }
+                }
+            }
+            if($line_list[7] == '5'){
+                if(!($line_list[13] == '09' || $line_list[13] == '10' || $line_list[13] == '11' || $line_list[13] == '12')) {
+                    if (count($error_list) < 20) {
+                        $error_list[] = $line_cnt . '行目の理由区分のフォーマットが不正です。';
+                    } else {
+                        $json_list['errors'] = $error_list;
+                        $json_list["error_code"] = "1";
+                        echo json_encode($json_list);
+                        exit;
+                    }
+                }
+            }
         }
     }
 
@@ -2072,5 +2105,8 @@ function input_check($line_list, $line_cnt)
             exit;
         }
     }
-    ChromePhp::log($error_list);
+    if (count($error_list) > 0){
+    return $error_list;
+    }
+
 }
