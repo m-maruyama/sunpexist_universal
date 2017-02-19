@@ -168,9 +168,7 @@ $app->post('/receive/search', function ()use($app){
         $chk_flg = '1';
         //貸与開始にチェックがついてたら
         $order_kbn = "t_order.order_sts_kbn = '1' AND (t_order.werer_sts_kbn = '1' OR t_order.werer_sts_kbn = '7')";
-      //$order_kbn = "t_order.order_sts_kbn = '1' AND m_wearer_std.werer_sts_kbn = '1'";
-
-      if ($cond['reason_kbn0']) {
+        if ($cond['reason_kbn0']) {
             array_push($reason_kbn_1, "t_order.order_reason_kbn = '01'");
         }
         if ($cond['reason_kbn1']) {
@@ -236,25 +234,27 @@ $app->post('/receive/search', function ()use($app){
         //交換にチェックがついてたら
         $order_kbn = "(t_order.order_sts_kbn = '3' OR t_order.order_sts_kbn = '4') AND t_order.werer_sts_kbn = '1'";
         if($cond['reason_kbn5']){
-            array_push($reason_kbn_2, "t_order.order_reason_kbn = '14'");
+            array_push($reason_kbn_2, "t_order.order_reason_kbn = '14'");//消耗交換
         }
         if($cond['reason_kbn6']){
-            array_push($reason_kbn_2, "t_order.order_reason_kbn = '15'");
+            array_push($reason_kbn_2, "t_order.order_reason_kbn = '15'");//破損
         }
         if($cond['reason_kbn7']){
-            array_push($reason_kbn_2, "t_order.order_reason_kbn = '16'");
+            array_push($reason_kbn_2, "t_order.order_reason_kbn = '16'");//紛失
         }
         if($cond['reason_kbn8']){
-            array_push($reason_kbn_2, "t_order.order_reason_kbn = '17'");
+            array_push($reason_kbn_2, "t_order.order_reason_kbn = '17'");//不良品
         }
         if($cond['reason_kbn9']){
-            array_push($reason_kbn_2, "t_order.order_reason_kbn = '12'");
+            array_push($reason_kbn_2, "t_order.order_reason_kbn = '12'");//着用前
+            array_push($reason_kbn_2, "t_order.order_reason_kbn = '21'");//着用前
         }
         if($cond['reason_kbn10']){
-            array_push($reason_kbn_2, "t_order.order_reason_kbn = '13'");
+            array_push($reason_kbn_2, "t_order.order_reason_kbn = '13'");//着用後
+            array_push($reason_kbn_2, "t_order.order_reason_kbn = '22'");
         }
         if($cond['reason_kbn11']){
-            array_push($reason_kbn_2, "t_order.order_reason_kbn = '23'");
+            array_push($reason_kbn_2, "t_order.order_reason_kbn = '23'");//なし
         }
         if ($reason_kbn_2) {
             //理由区分と発注区分
@@ -268,6 +268,8 @@ $app->post('/receive/search', function ()use($app){
             array_push($reason_kbn_2, "t_order.order_reason_kbn = '17'");
             array_push($reason_kbn_2, "t_order.order_reason_kbn = '12'");
             array_push($reason_kbn_2, "t_order.order_reason_kbn = '13'");
+            array_push($reason_kbn_2, "t_order.order_reason_kbn = '21'");
+            array_push($reason_kbn_2, "t_order.order_reason_kbn = '22'");
             array_push($reason_kbn_2, "t_order.order_reason_kbn = '23'");
             $reason_kbn_2_str = implode(' OR ', $reason_kbn_2);
             array_push($kbn_list, "(" . $order_kbn . " AND (" . $reason_kbn_2_str . "))");
@@ -288,9 +290,11 @@ $app->post('/receive/search', function ()use($app){
         }
         if($cond['reason_kbn9']){
             array_push($reason_kbn_2, "t_order.order_reason_kbn = '12'");
+            array_push($reason_kbn_2, "t_order.order_reason_kbn = '21'");
         }
         if($cond['reason_kbn10']){
             array_push($reason_kbn_2, "t_order.order_reason_kbn = '13'");
+            array_push($reason_kbn_2, "t_order.order_reason_kbn = '22'");
         }
         if($cond['reason_kbn11']){
             array_push($reason_kbn_2, "t_order.order_reason_kbn = '23'");
@@ -323,6 +327,7 @@ $app->post('/receive/search', function ()use($app){
         }
         if ($reason_kbn_3) {
             //理由区分と発注区分
+            array_push($reason_kbn_3, "t_order.order_reason_kbn = '24'");
             $reason_kbn_3_str = implode(' OR ', $reason_kbn_3);
             array_push($kbn_list, "(" . $order_kbn . " AND (" . $reason_kbn_3_str . "))");
         } else {
@@ -330,6 +335,7 @@ $app->post('/receive/search', function ()use($app){
             array_push($reason_kbn_3, "t_order.order_reason_kbn = '09'");
             array_push($reason_kbn_3, "t_order.order_reason_kbn = '10'");
             array_push($reason_kbn_3, "t_order.order_reason_kbn = '11'");
+            array_push($reason_kbn_3, "t_order.order_reason_kbn = '24'");
             $reason_kbn_3_str = implode(' OR ', $reason_kbn_3);
             array_push($kbn_list, "(" . $order_kbn . " AND (" . $reason_kbn_3_str . "))");
         }
@@ -426,7 +432,7 @@ $app->post('/receive/search', function ()use($app){
     */
     //その他
     if($cond['order_kbn4']){
-        array_push($kbn_list,"t_order.order_sts_kbn = '9' AND m_wearer_std.werer_sts_kbn = '1'");
+        array_push($kbn_list,"t_order.order_sts_kbn = '9'");
     }
 
     //区分を検索条件に追加
