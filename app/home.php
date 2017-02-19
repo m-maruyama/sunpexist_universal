@@ -155,15 +155,12 @@ $app->post('/home_count', function () use ($app) {
 
 
         //発注未送信
-        $all_list = array();
         $query_list = array();
         $query_list[] = "m_wearer_std_tran.corporate_id = '" . $auth['corporate_id'] . "'";
         $query_list[] = "m_wearer_std_tran.rntl_cont_no = '" . $rntl_cont_no . "'";
 
-
         if (!$rntl_sect_cd_zero_flg) {
             //ゼロ埋めがない場合、ログインアカウントの条件追加
-            if (empty($cond['section'])) {
                 if ($all_list > 0) {
                     $order_section = array();
                     $all_list_count = count($all_list);
@@ -179,9 +176,7 @@ $app->post('/home_count', function () use ($app) {
                     $accnt_no_and_order_section = $rntl_accnt_no . " OR " . $order_section_query . ")";
                 }
                 array_push($query_list, "$accnt_no_and_order_section");
-            }
         }
-
         $query_list[] = "m_wearer_std_tran.snd_kbn = '0'";
 
         //sql文字列を' AND 'で結合
@@ -252,6 +247,8 @@ $app->post('/home_count', function () use ($app) {
 
 
         if (!empty($results_cnt)) {
+            $all_list = array();
+
             foreach ($results as $result) {
                 // 発注区分=貸与で発注情報トランのデータが存在しない場合は対象外とする
                 if ($result->as_wst_order_sts_kbn == "1" && empty($result->as_order_req_no)) {
