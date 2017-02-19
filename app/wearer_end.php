@@ -89,11 +89,11 @@ $app->post('/wearer_end/search', function ()use($app){
              END = '".$cond['sex_kbn']."'";
     }
     if(!empty($cond['section'])){
-      //$query_list[] = "m_wearer_std.rntl_sect_cd = '".$cond['section']."'";
-      $query_list[] = "CASE
-             WHEN m_wearer_std_tran.rntl_sect_cd IS NULL THEN m_wearer_std.rntl_sect_cd
-             ELSE m_wearer_std_tran.rntl_sect_cd
-             END = '".$cond['section']."'";
+      $query_list[] = "m_wearer_std.rntl_sect_cd = '".$cond['section']."'";
+//      $query_list[] = "CASE
+//             WHEN m_wearer_std_tran.rntl_sect_cd IS NULL THEN m_wearer_std.rntl_sect_cd
+//             ELSE m_wearer_std_tran.rntl_sect_cd
+//             END = '".$cond['section']."'";
     }
     if(!empty($cond['job_type'])){
       //$query_list[] = "m_wearer_std.job_type_cd = '".$cond['job_type']."'";
