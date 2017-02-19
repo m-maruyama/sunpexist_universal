@@ -61,6 +61,8 @@ $app->post('/order_send/search', function () use ($app) {
     } else {
       $section_all_zero_flg = false;
     }
+
+
     $query_list = array();
     $query_list[] = "m_wearer_std_tran.corporate_id = '".$auth['corporate_id']."'";
     if (!empty($cond['agreement_no'])) {
@@ -102,10 +104,7 @@ $app->post('/order_send/search', function () use ($app) {
                     $accnt_no_and_order_section = $rntl_accnt_no . " OR " . $order_section_query. ")";
                 }
                 array_push($query_list, "$accnt_no_and_order_section");
-            }else{
-                //array_push($query_list,"m_contract_resource.accnt_no = '$accnt_no'");
             }
-    //$query_list[] = "m_contract_resource.accnt_no = '".$auth['accnt_no']."'";
     }
     $query = implode(' AND ', $query_list);
 
@@ -167,11 +166,8 @@ $app->post('/order_send/search', function () use ($app) {
     $arg_str .= $query;
     $arg_str .= ") as distinct_table";
     $arg_str .= " ORDER BY as_wst_order_req_no ASC";
-    //ChromePhp::log($arg_str);
     $m_wearer_std_tran = new MWearerStdTran();
     $results = new Resultset(null, $m_wearer_std_tran, $m_wearer_std_tran->getReadConnection()->query($arg_str));
-    $result_obj = (array)$results;
-    $results_cnt = $result_obj["\0*\0_count"];
     $result_obj = (array)$results;
     $results_cnt = $result_obj["\0*\0_count"];
     if(!empty($results_cnt)) {
@@ -185,7 +181,6 @@ $app->post('/order_send/search', function () use ($app) {
       $paginator = $paginator_model->getPaginate();
       $results = $paginator->items;
     }
-
     $list = array();
     $all_list = array();
     if (!empty($results_cnt)) {

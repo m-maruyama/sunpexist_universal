@@ -362,74 +362,6 @@ $app->post('/receive/search', function ()use($app){
             array_push($query_list, $order_kbn);
         }
     }
-    //貸与終了
-    /*
-    $reason_kbn_4 = array();
-    if($cond['order_kbn3']) {
-        //貸与終了にチェックがついてたら
-        $order_kbn = "t_order.order_sts_kbn = '2'";
-        if($cond['reason_kbn15']){
-            //貸与終了、かつ、理由区分＝05：退職の場合、着用者基本マスタ.着用者状況区分＝4：退社の着用者を検索する。
-            array_push($reason_kbn_4, "(t_order.order_reason_kbn = '05' AND m_wearer_std.werer_sts_kbn = '4')");
-        }
-        if($cond['reason_kbn16']){
-            //貸与終了、かつ、理由区分＝06：休職の場合、着用者基本マスタ.着用者状況区分＝2:休職の着用者を検索する。
-            array_push($reason_kbn_4, "(t_order.order_reason_kbn = '06' AND m_wearer_std.werer_sts_kbn = '2')");
-        }
-        if($cond['reason_kbn17']){
-            array_push($reason_kbn_4, "t_order.order_reason_kbn = '07' AND m_wearer_std.werer_sts_kbn = '1'");
-            array_push($reason_kbn_4, "t_order.order_reason_kbn = '28' AND m_wearer_std.werer_sts_kbn = '1'");
-        }
-        if($cond['reason_kbn18']){
-            array_push($reason_kbn_4, "t_order.order_reason_kbn = '08' AND m_wearer_std.werer_sts_kbn = '1'");
-        }
-        if($cond['reason_kbn19']){
-            array_push($reason_kbn_4, "t_order.order_reason_kbn = '24' AND m_wearer_std.werer_sts_kbn = '1'");
-        }
-        if ($reason_kbn_4) {
-            //理由区分と発注区分
-            $reason_kbn_4_str = implode(' OR ', $reason_kbn_4);
-            array_push($kbn_list, "(" . $order_kbn . " AND (" . $reason_kbn_4_str . "))");
-        } else {
-            //発注区分のみ
-            array_push($reason_kbn_4, "(t_order.order_reason_kbn = '05' AND m_wearer_std.werer_sts_kbn = '4')");
-            array_push($reason_kbn_4, "(t_order.order_reason_kbn = '06' AND m_wearer_std.werer_sts_kbn = '2')");
-            array_push($reason_kbn_4, "t_order.order_reason_kbn = '07' AND m_wearer_std.werer_sts_kbn = '1'");
-            array_push($reason_kbn_4, "t_order.order_reason_kbn = '28' AND m_wearer_std.werer_sts_kbn = '1'");
-            array_push($reason_kbn_4, "t_order.order_reason_kbn = '08' AND m_wearer_std.werer_sts_kbn = '1'");
-            array_push($reason_kbn_4, "t_order.order_reason_kbn = '24' AND m_wearer_std.werer_sts_kbn = '1'");
-            $reason_kbn_4_str = implode(' OR ', $reason_kbn_4);
-            array_push($kbn_list, "(" . $order_kbn . " AND (" . $reason_kbn_4_str . "))");
-        }
-    }else{
-        //貸与終了にチェックがついてない
-        if($cond['reason_kbn15']){
-            array_push($reason_kbn_4, "(t_order.order_reason_kbn = '05' AND m_wearer_std.werer_sts_kbn = '4')");
-        }
-        if($cond['reason_kbn16']){
-            array_push($reason_kbn_4, "(t_order.order_reason_kbn = '06' AND m_wearer_std.werer_sts_kbn = '2')");
-        }
-        if($cond['reason_kbn17']){
-            array_push($reason_kbn_4, "t_order.order_reason_kbn = '07' AND m_wearer_std.werer_sts_kbn = '1'");
-            array_push($reason_kbn_4, "t_order.order_reason_kbn = '28' AND m_wearer_std.werer_sts_kbn = '1'");
-        }
-        if($cond['reason_kbn18']){
-            array_push($reason_kbn_4, "t_order.order_reason_kbn = '08' AND m_wearer_std.werer_sts_kbn = '1'");
-        }
-        if($cond['reason_kbn19']){
-            array_push($reason_kbn_4, "t_order.order_reason_kbn = '24' AND m_wearer_std.werer_sts_kbn = '1'");
-        }
-        if ($reason_kbn_4) {
-            //理由区分のみ
-            $reason_kbn_4_str = implode(' OR ', $reason_kbn_4);
-            array_push($kbn_list, "(".$reason_kbn_4_str .")");
-        }else{
-            $order_kbn = "t_order.order_sts_kbn != '2'";
-            //何もチェックなければ交換を除く
-            array_push($query_list, $order_kbn);
-        }
-    }
-    */
     //その他
     if($cond['order_kbn4']){
         array_push($kbn_list,"t_order.order_sts_kbn = '9'");
@@ -593,7 +525,7 @@ $app->post('/receive/search', function ()use($app){
         $arg_str .= " ORDER BY ";
         $arg_str .= $q_sort_key." ".$order;
     }
-    //ChromePhp::log($arg_str);
+    ChromePhp::log($arg_str);
     $t_delivery_goods_state_details = new TDeliveryGoodsStateDetails();
     $results = new Resultset(null, $t_delivery_goods_state_details, $t_delivery_goods_state_details->getReadConnection()->query($arg_str));
     $result_obj = (array)$results;

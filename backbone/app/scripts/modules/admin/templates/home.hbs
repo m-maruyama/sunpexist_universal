@@ -9,9 +9,9 @@
                 <h2 class="col-md-2">■ 処理状況</h2>
                 <div class="col-md-9">
                     <ul class="list-unstyled red row">
-                        <li class="col-md-5 row"><span class="col-md-7">・発注未送信件数</span><span class="col-md-5">{{#if button14_use_flg}}<a class="red" href="order_send.html">{{/if}}{{emply_cd_no_regist_cnt}}件{{#if button14_use_flg}}</a>{{/if}}</span></li>
-                        <li class="col-md-4 row"><span class="col-md-6">・未受領件数</span><span class="col-md-6">{{#if button8_use_flg}}<a class="red" href="receive.html">{{/if}}{{no_recieve_cnt}}件{{#if button8_use_flg}}</a>{{/if}}</span></li>
-                        <li class="col-md-4 row"><span class="col-md-6">・未返却件数</span><span class="col-md-6">{{#if button7_use_flg}}<a class="red" href="unreturn.html">{{/if}}{{no_return_cnt}}件{{#if button7_use_flg}}</a>{{/if}}</span></li>
+                        <li class="col-md-5 row"><span class="col-md-7">・発注未送信件数</span><span class="col-md-5">{{#if button14_use_flg}}<a class="red" href="order_send.html">{{/if}}<span class="emply_cd_no_regist_cnt"></span>件{{#if button14_use_flg}}</a>{{/if}}</span></li>
+                        <li class="col-md-4 row"><span class="col-md-6">・未受領件数</span><span class="col-md-6">{{#if button8_use_flg}}<a class="red" href="receive.html">{{/if}}<span class="no_recieve_cnt"></span>件{{#if button8_use_flg}}</a>{{/if}}</span></li>
+                        <li class="col-md-4 row"><span class="col-md-6">・未返却件数</span><span class="col-md-6">{{#if button7_use_flg}}<a class="red" href="unreturn.html">{{/if}}<span class="no_return_cnt"></span>件{{#if button7_use_flg}}</a>{{/if}}</span></li>
                     </ul>
                 </div>
 			</div>
@@ -35,7 +35,7 @@
 						{{#if button2_use_flg}}<li class="col-md-3 col-pl-0 col-pb-5"><a href="wearer_size_change.html" class="btn btn-primary" title="交換">交換</a><br>サイズ交換、消耗交換、不良品交換等</li>{{/if}}
 						{{#if button3_use_flg}}<li class="col-md-3 col-pl-0 col-pb-5"><a href="wearer_change.html" class="btn btn-primary" title="職種変更または異動">職種変更または異動</a><br>貸与パターンの変更、異動（拠点変更）等</li>{{/if}}
 						{{#if button4_use_flg}}<li class="col-md-3 col-pl-0 col-pb-5"><a class="btn btn-primary" id='wearer_end' title="貸与終了">貸与終了</a><br>退職、休職、制服非着用部門への異動</li>{{/if}}
-						{{#if button5_use_flg}}<li class="col-md-3 col-pl-0 col-pb-5"><a href="wearer_other.html" class="btn btn-primary" title="その他貸与/返却">その他貸与/返却</a><br>追加貸与、不用品返却等</li>{{/if}}
+						{{#if button5_use_flg}}<li class="col-md-3 col-pl-0 col-pb-5"><a href="wearer_other.html" class="btn btn-primary" title="その他貸与/返却">その他貸与/返却</a><br>追加貸与、不要品返却等</li>{{/if}}
 					</ul>
 				</div>
 

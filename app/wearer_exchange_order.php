@@ -1418,7 +1418,7 @@ $app->post('/wearer_exchange/list', function ()use($app){
     $query_list[] = "t_delivery_goods_state_details.receipt_status = '2'";
       //自分の貸与パターンを絞り込み
     $query_list[] = "m_input_item.job_type_cd = '".$wearer_size_change_post['job_type_cd']."'";
-      $query = implode(' AND ', $query_list);
+    $query = implode(' AND ', $query_list);
 
     $arg_str = "";
     $arg_str = "SELECT ";

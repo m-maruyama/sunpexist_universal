@@ -144,6 +144,7 @@ define([
 			"CM0130": host + "/update_possible_chk",
 			"CM0140": host + "/btn_possible_chk",
 			"CM0150": host + "/snd_kbn",
+			"CM0160": host + "/check/agreement_no",
 			"IM0010": host + "/import_csv",
 			"IM0020": host + "/csv",
 			"DL0010": host + "/csv_download",
@@ -186,6 +187,8 @@ define([
 			"QA0030": host + "/qa/input",
 			"HM0010": host + "/home",
 			"HM0011": host + "/home_manual",
+			"HM0012": host + "/home_count",
+
 			"LO0010": host + "/login",
 			"OU0010": host + "/logout",
 			"LP0010": host + "/login_password",
