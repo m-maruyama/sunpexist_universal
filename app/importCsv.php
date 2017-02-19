@@ -121,8 +121,13 @@ $app->post('/import_csv', function () use ($app) {
             }
             // csvはココ
              if(input_check($line_list, $line_cnt) !== null){
-                 $error_list[] = input_check($line_list, $line_cnt);
+                 $error_list_array = input_check($line_list, $line_cnt);
+                 foreach($error_list_array as $error_item){
+                     $error_list[] = $error_item;
+                 }
              }
+             //ChromePhp::log($error_list);
+
             //フォーマットチェック: 行単位の各項目のフォーマット形式が、それぞれ仕様通りのフォーマットであるかチェックする。
             $error_list = chk_format($error_list, $line_list, $line_cnt);
             //ChromePhp::log($error_list);
@@ -2095,6 +2100,7 @@ function input_check($line_list, $line_cnt)
             exit;
         }
     }
+    //ChromePhp::log($error_list);
     if (count($error_list) > 0){
     return $error_list;
     }
