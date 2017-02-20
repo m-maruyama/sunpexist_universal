@@ -761,7 +761,7 @@ $app->post('/csv_download', function ()use($app){
 				}
 				// 商品-色(サイズ-サイズ2)表示変換
 				if (!empty($list['item_cd']) && !empty($list['color_cd'])) {
-					$list['shin_item_code'] = $list['item_cd']."-".$list['color_cd']."(".$list['size_cd']."-".$list['size_two_cd'].")";
+					$list['shin_item_code'] = $list['item_cd']."-".$list['color_cd']."(".$list['size_cd']."-".trim(mb_convert_kana( $list['size_two_cd'], "s")).")";
 				} else {
 					$list['shin_item_code'] = "-";
 				}
@@ -1093,7 +1093,8 @@ $app->post('/csv_download', function ()use($app){
         }
         //拠点
         if(!empty($cond['section'])){
-            array_push($query_list,"t_returned_plan_info.rntl_sect_cd = '".$cond['section']."'");
+            array_push($query_list,"(t_returned_plan_info.rntl_sect_cd = '".$cond['section']."' OR m_wearer_std.rntl_sect_cd = '".$cond['section']."')");
+//            array_push($query_list,"t_returned_plan_info.rntl_sect_cd = '".$cond['section']."'");
         }
         //貸与パターン
         if(!empty($cond['job_type'])){
@@ -1152,7 +1153,7 @@ $app->post('/csv_download', function ()use($app){
 
         //ゼロ埋めがない場合、ログインアカウントの条件追加
         if($rntl_sect_cd_zero_flg == 0){
-            array_push($query_list,"m_contract_resource.accnt_no = '$accnt_no'");
+            //array_push($query_list,"m_contract_resource.accnt_no = '$accnt_no'");
         }
 
         $status_kbn_list = array();
@@ -1505,6 +1506,8 @@ $app->post('/csv_download', function ()use($app){
             $arg_str .= "t_delivery_goods_state_details.receipt_date as as_receipt_date,";
             $arg_str .= "t_returned_plan_info.return_plan_qty as as_return_plan__qty,";
             $arg_str .= "t_returned_plan_info.rntl_cont_no as as_rntl_cont_no,";
+            $arg_str .= "t_returned_plan_info.rntl_sect_cd as as_trp_rntl_sect_cd,";
+            $arg_str .= "m_wearer_std.rntl_sect_cd as as_mws_rntl_sect_cd,";
             $arg_str .= "m_contract.rntl_cont_name as as_rntl_cont_name";
             $arg_str .= " FROM t_returned_plan_info LEFT JOIN";
             $arg_str .= " (t_order LEFT JOIN";
@@ -1579,6 +1582,10 @@ $app->post('/csv_download', function ()use($app){
             $arg_str .= "t_delivery_goods_state_details.receipt_date as as_receipt_date,";
             $arg_str .= "t_returned_plan_info.return_plan_qty as as_return_plan__qty,";
             $arg_str .= "t_returned_plan_info.rntl_cont_no as as_rntl_cont_no,";
+            $arg_str .= "t_returned_plan_info.rntl_sect_cd as as_trp_rntl_sect_cd,";
+            $arg_str .= "m_wearer_std.rntl_sect_cd as as_mws_rntl_sect_cd,";
+            $arg_str .= "t_returned_plan_info.rntl_sect_cd as as_trp_rntl_sect_cd,";
+            $arg_str .= "m_wearer_std.rntl_sect_cd as as_mws_rntl_sect_cd,";
             $arg_str .= "m_contract.rntl_cont_name as as_rntl_cont_name";
             $arg_str .= " FROM t_returned_plan_info LEFT JOIN";
             $arg_str .= " (t_order LEFT JOIN";
@@ -1731,7 +1738,7 @@ $app->post('/csv_download', function ()use($app){
 				}
 				// 商品-色(サイズ-サイズ2)表示変換
 				if (!empty($list['item_cd']) && !empty($list['color_cd'])) {
-					$list['shin_item_code'] = $list['item_cd']."-".$list['color_cd']."(".$list['size_cd']."-".$list['size_two_cd'].")";
+					$list['shin_item_code'] = $list['item_cd']."-".$list['color_cd']."(".$list['size_cd']."-".trim(mb_convert_kana( $list['size_two_cd'], "s")).")";
 				} else {
 					$list['shin_item_code'] = "-";
 				}
@@ -2687,7 +2694,7 @@ $app->post('/csv_download', function ()use($app){
 				}
 
 				// 商品-色(サイズ-サイズ2)表示変換
-				$list['shin_item_code'] = $list['item_cd']."-".$list['color_cd']."(".$list['size_cd']."-".$list['size_two_cd'].")";
+				$list['shin_item_code'] = $list['item_cd']."-".$list['color_cd']."(".$list['size_cd']."-".trim(mb_convert_kana( $list['size_two_cd'], "s")).")";
 
 				//---発注区分名称---//
 				$query_list = array();
@@ -3106,7 +3113,7 @@ $app->post('/csv_download', function ()use($app){
                 }
 
                 // 商品-色(サイズ-サイズ2)表示変換
-                $list['shin_item_code'] = $list['item_cd']."-".$list['color_cd']."(".$list['size_cd']."-".$list['size_two_cd'].")";
+                $list['shin_item_code'] = $list['item_cd']."-".$list['color_cd']."(".$list['size_cd']."-".trim(mb_convert_kana( $list['size_two_cd'], "s")).")";
 
                 // 現在の拠点
                 $search_q = array();
@@ -3687,7 +3694,7 @@ $app->post('/csv_download', function ()use($app){
 
 				// 商品-色(サイズ-サイズ2)表示変換
 
-				$list['shin_item_code'] = $list['zkprcd']."-".$list['zkclor']."(".$list['zksize']."-".$list['size_two_cd'].")";
+				$list['shin_item_code'] = $list['zkprcd']."-".$list['zkclor']."(".$list['zksize']."-".trim(mb_convert_kana( $list['size_two_cd'], "s")).")";
 
 				//---在庫区分名称---//
 				$query_list = array();

@@ -671,7 +671,7 @@ $app->post('/receive/search', function ()use($app){
             }
 
             // 商品-色(サイズ-サイズ2)表示変換
-            $list['shin_item_code'] = $list['item_cd']."-".$list['color_cd']."(".$list['size_cd']."-".$list['size_two_cd'].")";
+            $list['shin_item_code'] = $list['item_cd']."-".$list['color_cd']."(".$list['size_cd']."-".trim(mb_convert_kana( $list['size_two_cd'], "s")).")";
 
             //---発注区分名称---//
             $query_list = array();
