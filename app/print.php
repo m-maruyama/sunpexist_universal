@@ -1227,6 +1227,9 @@ $app->post('/print/search', function ()use($app){
         if($sort_key == 'send_ymd'){
             $q_sort_key = 'as_ship_ymd';
         }
+        if($sort_key == 'return_date'){
+            $q_sort_key = 'as_return_date';
+        }
         if($sort_key == 'individual_num'){
             $q_sort_key = 'as_individual_ctrl_no';
         }
@@ -1658,12 +1661,20 @@ $app->post('/print/search', function ()use($app){
 
                 $num_list = array();
                 $return_status_list = array();
+                $return_date_list = array();
                 $i = 0;
                 $each_item_return_plan_qty = 0;
                 $each_item_returned_qty = 0;
                 foreach ($t_returned_results as $t_returned_result) {
                     //個体管理番号
                     array_push($num_list, $t_returned_result->individual_ctrl_no);
+                    //返却日
+                    if (!empty($t_returned_result->return_date)) {
+                        $return_date = date('Y/m/d', strtotime($t_returned_result->return_date));
+                    } else {
+                        $return_date = '-';
+                    }
+                    array_push($return_date_list, $return_date);
                     //返却予定数の合計
                     $each_item_return_plan_qty = $each_item_return_plan_qty + $t_returned_result->return_plan_qty;
                     //返却済み数の合計
@@ -1701,6 +1712,10 @@ $app->post('/print/search', function ()use($app){
                 // 個体管理番号
                 $individual_ctrl_no = implode("<br>", $num_list);
                 $list['individual_num'] = $individual_ctrl_no;
+                //返却日
+                $return_date = implode("<br>", $return_date_list);
+                $list['return_date'] = $return_date;
+
             }
             array_push($all_list,$list);
         }
