@@ -284,7 +284,8 @@ define([
 
 				if (type == "cm0130_res") {
 					if (!val["chk_flg"]) {
-						alert(val["error_msg"]);
+						$('#myModal_alert').modal();
+						document.getElementById("alert_txt").innerHTML=val["error_msg"];
 					} else {
 						if (transition == "WR0021_req") {
 							var type = transition;
