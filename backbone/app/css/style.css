@@ -121,6 +121,16 @@
 .wearer_detail_modal .modal-dialog{
     position: relative;
 }
+.info_add_modal .modal-dialog{
+    position: relative;
+}
+.info_edit_modal .modal-dialog{
+    position: relative;
+}
+#manpower-detail-modal .modal-dialog{
+    position: relative;
+}
+
 .modal-dialog .modal-header {
     border-bottom: 0;
     background: #ccc;
