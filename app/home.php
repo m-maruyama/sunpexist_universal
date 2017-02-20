@@ -351,7 +351,6 @@ $app->post('/home_count', function () use ($app) {
             }
             $section_query .= implode(' OR ' , $section_list);
             $section_query .= ")";
-            ChromePhp::log($section_query);
             array_push($query_list, $section_query);
 
 //            array_push($query_list, "m_contract_resource.accnt_no = '$accnt_no'");
@@ -361,7 +360,6 @@ $app->post('/home_count', function () use ($app) {
         array_push($query_list, "t_returned_plan_info.rntl_cont_no = '" . $rntl_cont_no . "'");
         array_push($query_list, "t_returned_plan_info.return_status = '1'");
         //array_push($query_list, "(t_order.order_sts_kbn = '3' OR t_order.order_sts_kbn = '4')");
-        ChromePhp::log($query_list);
 
         $query = implode(' AND ', $query_list);
         if (individual_flg($auth['corporate_id'], $rntl_cont_no) == 1) {
