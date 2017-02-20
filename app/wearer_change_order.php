@@ -634,12 +634,12 @@ $app->post('/shipment_change', function ()use($app){
             $list['selected'] = '';
           }
         } else {
-//          // 初期遷移時は初期選択状態版を生成
-//          if ($list['ship_to_cd'] == $wearer_chg_post['ship_to_cd'] && $list['ship_to_brnch_cd'] == $wearer_chg_post['ship_to_brnch_cd']) {
-//            $list['selected'] = 'selected';
-//          } else {
-//            $list['selected'] = '';
-//          }
+          // 初期遷移時は初期選択状態版を生成
+          if ($list['ship_to_cd'] == $wearer_chg_post['ship_to_cd'] && $list['ship_to_brnch_cd'] == $wearer_chg_post['ship_to_brnch_cd']) {
+            $list['selected'] = 'selected';
+          } else {
+            $list['selected'] = '';
+          }
         }
 
         array_push($all_list, $list);
