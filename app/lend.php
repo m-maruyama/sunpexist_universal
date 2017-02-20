@@ -89,15 +89,15 @@ $app->post('/lend/search', function ()use($app){
 	}
 	//商品
 	if(!empty($cond['input_item'])){
-		array_push($query_list,"m_wearer_item.item_cd = '".$cond['input_item']."'");
+		array_push($query_list,"t_delivery_goods_state_details.item_cd = '".$cond['input_item']."'");
 	}
 	//色
 	if(!empty($cond['item_color'])){
-		array_push($query_list,"m_wearer_item.color_cd = '".$cond['item_color']."'");
+		array_push($query_list,"t_delivery_goods_state_details.color_cd = '".$cond['item_color']."'");
 	}
 	//サイズ
 	if(!empty($cond['item_size'])){
-		array_push($query_list,"m_wearer_item.size_cd = '".$cond['item_size']."'");
+		array_push($query_list,"t_delivery_goods_state_details.size_cd = '".$cond['item_size']."'");
 	}
 	//個体管理番号
 	if(!empty($cond['individual_number'])){
@@ -225,7 +225,6 @@ $app->post('/lend/search', function ()use($app){
     $arg_str .= " WHERE ";
     $arg_str .= $query;
     $arg_str .= ") as distinct_table";
-    ChromePhp::log($arg_str);
     if (!empty($q_sort_key)) {
         $arg_str .= " ORDER BY ";
         $arg_str .= $q_sort_key . " " . $order;

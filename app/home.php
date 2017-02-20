@@ -117,7 +117,6 @@ $app->post('/home_count', function () use ($app) {
 
     //アカウントが所持する契約no単位で処理を行う。
     foreach ($rntl_cont_no_array as $rntl_cont_no) {//---契約リソースマスター 0000000000フラグ確認処理---//
-
         //前処理 契約リソースマスタ参照 拠点ゼロ埋め確認
         $arg_str = "";
         $arg_str .= "SELECT ";
@@ -247,7 +246,7 @@ $app->post('/home_count', function () use ($app) {
 
 
         if (!empty($results_cnt)) {
-            $all_list = array();
+            $emply_cd_no_regist_list = array();
 
             foreach ($results as $result) {
                 // 発注区分=貸与で発注情報トランのデータが存在しない場合は対象外とする
@@ -259,14 +258,13 @@ $app->post('/home_count', function () use ($app) {
                 $list['werer_cd'] = $result->as_werer_cd;
                 // 発注状況区分
                 $list['order_sts_kbn'] = $result->as_wst_order_sts_kbn;
-                $all_list[] = $list;
+                $emply_cd_no_regist_list[] = $list;
                 //発注未送信件数
             }
         }
-        if (count($all_list) > 0) {
-            $emply_cd_no_regist_cnt += count($all_list);
+        if (count($emply_cd_no_regist_list) > 0) {
+            $emply_cd_no_regist_cnt += count($emply_cd_no_regist_list);
         }
-
         //未受領
         $query_list = array();
 
@@ -338,13 +336,24 @@ $app->post('/home_count', function () use ($app) {
         $result_obj = (array)$results;
         $results_cnt_list += $result_obj["\0*\0_count"];
 
-
         $query_list = array();
+
 
         //未返却
         //ゼロ埋めがない場合、ログインアカウントの条件追加
         if ($rntl_sect_cd_zero_flg == 0) {
-            array_push($query_list, "m_contract_resource.accnt_no = '$accnt_no'");
+            $section_list = array();
+            $section_query = "(";
+            foreach ($all_list as $rntl_sect_cd) {
+                array_push($section_list,"t_returned_plan_info.rntl_sect_cd = '".$rntl_sect_cd."'");
+                array_push($section_list,"m_wearer_std.rntl_sect_cd = '".$rntl_sect_cd."'");
+
+            }
+            $section_query .= implode(' OR ' , $section_list);
+            $section_query .= ")";
+            array_push($query_list, $section_query);
+
+//            array_push($query_list, "m_contract_resource.accnt_no = '$accnt_no'");
         }
 
         array_push($query_list, "t_returned_plan_info.corporate_id = '" . $auth['corporate_id'] . "'");
@@ -457,11 +466,13 @@ $app->post('/check/agreement_no', function ()use($app) {
     $arg_str .= "SELECT ";
     $arg_str .= " * ";
     $arg_str .= " FROM ";
-    $arg_str .= "m_contract_resource";
+    $arg_str .= "(SELECT distinct on (rntl_cont_no)";
+    $arg_str .= " * ";
+    $arg_str .= "FROM m_contract_resource";
     $arg_str .= " WHERE ";
     $arg_str .= "corporate_id = '$corporate_id'";
     $arg_str .= " AND accnt_no = '$accnt_no'";
-
+    $arg_str .= ") as distinct_table";
     $m_contract_resource = new MContractResource();
     $results = new Resultset(null, $m_contract_resource, $m_contract_resource->getReadConnection()->query($arg_str));
     $result_obj = (array)$results;
