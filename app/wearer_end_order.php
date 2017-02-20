@@ -834,6 +834,8 @@ $app->post('/wearer_end_order_list', function ()use($app){
             array_push($query_list, "m_job_type.corporate_id = '".$auth['corporate_id']."'");
             array_push($query_list, "m_job_type.rntl_cont_no = '".$now_wearer_map['rntl_cont_no']."'");
             array_push($query_list, "m_job_type.job_type_cd = '".$now_wearer_map['job_type_cd']."'");
+            array_push($query_list, "m_input_item.corporate_id = '".$auth['corporate_id']."'");
+            array_push($query_list, "m_input_item.rntl_cont_no = '".$now_wearer_map['rntl_cont_no']."'");
             array_push($query_list, "m_input_item.job_type_cd = '".$now_wearer_map['job_type_cd']."'");
             array_push($query_list, "m_input_item.item_cd = '".$now_wearer_map['item_cd']."'");
             $query = implode(' AND ', $query_list);
