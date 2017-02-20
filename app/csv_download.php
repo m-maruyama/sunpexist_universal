@@ -1452,6 +1452,9 @@ $app->post('/csv_download', function ()use($app){
             if($sort_key == 'send_ymd'){
                 $q_sort_key = 'as_ship_ymd';
             }
+            if($sort_key == 'return_date'){
+                $q_sort_key = 'as_return_date';
+            }
             if($sort_key == 'individual_num'){
                 $q_sort_key = 'as_individual_ctrl_no';
             }
