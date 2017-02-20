@@ -89,7 +89,7 @@ $app->post('/unreturn/search', function ()use($app){
     }
     //拠点
     if(!empty($cond['section'])){
-        array_push($query_list,"t_returned_plan_info.rntl_sect_cd = '".$cond['section']."'");
+        array_push($query_list,"(t_returned_plan_info.rntl_sect_cd = '".$cond['section']."' OR m_wearer_std.rntl_sect_cd = '".$cond['section']."')");
     }
     //貸与パターン
     if(!empty($cond['job_type'])){
@@ -496,6 +496,8 @@ $app->post('/unreturn/search', function ()use($app){
         $arg_str .= "t_delivery_goods_state_details.receipt_date as as_receipt_date,";
         $arg_str .= "t_returned_plan_info.return_plan_qty as as_return_plan__qty,";
         $arg_str .= "t_returned_plan_info.rntl_cont_no as as_rntl_cont_no,";
+        $arg_str .= "t_returned_plan_info.rntl_sect_cd as as_trp_rntl_sect_cd,";
+        $arg_str .= "m_wearer_std.rntl_sect_cd as as_mws_rntl_sect_cd,";
         $arg_str .= "m_contract.rntl_cont_name as as_rntl_cont_name";
         $arg_str .= " FROM t_returned_plan_info LEFT JOIN";
         $arg_str .= " (t_order LEFT JOIN";
@@ -569,6 +571,8 @@ $app->post('/unreturn/search', function ()use($app){
         $arg_str .= "t_delivery_goods_state_details.receipt_date as as_receipt_date,";
         $arg_str .= "t_returned_plan_info.return_plan_qty as as_return_plan__qty,";
         $arg_str .= "t_returned_plan_info.rntl_cont_no as as_rntl_cont_no,";
+        $arg_str .= "t_returned_plan_info.rntl_sect_cd as as_trp_rntl_sect_cd,";
+        $arg_str .= "m_wearer_std.rntl_sect_cd as as_mws_rntl_sect_cd,";
         $arg_str .= "m_contract.rntl_cont_name as as_rntl_cont_name";
         $arg_str .= " FROM t_returned_plan_info LEFT JOIN";
         $arg_str .= " (t_order LEFT JOIN";
@@ -612,6 +616,8 @@ $app->post('/unreturn/search', function ()use($app){
             $arg_str .= $q_sort_key . " " . $order;
         }
     }
+    //ChromePhp::log($arg_str);
+
     $t_order = new TOrder();
     $results = new Resultset(null, $t_order, $t_order->getReadConnection()->query($arg_str));
     $result_obj = (array)$results;
