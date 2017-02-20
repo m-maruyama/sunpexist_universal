@@ -767,7 +767,7 @@ $app->post('/wearer/detail', function () use ($app) {
           $list['item_name'] = "-";
         }
         // 商品-色(サイズ-サイズ2)変換
-        $list['shin_item_code'] = $list['item_cd'] . "-" . $list['color_cd'] . "(" . $list['size_cd'] . "-" . $list['size_two_cd'] . ")";
+        $list['shin_item_code'] = $list['item_cd'] . "-" . $list['color_cd'] . "(" . $list['size_cd'] . "-" . trim(mb_convert_kana( $list['size_two_cd'], "s")) . ")";
 
 
         if (individual_flg($auth['corporate_id'], $cond['agreement_no']) == 1) {
@@ -1005,9 +1005,9 @@ $app->post('/wearer/detail', function () use ($app) {
         array_push($search_q, "item_cd = '" . $list['item_cd'] . "'");
         array_push($search_q, "color_cd = '" . $list['color_cd'] . "'");
         //サイズ2が空だったらサイズ2を検索条件に入れない
-        if ($list['size_two_cd'] !== '') {
-          array_push($search_q, "size_two_cd = '" . $list['size_two_cd'] . "'");
-        }
+//        if ($list['size_two_cd'] !== '') {
+//          array_push($search_q, "size_two_cd = '" . $list['size_two_cd'] . "'");
+//        }
         //sql文字列を' AND 'で結合
         $query = implode(' AND ', $search_q);
         $input_item = MInputItem::query()
