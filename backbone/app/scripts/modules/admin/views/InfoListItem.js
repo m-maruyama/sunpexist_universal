@@ -20,6 +20,7 @@ define([
 					e.preventDefault();
 					var that = this;
 					var id = e.target.id;
+					console.log(id);
 					this.triggerMethod('click:editBtn', id);
 				},
 				'click @ui.deleteBtn': function(e){
