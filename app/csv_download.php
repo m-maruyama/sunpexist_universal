@@ -1883,7 +1883,7 @@ $app->post('/csv_download', function ()use($app){
              );
              $paginator = $paginator_model->getPaginate();
              $t_returned_results = $paginator->items;
-
+             $return_date_list = array();
              $num_list = array();
              $return_status_list = array();
              $i = 0;
@@ -1893,6 +1893,13 @@ $app->post('/csv_download', function ()use($app){
              foreach ($t_returned_results as $t_returned_result) {
                  //個体管理番号
                  array_push($num_list, $t_returned_result->individual_ctrl_no);
+                 //返却日
+                 if (!empty($t_returned_result->return_date)) {
+                     $return_date = date('Y/m/d', strtotime($t_returned_result->return_date));
+                 } else {
+                     $return_date = '-';
+                 }
+                 array_push($return_date_list, $return_date);
                  //返却予定数の合計
                  $each_item_return_plan_qty = $each_item_return_plan_qty + $t_returned_result->return_plan_qty;
                  //返却済み数の合計
@@ -1931,6 +1938,10 @@ $app->post('/csv_download', function ()use($app){
              // 個体管理番号
              $individual_ctrl_no = implode("\r\n", $num_list);
              $list['individual_num'] = $individual_ctrl_no;
+             //返却日
+             $return_date = implode("\r\n", $return_date_list);
+             $list['return_date'] = $return_date;
+
          }
 
 				array_push($all_list,$list);

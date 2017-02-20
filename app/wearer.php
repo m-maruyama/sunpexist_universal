@@ -746,10 +746,9 @@ $app->post('/wearer/detail', function () use ($app) {
         array_push($search_q, "item_cd = '" . $list['item_cd'] . "'");
         array_push($search_q, "color_cd = '" . $list['color_cd'] . "'");
         //サイズ2が空だったらサイズ2を検索条件に入れない
-          $list['size_two_cd'] = trim(mb_convert_kana( $list['size_two_cd'], "s"));
-          if($list['size_two_cd'] !== '') {
-              array_push($search_q, "size_two_cd = '".$list['size_two_cd']."'");
-          }
+        //if($list['size_two_cd'] !== '') {
+        //    array_push($search_q, "size_two_cd = '".$list['size_two_cd']."'");
+        //}
         //sql文字列を' AND 'で結合
         $query = implode(' AND ', $search_q);
         $input_item = MInputItem::query()
@@ -1007,7 +1006,7 @@ $app->post('/wearer/detail', function () use ($app) {
         array_push($search_q, "color_cd = '" . $list['color_cd'] . "'");
         //サイズ2が空だったらサイズ2を検索条件に入れない
 //        if ($list['size_two_cd'] !== '') {
-//            array_push($search_q, "size_two_cd = '" . $list['size_two_cd'] . "'");
+//          array_push($search_q, "size_two_cd = '" . $list['size_two_cd'] . "'");
 //        }
         //sql文字列を' AND 'で結合
         $query = implode(' AND ', $search_q);
