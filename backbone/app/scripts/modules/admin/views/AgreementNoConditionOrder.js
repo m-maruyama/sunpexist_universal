@@ -17,7 +17,7 @@ define([
 			onShow: function() {
 				var that = this;
 				var modelForUpdate = this.model;
-				modelForUpdate.url = App.api.CM0060;
+				modelForUpdate.url = App.api.CM0065;
 				var cond = {
 					"scr": '契約No'
 				};
