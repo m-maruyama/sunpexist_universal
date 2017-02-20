@@ -280,8 +280,6 @@ define([
 			},
 			onShow: function(val, type, transition, data) {
 				var that = this;
-
-
 				if (type == "cm0130_res") {
 					if (!val["chk_flg"]) {
 						$('#myModal_alert').modal();
