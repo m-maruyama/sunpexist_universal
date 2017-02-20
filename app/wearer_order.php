@@ -654,6 +654,8 @@ $app->post('/wearer_order_list', function ()use($app){
         array_push($query_list, "m_job_type.corporate_id = '".$auth['corporate_id']."'");
         array_push($query_list, "m_job_type.rntl_cont_no = '".$wearer_odr_post['rntl_cont_no']."'");
         array_push($query_list, "m_job_type.job_type_cd = '".$wearer_odr_post['job_type_cd']."'");
+        array_push($query_list, "m_input_item.corporate_id = '".$auth['corporate_id']."'");
+        array_push($query_list, "m_input_item.rntl_cont_no = '".$wearer_odr_post['rntl_cont_no']."'");
         array_push($query_list, "m_input_item.job_type_cd = '".$wearer_odr_post['job_type_cd']."'");
         array_push($query_list, "m_input_item.item_cd = '".$result->as_item_cd."'");
         array_push($query_list, "m_input_item.job_type_item_cd = '".$list['job_type_item_cd']."'");
@@ -676,7 +678,6 @@ $app->post('/wearer_order_list', function ()use($app){
         $m_input_item = new MInputItem();
         $results = new Resultset(NULL, $m_input_item, $m_input_item->getReadConnection()->query($arg_str));
         $result_obj = (array)$results;
-        ChromePhp::LOG($result_obj);
         $results_cnt = $result_obj["\0*\0_count"];
         if ($results_cnt > 1) {
             if(!$rowspan){
