@@ -92,6 +92,10 @@ $app->post('/manpower_info/search', function ()use($app){
 	$query = implode(' AND ', $query_list);
 
 	$arg_str = "SELECT ";
+    $arg_str .= " * ";
+    $arg_str .= " FROM ";
+    $arg_str .= "(SELECT distinct on ";
+    $arg_str .= "(t_staff_detail_head.rntl_sect_cd,t_staff_detail_head.yyyymm)";
 	$arg_str .= "t_staff_detail_head.rntl_sect_cd as as_rntl_sect_cd,";
 	$arg_str .= "t_staff_detail_head.yyyymm as as_yyyymm,";
 	$arg_str .= "t_staff_detail_head.staff_total as as_staff_total,";
@@ -100,7 +104,10 @@ $app->post('/manpower_info/search', function ()use($app){
 	//$arg_str .= " INNER JOIN m_section ON t_staff_detail_head.rntl_sect_cd = m_section.rntl_sect_cd";
     if($rntl_sect_cd_zero_flg == 1){
         $arg_str .= " INNER JOIN m_section";
-        $arg_str .= " ON t_staff_detail_head.rntl_sect_cd = m_section.rntl_sect_cd";
+        $arg_str .= " ON t_staff_detail_head.corporate_id = m_section.corporate_id";
+        $arg_str .= " AND t_staff_detail_head.rntl_cont_no = m_section.rntl_cont_no";
+        $arg_str .= " AND t_staff_detail_head.rntl_sect_cd = m_section.rntl_sect_cd";
+
     }elseif($rntl_sect_cd_zero_flg == 0){
         $arg_str .= " INNER JOIN (m_section INNER JOIN m_contract_resource";
         $arg_str .= " ON m_section.corporate_id = m_contract_resource.corporate_id";
@@ -110,8 +117,8 @@ $app->post('/manpower_info/search', function ()use($app){
     }
     $arg_str .= " WHERE ";
 	$arg_str .= $query;
+    $arg_str .= ") as distinct_table";
 	$arg_str .= " ORDER BY as_yyyymm DESC";
-
 	$t_staff_detail_head = new TStaffDetailHead();
 	$results = new Resultset(null, $t_staff_detail_head, $t_staff_detail_head->getReadConnection()->query($arg_str));
 	$result_obj = (array)$results;
@@ -134,7 +141,9 @@ $app->post('/manpower_info/search', function ()use($app){
 		$results = $paginator->items;
 
 		// 表No設定
-		$list_no = 1;
+        $page_no = $page['page_number'] - 1;
+        $start =  $page['records_per_page'] * $page_no;
+        $list_no = $start + 1;
 		foreach($results as $result) {
 			// 表No
 			$list['list_no'] = $list_no++;
@@ -203,14 +212,13 @@ $app->post('/manpower_info/detail', function ()use($app){
 
 	// json返却値
 	$json_list = array();
-
 	//---小見出し項目---//
 	$heading = array();
 	$heading_list = array();
 	// 対象年月
 	if (!empty($cond['yyyymm'])) {
 		$heading['yyyymm'] = $cond['yyyymm'];
-		$heading['yyyymm'] = date('Y年m月', strtotime($heading['yyyymm']));
+		$heading['yyyymm'] = date('Y年m月', strtotime($heading['yyyymm'].'01'));
 	} else {
 		$heading['yyyymm'] = '';
 	}
@@ -339,7 +347,7 @@ $app->post('/manpower_info/download', function ()use($app){
 	// 対象年月
 	if (!empty($cond['yyyymm'])) {
 		$heading['yyyymm'] = $cond['yyyymm'];
-		$heading['yyyymm'] = date('Y年m月', strtotime($heading['yyyymm']));
+        $heading['yyyymm'] = date('Y年m月', strtotime($heading['yyyymm'].'01'));
 	} else {
 		$heading['yyyymm'] = '';
 	}

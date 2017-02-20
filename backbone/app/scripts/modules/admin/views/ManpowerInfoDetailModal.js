@@ -52,7 +52,6 @@ define([
 					"yyyymm": yyyymm,
 					"staff_total": staff_total
 				};
-
 				modelForUpdate.fetchMx({
 					data:cond,
 					success:function(res){

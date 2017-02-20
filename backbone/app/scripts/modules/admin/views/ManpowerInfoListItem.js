@@ -40,8 +40,12 @@ define([
 					cond_map["yyyymm"] = target_id[3];
 					cond_map["staff_total"] = target_id[4];
 
-					var msg = "データ量により、ダウンロード処理に時間がかかる可能性があります。ダウンロードを実施してよろしいですか？";
-					if (window.confirm(msg)) {
+					// JavaScript モーダルで表示
+					$('#myModal').modal('show'); //追加
+					//メッセージの修正
+					document.getElementById("confirm_txt").innerHTML=App.dl_msg; //追加　このメッセージはapp.jsで定義
+					$("#btn_ok").off();
+					$("#btn_ok").on('click',function() { //追加
 						var cond = {
 							"scr": '請求書データ詳細ダウンロード',
 							"cond": cond_map
@@ -55,8 +59,8 @@ define([
 						data.remove();
 						form.remove();
 						form=null;
-						return;
-					}
+						$('#myModal').modal('hide');
+					});
 				}
 			}
 		});
