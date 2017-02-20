@@ -78,7 +78,7 @@ $app->post('/order_send/search', function () use ($app) {
       $query_list[] = "m_wearer_std_tran.sex_kbn = '".$cond['sex_kbn']."'";
     }
     if (!empty($cond['section'])) {
-      $query_list[] = "(t_order_tran.rntl_sect_cd = '".$cond['section']."' OR t_order_tran.order_rntl_sect_cd = '".$cond['section']."')";
+      $query_list[] = "(m_wearer_std_tran.rntl_sect_cd = '".$cond['section']."' OR t_order_tran.order_rntl_sect_cd = '".$cond['section']."')";
     }
     if (!empty($cond['job_type'])) {
       $query_list[] = "m_wearer_std_tran.job_type_cd = '".$cond['job_type']."'";
@@ -167,6 +167,7 @@ $app->post('/order_send/search', function () use ($app) {
     $arg_str .= ") as distinct_table";
     $arg_str .= " ORDER BY as_wst_order_req_no ASC";
     $m_wearer_std_tran = new MWearerStdTran();
+    //ChromePhp::log($arg_str);
     $results = new Resultset(null, $m_wearer_std_tran, $m_wearer_std_tran->getReadConnection()->query($arg_str));
     $result_obj = (array)$results;
     $results_cnt = $result_obj["\0*\0_count"];
