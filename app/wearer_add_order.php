@@ -595,7 +595,6 @@ $app->post('/wearer_add/info', function ()use($app){
        $arg_str .= "m_input_item.job_type_item_cd as as_job_type_item_cd,";
        $arg_str .= "m_input_item.input_item_name as as_input_item_name,";
        $arg_str .= "m_input_item.std_input_qty as as_std_input_qty,";
-       $arg_str .= "m_input_item.job_type_item_cd as as_job_type_item_cd,";
        $arg_str .= "m_job_type.order_control_unit as as_order_control_unit";
        $arg_str .= " FROM ";
        $arg_str .= "m_job_type INNER JOIN m_input_item";
@@ -609,7 +608,7 @@ $app->post('/wearer_add/info', function ()use($app){
        $arg_str .= " WHERE ";
        $arg_str .= $query;
        $arg_str .= ") as distinct_table";
-       $arg_str .= " ORDER BY as_item_cd ASC, as_color_cd ASC";
+       $arg_str .= " ORDER BY as_item_cd, as_job_type_item_cd, as_color_cd ASC";
        //ChromePhp::LOG($arg_str);
        $m_job_type = new MJobType();
        $item_results = new Resultset(null, $m_job_type, $m_job_type->getReadConnection()->query($arg_str));
@@ -796,7 +795,6 @@ $app->post('/wearer_add/info', function ()use($app){
      $arg_str .= "m_input_item.job_type_item_cd as as_job_type_item_cd,";
      $arg_str .= "m_input_item.input_item_name as as_input_item_name,";
      $arg_str .= "m_input_item.std_input_qty as as_std_input_qty,";
-     $arg_str .= "m_input_item.job_type_item_cd as as_job_type_item_cd,";
      $arg_str .= "m_job_type.order_control_unit as as_order_control_unit";
      $arg_str .= " FROM ";
      $arg_str .= "m_job_type INNER JOIN m_input_item";
@@ -810,7 +808,7 @@ $app->post('/wearer_add/info', function ()use($app){
      $arg_str .= " WHERE ";
      $arg_str .= $query;
      $arg_str .= ") as distinct_table";
-     $arg_str .= " ORDER BY as_item_cd ASC, as_color_cd ASC";
+       $arg_str .= " ORDER BY as_item_cd, as_job_type_item_cd, as_color_cd ASC";
      //ChromePhp::LOG($arg_str);
      $m_job_type = new MJobType();
      $results = new Resultset(null, $m_job_type, $m_job_type->getReadConnection()->query($arg_str));
@@ -2163,43 +2161,43 @@ $app->post('/wearer_add/send', function ()use($app){
       }
     }
 */
-    // 着用者名
-    if (empty($wearer_data_input["member_name"])) {
-      $json_list["error_code"] = "1";
-      $error_msg = "着用者名を入力してください。";
-      array_push($json_list["error_msg"], $error_msg);
-    }
-    if (mb_strlen($wearer_data_input['member_name']) > 0) {
-       if (strlen(mb_convert_encoding($wearer_data_input['member_name'], "SJIS")) > 22) {
-         $json_list["error_code"] = "1";
-         $error_msg = "着用者名が規定の文字数をオーバーしています。";
-         array_push($json_list["error_msg"], $error_msg);
-       }
-    }
-
-    if (mb_strlen($wearer_data_input['member_name_kana']) > 0) {
-       if (strlen(mb_convert_encoding($wearer_data_input['member_name_kana'], "SJIS")) > 25) {
-         $json_list["error_code"] = "1";
-         $error_msg = "着用者名(カナ)が規定の文字数をオーバーしています。";
-         array_push($json_list["error_msg"], $error_msg);
-       }
-    }
-    // コメント欄
-    if (mb_strlen($wearer_data_input['comment']) > 0) {
-      if (strlen(mb_convert_encoding($wearer_data_input['comment'], "SJIS")) > 100) {
-        $json_list["error_code"] = "1";
-        $error_msg = "コメント欄は100文字以内で入力してください。";
-        array_push($json_list["error_msg"], $error_msg);
-      }
-      //コメント欄使用不可文字
-      $str_utf8 = $wearer_data_input['comment'];
-      if (convert_not_sjis($str_utf8) !== true) {
-          $output_text = convert_not_sjis($str_utf8);
+      // 着用者名
+      if (empty($wearer_data_input["member_name"])) {
           $json_list["error_code"] = "1";
-          $error_msg = 'コメント欄に使用できない文字が含まれています。' . "$output_text";
+          $error_msg = "着用者名を入力してください。";
           array_push($json_list["error_msg"], $error_msg);
-      };
-    }
+      }
+      if (mb_strlen($wearer_data_input['member_name']) > 0) {
+          if (strlen(mb_convert_encoding($wearer_data_input['member_name'], "SJIS")) > 22) {
+              $json_list["error_code"] = "1";
+              $error_msg = "着用者名が規定の文字数をオーバーしています。";
+              array_push($json_list["error_msg"], $error_msg);
+          }
+      }
+
+      if (mb_strlen($wearer_data_input['member_name_kana']) > 0) {
+          if (strlen(mb_convert_encoding($wearer_data_input['member_name_kana'], "SJIS")) > 25) {
+              $json_list["error_code"] = "1";
+              $error_msg = "着用者名(カナ)が規定の文字数をオーバーしています。";
+              array_push($json_list["error_msg"], $error_msg);
+          }
+      }
+      // コメント欄
+      if (mb_strlen($wearer_data_input['comment']) > 0) {
+          if (strlen(mb_convert_encoding($wearer_data_input['comment'], "SJIS")) > 100) {
+              $json_list["error_code"] = "1";
+              $error_msg = "コメント欄は100文字以内で入力してください。";
+              array_push($json_list["error_msg"], $error_msg);
+          }
+          //コメント欄使用不可文字
+          $str_utf8 = $wearer_data_input['comment'];
+          if (convert_not_sjis($str_utf8) !== true) {
+              $output_text = convert_not_sjis($str_utf8);
+              $json_list["error_code"] = "1";
+              $error_msg = 'コメント欄に使用できない文字が含まれています。' . "$output_text";
+              array_push($json_list["error_msg"], $error_msg);
+          };
+      }
       // 発注商品一覧
       foreach ($item_list as $item_map) {
           // 発注枚数フォーマットチェック(複数選択商品)
@@ -2224,7 +2222,7 @@ $app->post('/wearer_add/send', function ()use($app){
           }
       }
 
-    echo json_encode($json_list);
+      echo json_encode($json_list);
   } else if ($mode == "update") {
 /*
 ChromePhp::LOG("着用者入力");

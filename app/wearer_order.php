@@ -10,6 +10,76 @@ use Phalcon\Paginator\Adapter\QueryBuilder as PaginatorQueryBuilder;
  * 発注入力
  * 入力項目：理由区分
  */
+$app->post('/agreement_no_order', function ()use($app) {
+    $params = json_decode(file_get_contents("php://input"), true);
+
+    // アカウントセッション取得
+    $auth = $app->session->get("auth");
+    // 前画面セッション取得
+    $wearer_odr_post = $app->session->get("wearer_odr_post");
+    //ChromePhp::LOG($cond);
+
+    $query_list = array();
+    $list = array();
+    $all_list = array();
+    $json_list = array();
+    array_push($query_list, "m_contract.rntl_cont_no = '".$wearer_odr_post["rntl_cont_no"]."'");
+    array_push($query_list, "m_contract.corporate_id = '".$auth["corporate_id"]."'");
+    $query = implode(' AND ', $query_list);
+
+    $arg_str = 'SELECT ';
+    $arg_str .= 'm_contract.rntl_cont_no as as_rntl_cont_no,';
+    $arg_str .= 'm_contract.rntl_emply_cont_name as as_rntl_cont_name';
+    $arg_str .= ' FROM ';
+    $arg_str .= 'm_contract';
+    $arg_str .= ' WHERE ';
+    $arg_str .= $query;
+
+    $m_contract = new MContract();
+    $results = new Resultset(null, $m_contract, $m_contract->getReadConnection()->query($arg_str));
+    $results_array = (array) $results;
+    $results_cnt = $results_array["\0*\0_count"];
+
+    if ($results_cnt > 0) {
+        $paginator_model = new PaginatorModel(
+            array(
+                "data"  => $results,
+                "limit" => $results_cnt,
+                "page" => 1
+            )
+        );
+        $paginator = $paginator_model->getPaginate();
+        $results = $paginator->items;
+
+        foreach ($results as $result) {
+            $list['rntl_cont_no'] = $result->as_rntl_cont_no;
+            $list['rntl_cont_name'] = $result->as_rntl_cont_name;
+            if (!empty($cond["agreement_no"])) {
+                if ($list['rntl_cont_no'] == $cond["agreement_no"]) {
+                    $list['selected'] = 'selected';
+                } else {
+                    $list['selected'] = '';
+                }
+            }
+            array_push($all_list, $list);
+        }
+    } else {
+        $list['rntl_cont_no'] = null;
+        $list['rntl_cont_name'] = '';
+        $list['selected'] = '';
+        array_push($all_list, $list);
+    }
+    $json_list['agreement_no_disabled'] = 'disabled';
+    $json_list['agreement_no_list'] = $all_list;
+
+    echo json_encode($json_list);
+});
+
+
+/**
+ * 発注入力
+ * 入力項目：理由区分
+ */
 $app->post('/reason_kbn_order', function ()use($app){
     $params = json_decode(file_get_contents("php://input"), true);
 
@@ -481,7 +551,7 @@ $app->post('/wearer_order_list', function ()use($app){
     $arg_str .= " GROUP BY as_item_name,as_item_cd,as_color_cd, as_std_input_qty,
         as_input_item_name,as_size_two_cd,as_input_item_name,as_size_cd_tran,as_order_qty_tran,as_job_type_cd,as_job_type_item_cd";
     $arg_str .= ") as distinct_table";
-    $arg_str .= " ORDER BY as_item_cd,as_color_cd ASC";
+    $arg_str .= " ORDER BY as_item_cd, as_job_type_item_cd, as_color_cd ASC";
     $m_weare_std_tran= new MWearerStdTran();
     $results = new Resultset(null, $m_weare_std_tran, $m_weare_std_tran->getReadConnection()->query($arg_str));
     $result_obj = (array)$results;
@@ -534,7 +604,7 @@ $app->post('/wearer_order_list', function ()use($app){
         $arg_str .= " GROUP BY as_item_name, as_item_cd,as_color_cd, as_std_input_qty,
         as_input_item_name,as_size_two_cd,as_input_item_name,as_job_type_cd,as_job_type_item_cd";
         $arg_str .= ") as distinct_table";
-        $arg_str .= " ORDER BY as_item_cd,as_color_cd ASC";
+        $arg_str .= " ORDER BY as_item_cd, as_job_type_item_cd, as_color_cd ASC";
 
         $m_job_type = new MJobType();
         $results = new Resultset(null, $m_job_type, $m_job_type->getReadConnection()->query($arg_str));
@@ -606,6 +676,7 @@ $app->post('/wearer_order_list', function ()use($app){
         $m_input_item = new MInputItem();
         $results = new Resultset(NULL, $m_input_item, $m_input_item->getReadConnection()->query($arg_str));
         $result_obj = (array)$results;
+        ChromePhp::LOG($result_obj);
         $results_cnt = $result_obj["\0*\0_count"];
         if ($results_cnt > 1) {
             if(!$rowspan){

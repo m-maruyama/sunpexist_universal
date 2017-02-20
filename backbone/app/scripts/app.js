@@ -135,6 +135,7 @@ define([
 			"CM0061": host + "/agreement_no_input",
 			"CM0063": host + "/corporate_id",
 			"CM0064": host + "/corporate_id_all",
+			"CM0065": host + "/agreement_no_order",
 			"CM0070": host + "/input_item",
 			"CM0080": host + "/item_color",
 			"CM0090": host + "/section_modal",
