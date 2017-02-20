@@ -634,6 +634,7 @@ $app->post('/wearer_add/info', function ()use($app){
            //※着用者の職種マスタ.職種コードに紐づく投入商品マスタの職種アイテムコード単位で単一or複数判断
            $query_list = array();
            array_push($query_list, "m_input_item.corporate_id = '".$auth['corporate_id']."'");
+           array_push($query_list, "m_input_item.rntl_cont_no = '".$wearer_other_post['rntl_cont_no']."'");
            array_push($query_list, "m_input_item.job_type_cd = '".$wearer_other_post["job_type_cd"]."'");
            array_push($query_list, "m_input_item.item_cd = '".$list["item_cd"]."'");
            array_push($query_list, "m_input_item.job_type_item_cd = '".$item_result->as_job_type_item_cd."'");
@@ -849,9 +850,10 @@ $app->post('/wearer_add/info', function ()use($app){
          //※着用者の職種マスタ.職種コードに紐づく投入商品マスタの職種アイテムコード単位で単一or複数判断
          $query_list = array();
          array_push($query_list, "m_input_item.corporate_id = '".$auth['corporate_id']."'");
+         array_push($query_list, "m_input_item.rntl_cont_no = '".$wearer_other_post['rntl_cont_no']."'");
          array_push($query_list, "m_input_item.job_type_cd = '".$wearer_other_post["job_type_cd"]."'");
          array_push($query_list, "m_input_item.item_cd = '".$list["item_cd"]."'");
-           array_push($query_list, "m_input_item.job_type_item_cd = '".$result->as_job_type_item_cd."'");
+         array_push($query_list, "m_input_item.job_type_item_cd = '".$result->as_job_type_item_cd."'");
          $query = implode(' AND ', $query_list);
 
          $arg_str = "";
