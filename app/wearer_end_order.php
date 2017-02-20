@@ -736,7 +736,7 @@ $app->post('/wearer_end_order_list', function ()use($app){
     $arg_str .= " WHERE ";
     $arg_str .= $query;
     $arg_str .= ") as distinct_table";
-    $arg_str .= " ORDER BY as_item_cd ASC, as_color_cd ASC";
+    $arg_str .= " ORDER BY as_item_cd, as_job_type_item_cd, as_color_cd ASC";
     //ChromePhp::log($arg_str);
     $t_delivery_goods_state_details = new TDeliveryGoodsStateDetails();
     $results = new Resultset(null, $t_delivery_goods_state_details, $t_delivery_goods_state_details->getReadConnection()->query($arg_str));
