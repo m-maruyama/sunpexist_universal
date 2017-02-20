@@ -141,7 +141,7 @@ $app->post('/unreturn/search', function ()use($app){
 
     //ゼロ埋めがない場合、ログインアカウントの条件追加
     if($rntl_sect_cd_zero_flg == 0){
-        array_push($query_list,"m_contract_resource.accnt_no = '$accnt_no'");
+        //array_push($query_list,"m_contract_resource.accnt_no = '$accnt_no'");
     }
 
     $status_kbn_list = array();
@@ -616,7 +616,6 @@ $app->post('/unreturn/search', function ()use($app){
             $arg_str .= $q_sort_key . " " . $order;
         }
     }
-    //ChromePhp::log($arg_str);
 
     $t_order = new TOrder();
     $results = new Resultset(null, $t_order, $t_order->getReadConnection()->query($arg_str));
