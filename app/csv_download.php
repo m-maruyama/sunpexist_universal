@@ -3520,76 +3520,78 @@ $app->post('/csv_download', function ()use($app){
 		$result["csv_code"] = "0005";
 
 		//---在庫照会検索処理---//
-		//企業ID
-		array_push($query_list,"t_sdmzk.corporate_id = '".$auth['corporate_id']."'");
-		//契約No
-		if(!empty($cond['agreement_no'])){
-			array_push($query_list,"t_sdmzk.rntl_cont_no = '".$cond['agreement_no']."'");
-		}
-		//貸与パターン
-		if(!empty($cond['job_type_zaiko'])){
-       array_push($query_list,"substring(t_sdmzk.rent_pattern_data, 3) = '".$cond['job_type_zaiko']."'");
-		}
-		//商品
-		if(!empty($cond['item'])){
-			array_push($query_list,"m_item.item_cd = '".$cond['item']."'");
-		}
-		//色
-		if(!empty($cond['item_color'])){
-			array_push($query_list,"m_item.color_cd = '".$cond['item_color']."'");
-		}
-		//サイズ
-		if(!empty($cond['item_size'])){
-			array_push($query_list,"m_item.size_cd = '".$cond['item_size']."'");
-		}
+        //企業ID
+        array_push($query_list,"t_sdmzk.corporate_id = '".$auth['corporate_id']."'");
+        //契約No
+        if(!empty($cond['agreement_no'])){
+            array_push($query_list,"t_sdmzk.rntl_cont_no = '".$cond['agreement_no']."'");
+        }
+        //貸与パターン
+        if(!empty($cond['job_type_zaiko'])){
+            array_push($query_list,"substring(t_sdmzk.rent_pattern_data, 3) = '".$cond['job_type_zaiko']."'");
+        }
+        //商品
+        if(!empty($cond['item'])){
+            array_push($query_list,"m_item.item_cd = '".$cond['item']."'");
+        }
+        //色
+        if(!empty($cond['item_color'])){
+            array_push($query_list,"m_item.color_cd = '".$cond['item_color']."'");
+        }
+        //サイズ
+        if(!empty($cond['item_size'])){
+            array_push($query_list,"m_item.size_cd = '".$cond['item_size']."'");
+        }
 
-		$query = implode(' AND ', $query_list);
-		$sort_key ='';
-		$order ='';
+        $query = implode(' AND ', $query_list);
+        $sort_key ='';
+        $order ='';
+        //第一ソート設定
+        if(!empty($page['sort_key'])){
+            $sort_key = $page['sort_key'];
+            $order = $page['order'];
+            // 商品コード
+            if($sort_key == 'item_code'){
+                $q_sort_key = 'as_zkprcd, as_zksize_display_order';
+            }
+            // 商品名
+            if($sort_key == 'item_name'){
+                $q_sort_key = 'as_item_name';
+            }
+            // 在庫状態
+            if($sort_key == 'stock_status'){
+                $q_sort_key = 'as_zk_status_cd';
+            }
+            // 倉庫コード
+            if($sort_key == 'zkwhcd'){
+                $q_sort_key = 'as_zkwhcd';
+            }
+            // ラベル
+            if($sort_key == 'label'){
+                $q_sort_key = 'as_label';
+            }
+//		// 返却処理中
+//		if($sort_key == 'rtn_proc_qty'){
+//			$q_sort_key = 'as_rtn_proc_qty,';
+//		}
+//		// 返却予定
+//		if($sort_key == 'rtn_plan_qty'){
+//			$q_sort_key = 'as_rtn_plan_qty,';
+//		}
+//		// 貸与中
+//		if($sort_key == 'in_use_qty'){
+//			$q_sort_key = 'as_in_use_qty,';
+//		}
+            // その他出荷
+//            if($sort_key == 'other_ship_qty'){
+//                $q_sort_key = 'as_other_ship_qty';
+//            }
+        } else {
+            //指定がなければデフォルトソート順
+            $q_sort_key = "";
+            $order = 'asc';
+        }
 
-		//第一ソート設定
-		if(!empty($page['sort_key'])){
-			$sort_key = $page['sort_key'];
-			$order = $page['order'];
-			// 商品名
-			if($sort_key == 'item_name'){
-				$q_sort_key = 'as_item_name,';
-			}
-			// 在庫状態
-			if($sort_key == 'stock_status'){
-				$q_sort_key = 'as_zk_status_cd,';
-			}
-			// 倉庫コード
-			if($sort_key == 'zkwhcd'){
-				$q_sort_key = 'as_zkwhcd,';
-			}
-			// ラベル
-			if($sort_key == 'label'){
-				$q_sort_key = 'as_label,';
-			}
-//			// 返却処理中
-//			if($sort_key == 'rtn_proc_qty'){
-//				$q_sort_key = 'as_rtn_proc_qty,';
-//			}
-//			// 返却予定
-//			if($sort_key == 'rtn_plan_qty'){
-//				$q_sort_key = 'as_rtn_plan_qty,';
-//			}
-//			// 貸与中
-//			if($sort_key == 'in_use_qty'){
-//				$q_sort_key = 'as_in_use_qty,';
-//			}
-			// その他出荷
-			if($sort_key == 'other_ship_qty'){
-				$q_sort_key = 'as_other_ship_qty,';
-			}
-		} else {
-			//指定がなければデフォルトソート順
-			$q_sort_key = "";
-			$order = 'asc';
-		}
-
-		//---SQLクエリー実行---//
         $arg_str = "SELECT";
         $arg_str .= " * ";
         $arg_str .= " FROM ";
@@ -3622,10 +3624,14 @@ $app->post('/csv_download', function ()use($app){
         $arg_str .= " WHERE ";
         $arg_str .= $query;
         $arg_str .= ") as distinct_table";
-		if (!empty($q_sort_key)) {
-			$arg_str .= " ORDER BY ";
-			$arg_str .= $q_sort_key."as_rent_pattern_data,as_zkprcd,as_zkclor,as_zksize_display_order,as_zksize ".$order;
-		}
+        if ($q_sort_key) {
+            $arg_str .= " ORDER BY ";
+            $arg_str .= $q_sort_key." ".$order;
+        }else{
+            //初期状態：在庫専用貸与パターンコードの昇順、　商品コードの昇順、商品色の昇順、商品サイズ表示順の昇順、商品サイズの昇順
+            $arg_str .= " ORDER BY ";
+            $arg_str .= "as_rent_pattern_data, as_zkprcd, as_zkclor, as_zksize_display_order, as_zksize ".$order;
+        }
     //ChromePhp::log($arg_str);
 		$t_sdmzk = new TSdmzk();
 		$results = new Resultset(null, $t_sdmzk, $t_sdmzk->getReadConnection()->query($arg_str));
@@ -3693,7 +3699,6 @@ $app->post('/csv_download', function ()use($app){
 				}
 
 				// 商品-色(サイズ-サイズ2)表示変換
-
 				$list['shin_item_code'] = $list['zkprcd']."-".$list['zkclor']."(".$list['zksize']."-".trim(mb_convert_kana( $list['size_two_cd'], "s")).")";
 
 				//---在庫区分名称---//
@@ -3716,13 +3721,13 @@ $app->post('/csv_download', function ()use($app){
 
 		//---第二ソートキー(配列ソート)---//
 		// 商品-色(サイズ-サイズ2)
-		if($sort_key == 'item_code'){
-			if ($order == 'asc') {
-				array_multisort(array_column($all_list, 'shin_item_code'), SORT_DESC, $all_list);
-			} else {
-				array_multisort(array_column($all_list, 'shin_item_code'), SORT_ASC, $all_list);
-			}
-		}
+//		if($sort_key == 'item_code'){
+//			if ($order == 'asc') {
+//				array_multisort(array_column($all_list, 'shin_item_code'), SORT_DESC, $all_list);
+//			} else {
+//				array_multisort(array_column($all_list, 'shin_item_code'), SORT_ASC, $all_list);
+//			}
+//		}
 
 		//---CSV出力---//
 		$csv_datas = array();

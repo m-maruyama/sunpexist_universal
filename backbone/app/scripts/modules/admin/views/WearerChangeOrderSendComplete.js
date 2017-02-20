@@ -93,7 +93,8 @@ define([
 						} else {
 							// 登録処理にエラーがある場合
 							$("#h").text('');
-							$(".explanation").text('');
+							$(".explanation1").text('');
+							$(".explanation2").text('');
 							that.triggerMethod('showAlerts', res_val["error_msg"]);
 						}
 					}

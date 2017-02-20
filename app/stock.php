@@ -85,9 +85,9 @@ $app->post('/stock/search', function ()use($app){
 //			$q_sort_key = 'as_in_use_qty,';
 //		}
 		// その他出荷
-		if($sort_key == 'other_ship_qty'){
-			$q_sort_key = 'as_other_ship_qty';
-		}
+//		if($sort_key == 'other_ship_qty'){
+//			$q_sort_key = 'as_other_ship_qty';
+//		}
 	} else {
 		//指定がなければデフォルトソート順
 		$q_sort_key = "";
@@ -135,7 +135,6 @@ $app->post('/stock/search', function ()use($app){
         $arg_str .= "as_rent_pattern_data, as_zkprcd, as_zkclor, as_zksize_display_order, as_zksize ".$order;
     }
   //ChromePhp::log($arg_str);
-    ChromePhp::LOG($arg_str);
 	$t_sdmzk = new TSdmzk();
 	$results = new Resultset(null, $t_sdmzk, $t_sdmzk->getReadConnection()->query($arg_str));
 	$result_obj = (array)$results;
@@ -203,9 +202,9 @@ $app->post('/stock/search', function ()use($app){
 			}
 
 			// 商品-色(サイズ-サイズ2)表示変換
-			$list['shin_item_code'] = $list['zkprcd']."-".$list['zkclor']."(".$list['zksize']."-".$list['size_two_cd'].")";
 
-			//---在庫区分名称---//
+            $list['shin_item_code'] = $list['zkprcd']."-".$list['zkclor']."(".$list['zksize']."-".trim(mb_convert_kana( $list['size_two_cd'], "s")).")";
+            //---在庫区分名称---//
 			$query_list = array();
 			array_push($query_list, "cls_cd = '010'");
 			array_push($query_list, "gen_cd = '".$list['zk_status_cd']."'");

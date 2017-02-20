@@ -5054,140 +5054,268 @@ $app->post('/wearer_change/send', function ()use($app){
 
     echo json_encode($json_list);
   } else if ($mode == "update") {
-    //--発注NGパターンチェック--//
-    //※着用者基本マスタトラン参照
-    $query_list = array();
-    array_push($query_list, "corporate_id = '".$auth['corporate_id']."'");
-    array_push($query_list, "rntl_cont_no = '".$wearer_chg_post['rntl_cont_no']."'");
-    array_push($query_list, "werer_cd = '".$wearer_chg_post['werer_cd']."'");
-    $query = implode(' AND ', $query_list);
+      //--発注NGパターンチェック--//
+      //※着用者基本マスタトラン参照
+      $query_list = array();
+      array_push($query_list, "corporate_id = '".$auth['corporate_id']."'");
+      array_push($query_list, "rntl_cont_no = '".$wearer_chg_post['rntl_cont_no']."'");
+      array_push($query_list, "werer_cd = '".$wearer_chg_post['werer_cd']."'");
+      $query = implode(' AND ', $query_list);
 
-    $arg_str = "";
-    $arg_str = "SELECT ";
-    $arg_str .= "*";
-    $arg_str .= " FROM ";
-    $arg_str .= "m_wearer_std_tran";
-    $arg_str .= " WHERE ";
-    $arg_str .= $query;
-    $arg_str .= " ORDER BY upd_date DESC";
-    //ChromePhp::LOG($arg_str);
-    $m_wearer_std_tran = new MWearerStdTran();
-    $results = new Resultset(NULL, $m_wearer_std_tran, $m_wearer_std_tran->getReadConnection()->query($arg_str));
-    $result_obj = (array)$results;
-    $results_cnt = $result_obj["\0*\0_count"];
-    //ChromePhp::LOG($results_cnt);
-    if (!empty($results_cnt)) {
-      $paginator_model = new PaginatorModel(
-          array(
-              "data"  => $results,
-              "limit" => 1,
-              "page" => 1
-          )
-      );
-      $paginator = $paginator_model->getPaginate();
-      $results = $paginator->items;
-      //ChromePhp::LOG($results);
-      foreach ($results as $result) {
-        $order_sts_kbn = $result->order_sts_kbn;
+      $arg_str = "";
+      $arg_str = "SELECT ";
+      $arg_str .= "*";
+      $arg_str .= " FROM ";
+      $arg_str .= "m_wearer_std_tran";
+      $arg_str .= " WHERE ";
+      $arg_str .= $query;
+      $arg_str .= " ORDER BY upd_date DESC";
+      //ChromePhp::LOG($arg_str);
+      $m_wearer_std_tran = new MWearerStdTran();
+      $results = new Resultset(NULL, $m_wearer_std_tran, $m_wearer_std_tran->getReadConnection()->query($arg_str));
+      $result_obj = (array)$results;
+      $results_cnt = $result_obj["\0*\0_count"];
+      //ChromePhp::LOG($results_cnt);
+      if (!empty($results_cnt)) {
+          $paginator_model = new PaginatorModel(
+              array(
+                  "data"  => $results,
+                  "limit" => 1,
+                  "page" => 1
+              )
+          );
+          $paginator = $paginator_model->getPaginate();
+          $results = $paginator->items;
+          //ChromePhp::LOG($results);
+          foreach ($results as $result) {
+              $order_sts_kbn = $result->order_sts_kbn;
+          }
+
+          // 着用者基本マスタトラン.発注状況区分 = 「着用者編集」の情報がある際は発注NG
+          if ($order_sts_kbn == "6") {
+              $json_list["error_code"] = "1";
+              $error_msg = "着用者編集の発注が登録されていた為、操作を完了できませんでした。着用者編集の発注を削除してから再度登録して下さい。";
+              array_push($json_list["error_msg"], $error_msg);
+
+              //ChromePhp::LOG($json_list);
+              echo json_encode($json_list);
+              return;
+          }
       }
 
-      // 着用者基本マスタトラン.発注状況区分 = 「着用者編集」の情報がある際は発注NG
-      if ($order_sts_kbn == "6") {
-        $json_list["error_code"] = "1";
-        $error_msg = "着用者編集の発注が登録されていた為、操作を完了できませんでした。着用者編集の発注を削除してから再度登録して下さい。";
-          array_push($json_list["error_msg"], $error_msg);
+      //※発注情報トラン参照
+      $query_list = array();
+      array_push($query_list, "corporate_id = '".$auth['corporate_id']."'");
+      array_push($query_list, "rntl_cont_no = '".$wearer_chg_post['rntl_cont_no']."'");
+      array_push($query_list, "werer_cd = '".$wearer_chg_post['werer_cd']."'");
+      $query = implode(' AND ', $query_list);
 
-        //ChromePhp::LOG($json_list);
-        echo json_encode($json_list);
-        return;
-      }
-    }
+      $arg_str = "";
+      $arg_str = "SELECT ";
+      $arg_str .= "*";
+      $arg_str .= " FROM ";
+      $arg_str .= "t_order_tran";
+      $arg_str .= " WHERE ";
+      $arg_str .= $query;
+      $arg_str .= " ORDER BY upd_date DESC";
+      //ChromePhp::LOG($arg_str);
+      $t_order_tran = new TOrderTran();
+      $results = new Resultset(NULL, $t_order_tran, $t_order_tran->getReadConnection()->query($arg_str));
+      $result_obj = (array)$results;
+      $results_cnt = $result_obj["\0*\0_count"];
+      //ChromePhp::LOG($results_cnt);
+      if (!empty($results_cnt)) {
+          $paginator_model = new PaginatorModel(
+              array(
+                  "data"  => $results,
+                  "limit" => 1,
+                  "page" => 1
+              )
+          );
+          $paginator = $paginator_model->getPaginate();
+          $results = $paginator->items;
+          //ChromePhp::LOG($results);
+          foreach ($results as $result) {
+              $order_sts_kbn = $result->order_sts_kbn;
+              $order_reason_kbn = $result->order_reason_kbn;
+          }
 
-    //※発注情報トラン参照
-    $query_list = array();
-    array_push($query_list, "corporate_id = '".$auth['corporate_id']."'");
-    array_push($query_list, "rntl_cont_no = '".$wearer_chg_post['rntl_cont_no']."'");
-    array_push($query_list, "werer_cd = '".$wearer_chg_post['werer_cd']."'");
-    array_push($query_list, "rntl_sect_cd = '".$wearer_chg_post['rntl_sect_cd']."'");
-    array_push($query_list, "job_type_cd = '".$wearer_chg_post['job_type_cd']."'");
-    $query = implode(' AND ', $query_list);
+          // 発注情報トラン.発注状況区分 = 「異動」以外の情報がある際は発注NG
+          if ($order_sts_kbn !== "5") {
+              $json_list["error_code"] = "1";
+              if ($order_sts_kbn == "1" && ($order_reason_kbn == "03" || $order_reason_kbn == "27")) {
+                  $error_msg = "追加貸与の発注が登録されていた為、操作を完了できませんでした。追加貸与の発注を削除してから再度登録して下さい。";
+                  array_push($json_list["error_msg"], $error_msg);
+              }
+              if ($order_sts_kbn == "2" && ($order_reason_kbn == "05" || $order_reason_kbn == "06" || $order_reason_kbn == "08" || $order_reason_kbn == "20")) {
+                  $error_msg = "貸与終了の発注が登録されていた為、操作を完了できませんでした。貸与終了の発注を削除してから再度登録して下さい。";
+                  array_push($json_list["error_msg"], $error_msg);
+              }
+              if ($order_sts_kbn == "2" && ($order_reason_kbn == "07" || $order_reason_kbn == "28")) {
+                  $error_msg = "不要品返却の発注が登録されていた為、操作を完了できませんでした。不要品返却の発注を削除してから再度登録して下さい。";
+                  array_push($json_list["error_msg"], $error_msg);
+              }
+              if ($order_sts_kbn == "3" || $order_sts_kbn == "4") {
+                  $error_msg = "交換の発注が登録されていた為、操作を完了できませんでした。交換の発注を削除してから再度登録して下さい。";
+                  array_push($json_list["error_msg"], $error_msg);
+              }
 
-    $arg_str = "";
-    $arg_str = "SELECT ";
-    $arg_str .= "*";
-    $arg_str .= " FROM ";
-    $arg_str .= "t_order_tran";
-    $arg_str .= " WHERE ";
-    $arg_str .= $query;
-    $arg_str .= " ORDER BY upd_date DESC";
-    //ChromePhp::LOG($arg_str);
-    $t_order_tran = new TOrderTran();
-    $results = new Resultset(NULL, $t_order_tran, $t_order_tran->getReadConnection()->query($arg_str));
-    $result_obj = (array)$results;
-    $results_cnt = $result_obj["\0*\0_count"];
-    //ChromePhp::LOG($results_cnt);
-    if (!empty($results_cnt)) {
-      $paginator_model = new PaginatorModel(
-          array(
-              "data"  => $results,
-              "limit" => 1,
-              "page" => 1
-          )
-      );
-      $paginator = $paginator_model->getPaginate();
-      $results = $paginator->items;
-      //ChromePhp::LOG($results);
-      foreach ($results as $result) {
-        $order_sts_kbn = $result->order_sts_kbn;
-        $order_reason_kbn = $result->order_reason_kbn;
-      }
-
-        // 発注情報トラン.発注状況区分 = 「異動」以外の情報がある際は発注NG
-        if ($order_sts_kbn !== "5") {
-            $json_list["error_code"] = "1";
-            if ($order_sts_kbn == "1" && ($order_reason_kbn == "03" || $order_reason_kbn == "27")) {
-                $error_msg = "追加貸与の発注が登録されていた為、操作を完了できませんでした。追加貸与の発注を削除してから再度登録して下さい。";
-                array_push($json_list["error_msg"], $error_msg);
-            }
-            if ($order_sts_kbn == "2" && ($order_reason_kbn == "05" || $order_reason_kbn == "06" || $order_reason_kbn == "08" || $order_reason_kbn == "20")) {
-                $error_msg = "貸与終了の発注が登録されていた為、操作を完了できませんでした。貸与終了の発注を削除してから再度登録して下さい。";
-                array_push($json_list["error_msg"], $error_msg);
-            }
-            if ($order_sts_kbn == "2" && ($order_reason_kbn == "07" || $order_reason_kbn == "28")) {
-                $error_msg = "不要品返却の発注が登録されていた為、操作を完了できませんでした。不要品返却の発注を削除してから再度登録して下さい。";
-                array_push($json_list["error_msg"], $error_msg);
-            }
-            if ($order_sts_kbn == "3" || $order_sts_kbn == "4") {
-                $error_msg = "交換の発注が登録されていた為、操作を完了できませんでした。交換の発注を削除してから再度登録して下さい。";
-                array_push($json_list["error_msg"], $error_msg);
-            }
+              echo json_encode($json_list);
+              return;
+          }
 
           // ※発注情報状況・納品状況情報参照
           $query_list = array();
           array_push($query_list, "corporate_id = '".$auth['corporate_id']."'");
           array_push($query_list, "rntl_cont_no = '".$wearer_chg_post['rntl_cont_no']."'");
           array_push($query_list, "werer_cd = '".$wearer_chg_post['werer_cd']."'");
-          array_push($query_list, "ship_qty = 0");
-          array_push($query_list, "ship_ymd = '00000000'");
           $query = implode(' AND ', $query_list);
           $arg_str = "";
-          $arg_str .= "SELECT ";
-          $arg_str .= "*";
+          $arg_str = "SELECT ";
+          $arg_str .= " * ";
+          $arg_str .= " FROM ";
+          $arg_str .= "(SELECT distinct on (t_order_state.item_cd, t_order_state.color_cd, t_order_state.size_cd) ";
+          $arg_str .= "t_order_state.ship_qty as as_ship_qty,";
+          $arg_str .= "t_order_state.ship_ymd as as_ship_ymd,";
+          $arg_str .= "t_order_state.item_cd as as_item_cd,";
+          $arg_str .= "t_order_state.color_cd as as_color_cd,";
+          $arg_str .= "t_order_state.size_cd as as_size_cd,";
+          $arg_str .= "t_order_state.werer_cd as as_werer_cd";
           $arg_str .= " FROM ";
           $arg_str .= "t_order_state";
           $arg_str .= " WHERE ";
           $arg_str .= $query;
+          $arg_str .= ") as distinct_table";
           //ChromePhp::LOG($arg_str);
           $t_order_state = new TOrderState();
           $results = new Resultset(NULL, $t_order_state, $t_order_state->getReadConnection()->query($arg_str));
           $result_obj = (array)$results;
+          $results_cnt_ship_item = $result_obj["\0*\0_count"];
+          if ($results_cnt_ship_item > 0) {
+              $list = array();
+              $ship_item_list = array();
+              foreach ($results as $result) {
+                  $list['ship_ymd'] = $result->as_ship_ymd;
+                  $list['item_cd'] = $result->as_item_cd;
+                  $list['color_cd'] = $result->as_color_cd;
+                  $list['size_cd'] = $result->as_size_cd;
+
+                  //商品ごとの発注数合計を計算
+                  $parameter = array(
+                      "corporate_id" => $auth['corporate_id'],
+                      "rntl_cont_no" => $wearer_chg_post['rntl_cont_no'],
+                      "werer_cd" => $result->as_werer_cd,
+                      "item_cd" => $result->as_item_cd,
+                      "color_cd" => $result->as_color_cd,
+                      "size_cd" => $result->as_size_cd);
+                  $TOrderState = TOrderState::find(array(
+                      'conditions'  => "corporate_id = :corporate_id: AND rntl_cont_no = :rntl_cont_no:  AND werer_cd = :werer_cd: AND item_cd = :item_cd: AND color_cd = :color_cd: AND size_cd = :size_cd:",
+                      "bind" => $parameter
+                  ));
+                  //商品数
+                  $each_item_count = $TOrderState->count();
+                  //商品ごとの発注数サマリ
+                  $each_item_ship = 0;
+                  for($i = 0; $i < $each_item_count; $i++){
+                      $each_item_ship = $each_item_ship + $TOrderState[$i]->ship_qty;
+                  }
+                  $list['ship_qty'] = $each_item_ship;
+
+                  array_push($ship_item_list, $list);
+              }
+          }
+
+          // ※発注情報状況・納品状況情報参照
+          $query_list = array();
+          array_push($query_list, "corporate_id = '".$auth['corporate_id']."'");
+          array_push($query_list, "rntl_cont_no = '".$wearer_chg_post['rntl_cont_no']."'");
+          array_push($query_list, "werer_cd = '".$wearer_chg_post['werer_cd']."'");
+          array_push($query_list, "item_cd IS NOT null");
+          $query = implode(' AND ', $query_list);
+          $arg_str = "";
+          $arg_str = "SELECT ";
+          $arg_str .= " * ";
+          $arg_str .= " FROM ";
+          $arg_str .= "(SELECT distinct on (t_order.item_cd, t_order.color_cd, t_order.size_cd) ";
+          $arg_str .= "t_order.order_qty as as_order_qty,";
+          $arg_str .= "t_order.item_cd as as_item_cd,";
+          $arg_str .= "t_order.color_cd as as_color_cd,";
+          $arg_str .= "t_order.size_cd as as_size_cd,";
+          $arg_str .= "t_order.werer_cd as as_werer_cd";
+          $arg_str .= " FROM ";
+          $arg_str .= "t_order";
+          $arg_str .= " WHERE ";
+          $arg_str .= $query;
+          $arg_str .= ") as distinct_table";
+          //ChromePhp::LOG($arg_str);
+          $t_order = new TOrder();
+          $results = new Resultset(NULL, $t_order, $t_order->getReadConnection()->query($arg_str));
+          $result_obj = (array)$results;
           $results_cnt = $result_obj["\0*\0_count"];
           if ($results_cnt > 0) {
+              $list = array();
+              $order_item_list = array();
+              foreach ($results as $result) {
+                  $list['item_cd'] = $result->as_item_cd;
+                  $list['color_cd'] = $result->as_color_cd;
+                  $list['size_cd'] = $result->as_size_cd;
+
+                  //商品ごとの発注数合計を計算
+                  $parameter = array(
+                      "corporate_id" => $auth['corporate_id'],
+                      "rntl_cont_no" => $wearer_chg_post['rntl_cont_no'],
+                      "werer_cd" => $result->as_werer_cd,
+                      "item_cd" => $result->as_item_cd,
+                      "color_cd" => $result->as_color_cd,
+                      "size_cd" => $result->as_size_cd);
+                  $TOrder = TOrder::find(array(
+                      'conditions'  => "corporate_id = :corporate_id: AND rntl_cont_no = :rntl_cont_no:  AND werer_cd = :werer_cd: AND item_cd = :item_cd: AND color_cd = :color_cd: AND size_cd = :size_cd:",
+                      "bind" => $parameter
+                  ));
+                  //商品数
+                  $each_item_count = $TOrder->count();
+                  //商品ごとの発注数サマリ
+                  $each_item_order = 0;
+                  for($i = 0; $i < $each_item_count; $i++){
+                      $each_item_order = $each_item_order + $TOrder[$i]->order_qty;
+                  }
+                  $list['order_qty'] = $each_item_order;
+                  $list['unshipped_qty'] = null;
+
+                  array_push($order_item_list, $list);
+              }
+          }
+          //出荷情報が0な時点で未出荷があるとみなし、未出荷エラー
+          if($results_cnt_ship_item == 0){
               $json_list["error_code"] = "1";
               $error_msg = "対象の方は未出荷の商品がある為、職種変更または異動の発注を完了できません。";
               array_push($json_list["error_msg"], $error_msg);
               echo json_encode($json_list);
               return;
+          }
+          //出荷情報が1以上あった場合に、下記の処理に移行
+          if($results_cnt_ship_item > 0) {
+              $count_ship = count($ship_item_list);
+              $count_order = count($order_item_list);
+              //発注情報と、出荷商品の比較 同じ商品cd,色cd,サイズcdだったらお互いのサマリ数を比較
+              for($i = 0; $i < $count_order; $i++){
+                  for($s = 0; $s < $count_ship; $s++){
+                      if($order_item_list[$i]['item_cd'] == $ship_item_list[$s]['item_cd']
+                          && $order_item_list[$i]['color_cd'] == $ship_item_list[$s]['color_cd']
+                          && $order_item_list[$i]['size_cd'] == $ship_item_list[$s]['size_cd'])
+                      {
+                          $order_item_list[$i]['unshipped_qty'] = $order_item_list[$i]['order_qty'] - $ship_item_list[$s]['ship_qty'];
+                      }
+                  }
+                  //未出荷商品が0以上または、発注情報があるのに、出荷情報（発注状況）がない場合はエラー
+                  if($order_item_list[$i]['unshipped_qty'] > 0 || is_null($order_item_list[$i]['unshipped_qty'])){
+                      $json_list["error_code"] = "1";
+                      $error_msg = "対象の方は未出荷の商品がある為、職種変更または異動の発注を完了できません。";
+                      array_push($json_list["error_msg"], $error_msg);
+                      echo json_encode($json_list);
+                      return;
+                  }
+              }
           }
           $query_list = array();
           array_push($query_list, "corporate_id = '".$auth['corporate_id']."'");
@@ -5214,11 +5342,7 @@ $app->post('/wearer_change/send', function ()use($app){
               echo json_encode($json_list);
               return;
           }
-
-        echo json_encode($json_list);
-        return;
       }
-    }
 
     // 着用者基本マスタ参照
     $query_list = array();
