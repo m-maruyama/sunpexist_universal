@@ -87,11 +87,23 @@ define([
 							that.ui.modal.modal('hide');
 							var type = that.ui.display_type.val();
 							if( type == '1'){
-								alert('お知らせを編集しました。');
+								//お知らせを編集しました。
+								// JavaScript モーダルで表示
+								$('#myModalAlert').modal(); //追加
+								//メッセージの修正
+								document.getElementById("alert_txt").innerHTML=App.info_edit_msg;
 							}else if(type == '2'){
-								alert('お知らせを削除しました。');
+								//お知らせを削除しました。
+								// JavaScript モーダルで表示
+								$('#myModalAlert').modal(); //追加
+								//メッセージの修正
+								document.getElementById("alert_txt").innerHTML=App.info_delete_msg;
 							}else {
-								alert('お知らせを登録しました。');
+								//お知らせを登録しました。
+								// JavaScript モーダルで表示
+								$('#myModalAlert').modal(); //追加
+								//メッセージの修正
+								document.getElementById("alert_txt").innerHTML=App.info_insert_msg;
 							}
 							that.reset();
 							that.triggerMethod('reload');

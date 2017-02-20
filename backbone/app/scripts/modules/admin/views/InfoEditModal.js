@@ -59,7 +59,10 @@ define([
 						var res_list = res.attributes;
 						// 異常があった場合
 						if (res_list["error_code"] !== "0") {
-							alert("対象の詳細データが見つかりませんでした。");
+							// JavaScript モーダルで表示
+							$('#myModalAlert').modal(); //追加
+							//メッセージの修正
+							document.getElementById("alert_txt").innerHTML=App.info_err_msg;
 							location.href = "info.html";
 						}
 						// ID

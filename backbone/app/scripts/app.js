@@ -325,6 +325,10 @@ define([
 		App.wearer_input_msg = '着用者を登録しますが、よろしいですか？';
 		App.receipt_msg = "受領ステータスを更新してよろしいですか？";
 		App.receipt_alt_msg = "受領更新に失敗しました。";
+		App.info_edit_msg = "お知らせを編集しました。";
+		App.info_delete_msg = "お知らせを削除しました。";
+		App.info_insert_msg = "お知らせを登録しました。";
+		App.info_err_msg = "対象の詳細データが見つかりませんでした。";
 
 		App.order_send_check_msg = '発注送信を行う場合は選択欄の何れかにチェックを入れてください。';
 		App.order_send_confirm_msg = '選択されているデータの発注送信を行います。よろしいですか？';

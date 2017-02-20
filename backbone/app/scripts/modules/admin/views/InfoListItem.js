@@ -28,7 +28,13 @@ define([
 					var id = e.target.id;
 
 					var msg = "ID:" + id + "のお知らせを削除しますが、よろしいですか？";
-					if (window.confirm(msg)) {
+					// JavaScript モーダルで表示
+					$('#myModal').modal('show'); //追加
+					//メッセージの修正
+					document.getElementById("confirm_txt").innerHTML=msg; //追加　このメッセージはapp.jsで定義
+					$("#btn_ok").off();
+					$("#btn_ok").on('click',function() { //追加
+						hideModal();
 						var data = {
 							"info_id": id
 						};
@@ -49,11 +55,14 @@ define([
 									that.triggerMethod('complete');
 								} else {
 									// 異常終了の場合、アラート表示
-									alert(res_list["error_msg"]);
+									// JavaScript モーダルで表示
+									$('#myModalAlert').modal(); //追加
+									//メッセージの修正
+									document.getElementById("alert_txt").innerHTML=res_list["error_msg"];
 								}
 							}
 						});
-					}
+					});
 				},
 			},
 			templateHelpers: {
