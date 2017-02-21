@@ -144,6 +144,7 @@ define([
 							},
 							complete: function (res) {
 
+								Sleep(0.12);
 								//拠点と出荷先が同じだったら、拠点と同じに変更
 								var section_name = $('[name=section] option:selected').text();
 								var m_shipment_to = $('[name=shipment] option:selected').text();
@@ -206,6 +207,9 @@ define([
 						});
 					}
 				});
+			},
+			onAttach: function() {
+				alert();
 			},
 			events: {
 				'click @ui.back': function(){
@@ -439,14 +443,6 @@ define([
 			onShow: function(val, type, transition, data) {
 				var that = this;
 
-				//拠点と出荷先が同じだったら、拠点と同じに変更
-				var section_name = $('[name=section] option:selected').text();
-				var m_shipment_to = $('[name=shipment] option:selected').text();
-
-
-				if(section_name == m_shipment_to){
-					$('#shipment').prop('selectedIndex',0);
-				}
 				if (type == "cm0130_res") {
 					if (!val["chk_flg"]) {
                         // JavaScript モーダルで表示
