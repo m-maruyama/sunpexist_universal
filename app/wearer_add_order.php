@@ -1242,6 +1242,12 @@ $app->post('/wearer_add/complete', function ()use($app){
            array_push($json_list["error_msg"], $error_msg);
        };
      }
+     if(!$item_list){
+         $order_num_format_err = "err";
+         $json_list["error_code"] = "1";
+         $error_msg = "発注商品を入力してください。";
+         array_push($json_list["error_msg"], $error_msg);
+     }
      // 発注商品一覧
      foreach ($item_list as $item_map) {
        // 発注枚数フォーマットチェック(複数選択商品)
