@@ -347,7 +347,7 @@ $app->post('/order_send/search', function () use ($app) {
         if (isset($result->as_cster_emply_cd)) {
             $list['cster_emply_cd'] = $result->as_cster_emply_cd;
         } else {
-            $list['cster_emply_cd'] = "";
+            $list['cster_emply_cd'] = "-";
         }
         // 着用者名
         if (!empty($result->as_werer_name)) {
