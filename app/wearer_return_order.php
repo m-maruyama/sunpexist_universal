@@ -2990,7 +2990,6 @@ $app->post('/wearer_return/send', function ()use($app){
           //その他交換、サイズ交換、発注のチェック 個なし
           if (individual_flg($auth['corporate_id'], $wearer_other_post['rntl_cont_no']) == "0") {
               foreach ($item_list as $item_map) {
-                  ChromePhp::log($item_map);
                   $query_list = array();
                   array_push($query_list, "corporate_id = '" . $auth['corporate_id'] . "'");
                   array_push($query_list, "rntl_cont_no = '" . $wearer_other_post['rntl_cont_no'] . "'");

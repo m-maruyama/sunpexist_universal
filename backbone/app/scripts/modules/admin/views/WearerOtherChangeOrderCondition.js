@@ -545,9 +545,9 @@ define([
 									$("#btn_ok").on('click',function() { //追加
 										hideModal();
 										window.sessionStorage.setItem('referrer', 'wearer_other_change_order');
+										// 入力完了画面処理へ移行
+										that.triggerMethod('sendComplete', data);
 									});
-									// 入力完了画面処理へ移行
-									that.triggerMethod('sendComplete', data);
 								} else {
 									//メッセージの修正
 									document.getElementById("confirm_txt").innerHTML = App.input_msg; //追加　このメッセージはapp.jsで定義

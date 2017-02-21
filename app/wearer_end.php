@@ -944,7 +944,6 @@ $app->post('/wearer_end/order_check', function ()use($app){
         array_push($order_item_list, $list);
       }
     }
-    ChromePhp::LOG($results_cnt_ship_item);
   //出荷情報が0な時点で未出荷があるとみなし、未出荷エラー
   if($results_cnt_ship_item == 0){
     $json_list["err_cd"] = "1";
