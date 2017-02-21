@@ -272,7 +272,7 @@ define([
 					var section = $("select[name='section']").val();
 					var job_type = $("select[name='job_type']").val();
 					var comment = $("#comment").val();
-					var member_no = $("input[name='member_no']").val();
+					var member_no = $("input[name='cster_emply_cd']").val();
 					var member_name = $("input[name='member_name']").val();
 					var member_name_kana = $("input[name='member_name_kana']").val();
 					var sex_kbn = $("input[name='sex_kbn']").val();
@@ -375,7 +375,7 @@ define([
 					var section = $("select[name='section']").val();
 					var job_type = $("select[name='job_type']").val();
 					var comment = $("#comment").val();
-					var member_no = $("input[name='member_no']").val();
+					var member_no = $("input[name='cster_emply_cd']").val();
 					var member_name = $("input[name='member_name']").val();
 					var member_name_kana = $("input[name='member_name_kana']").val();
 					var sex_kbn = $("input[name='sex_kbn']").val();
