@@ -2934,6 +2934,11 @@ $app->post('/wearer_return/send', function ()use($app){
           }
         }
       }
+      if (($sum_possible_num - $sum_return_num) == 0) {
+          $json_list["error_code"] = "1";
+          $error_msg = "所持している商品を全て返却することはできません。";
+          array_push($json_list["error_msg"], $error_msg);
+      }
       if ($sum_return_num == 0) {
         $json_list["error_code"] = "1";
         $error_msg = "１つ以上の商品の返却枚数を指定してから登録を行ってください。";
