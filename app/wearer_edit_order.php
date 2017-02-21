@@ -735,7 +735,7 @@ $app->post('/wearer_edit_complete', function ()use($app){
          $kana = $wearer_data_input['member_name_kana'];
          if (kana_check($kana) === false){
              $json_list["error_code"] = "1";
-             $error_msg = '着用者名（カナ）に全角カタカナまたは全角スペース以外が入力されています';
+             $error_msg = '着用者名（カナ）に全角カタカナまたは全角スペース以外が入力されています。';
              array_push($json_list["error_msg"], $error_msg);
          }
      }
@@ -1337,7 +1337,7 @@ $app->post('/wearer_edit_send', function ()use($app){
           $kana = $wearer_data_input['member_name_kana'];
           if (kana_check($kana) === false){
               $json_list["error_code"] = "1";
-              $error_msg = '着用者名（カナ）に全角カタカナまたは全角スペース以外が入力されています';
+              $error_msg = '着用者名（カナ）に全角カタカナまたは全角スペース以外が入力されています。';
               array_push($json_list["error_msg"], $error_msg);
           }
       }
