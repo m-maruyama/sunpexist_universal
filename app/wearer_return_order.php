@@ -1553,6 +1553,44 @@ $app->post('/wearer_return/complete', function ()use($app){
        }
      }
 
+       //所持している商品は全てを返却することはできない。
+       if (empty($json_list["error_code"]) && empty($json_list["error_msg"])) {
+           $sum_possible_num = 0;
+           $sum_return_num = 0;
+           foreach ($item_list as $item_map) {
+               $sum_possible_num += $item_map["possible_num"];
+               if ($item_map["individual_flg"] == false) {
+                   // ※個体管理番号表示フラグがOFFの場合
+                   // 返却可能総枚数チェック
+                   if (!empty($item_map["return_num"])) {
+                       $sum_return_num += $item_map["return_num"];
+                   }
+               } else {
+                   // ※個体管理番号表示フラグがONの場合
+                   // 返却可能総枚数チェック
+                   $target_cnt = 0;
+                   if (!empty($item_map["individual_data"])) {
+                       foreach ($item_map["individual_data"] as $individual_data) {
+                           if ($individual_data["target_flg"] == "1") {
+                               $target_cnt += 1;
+                           }
+                       }
+                       $sum_return_num += $target_cnt;
+                   }
+               }
+           }
+           if (($sum_possible_num - $sum_return_num) == 0) {
+               $json_list["error_code"] = "1";
+               $error_msg = "所持している商品を全て返却することはできません。";
+               array_push($json_list["error_msg"], $error_msg);
+           }
+           if ($sum_return_num == 0) {
+               $json_list["error_code"] = "1";
+               $error_msg = "１つ以上の商品の返却枚数を指定してから登録を行ってください。";
+               array_push($json_list["error_msg"], $error_msg);
+           }
+       }
+
      if (empty($json_list["error_code"]) && empty($json_list["error_msg"])) {
        $sum_possible_num = 0;
        $sum_return_num = 0;
@@ -1584,6 +1622,12 @@ $app->post('/wearer_return/complete', function ()use($app){
          array_push($json_list["error_msg"], $error_msg);
        }
      }
+
+
+
+
+
+
      //サイズ交換 その他交換
     if (empty($json_list["error_code"]) && empty($json_list["error_msg"])) {
         if (individual_flg($auth['corporate_id'], $wearer_other_post['rntl_cont_no']) == "1") {
@@ -1621,7 +1665,6 @@ $app->post('/wearer_return/complete', function ()use($app){
         //その他交換、サイズ交換、発注のチェック 個なし
         if (individual_flg($auth['corporate_id'], $wearer_other_post['rntl_cont_no']) == "0") {
             foreach ($item_list as $item_map) {
-                ChromePhp::log($item_map);
                 $query_list = array();
                 array_push($query_list, "corporate_id = '" . $auth['corporate_id'] . "'");
                 array_push($query_list, "rntl_cont_no = '" . $wearer_other_post['rntl_cont_no'] . "'");
