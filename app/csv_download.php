@@ -2690,18 +2690,29 @@ $app->post('/csv_download', function ()use($app){
 				}else{
 					$list['receipt_date'] = '-';
 				}
-				// 発注日
-				if(!empty($list['order_req_ymd'])){
-					$list['order_req_ymd'] = date('Y/m/d',strtotime($list['order_req_ymd']));
-				}else{
-					$list['order_req_ymd'] = '-';
-				}
-				// 出荷日
-				if($list['ship_ymd']){
-					$list['ship_ymd'] =  date('Y/m/d',strtotime($list['ship_ymd']));
-				}else{
-					$list['ship_ymd'] = '-';
-				}
+                //---日付設定---//
+                // 発注依頼日、
+                if($list['order_req_ymd']){
+                    if(date_check($list['order_req_ymd'])){
+                        $list['order_req_ymd'] = date('Y/m/d',strtotime($list['order_req_ymd']));
+                    }else{
+                        $list['order_req_ymd'] = '-';
+                    }
+                }else{
+                    $list['order_req_ymd'] = '-';
+                }
+                //---日付設定---//
+                // 出荷日
+                if($list['ship_ymd']){
+                    if(date_check($list['ship_ymd'])){
+                        $list['ship_ymd'] = date('Y/m/d',strtotime($list['ship_ymd']));
+                    }else{
+                        $list['ship_ymd'] = '-';
+                    }
+                }else{
+                    $list['ship_ymd'] = '-';
+                }
+
 
 				// 商品-色(サイズ-サイズ2)表示変換
 				$list['shin_item_code'] = $list['item_cd']."-".$list['color_cd']."(".$list['size_cd']."-".trim(mb_convert_kana( $list['size_two_cd'], "s")).")";
