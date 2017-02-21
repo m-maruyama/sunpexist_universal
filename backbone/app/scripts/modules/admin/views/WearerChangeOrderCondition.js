@@ -142,16 +142,6 @@ define([
 									$('.orderSend').css('display', '');
 								}
 							},
-							complete: function (res) {
-
-								//拠点と出荷先が同じだったら、拠点と同じに変更
-								var section_name = $('[name=section] option:selected').text();
-								var m_shipment_to = $('[name=shipment] option:selected').text();
-
-								if(section_name == m_shipment_to){
-									$('#shipment').prop('selectedIndex',0);
-								}
-							}
 						});
 
 						if (res_list['wearer_info'][0]) {
@@ -205,6 +195,13 @@ define([
 						});
 					}
 				});
+				//拠点と出荷先が同じだったら、拠点と同じに変更
+				var section_name = $('[name=section] option:selected').text();
+				var m_shipment_to = $('[name=shipment] option:selected').text();
+
+				if(section_name == m_shipment_to){
+					$('#shipment').prop('selectedIndex',0);
+				}
 			},
 			events: {
 				'click @ui.back': function(){
