@@ -797,28 +797,27 @@ $app->post('/wearer_end/order_check', function ()use($app){
         $order_sts_kbn = $result->order_sts_kbn;
         $order_reason_kbn = $result->order_reason_kbn;
       }
-
-      // 発注情報トラン.発注状況区分 = 「終了(貸与終了)」以外の発注情報がある際は発注NG
-      if ($order_sts_kbn == "1" && $order_reason_kbn == "03") {
-        $json_list["err_cd"] = "1";
-        $error_msg = "追加貸与の発注が入力されています。".PHP_EOL."貸与終了を行う場合は追加貸与の発注をキャンセルしてください。";
-        $json_list["err_msg"] = $error_msg;
-      }
-      if ($order_sts_kbn == "5") {
-        $json_list["err_cd"] = "1";
-        $error_msg = "職種変更または異動の発注が入力されています。".PHP_EOL."貸与終了を行う場合は職種変更または異動の発注をキャンセルしてください。";
-        $json_list["err_msg"] = $error_msg;
-      }
-      if ($order_sts_kbn == "2" && $order_reason_kbn == "07") {
-        $json_list["err_cd"] = "1";
-        $error_msg = "不要品返却の発注が入力されています。".PHP_EOL."貸与終了を行う場合は不要品返却の発注をキャンセルしてください。";
-        $json_list["err_msg"] = $error_msg;
-      }
-      if ($order_sts_kbn == "3" || $order_sts_kbn == "4") {
-        $json_list["err_cd"] = "1";
-        $error_msg = "交換の発注が入力されています。".PHP_EOL."貸与終了を行う場合は交換の発注をキャンセルしてください。";
-        $json_list["err_msg"] = $error_msg;
-      }
+        // 発注情報トラン.発注状況区分 = 「終了(貸与終了)」以外の発注情報がある際は発注NG
+        if ($order_sts_kbn == "1" && ($order_reason_kbn == "03" || $order_reason_kbn == "27")) {
+            $json_list["err_cd"] = "1";
+            $error_msg = "追加貸与の発注が入力されています。".PHP_EOL."貸与終了を行う場合は追加貸与の発注をキャンセルしてください。";
+            $json_list["err_msg"] = $error_msg;
+        }
+        if ($order_sts_kbn == "5") {
+            $json_list["err_cd"] = "1";
+            $error_msg = "職種変更または異動の発注が入力されています。".PHP_EOL."貸与終了を行う場合は職種変更または異動の発注をキャンセルしてください。";
+            $json_list["err_msg"] = $error_msg;
+        }
+        if ($order_sts_kbn == "2" && ($order_reason_kbn == "07" || $order_reason_kbn == "28")) {
+            $json_list["err_cd"] = "1";
+            $error_msg = "不要品返却の発注が入力されています。".PHP_EOL."貸与終了を行う場合は不要品返却の発注をキャンセルしてください。";
+            $json_list["err_msg"] = $error_msg;
+        }
+        if ($order_sts_kbn == "3" || $order_sts_kbn == "4") {
+            $json_list["err_cd"] = "1";
+            $error_msg = "交換の発注が入力されています。".PHP_EOL."貸与終了を行う場合は交換の発注をキャンセルしてください。";
+            $json_list["err_msg"] = $error_msg;
+        }
     }
     // ※発注情報状況の商品レコード取得
     $query_list = array();
@@ -945,6 +944,7 @@ $app->post('/wearer_end/order_check', function ()use($app){
         array_push($order_item_list, $list);
       }
     }
+    ChromePhp::LOG($results_cnt_ship_item);
   //出荷情報が0な時点で未出荷があるとみなし、未出荷エラー
   if($results_cnt_ship_item == 0){
     $json_list["err_cd"] = "1";
