@@ -24,12 +24,14 @@ define([
 				'click @ui.receive_button': function(){
 					var that = this;
 					var rntl_cont_no = $("select[name='agreement_no']").val();
+                    var rntl_sect_cd = $("select[name='section']").val();
 					var modelForUpdate = this.model;
 					modelForUpdate.url = App.api.CM0130;
 					var cond = {
 						"scr": '更新可否チェック',
                         "log_type": '1',
-                        "rntl_cont_no": rntl_cont_no
+                        "rntl_cont_no": rntl_cont_no,
+                        "rntl_sect_cd": rntl_sect_cd
 					};
 					modelForUpdate.fetchMx({
 						data:cond,
