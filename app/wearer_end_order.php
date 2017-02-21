@@ -709,7 +709,7 @@ $app->post('/wearer_end_order_list', function ()use($app){
     $arg_str .= "SELECT ";
     $arg_str .= " * ";
     $arg_str .= " FROM ";
-    $arg_str .= "(SELECT distinct on (m_item.item_cd, m_item.color_cd, m_item.size_cd) ";
+    $arg_str .= "(SELECT distinct on (m_input_item.item_cd, m_input_item.color_cd, m_input_item.job_type_item_cd) ";
     $arg_str .= "t_delivery_goods_state_details.quantity as as_quantity,";
     $arg_str .= "t_delivery_goods_state_details.return_plan__qty as as_return_plan_qty,";
     $arg_str .= "t_delivery_goods_state_details.returned_qty as as_returned_qty,";
@@ -838,6 +838,7 @@ $app->post('/wearer_end_order_list', function ()use($app){
             array_push($query_list, "m_input_item.rntl_cont_no = '".$now_wearer_map['rntl_cont_no']."'");
             array_push($query_list, "m_input_item.job_type_cd = '".$now_wearer_map['job_type_cd']."'");
             array_push($query_list, "m_input_item.item_cd = '".$now_wearer_map['item_cd']."'");
+            array_push($query_list, "m_input_item.job_type_item_cd = '". $now_wearer_map["job_type_item_cd"]."'");
             $query = implode(' AND ', $query_list);
             $arg_str = "";
             $arg_str = "SELECT ";
