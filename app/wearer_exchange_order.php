@@ -2324,7 +2324,7 @@ $app->post('/wearer_exchange/complete', function ()use($app){
      if (mb_strlen($wearer_data_input['comment']) > 0) {
        if (strlen(mb_convert_encoding($wearer_data_input['comment'], "SJIS")) > 100) {
          $json_list["error_code"] = "1";
-         $error_msg = "コメント欄は100文字以内で入力してください。";
+         $error_msg = "コメント欄は50文字以内で入力してください。";
          array_push($json_list["error_msg"], $error_msg);
        }
      }
@@ -4078,7 +4078,7 @@ $app->post('/wearer_exchange/send', function ()use($app){
         if (mb_strlen($wearer_data_input['comment']) > 0) {
             if (strlen(mb_convert_encoding($wearer_data_input['comment'], "SJIS")) > 100) {
                 $json_list["error_code"] = "1";
-                $error_msg = "コメント欄は100文字以内で入力してください。";
+                $error_msg = "コメント欄は50文字以内で入力してください。";
                 array_push($json_list["error_msg"], $error_msg);
             }
         }

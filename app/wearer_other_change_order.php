@@ -1631,7 +1631,7 @@ $app->post('/wearer_other_change_insert', function () use ($app) {
     }
     if (!empty($wearer_data_input["comment"])) {
         if (strlen(mb_convert_encoding($wearer_data_input['comment'], "SJIS")) > 100) {
-            array_push($error_list,'コメント欄は100文字以内で入力してください。');
+            array_push($error_list,'コメント欄は50文字以内で入力してください。');
             $json_list['error_msg'] = $error_list;
             $json_list["error_code"] = "1";
         }
