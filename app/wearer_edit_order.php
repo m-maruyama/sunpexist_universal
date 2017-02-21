@@ -696,14 +696,14 @@ $app->post('/wearer_edit_complete', function ()use($app){
      // 着用者名
      if (empty($wearer_data_input["member_name"])) {
        $json_list["error_code"] = "1";
-       $error_msg = "着用者名を入力してください。";
+       $error_msg = "着用者名が未入力です。";
        array_push($json_list["error_msg"], $error_msg);
      }
 
      if (mb_strlen($wearer_data_input['member_name']) > 0) {
         if (strlen(mb_convert_encoding($wearer_data_input['member_name'], "SJIS")) > 22) {
           $json_list["error_code"] = "1";
-          $error_msg = "着用者名が規定の文字数をオーバーしています。";
+          $error_msg = "着用者名の文字数が多すぎます。（最大全角11文字）'";
           array_push($json_list["error_msg"], $error_msg);
         }
 
@@ -721,7 +721,7 @@ $app->post('/wearer_edit_complete', function ()use($app){
      if (mb_strlen($wearer_data_input['member_name_kana']) > 0) {
         if (strlen(mb_convert_encoding($wearer_data_input['member_name_kana'], "SJIS")) > 25) {
           $json_list["error_code"] = "1";
-          $error_msg = "着用者名(カナ)が規定の文字数をオーバーしています。";
+          $error_msg = "着用者名(カナ)の文字数が多すぎます。（最大全角12文字）";
           array_push($json_list["error_msg"], $error_msg);
         }
          //着用者カナ
