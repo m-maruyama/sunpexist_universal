@@ -148,8 +148,9 @@ define([
 								var section_name = $('[name=section] option:selected').text();
 								var m_shipment_to = $('[name=shipment] option:selected').text();
 
-
 								if(section_name == m_shipment_to){
+									alert(section_name);
+									alert(m_shipment_to);
 									$('#shipment').prop('selectedIndex',0);
 								}
 							}
