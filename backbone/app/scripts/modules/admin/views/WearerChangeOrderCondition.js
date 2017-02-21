@@ -144,7 +144,6 @@ define([
 							},
 							complete: function (res) {
 
-								Sleep(2.12);
 								//拠点と出荷先が同じだったら、拠点と同じに変更
 								var section_name = $('[name=section] option:selected').text();
 								var m_shipment_to = $('[name=shipment] option:selected').text();
@@ -207,9 +206,6 @@ define([
 						});
 					}
 				});
-			},
-			onAttach: function() {
-				alert();
 			},
 			events: {
 				'click @ui.back': function(){
