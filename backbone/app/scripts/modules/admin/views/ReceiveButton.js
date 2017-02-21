@@ -23,11 +23,13 @@ define([
 			events: {
 				'click @ui.receive_button': function(){
 					var that = this;
+					var rntl_cont_no = $("select[name='agreement_no']").val();
 					var modelForUpdate = this.model;
 					modelForUpdate.url = App.api.CM0130;
 					var cond = {
 						"scr": '更新可否チェック',
-						"update_skip_flg": 'receive',//更新可否フラグをrecieve.phpでチェックしているためskip
+                        "log_type": '1',
+                        "rntl_cont_no": rntl_cont_no
 					};
 					modelForUpdate.fetchMx({
 						data:cond,
