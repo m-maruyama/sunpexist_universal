@@ -1420,38 +1420,38 @@ $app->post('/wearer_end_order_insert', function () use ($app) {
       $results = $paginator->items;
       //ChromePhp::LOG($results);
       foreach ($results as $result) {
-        $order_sts_kbn = $result->order_sts_kbn;
-        $order_reason_kbn = $result->order_reason_kbn;
+          $order_sts_kbn = $result->order_sts_kbn;
+          $order_reason_kbn = $result->order_reason_kbn;
 
-        // 発注情報トラン.発注状況区分 = 「終了(貸与終了)」以外の発注がある際は発注NG
-        if ($order_sts_kbn == "1" && $order_reason_kbn == "03") {
-          $json_list["error_code"] = "1";
-          $error_msg = "追加貸与の発注が登録されていた為、操作を完了できませんでした。追加貸与の発注を削除してから再度登録して下さい。";
-          array_push($json_list["error_msg"], $error_msg);
-          echo json_encode($json_list);
-          return;
-        }
-        if ($order_sts_kbn == "5") {
-          $json_list["error_code"] = "1";
-          $error_msg = "職種変更または異動の発注が登録されていた為、操作を完了できませんでした。職種変更または異動の発注を削除してから再度登録して下さい。";
-          array_push($json_list["error_msg"], $error_msg);
-          echo json_encode($json_list);
-          return;
-        }
-        if ($order_sts_kbn == "2" && $order_reason_kbn == "07") {
-          $json_list["error_code"] = "1";
-          $error_msg = "不要品返却の発注が登録されていた為、操作を完了できませんでした。不要品返却の発注を削除してから再度登録して下さい。";
-          array_push($json_list["error_msg"], $error_msg);
-          echo json_encode($json_list);
-          return;
-        }
-        if ($order_sts_kbn == "3" || $order_sts_kbn == "4") {
-          $json_list["error_code"] = "1";
-          $error_msg = "交換の発注が登録されていた為、操作を完了できませんでした。交換の発注を削除してから再度登録して下さい。";
-          array_push($json_list["error_msg"], $error_msg);
-          echo json_encode($json_list);
-          return;
-        }
+          // 発注情報トラン.発注状況区分 = 「終了(貸与終了)」以外の発注がある際は発注NG
+          if ($order_sts_kbn == "1" && ($order_reason_kbn == "03" || $order_reason_kbn == "27")) {
+              $json_list["error_code"] = "1";
+              $error_msg = "追加貸与の発注が登録されていた為、操作を完了できませんでした。追加貸与の発注を削除してから再度登録して下さい。";
+              array_push($json_list["error_msg"], $error_msg);
+              echo json_encode($json_list);
+              return;
+          }
+          if ($order_sts_kbn == "5") {
+              $json_list["error_code"] = "1";
+              $error_msg = "職種変更または異動の発注が登録されていた為、操作を完了できませんでした。職種変更または異動の発注を削除してから再度登録して下さい。";
+              array_push($json_list["error_msg"], $error_msg);
+              echo json_encode($json_list);
+              return;
+          }
+          if ($order_sts_kbn == "2" && ($order_reason_kbn == "07" || $order_reason_kbn == "28")) {
+              $json_list["error_code"] = "1";
+              $error_msg = "不要品返却の発注が登録されていた為、操作を完了できませんでした。不要品返却の発注を削除してから再度登録して下さい。";
+              array_push($json_list["error_msg"], $error_msg);
+              echo json_encode($json_list);
+              return;
+          }
+          if ($order_sts_kbn == "3" || $order_sts_kbn == "4") {
+              $json_list["error_code"] = "1";
+              $error_msg = "交換の発注が登録されていた為、操作を完了できませんでした。交換の発注を削除してから再度登録して下さい。";
+              array_push($json_list["error_msg"], $error_msg);
+              echo json_encode($json_list);
+              return;
+          }
       }
     }
 
