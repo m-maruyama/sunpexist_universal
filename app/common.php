@@ -1439,7 +1439,7 @@ $app->post('/update_possible_chk', function ()use($app) {
     $json_list["chk_flg"] = true;
     $json_list["error_msg"] = "";
 
-    //--受領確認の共通更新可否チェック処理 スキップ--//
+    //--共通更新可否チェック処理 スキップ--//
     if(empty($cond['update_skip_flg'])){
 
         //---契約リソースマスター 0000000000フラグ確認処理---//

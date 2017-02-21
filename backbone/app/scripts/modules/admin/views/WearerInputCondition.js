@@ -147,9 +147,12 @@ define([
                         if(section_name == m_shipment_to){
                             $('#m_shipment_to').prop('selectedIndex',0);
                         }
+                        if(that.ui.section.val()){
+                            change_select(that.model, $('#agreement_no').val(), that.ui.section.val(), that.ui.m_shipment_to.val(), that.ui.m_shipment_to.children(':selected').text());
+
+                        }
                     }
                 });
-
             },
             onshow: function(){
             },
