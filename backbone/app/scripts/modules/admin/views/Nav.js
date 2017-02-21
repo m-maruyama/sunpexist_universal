@@ -6,6 +6,7 @@ define([
 	'use strict';
 	App.module('Admin.Views', function(Views, App, Backbone, Marionette, $, _){
 		Views.Nav = Marionette.ItemView.extend({
+			model: new Backbone.Model(),
 			template: App.Admin.Templates.nav,
 			ui: {
 				"home": "li.nav_home",
@@ -76,11 +77,9 @@ define([
 					this.ui[this.options.active].addClass('active');
 				}
 			},
-			model: new Backbone.Model(),
 			events: {
 				"click @ui.logout": function(e){
 					e.preventDefault();
-					App.container.logout = true;//これがtrueだったら403で飛ばないようにしてある
 					var that = this;
 					var logout = this.model;
 					logout.url = App.api.OU0010;
@@ -94,9 +93,10 @@ define([
 								that.triggerMethod('showAlerts', errorMessages);
 								return;
 							}
+							App.container.logout = true;//これがtrueだったら403で飛ばないようにしてある
+							location.href = './login.html';
 						}
 					});
-					location.href = './login.html';
 				}
 			}
 
