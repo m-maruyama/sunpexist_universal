@@ -656,15 +656,27 @@ $app->post('/receive/search', function ()use($app){
             }else{
                 $list['receipt_date'] = '-';
             }
-            // 発注日
-            if(!empty($list['order_req_ymd'])){
-                $list['order_req_ymd'] = date('Y/m/d',strtotime($list['order_req_ymd']));
+
+
+            //---日付設定---//
+            // 発注依頼日、
+            if($list['order_req_ymd']){
+                if(date_check($list['order_req_ymd'])){
+                    $list['order_req_ymd'] = date('Y/m/d',strtotime($list['order_req_ymd']));
+                }else{
+                    $list['order_req_ymd'] = '-';
+                }
             }else{
                 $list['order_req_ymd'] = '-';
             }
+            //---日付設定---//
             // 出荷日
             if($list['ship_ymd']){
-                $list['ship_ymd'] =  date('Y/m/d',strtotime($list['ship_ymd']));
+                if(date_check($list['ship_ymd'])){
+                    $list['ship_ymd'] = date('Y/m/d',strtotime($list['ship_ymd']));
+                }else{
+                    $list['ship_ymd'] = '-';
+                }
             }else{
                 $list['ship_ymd'] = '-';
             }
