@@ -20,14 +20,13 @@ define([
 					e.preventDefault();
 					var that = this;
 					var id = e.target.id;
-					console.log(id);
 					this.triggerMethod('click:editBtn', id);
 				},
 				'click @ui.deleteBtn': function(e){
 					e.preventDefault();
 					var that = this;
 					var id = e.target.id;
-
+					console.log(e.target);
 					var msg = "ID:" + id + "のお知らせを削除しますが、よろしいですか？";
 					// JavaScript モーダルで表示
 					$('#myModal').modal('show'); //追加
