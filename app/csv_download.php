@@ -856,21 +856,22 @@ $app->post('/csv_download', function ()use($app){
 					$list['order_reason_name'] = $gencode_map->gen_name;
 				}
 
-				//---発注ステータス名称---//
-				$query_list = array();
-				// 汎用コードマスタ.分類コード
-				array_push($query_list, "cls_cd = '006'");
-				// 汎用コードマスタ. レンタル契約No
-				array_push($query_list, "gen_cd = '".$list['order_status']."'");
-				//sql文字列を' AND 'で結合
-				$query = implode(' AND ', $query_list);
-				$gencode = MGencode::query()
-					->where($query)
-					->columns('*')
-					->execute();
-				foreach ($gencode as $gencode_map) {
-					$list['order_status_name'] = $gencode_map->gen_name;
-				}
+                //---発注ステータス名称---//
+                if($list['order_reason_kbn'] !== '10'){
+                    $query_list = array();
+                    array_push($query_list, "cls_cd = '006'");
+                    array_push($query_list, "gen_cd = '".$list['order_status']."'");
+                    $query = implode(' AND ', $query_list);
+                    $gencode = MGencode::query()
+                    ->where($query)
+                    ->columns('*')
+                    ->execute();
+                    foreach ($gencode as $gencode_map) {
+                        $list['order_status_name'] = $gencode_map->gen_name;
+                    }
+                }else{
+                    $list['order_status_name'] = '-';
+                }
 
 				//---個体管理番号・受領日時の取得---//
 				$list['individual_num'] = "-";

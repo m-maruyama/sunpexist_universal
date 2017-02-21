@@ -862,17 +862,21 @@ $app->post('/history/search', function ()use($app){
 			}
 
 			//---発注ステータス名称---//
-			$query_list = array();
-			array_push($query_list, "cls_cd = '006'");
-			array_push($query_list, "gen_cd = '".$list['order_status']."'");
-			$query = implode(' AND ', $query_list);
-			$gencode = MGencode::query()
-				->where($query)
-				->columns('*')
-				->execute();
-			foreach ($gencode as $gencode_map) {
-				$list['order_status_name'] = $gencode_map->gen_name;
-			}
+            if($list['order_reason_kbn'] !== '10'){
+                $query_list = array();
+                array_push($query_list, "cls_cd = '006'");
+                array_push($query_list, "gen_cd = '".$list['order_status']."'");
+                $query = implode(' AND ', $query_list);
+                $gencode = MGencode::query()
+                    ->where($query)
+                    ->columns('*')
+                    ->execute();
+                foreach ($gencode as $gencode_map) {
+                    $list['order_status_name'] = $gencode_map->gen_name;
+                }
+            }else{
+                $list['order_status_name'] = '-';
+            }
 			//---個体管理番号・受領日時の取得---//
 			$list['individual_num'] = "-";
 			$list['order_res_ymd'] = "-";
