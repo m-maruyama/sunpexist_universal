@@ -117,9 +117,9 @@ define([
                 $('.errorMessage').css('display', '');
                 that.triggerMethod('showAlerts', response["errors"].slice(0,20));
               } else {
-                $('#fake_input_file').val('');
                 $('#ImportModal').modal();
                 document.getElementById("confirm_txt").innerHTML=App.import_csv_complete_msg;//一括データ取込みの処理が正常に完了しました。
+                $('#fake_input_file').val('');
                 $("#btn_ok").off();
                 $("#btn_ok").on('click',function() {
                   location.href = "importCsv.html";
@@ -181,7 +181,6 @@ define([
               data: cond,
               success: function (res) {
                 var res_val = res.attributes;
-                console.log(res_val);
                 if (!res_val["chk_flg"]) {
                   $('#ImportModal').modal();
                   document.getElementById("confirm_txt").innerHTML = res_val["error_msg"];// 更新可否フラグ=更新不可の場合はアラートメッセージ表示
