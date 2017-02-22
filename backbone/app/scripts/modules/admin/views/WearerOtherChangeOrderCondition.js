@@ -379,7 +379,7 @@ define([
                         // JavaScript モーダルで表示
                         $('#myModalAlert').modal('show'); //追加
                         //メッセージの修正
-                        document.getElementById("alert_txt").innerHTML=res_val["error_msg"];
+                        document.getElementById("alert_txt").innerHTML=val["error_msg"];
 						// // 更新可否フラグ=更新不可の場合はアラートメッセージ表示
 						// alert(val["error_msg"]);
 					} else {
