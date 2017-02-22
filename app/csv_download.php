@@ -2085,49 +2085,53 @@ $app->post('/csv_download', function ()use($app){
 	if ($cond["ui_type"] === "receive") {
 		$result["csv_code"] = "0003";
 
-		//---受領確認検索処理---//
-		//企業ID
-		array_push($query_list,"t_delivery_goods_state_details.corporate_id = '".$auth['corporate_id']."'");
-		//契約No
-		if(!empty($cond['agreement_no'])){
-			array_push($query_list,"t_delivery_goods_state_details.rntl_cont_no = '".$cond['agreement_no']."'");
-		}
-		//発注No
-		if(!empty($cond['no'])){
-			array_push($query_list,"t_order.order_req_no LIKE '".$cond['no']."%'");
-		}
-		//お客様発注No
-		if(!empty($cond['emply_order_no'])){
-			array_push($query_list,"t_order.emply_order_req_no LIKE '".$cond['emply_order_no']."%'");
-		}
-		//社員番号
-		if(!empty($cond['member_no'])){
-			array_push($query_list,"m_wearer_std.cster_emply_cd LIKE '".$cond['member_no']."%'");
-		}
-		//着用者名
-		if(!empty($cond['member_name'])){
-			array_push($query_list,"m_wearer_std.werer_name LIKE '%".$cond['member_name']."%'");
-		}
-		//拠点
-		if(!empty($cond['section'])){
-			array_push($query_list,"t_order.rntl_sect_cd = '".$cond['section']."'");
-		}
-		//貸与パターン
-		if(!empty($cond['job_type'])){
-			array_push($query_list,"t_order.job_type_cd = '".$cond['job_type']."'");
-		}
-		//商品
-		if(!empty($cond['input_item'])){
-			array_push($query_list,"t_delivery_goods_state_details.item_cd = '".$cond['input_item']."'");
-		}
-		//色
-		if(!empty($cond['item_color'])){
-			array_push($query_list,"t_delivery_goods_state_details.color_cd = '".$cond['item_color']."'");
-		}
-		//サイズ
-		if(!empty($cond['item_size'])){
-			array_push($query_list,"t_delivery_goods_state_details.size_cd = '".$cond['item_size']."'");
-		}
+        //---検索条件---//
+        //企業ID
+        array_push($query_list,"t_delivery_goods_state_details.corporate_id = '".$auth['corporate_id']."'");
+        //契約No
+        if(!empty($cond['agreement_no'])){
+            array_push($query_list,"t_delivery_goods_state_details.rntl_cont_no = '".$cond['agreement_no']."'");
+        }
+        //発注No
+        if(!empty($cond['no'])){
+            array_push($query_list,"t_order.order_req_no LIKE '".$cond['no']."%'");
+        }
+        //お客様発注No
+        if(!empty($cond['emply_order_no'])){
+            array_push($query_list,"t_order.emply_order_req_no LIKE '".$cond['emply_order_no']."%'");
+        }
+        //社員番号
+        if(!empty($cond['member_no'])){
+            array_push($query_list,"m_wearer_std.cster_emply_cd LIKE '".$cond['member_no']."%'");
+        }
+        //着用者名
+        if(!empty($cond['member_name'])){
+            array_push($query_list,"m_wearer_std.werer_name LIKE '%".$cond['member_name']."%'");
+        }
+        //伝票番号
+        if(!empty($cond['maker_send_no'])){
+            array_push($query_list,"t_delivery_goods_state_details.ship_no LIKE '".$cond['maker_send_no']."%'");
+        }
+        //拠点
+        if(!empty($cond['section'])){
+            array_push($query_list,"t_order.rntl_sect_cd = '".$cond['section']."'");
+        }
+        //貸与パターン
+        if(!empty($cond['job_type'])){
+            array_push($query_list,"t_order.job_type_cd = '".$cond['job_type']."'");
+        }
+        //商品
+        if(!empty($cond['input_item'])){
+            array_push($query_list,"t_delivery_goods_state_details.item_cd = '".$cond['input_item']."'");
+        }
+        //色
+        if(!empty($cond['item_color'])){
+            array_push($query_list,"t_delivery_goods_state_details.color_cd = '".$cond['item_color']."'");
+        }
+        //サイズ
+        if(!empty($cond['item_size'])){
+            array_push($query_list,"t_delivery_goods_state_details.size_cd = '".$cond['item_size']."'");
+        }
         //発注日from
         if(!empty($cond['order_day_from'])){
             array_push($query_list,"CAST(CASE 
@@ -2155,7 +2159,7 @@ $app->post('/csv_download', function ()use($app){
         }
         //個体管理番号
         if(!empty($cond['individual_number'])){
-          array_push($query_list,"t_delivery_goods_state_details.individual_ctrl_no LIKE '%".$cond['individual_number']."%'");
+            array_push($query_list,"t_delivery_goods_state_details.individual_ctrl_no LIKE '%".$cond['individual_number']."%'");
         }
 
         //ゼロ埋めがない場合、ログインアカウントの条件追加

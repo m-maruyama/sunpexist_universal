@@ -35,6 +35,7 @@ define([
 					cond_map["return_day_to"] = $("input[name='return_day_to']").val();
 					cond_map["receipt_day_from"] = $("input[name='receipt_day_from']").val();
 					cond_map["receipt_day_to"] = $("input[name='receipt_day_to']").val();
+					cond_map["maker_send_no"] = $("input[name='maker_send_no']").val();
 					cond_map["status0"] = $("#status0").prop("checked");
 					cond_map["status1"] = $("#status1").prop("checked");
 					cond_map["order_kbn0"] = $("#order_kbn0").prop("checked");
