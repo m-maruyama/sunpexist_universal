@@ -117,11 +117,11 @@ define([
                 $('.errorMessage').css('display', '');
                 that.triggerMethod('showAlerts', response["errors"].slice(0,20));
               } else {
-                $('#ImportModal').modal();
-                document.getElementById("confirm_txt").innerHTML=App.import_csv_complete_msg;//一括データ取込みの処理が正常に完了しました。
+                $('#ImportFinishModal').modal();
+                document.getElementById("finish_txt").innerHTML=App.import_csv_complete_msg;//一括データ取込みの処理が正常に完了しました。
                 $('#fake_input_file').val('');
-                $("#btn_ok").off();
-                $("#btn_ok").on('click',function() {
+                $("#btn_finish").off();
+                $("#btn_finish").on('click',function() {
                   location.href = "importCsv.html";
                 });
               }
