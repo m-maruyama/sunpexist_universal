@@ -188,8 +188,8 @@ define([
 
                 }
                 var cond = {
-                    "scr": '着用者登録',
-                    "mode": 'insert',
+                    "scr": '着用者登録-check',
+                    "mode": 'check',
                     "referrer" : referrer,
                     "cond": model.getReq()
                 };
@@ -203,19 +203,38 @@ define([
                             var er = res_val["errors"]
                             res.attributes["errors"] = null;
                             that.triggerMethod('error_msg', er);
-                        }else{
+                        } else {
                             // JavaScript モーダルで表示
                             $('#myModal').modal('show'); //追加
                             //メッセージの修正
-                            document.getElementById("confirm_txt").innerHTML=App.wearer_input_msg; //追加　このメッセージはapp.jsで定義
+                            document.getElementById("confirm_txt").innerHTML = App.wearer_input_msg; //追加　このメッセージはapp.jsで定義
                             $("#btn_ok").off();
-                            $("#btn_ok").on('click',function() { //追加
+                            $("#btn_ok").on('click', function () { //追加
                                 hideModal();
-                                window.sessionStorage.removeItem('wearer_input_ref');
-                                location.href = './wearer_input_complete.html';
+                                var cond = {
+                                    "scr": '着用者登録-insert',
+                                    "mode": 'insert',
+                                    "referrer" : referrer,
+                                    "cond": model.getReq()
+                                };
+                                model.url = App.api.WI0012;
+                                model.fetchMx({
+                                    data: cond,
+                                    success: function (res) {
+                                        var res_val = res.attributes;
+                                        if (res_val["errors"]) {
+                                            var er = res_val["errors"]
+                                            res.attributes["errors"] = null;
+                                            that.triggerMethod('error_msg', er);
+                                        }else{
+                                            window.sessionStorage.removeItem('wearer_input_ref');
+                                            location.href = './wearer_input_complete.html';
+                                        }
+                                    }
+                                })
                             });
                         }
-                }
+                    }
                 });
             },
             input_item: function (rntl_cont_no) {

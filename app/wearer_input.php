@@ -639,45 +639,53 @@ $app->post('/input_insert', function () use ($app) {
         }
     }
     $query_list = array();
-    if ($cond['cster_emply_cd']) {
-        //前画面からデータを引き継いでいる場合
-        $wearer_odr_post = $app->session->get("wearer_odr_post");
-        //社員コードのマスタチェック(社員コードありの場合のみ)
-        if(isset($wearer_odr_post['cster_emply_cd'])&&$wearer_odr_post['cster_emply_cd']==$cond['cster_emply_cd']){
-            //入力値と一緒なら
-        }else{
-            // 契約マスタ．企業ID　＝　ログインしているアカウントの企業ID　AND
-            array_push($query_list, "corporate_id = '" . $auth['corporate_id'] . "'");
-            // 契約マスタ．レンタル契約No.　＝　画面で選択されている契約No.
-            array_push($query_list, "rntl_cont_no = '" . $cond['agreement_no'] . "'");
-            // 着用者基本マスタ．客先社員コード ＝ 画面で入力された社員コード AND
-            array_push($query_list, "cster_emply_cd = '" . $cond['cster_emply_cd'] . "'");
+    if (mb_strlen($cond['cster_emply_cd']) > 0) {
+        if (strlen(mb_convert_encoding($cond['cster_emply_cd'], "SJIS")) > 10) {
+            $json_list["error_code"] = "1";
+            $error_msg = "社員コードが規定の文字数をオーバーしています。";
+            array_push($json_list["error_msg"], $error_msg);
+        }
+        // 社員コード重複チェック
+        $member_no_overlap_err = "";
+        $query_list = array();
+        array_push($query_list, "corporate_id = '" . $auth['corporate_id'] . "'");
+        array_push($query_list, "rntl_cont_no = '" . $cond['agreement_no'] . "'");
+        array_push($query_list, "cster_emply_cd = '" . $cond['cster_emply_cd'] . "'");
+        if ($cond['werer_cd']) {
+            //検索画面から来た場合
+            array_push($query_list, "werer_cd <> '" . $cond['werer_cd'] . "'");
+        }
 
-            //sql文字列を' AND 'で結合
-            $query = implode(' AND ', $query_list);
-            //--- クエリー実行・取得 ---//
-            $m_wearer_std_count = MWearerStdTran::find(array(
-                'conditions' => $query
-            ))->count();
-            $cster_emply_cd_chk = true;
-            //存在する場合NG
-            if ($m_wearer_std_count > 0) {
+        $query = implode(' AND ', $query_list);
+        $arg_str = '';
+        $arg_str .= 'SELECT ';
+        $arg_str .= '*';
+        $arg_str .= ' FROM ';
+        $arg_str .= 'm_wearer_std';
+        $arg_str .= ' WHERE ';
+        $arg_str .= $query;
+        $m_wearer_std = new MWearerStd();
+        $results = new Resultset(NULL, $m_wearer_std, $m_wearer_std->getReadConnection()->query($arg_str));
+        $results_array = (array)$results;
+        $results_cnt = $results_array["\0*\0_count"];
+        if ($results_cnt > 0) {
+            array_push($error_list, '既に社員コードが使用されています。');
+        }
+        if (empty($member_no_overlap_err)) {
+            $arg_str = '';
+            $arg_str .= 'SELECT ';
+            $arg_str .= '*';
+            $arg_str .= ' FROM ';
+            $arg_str .= 'm_wearer_std_tran';
+            $arg_str .= ' WHERE ';
+            $arg_str .= $query;
+            $m_wearer_std_tran = new MWearerStdTran();
+            $results = new Resultset(NULL, $m_wearer_std_tran, $m_wearer_std_tran->getReadConnection()->query($arg_str));
+            $results_array = (array)$results;
+            $results_cnt = $results_array["\0*\0_count"];
+            if ($results_cnt > 0) {
                 array_push($error_list, '既に社員コードが使用されています。');
-                $cster_emply_cd_chk = false;
             }
-            if($cster_emply_cd_chk){
-                // 着用者基本マスタ．着用者状況区分 ＝ 稼働
-                array_push($query_list, "werer_sts_kbn = '1'");
-                //--- クエリー実行・取得 ---//
-                $m_wearer_std_count = MWearerStd::find(array(
-                    'conditions' => $query
-                ))->count();
-                //存在する場合NG
-                if ($m_wearer_std_count > 0) {
-                    array_push($error_list, '既に社員コードが使用されています。');
-                }
-            }
-
         }
     }
     if (byte_cnt($cond['cster_emply_cd']) > 10) {
