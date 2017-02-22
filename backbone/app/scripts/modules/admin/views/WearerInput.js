@@ -83,6 +83,12 @@ define([
 						}
 						// 検索画面から遷移してきた場合
 						if(window.sessionStorage.getItem('wearer_input_ref') == 'wearer_search'){
+
+							//検索条件
+							var cond = window.sessionStorage.getItem("wearer_search_cond");
+							window.sessionStorage.setItem("back_wearer_search_cond", cond);
+
+
 							window.sessionStorage.removeItem('wearer_input_ref');
 							location.href = './wearer_search.html';
 							return;

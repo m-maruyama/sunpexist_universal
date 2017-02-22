@@ -15,6 +15,20 @@ define([
 			},
 			onRender: function() {
 			},
+			onShow: function(){
+				var cond = new Array(
+					$("select[name='agreement_no']").val(),
+					$("input[name='cster_emply_cd']").val(),
+					$("input[name='werer_name']").val(),
+					$("select[name='sex_kbn']").val(),
+					$("select[name='section']").val(),
+					$("select[name='job_type']").val(),
+					document.getElementsByClassName("active")[0].getElementsByTagName("a")[0].text
+				);
+				var arr_str = cond.toString();
+				// 検索項目値、ページ数のセッション保持
+				window.sessionStorage.setItem("wearer_search_cond", arr_str);
+			},
 			events: {
 				'click @ui.wearer_order': function(e){
 					e.preventDefault();
