@@ -458,19 +458,19 @@ $app->post('/wearer_search/req_param', function ()use($app) {
     } else {
       $werer_name = "";
     }
+    $werer_name_kana = "";
+//    if (isset($wearer_odr_post["werer_name_kana"])) {
+//        $werer_name_kana = $wearer_odr_post["werer_name_kana"];
+//    }
     if(isset($cond["werer_name_kana"])){
       $werer_name_kana = $cond["werer_name_kana"];
-    } else if (isset($wearer_odr_post["werer_name_kana"])) {
-      $werer_name_kana = $wearer_odr_post["werer_name_kana"];
-    } else {
-      $werer_name_kana = "";
     }
+    $cster_emply_cd = "";
+//    if (isset($wearer_odr_post["cster_emply_cd"])) {
+//        $cster_emply_cd = $wearer_odr_post["cster_emply_cd"];
+//    }
     if(isset($cond["cster_emply_cd"])){
       $cster_emply_cd = $cond["cster_emply_cd"];
-    } else if (isset($wearer_odr_post["cster_emply_cd"])) {
-      $cster_emply_cd = $wearer_odr_post["cster_emply_cd"];
-    } else {
-      $cster_emply_cd = "";
     }
     if(isset($cond["cster_emply_flg"])){
       $cster_emply_flg = $cond["cster_emply_flg"];

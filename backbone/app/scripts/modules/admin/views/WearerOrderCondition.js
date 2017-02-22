@@ -152,8 +152,9 @@ define([
 				// 「戻る」ボタン
 				'click @ui.back': function(e) {
 					e.preventDefault();
-
 					var data = {
+						'werer_name_kana': this.ui.member_name_kana.val(),
+						'cster_emply_cd': this.ui.member_no.val(),
 						'order_reason_kbn': $("select[name='reason_kbn']").val(),
 						'comment': this.ui.comment.val()
 					};
