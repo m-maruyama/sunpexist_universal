@@ -1812,9 +1812,12 @@ $app->post('/wearer_change/info', function ()use($app){
        array_push($query_list, "m_job_type.corporate_id = '".$auth['corporate_id']."'");
        array_push($query_list, "m_job_type.job_type_cd = '".$chk_map['job_type_cd']."'");
        array_push($query_list, "m_job_type.rntl_cont_no = '".$wearer_chg_post['rntl_cont_no']."'");
+       array_push($query_list, "m_input_item.corporate_id = '".$auth['corporate_id']."'");
+       array_push($query_list, "m_input_item.rntl_cont_no = '".$wearer_chg_post['rntl_cont_no']."'");
        array_push($query_list, "m_input_item.job_type_cd = '".$chk_map['job_type_cd']."'");
        array_push($query_list, "m_input_item.item_cd = '".$chk_map['item_cd']."'");
        array_push($query_list, "m_input_item.job_type_item_cd = '".$chk_map['job_type_item_cd']."'");
+
 
        $query = implode(' AND ', $query_list);
 
@@ -1896,6 +1899,8 @@ $app->post('/wearer_change/info', function ()use($app){
            $element["size"] = $result->size_cd;
            //$element["size_sort"] = $result->size_cd_display_order;
            $query_list = array();
+           $query_list[] = "rntl_cont_no = '".$wearer_chg_post['rntl_cont_no']."'";
+           $query_list[] = "rntl_sect_cd = '".$chk_map["rntl_sect_cd"]."'";
            $query_list[] = "corporate_id = '".$auth['corporate_id']."'";
            $query_list[] = "job_type_cd = '".$chk_map['job_type_cd']."'";
            $query_list[] = "order_req_no = '".$wearer_chg_post['order_req_no']."'";
@@ -2062,6 +2067,8 @@ $app->post('/wearer_change/info', function ()use($app){
        array_push($query_list, "m_job_type.corporate_id = '".$auth['corporate_id']."'");
        array_push($query_list, "m_job_type.rntl_cont_no = '".$now_wearer_map['rntl_cont_no']."'");
        array_push($query_list, "m_job_type.job_type_cd = '".$now_wearer_map['job_type_cd']."'");
+       array_push($query_list, "m_input_item.rntl_cont_no = '".$now_wearer_map['rntl_cont_no']."'");
+       array_push($query_list, "m_input_item.corporate_id = '".$auth['corporate_id']."'");
        array_push($query_list, "m_input_item.job_type_cd = '".$now_wearer_map['job_type_cd']."'");
        array_push($query_list, "m_input_item.item_cd = '".$now_wearer_map['item_cd']."'");
        array_push($query_list, "m_input_item.job_type_item_cd = '".$now_wearer_map['job_type_item_cd']."'");
