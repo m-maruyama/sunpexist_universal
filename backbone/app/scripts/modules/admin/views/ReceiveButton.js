@@ -30,7 +30,8 @@ define([
 					var cond = {
 						"scr": '更新可否チェック',
                         "log_type": '1',
-                        "rntl_cont_no": rntl_cont_no,
+						"update_skip_flg": 'receive',//更新可否フラグをrecieve.phpでチェックしているためskip
+						"rntl_cont_no": rntl_cont_no,
                         "rntl_sect_cd": rntl_sect_cd
 					};
 					modelForUpdate.fetchMx({
