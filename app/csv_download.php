@@ -1548,9 +1548,14 @@ $app->post('/csv_download', function ()use($app){
             }
 
         }else {
-
             //---SQLクエリー実行---//
             $arg_str = "SELECT ";
+            $arg_str .= " * ";
+            $arg_str .= " FROM ";
+            $arg_str .= "(SELECT distinct on (t_returned_plan_info.order_req_no, t_returned_plan_info.item_cd, t_returned_plan_info.color_cd, t_returned_plan_info.size_cd) ";
+
+            //---SQLクエリー実行---//
+            //$arg_str = "SELECT ";
             $arg_str .= "t_returned_plan_info.order_req_no as as_order_req_no,";
             $arg_str .= "t_order.order_req_ymd as as_order_req_ymd,";
             $arg_str .= "t_returned_plan_info.order_sts_kbn as as_order_sts_kbn,";
@@ -1619,7 +1624,7 @@ $app->post('/csv_download', function ()use($app){
             $arg_str .= " ON t_returned_plan_info.rntl_cont_no = m_contract.rntl_cont_no";
             $arg_str .= " WHERE ";
             $arg_str .= $query;
-            //$arg_str .= ") as distinct_table";
+            $arg_str .= ") as distinct_table";
             if (!empty($q_sort_key)) {
                 $arg_str .= " ORDER BY ";
                 $arg_str .= $q_sort_key . " " . $order;
