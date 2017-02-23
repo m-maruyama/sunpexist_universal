@@ -488,11 +488,8 @@ $app->post('/wearer_input', function () use ($app) {
     $json_list['param'] = $param_list;
 
     if(isset($wearer_odr_post['order_req_no'])&&$wearer_odr_post['order_req_no']){
-        ChromePhp::LOG(1);
-        ChromePhp::LOG($wearer_odr_post['order_req_no']);
         $json_list['order_flg'] = true;
     }else{
-        ChromePhp::LOG($wearer_odr_post['order_req_no']);
         $json_list['order_flg'] = false;
     }
 
