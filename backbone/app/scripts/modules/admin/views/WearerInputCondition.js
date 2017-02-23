@@ -334,7 +334,7 @@ define([
                                             res.attributes["errors"] = null;
                                             that.triggerMethod('error_msg', er);
                                         }else{
-                                            window.sessionStorage.setItem('referrer', 'wearer_input');
+                                            window.sessionStorage.setItem('referrer', 'wearer_input_delete');
                                             window.sessionStorage.removeItem('wearer_input_ref');
                                             location.href = './wearer_input.html';
                                         }
