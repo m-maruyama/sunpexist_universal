@@ -4747,56 +4747,64 @@ $app->post('/wearer_change/send', function ()use($app){
             array_push($json_list["error_msg"], $error_msg);
         };
     }
-    // 現在貸与中のアイテム
-    if (!empty($now_item_input)) {
-      foreach ($now_item_input as $now_item_input_map) {
-        // 返却枚数フォーマットチェック
-        if (!ctype_digit(strval($now_item_input_map["now_return_num"]))) {
-          if (empty($now_return_num_format_err)) {
-            $now_return_num_format_err = "err";
-            $json_list["error_code"] = "1";
-            $error_msg = "現在貸与中のアイテム：返却枚数には半角数字を入力してください。";
-            array_push($json_list["error_msg"], $error_msg);
+      // 現在貸与中のアイテム
+      if (!empty($now_item_input)) {
+          foreach ($now_item_input as $now_item_input_map) {
+              // 返却枚数フォーマットチェック
+              if (!ctype_digit(strval($now_item_input_map["now_return_num"]))) {
+                  if (empty($now_return_num_format_err)) {
+                      $now_return_num_format_err = "err";
+                      $json_list["error_code"] = "1";
+                      $error_msg = "現在貸与中のアイテム：返却枚数には半角数字を入力してください。";
+                      array_push($json_list["error_msg"], $error_msg);
+                  }
+              }
+              // 返却枚数チェック
+              if ($now_item_input_map["individual_flg"] == "1") {
+                  //※個体管理番号有りの場合
+                  $target_cnt = 0;
+                  for ($i=0; $i<count($now_item_input_map["individual_data"]); $i++) {
+                      if ($now_item_input_map["individual_data"][$i]["now_target_flg"] == "1") {
+                          $target_cnt = $target_cnt + 1;
+                      }
+                  }
+                  if ($now_item_input_map["possible_num"] > $target_cnt) {
+                      if (empty($now_return_num_err1)) {
+                          $now_return_num_err1 = "err";
+                          $json_list["error_code"] = "1";
+                          $error_msg = "現在貸与中のアイテム：返却枚数が足りない商品があります。";
+                          array_push($json_list["error_msg"], $error_msg);
+                      }
+                  }
+                  if ($now_item_input_map["possible_num"] < $target_cnt) {
+                      if (empty($now_return_num_err1)) {
+                          $now_return_num_err1 = "err";
+                          $json_list["error_code"] = "1";
+                          $error_msg = "現在貸与中のアイテム：返却枚数が超過している商品があります。";
+                          array_push($json_list["error_msg"], $error_msg);
+                      }
+                  }
+              } else {
+                  //※個体管理番号なしの場合
+                  if ($now_item_input_map["possible_num"] < $now_item_input_map["now_return_num"]) {
+                      if (empty($now_return_num_err2)) {
+                          $now_return_num_err2 = "err";
+                          $json_list["error_code"] = "1";
+                          $error_msg = "現在貸与中のアイテム：返却枚数が超過している商品があります。";
+                          array_push($json_list["error_msg"], $error_msg);
+                      }
+                  }
+                  if ($now_item_input_map["possible_num"] > $now_item_input_map["now_return_num"]) {
+                      if (empty($now_return_num_err2)) {
+                          $now_return_num_err2 = "err";
+                          $json_list["error_code"] = "1";
+                          $error_msg = "現在貸与中のアイテム：返却枚数が足りない商品があります。";
+                          array_push($json_list["error_msg"], $error_msg);
+                      }
+                  }
+              }
           }
-        }
-        // 返却枚数チェック
-        if ($now_item_input_map["individual_flg"] == "1") {
-          //※個体管理番号有りの場合
-          $target_cnt = 0;
-          for ($i=0; $i<count($now_item_input_map["individual_data"]); $i++) {
-            if ($now_item_input_map["individual_data"][$i]["now_target_flg"] == "1") {
-              $target_cnt = $target_cnt + 1;
-            }
-          }
-          if ($now_item_input_map["possible_num"] != $target_cnt) {
-            if (empty($now_return_num_err1)) {
-              $now_return_num_err1 = "err";
-              $json_list["error_code"] = "1";
-              $error_msg = "現在貸与中のアイテム：返却枚数が足りない商品があります。";
-              array_push($json_list["error_msg"], $error_msg);
-            }
-          }
-        } else {
-          //※個体管理番号なしの場合
-          if ($now_item_input_map["possible_num"] < $now_item_input_map["now_return_num"]) {
-            if (empty($now_return_num_err2)) {
-              $now_return_num_err2 = "err";
-              $json_list["error_code"] = "1";
-              $error_msg = "現在貸与中のアイテム：返却枚数が超過している商品があります。";
-              array_push($json_list["error_msg"], $error_msg);
-            }
-          }
-          if ($now_item_input_map["possible_num"] > $now_item_input_map["now_return_num"]) {
-            if (empty($now_return_num_err2)) {
-              $now_return_num_err2 = "err";
-              $json_list["error_code"] = "1";
-              $error_msg = "現在貸与中のアイテム：返却枚数が足りない商品があります。";
-              array_push($json_list["error_msg"], $error_msg);
-            }
-          }
-        }
       }
-    }
     if (!empty($add_item_input)) {
       // 新たに追加されるアイテム
       foreach ($add_item_input as $add_item_input_map) {
