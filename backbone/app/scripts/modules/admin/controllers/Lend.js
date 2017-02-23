@@ -139,14 +139,14 @@ define([
 				});
 
 				this.listenTo(paginationView, 'selected', function(pageNumber){
-					if(modal){
+					if($("#section_modal").hasClass("in")){
 						fetchList_section(pageNumber);
 					}else{
 						fetchList(pageNumber);
 					}
 				});
 				this.listenTo(paginationView2, 'selected', function(pageNumber){
-					if(modal){
+					if($("#section_modal").hasClass("in")){
 						fetchList_section(pageNumber);
 					}else{
 						fetchList(pageNumber);
