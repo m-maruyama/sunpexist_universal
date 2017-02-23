@@ -862,7 +862,7 @@ $app->post('/history/search', function ()use($app){
 			}
 
 			//---発注ステータス名称---//
-            if($list['order_reason_kbn'] !== '10'){
+            if($list['order_reason_kbn'] !== '10' && $list['order_reason_kbn'] !== '05' && $list['order_reason_kbn'] !== '06' && $list['order_reason_kbn'] !== '07' && $list['order_reason_kbn'] !== '08' && $list['order_reason_kbn'] !== '20' && $list['order_reason_kbn'] !== '28'){
                 $query_list = array();
                 array_push($query_list, "cls_cd = '006'");
                 array_push($query_list, "gen_cd = '".$list['order_status']."'");
@@ -872,6 +872,7 @@ $app->post('/history/search', function ()use($app){
                     ->columns('*')
                     ->execute();
                 foreach ($gencode as $gencode_map) {
+                    ChromePhp::log($gencode_map->gen_name);
                     $list['order_status_name'] = $gencode_map->gen_name;
                 }
             }else{
