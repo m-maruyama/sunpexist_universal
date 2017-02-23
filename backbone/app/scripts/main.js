@@ -84,7 +84,7 @@ require([
 								break;
 							case 0:
 								App.container.networkFailure++;
-								if( App.container.networkFailure > 5) {
+								if( App.container.networkFailure > 10) {
 									alert("通信エラーが発生いたしました。");
 								}
 								break;
