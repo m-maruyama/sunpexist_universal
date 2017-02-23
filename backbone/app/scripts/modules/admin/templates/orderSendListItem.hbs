@@ -1,6 +1,8 @@
 <td>
   {{#if send_choice_chk}}
-  <input type="checkbox" name="order_check" class="order_check snd_kbn{{order_snd_kbn}}" value="{{param}}">
+      {{#if update_ok_flg}}
+          <input type="checkbox" name="order_check" class="order_check snd_kbn{{order_snd_kbn}}" value="{{param}}">
+      {{/if}}
   {{/if}}
 </td>
 <td>
