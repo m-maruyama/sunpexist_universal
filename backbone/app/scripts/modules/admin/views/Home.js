@@ -98,6 +98,7 @@ define([
 				'click @ui.wearer_input': function(e){
 					var $form = $('<form/>', {'action': '/universal/wearer_input.html', 'method': 'post'});
 
+					window.sessionStorage.setItem('wearer_input_ref', 'home');
 					window.sessionStorage.setItem('referrer', 'home');
 					$form.appendTo(document.body);
 					$form.submit();

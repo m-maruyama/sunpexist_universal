@@ -138,7 +138,7 @@ define([
 					$("#btn_ok").on('click',function() { //追加
 						hideModal();
 						// 検索画面以外から遷移してきた場合はホーム画面に戻る
-						if(window.sessionStorage.getItem('referrer')=='wearer_search'||window.sessionStorage.getItem('referrer')=='wearer_order'){
+						if(window.sessionStorage.getItem('wearer_input_ref')=='wearer_search'){
 							//検索条件
 							var cond = window.sessionStorage.getItem("wearer_search_cond");
 							window.sessionStorage.setItem("back_wearer_search_cond", cond);
