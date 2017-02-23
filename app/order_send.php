@@ -131,8 +131,14 @@ $app->post('/order_send/search', function () use ($app) {
     $arg_str .= "t_order_tran.order_req_ymd as as_order_req_ymd,";
     $arg_str .= "t_order_tran.order_sts_kbn as as_order_sts_kbn,";
     $arg_str .= "t_order_tran.order_reason_kbn as as_order_reason_kbn,";
+    $arg_str .= "t_order_tran.order_rntl_sect_cd as as_order_rntl_sect_cd,";
+
+    if ($section_all_zero_flg == 0) {
+        $arg_str .= "m_contract_resource.update_ok_flg as as_update_ok_flg,";
+    }
     $arg_str .= "t_order_tran.snd_kbn as as_snd_kbn,";
     $arg_str .= "t_returned_plan_info_tran.order_req_no as as_rtn_order_req_no";
+
     $arg_str .= " FROM ";
     $arg_str .= "(m_wearer_std_tran";
     if ($section_all_zero_flg) {
@@ -167,7 +173,6 @@ $app->post('/order_send/search', function () use ($app) {
     $arg_str .= ") as distinct_table";
     $arg_str .= " ORDER BY as_wst_order_req_no ASC";
     $m_wearer_std_tran = new MWearerStdTran();
-    //ChromePhp::log($arg_str);
     $results = new Resultset(null, $m_wearer_std_tran, $m_wearer_std_tran->getReadConnection()->query($arg_str));
     $result_obj = (array)$results;
     $results_cnt = $result_obj["\0*\0_count"];
@@ -186,6 +191,7 @@ $app->post('/order_send/search', function () use ($app) {
     $all_list = array();
     if (!empty($results_cnt)) {
       foreach ($results as $result) {
+
         // 発注区分=貸与で発注情報トランのデータが存在しない場合は対象外とする
         if ($result->as_wst_order_sts_kbn == "1" && empty($result->as_order_req_no)) {
           continue;
@@ -450,7 +456,90 @@ $app->post('/order_send/search', function () use ($app) {
           $list['order_delete_bottom'] = false;
         }
 
-        // 発注入力へのパラメータ設定
+          //契約リソースマスターにゼロ埋めの拠点があれば、そのゼロ埋めのupdate_okフラグを適用する。
+          //ゼロ埋めが複数あり、それらのupdate_okフラグが異なることは想定しない。
+          if($section_all_zero_flg == '1'){
+              $arg_str = "";
+              $arg_str .= "SELECT ";
+              $arg_str .= " * ";
+              $arg_str .= " FROM ";
+              $arg_str .= "m_contract_resource";
+              $arg_str .= " WHERE ";
+              $arg_str .= "corporate_id = '".$auth['corporate_id']."'";
+              $arg_str .= " AND rntl_cont_no = '".$cond['agreement_no']."'";
+              $arg_str .= " AND accnt_no = '".$auth['accnt_no']."'";
+              $arg_str .= " AND rntl_sect_cd = '0000000000'";
+
+              $m_contract_resource = new MContractResource();
+              $zero_results = new Resultset(null, $m_contract_resource, $m_contract_resource->getReadConnection()->query($arg_str));
+              $zero_result_obj = (array)$zero_results;
+              $zero_results_cnt = $zero_result_obj["\0*\0_count"];
+              if ($results_cnt > 0) {
+                  $paginator_model = new PaginatorModel(
+                  array(
+                  "data" => $zero_results,
+                  "limit" => $zero_results_cnt,
+                  "page" => 1
+                  )
+                  );
+              }
+              $zero_paginator = $paginator_model->getPaginate();
+              $zero_results = $zero_paginator->items;
+              $i = 0;
+              foreach ($zero_results as $zero_result) {
+                  $zero_all_list[$i]['rntl_sect_cd'] = $zero_result->rntl_sect_cd;
+                  $zero_all_list[$i]['update_ok_flg'] = $zero_result->update_ok_flg;
+                  $i++;
+              }
+              if (count($zero_all_list) > 0) {
+                  $update_ok_flg = $zero_all_list[0]['update_ok_flg'];
+              }
+              if($update_ok_flg == '1'){
+                  $list['update_ok_flg'] = true;
+              }else{
+                  $list['update_ok_flg'] = false;
+              }
+          }elseif($section_all_zero_flg == '0'){
+
+              if($result->as_order_sts_kbn == '5'){
+                  //拠点ゼロ埋めなしで、発注が職種変更または異動の場合、発注情報トランの発注時拠点を見る
+                  $arg_str = "";
+                  $arg_str .= "SELECT ";
+                  $arg_str .= " * ";
+                  $arg_str .= " FROM ";
+                  $arg_str .= "m_contract_resource";
+                  $arg_str .= " WHERE ";
+                  $arg_str .= "corporate_id = '".$auth['corporate_id']."'";
+                  $arg_str .= " AND rntl_cont_no = '".$cond['agreement_no']."'";
+                  $arg_str .= " AND accnt_no = '".$auth['accnt_no']."'";
+                  $arg_str .= " AND rntl_sect_cd = '".$result->as_order_rntl_sect_cd."'";
+                  $m_contract_resource = new MContractResource();
+                  $section_result = new Resultset(null, $m_contract_resource, $m_contract_resource->getReadConnection()->query($arg_str));
+                  $section_result_obj = (array)$section_result;
+                  $section_list = array();
+                  foreach ($section_result as $section_result_value) {
+                      $section_list['rntl_sect_cd'] = $section_result_value->rntl_sect_cd;
+                      $section_list['update_ok_flg'] = $section_result_value->update_ok_flg;
+                  }
+                  if($section_list['update_ok_flg'] == '1'){
+                      $list['update_ok_flg'] = true;
+                  }else{
+                      $list['update_ok_flg'] = false;
+                  }
+
+              }else{
+                  //ゼロ埋め拠点がない場合は、それぞれのレコードのupdate_okフラグを確認する
+                  if($result->as_update_ok_flg == '1'){
+                      $list['update_ok_flg'] = true;
+                  }else{
+                      $list['update_ok_flg'] = false;
+                  }
+              }
+          }
+        //ChromePhp::log($list['update_ok_flg']);
+
+
+          // 発注入力へのパラメータ設定
         $list['param'] = '';
         $list['param'] .= $list['corporate_id'].':';
         $list['param'] .= $list['rntl_cont_no'].':';

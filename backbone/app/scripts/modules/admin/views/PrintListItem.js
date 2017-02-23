@@ -39,8 +39,13 @@ define([
 						printData["individual_number"] = '0';
 					}
 
-					var msg = "データ量により、ダウンロード処理に時間がかかる可能性があります。ダウンロードを実施してよろしいですか？";
-					if (window.confirm(msg)) {
+					//var msg = "データ量により、ダウンロード処理に時間がかかる可能性があります。ダウンロードを実施してよろしいですか？";
+					$("#btn_ok").off();
+					$('#myModal').modal();
+					document.getElementById("confirm_txt").innerHTML=App.dl_msg;
+					$("#btn_ok").on('click',function() {
+						$('#myModal').modal('hide');
+						// if (window.confirm(msg)) {
 						var cond = {
 							"scr": 'PDFダウンロード',
 							"cond": printData
@@ -55,7 +60,7 @@ define([
 						form.remove();
 						form=null;
 						return;
-					}
+					});
 				}
 
 				/*"click @ui.print_download": function () {
