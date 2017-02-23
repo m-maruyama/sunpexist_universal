@@ -124,6 +124,14 @@ define([
 
                       $('#agreement_no').prop("disabled", true);
                       that.render();
+                        if(res_list['order_flg']){
+                            //着用者情報編集時(商品情報登録済み)は「着用者のみ登録して終了」ボタンを隠す
+                            $('#input_insert').hide();
+                            $('#input_insert_button').hide();
+                            $('#input_insert').remove();
+                            $('#input_insert_button').remove();
+                        }
+
                       if (res_list['cster_emply_cd']) {
                         that.ui.cster_emply_cd_chk.prop('checked', true);
                       } else {

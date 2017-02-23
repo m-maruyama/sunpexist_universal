@@ -138,6 +138,7 @@ $app->post('/wearer_input', function () use ($app) {
     //ChromePhp::LOG($referrer);
     //ChromePhp::LOG($disp_type);
 
+    $json_list['order_flg'] = false;
     $json_list = array();
     $list = array();
     // 画面遷移により、以降の処理で使用するパラメータを設定
@@ -187,6 +188,7 @@ $app->post('/wearer_input', function () use ($app) {
           $wearer_odr_post['ship_to_brnch_cd'] = $result->ship_to_brnch_cd;
         }
       }
+
     } else if ($disp_type == "wearer_input") {
       $wearer_odr_post = $app->session->get("wearer_odr_post");
     } else {
@@ -484,6 +486,15 @@ $app->post('/wearer_input', function () use ($app) {
     $param_list .= $wearer_odr_post['wst_order_req_no'].':';
     $param_list .= $wearer_odr_post['order_req_no'];
     $json_list['param'] = $param_list;
+
+    if(isset($wearer_odr_post['order_req_no'])&&$wearer_odr_post['order_req_no']){
+        ChromePhp::LOG(1);
+        ChromePhp::LOG($wearer_odr_post['order_req_no']);
+        $json_list['order_flg'] = true;
+    }else{
+        ChromePhp::LOG($wearer_odr_post['order_req_no']);
+        $json_list['order_flg'] = false;
+    }
 
     echo json_encode($json_list);
 });
