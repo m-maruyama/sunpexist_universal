@@ -141,17 +141,24 @@ $app->post('/import_csv', function () use ($app) {
     } elseif ($getFileExt->getExtension() == 'xlsx' || $getFileExt->getExtension() == 'xls') {
         $auth = $app->session->get("auth");
         // init excel work book as xlsx
-        $useXlsxFormat = true;
+        if($getFileExt->getExtension() == 'xlsx'){
+            $useXlsxFormat = true;
+        }else{
+            $useXlsxFormat = false;
+        }
         setlocale(LC_ALL, 'ja_JP.UTF-8');
         $xlBook = new ExcelBook('Taichi Nakamura', 'linux-e4d4157290acad17020f2f384ei1c3od', $useXlsxFormat);
         $xlBook->setLocale('ja_JP.UTF-8');
 
         // add sheet to work book
         $xlBook->loadfile($_FILES['file']['tmp_name']);
+
         //エクセルの一番左のシートを取得
         $sheet = $xlBook->getSheet(0);
         //エクセルの行数を取得
+
         $lastRow = $sheet->lastRow();
+
         //配列を初期化
         $new_list = array();
         $line_no = 2;//行no追加
@@ -159,7 +166,6 @@ $app->post('/import_csv', function () use ($app) {
         //存在する行数の最初の行を除き、連想配列にする
         for ($i = 1; $i < $lastRow; $i++) {
             $line_list = $sheet->readRow($i, 0);
-
             if (count($line_list) != 15) {
                 $cnt_list = array();
                 //項目数が不正な場合、エラーメッセージを配列に格納
