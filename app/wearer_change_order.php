@@ -2028,6 +2028,10 @@ $app->post('/wearer_change/info', function ()use($app){
      }
    }
 
+     //元の職種と変更後の職種が一緒だったら空にする
+     if($m_wearer_job_type_cd == $chg_wearer_job_type_cd){
+         $add_list = array();
+     }
    $json_list["add_list_disp_flg"] = true;
    if (count($add_list) == 0) {
      $json_list["add_list_disp_flg"] = false;
@@ -2311,6 +2315,10 @@ $app->post('/wearer_change/info', function ()use($app){
          //ChromePhp::log($now_list);
      }
    }
+   //元の職種と変更後の職種が一緒だったら空にする
+     if($m_wearer_job_type_cd == $chg_wearer_job_type_cd){
+         $now_list = array();
+     }
    // 現在貸与中アイテム一覧内容の表示フラグ
    if (!empty($now_list)) {
      $json_list["now_list_disp_flg"] = true;
