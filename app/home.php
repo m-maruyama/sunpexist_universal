@@ -16,11 +16,10 @@ $app->post('/home', function ()use($app){
     $json_list = array();
     $auth = $app->session->get("auth");
     $corporate_id = $app->session->get("auth")['corporate_id'];
-
     //お知らせ
     $now = date( "Y/m/d H:i:s", time() );
     $results = TInfo::find(array(
-        "conditions" => "open_date < ?1 AND close_date > ?1",
+        "conditions" => "corporate_id = '"."$corporate_id"."' AND open_date < ?1 AND close_date > ?1",
         "bind"	=> array(1 => $now),
         'order'	  => "display_order asc"
     ));
@@ -396,10 +395,45 @@ $app->post('/home_count', function () use ($app) {
             $arg_str .= " WHERE ";
             $arg_str .= $query;
             $arg_str .= ") as distinct_table";
-        } else {
+        }else {
             //---SQLクエリー実行---//
             $arg_str = "SELECT ";
-            $arg_str .= "*";
+            $arg_str .= " * ";
+            $arg_str .= " FROM ";
+            $arg_str .= "(SELECT distinct on (t_returned_plan_info.order_req_no, t_returned_plan_info.item_cd, t_returned_plan_info.color_cd, t_returned_plan_info.size_cd) ";
+            //---SQLクエリー実行---//
+            //$arg_str = "SELECT ";
+            $arg_str .= "t_returned_plan_info.order_req_no as as_order_req_no,";
+            $arg_str .= "t_order.order_req_ymd as as_order_req_ymd,";
+            $arg_str .= "t_returned_plan_info.order_sts_kbn as as_order_sts_kbn,";
+            $arg_str .= "t_order.order_reason_kbn as as_order_reason_kbn,";
+            $arg_str .= "m_section.rntl_sect_name as as_rntl_sect_name,";
+            $arg_str .= "m_job_type.job_type_name as as_job_type_name,";
+            $arg_str .= "m_wearer_std.cster_emply_cd as as_cster_emply_cd,";
+            $arg_str .= "m_wearer_std.werer_name as as_werer_name,";
+            $arg_str .= "t_returned_plan_info.item_cd as as_item_cd,";
+            $arg_str .= "t_returned_plan_info.color_cd as as_color_cd,";
+            $arg_str .= "t_returned_plan_info.size_cd as as_size_cd,";
+            $arg_str .= "t_order.job_type_cd as as_job_type_cd,";
+            $arg_str .= "t_order.size_two_cd as as_size_two_cd,";
+            $arg_str .= "t_order.order_qty as as_order_qty,";
+            $arg_str .= "m_input_item.input_item_name as as_input_item_name,";
+            $arg_str .= "t_returned_plan_info.order_date as as_re_order_date,";
+            $arg_str .= "t_returned_plan_info.return_status as as_return_status,";
+            $arg_str .= "t_returned_plan_info.return_date as as_return_date,";
+            $arg_str .= "t_returned_plan_info.job_type_cd as as_return_job_type_cd,";
+            $arg_str .= "t_delivery_goods_state.rec_order_no as as_rec_order_no,";
+            $arg_str .= "t_delivery_goods_state.ship_no as as_ship_no,";
+            $arg_str .= "t_delivery_goods_state.ship_ymd as as_ship_ymd,";
+            $arg_str .= "t_order_state.ship_qty as as_ship_qty,";
+            $arg_str .= "t_returned_plan_info.return_qty as as_return_qty,";
+            $arg_str .= "t_returned_plan_info.individual_ctrl_no as as_individual_ctrl_no,";
+            $arg_str .= "t_delivery_goods_state_details.receipt_date as as_receipt_date,";
+            $arg_str .= "t_returned_plan_info.return_plan_qty as as_return_plan__qty,";
+            $arg_str .= "t_returned_plan_info.rntl_cont_no as as_rntl_cont_no,";
+            $arg_str .= "t_returned_plan_info.rntl_sect_cd as as_trp_rntl_sect_cd,";
+            $arg_str .= "m_wearer_std.rntl_sect_cd as as_mws_rntl_sect_cd,";
+            $arg_str .= "m_contract.rntl_cont_name as as_rntl_cont_name";
             $arg_str .= " FROM t_returned_plan_info LEFT JOIN";
             $arg_str .= " (t_order LEFT JOIN";
             $arg_str .= " (t_order_state LEFT JOIN ";
@@ -418,6 +452,16 @@ $app->post('/home_count', function () use ($app) {
                 $arg_str .= " AND m_section.rntl_sect_cd = m_contract_resource.rntl_sect_cd";
                 $arg_str .= " ) ON t_order.m_section_comb_hkey = m_section.m_section_comb_hkey";
             }
+            $arg_str .= " LEFT JOIN (m_job_type INNER JOIN m_input_item";
+            $arg_str .= " ON m_job_type.corporate_id = m_input_item.corporate_id";
+            $arg_str .= " AND m_job_type.rntl_cont_no = m_input_item.rntl_cont_no";
+            $arg_str .= " AND m_job_type.job_type_cd = m_input_item.job_type_cd)";
+            $arg_str .= " ON t_returned_plan_info.corporate_id = m_job_type.corporate_id";
+            $arg_str .= " AND t_returned_plan_info.rntl_cont_no = m_job_type.rntl_cont_no";
+            $arg_str .= " AND t_returned_plan_info.job_type_cd = m_job_type.job_type_cd";
+            $arg_str .= " AND t_returned_plan_info.corporate_id = m_input_item.corporate_id";
+            $arg_str .= " AND t_returned_plan_info.item_cd = m_input_item.item_cd";
+            $arg_str .= " AND t_returned_plan_info.color_cd = m_input_item.color_cd";
             $arg_str .= " INNER JOIN m_wearer_std";
             $arg_str .= " ON t_returned_plan_info.werer_cd = m_wearer_std.werer_cd";
             $arg_str .= " AND t_returned_plan_info.corporate_id = m_wearer_std.corporate_id";
@@ -426,6 +470,12 @@ $app->post('/home_count', function () use ($app) {
             $arg_str .= " ON t_returned_plan_info.rntl_cont_no = m_contract.rntl_cont_no";
             $arg_str .= " WHERE ";
             $arg_str .= $query;
+            $arg_str .= ") as distinct_table";
+            //$arg_str .= ") as distinct_table";
+            if (!empty($q_sort_key)) {
+                $arg_str .= " ORDER BY ";
+                $arg_str .= $q_sort_key . " " . $order;
+            }
         }
         $t_order = new TOrder();
         $results = new Resultset(null, $t_order, $t_order->getReadConnection()->query($arg_str));
