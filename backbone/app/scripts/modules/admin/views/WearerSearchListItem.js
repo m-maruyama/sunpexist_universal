@@ -26,7 +26,6 @@ define([
 					document.getElementsByClassName("active")[0].getElementsByTagName("a")[0].text
 				);
 				var arr_str = cond.toString();
-				console.log(arr_str);
 				// 検索項目値、ページ数のセッション保持
 				window.sessionStorage.setItem("wearer_search_cond", arr_str);
 			},
