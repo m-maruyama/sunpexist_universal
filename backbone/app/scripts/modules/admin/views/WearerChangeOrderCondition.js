@@ -390,11 +390,11 @@ define([
 						// 	$('#myModal').modal('hide');
 						// // var msg = "社内申請手続きを踏んでいますか？";
 						// // if (window.confirm(msg)) {
-						// 	var reasonKbnConditionChangeView = new App.Admin.Views.ReasonKbnConditionChange({
-						// 		job_type: job_type
-						// 	});
-						// 	// that.reason_kbn.show(reasonKbnConditionChangeView);
-						// 	that.triggerMethod('change:job_type', data);
+							var reasonKbnConditionChangeView = new App.Admin.Views.ReasonKbnConditionChange({
+								job_type: job_type
+							});
+							// that.reason_kbn.show(reasonKbnConditionChangeView);
+							that.triggerMethod('change:job_type', data);
 						// });
 						// $("#btn_cancel").on('click',function() { //追加
 						// 	$('#myModal').modal('hide');
