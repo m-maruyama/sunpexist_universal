@@ -614,7 +614,6 @@ $app->post('/shipment_change', function ()use($app){
             //1件だったら非活性
             $json_list['ship_disabled'] = 'disabled';
         }
-
       foreach ($results as $result) {
         $list['ship_to_cd'] = $result->ship_to_cd;
         $list['ship_to_brnch_cd'] = $result->ship_to_brnch_cd;
@@ -637,6 +636,8 @@ $app->post('/shipment_change', function ()use($app){
           // 初期遷移時は初期選択状態版を生成
           if ($list['ship_to_cd'] == $wearer_chg_post['ship_to_cd'] && $list['ship_to_brnch_cd'] == $wearer_chg_post['ship_to_brnch_cd']) {
             $list['selected'] = 'selected';
+              $choice_ship = $list['ship_to_cd'];
+              $choice_ship_to_brnch = $list['ship_to_brnch_cd'];
           } else {
             $list['selected'] = '';
           }
@@ -652,9 +653,13 @@ $app->post('/shipment_change', function ()use($app){
       $list['selected'] = '';
       array_push($all_list, $list);
     }
-
+    $std_ship_to_cd = '';
+    $std_ship_to_brnch_cd = '';
     //「支店店舗とおなじ」が選択されている場合
-    if ($cond['ship_to_cd'] == "0" && $cond['ship_to_brnch_cd'] == "0") {
+    if (($cond['ship_to_cd'] == "0" && $cond['ship_to_brnch_cd'] == "0")||(!$cond['ship_to_cd']&&!$cond['ship_to_brnch_cd'])) {
+        if(!($cond['section'])){
+            $cond['section'] = $wearer_chg_post['rntl_sect_cd'];
+        }
       // 部門マスタから標準出荷先、支店コード取得
       $query_list = array();
       array_push($query_list, "corporate_id = '".$auth['corporate_id']."'");
@@ -690,7 +695,6 @@ $app->post('/shipment_change', function ()use($app){
       }
     }
 
-    $json_list['shipment_list'] = $all_list;
     //ChromePhp::LOG($json_list['shipment_list']);
 
     // 表示する対象支店の郵便番号、住所を設定
@@ -721,6 +725,12 @@ $app->post('/shipment_change', function ()use($app){
             );
             $post_address_list = array();
             array_push($post_address_list, $post_address);
+
+              //拠点と出荷先が同じ場合は「拠点と同じ」を選択
+              if ($std_ship_to_cd == $wearer_chg_post['ship_to_cd'] && $std_ship_to_brnch_cd == $wearer_chg_post['ship_to_brnch_cd']) {
+                  $all_list[$i]['selected'] = '';
+                  $all_list[0]['selected'] = 'selected';
+              }
           }
         }
       }
@@ -737,6 +747,7 @@ $app->post('/shipment_change', function ()use($app){
       array_push($post_address_list, $post_address);
     }
     $json_list['post_address'] = $post_address_list;
+    $json_list['shipment_list'] = $all_list;
     //ChromePhp::LOG($json_list['post_address']);
 
     echo json_encode($json_list);

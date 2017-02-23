@@ -145,13 +145,13 @@ define([
 							complete: function (res) {
 
 								//拠点と出荷先が同じだったら、拠点と同じに変更
-								var section_name = $('[name=section] option:selected').text();
-								var m_shipment_to = $('[name=shipment] option:selected').text();
-
-
-								if(section_name == m_shipment_to){
-									$('#shipment').prop('selectedIndex',0);
-								}
+								// var section_name = $('[name=section] option:selected').text();
+								// var m_shipment_to = $('[name=shipment] option:selected').text();
+                                //
+                                //
+								// if(section_name == m_shipment_to){
+								// 	$('#shipment').prop('selectedIndex',0);
+								// }
 							}
 						});
 
@@ -234,7 +234,7 @@ define([
 						"job_type_cd": job_type_cd
 					};
 
-					var rntl_sect_cd = $("select[name='section']").val();
+					var rntl_sect_cd = $("#bef_rntl_sect_cd").val();
 					var rntl_cont_no = $("select[name='agreement_no']").val();
 
 					var modelForUpdate = this.model;
@@ -261,7 +261,7 @@ define([
 					var that = this;
 
 					//更新可否フラグ絞り込み用 セレクトボックスの拠点cd取得
-					var rntl_sect_cd = $("select[name='section']").val();
+					var rntl_sect_cd = $("#bef_rntl_sect_cd").val();
 					var rntl_cont_no = $("select[name='agreement_no']").val();
 					console.log();
 					var modelForUpdate = this.model;
@@ -287,7 +287,7 @@ define([
 					var that = this;
 
 					//更新可否フラグ絞り込み用 セレクトボックスの拠点cd取得
-					var rntl_sect_cd = $("select[name='section']").val();
+					var rntl_sect_cd = $("#bef_rntl_sect_cd").val();
 					var rntl_cont_no = $("select[name='agreement_no']").val();
 
 					var modelForUpdate = this.model;
@@ -378,9 +378,9 @@ define([
 
 					if (sp_job_type_flg == "1") {
 						// JavaScript モーダルで表示
-						$('#myModalAlert').modal(); //追加
+						$('#myModalAlert2').modal('show'); //追加
 						//メッセージの修正
-						document.getElementById("alert_txt").innerHTML=App.apply_msg;
+						document.getElementById("alert_txt2").innerHTML=App.apply_msg;
 						// $('#myModal').modal('show'); //追加
 						// //メッセージの修正
 						// document.getElementById("confirm_txt").innerHTML=App.apply_msg; //追加　このメッセージはapp.jsで定義
@@ -390,9 +390,9 @@ define([
 						// 	$('#myModal').modal('hide');
 						// // var msg = "社内申請手続きを踏んでいますか？";
 						// // if (window.confirm(msg)) {
-							var reasonKbnConditionChangeView = new App.Admin.Views.ReasonKbnConditionChange({
-								job_type: job_type
-							});
+						// 	var reasonKbnConditionChangeView = new App.Admin.Views.ReasonKbnConditionChange({
+						// 		job_type: job_type
+						// 	});
 							// that.reason_kbn.show(reasonKbnConditionChangeView);
 							that.triggerMethod('change:job_type', data);
 						// });
