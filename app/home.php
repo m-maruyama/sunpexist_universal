@@ -16,11 +16,10 @@ $app->post('/home', function ()use($app){
     $json_list = array();
     $auth = $app->session->get("auth");
     $corporate_id = $app->session->get("auth")['corporate_id'];
-
     //お知らせ
     $now = date( "Y/m/d H:i:s", time() );
     $results = TInfo::find(array(
-        "conditions" => "open_date < ?1 AND close_date > ?1",
+        "conditions" => "corporate_id = '"."$corporate_id"."' AND open_date < ?1 AND close_date > ?1",
         "bind"	=> array(1 => $now),
         'order'	  => "display_order asc"
     ));
