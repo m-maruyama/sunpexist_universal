@@ -24,11 +24,10 @@
 					</a>
 				</li>
 			{{/if}}
-			{{#if total_records}}
-				<!-- <li class="pager_count">&nbsp;&nbsp;{{start_num}}-{{end_num}}件(全{{total_records}}件) -->
-				<!--li class="pager_count">&nbsp;&nbsp;全{{total_records}}件
-				</li-->
-			{{/if}}
 		</ul>
+		{{#if total_records}}
+		<!--<span class="pager_count pull-right">&nbsp;&nbsp;<b>{{start_num}}-{{end_num}}件(全{{total_records}}件)</b>-->
+			<span class="pager_count pull-right">&nbsp;&nbsp;<b>全{{total_records}}件</b></span>
+		{{/if}}
 	</nav>
 <!--/div-->

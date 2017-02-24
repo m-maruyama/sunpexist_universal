@@ -81,7 +81,7 @@ define(["app"],function(App) {
 				page_number: 1,
 				total_records: 0,
 				total_page: 0,
-				delta: 15,
+				delta: 20,
 				pages: [],
 				first: false,//最初へ戻るフラグ
 				last: false,//最後へ戻るフラグ
