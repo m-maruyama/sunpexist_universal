@@ -101,13 +101,12 @@ $app->post('/order_send/search', function () use ($app) {
                         $order_section_query = "t_order_tran.order_rntl_sect_cd IN ('" . $order_section_str . "')";
                     }
                     $rntl_accnt_no = "(m_contract_resource.accnt_no = '".$auth['accnt_no']."'";
-                    $accnt_no_and_order_section = $rntl_accnt_no . " OR " . $order_section_query. ")";
+                    $accnt_no_and_order_section = $rntl_accnt_no . " AND " . $order_section_query. ")";
                 }
-                array_push($query_list, "$accnt_no_and_order_section");
+                $query_list[] = $accnt_no_and_order_section;
             }
     }
     $query = implode(' AND ', $query_list);
-
     $arg_str = "";
     $arg_str .= "SELECT ";
     $arg_str .= " * ";
@@ -133,7 +132,7 @@ $app->post('/order_send/search', function () use ($app) {
     $arg_str .= "t_order_tran.order_reason_kbn as as_order_reason_kbn,";
     $arg_str .= "t_order_tran.order_rntl_sect_cd as as_order_rntl_sect_cd,";
 
-    if ($section_all_zero_flg == 0) {
+    if (!$section_all_zero_flg) {
         $arg_str .= "m_contract_resource.update_ok_flg as as_update_ok_flg,";
     }
     $arg_str .= "t_order_tran.snd_kbn as as_snd_kbn,";
@@ -458,7 +457,7 @@ $app->post('/order_send/search', function () use ($app) {
 
           //契約リソースマスターにゼロ埋めの拠点があれば、そのゼロ埋めのupdate_okフラグを適用する。
           //ゼロ埋めが複数あり、それらのupdate_okフラグが異なることは想定しない。
-          if($section_all_zero_flg == '1'){
+          if($section_all_zero_flg){
               $arg_str = "";
               $arg_str .= "SELECT ";
               $arg_str .= " * ";
@@ -499,7 +498,7 @@ $app->post('/order_send/search', function () use ($app) {
               }else{
                   $list['update_ok_flg'] = false;
               }
-          }elseif($section_all_zero_flg == '0'){
+          }else{
 
               if($result->as_order_sts_kbn == '5'){
                   //拠点ゼロ埋めなしで、発注が職種変更または異動の場合、発注情報トランの発注時拠点を見る
