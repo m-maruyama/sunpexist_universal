@@ -872,7 +872,6 @@ $app->post('/history/search', function ()use($app){
                     ->columns('*')
                     ->execute();
                 foreach ($gencode as $gencode_map) {
-                    ChromePhp::log($gencode_map->gen_name);
                     $list['order_status_name'] = $gencode_map->gen_name;
                 }
             }else{

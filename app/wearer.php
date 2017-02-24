@@ -647,7 +647,7 @@ $app->post('/wearer/detail', function () use ($app) {
     $arg_str .= "m_wearer_std.rntl_cont_no as as_rntl_cont_no,";
     $arg_str .= "t_order.rntl_sect_cd as as_old_rntl_sect_cd,";
     $arg_str .= "t_order.job_type_cd as as_old_job_type_cd,";
-    $arg_str .= "t_order.order_req_no as as_order_req_no,";
+    $arg_str .= "t_delivery_goods_state_details.order_req_no as as_order_req_no,";
     $arg_str .= "t_delivery_goods_state_details.item_cd as as_item_cd,";
     $arg_str .= "t_delivery_goods_state_details.color_cd as as_color_cd,";
     $arg_str .= "t_delivery_goods_state_details.size_cd as as_size_cd,";
@@ -660,7 +660,6 @@ $app->post('/wearer/detail', function () use ($app) {
     $arg_str .= "t_delivery_goods_state.ship_ymd as as_ship_ymd,";
     $arg_str .= "t_returned_plan_info.order_date as as_re_order_date,";
     $arg_str .= "t_returned_plan_info.return_plan_qty as as_return_plan_qty,";
-    $arg_str .= "t_order.order_req_no as as_order_req_no,";
     $arg_str .= "t_delivery_goods_state.rec_order_no as as_rec_order_no,";
     $arg_str .= "t_delivery_goods_state_details.ship_no as as_ship_no";
     $arg_str .= " FROM t_delivery_goods_state_details";
@@ -688,8 +687,7 @@ $app->post('/wearer/detail', function () use ($app) {
     $arg_str .= " ON t_order.m_wearer_item_comb_hkey = m_wearer_item.m_wearer_item_comb_hkey";
     $arg_str .= " WHERE ";
     $arg_str .= $query;
-    $arg_str .= ") as distinct_table";
-
+    $arg_str .= ") as distinct_table ORDER BY as_order_req_no asc";
     $t_order = new TOrder();
     $results = new Resultset(null, $t_order, $t_order->getReadConnection()->query($arg_str));
     $result_obj = (array)$results;
