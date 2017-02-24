@@ -154,7 +154,7 @@ define([
 								}
 							}
 						});
-						// 社員コード、着用者名、読みかな、コメント欄
+						// 社員番号、着用者名、読みかな、コメント欄
 						that.ui.cster_emply_cd.prop('disabled',true);
 						if (res_list['wearer_info'][0]) {
 							if(res_list['wearer_info'][0]['cster_emply_cd']){

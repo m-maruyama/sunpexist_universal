@@ -71,7 +71,7 @@ $app->post('/wearer_edit_info', function ()use($app){
     $results = $paginator->items;
     //ChromePhp::LOG($results);
     foreach ($results as $result) {
-      // 社員コード
+      // 社員番号
       $list['cster_emply_cd'] = $result->as_cster_emply_cd;
       // 着用者名
       $list['werer_name'] = $result->as_werer_name;
@@ -142,7 +142,7 @@ $app->post('/wearer_edit_info', function ()use($app){
       //ChromePhp::LOG($results);
 
       foreach ($results as $result) {
-        // 社員コード
+        // 社員番号
         $list['cster_emply_cd'] = $result->as_cster_emply_cd;
         // 着用者名
         $list['werer_name'] = $result->as_werer_name;
@@ -628,28 +628,28 @@ $app->post('/wearer_edit_complete', function ()use($app){
    $json_list["error_msg"] = array();
    if ($mode == "check") {
      //--入力内容確認--//
-     // 社員コード
+     // 社員番号
      if ($wearer_data_input['emply_cd_flg']) {
        if (mb_strlen($wearer_data_input['member_no']) == 0) {
          $json_list["error_code"] = "1";
-         $error_msg = "社員コードありにチェックしている場合、社員コードを入力してください。";
+         $error_msg = "社員番号ありにチェックしている場合、社員番号を入力してください。";
          array_push($json_list["error_msg"], $error_msg);
        }
      }
      if (!$wearer_data_input['emply_cd_flg']) {
        if (mb_strlen($wearer_data_input['member_no']) > 0) {
          $json_list["error_code"] = "1";
-         $error_msg = "社員コードありにチェックしていない場合、社員コードの入力は不要です。";
+         $error_msg = "社員番号ありにチェックしていない場合、社員番号の入力は不要です。";
          array_push($json_list["error_msg"], $error_msg);
        }
      }
      if (mb_strlen($wearer_data_input['member_no']) > 0) {
         if (strlen(mb_convert_encoding($wearer_data_input['member_no'], "SJIS")) > 10) {
           $json_list["error_code"] = "1";
-          $error_msg = "社員コードが規定の文字数をオーバーしています。";
+          $error_msg = "社員番号が規定の文字数をオーバーしています。";
           array_push($json_list["error_msg"], $error_msg);
         }
-        // 社員コード重複チェック
+        // 社員番号重複チェック
         $member_no_overlap_err = "";
         $query_list = array();
         array_push($query_list, "corporate_id = '".$auth['corporate_id']."'");
@@ -671,7 +671,7 @@ $app->post('/wearer_edit_complete', function ()use($app){
         if ($results_cnt > 0) {
           $member_no_overlap_err = "err";
           $json_list["error_code"] = "1";
-          $error_msg = "既に社員コードが使用されています。";
+          $error_msg = "既に社員番号が使用されています。";
           array_push($json_list["error_msg"], $error_msg);
         }
         if (empty($member_no_overlap_err)) {
@@ -688,7 +688,7 @@ $app->post('/wearer_edit_complete', function ()use($app){
           $results_cnt = $results_array["\0*\0_count"];
           if ($results_cnt > 0) {
             $json_list["error_code"] = "1";
-            $error_msg = "既に社員コードが使用されています。";
+            $error_msg = "既に社員番号が使用されています。";
             array_push($json_list["error_msg"], $error_msg);
           }
         }
@@ -901,7 +901,7 @@ $app->post('/wearer_edit_complete', function ()use($app){
 //         $job_type_cd = explode(':', $wearer_data_input['job_type']);
 //         $job_type_cd = $job_type_cd[0];
 //         array_push($up_query_list, "job_type_cd = '".$job_type_cd."'");
-         // 客先社員コード
+         // 客先社員番号
          array_push($up_query_list, "cster_emply_cd = '".$wearer_data_input['member_no']."'");
          // 着用者名
          array_push($up_query_list, "werer_name = '".$wearer_data_input['member_name']."'");
@@ -1042,7 +1042,7 @@ $app->post('/wearer_edit_complete', function ()use($app){
          // レンタル部門コード
          array_push($calum_list, "rntl_sect_cd");
          array_push($values_list, "'".$wearer_data_input['section']."'");
-         // 客先社員コード
+         // 客先社員番号
          if (!empty($wearer_data_input['member_no'])) {
            array_push($calum_list, "cster_emply_cd");
            array_push($values_list, "'".$wearer_data_input['member_no']."'");
@@ -1230,28 +1230,28 @@ $app->post('/wearer_edit_send', function ()use($app){
     ChromePhp::LOG($wearer_data_input);
 */
     //--入力内容確認--//
-    // 社員コード
+    // 社員番号
     if ($wearer_data_input['emply_cd_flg']) {
       if (mb_strlen($wearer_data_input['member_no']) == 0) {
         $json_list["error_code"] = "1";
-        $error_msg = "社員コードありにチェックしている場合、社員コードを入力してください。";
+        $error_msg = "社員番号ありにチェックしている場合、社員番号を入力してください。";
         array_push($json_list["error_msg"], $error_msg);
       }
     }
     if (!$wearer_data_input['emply_cd_flg']) {
       if (mb_strlen($wearer_data_input['member_no']) > 0) {
         $json_list["error_code"] = "1";
-        $error_msg = "社員コードありにチェックしていない場合、社員コードの入力は不要です。";
+        $error_msg = "社員番号ありにチェックしていない場合、社員番号の入力は不要です。";
         array_push($json_list["error_msg"], $error_msg);
       }
     }
     if (mb_strlen($wearer_data_input['member_no']) > 0) {
        if (strlen(mb_convert_encoding($wearer_data_input['member_no'], "SJIS")) > 10) {
          $json_list["error_code"] = "1";
-         $error_msg = "社員コードが規定の文字数をオーバーしています。";
+         $error_msg = "社員番号が規定の文字数をオーバーしています。";
          array_push($json_list["error_msg"], $error_msg);
        }
-       // 社員コード重複チェック
+       // 社員番号重複チェック
        $member_no_overlap_err = "";
        $query_list = array();
        array_push($query_list, "corporate_id = '".$auth['corporate_id']."'");
@@ -1273,7 +1273,7 @@ $app->post('/wearer_edit_send', function ()use($app){
        if ($results_cnt > 0) {
          $member_no_overlap_err = "err";
          $json_list["error_code"] = "1";
-         $error_msg = "既に社員コードが使用されています。";
+         $error_msg = "既に社員番号が使用されています。";
          array_push($json_list["error_msg"], $error_msg);
        }
        if (empty($member_no_overlap_err)) {
@@ -1290,7 +1290,7 @@ $app->post('/wearer_edit_send', function ()use($app){
          $results_cnt = $results_array["\0*\0_count"];
          if ($results_cnt > 0) {
            $json_list["error_code"] = "1";
-           $error_msg = "既に社員コードが使用されています。";
+           $error_msg = "既に社員番号が使用されています。";
            array_push($json_list["error_msg"], $error_msg);
          }
        }
@@ -1506,7 +1506,7 @@ $app->post('/wearer_edit_send', function ()use($app){
 //        $job_type_cd = explode(':', $wearer_data_input['job_type']);
 //        $job_type_cd = $job_type_cd[0];
 //        array_push($up_query_list, "job_type_cd = '".$job_type_cd."'");
-        // 客先社員コード
+        // 客先社員番号
         array_push($up_query_list, "cster_emply_cd = '".$wearer_data_input['member_no']."'");
         // 着用者名
         array_push($up_query_list, "werer_name = '".$wearer_data_input['member_name']."'");
@@ -1647,7 +1647,7 @@ $app->post('/wearer_edit_send', function ()use($app){
         // レンタル部門コード
         array_push($calum_list, "rntl_sect_cd");
         array_push($values_list, "'".$wearer_data_input['section']."'");
-        // 客先社員コード
+        // 客先社員番号
         if (!empty($wearer_data_input['member_no'])) {
           array_push($calum_list, "cster_emply_cd");
           array_push($values_list, "'".$wearer_data_input['member_no']."'");

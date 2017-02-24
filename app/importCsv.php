@@ -458,7 +458,7 @@ $app->post('/import_csv', function () use ($app) {
     $corporate_id = $auth["corporate_id"];
     $t_import_job = new TImportJob();
 
-    //社員番号マスターチェック  発注区分：着用者登録のみ、貸与の場合 条件：着用者基本マスタに同じ客先社員コードがある場合、稼働である事。
+    //社員番号マスターチェック  発注区分：着用者登録のみ、貸与の場合 条件：着用者基本マスタに同じ客先社員番号がある場合、稼働である事。
     $arg_str = "SELECT ";
     $arg_str .= " * ";
     $arg_str .= " FROM ";
@@ -766,7 +766,7 @@ $app->post('/import_csv', function () use ($app) {
         }
     }
 
-    //C-3-5 社員コードごとのお客様発注no(emply_order_req_no)の重複 検索条件
+    //C-3-5 社員番号ごとのお客様発注no(emply_order_req_no)の重複 検索条件
     $arg_str8 = "SELECT ";
     $arg_str8 .= " * ";
     $arg_str8 .= " FROM (SELECT * FROM t_import_job WHERE emply_order_req_no != '' AND emply_order_req_no IS NOT NULL) as T1";//お客様発注no
