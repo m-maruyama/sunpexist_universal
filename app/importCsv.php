@@ -458,7 +458,7 @@ $app->post('/import_csv', function () use ($app) {
     $corporate_id = $auth["corporate_id"];
     $t_import_job = new TImportJob();
 
-    //社員番号マスターチェック  発注区分：着用者登録のみ、貸与の場合 条件：着用者基本マスタに同じ客先社員コードがある場合、稼働である事。
+    //社員番号マスターチェック  発注区分：着用者登録のみ、貸与の場合 条件：着用者基本マスタに同じ客先社員番号がある場合、稼働である事。
     $arg_str = "SELECT ";
     $arg_str .= " * ";
     $arg_str .= " FROM ";
@@ -766,7 +766,7 @@ $app->post('/import_csv', function () use ($app) {
         }
     }
 
-    //C-3-5 社員コードごとのお客様発注no(emply_order_req_no)の重複 検索条件
+    //C-3-5 社員番号ごとのお客様発注no(emply_order_req_no)の重複 検索条件
     $arg_str8 = "SELECT ";
     $arg_str8 .= " * ";
     $arg_str8 .= " FROM (SELECT * FROM t_import_job WHERE emply_order_req_no != '' AND emply_order_req_no IS NOT NULL) as T1";//お客様発注no
@@ -1628,18 +1628,18 @@ function chk_format($error_list, $line_list, $line_cnt)
             array_push($error_list, error_msg_format($line_cnt, '社員番号'));
         }
     }
-    if (!empty($line_list[1])) {
-        //着用者名
-        if (!chk_pattern($line_list[1], 13)) {
-            array_push($error_list, error_msg_format($line_cnt, '着用者名'));
-        }
-    }
-    if (!empty($line_list[2])) {
-        //着用者名（カナ）
-        if (!chk_pattern($line_list[2], 14)) {
-            array_push($error_list, error_msg_format($line_cnt, '着用者名（カナ）'));
-        }
-    }
+//    if (!empty($line_list[1])) {
+//        //着用者名
+//        if (!chk_pattern($line_list[1], 13)) {
+//            array_push($error_list, error_msg_format($line_cnt, '着用者名'));
+//        }
+//    }
+//    if (!empty($line_list[2])) {
+//        //着用者名（カナ）
+//        if (!chk_pattern($line_list[2], 14)) {
+//            array_push($error_list, error_msg_format($line_cnt, '着用者名（カナ）'));
+//        }
+//    }
     if (!empty($line_list[3])) {
         //性別区分
         if (!chk_pattern($line_list[3], 2)) {
@@ -1832,22 +1832,22 @@ function chk_pattern($val, $pattaern)
                 return true;
             }
             break;
-        case 13:
-            //パターン13(22byte) //着用者名
-            if (strlen(mb_convert_encoding($val, 'SJIS', 'UTF-8')) > 22) {
-                return false;
-            } else {
-                return true;
-            }
-            break;
-        case 14:
-            //パターン14(25byte)1か2  //着用者名（カナ）
-            if (strlen(mb_convert_encoding($val, 'SJIS', 'UTF-8')) > 25) {
-                return false;
-            } else {
-                return true;
-            }
-            break;
+//        case 13:
+//            //パターン13(22byte) //着用者名
+//            if (strlen(mb_convert_encoding($val, 'SJIS', 'UTF-8')) > 22) {
+//                return false;
+//            } else {
+//                return true;
+//            }
+//            break;
+//        case 14:
+//            //パターン14(25byte)1か2  //着用者名（カナ）
+//            if (strlen(mb_convert_encoding($val, 'SJIS', 'UTF-8')) > 25) {
+//                return false;
+//            } else {
+//                return true;
+//            }
+//            break;
 
 
         default:
@@ -2078,9 +2078,9 @@ function input_check($line_list, $line_cnt)
 
     //日本語文字数チェック
     //着用者漢字
-    if (byte_cnv($line_list[1]) > 100) {
+    if (byte_cnv($line_list[1]) > 22) {
         if (count($error_list) < 20) {
-            $error_list[] = '着用者名の文字数が多すぎます。';
+            $error_list[] = '着用者名の文字数が多すぎます。（最大全角11文字）';
         } else {
             $json_list['errors'] = $error_list;
             $json_list["error_code"] = "1";
@@ -2089,9 +2089,9 @@ function input_check($line_list, $line_cnt)
         }
     }
     //着用者カナ
-    if (byte_cnv($line_list[2]) > 100) {
+    if (byte_cnv($line_list[2]) > 25) {
         if (count($error_list) < 20) {
-            $error_list[] = '着用者名(カナ)の文字数が多すぎます。';
+            $error_list[] = '着用者名(カナ)の文字数が多すぎます。（最大全角12文字）';
         } else {
             $json_list['errors'] = $error_list;
             $json_list["error_code"] = "1";
@@ -2102,7 +2102,7 @@ function input_check($line_list, $line_cnt)
     //伝言
     if (byte_cnv($line_list[14]) > 100) {
         if (count($error_list) < 20) {
-            $error_list[] = '伝言欄の文字数が多すぎます。';
+            $error_list[] = '伝言欄の文字数が多すぎます。（最大全角50文字）';
         } else {
             $json_list['errors'] = $error_list;
             $json_list["error_code"] = "1";

@@ -258,7 +258,7 @@ $app->post('/print/pdf_tran', function ()use($app){
     $pdf->SetFontSize(10);
     $pdf->Text($headerX, 29, $results[0]->as_werer_name);
 
-    //客先社員コード
+    //客先社員番号
     $pdf->SetFontSize(10);
     $pdf->Text(105, 29, $results[0]->as_cster_emply_cd);
 
@@ -285,7 +285,7 @@ $app->post('/print/pdf_tran', function ()use($app){
     $pdf -> SetFontSize(10);
     $pdf -> Text($headerX, 37, $results[0]->as_werer_name);
 
-    //客先社員コード
+    //客先社員番号
     $pdf -> SetFontSize(10);
     $pdf -> Text(105, 37, $results[0]->as_cster_emply_cd);
 
@@ -548,7 +548,7 @@ $app->post('/print/pdf_tran', function ()use($app){
                     $pdf->SetFontSize(10);
                     $pdf->Text($headerX, 29, $results[0]->as_werer_name);
 
-                    //客先社員コード
+                    //客先社員番号
                     $pdf->SetFontSize(10);
                     $pdf->Text(105, 29, $results[0]->as_cster_emply_cd);
 
@@ -573,7 +573,7 @@ $app->post('/print/pdf_tran', function ()use($app){
                     $pdf->SetFontSize(10);
                     $pdf->Text($headerX, 37, $results[0]->as_werer_name);
 
-                    //客先社員コード
+                    //客先社員番号
                     $pdf->SetFontSize(10);
                     $pdf->Text(105, 37, $results[0]->as_cster_emply_cd);
 
@@ -759,7 +759,7 @@ $app->post('/print/pdf_tran', function ()use($app){
                     $pdf->SetFontSize(10);
                     $pdf->Text($headerX, 29, $results[0]->as_werer_name);
 
-                    //客先社員コード
+                    //客先社員番号
                     $pdf->SetFontSize(10);
                     $pdf->Text(105, 29, $results[0]->as_cster_emply_cd);
 
@@ -779,7 +779,7 @@ $app->post('/print/pdf_tran', function ()use($app){
                     $pdf->SetFontSize(10);
                     $pdf->Text($headerX, 37, $results[0]->as_werer_name);
 
-                    //客先社員コード
+                    //客先社員番号
                     $pdf->SetFontSize(10);
                     $pdf->Text(105, 37, $results[0]->as_cster_emply_cd);
 

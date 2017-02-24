@@ -58,7 +58,7 @@ define([
 			},
 			onRender: function() {
 				var that = this;
-				// 着用者情報(着用者名、(読み仮名)、社員コード、発令日)
+				// 着用者情報(着用者名、(読み仮名)、社員番号、発令日)
 				var modelForUpdate = this.model;
 				modelForUpdate.url = App.api.WO0010;
 				var cond = {
