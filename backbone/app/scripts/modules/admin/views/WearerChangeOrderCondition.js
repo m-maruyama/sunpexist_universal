@@ -378,9 +378,10 @@ define([
 
 					if (sp_job_type_flg == "1") {
 						// JavaScript モーダルで表示
-						$('#myModalAlert2').modal('show'); //追加
+						$('#myModalAlert').modal('show'); //追加
 						//メッセージの修正
-						document.getElementById("alert_txt2").innerHTML=App.apply_msg;
+						document.getElementById("alert_txt").innerHTML=App.apply_msg;
+						$('html,body').animate({ scrollTop: 0 }, '1');
 						// $('#myModal').modal('show'); //追加
 						// //メッセージの修正
 						// document.getElementById("confirm_txt").innerHTML=App.apply_msg; //追加　このメッセージはapp.jsで定義
