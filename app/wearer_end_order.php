@@ -222,7 +222,7 @@ $app->post('/wearer_end_order_info', function ()use($app){
     $results = $paginator->items;
     //ChromePhp::LOG($results);
     foreach ($results as $result) {
-      // 社員コード
+      // 社員番号
       $list['cster_emply_cd'] = $result->as_cster_emply_cd;
       // 着用者名
       $list['werer_name'] = $result->as_werer_name;
@@ -278,7 +278,7 @@ $app->post('/wearer_end_order_info', function ()use($app){
       //ChromePhp::LOG($results);
 
       foreach ($results as $result) {
-        // 社員コード
+        // 社員番号
         $list['cster_emply_cd'] = $result->as_cster_emply_cd;
         // 着用者名
         $list['werer_name'] = $result->as_werer_name;
@@ -1073,18 +1073,18 @@ $app->post('/wearer_end_order_insert', function () use ($app) {
 
 
 /*
-    // 社員コード
+    // 社員番号
     if ($wearer_data_input['emply_cd_flg']) {
       if (mb_strlen($wearer_data_input['member_no']) == 0) {
         $json_list["error_code"] = "1";
-        $error_msg = "社員コードありにチェックしている場合、社員コードを入力してください。";
+        $error_msg = "社員番号ありにチェックしている場合、社員番号を入力してください。";
         array_push($json_list["error_msg"], $error_msg);
       }
     }
     if (!$wearer_data_input['emply_cd_flg']) {
       if (mb_strlen($wearer_data_input['member_no']) > 0) {
         $json_list["error_code"] = "1";
-        $error_msg = "社員コードありにチェックしていない場合、社員コードの入力は不要です。";
+        $error_msg = "社員番号ありにチェックしていない場合、社員番号の入力は不要です。";
         array_push($json_list["error_msg"], $error_msg);
       }
     }
@@ -1728,7 +1728,7 @@ $app->post('/wearer_end_order_insert', function () use ($app) {
         array_push($up_query_list, "rntl_cont_no = '".$wearer_data_input['agreement_no']."'");
         // 部門コード
         array_push($up_query_list, "rntl_sect_cd = '".$wearer_data_input['section']."'");
-        // 客先社員コード
+        // 客先社員番号
         if (isset($wearer_data_input['member_no'])) {
           array_push($up_query_list, "cster_emply_cd = '".$wearer_data_input['member_no']."'");
         } else {
@@ -1879,7 +1879,7 @@ $app->post('/wearer_end_order_insert', function () use ($app) {
         // レンタル部門コード
         array_push($calum_list, "rntl_sect_cd");
         array_push($values_list, "'".$wearer_data_input['section']."'");
-        // 客先社員コード
+        // 客先社員番号
         if (!empty($wearer_data_input['member_no'])) {
           array_push($calum_list, "cster_emply_cd");
           array_push($values_list, "'".$wearer_data_input['member_no']."'");
@@ -2168,7 +2168,7 @@ $app->post('/wearer_end_order_insert', function () use ($app) {
           array_push($calum_list, "werer_name");
           array_push($values_list, "'".$wearer_data_input['member_name']."'");
         }
-        // 客先社員コード
+        // 客先社員番号
         if (!empty($wearer_data_input['member_no'])) {
           array_push($calum_list, "cster_emply_cd");
           array_push($values_list, "'".$wearer_data_input['member_no']."'");
@@ -2316,7 +2316,7 @@ $app->post('/wearer_end_order_insert', function () use ($app) {
               // 着用者コード
               array_push($calum_list, "werer_cd");
               array_push($values_list, "'".$wearer_end_post['werer_cd']."'");
-              // 客先社員コード
+              // 客先社員番号
               if (isset($wearer_data_input['member_no'])) {
                 array_push($calum_list, "cster_emply_cd");
                 array_push($values_list, "'".$wearer_data_input['member_no']."'");
@@ -2416,7 +2416,7 @@ $app->post('/wearer_end_order_insert', function () use ($app) {
             // 着用者コード
             array_push($calum_list, "werer_cd");
             array_push($values_list, "'".$wearer_end_post['werer_cd']."'");
-            // 客先社員コード
+            // 客先社員番号
             if (isset($wearer_data_input['member_no'])) {
               array_push($calum_list, "cster_emply_cd");
               array_push($values_list, "'".$wearer_data_input['member_no']."'");

@@ -629,20 +629,20 @@ $app->post('/input_insert', function () use ($app) {
         array_push($error_list, '契約Noの値が不正です。');
     }
     if ($cond['cster_emply_cd']&&!is_alnum($cond['cster_emply_cd'])) {
-        array_push($error_list, '社員コードは半角英数字で入力してください。');
+        array_push($error_list, '社員番号は半角英数字で入力してください。');
     }
-    // 社員コード
+    // 社員番号
     if ($cond['cster_emply_cd_chk']) {
         if (mb_strlen($cond['cster_emply_cd']) == 0) {
             $json_list["error_code"] = "1";
-            $error_msg = "社員コードありにチェックしている場合、社員コードを入力してください。";
+            $error_msg = "社員番号ありにチェックしている場合、社員番号を入力してください。";
             array_push($error_list, $error_msg);
         }
     }
     if (!$cond['cster_emply_cd_chk']) {
         if (mb_strlen($cond['cster_emply_cd']) > 0) {
             $json_list["error_code"] = "1";
-            $error_msg = "社員コードありにチェックしていない場合、社員コードの入力は不要です。";
+            $error_msg = "社員番号ありにチェックしていない場合、社員番号の入力は不要です。";
             array_push($error_list, $error_msg);
         }
     }
@@ -650,10 +650,10 @@ $app->post('/input_insert', function () use ($app) {
     if (mb_strlen($cond['cster_emply_cd']) > 0) {
         if (strlen(mb_convert_encoding($cond['cster_emply_cd'], "SJIS")) > 10) {
             $json_list["error_code"] = "1";
-            $error_msg = "社員コードが規定の文字数をオーバーしています。";
+            $error_msg = "社員番号が規定の文字数をオーバーしています。";
             array_push($json_list["error_msg"], $error_msg);
         }
-        // 社員コード重複チェック
+        // 社員番号重複チェック
         $member_no_overlap_err = "";
         $query_list = array();
         array_push($query_list, "corporate_id = '" . $auth['corporate_id'] . "'");
@@ -677,7 +677,7 @@ $app->post('/input_insert', function () use ($app) {
         $results_array = (array)$results;
         $results_cnt = $results_array["\0*\0_count"];
         if ($results_cnt > 0) {
-            array_push($error_list, '既に社員コードが使用されています。');
+            array_push($error_list, '既に社員番号が使用されています。');
         }
         if (empty($member_no_overlap_err)) {
             $arg_str = '';
@@ -692,12 +692,12 @@ $app->post('/input_insert', function () use ($app) {
             $results_array = (array)$results;
             $results_cnt = $results_array["\0*\0_count"];
             if ($results_cnt > 0) {
-                array_push($error_list, '既に社員コードが使用されています。');
+                array_push($error_list, '既に社員番号が使用されています。');
             }
         }
     }
     if (byte_cnt($cond['cster_emply_cd']) > 10) {
-        array_push($error_list, '社員コードの文字数が多すぎます。（最大半角10文字）');
+        array_push($error_list, '社員番号の文字数が多すぎます。（最大半角10文字）');
     }
 
     if (!$cond['werer_name']) {
@@ -885,7 +885,7 @@ $app->post('/input_insert', function () use ($app) {
         $rgst_user_id = $auth['accnt_no'];//登録ユーザーID
         $rntl_sect_cd = $cond['rntl_sect_cd']; //レンタル部門コード
         $job_type_cd = $deli_job[0];//職種コード
-        $cster_emply_cd = $cond['cster_emply_cd'];//客先社員コード
+        $cster_emply_cd = $cond['cster_emply_cd'];//客先社員番号
         $werer_name = $cond['werer_name'];//着用者名
         $werer_name_kana = $cond['werer_name_kana']; //着用者名（カナ）
         $sex_kbn = $cond['sex_kbn'];//性別区分
@@ -981,7 +981,7 @@ $app->post('/input_insert', function () use ($app) {
         // 職種コード
         array_push($calum_list, "job_type_cd");
         array_push($values_list, "'" . $job_type_cd . "'");
-        // 客先社員コード
+        // 客先社員番号
         array_push($calum_list, "cster_emply_cd");
         array_push($values_list, "'" . $cster_emply_cd . "'");
         // 着用者名
