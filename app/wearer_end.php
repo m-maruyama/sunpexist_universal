@@ -200,8 +200,9 @@ $app->post('/wearer_end/search', function ()use($app){
           $query_list[] = "wcr.accnt_no = '".$auth['accnt_no']."'";
         }
         */
-        $tran_query_list[] = "(t_order_tran.order_sts_kbn = '2' AND t_order_tran.order_reason_kbn <> '07')";
-        $tran_query_list[] = "(t_returned_plan_info_tran.order_sts_kbn = '2' AND t_returned_plan_info_tran.order_reason_kbn <> '07')";
+        $tran_query_list[] = "(t_order_tran.order_sts_kbn = '2' AND (t_order_tran.order_reason_kbn <> '07' AND t_order_tran.order_reason_kbn <> '28'))";
+        $tran_query_list[] = "(t_returned_plan_info_tran.order_sts_kbn = '2' AND 
+        (t_returned_plan_info_tran.order_reason_kbn <> '07' AND t_returned_plan_info_tran.order_reason_kbn <> '28'))";
         $tran_query = implode(' OR ', $tran_query_list);
         $query_list[] = "(".$tran_query.")";
         $query = implode(' AND ', $query_list);
@@ -475,6 +476,7 @@ $app->post('/wearer_end/search', function ()use($app){
         }
         // 発注、発注情報トラン有無フラグ
         if (isset($result->as_order_sts_kbn)) {
+            ChromePhp::LOG($result);
           $list['order_kbn'] = "<font color='red'>済</font>";
           $list['order_tran_flg'] = '1';
         }else{
@@ -538,6 +540,13 @@ $app->post('/wearer_end/search', function ()use($app){
           $paginator = $paginator_model->getPaginate();
           $t_order_tran_results = $paginator->items;
 
+            // パターンE: 着用者基本マスタトラン.送信区分 = 処理中の場合、ボタンの文言は「貸与終了」で非活性表示する。
+            if ($list['wearer_tran_flg'] == "1" && $list['snd_kbn'] == "処理中") {
+                $list['wearer_end_button'] = "貸与終了";
+                $list['wearer_end_red'] = "";
+                $list['disabled'] = "disabled";
+                $list['btnPattern'] = "E";
+            }
           if ($list['btnPattern'] == "") {
             //パターンB： 発注情報トラン．発注状況区分 = 貸与終了 かつ、発注情報トラン．理由区分 = 不要品返却以外のデータがある場合、かつ、発注情報トラン．送信区分 = 未送信の場合、ボタンの文言は「貸与終了[済]」で表示する。
             $patarn_flg = true;
@@ -546,7 +555,7 @@ $app->post('/wearer_end/search', function ()use($app){
               $order_sts_kbn = $t_order_tran_result->order_sts_kbn;
               $order_reason_kbn = $t_order_tran_result->order_reason_kbn;
               $snd_kbn = $t_order_tran_result->snd_kbn;
-              if ($order_sts_kbn == '2' && $snd_kbn == '0' && $order_reason_kbn != '07') {
+              if ($order_sts_kbn == '2' && $snd_kbn == '0' && ($order_reason_kbn != '07' && $order_reason_kbn != '28')) {
                 $patarn_flg = false;
                 break;
               }
