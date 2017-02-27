@@ -485,12 +485,12 @@ $app->post('/wearer_size_change/search', function ()use($app){
             }
             // 状態
             $list['snd_kbn'] = "-";
-            if (isset($result->as_order_snd_kbn)) {
-                if($result->as_order_snd_kbn == '0'){
+            if (isset($result->as_wearer_snd_kbn)) {
+                if($result->as_wearer_snd_kbn == '0'){
                     $list['snd_kbn'] = "未送信";
-                }elseif($result->as_order_snd_kbn == '1'){
+                }elseif($result->as_wearer_snd_kbn == '1'){
                     $list['snd_kbn'] = "送信済";
-                }elseif($result->as_order_snd_kbn == '9'){
+                }elseif($result->as_wearer_snd_kbn == '9'){
                     $list['snd_kbn'] = "処理中";
                 }
             }
@@ -592,27 +592,109 @@ $app->post('/wearer_size_change/search', function ()use($app){
                         $list['btnPattern'] = "C";
                     }
                 }
-                if ($list['btnPattern'] == "") {
-                    //パターンD： 着用者基本マスタトラン．送信区分 = 処理中のデータがある場合、ボタンの文言は「サイズ交換」で非活性表示する。
-                    $patarn_flg = true;
-                    foreach ($t_order_tran_results as $t_order_tran_result) {
-                        $order_req_no = $t_order_tran_result->order_req_no;
-                        $order_sts_kbn = $t_order_tran_result->order_sts_kbn;
-                        $order_reason_kbn = $t_order_tran_result->order_reason_kbn;
-                        $snd_kbn = $t_order_tran_result->snd_kbn;
-                        if ($snd_kbn == '9') {
-                            $patarn_flg = false;
-                            break;
-                        }
+//                if ($list['btnPattern'] == "") {
+//                    //パターンD： 着用者基本マスタトラン．送信区分 = 処理中のデータがある場合、ボタンの文言は「サイズ交換」で非活性表示する。
+//                    $patarn_flg = true;
+//                    foreach ($t_order_tran_results as $t_order_tran_result) {
+//                        $order_req_no = $t_order_tran_result->order_req_no;
+//                        $order_sts_kbn = $t_order_tran_result->order_sts_kbn;
+//                        $order_reason_kbn = $t_order_tran_result->order_reason_kbn;
+//                        $snd_kbn = $t_order_tran_result->snd_kbn;
+//                        if ($snd_kbn == '9') {
+//                            $patarn_flg = false;
+//                            break;
+//                        }
+//                    }
+//                    if (!$patarn_flg) {
+//                        $list['order_req_no'] = $order_req_no;
+//                        $list['order_reason_kbn'] = $order_reason_kbn;
+//                        $list['wearer_add_button'] = "サイズ交換";
+//                        $list['wearer_add_red'] = "";
+//                        $list['add_disabled'] = "disabled";
+//                        $list['btnPattern'] = "D";
+//                    }
+//                }
+            }
+            // 着用者基本マスタトラン参照
+            $query_list = array();
+            $query_list[] = "corporate_id = '".$auth['corporate_id']."'";
+            $query_list[] = "rntl_cont_no = '".$list['rntl_cont_no']."'";
+            $query_list[] = "werer_cd = '".$list['werer_cd']."'";
+            $query = implode(' AND ', $query_list);
+            $arg_str = "";
+            $arg_str .= "SELECT distinct on (order_req_no) ";
+            $arg_str .= "*";
+            $arg_str .= " FROM ";
+            $arg_str .= "m_wearer_std_tran";
+            $arg_str .= " WHERE ";
+            $arg_str .= $query;
+            $m_wearer_std_tran = new MWearerStdTran();
+            $m_wearer_std_tran_results = new Resultset(NULL, $m_wearer_std_tran, $m_wearer_std_tran->getReadConnection()->query($arg_str));
+            $result_obj = (array)$m_wearer_std_tran_results;
+            $m_wearer_std_tran_cnt = $result_obj["\0*\0_count"];
+            if ($m_wearer_std_tran_cnt > 0) {
+                $paginator_model = new PaginatorModel(
+                    array(
+                        "data"  => $m_wearer_std_tran_results,
+                        "limit" => $m_wearer_std_tran_cnt,
+                        "page" => 1
+                    )
+                );
+                $paginator = $paginator_model->getPaginate();
+                $m_wearer_std_tran_results = $paginator->items;
+                $patarn_flg = true;
+                foreach ($m_wearer_std_tran_results as $m_wearer_std_tran_result) {
+                    if ($m_wearer_std_tran_result->snd_kbn == '9') {
+                        $patarn_flg = false;
+                        break;
                     }
-                    if (!$patarn_flg) {
-                        $list['order_req_no'] = $order_req_no;
-                        $list['order_reason_kbn'] = $order_reason_kbn;
-                        $list['wearer_add_button'] = "サイズ交換";
-                        $list['wearer_add_red'] = "";
-                        $list['add_disabled'] = "disabled";
-                        $list['btnPattern'] = "D";
+                }
+                if (!$patarn_flg) {
+                    $list['wearer_add_button'] = "サイズ交換";
+                    $list['wearer_add_red'] = "";
+                    $list['add_disabled'] = "disabled";
+                    $list['btnPattern'] = "D";
+                }
+            }
+            // 着用者基本マスタトラン参照
+            $query_list = array();
+            $query_list[] = "corporate_id = '".$auth['corporate_id']."'";
+            $query_list[] = "rntl_cont_no = '".$list['rntl_cont_no']."'";
+            $query_list[] = "werer_cd = '".$list['werer_cd']."'";
+            $query = implode(' AND ', $query_list);
+            $arg_str = "";
+            $arg_str .= "SELECT distinct on (order_req_no) ";
+            $arg_str .= "*";
+            $arg_str .= " FROM ";
+            $arg_str .= "m_wearer_std_tran";
+            $arg_str .= " WHERE ";
+            $arg_str .= $query;
+            $m_wearer_std_tran = new MWearerStdTran();
+            $m_wearer_std_tran_results = new Resultset(NULL, $m_wearer_std_tran, $m_wearer_std_tran->getReadConnection()->query($arg_str));
+            $result_obj = (array)$m_wearer_std_tran_results;
+            $m_wearer_std_tran_cnt = $result_obj["\0*\0_count"];
+            if ($m_wearer_std_tran_cnt > 0) {
+                $paginator_model = new PaginatorModel(
+                    array(
+                        "data"  => $m_wearer_std_tran_results,
+                        "limit" => $m_wearer_std_tran_cnt,
+                        "page" => 1
+                    )
+                );
+                $paginator = $paginator_model->getPaginate();
+                $m_wearer_std_tran_results = $paginator->items;
+                $patarn_flg = true;
+                foreach ($m_wearer_std_tran_results as $m_wearer_std_tran_result) {
+                    if ($m_wearer_std_tran_result->snd_kbn == '9') {
+                        $patarn_flg = false;
+                        break;
                     }
+                }
+                if (!$patarn_flg) {
+                    $list['wearer_add_button'] = "サイズ交換";
+                    $list['wearer_add_red'] = "";
+                    $list['add_disabled'] = "disabled";
+                    $list['btnPattern'] = "D";
                 }
             }
             if ($list['btnPattern'] == "") {
@@ -651,26 +733,26 @@ $app->post('/wearer_size_change/search', function ()use($app){
             $list['btnPattern'] = "";
             $patarn_flg = true;
             if (!empty($t_order_tran_cnt)) {
-                if ($list['btnPattern'] == "") {
-                    //パターンD： 着用者基本マスタトラン．送信区分 = 処理中のデータがある場合、ボタンの文言は「サイズ交換」で非活性表示する。
-                    $patarn_flg = true;
-                    foreach ($t_order_tran_results as $t_order_tran_result) {
-                        $order_req_no = $t_order_tran_result->order_req_no;
-                        $order_sts_kbn = $t_order_tran_result->order_sts_kbn;
-                        $order_reason_kbn = $t_order_tran_result->order_reason_kbn;
-                        $snd_kbn = $t_order_tran_result->snd_kbn;
-                        if ($snd_kbn == '9') {
-                            $patarn_flg = false;
-                            break;
-                        }
-                    }
-                    if (!$patarn_flg) {
-                        $list['wearer_return_button'] = "その他交換";
-                        $list['wearer_return_red'] = "";
-                        $list['return_disabled'] = "disabled";
-                        $list['btnPattern'] = "D";
-                    }
-                }
+//                if ($list['btnPattern'] == "") {
+//                    //パターンD： 着用者基本マスタトラン．送信区分 = 処理中のデータがある場合、ボタンの文言は「サイズ交換」で非活性表示する。
+//                    $patarn_flg = true;
+//                    foreach ($t_order_tran_results as $t_order_tran_result) {
+//                        $order_req_no = $t_order_tran_result->order_req_no;
+//                        $order_sts_kbn = $t_order_tran_result->order_sts_kbn;
+//                        $order_reason_kbn = $t_order_tran_result->order_reason_kbn;
+//                        $snd_kbn = $t_order_tran_result->snd_kbn;
+//                        if ($snd_kbn == '9') {
+//                            $patarn_flg = false;
+//                            break;
+//                        }
+//                    }
+//                    if (!$patarn_flg) {
+//                        $list['wearer_return_button'] = "その他交換";
+//                        $list['wearer_return_red'] = "";
+//                        $list['return_disabled'] = "disabled";
+//                        $list['btnPattern'] = "D";
+//                    }
+//                }
                 if ($list['btnPattern'] == "") {
                     //パターンB： 発注情報トラン．発注状況区分 = その他交換のデータがある場合、かつ、発注情報トラン．送信区分 = 未送信の場合、ボタンの文言は「その他交換[済]」で表示する。
                     $patarn_flg = true;
@@ -737,6 +819,89 @@ $app->post('/wearer_size_change/search', function ()use($app){
                     $list['wearer_return_red'] = "";
                     $list['return_disabled'] = "";
                     $list['btnPattern'] = "A";
+                }
+            }
+            // 着用者基本マスタトラン参照
+            $query_list = array();
+            $query_list[] = "corporate_id = '".$auth['corporate_id']."'";
+            $query_list[] = "rntl_cont_no = '".$list['rntl_cont_no']."'";
+            $query_list[] = "werer_cd = '".$list['werer_cd']."'";
+            $query = implode(' AND ', $query_list);
+            $arg_str = "";
+            $arg_str .= "SELECT distinct on (order_req_no) ";
+            $arg_str .= "*";
+            $arg_str .= " FROM ";
+            $arg_str .= "m_wearer_std_tran";
+            $arg_str .= " WHERE ";
+            $arg_str .= $query;
+            $m_wearer_std_tran = new MWearerStdTran();
+            $m_wearer_std_tran_results = new Resultset(NULL, $m_wearer_std_tran, $m_wearer_std_tran->getReadConnection()->query($arg_str));
+            $result_obj = (array)$m_wearer_std_tran_results;
+            $m_wearer_std_tran_cnt = $result_obj["\0*\0_count"];
+            if ($m_wearer_std_tran_cnt > 0) {
+                $paginator_model = new PaginatorModel(
+                    array(
+                        "data"  => $m_wearer_std_tran_results,
+                        "limit" => $m_wearer_std_tran_cnt,
+                        "page" => 1
+                    )
+                );
+                $paginator = $paginator_model->getPaginate();
+                $m_wearer_std_tran_results = $paginator->items;
+                $patarn_flg = true;
+                foreach ($m_wearer_std_tran_results as $m_wearer_std_tran_result) {
+                    if ($m_wearer_std_tran_result->snd_kbn == '9') {
+                        $patarn_flg = false;
+                        break;
+                    }
+                }
+                if (!$patarn_flg) {
+                    $list['wearer_return_button'] = "その他交換";
+                    $list['wearer_return_red'] = "";
+                    $list['return_disabled'] = "disabled";
+                    $list['btnPattern'] = "D";
+                }
+            }
+
+            // 着用者基本マスタトラン参照
+            $query_list = array();
+            $query_list[] = "corporate_id = '".$auth['corporate_id']."'";
+            $query_list[] = "rntl_cont_no = '".$list['rntl_cont_no']."'";
+            $query_list[] = "werer_cd = '".$list['werer_cd']."'";
+            $query = implode(' AND ', $query_list);
+            $arg_str = "";
+            $arg_str .= "SELECT distinct on (order_req_no) ";
+            $arg_str .= "*";
+            $arg_str .= " FROM ";
+            $arg_str .= "m_wearer_std_tran";
+            $arg_str .= " WHERE ";
+            $arg_str .= $query;
+            $m_wearer_std_tran = new MWearerStdTran();
+            $m_wearer_std_tran_results = new Resultset(NULL, $m_wearer_std_tran, $m_wearer_std_tran->getReadConnection()->query($arg_str));
+            $result_obj = (array)$m_wearer_std_tran_results;
+            $m_wearer_std_tran_cnt = $result_obj["\0*\0_count"];
+            if ($m_wearer_std_tran_cnt > 0) {
+                $paginator_model = new PaginatorModel(
+                    array(
+                        "data"  => $m_wearer_std_tran_results,
+                        "limit" => $m_wearer_std_tran_cnt,
+                        "page" => 1
+                    )
+                );
+                $paginator = $paginator_model->getPaginate();
+                $m_wearer_std_tran_results = $paginator->items;
+                $patarn_flg = true;
+                foreach ($m_wearer_std_tran_results as $m_wearer_std_tran_result) {
+                    if ($m_wearer_std_tran_result->snd_kbn == '9') {
+                        $patarn_flg = false;
+                        break;
+                    }
+                }
+                if (!$patarn_flg) {
+                    $list['wearer_return_button'] = "その他交換";
+                    $list['wearer_return_red'] = "";
+                    $list['return_disabled'] = "disabled";
+                    $list['btnPattern'] = "D";
                 }
             }
             if ($list['btnPattern'] == "") {
