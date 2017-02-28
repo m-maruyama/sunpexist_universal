@@ -120,8 +120,8 @@ define([
 					manualData["file"] = manualArray[1];
 					manualData["corporate"] = manualArray[2];
 
-					var msg = "データ量により、ダウンロード処理に時間がかかる可能性があります。ダウンロードを実施してよろしいですか？";
-					if (window.confirm(msg)) {
+					// var msg = "データ量により、ダウンロード処理に時間がかかる可能性があります。ダウンロードを実施してよろしいですか？";
+					// if (window.confirm(msg)) {
 						var cond = {
 							"scr": 'マニュアルダウンロード',
 							"cond": manualData
@@ -135,7 +135,7 @@ define([
 						data.remove();
 						form.remove();
 						form=null;
-					}
+					// }
 				}
 			},
 		});

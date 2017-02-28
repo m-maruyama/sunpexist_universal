@@ -158,6 +158,9 @@ define([
 					modal = false;
 					fetchList(1,sortKey,order);
 				});
+				this.listenTo(purchaseHistoryListListView, 'childview:research', function(sortKey,order){
+					purchaseHistoryConditionView.search_func();
+				});
 				//this.listenTo(purchaseHistoryConditionView, 'click:delete', function(sortKey,order){
 				//	modal = false;
 				//	fetchList(1,sortKey,order);

@@ -21,7 +21,7 @@ $app->post('/home', function ()use($app){
     $results = TInfo::find(array(
         "conditions" => "corporate_id = '"."$corporate_id"."' AND open_date < ?1 AND close_date > ?1",
         "bind"	=> array(1 => $now),
-        'order'	  => "display_order asc"
+        'order'	  => "display_order, index asc"
     ));
     // $results = TInfo::find();
     foreach ($results as $result) {

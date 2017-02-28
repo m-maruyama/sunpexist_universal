@@ -2,7 +2,7 @@ define([
 	'app',
 	'../Templates',
 	'./PurchaseHistoryListItem',
-	"entities/models/PurchaseHistoryAbstract"
+	"entities/models/PurchaseHistoryAbstract",
 ], function(App) {
 	'use strict';
 	App.module('Admin.Views', function(Views, App, Backbone, Marionette, $, _){
@@ -33,8 +33,17 @@ define([
 					//trに注文番号のクラスをつける
 					this.ui.deleteBtn.parents("tr").addClass(this.ui.deleteBtn.attr('id'));
 
-					if(window.confirm('この注文をキャンセルしますか？')){
-						var line_no = this.ui.deleteBtn.attr('id');
+
+					// if(window.confirm('この注文をキャンセルしますか？')){
+
+                    // JavaScript モーダルで表示
+                    $('#myModal').modal('show'); //追加
+                    //メッセージの修正
+                    document.getElementById("confirm_txt").innerHTML=App.purchase_cancel_msg; //追加　このメッセージはapp.jsで定義
+                    $("#btn_ok").off();
+                    $("#btn_ok").on('click',function() {
+                        hideModal();
+						var line_no = that.ui.deleteBtn.attr('id');
 						var cond = {
 							"cond": model.getReq(),
 							"del": 'del',
@@ -54,20 +63,18 @@ define([
 								//that.reset();
 								//trに注文番号のクラスをつける
 								//console.log(line_no);
-								$("." + line_no).remove();
+
+                                that.triggerMethod('research','line_no','desc');
+								// $("." + line_no).remove();
 								return;
 
 							}
 
 						});
-					}
-					else{
+					});
 						//window.alert('キャンセルされました'); // 警告ダイアログを表示
-						return;
-					}
-
-
-				}
+                    return;
+                }
 			},
 			templateHelpers: {
 				//ステータス

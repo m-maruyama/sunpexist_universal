@@ -475,12 +475,12 @@ function _input_check($cond, &$error_msg) {
 		}
 	}
 	if (empty($date_err)) {
-		if (strtotime($cond["open_date"]) < time()) {
-			$error_msg[] = "公開開始日：現日時以降で設定してください。";
-		}
-		if (strtotime($cond["close_date"]) < time()) {
-			$error_msg[] = "公開終了日：現日時以降で設定してください。";
-		}
+//		if (strtotime($cond["open_date"]) < time()) {
+//			$error_msg[] = "公開開始日：現日時以降で設定してください。";
+//		}
+//		if (strtotime($cond["close_date"]) < time()) {
+//			$error_msg[] = "公開終了日：現日時以降で設定してください。";
+//		}
 		if (strtotime($cond["open_date"]) > strtotime($cond["close_date"])) {
 			$error_msg[] = "公開開始日、公開終了日：正しく設定してください。";
 		}

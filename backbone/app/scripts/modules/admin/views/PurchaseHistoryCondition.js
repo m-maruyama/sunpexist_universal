@@ -158,25 +158,7 @@ define([
 					e.preventDefault();
 
 					this.triggerMethod('hideAlerts');
-					var agreement_no = $("select[name='agreement_no']").val();
-					this.model.set('search', this.ui.search.val());
-					//this.model.set('datepicker', this.ui.datepicker.val());
-					//this.model.set('timepicker', this.ui.timepicker.val());
-                    this.model.set('rntl_cont_no', agreement_no);
-                    this.model.set('order_day_from', $("#order_day_from").val());
-                    this.model.set('order_day_to', $("#order_day_to").val());
-                    this.model.set('section', $("#section").val());
-                    this.model.set('input_item', $("#input_item").val());
-                    this.model.set('item_color', $("#item_color").val());
-                    this.model.set('item_size', $("#item_size").val());
-
-
-                    var errors = this.model.validate();
-					if(errors) {
-						this.triggerMethod('showAlerts', errors);
-						return;
-					}
-					this.triggerMethod('click:search','line_no','desc');
+					do_search(this);
 				},
 
 				'change @ui.agreement_no': function(){
@@ -248,6 +230,32 @@ define([
 					this.item_color.show(purchaseItemColorConditionView);
 				}
 			},
+
+			search_func: function () {
+				do_search(this);
+			},
 		});
+		function do_search(that){
+			var agreement_no = $("select[name='agreement_no']").val();
+			// that.model.set('search', that.ui.search.val());
+			//this.model.set('datepicker', this.ui.datepicker.val());
+			//this.model.set('timepicker', this.ui.timepicker.val());
+			that.model.set('rntl_cont_no', agreement_no);
+			that.model.set('order_day_from', $("#order_day_from").val());
+			that.model.set('order_day_to', $("#order_day_to").val());
+			that.model.set('section', $("#section").val());
+			that.model.set('input_item', $("#input_item").val());
+			that.model.set('item_color', $("#item_color").val());
+			that.model.set('item_size', $("#item_size").val());
+
+
+			var errors = that.model.validate();
+			if(errors) {
+				that.triggerMethod('showAlerts', errors);
+				return;
+			}
+			that.triggerMethod('click:search','line_no','desc');
+
+		}
 	});
 });

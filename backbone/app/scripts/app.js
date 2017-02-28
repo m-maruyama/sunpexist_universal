@@ -330,6 +330,7 @@ define([
 		App.info_delete_msg = "お知らせを削除しました。";
 		App.info_insert_msg = "お知らせを登録しました。";
 		App.info_err_msg = "対象の詳細データが見つかりませんでした。";
+		App.purchase_cancel_msg = 'この注文をキャンセルしますか？';
 
 		App.order_send_check_msg = '発注送信を行う場合は選択欄の何れかにチェックを入れてください。';
 		App.order_send_confirm_msg = '選択されているデータの発注送信を行います。よろしいですか？';

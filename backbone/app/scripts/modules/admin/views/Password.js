@@ -42,9 +42,10 @@ define([
 									//console.log(model);
 									//ハッシュタグが違う場合
 									if (model.attributes.errors) {
-										if(window.confirm('不正なURLです')){
+										// if(window.confirm('不正なURLです')){
+                                            window.alert('不正なURLです');
 											location.href = "login.html";
-										}
+										// }
 										return;
 									}
 									$("#passwordContent").removeClass("none");
