@@ -79,9 +79,9 @@ define([
 						}
 
 						// ユーザー区分による表示切り替え
-						if (res_list["user_type"] == "1") {
+						if (res_list["user_type"] != "1") {
 							// 更新、回答ボタン非表示
-							$('.answer').css('display', 'none');
+							$('.answer').css('display', '');
 						}
 
 						// 企業名
