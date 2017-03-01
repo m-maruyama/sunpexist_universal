@@ -389,7 +389,7 @@ define([
                         $('#myModalAlert').modal(); //追加
                         //メッセージの修正
                         document.getElementById("alert_txt").innerHTML=App.apply_msg;
-                        $('html,body').animate({ scrollTop: 0 }, '1');
+                        //$('html,body').animate({ scrollTop: 0 }, '1');
                     }
                 },
             },

@@ -59,7 +59,7 @@ define([
                                 $('#myModalAlert').modal('show'); //追加
                                 //メッセージの修正
                                 document.getElementById("alert_txt").innerHTML=res_val["error_msg"];
-								$('html,body').animate({ scrollTop: 0 }, '1');
+								//$('html,body').animate({ scrollTop: 0 }, '1');
 								// // エラーアラート表示
 								// alert(res_val["err_msg"]);
 							}
