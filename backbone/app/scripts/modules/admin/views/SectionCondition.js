@@ -106,20 +106,21 @@ define([
 							});
 							that.triggerMethod('showAlerts', errorMessages);
 						}
+						//職種コードが1以上だったらそのまま表示
 						if (res.attributes.section_list.length > 1) {
-							that.render();
-							$(".search").css("display", "block");
-						} else {
-							//拠点のリトライ
-							modelForUpdate.fetchMx({
-								data: cond,
-								success: function (res) {
-									that.render();
-									$(".search").css("display", "block");
-								}
-							});
+								that.render();
+								$(".search").css("display", "block");
+							} else {
+								//拠点のリトライ
+								modelForUpdate.fetchMx({
+									data: cond,
+									success: function (res) {
+										that.render();
+										$(".search").css("display", "block");
+									}
+								});
+							}
 						}
-					}
 				});
 			},
 			events: {

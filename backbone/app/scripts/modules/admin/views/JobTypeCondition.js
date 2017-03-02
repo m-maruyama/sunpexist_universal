@@ -45,6 +45,7 @@ define([
 							});
 							that.triggerMethod('showAlerts', errorMessages);
 						}
+						//職種コードが1以上だったらそのまま表示
 						if (res.attributes.job_type_list.length > 1) {
 							that.render();
 						}else{
@@ -55,7 +56,6 @@ define([
 									that.render();
 								}
 							});
-
 						}
 					}
 				});

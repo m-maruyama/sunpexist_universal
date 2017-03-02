@@ -60,10 +60,23 @@
 				<!--個体管理番号-->
 				<div class="individual_number" style="display:none;"></div>
 
-				<div class="form-group">					<div class="col-md-2 control-label"><b>着用者状況区分</b></div>					<div class="col-md-10 form-inline">						<label class="checkbox-inline"><input type="checkbox" id="wearer_kbn0" name="wearer_kbn[]" value="1" checked>稼働</label>						<label class="checkbox-inline"><input type="checkbox" id="wearer_kbn1" name="wearer_kbn[]" value="2" checked>休職</label>						<label class="checkbox-inline"><input type="checkbox" id="wearer_kbn2" name="wearer_kbn[]" value="4" checked>退社</label>						<!--label class="checkbox-inline"><input type="checkbox" id="wearer_kbn0" name="wearer_kbn[]" value="1">入社</label-->						<!--label class="checkbox-inline"><input type="checkbox" id="wearer_kbn0" name="wearer_kbn[]" value="1">復職</label-->						<label class="checkbox-inline"><input type="checkbox" id="wearer_kbn3" name="wearer_kbn[]" value="8" checked>異動</label>						<!--label class="checkbox-inline"><input type="checkbox" id="wearer_kbn0" name="wearer_kbn[]" value="1">その他（着用開始）</label-->						<label class="checkbox-inline"><input type="checkbox" id="wearer_kbn4" name="wearer_kbn[]" value="3" checked>その他（着用終了）</label>					</div>				</div>				<div class="form-group">
+				<div class="form-group">
+					<div class="col-md-2 control-label"><b>着用者状況区分</b></div>
+					<div class="col-md-10 form-inline">
+						<label class="checkbox-inline"><input type="checkbox" id="wearer_kbn0" name="wearer_kbn[]" value="1" checked>稼働</label>
+						<label class="checkbox-inline"><input type="checkbox" id="wearer_kbn1" name="wearer_kbn[]" value="2" checked>休職</label>
+						<label class="checkbox-inline"><input type="checkbox" id="wearer_kbn2" name="wearer_kbn[]" value="4" checked>退社</label>
+						<!--label class="checkbox-inline"><input type="checkbox" id="wearer_kbn0" name="wearer_kbn[]" value="1">入社</label-->
+						<!--label class="checkbox-inline"><input type="checkbox" id="wearer_kbn0" name="wearer_kbn[]" value="1">復職</label-->
+						<label class="checkbox-inline"><input type="checkbox" id="wearer_kbn3" name="wearer_kbn[]" value="8" checked>異動</label>
+						<!--label class="checkbox-inline"><input type="checkbox" id="wearer_kbn0" name="wearer_kbn[]" value="1">その他（着用開始）</label-->
+						<label class="checkbox-inline"><input type="checkbox" id="wearer_kbn4" name="wearer_kbn[]" value="3" checked>その他（着用終了）</label>
+					</div>
+				</div>
+				<div class="form-group">
 					<div class="col-md-2 col-md-push-2 " style="margin-left: 500px">
 						<input type="hidden" class="ui_type" id="ui_type" name="ui_type" value="wearer">
-						<a type="button" data-page="1" class="btn btn-primary btn-sm btn-block search" title="検索" id="button1">検索</a>
+						<a type="button" data-page="1" class="btn btn-primary btn-sm btn-block search" title="検索" id="button1" style="display: none;">検索</a>
 					</div>
 				</div>
 			</form>
