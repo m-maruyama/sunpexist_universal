@@ -45,7 +45,18 @@ define([
 							});
 							that.triggerMethod('showAlerts', errorMessages);
 						}
-						that.render();
+						if (res.attributes.job_type_list.length > 1) {
+							that.render();
+						}else{
+							//貸与パターンのリトライ
+							modelForUpdate.fetchMx({
+								data: cond,
+								success: function (res) {
+									that.render();
+								}
+							});
+
+						}
 					}
 				});
 			},
