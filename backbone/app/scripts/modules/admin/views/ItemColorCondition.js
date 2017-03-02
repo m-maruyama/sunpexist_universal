@@ -48,7 +48,17 @@ define([
 							});
 							that.triggerMethod('showAlerts', errorMessages);
 						}
-						that.render();
+						//色リストが１だったらリトライ処理
+						if (res.attributes.item_color_list.length > 1) {
+							that.render();
+						}else {
+							modelForUpdate.fetchMx({
+								data: cond,
+								success: function (res) {
+									that.render();
+								}
+							});
+						}
 					}
 				});
 			},

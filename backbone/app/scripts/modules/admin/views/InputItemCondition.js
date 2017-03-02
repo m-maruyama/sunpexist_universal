@@ -45,7 +45,17 @@ define([
 							});
 							that.triggerMethod('showAlerts', errorMessages);
 						}
-						that.render();
+						//商品リストが1以上だったらリトライ処理
+						if (res.attributes.input_item_list.length > 1) {
+							that.render();
+						}else {
+							modelForUpdate.fetchMx({
+								data: cond,
+								success: function (res) {
+									that.render();
+								}
+							});
+						}
 					}
 				});
 			},
