@@ -432,7 +432,7 @@ $app->post('/wearer_edit/search', function ()use($app){
         if ($list['wearer_tran_flg'] == "1") {
           $list['order_kbn'] = "<font color='red'>済</font>";
         } else {
-          $list['order_kbn'] = "未";
+          $list['order_kbn'] = "-";
         }
         // 状態
         $list['snd_kbn'] = "-";

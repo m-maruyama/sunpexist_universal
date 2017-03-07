@@ -479,7 +479,7 @@ $app->post('/wearer_size_change/search', function ()use($app){
                 // 発注情報トラン有
                 $list['order_tran_flg'] = '1';
             }else{
-                $list['order_kbn'] = "未";
+                $list['order_kbn'] = "-";
                 // 発注情報トラン無
                 $list['order_tran_flg'] = '0';
             }

@@ -480,7 +480,7 @@ $app->post('/wearer_end/search', function ()use($app){
           $list['order_kbn'] = "<font color='red'>済</font>";
           $list['order_tran_flg'] = '1';
         }else{
-          $list['order_kbn'] = "未";
+          $list['order_kbn'] = "-";
           $list['order_tran_flg'] = '0';
         }
         // 状態
