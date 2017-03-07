@@ -29,7 +29,7 @@ define("bold_font", "../app/library/tcpdf/fonts/migmix-1p-bold.ttf");
 define("pdf_template", "template_none.pdf");
 
 //返却伝票返却先住所
-define("return_address00", "【UF返却先住所】");
+define("return_address00", "【返却先住所】");
 define("return_address01", "〒374-0012  群馬県館林市羽附旭町  1210-1");
 define("return_address02", "㈱サンペックスイスト物流センター内  レンタル部  宛");
 define("return_address03", "TEL：0276-80-2733");
