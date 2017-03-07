@@ -875,7 +875,7 @@ $app->post('/print/search', function ()use($app){
     }
     //拠点
     if(!empty($cond['section'])){
-        array_push($query_list,"t_returned_plan_info.rntl_sect_cd = '".$cond['section']."'");
+        array_push($query_list,"(t_returned_plan_info.rntl_sect_cd = '".$cond['section']."' OR m_wearer_std.rntl_sect_cd = '".$cond['section']."')");
     }
     //貸与パターン
     if(!empty($cond['job_type'])){
@@ -1263,11 +1263,11 @@ $app->post('/print/search', function ()use($app){
         $arg_str .= "m_job_type.job_type_name as as_job_type_name,";
         $arg_str .= "t_order.cster_emply_cd as as_cster_emply_cd,";
         $arg_str .= "t_order.werer_name as as_werer_name,";
+        $arg_str .= "m_input_item.input_item_name as as_input_item_name,";
         $arg_str .= "t_returned_plan_info.item_cd as as_item_cd,";
         $arg_str .= "t_returned_plan_info.color_cd as as_color_cd,";
         $arg_str .= "t_returned_plan_info.size_cd as as_size_cd,";
         $arg_str .= "t_returned_plan_info.job_type_cd as as_return_job_type_cd,";
-        $arg_str .= "m_input_item.input_item_name as as_input_item_name,";
         $arg_str .= "t_order.job_type_cd as as_job_type_cd,";
         $arg_str .= "t_order.size_two_cd as as_size_two_cd,";
         $arg_str .= "t_order.order_qty as as_order_qty,";
@@ -1283,6 +1283,8 @@ $app->post('/print/search', function ()use($app){
         $arg_str .= "t_delivery_goods_state_details.receipt_date as as_receipt_date,";
         $arg_str .= "t_returned_plan_info.return_plan_qty as as_return_plan__qty,";
         $arg_str .= "t_returned_plan_info.rntl_cont_no as as_rntl_cont_no,";
+        $arg_str .= "t_returned_plan_info.rntl_sect_cd as as_trp_rntl_sect_cd,";
+        $arg_str .= "m_wearer_std.rntl_sect_cd as as_mws_rntl_sect_cd,";
         $arg_str .= "m_contract.rntl_cont_name as as_rntl_cont_name";
         $arg_str .= " FROM t_returned_plan_info LEFT JOIN";
         $arg_str .= " (t_order LEFT JOIN";
@@ -1338,8 +1340,8 @@ $app->post('/print/search', function ()use($app){
         $arg_str .= "t_order.order_reason_kbn as as_order_reason_kbn,";
         $arg_str .= "m_section.rntl_sect_name as as_rntl_sect_name,";
         $arg_str .= "m_job_type.job_type_name as as_job_type_name,";
-        $arg_str .= "t_order.cster_emply_cd as as_cster_emply_cd,";
-        $arg_str .= "t_order.werer_name as as_werer_name,";
+        $arg_str .= "m_wearer_std.cster_emply_cd as as_cster_emply_cd,";
+        $arg_str .= "m_wearer_std.werer_name as as_werer_name,";
         $arg_str .= "t_returned_plan_info.item_cd as as_item_cd,";
         $arg_str .= "t_returned_plan_info.color_cd as as_color_cd,";
         $arg_str .= "t_returned_plan_info.size_cd as as_size_cd,";
@@ -1360,6 +1362,8 @@ $app->post('/print/search', function ()use($app){
         $arg_str .= "t_delivery_goods_state_details.receipt_date as as_receipt_date,";
         $arg_str .= "t_returned_plan_info.return_plan_qty as as_return_plan__qty,";
         $arg_str .= "t_returned_plan_info.rntl_cont_no as as_rntl_cont_no,";
+        $arg_str .= "t_returned_plan_info.rntl_sect_cd as as_trp_rntl_sect_cd,";
+        $arg_str .= "m_wearer_std.rntl_sect_cd as as_mws_rntl_sect_cd,";
         $arg_str .= "m_contract.rntl_cont_name as as_rntl_cont_name";
         $arg_str .= " FROM t_returned_plan_info LEFT JOIN";
         $arg_str .= " (t_order LEFT JOIN";
@@ -1567,8 +1571,10 @@ $app->post('/print/search', function ()use($app){
             // 出荷日
             $list['ship_ymd'] = $result->as_ship_ymd;
             // 出荷数
-            $list['ship_qty'] = $result->as_ship_qty;
-            // 契約No
+            $list['ship_qty'] = '0';
+            if($result->as_ship_qty){
+                $list['ship_qty'] = $result->as_ship_qty;
+            }            // 契約No
             if (!empty($result->as_rntl_cont_name)) {
                 $list['rntl_cont_name'] = $result->as_rntl_cont_name;
             } else {
@@ -1650,7 +1656,7 @@ $app->post('/print/search', function ()use($app){
                 //出荷数
                 $list['ship_qty'] = $results_cnt3;
                 //返却予定数
-                $list['order_qty'] = $results_cnt3;
+                //$list['order_qty'] = $results_cnt3;
             }
             if ($results_cnt3 > 0) {
                 $paginator_model = new PaginatorModel(
