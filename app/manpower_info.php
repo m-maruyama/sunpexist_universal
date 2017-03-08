@@ -459,7 +459,7 @@ $app->post('/manpower_info/download', function ()use($app){
 		foreach ($detail_list as $detail_map) {
 			$csv_body_list = array();
 			foreach ($detail_map as $details) {
-				array_push($csv_body_list, '="'.$details["data"].'"');
+				array_push($csv_body_list, $details["data"]);
 			}
 			// CSVレコード配列にマージ
 			array_push($csv_datas, $csv_body_list);
