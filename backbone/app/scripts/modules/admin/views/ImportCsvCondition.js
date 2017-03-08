@@ -182,8 +182,8 @@ define([
               success: function (res) {
                 var res_val = res.attributes;
                 if (!res_val["chk_flg"]) {
-                  $('#ImportModal').modal();
-                  document.getElementById("confirm_txt").innerHTML = res_val["error_msg"];// 更新可否フラグ=更新不可の場合はアラートメッセージ表示
+                  $('#ImportModal_alert').modal();
+                  document.getElementById("alert_txt").innerHTML = res_val["error_msg"];// 更新可否フラグ=更新不可の場合はアラートメッセージ表示
                 } else {
                   $('#ImportModal').modal();
                   document.getElementById("confirm_txt").innerHTML = 'データ量により、処理に時間がかかる場合があります。\n' + $("#file_input").prop("files")[0].name + 'を取り込んでもよろしいですか？';
@@ -198,8 +198,8 @@ define([
               }
             });
           } else {
-              $('#ImportModal').modal();
-              document.getElementById("confirm_txt").innerHTML=App.import_csv_no_choose_file_msg;//ファイルを選択してください。
+              $('#ImportModal_alert').modal();
+              document.getElementById("alert_txt").innerHTML=App.import_csv_no_choose_file_msg;//ファイルを選択してください。
           }
         }
       }
