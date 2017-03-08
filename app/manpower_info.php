@@ -156,12 +156,20 @@ $app->post('/manpower_info/search', function ()use($app){
 			} else {
 				$list['rntl_sect_cd'] = "-";
 			}
-			// 年月
+            // 年月
+            if (!empty($result->as_yyyymm)) {
+                $list['yyyymm'] = $result->as_yyyymm;
+            } else {
+                $list['yyyymm'] = "";
+            }
+			// 表示年月
 			if (!empty($result->as_yyyymm)) {
-				$list['yyyymm'] = $result->as_yyyymm;
+			    $yyyymm = $result->as_yyyymm."01 00:00:00";
+				$list['display_yyyymm'] = date('Y/m', strtotime($yyyymm));
 			} else {
-				$list['yyyymm'] = "";
+				$list['display_yyyymm'] = "";
 			}
+
 			// 拠点名
 			if (!empty($result->as_rntl_sect_name)) {
 				$list['rntl_sect_name'] = $result->as_rntl_sect_name;
@@ -335,7 +343,6 @@ $app->post('/manpower_info/download', function ()use($app){
 
 	//--フロント側パラメータ取得--//
 	$cond = $params['cond'];
-//	ChromePhp::log($cond);
 
 	// json返却値
 	$json_list = array();
@@ -386,7 +393,6 @@ $app->post('/manpower_info/download', function ()use($app){
 	$arg_str .= " WHERE ";
 	$arg_str .= $query;
 	$arg_str .= " ORDER BY t_staff_detail_body.line_no ASC";
-
 	$t_staff_detail_body = new TStaffDetailBody();
 	$results = new Resultset(null, $t_staff_detail_body, $t_staff_detail_body->getReadConnection()->query($arg_str));
 	$result_obj = (array)$results;
