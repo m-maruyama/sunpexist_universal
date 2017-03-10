@@ -8,9 +8,9 @@ use Phalcon\Http\Response;
 
 
 /**
- * CSV取込BTMU
+ * CSV取込ALL
  */
-$app->post('/import_csv_btmu', function () use ($app) {
+$app->post('/import_csv_all', function () use ($app) {
     ini_set('max_execution_time', 0);
     ini_set('memory_limit', '500M');
     //$start = microtime(true);
@@ -26,9 +26,9 @@ $app->post('/import_csv_btmu', function () use ($app) {
     $query_list = array();
     $list = array();
     $all_list = array();
-    $query_list[] = "corporate_id = '".$auth["corporate_id"]."'";
-    $query_list[] = "rntl_cont_no = '".$agreement_no."'";
-    $query_list[] = "accnt_no = '".$auth["accnt_no"]."'";
+    $query_list[] = "corporate_id = '" . $auth["corporate_id"] . "'";
+    $query_list[] = "rntl_cont_no = '" . $agreement_no . "'";
+    $query_list[] = "accnt_no = '" . $auth["accnt_no"] . "'";
     $query = implode(' AND ', $query_list);
 
     $arg_str = '';
@@ -40,12 +40,12 @@ $app->post('/import_csv_btmu', function () use ($app) {
     $arg_str .= $query;
     $m_contract_resource = new MContractResource();
     $results = new Resultset(null, $m_contract_resource, $m_contract_resource->getReadConnection()->query($arg_str));
-    $results_array = (array) $results;
+    $results_array = (array)$results;
     $results_cnt = $results_array["\0*\0_count"];
     if ($results_cnt > 0) {
         $paginator_model = new PaginatorModel(
         array(
-        "data"  => $results,
+        "data" => $results,
         "limit" => $results_cnt,
         "page" => 1
         )
@@ -119,14 +119,14 @@ $app->post('/import_csv_btmu', function () use ($app) {
                 }
                 continue;
             }
-            // csvはココ
-             if(input_check($line_list, $line_cnt) !== null){
-                 $error_list_array = input_check($line_list, $line_cnt);
-                 foreach($error_list_array as $error_item){
-                     $error_list[] = $error_item;
-                 }
-             }
-             //ChromePhp::log($error_list);
+            // 必須チェックを行う関数
+            if (input_check($line_list, $line_cnt) !== null) {
+                $error_list_array = input_check($line_list, $line_cnt);
+                foreach ($error_list_array as $error_item) {
+                    $error_list[] = $error_item;
+                }
+            }
+            //ChromePhp::log($error_list);
 
             //フォーマットチェック: 行単位の各項目のフォーマット形式が、それぞれ仕様通りのフォーマットであるかチェックする。
             $error_list = chk_format($error_list, $line_list, $line_cnt);
@@ -135,15 +135,15 @@ $app->post('/import_csv_btmu', function () use ($app) {
             $line_cnt++;
 
             $line_list[] = $line_no++;
+            //取込リストを生成
             $new_list[] = $line_list;
 
         }
     } elseif ($getFileExt->getExtension() == 'xlsx' || $getFileExt->getExtension() == 'xls') {
-        $auth = $app->session->get("auth");
         // init excel work book as xlsx
-        if($getFileExt->getExtension() == 'xlsx'){
+        if ($getFileExt->getExtension() == 'xlsx') {
             $useXlsxFormat = true;
-        }else{
+        } else {
             $useXlsxFormat = false;
         }
         setlocale(LC_ALL, 'ja_JP.UTF-8');
@@ -182,9 +182,9 @@ $app->post('/import_csv_btmu', function () use ($app) {
             }
 
             // csvはココ
-            if(input_check($line_list, $line_cnt) !== null){
+            if (input_check($line_list, $line_cnt) !== null) {
                 $error_list_array = input_check($line_list, $line_cnt);
-                foreach($error_list_array as $error_item){
+                foreach ($error_list_array as $error_item) {
                     $error_list[] = $error_item;
                 }
             }
@@ -206,12 +206,9 @@ $app->post('/import_csv_btmu', function () use ($app) {
         }
     }
 
-
-
     //ChromePhp::log($error_list);
     // バリデーション処理で異常が発生した場合、以降処理せず終了
     if (!empty($error_list)) {
-
         $json_list['errors'] = $error_list;
         $json_list["error_code"] = "1";
         echo json_encode($json_list);
@@ -304,17 +301,11 @@ $app->post('/import_csv_btmu', function () use ($app) {
             } else {
                 $app->session->set("chk_cster_emply_cd_1", $line_new[0]);
                 $app->session->set("chk_order_kbn", $line_new[7]);
-                // 新規の発注No発行
-                $results = new Resultset(
-                null,
-                $t_order,
-                $t_order->getReadConnection()->query("select nextval('t_order_seq')")
-                );
-                $shin_order_req_no = "WB" . str_pad($results[0]->nextval, 8, '0', STR_PAD_LEFT);
+
                 $order_line_no = 1;
-                $values_list[] = "'" . $shin_order_req_no . "'";
+                $values_list[] = "'" . $line_new[12] . "'";
                 $values_list[] = $order_line_no;
-                $app->session->set("chk_order_req_no_1", $shin_order_req_no);
+                $app->session->set("chk_order_req_no_1", $line_new[12]);
                 $app->session->set("chk_order_line_no", $order_line_no);
             }
             // 社員番号
@@ -342,7 +333,8 @@ $app->post('/import_csv_btmu', function () use ($app) {
             // サイズコード
             $values_list[] = "'" . $line_new[9] . "'";
             // 着用者コード
-            if ($line_new[7] == "0" || $line_new[7] == "1") {
+            if ($line_new[7] == "1" && $line_new[5] != "13") {
+                // 貸与で女性フリー以外
                 if ($app->session->get("chk_cster_emply_cd_2") == $line_new[0]) {
                     $values_list[] = "'" . $app->session->get("chk_werer_cd") . "'";
                 } else {
@@ -358,6 +350,7 @@ $app->post('/import_csv_btmu', function () use ($app) {
                     $values_list[] = "'" . $werer_cd . "'";
                 }
             } else {
+                // 貸与で女性フリー、返却、サイズ交換、消耗交換、異動
                 if ($app->session->get("chk_cster_emply_cd_2") == $line_new[0]) {
                     $values_list[] = "'" . $app->session->get("chk_werer_cd") . "'";
                 } else {
@@ -579,7 +572,7 @@ $app->post('/import_csv_btmu', function () use ($app) {
         }
     }
     //発注 貸与開始と着用者登録のみは、取込ファイル内の拠点が契約リソースマスタのアカウントに紐づく、データがあるか確認
-    if(!$section_all_zero_flg){
+    if (!$section_all_zero_flg) {
         $accnt_no = $auth["accnt_no"];
         $arg_str11 = "";
         $arg_str11 .= "SELECT *";
@@ -618,7 +611,7 @@ $app->post('/import_csv_btmu', function () use ($app) {
     }
 
     //発注 異動の場合、
-    if(!$section_all_zero_flg){
+    if (!$section_all_zero_flg) {
         $accnt_no = $auth["accnt_no"];
         $arg_str11 = "";
         $arg_str11 .= "SELECT *";
@@ -801,6 +794,7 @@ $app->post('/import_csv_btmu', function () use ($app) {
             }
         }
     }
+
     //C-3-9 お客様発注Noが発注情報、発注情報トランに存在しないこと
     $arg_str9 = "SELECT ";
     $arg_str9 .= " * ";
@@ -838,108 +832,109 @@ $app->post('/import_csv_btmu', function () use ($app) {
             }
         }
     }
+
     //C-3-7 貸与パターン別商品チェック　発注区分が貸与（１）の場合、社員番号単位に貸与パターンで指定された商品がファイル内に指定されていること。
-    $arg_str10 = "SELECT ";
-    $arg_str10 .= " * ";
-    $arg_str10 .= " FROM (SELECT * FROM t_import_job WHERE job_no = '" . $job_no . "' AND order_kbn = '1') as T1 ";
-    $arg_str10 .= " WHERE NOT EXISTS ";
-    $arg_str10 .= "(SELECT * FROM ( SELECT m_input_item.*,size_cd FROM m_input_item ";
-    $arg_str10 .= "INNER JOIN m_item ON m_input_item.item_cd = m_item.item_cd AND m_input_item.color_cd = m_item.color_cd AND m_input_item.corporate_id = m_item.corporate_id ";
-    $arg_str10 .= "WHERE m_input_item.corporate_id = '$corporate_id' AND m_input_item.rntl_cont_no = '$agreement_no' ) as T2 ";
-    $arg_str10 .= "WHERE T2.item_cd = T1.item_cd AND T2.color_cd = T1.color_cd AND T2.std_input_qty = CAST(T1.quantity as integer) AND T2.size_cd = T1.size_cd )";
-    $results10 = new Resultset(null, $t_import_job, $t_import_job->getReadConnection()->query($arg_str10));
-    $result_obj10 = (array)$results10;
-    $results_cnt10 = $result_obj10["\0*\0_count"];
-    if (!empty($results_cnt10)) {
-        $results_count = (count($results10));
-        $paginator_model = new PaginatorModel(
-        array(
-        'data' => $results10,
-        'limit' => $results_count,
-        "page" => 1
-        )
-        );
-        $paginator = $paginator_model->getPaginate();
-        $results = $paginator->items;
-        foreach ($results as $result) {
-            if (count($error_list) < 20) {
-                $error_list[] = $result->line_no . '行目の社員番号' . $result->cster_emply_cd . 'の貸与パターンの商品指定が不足しています。';
-            } else {
-                $json_list['errors'] = $error_list;
-                $json_list["error_code"] = "1";
-                echo json_encode($json_list);
-                return;
-            }
-        }
-    }
-    // マスターチェック処理で異常が発生した場合、以降処理せず終了
-    if (!empty($error_list)) {
-        $json_list['errors'] = $error_list;
-        $json_list["error_code"] = "1";
-        echo json_encode($json_list);
-        return;
-    }
+//    $arg_str10 = "SELECT ";
+//    $arg_str10 .= " * ";
+//    $arg_str10 .= " FROM (SELECT * FROM t_import_job WHERE job_no = '" . $job_no . "' AND order_kbn = '1') as T1 ";
+//    $arg_str10 .= " WHERE NOT EXISTS ";
+//    $arg_str10 .= "(SELECT * FROM ( SELECT m_input_item.*,size_cd FROM m_input_item ";
+//    $arg_str10 .= "INNER JOIN m_item ON m_input_item.item_cd = m_item.item_cd AND m_input_item.color_cd = m_item.color_cd AND m_input_item.corporate_id = m_item.corporate_id ";
+//    $arg_str10 .= "WHERE m_input_item.corporate_id = '$corporate_id' AND m_input_item.rntl_cont_no = '$agreement_no' ) as T2 ";
+//    $arg_str10 .= "WHERE T2.item_cd = T1.item_cd AND T2.color_cd = T1.color_cd AND T2.std_input_qty = CAST(T1.quantity as integer) AND T2.size_cd = T1.size_cd )";
+//    $results10 = new Resultset(null, $t_import_job, $t_import_job->getReadConnection()->query($arg_str10));
+//    $result_obj10 = (array)$results10;
+//    $results_cnt10 = $result_obj10["\0*\0_count"];
+//    if (!empty($results_cnt10)) {
+//        $results_count = (count($results10));
+//        $paginator_model = new PaginatorModel(
+//        array(
+//        'data' => $results10,
+//        'limit' => $results_count,
+//        "page" => 1
+//        )
+//        );
+//        $paginator = $paginator_model->getPaginate();
+//        $results = $paginator->items;
+//        foreach ($results as $result) {
+//            if (count($error_list) < 20) {
+//                $error_list[] = $result->line_no . '行目の社員番号' . $result->cster_emply_cd . 'の貸与パターンの商品指定が不足しています。';
+//            } else {
+//                $json_list['errors'] = $error_list;
+//                $json_list["error_code"] = "1";
+//                echo json_encode($json_list);
+//                return;
+//            }
+//        }
+//    }
+//    // マスターチェック処理で異常が発生した場合、以降処理せず終了
+//    if (!empty($error_list)) {
+//        $json_list['errors'] = $error_list;
+//        $json_list["error_code"] = "1";
+//        echo json_encode($json_list);
+//        return;
+//    }
 
-    //貸与パターンと発注番号別ごとの貸与パターン比較個数チェック
-    $import_job_list = array();
-    $list = array();
-    $arg_str = "";
-    $arg_str = "SELECT * FROM t_import_job";
-    $arg_str .= " WHERE ";
-    $arg_str .= " job_no = '" . $job_no . "' AND order_kbn = '1'";
-    $arg_str .= " ORDER BY order_req_no,order_req_line_no ASC";
-
-    $results = new Resultset(null, $t_import_job, $t_import_job->getReadConnection()->query($arg_str));
-    $result_obj = (array)$results;
-    $results_cnt = $result_obj["\0*\0_count"];
-    if (!empty($results_cnt)) {
-        $paginator_model = new PaginatorModel(
-        array(
-        "data" => $results,
-        "limit" => $results_cnt,
-        "page" => 1
-        )
-        );
-        $paginator = $paginator_model->getPaginate();
-        $results = $paginator->items;
-        $i = 0;
-        foreach ($results as $result) {
-            if (isset($check_order_req_no)) {
-                //発注番号が変わったタイミングで発注番号単位の商品数と貸与パターンに対する商品数を比較して異なる場合はエラーメッセージを出力する
-                if ($check_order_req_no !== $result->order_req_no) {
-                    $arg_str = "";
-                    $arg_str = "SELECT * FROM  m_input_item WHERE corporate_id = '" . $corporate_id . "' AND rntl_cont_no = '" . $agreement_no . "' AND job_type_cd = '" . $check_job_type_cd . "'";
-                    //ChromePhp::log($arg_str);
-                    $m_job_type_count = new Resultset(null, $t_import_job, $t_import_job->getReadConnection()->query($arg_str));
-                    $m_job_type_count_obj = (array)$m_job_type_count;
-                    if (count($list) !== count($m_job_type_count)) {
-                        $error_list[] = '発注番号' . $check_order_req_no . 'の貸与パターンに対する商品指定数が不正です。';
-                    }
-                    $i++;
-                    $list = [];
-                }
-            }
-            $list[] = $result->item_cd;
-            $check_job_type_cd = $result->rent_pattern_code;
-            $check_order_req_no = $result->order_req_no;
-        }
-        //最後の発注no用 個数チェック
-        $arg_str = "";
-        $arg_str = "SELECT * FROM  m_input_item WHERE corporate_id = '" . $corporate_id . "' AND rntl_cont_no = '" . $agreement_no . "' AND job_type_cd = '" . $check_job_type_cd . "'";
-        //ChromePhp::log($arg_str);
-        $m_job_type_count = new Resultset(null, $t_import_job, $t_import_job->getReadConnection()->query($arg_str));
-        if (count($list) !== count($m_job_type_count)) {
-            $error_list[] = '発注番号' . $check_order_req_no . 'の貸与パターンに対する商品指定数が不正です。';
-        }
-    }
-    //ChromePhp::log($error_list);
-    // マスターチェック処理で異常が発生した場合、以降処理せず終了
-    if (!empty($error_list)) {
-        $json_list['errors'] = $error_list;
-        $json_list["error_code"] = "1";
-        echo json_encode($json_list);
-        return;
-    }
+//    //貸与パターンと発注番号別ごとの貸与パターン比較個数チェック
+//    $import_job_list = array();
+//    $list = array();
+//    $arg_str = "";
+//    $arg_str = "SELECT * FROM t_import_job";
+//    $arg_str .= " WHERE ";
+//    $arg_str .= " job_no = '" . $job_no . "' AND order_kbn = '1'";
+//    $arg_str .= " ORDER BY order_req_no,order_req_line_no ASC";
+//
+//    $results = new Resultset(null, $t_import_job, $t_import_job->getReadConnection()->query($arg_str));
+//    $result_obj = (array)$results;
+//    $results_cnt = $result_obj["\0*\0_count"];
+//    if (!empty($results_cnt)) {
+//        $paginator_model = new PaginatorModel(
+//        array(
+//        "data" => $results,
+//        "limit" => $results_cnt,
+//        "page" => 1
+//        )
+//        );
+//        $paginator = $paginator_model->getPaginate();
+//        $results = $paginator->items;
+//        $i = 0;
+//        foreach ($results as $result) {
+//            if (isset($check_order_req_no)) {
+//                //発注番号が変わったタイミングで発注番号単位の商品数と貸与パターンに対する商品数を比較して異なる場合はエラーメッセージを出力する
+//                if ($check_order_req_no !== $result->order_req_no) {
+//                    $arg_str = "";
+//                    $arg_str = "SELECT * FROM  m_input_item WHERE corporate_id = '" . $corporate_id . "' AND rntl_cont_no = '" . $agreement_no . "' AND job_type_cd = '" . $check_job_type_cd . "'";
+//                    //ChromePhp::log($arg_str);
+//                    $m_job_type_count = new Resultset(null, $t_import_job, $t_import_job->getReadConnection()->query($arg_str));
+//                    $m_job_type_count_obj = (array)$m_job_type_count;
+//                    if (count($list) !== count($m_job_type_count)) {
+//                        $error_list[] = '発注番号' . $check_order_req_no . 'の貸与パターンに対する商品指定数が不正です。';
+//                    }
+//                    $i++;
+//                    $list = [];
+//                }
+//            }
+//            $list[] = $result->item_cd;
+//            $check_job_type_cd = $result->rent_pattern_code;
+//            $check_order_req_no = $result->order_req_no;
+//        }
+//        //最後の発注no用 個数チェック
+//        $arg_str = "";
+//        $arg_str = "SELECT * FROM  m_input_item WHERE corporate_id = '" . $corporate_id . "' AND rntl_cont_no = '" . $agreement_no . "' AND job_type_cd = '" . $check_job_type_cd . "'";
+//        //ChromePhp::log($arg_str);
+//        $m_job_type_count = new Resultset(null, $t_import_job, $t_import_job->getReadConnection()->query($arg_str));
+//        if (count($list) !== count($m_job_type_count)) {
+//            $error_list[] = '発注番号' . $check_order_req_no . 'の貸与パターンに対する商品指定数が不正です。';
+//        }
+//    }
+//    //ChromePhp::log($error_list);
+//    // マスターチェック処理で異常が発生した場合、以降処理せず終了
+//    if (!empty($error_list)) {
+//        $json_list['errors'] = $error_list;
+//        $json_list["error_code"] = "1";
+//        echo json_encode($json_list);
+//        return;
+//    }
 
     //--マスターチェック処理--ここまで//
 
@@ -1088,7 +1083,7 @@ $app->post('/import_csv_btmu', function () use ($app) {
                 $values_list = array();
 
                 // 出荷先、出荷先支店コード取得
-                if ($result->order_kbn == "1" || $result->order_kbn == "5" || $result->order_kbn == "0") {
+                if ($result->order_kbn == "1" || $result->order_kbn == "2" || $result->order_kbn == "3" || $result->order_kbn == "4" || $result->order_kbn == "5") {
                     $query_list = array();
                     $query_list[] = "corporate_id = '" . $auth['corporate_id'] . "'";
                     $query_list[] = "rntl_cont_no = '" . $agreement_no . "'";
@@ -1242,14 +1237,13 @@ $app->post('/import_csv_btmu', function () use ($app) {
         $results = new Resultset(NULL, $t_import_job, $t_import_job->getReadConnection()->query($arg_str));
         // 着用者基本マスタトラン登録 ここまで
 
+
+
+
+
         // 発注情報トラン登録 ここから
         $query_list = array();
-        $kbn_list = array();
         $query_list[] = "job_no = '" . $job_no . "'";
-        $kbn_list[] = "order_kbn = '1'";
-        $kbn_list[] = "order_kbn = '5'";
-        $or_query = implode(' OR ', $kbn_list);
-        $query_list[] = "(" . $or_query . ")";
         $query = implode(' AND ', $query_list);
         $arg_str = "";
         $arg_str = "SELECT ";
@@ -1384,10 +1378,10 @@ $app->post('/import_csv_btmu', function () use ($app) {
                 $values_list[] = "null";
                 $values_list[] = "'" . $result->ship_to_cd . "'";
                 $values_list[] = "'" . $result->ship_to_brnch_cd . "'";
-                if(empty($result->quantity)){
+                if (empty($result->quantity)) {
                     //移動の場合は、0
                     $values_list[] = 0;
-                }else{
+                } else {
                     //貸与開始の場合は数字を入れる
                     $values_list[] = $result->quantity;
                 }
@@ -1824,14 +1818,14 @@ function chk_pattern($val, $pattaern)
                 return true;
             }
             break;
-        case 12:
-            //パターン12(200文字)
-            if (mb_strlen($val) > 100) {
-                return false;
-            } else {
-                return true;
-            }
-            break;
+//        case 12:
+//            //パターン12(200文字)
+//            if (mb_strlen($val) > 100) {
+//                return false;
+//            } else {
+//                return true;
+//            }
+//            break;
 //        case 13:
 //            //パターン13(22byte) //着用者名
 //            if (strlen(mb_convert_encoding($val, 'SJIS', 'UTF-8')) > 22) {
@@ -1865,9 +1859,26 @@ function byte_cnv($data)
     return strlen(bin2hex(mb_convert_encoding($data, $af, $bf))) / 2;
 }
 
+
+/**
+ *  ・必須チェック
+ *
+ *  関数の詳細:
+ *  インポートされたCSVのデータが正常な場合、DBに登録する。
+ *
+ * @param array $line_list １行データ
+ * @param integer $line_cnt 着用者コード新規発行時の連番
+ * @return array $error_list errorリスト
+ */
 function input_check($line_list, $line_cnt)
 {
     $error_list = array();
+    //発注一覧
+    //$line_list[7] == 1 貸与
+    //$line_list[7] == 2 返却
+    //$line_list[7] == 3 サイズ交換
+    //$line_list[7] == 4 消耗交換
+    //$line_list[7] == 5 異動
 
     //必須チェック
     if (empty($line_list[0])) {
@@ -1920,7 +1931,7 @@ function input_check($line_list, $line_cnt)
             }
         }
     }
-    if ($line_list[3] == '') {
+    if ($line_list[3] == '' || empty($line_list[3])) {
         if (count($error_list) < 20) {
             $error_list[] = $line_cnt . '行目の性別区分を入力してください。';
         } else {
@@ -1950,7 +1961,8 @@ function input_check($line_list, $line_cnt)
             exit;
         }
     }
-    if ($line_list[7] == '') {
+    //発注区分が空の場合は必須エラー
+    if ($line_list[7] == '' || empty($line_list[7])) {
         if (count($error_list) < 20) {
             $error_list[] = $line_cnt . '行目の発注区分を入力してください。';
         } else {
@@ -1960,8 +1972,8 @@ function input_check($line_list, $line_cnt)
             exit;
         }
     }
-    //発注区分が貸与、異動の場合に必須
-    if ($line_list[7] == '1' || $line_list[7] == '5') {
+    //発注区分が貸与、サイズ交換、消耗交換、異動の場合は以下の必須チェックを行う
+    if ($line_list[7] == '1' || $line_list[7] == '3' || $line_list[7] == '4' || $line_list[7] == '5') {
         if (empty($line_list[6])) {
             if (count($error_list) < 20) {
                 $error_list[] = $line_cnt . '行目の着用開始日を入力してください。';
@@ -1973,7 +1985,21 @@ function input_check($line_list, $line_cnt)
             }
         }
     }
-    if ($line_list[7] == '1') {
+    //発注区分が返却の場合に必須
+    if ($line_list[7] == '2') {
+        if (empty($line_list[6])) {
+            if (count($error_list) < 20) {
+                $error_list[] = $line_cnt . '行目の着用終了日を入力してください。';
+            } else {
+                $json_list['errors'] = $error_list;
+                $json_list["error_code"] = "1";
+                echo json_encode($json_list);
+                exit;
+            }
+        }
+    }
+    //発注区分が貸与、サイズ交換、消耗交換、異動の場合は以下の必須チェックを行う
+    if ($line_list[7] == '1' || $line_list[7] == '3' || $line_list[7] == '4' || $line_list[7] == '5') {
         if (empty($line_list[8])) {
             if (count($error_list) < 20) {
                 $error_list[] = $line_cnt . '行目の商品コードを入力してください。';
@@ -1984,13 +2010,13 @@ function input_check($line_list, $line_cnt)
                 exit;
             }
         }
-    } elseif ($line_list[7] == '0' || $line_list[7] == '5') {
-
+    } elseif ($line_list[7] == '2') {
+        //発注区分が返却の場合は商品コードにNULLをセット　
         $line_list[8] = NULL;
     }
 
 
-    if ($line_list[7] == '1') {
+    if ($line_list[7] == '1' || $line_list[7] == '3' || $line_list[7] == '4' || $line_list[7] == '5') {
         if (empty($line_list[9])) {
             if (count($error_list) < 20) {
                 $error_list[] = $line_cnt . '行目のサイズコードを入力してください。';
@@ -2001,12 +2027,12 @@ function input_check($line_list, $line_cnt)
                 exit;
             }
         }
-    } elseif ($line_list[7] == '0' || $line_list[7] == '5') {
-
+    } elseif ($line_list[7] == '2') {
+        //発注区分が返却の場合はサイズコードにNULLをセット　
         $line_list[9] = NULL;
     }
 
-    if ($line_list[7] == '1') {
+    if ($line_list[7] == '1' || $line_list[7] == '3' || $line_list[7] == '4' || $line_list[7] == '5') {
         if (empty($line_list[10])) {
             if (count($error_list) < 20) {
                 $error_list[] = $line_cnt . '行目の色コードを入力してください。';
@@ -2017,12 +2043,12 @@ function input_check($line_list, $line_cnt)
                 exit;
             }
         }
-    } elseif ($line_list[7] == '0' || $line_list[7] == '5') {
-
+    } elseif ($line_list[7] == '2') {
+        //発注区分が返却の場合は色コードにNULLをセット　
         $line_list[10] = NULL;
     }
 
-    if ($line_list[7] == '1') {
+    if ($line_list[7] == '1' || $line_list[7] == '3' || $line_list[7] == '4' || $line_list[7] == '5') {
         if (empty($line_list[11])) {
             if (count($error_list) < 20) {
                 $error_list[] = $line_cnt . '行目の数量を入力してください。';
@@ -2033,46 +2059,30 @@ function input_check($line_list, $line_cnt)
                 exit;
             }
         }
-    } elseif ($line_list[7] == '0' || $line_list[7] == '5') {
+    } elseif ($line_list[7] == '2') {
+        //発注区分が返却の場合は数量に0をセット
         $line_list[11] = 0;
     }
 
+    if (empty($line_list[12])) {
+        if (count($error_list) < 20) {
+            $error_list[] = $line_cnt . '行目のお客様発注noを入力してください。';
+        } else {
+            $json_list['errors'] = $error_list;
+            $json_list["error_code"] = "1";
+            echo json_encode($json_list);
+            exit;
+        }
+    }
 
-    if ($line_list[7] == '1' || $line_list[7] == '5') {
-        if (empty($line_list[13])) {
-            if (count($error_list) < 20) {
-                $error_list[] = $line_cnt . '行目の理由区分を入力してください。';
-            } else {
-                $json_list['errors'] = $error_list;
-                $json_list["error_code"] = "1";
-                echo json_encode($json_list);
-                exit;
-            }
-        }else{
-            if($line_list[7] == '1'){
-                if(!($line_list[13] == '01' || $line_list[13] == '02' || $line_list[13] == '04' || $line_list[13] == '19')){
-                    if (count($error_list) < 20) {
-                        $error_list[] = $line_cnt . '行目の理由区分のフォーマットが不正です。';
-                    } else {
-                        $json_list['errors'] = $error_list;
-                        $json_list["error_code"] = "1";
-                        echo json_encode($json_list);
-                        exit;
-                    }
-                }
-            }
-            if($line_list[7] == '5'){
-                if(!($line_list[13] == '09' || $line_list[13] == '10' || $line_list[13] == '11' || $line_list[13] == '12')) {
-                    if (count($error_list) < 20) {
-                        $error_list[] = $line_cnt . '行目の理由区分のフォーマットが不正です。';
-                    } else {
-                        $json_list['errors'] = $error_list;
-                        $json_list["error_code"] = "1";
-                        echo json_encode($json_list);
-                        exit;
-                    }
-                }
-            }
+    if (empty($line_list[13])) {
+        if (count($error_list) < 20) {
+            $error_list[] = $line_cnt . '行目の理由区分を入力してください。';
+        } else {
+            $json_list['errors'] = $error_list;
+            $json_list["error_code"] = "1";
+            echo json_encode($json_list);
+            exit;
         }
     }
 
@@ -2111,8 +2121,8 @@ function input_check($line_list, $line_cnt)
         }
     }
     //ChromePhp::log($error_list);
-    if (count($error_list) > 0){
-    return $error_list;
+    if (count($error_list) > 0) {
+        return $error_list;
     }
 
 }
