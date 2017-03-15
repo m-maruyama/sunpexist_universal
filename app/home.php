@@ -33,28 +33,28 @@ $app->post('/home', function ()use($app){
     $json_list['info_list'] = $all_list;
 
     //ボタン表示非表示制御
-    if($app->session->get("auth")['button1_use_flg']==1){$json_list['button1_use_flg']=1;};
-    if($app->session->get("auth")['button2_use_flg']==1){$json_list['button2_use_flg']=1;};
-    if($app->session->get("auth")['button3_use_flg']==1){$json_list['button3_use_flg']=1;};
-    if($app->session->get("auth")['button4_use_flg']==1){$json_list['button4_use_flg']=1;};
-    if($app->session->get("auth")['button5_use_flg']==1){$json_list['button5_use_flg']=1;};
-    if($app->session->get("auth")['button6_use_flg']==1){$json_list['button6_use_flg']=1;};
-    if($app->session->get("auth")['button7_use_flg']==1){$json_list['button7_use_flg']=1;};
-    if($app->session->get("auth")['button8_use_flg']==1){$json_list['button8_use_flg']=1;};
-    if($app->session->get("auth")['button9_use_flg']==1){$json_list['button9_use_flg']=1;};
-    if($app->session->get("auth")['button10_use_flg']==1){$json_list['button10_use_flg']=1;};
-    if($app->session->get("auth")['button11_use_flg']==1){$json_list['button11_use_flg']=1;};
-    if($app->session->get("auth")['button12_use_flg']==1){$json_list['button12_use_flg']=1;};
-    if($app->session->get("auth")['button13_use_flg']==1){$json_list['button13_use_flg']=1;};
-    if($app->session->get("auth")['button14_use_flg']==1){$json_list['button14_use_flg']=1;};
-    if($app->session->get("auth")['button15_use_flg']==1){$json_list['button15_use_flg']=1;};
-    if($app->session->get("auth")['button16_use_flg']==1){$json_list['button16_use_flg']=1;};
-    if($app->session->get("auth")['button17_use_flg']==1){$json_list['button17_use_flg']=1;};
-    if($app->session->get("auth")['button18_use_flg']==1){$json_list['button18_use_flg']=1;};
-    if($app->session->get("auth")['button19_use_flg']==1){$json_list['button19_use_flg']=1;};
-    if($app->session->get("auth")['button20_use_flg']==1){$json_list['button20_use_flg']=1;};
-    if($app->session->get("auth")['button21_use_flg']==1){$json_list['button21_use_flg']=1;};
-    if($app->session->get("auth")['button22_use_flg']==1){$json_list['button22_use_flg']=1;};
+    if($app->session->get("auth")['button1_use_flg']==1){$json_list['button1_use_flg']=1;};//貸与開始
+    if($app->session->get("auth")['button2_use_flg']==1){$json_list['button2_use_flg']=1;};//交換
+    if($app->session->get("auth")['button3_use_flg']==1){$json_list['button3_use_flg']=1;};//職種変更または異動
+    if($app->session->get("auth")['button4_use_flg']==1){$json_list['button4_use_flg']=1;};//貸与終了
+    if($app->session->get("auth")['button5_use_flg']==1){$json_list['button5_use_flg']=1;};//その他貸与・不要品返却
+    if($app->session->get("auth")['button6_use_flg']==1){$json_list['button6_use_flg']=1;};//発注状況照会
+    if($app->session->get("auth")['button7_use_flg']==1){$json_list['button7_use_flg']=1;};//返却状況照会
+    if($app->session->get("auth")['button8_use_flg']==1){$json_list['button8_use_flg']=1;};//受領確認照会
+    if($app->session->get("auth")['button9_use_flg']==1){$json_list['button9_use_flg']=1;};//在庫照会
+    if($app->session->get("auth")['button10_use_flg']==1){$json_list['button10_use_flg']=1;};//着用者照会
+    if($app->session->get("auth")['button11_use_flg']==1){$json_list['button11_use_flg']=1;};//請求書データ照会
+    if($app->session->get("auth")['button12_use_flg']==1){$json_list['button12_use_flg']=1;};//着用者編集
+    if($app->session->get("auth")['button13_use_flg']==1){$json_list['button13_use_flg']=1;};//返却伝票印刷
+    if($app->session->get("auth")['button14_use_flg']==1){$json_list['button14_use_flg']=1;};//発注送信処理
+    if($app->session->get("auth")['button15_use_flg']==1){$json_list['button15_use_flg']=1;};//貸与リスト
+    if($app->session->get("auth")['button16_use_flg']==1){$json_list['button16_use_flg']=1;};//注文入力
+    if($app->session->get("auth")['button17_use_flg']==1){$json_list['button17_use_flg']=1;};//注文履歴
+    if($app->session->get("auth")['button18_use_flg']==1){$json_list['button18_use_flg']=1;};//Q&amp;A
+    if($app->session->get("auth")['button19_use_flg']==1){$json_list['button19_use_flg']=1;};//お問い合わせ
+    if($app->session->get("auth")['button20_use_flg']==1){$json_list['button20_use_flg']=1;};//一括データ取込
+    if($app->session->get("auth")['button21_use_flg']==1){$json_list['button21_use_flg']=1;};//アカウント管理
+    if($app->session->get("auth")['button22_use_flg']==1){$json_list['button22_use_flg']=1;};//お知らせ管理
     if($app->session->get("auth")['button23_use_flg']==1){$json_list['button23_use_flg']=1;};
     if($app->session->get("auth")['button24_use_flg']==1){$json_list['button24_use_flg']=1;};
     if($app->session->get("auth")['button25_use_flg']==1){$json_list['button25_use_flg']=1;};
@@ -63,6 +63,18 @@ $app->post('/home', function ()use($app){
     if($app->session->get("auth")['button28_use_flg']==1){$json_list['button28_use_flg']=1;};
     if($app->session->get("auth")['button29_use_flg']==1){$json_list['button29_use_flg']=1;};
     if($app->session->get("auth")['button30_use_flg']==1){$json_list['button30_use_flg']=1;};
+
+    //予備契約フラグ1の表示制御
+    //ログインしているアカウントの企業に紐付く契約の中に、１つでも下記条件を満たす契約があった場合、
+    //ホーム画面の特定のボタンを利用不可（非表示）に切り替える。
+    if ($auth["sub_cont_flg1_exist"]) {
+        $json_list['button1_use_flg']=0;//貸与開始
+        $json_list['button2_use_flg']=0;//交換
+        $json_list['button3_use_flg']=0;//職種変更または異動
+        $json_list['button4_use_flg']=0;//貸与終了
+        $json_list['button5_use_flg']=0;//その他貸与・不要品返却
+        $json_list['button12_use_flg']=0;//着用者編集
+    }
 
     //document処理
     //ChromePhp::log(DOCUMENT_UPLOAD.$corporate_id.'/meta.txt');
