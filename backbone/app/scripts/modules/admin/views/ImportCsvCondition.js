@@ -34,6 +34,7 @@ define([
       },
       onShow: function () {
         var that = this;
+
         $("#btn_ok").off();
         // インラインフレーム内の読み込み完了を監視するコンストラクタ
         function IFrameElementObserverContentLoaded (iframe,callback){
@@ -85,7 +86,28 @@ define([
         var iframe = document.getElementById("my_iframe");
         // フォームの設定を変更する
         // アクセス先を変更する
-        form.action = "/import_csv";
+
+        //購買フラグチェック
+        var modelForUpdate = this.model;
+        modelForUpdate.url = App.api.IM0031;
+        var cond = {
+          "scr": '一括データ取込-予備契約フラグ1',
+          "log_type": '1'
+        };
+        modelForUpdate.fetchMx({
+          data:cond,
+          success:function(res){
+            var sub_cont_flg1_exist = res.get('sub_cont_flg1_exist');
+              if(sub_cont_flg1_exist){
+                //取込のみ仕様
+                form.action = "/import_csv_all";
+              }else{
+                //universal用の取込
+                form.action = "/import_csv";
+              }
+          }
+        });
+
         // ターゲットウィンドウを設定する
         form.target = "form_response";
         // サブミット直前に実行されるイベント
