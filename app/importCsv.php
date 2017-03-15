@@ -6,6 +6,21 @@ use Phalcon\Paginator\Adapter\NativeArray as PaginatorArray;
 use Phalcon\Paginator\Adapter\QueryBuilder as PaginatorQueryBuilder;
 use Phalcon\Http\Response;
 
+/**
+ * 取込フラグチェック
+ */
+$app->post('/import_csv_check', function () use ($app) {
+    $auth = $app->session->get("auth");
+    $json_list = array();
+    //予備フラグ1が企業id内に一つでもあるか
+    $json_list['sub_cont_flg1_exist'] = $auth["sub_cont_flg1_exist"];
+    //ture あり : false なし
+
+    echo json_encode($json_list);
+    return true;
+});
+
+
 
 /**
  * CSV取込
@@ -19,6 +34,7 @@ $app->post('/import_csv', function () use ($app) {
 
     // アカウントセッション情報取得
     $auth = $app->session->get("auth");
+    $accnt_no = $auth["accnt_no"];
 
     //契約リソースマスタゼロ埋め
     //（前処理）契約リソースマスタ参照、拠点コード「0」埋めデータ確認
@@ -474,6 +490,7 @@ $app->post('/import_csv', function () use ($app) {
     $arg_str .= "WHERE NOT EXISTS ";
     $arg_str .= "( SELECT * FROM (SELECT * FROM m_wearer_std WHERE corporate_id = '$corporate_id' AND rntl_cont_no = '$agreement_no' AND job_type_cd = T1.rent_pattern_code) AS T2 ";
     $arg_str .= "WHERE T1.cster_emply_cd = T2.cster_emply_cd AND T2.werer_sts_kbn = '1') ";
+
     $results = new Resultset(null, $t_import_job, $t_import_job->getReadConnection()->query($arg_str));
     $result_obj = (array)$results;
     $results_cnt = $result_obj["\0*\0_count"];
@@ -578,9 +595,8 @@ $app->post('/import_csv', function () use ($app) {
             }
         }
     }
-    //発注 貸与開始と着用者登録のみは、取込ファイル内の拠点が契約リソースマスタのアカウントに紐づく、データがあるか確認
-    if(!$section_all_zero_flg){
-        $accnt_no = $auth["accnt_no"];
+    //発注 貸与の場合は、取込ファイル内の拠点が契約リソースマスタのアカウントに紐づく、データがあるか確認
+    if (!$section_all_zero_flg) {
         $arg_str11 = "";
         $arg_str11 .= "SELECT *";
         $arg_str11 .= " FROM ";
@@ -589,7 +605,10 @@ $app->post('/import_csv', function () use ($app) {
         $arg_str11 .= "(SELECT ";
         $arg_str11 .= " * ";
         $arg_str11 .= " FROM (SELECT * FROM m_contract_resource WHERE corporate_id = '$corporate_id' AND rntl_cont_no = '$agreement_no' AND accnt_no = '$accnt_no') AS T2 ";
-        $arg_str11 .= "WHERE T2.rntl_sect_cd = T1.rntl_sect_cd)";
+        $arg_str11 .= "WHERE T2.rntl_sect_cd = T1.rntl_sect_cd) ";
+        $arg_str11 .= "ORDER BY line_no ASC";
+        ChromePhp::log($arg_str11);
+
         $results11 = new Resultset(null, $t_import_job, $t_import_job->getReadConnection()->query($arg_str11));
         $result_obj11 = (array)$results11;
         $results_cnt11 = $result_obj11["\0*\0_count"];
@@ -617,19 +636,21 @@ $app->post('/import_csv', function () use ($app) {
         }
     }
 
-    //発注 異動の場合、
-    if(!$section_all_zero_flg){
-        $accnt_no = $auth["accnt_no"];
+    //異動の場合は、着用者基本マスタの着用者の拠点が契約リソースマスタのアカウントに紐づく拠点が記載されているかチェック
+    if (!$section_all_zero_flg) {
         $arg_str11 = "";
         $arg_str11 .= "SELECT *";
         $arg_str11 .= " FROM ";
-        $arg_str11 .= "(SELECT distinct on (m_wearer_std.cster_emply_cd) m_wearer_std.rntl_sect_cd as as_rntl_sect_cd,t_import_job.line_no as as_line_no FROM m_wearer_std INNER JOIN t_import_job ON m_wearer_std.cster_emply_cd = t_import_job.cster_emply_cd  ";
-        $arg_str11 .= "WHERE corporate_id = '$corporate_id' AND rntl_cont_no = '$agreement_no' AND m_wearer_std.cster_emply_cd = (SELECT cster_emply_cd FROM t_import_job WHERE job_no = '" . $job_no . "' AND order_kbn = '5')) AS T1";
+        $arg_str11 .= "(SELECT m_wearer_std.rntl_sect_cd as as_rntl_sect_cd,T1.line_no as as_line_no";
+        $arg_str11 .= " FROM m_wearer_std INNER JOIN (SELECT * FROM t_import_job WHERE job_no = '" . $job_no . "' AND order_kbn = '5') as T1";
+        $arg_str11 .= " ON  m_wearer_std.cster_emply_cd = T1.cster_emply_cd";
+        $arg_str11 .= " WHERE corporate_id = '$corporate_id' AND rntl_cont_no = '$agreement_no') AS T2";
         $arg_str11 .= " WHERE NOT EXISTS ";
         $arg_str11 .= "(SELECT ";
         $arg_str11 .= " * ";
         $arg_str11 .= " FROM (SELECT * FROM m_contract_resource WHERE corporate_id = '$corporate_id' AND rntl_cont_no = '$agreement_no' AND accnt_no = '$accnt_no') as T2 ";
-        $arg_str11 .= "WHERE T2.rntl_sect_cd = as_rntl_sect_cd)";
+        $arg_str11 .= "WHERE T2.rntl_sect_cd = as_rntl_sect_cd) ";
+        //$arg_str11 .= "ORDER BY line_no ASC";
         $results11 = new Resultset(null, $t_import_job, $t_import_job->getReadConnection()->query($arg_str11));
         $result_obj11 = (array)$results11;
         $results_cnt11 = $result_obj11["\0*\0_count"];
@@ -656,6 +677,8 @@ $app->post('/import_csv', function () use ($app) {
             }
         }
     }
+    ChromePhp::log('aaa');
+
 
 
     //マスターチェック3 職種マスタの検索条件
@@ -766,16 +789,28 @@ $app->post('/import_csv', function () use ($app) {
         }
     }
 
-    //C-3-5 社員番号ごとのお客様発注no(emply_order_req_no)の重複 検索条件
-    $arg_str8 = "SELECT ";
-    $arg_str8 .= " * ";
-    $arg_str8 .= " FROM (SELECT * FROM t_import_job WHERE emply_order_req_no != '' AND emply_order_req_no IS NOT NULL) as T1";//お客様発注no
-    $arg_str8 .= " WHERE job_no = '" . $job_no . "' AND (cster_emply_cd,emply_order_req_no) IN(";
-    $arg_str8 .= "SELECT cster_emply_cd,emply_order_req_no ";
-    $arg_str8 .= "FROM t_import_job ";
-    $arg_str8 .= "GROUP by cster_emply_cd,emply_order_req_no ";
-    $arg_str8 .= "HAVING count(*) > 1 ) ";
-    //ChromePhp::log($arg_str8);
+    // 同一社員番号で発注番号違いの場合はエラー発生
+    $arg_str8 = "";
+    $arg_str8 .= "SELECT ";
+    $arg_str8 .= " *";
+    $arg_str8 .= " FROM t_import_job as T1";
+    //インポート処理テーブルと、社員番号ごとの客先社員番号が重複している列との結合で、エラーメッセージ用のデータを作成する
+    $arg_str8 .= " INNER JOIN (";
+    $arg_str8 .= " SELECT";
+    $arg_str8 .= " emply_order_req_no";
+    $arg_str8 .= " FROM (SELECT cster_emply_cd,emply_order_req_no,count(emply_order_req_no)";
+    $arg_str8 .= " FROM t_import_job";
+    $arg_str8 .= " WHERE job_no = '" . $job_no . "' ";
+    $arg_str8 .= " GROUP by cster_emply_cd,emply_order_req_no";
+    //客先社員番号ごとにまとめる
+    $arg_str8 .= " HAVING count(emply_order_req_no) > 1";
+    $arg_str8 .= " ) as T2";
+    $arg_str8 .= " GROUP by emply_order_req_no";
+    //客先社員番号ごとにまとめた後、重複している行どうしがあるかチェック
+    $arg_str8 .= " HAVING count(emply_order_req_no) > 1) as T3";
+    $arg_str8 .= " ON T1.emply_order_req_no = T3.emply_order_req_no";
+    $arg_str8 .= " WHERE T1.job_no = '" . $job_no . "' ";
+    //$arg_str8 .= "ORDER BY line_no ASC";
     $results8 = new Resultset(null, $t_import_job, $t_import_job->getReadConnection()->query($arg_str8));
     $result_obj8 = (array)$results8;
     $results_cnt8 = $result_obj8["\0*\0_count"];
@@ -792,8 +827,9 @@ $app->post('/import_csv', function () use ($app) {
         $results = $paginator->items;
         foreach ($results as $result) {
             if (count($error_list) < 20) {
-                $error_list[] = $result->line_no . '行目のお客様発注Noが、重複されて使用されています。';
+                $error_list[] = $result->line_no . '行目のお客様発注Noが、社員番号違いで重複して使用されています。';
             } else {
+
                 $json_list['errors'] = $error_list;
                 $json_list["error_code"] = "1";
                 echo json_encode($json_list);
@@ -801,6 +837,85 @@ $app->post('/import_csv', function () use ($app) {
             }
         }
     }
+
+    //同一社員番号内でお客様発注no違いがある場合はエラー出力
+    $arg_str8_2 = "";
+    $arg_str8_2 .= "SELECT ";
+    $arg_str8_2 .= " *";
+    $arg_str8_2 .= " FROM t_import_job as T1";
+    $arg_str8_2 .= " INNER JOIN (";
+    $arg_str8_2 .= " SELECT";
+    $arg_str8_2 .= " cster_emply_cd";
+    $arg_str8_2 .= " FROM (SELECT cster_emply_cd,emply_order_req_no,count(cster_emply_cd)";
+    $arg_str8_2 .= " FROM t_import_job";
+    $arg_str8_2 .= " WHERE job_no = '" . $job_no . "' ";
+    $arg_str8_2 .= " GROUP BY cster_emply_cd,emply_order_req_no) as T2";
+    $arg_str8_2 .= " GROUP BY cster_emply_cd HAVING count(cster_emply_cd) > 1) as T3";
+    $arg_str8_2 .= " ON T1.cster_emply_cd = T3.cster_emply_cd";
+    $arg_str8_2 .= " WHERE T1.job_no = '" . $job_no . "' ";
+    $results8_2 = new Resultset(null, $t_import_job, $t_import_job->getReadConnection()->query($arg_str8_2));
+    $result_obj8_2 = (array)$results8_2;
+    $results_cnt8_2 = $result_obj8_2["\0*\0_count"];
+    if (!empty($results_cnt8_2)) {
+        $results_count = (count($results8_2));
+        $paginator_model = new PaginatorModel(
+        array(
+        'data' => $results8_2,
+        'limit' => $results_count,
+        "page" => 1
+        )
+        );
+        $paginator = $paginator_model->getPaginate();
+        $results = $paginator->items;
+        foreach ($results as $result) {
+            if (count($error_list) < 20) {
+                $error_list[] = $result->line_no . '行目のお客様発注Noが、同一の社員番号内で異なっています。';
+            } else {
+
+                $json_list['errors'] = $error_list;
+                $json_list["error_code"] = "1";
+                echo json_encode($json_list);
+                return;
+            }
+        }
+    }
+
+
+    //こちらのコードは同一ファイル内に一つでも同じ客先発注番号があればエラー出力 仕様変更により未使用
+//    $arg_str8 = "SELECT ";
+//    $arg_str8 .= " * ";
+//    $arg_str8 .= " FROM (SELECT * FROM t_import_job WHERE emply_order_req_no != '' AND emply_order_req_no IS NOT NULL) as T1";//お客様発注no
+//    $arg_str8 .= " WHERE job_no = '" . $job_no . "' AND (cster_emply_cd,emply_order_req_no) IN(";
+//    $arg_str8 .= "SELECT cster_emply_cd,emply_order_req_no ";
+//    $arg_str8 .= "FROM t_import_job ";
+//    $arg_str8 .= "GROUP by cster_emply_cd,emply_order_req_no ";
+//    $arg_str8 .= "HAVING count(*) > 1 ) ";
+//    $results8 = new Resultset(null, $t_import_job, $t_import_job->getReadConnection()->query($arg_str8));
+//    $result_obj8 = (array)$results8;
+//    $results_cnt8 = $result_obj8["\0*\0_count"];
+//    if (!empty($results_cnt8)) {
+//        $results_count = (count($results8));
+//        $paginator_model = new PaginatorModel(
+//        array(
+//        'data' => $results8,
+//        'limit' => $results_count,
+//        "page" => 1
+//        )
+//        );
+//        $paginator = $paginator_model->getPaginate();
+//        $results = $paginator->items;
+//        foreach ($results as $result) {
+//            if (count($error_list) < 20) {
+//                $error_list[] = $result->line_no . '行目のお客様発注Noが、重複されて使用されています。';
+//            } else {
+//                $json_list['errors'] = $error_list;
+//                $json_list["error_code"] = "1";
+//                echo json_encode($json_list);
+//                return;
+//            }
+//        }
+//    }
+
     //C-3-9 お客様発注Noが発注情報、発注情報トランに存在しないこと
     $arg_str9 = "SELECT ";
     $arg_str9 .= " * ";
@@ -838,6 +953,8 @@ $app->post('/import_csv', function () use ($app) {
             }
         }
     }
+
+
     //C-3-7 貸与パターン別商品チェック　発注区分が貸与（１）の場合、社員番号単位に貸与パターンで指定された商品がファイル内に指定されていること。
     $arg_str10 = "SELECT ";
     $arg_str10 .= " * ";
@@ -908,7 +1025,11 @@ $app->post('/import_csv', function () use ($app) {
                 //発注番号が変わったタイミングで発注番号単位の商品数と貸与パターンに対する商品数を比較して異なる場合はエラーメッセージを出力する
                 if ($check_order_req_no !== $result->order_req_no) {
                     $arg_str = "";
-                    $arg_str = "SELECT * FROM  m_input_item WHERE corporate_id = '" . $corporate_id . "' AND rntl_cont_no = '" . $agreement_no . "' AND job_type_cd = '" . $check_job_type_cd . "'";
+                    $arg_str = "SELECT";
+                    $arg_str .= " * ";
+                    $arg_str .= "FROM  m_input_item ";
+                    $arg_str .= "WHERE ";
+                    $arg_str .= "corporate_id = '" . $corporate_id . "' AND rntl_cont_no = '" . $agreement_no . "' AND job_type_cd = '" . $check_job_type_cd . "'";
                     //ChromePhp::log($arg_str);
                     $m_job_type_count = new Resultset(null, $t_import_job, $t_import_job->getReadConnection()->query($arg_str));
                     $m_job_type_count_obj = (array)$m_job_type_count;
@@ -925,7 +1046,11 @@ $app->post('/import_csv', function () use ($app) {
         }
         //最後の発注no用 個数チェック
         $arg_str = "";
-        $arg_str = "SELECT * FROM  m_input_item WHERE corporate_id = '" . $corporate_id . "' AND rntl_cont_no = '" . $agreement_no . "' AND job_type_cd = '" . $check_job_type_cd . "'";
+        $arg_str = "SELECT";
+        $arg_str .= " * ";
+        $arg_str .= "FROM  m_input_item ";
+        $arg_str .= "WHERE ";
+        $arg_str .= "corporate_id = '" . $corporate_id . "' AND rntl_cont_no = '" . $agreement_no . "' AND job_type_cd = '" . $check_job_type_cd . "'";
         //ChromePhp::log($arg_str);
         $m_job_type_count = new Resultset(null, $t_import_job, $t_import_job->getReadConnection()->query($arg_str));
         if (count($list) !== count($m_job_type_count)) {
@@ -1155,12 +1280,17 @@ $app->post('/import_csv', function () use ($app) {
                 $values_list[] = "'" . $result->werer_name . "'";
                 $values_list[] = "'" . $result->werer_name_kana . "'";
                 $values_list[] = "'" . $result->sex_kbn . "'";
-                $values_list[] = "'7'";
+                if($result->order_kbn == '0' || $result->order_kbn == '1'){
+                    $values_list[] = "'7'";//その他（着用開始）
+                }
+                if($result->order_kbn == '5'){
+                    $values_list[] = "'1'";//稼働
+                }
                 $values_list[] = "'" . $result->wear_start . "'";
                 $values_list[] = "'" . $result->ship_to_cd . "'";
                 $values_list[] = "'" . $result->ship_to_brnch_cd . "'";
                 $values_list[] = "'" . $order_sts_kbn . "'";
-                $values_list[] = "'7'";
+                $values_list[] = "'7'";//WEB発注システム(CSVインポート)
                 $values_list[] = "'" . date("Y-m-d H:i:s", time()) . "'";
                 $values_list[] = "'0'";
                 $values_list[] = "'" . date("Y-m-d H:i:s", time()) . "'";
@@ -1394,7 +1524,12 @@ $app->post('/import_csv', function () use ($app) {
                 $values_list[] = "'" . $result->message . "'";
                 $values_list[] = "'" . $result->werer_name . "'";
                 $values_list[] = "'" . $result->cster_emply_cd . "'";
-                $values_list[] = "'7'";
+                if($result->order_kbn == '0' || $result->order_kbn == '1'){
+                    $values_list[] = "'7'";//その他（着用開始）
+                }
+                if($result->order_kbn == '5'){
+                    $values_list[] = "'1'";//稼働
+                }
                 $values_list[] = "'" . $result->wear_start . "'";
                 $values_list[] = "'0'";
                 $values_list[] = "'" . date("Y-m-d H:i:s", time()) . "'";
@@ -2080,7 +2215,7 @@ function input_check($line_list, $line_cnt)
     //着用者漢字
     if (byte_cnv($line_list[1]) > 22) {
         if (count($error_list) < 20) {
-            $error_list[] = '着用者名の文字数が多すぎます。（最大全角11文字）';
+            $error_list[] = $line_cnt . '行目の着用者名の文字数が多すぎます。（最大全角11文字）';
         } else {
             $json_list['errors'] = $error_list;
             $json_list["error_code"] = "1";
@@ -2091,7 +2226,7 @@ function input_check($line_list, $line_cnt)
     //着用者カナ
     if (byte_cnv($line_list[2]) > 25) {
         if (count($error_list) < 20) {
-            $error_list[] = '着用者名(カナ)の文字数が多すぎます。（最大全角12文字）';
+            $error_list[] = $line_cnt . '行目の着用者名(カナ)の文字数が多すぎます。（最大全角12文字）';
         } else {
             $json_list['errors'] = $error_list;
             $json_list["error_code"] = "1";
@@ -2102,7 +2237,7 @@ function input_check($line_list, $line_cnt)
     //伝言
     if (byte_cnv($line_list[14]) > 100) {
         if (count($error_list) < 20) {
-            $error_list[] = '伝言欄の文字数が多すぎます。（最大全角50文字）';
+            $error_list[] = $line_cnt . '行目の伝言欄の文字数が多すぎます。（最大全角50文字）';
         } else {
             $json_list['errors'] = $error_list;
             $json_list["error_code"] = "1";
