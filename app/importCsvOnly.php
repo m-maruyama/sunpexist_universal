@@ -1807,6 +1807,40 @@ function chk_format2($error_list, $line_list, $line_cnt)
         //理由区分
         if (!chk_pattern2($line_list[13], 11)) {
             array_push($error_list, error_msg_format2($line_cnt, '理由区分'));
+        }else {
+            //理由区分チェック
+            if ($line_list[7] == '1' && $line_list[5] != '13') {
+                if ($line_list[13] != order_kbn1_reason) {
+                    array_push($error_list, error_msg_format2($line_cnt, '理由区分'));
+                }
+            }
+            if ($line_list[7] == '1' && $line_list[5] == '13') {
+                if ($line_list[13] != order_kbn1_free_reason) {
+                    array_push($error_list, error_msg_format2($line_cnt, '理由区分'));
+                }
+            }
+            if ($line_list[7] == '2') {
+                if ($line_list[13] != order_kbn2_reason) {
+                    array_push($error_list, error_msg_format2($line_cnt, '理由区分'));
+                }
+            }
+            if ($line_list[7] == '3') {
+                if ($line_list[13] != order_kbn3_reason) {
+                    array_push($error_list, error_msg_format2($line_cnt, '理由区分'));
+                }
+            }
+            if ($line_list[7] == '4') {
+                if ($line_list[13] != order_kbn4_reason) {
+                    array_push($error_list, error_msg_format2($line_cnt, '理由区分'));
+                }
+            }
+            if ($line_list[7] == '5') {
+                //定数から呼び出し
+                $order_kbn5_reason = json_decode(order_kbn5_list,true);
+                if ($line_list[13] != $order_kbn5_reason[0] && $line_list[13] != $order_kbn5_reason[1] && $line_list[13] != $order_kbn5_reason[2]) {
+                    array_push($error_list, error_msg_format2($line_cnt, '理由区分'));
+                }
+            }
         }
     }
     if (!empty($line_list[14])) {
@@ -1914,7 +1948,7 @@ function chk_pattern2($val, $pattaern)
             break;
         case 11:
             //パターン11(半数2桁)  //理由区分
-            if (!preg_match("/^[0-9]|1[0-9]|2[0-6]{1,2}$/", $val)) {
+            if (!preg_match("/^[0-9]|1[0-9]|2[0-9]{1,2}$/", $val)) {
                 return false;
             } else {
                 return true;
@@ -2088,6 +2122,7 @@ function input_check2($line_list, $line_cnt)
             }
         }
     }
+
     //発注区分が返却の場合に必須
     if ($line_list[7] == '2') {
         if (empty($line_list[6])) {
@@ -2101,6 +2136,7 @@ function input_check2($line_list, $line_cnt)
             }
         }
     }
+
     //発注区分が貸与、サイズ交換、消耗交換、異動の場合は以下の必須チェックを行う　//拠点異動の理由区分10の時はチェックしない
     if (($line_list[7] == '1' || $line_list[7] == '3' || $line_list[7] == '4' || $line_list[7] == '5') && $line_list[13] != '10') {
         if (empty($line_list[8])) {
@@ -2203,6 +2239,7 @@ function input_check2($line_list, $line_cnt)
             exit;
         }
     }
+
     //着用者カナ
     if (byte_cnv($line_list[2]) > 25) {
         if (count($error_list) < 20) {
@@ -2214,6 +2251,7 @@ function input_check2($line_list, $line_cnt)
             exit;
         }
     }
+
     //伝言
     if (byte_cnv($line_list[14]) > 100) {
         if (count($error_list) < 20) {

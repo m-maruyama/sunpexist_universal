@@ -677,9 +677,6 @@ $app->post('/import_csv', function () use ($app) {
             }
         }
     }
-    ChromePhp::log('aaa');
-
-
 
     //マスターチェック3 職種マスタの検索条件
     $arg_str3 = "SELECT ";
@@ -1845,6 +1842,20 @@ function chk_format($error_list, $line_list, $line_cnt)
             //理由区分
             if (!chk_pattern($line_list[13], 11)) {
                 array_push($error_list, error_msg_format($line_cnt, '理由区分'));
+            }else{
+                //理由区分チェック
+                if ($line_list[7] == '1') {//貸与
+                    //define.phpの定数で設定
+                    $order_kbn1_reason = json_decode(order_kbn1_list,true);
+                    if ($line_list[13] != $order_kbn1_reason[0] && $line_list[13] != $order_kbn1_reason[1] && $line_list[13] != $order_kbn1_reason[2]) {
+                        array_push($error_list, error_msg_format($line_cnt, '理由区分'));
+                    }
+                }
+                if ($line_list[7] == '5') {//拠点異動
+                    if ($line_list[13] != order_kbn5_ido) {
+                        array_push($error_list, error_msg_format($line_cnt, '理由区分'));
+                    }
+                }
             }
         }
     }
