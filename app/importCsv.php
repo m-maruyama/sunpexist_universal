@@ -2245,17 +2245,6 @@ function input_check($line_list, $line_cnt)
             exit;
         }
     }
-    //伝言
-    if (byte_cnv($line_list[14]) > 100) {
-        if (count($error_list) < 20) {
-            $error_list[] = $line_cnt . '行目の伝言欄の文字数が多すぎます。（最大全角50文字）';
-        } else {
-            $json_list['errors'] = $error_list;
-            $json_list["error_code"] = "1";
-            echo json_encode($json_list);
-            exit;
-        }
-    }
     //ChromePhp::log($error_list);
     if (count($error_list) > 0){
     return $error_list;

@@ -53,4 +53,4 @@ define("order_kbn3_reason", "13");
 //その他交換
 define("order_kbn4_reason", "14");
 //異動
-define('order_kbn5_list','["10","11","12"]');
+define('order_kbn5_list','["09","10","11"]');

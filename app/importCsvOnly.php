@@ -455,6 +455,9 @@ $app->post('/import_csv_all', function () use ($app) {
     //社員番号マスターチェック1  発注区分：貸与 貸与パターン：女性フリーでないの場合 条件：着用者基本マスタに同じ客先社員番号がある場合、稼働でないこと。
     //社員番号マスターチェック2  発注区分：貸与 貸与パターン：女性フリーの場合 条件：着用者基本マスタに同じ客先社員番号がある場合、稼働であること。
     //社員番号マスターチェック3  発注区分：返却、サイズ交換、消耗交換、異動 条件：着用者基本マスタに同じ客先社員番号がないこと。
+    //社員番号マスターチェック4  拠点変更のみ order_kbn = '5' AND order_reason_kbn = '10'
+    //社員番号マスターチェック5 貸与パターン変更 order_kbn = '5' AND order_reason_kbn = '09'
+    //社員番号マスターチェック6 拠点変更と貸与パターン変更 order_kbn = '5' AND order_reason_kbn = '11'
 
     //パターン1 貸与 貸与パターン：女性フリーでないの場合 order_kbn = '1' AND rent_pattern_code <> '13'）
     $arg_str = "";
@@ -474,15 +477,43 @@ $app->post('/import_csv_all', function () use ($app) {
     $arg_str .= " WHERE NOT EXISTS ";
     $arg_str .= "(SELECT * FROM (SELECT * FROM m_wearer_std WHERE corporate_id = '$corporate_id' AND rntl_cont_no = '$agreement_no'  AND rntl_sect_cd = T1.rntl_sect_cd AND job_type_cd = T1.rent_pattern_code ) AS T2 ";
     $arg_str .= "WHERE T1.cster_emply_cd = T2.cster_emply_cd AND T2.werer_sts_kbn = '1') ";
-    //パターン3 返却、サイズ交換、消耗交換、異動 order_kbn IN ('2','3','4','5')
+    //パターン3 返却、サイズ交換、消耗交換、拠点異動 order_kbn IN ('2','3','4')
     $arg_str .= "UNION ";
     $arg_str .= "SELECT ";
     $arg_str .= " * ";
     $arg_str .= " FROM ";
-    $arg_str .= "(SELECT * FROM t_import_job WHERE  job_no = '" . $job_no . "' AND order_kbn IN ('2','3','4','5')) AS T1 ";
+    $arg_str .= "(SELECT * FROM t_import_job WHERE  job_no = '" . $job_no . "' AND order_kbn IN ('2','3','4')) AS T1 ";
+    $arg_str .= "WHERE NOT EXISTS ";
+    $arg_str .= "( SELECT * FROM (SELECT * FROM m_wearer_std WHERE corporate_id = '$corporate_id' AND rntl_cont_no = '$agreement_no' AND rntl_sect_cd = T1.rntl_sect_cd AND job_type_cd = T1.rent_pattern_code) AS T2 ";
+    $arg_str .= "WHERE T1.cster_emply_cd = T2.cster_emply_cd AND T2.werer_sts_kbn = '1') ";
+    //パターン4  拠点変更のみ order_kbn = '5' AND order_reason_kbn = '10'
+    $arg_str .= "UNION ";
+    $arg_str .= "SELECT ";
+    $arg_str .= " * ";
+    $arg_str .= " FROM ";
+    $arg_str .= "(SELECT * FROM t_import_job WHERE  job_no = '" . $job_no . "' AND order_kbn = '5' AND order_reason_kbn = '10') AS T1 ";
     $arg_str .= "WHERE NOT EXISTS ";
     $arg_str .= "( SELECT * FROM (SELECT * FROM m_wearer_std WHERE corporate_id = '$corporate_id' AND rntl_cont_no = '$agreement_no' AND job_type_cd = T1.rent_pattern_code) AS T2 ";
     $arg_str .= "WHERE T1.cster_emply_cd = T2.cster_emply_cd AND T2.werer_sts_kbn = '1') ";
+    //パターン5 貸与パターン変更 拠点変更と貸与パターン変更 order_kbn = '5' AND order_reason_kbn IN ('09','11')
+    $arg_str .= "UNION ";
+    $arg_str .= "SELECT ";
+    $arg_str .= " * ";
+    $arg_str .= " FROM ";
+    $arg_str .= "(SELECT * FROM t_import_job WHERE  job_no = '" . $job_no . "' AND order_kbn = '5' AND order_reason_kbn = '09') AS T1 ";
+    $arg_str .= "WHERE NOT EXISTS ";
+    $arg_str .= "( SELECT * FROM (SELECT * FROM m_wearer_std WHERE corporate_id = '$corporate_id' AND rntl_cont_no = '$agreement_no' AND rntl_sect_cd = T1.rntl_sect_cd) AS T2 ";
+    $arg_str .= "WHERE T1.cster_emply_cd = T2.cster_emply_cd AND T2.werer_sts_kbn = '1') ";
+    //パターン6 拠点変更と貸与パターン変更 order_kbn = '5' AND order_reason_kbn IN ('09','11')
+    $arg_str .= "UNION ";
+    $arg_str .= "SELECT ";
+    $arg_str .= " * ";
+    $arg_str .= " FROM ";
+    $arg_str .= "(SELECT * FROM t_import_job WHERE  job_no = '" . $job_no . "' AND order_kbn = '5' AND order_reason_kbn = '11') AS T1 ";
+    $arg_str .= "WHERE NOT EXISTS ";
+    $arg_str .= "( SELECT * FROM (SELECT * FROM m_wearer_std WHERE corporate_id = '$corporate_id' AND rntl_cont_no = '$agreement_no') AS T2 ";
+    $arg_str .= "WHERE T1.cster_emply_cd = T2.cster_emply_cd AND T2.werer_sts_kbn = '1') ";
+
     $arg_str .= "ORDER BY line_no ASC";
     $results = new Resultset(null, $t_import_job, $t_import_job->getReadConnection()->query($arg_str));
     $result_obj = (array)$results;
@@ -916,108 +947,105 @@ $app->post('/import_csv_all', function () use ($app) {
     }
 
     //C-3-7 貸与パターン別商品チェック　発注区分が貸与（2）返却以外の場合、社員番号単位に貸与パターンで指定された商品がファイル内に指定されていること。
-    $arg_str10 = "SELECT ";
-    $arg_str10 .= " * ";
-    $arg_str10 .= " FROM (SELECT * FROM t_import_job WHERE job_no = '" . $job_no . "' AND (order_kbn = '1' AND rent_pattern_code <> '13')) as T1 ";
-    $arg_str10 .= " WHERE NOT EXISTS ";
-    $arg_str10 .= "(SELECT * FROM ( SELECT m_input_item.*,size_cd FROM m_input_item ";
-    $arg_str10 .= "INNER JOIN m_item ON m_input_item.item_cd = m_item.item_cd AND m_input_item.color_cd = m_item.color_cd AND m_input_item.corporate_id = m_item.corporate_id ";
-    $arg_str10 .= "WHERE m_input_item.corporate_id = '$corporate_id' AND m_input_item.rntl_cont_no = '$agreement_no' ) as T2 ";
-    //$arg_str10 .= "WHERE T2.item_cd = T1.item_cd AND T2.color_cd = T1.color_cd AND T2.std_input_qty = CAST(T1.quantity as integer) AND T2.size_cd = T1.size_cd ) ";
-    $arg_str10 .= "WHERE T2.item_cd = T1.item_cd AND T2.color_cd = T1.color_cd AND T2.size_cd = T1.size_cd ) ";
-    $arg_str10 .= "ORDER BY line_no ASC";
-    $results10 = new Resultset(null, $t_import_job, $t_import_job->getReadConnection()->query($arg_str10));
-    $result_obj10 = (array)$results10;
-    $results_cnt10 = $result_obj10["\0*\0_count"];
-    if (!empty($results_cnt10)) {
-        $results_count = (count($results10));
-        $paginator_model = new PaginatorModel(
-        array(
-        'data' => $results10,
-        'limit' => $results_count,
-        "page" => 1
-        )
-        );
-        $paginator = $paginator_model->getPaginate();
-        $results = $paginator->items;
-        foreach ($results as $result) {
-            if (count($error_list) < 20) {
-                $error_list[] = $result->line_no . '行目の社員番号' . $result->cster_emply_cd . 'の貸与パターンの商品指定が不足しています。';
-            } else {
-                $json_list['errors'] = $error_list;
-                $json_list["error_code"] = "1";
-                echo json_encode($json_list);
-                return;
-            }
-        }
-    }
-    ChromePhp::log('aaa');
+//    $arg_str10 = "SELECT ";
+//    $arg_str10 .= " * ";
+//    $arg_str10 .= " FROM (SELECT * FROM t_import_job WHERE job_no = '" . $job_no . "' AND (order_kbn = '1' AND rent_pattern_code <> '13')) as T1 ";
+//    $arg_str10 .= " WHERE NOT EXISTS ";
+//    $arg_str10 .= "(SELECT * FROM ( SELECT m_input_item.*,size_cd FROM m_input_item ";
+//    $arg_str10 .= "INNER JOIN m_item ON m_input_item.item_cd = m_item.item_cd AND m_input_item.color_cd = m_item.color_cd AND m_input_item.corporate_id = m_item.corporate_id ";
+//    $arg_str10 .= "WHERE m_input_item.corporate_id = '$corporate_id' AND m_input_item.rntl_cont_no = '$agreement_no' ) as T2 ";
+//    //$arg_str10 .= "WHERE T2.item_cd = T1.item_cd AND T2.color_cd = T1.color_cd AND T2.std_input_qty = CAST(T1.quantity as integer) AND T2.size_cd = T1.size_cd ) ";
+//    $arg_str10 .= "WHERE T2.item_cd = T1.item_cd AND T2.color_cd = T1.color_cd AND T2.size_cd = T1.size_cd ) ";
+//    $arg_str10 .= "ORDER BY line_no ASC";
+//    $results10 = new Resultset(null, $t_import_job, $t_import_job->getReadConnection()->query($arg_str10));
+//    $result_obj10 = (array)$results10;
+//    $results_cnt10 = $result_obj10["\0*\0_count"];
+//    if (!empty($results_cnt10)) {
+//        $results_count = (count($results10));
+//        $paginator_model = new PaginatorModel(
+//        array(
+//        'data' => $results10,
+//        'limit' => $results_count,
+//        "page" => 1
+//        )
+//        );
+//        $paginator = $paginator_model->getPaginate();
+//        $results = $paginator->items;
+//        foreach ($results as $result) {
+//            if (count($error_list) < 20) {
+//                $error_list[] = $result->line_no . '行目の社員番号' . $result->cster_emply_cd . 'の貸与パターンの商品指定が不足しています。';
+//            } else {
+//                $json_list['errors'] = $error_list;
+//                $json_list["error_code"] = "1";
+//                echo json_encode($json_list);
+//                return;
+//            }
+//        }
+//    }
 
-
-
-//    //貸与パターンと発注番号別ごとの貸与パターン比較個数チェック 返却と拠点異動以外
-    $import_job_list = array();
-    $list = array();
-    $arg_str = "";
-    $arg_str = "SELECT";
-    $arg_str .= " * ";
-    $arg_str .= " FROM t_import_job";
-    $arg_str .= " WHERE ";
-    $arg_str .= " job_no = '" . $job_no . "' AND (order_kbn = '1' AND rent_pattern_code <> '13')";
-    $arg_str .= " ORDER BY order_req_no,order_req_line_no ASC";
-
-    $results = new Resultset(null, $t_import_job, $t_import_job->getReadConnection()->query($arg_str));
-    $result_obj = (array)$results;
-    $results_cnt = $result_obj["\0*\0_count"];
-    if (!empty($results_cnt)) {
-        $paginator_model = new PaginatorModel(
-        array(
-        "data" => $results,
-        "limit" => $results_cnt,
-        "page" => 1
-        )
-        );
-        $paginator = $paginator_model->getPaginate();
-        $results = $paginator->items;
-        $i = 0;
-        foreach ($results as $result) {
-            if (isset($check_order_req_no)) {
-                //発注番号が変わったタイミングで発注番号単位の商品数と貸与パターンに対する商品数を比較して異なる場合はエラーメッセージを出力する
-                if ($check_order_req_no !== $result->order_req_no) {
-                    $arg_str = "";
-                    $arg_str = "SELECT";
-                    $arg_str .= " * ";
-                    $arg_str .= "FROM  m_input_item ";
-                    $arg_str .= "WHERE ";
-                    $arg_str .= "corporate_id = '" . $corporate_id . "' AND rntl_cont_no = '" . $agreement_no . "' AND job_type_cd = '" . $check_job_type_cd . "'";
-                    //ChromePhp::log($arg_str);
-                    $m_job_type_count = new Resultset(null, $t_import_job, $t_import_job->getReadConnection()->query($arg_str));
-                    $m_job_type_count_obj = (array)$m_job_type_count;
-                    if (count($list) !== count($m_job_type_count)) {
-                        $error_list[] = '発注番号' . $check_order_req_no . 'の貸与パターンに対する商品指定数が不正です。';
-                    }
-                    $i++;
-                    $list = [];
-                }
-            }
-            $list[] = $result->item_cd;
-            $check_job_type_cd = $result->rent_pattern_code;
-            $check_order_req_no = $result->order_req_no;
-        }
-        //最後の発注no用 個数チェック
-        $arg_str = "";
-        $arg_str = "SELECT";
-        $arg_str .= " * ";
-        $arg_str .= "FROM  m_input_item ";
-        $arg_str .= "WHERE ";
-        $arg_str .= "corporate_id = '" . $corporate_id . "' AND rntl_cont_no = '" . $agreement_no . "' AND job_type_cd = '" . $check_job_type_cd . "'";
-
-        //ChromePhp::log($arg_str);
-        $m_job_type_count = new Resultset(null, $t_import_job, $t_import_job->getReadConnection()->query($arg_str));
-        if (count($list) !== count($m_job_type_count)) {
-            $error_list[] = '発注番号' . $check_order_req_no . 'の貸与パターンに対する商品指定数が不正です。';
-        }
-    }
+////    //貸与パターンと発注番号別ごとの貸与パターン比較個数チェック 貸与のみ
+//    $import_job_list = array();
+//    $list = array();
+//    $arg_str = "";
+//    $arg_str = "SELECT";
+//    $arg_str .= " * ";
+//    $arg_str .= " FROM t_import_job";
+//    $arg_str .= " WHERE ";
+//    $arg_str .= " job_no = '" . $job_no . "' AND (order_kbn = '1' AND rent_pattern_code <> '13')";
+//    $arg_str .= " ORDER BY order_req_no,order_req_line_no ASC";
+//
+//    $results = new Resultset(null, $t_import_job, $t_import_job->getReadConnection()->query($arg_str));
+//    $result_obj = (array)$results;
+//    $results_cnt = $result_obj["\0*\0_count"];
+//    if (!empty($results_cnt)) {
+//        $paginator_model = new PaginatorModel(
+//        array(
+//        "data" => $results,
+//        "limit" => $results_cnt,
+//        "page" => 1
+//        )
+//        );
+//        $paginator = $paginator_model->getPaginate();
+//        $results = $paginator->items;
+//        $i = 0;
+//        foreach ($results as $result) {
+//            if (isset($check_order_req_no)) {
+//                //発注番号が変わったタイミングで発注番号単位の商品数と貸与パターンに対する商品数を比較して異なる場合はエラーメッセージを出力する
+//                if ($check_order_req_no !== $result->order_req_no) {
+//                    $arg_str = "";
+//                    $arg_str = "SELECT";
+//                    $arg_str .= " * ";
+//                    $arg_str .= "FROM  m_input_item ";
+//                    $arg_str .= "WHERE ";
+//                    $arg_str .= "corporate_id = '" . $corporate_id . "' AND rntl_cont_no = '" . $agreement_no . "' AND job_type_cd = '" . $check_job_type_cd . "'";
+//                    //ChromePhp::log($arg_str);
+//                    $m_job_type_count = new Resultset(null, $t_import_job, $t_import_job->getReadConnection()->query($arg_str));
+//                    $m_job_type_count_obj = (array)$m_job_type_count;
+//                    if (count($list) !== count($m_job_type_count)) {
+//                        $error_list[] = '発注番号' . $check_order_req_no . 'の貸与パターンに対する商品指定数が不正です。';
+//                    }
+//                    $i++;
+//                    $list = [];
+//                }
+//            }
+//            $list[] = $result->item_cd;
+//            $check_job_type_cd = $result->rent_pattern_code;
+//            $check_order_req_no = $result->order_req_no;
+//        }
+//        //最後の発注no用 個数チェック
+//        $arg_str = "";
+//        $arg_str = "SELECT";
+//        $arg_str .= " * ";
+//        $arg_str .= "FROM  m_input_item ";
+//        $arg_str .= "WHERE ";
+//        $arg_str .= "corporate_id = '" . $corporate_id . "' AND rntl_cont_no = '" . $agreement_no . "' AND job_type_cd = '" . $check_job_type_cd . "'";
+//
+//        //ChromePhp::log($arg_str);
+//        $m_job_type_count = new Resultset(null, $t_import_job, $t_import_job->getReadConnection()->query($arg_str));
+//        if (count($list) !== count($m_job_type_count)) {
+//            $error_list[] = '発注番号' . $check_order_req_no . 'の貸与パターンに対する商品指定数が不正です。';
+//        }
+//    }
     //ChromePhp::log($error_list);
     // マスターチェック処理で異常が発生した場合、以降処理せず終了
     if (!empty($error_list)) {
@@ -1500,10 +1528,10 @@ $app->post('/import_csv_all', function () use ($app) {
                 $values_list[] = "null";
                 $values_list[] = "'" . $result->ship_to_cd . "'";
                 $values_list[] = "'" . $result->ship_to_brnch_cd . "'";
-                if($result->order_kbn != '2' || $result->order_reason_kbn != '10'){
-                    $values_list[] = $result->quantity;
-                }else{
+                if($result->order_kbn == '2' || $result->order_reason_kbn == '10'){
                     $values_list[] = 0; //返却と拠点異動のみの場合はゼロをセット
+                }else{
+                    $values_list[] = $result->quantity;
                 }
 //                if (empty($result->quantity)) {
 //                    //移動の場合は、0
@@ -1666,7 +1694,7 @@ $app->post('/import_csv_all', function () use ($app) {
             $arg_str .= "(" . $calum_query . ")";
             $arg_str .= " VALUES ";
             $arg_str .= $values_query;
-            //ChromePhp::log($arg_str);
+            ChromePhp::log($arg_str);
             $results = new Resultset(NULL, $t_import_job, $t_import_job->getReadConnection()->query($arg_str));
         }
 
@@ -1771,7 +1799,7 @@ function chk_format2($error_list, $line_list, $line_cnt)
         }
     }
     //返却の場合は必須チェックをskip
-    if ($line_list[7] == '1' || $line_list[7] == '3' || $line_list[7] == '4' || $line_list[7] == '5') {
+    if ($line_list[7] == '1' || $line_list[7] == '3' || $line_list[7] == '4' || ($line_list[7] == '5' && $line_list[13] != '10')) {
         if (!empty($line_list[8])) {
             //商品コード
             if (!chk_pattern2($line_list[8], 6)) {
@@ -1853,14 +1881,11 @@ function chk_format2($error_list, $line_list, $line_cnt)
     return $error_list;
 }
 
+
 /**
- * ・パターンチェッカー
- *
- * ステータスパターンに応じてフォーマットのチェックを行う
- *
- * @param string $val チェックする値
- * @param integer $pattaern チェックパターン
- * @return boolean チェック結果
+ * @param $val
+ * @param $pattaern
+ * @return bool
  */
 function chk_pattern2($val, $pattaern)
 {
@@ -1998,14 +2023,9 @@ function chk_pattern2($val, $pattaern)
 
 
 /**
- *  ・必須チェック
- *
- *  関数の詳細:
- *  インポートされたCSVのデータが正常な場合、DBに登録する。
- *
- * @param array $line_list １行データ
- * @param integer $line_cnt 着用者コード新規発行時の連番
- * @return array $error_list errorリスト
+ * @param $line_list
+ * @param $line_cnt
+ * @return array
  */
 function input_check2($line_list, $line_cnt)
 {
@@ -2252,17 +2272,6 @@ function input_check2($line_list, $line_cnt)
         }
     }
 
-    //伝言
-    if (byte_cnv($line_list[14]) > 100) {
-        if (count($error_list) < 20) {
-            $error_list[] = $line_cnt . '行目の伝言欄の文字数が多すぎます。（最大全角50文字）';
-        } else {
-            $json_list['errors'] = $error_list;
-            $json_list["error_code"] = "1";
-            echo json_encode($json_list);
-            exit;
-        }
-    }
     //ChromePhp::log($error_list);
     if (count($error_list) > 0) {
         return $error_list;
