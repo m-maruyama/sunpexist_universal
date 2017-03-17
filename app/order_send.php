@@ -147,15 +147,15 @@ $app->post('/order_send/search', function () use ($app) {
       $arg_str .= " AND m_wearer_std_tran.rntl_cont_no = m_section.rntl_cont_no";
       $arg_str .= " AND m_wearer_std_tran.rntl_sect_cd = m_section.rntl_sect_cd)";
     } else {
-      $arg_str .= " LEFT JOIN ";
-      $arg_str .= "(m_section";
-      $arg_str .= " LEFT JOIN m_contract_resource";
-      $arg_str .= " ON m_section.corporate_id = m_contract_resource.corporate_id";
-      $arg_str .= " AND m_section.rntl_cont_no = m_contract_resource.rntl_cont_no";
-      $arg_str .= " AND m_section.rntl_sect_cd = m_contract_resource.rntl_sect_cd)";
+      $arg_str .= " LEFT JOIN m_section";
       $arg_str .= " ON m_wearer_std_tran.corporate_id = m_section.corporate_id";
       $arg_str .= " AND m_wearer_std_tran.rntl_cont_no = m_section.rntl_cont_no";
       $arg_str .= " AND m_wearer_std_tran.rntl_sect_cd = m_section.rntl_sect_cd";
+      $arg_str .= " LEFT JOIN m_contract_resource";
+      $arg_str .= " ON m_wearer_std_tran.corporate_id = m_contract_resource.corporate_id";
+      $arg_str .= " AND m_wearer_std_tran.rntl_cont_no = m_contract_resource.rntl_cont_no";
+      $arg_str .= " AND m_wearer_std_tran.rntl_sect_cd = m_contract_resource.rntl_sect_cd";
+      $arg_str .= " AND '".$auth['accnt_no']."' = m_contract_resource.accnt_no";
     }
     $arg_str .= " INNER JOIN m_job_type";
     $arg_str .= " ON (m_wearer_std_tran.corporate_id = m_job_type.corporate_id";
@@ -517,6 +517,7 @@ $app->post('/order_send/search', function () use ($app) {
                   $section_result_obj = (array)$section_result;
                   $section_list = array();
                   foreach ($section_result as $section_result_value) {
+                      //ChromePhp::log($section_result_value);
                       $section_list['rntl_sect_cd'] = $section_result_value->rntl_sect_cd;
                       $section_list['update_ok_flg'] = $section_result_value->update_ok_flg;
                   }
@@ -535,9 +536,6 @@ $app->post('/order_send/search', function () use ($app) {
                   }
               }
           }
-        //ChromePhp::log($list['update_ok_flg']);
-
-
           // 発注入力へのパラメータ設定
         $list['param'] = '';
         $list['param'] .= $list['corporate_id'].':';
