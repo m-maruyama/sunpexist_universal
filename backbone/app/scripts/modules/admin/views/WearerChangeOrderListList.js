@@ -30,7 +30,9 @@ define([
 			ui: {
 				'order_count': '#order_count',
 				'return_count': '#return_count',
-				'target_flg': '#target_flg',
+				'target_flg': '.now_target_flg',
+				'add_order_num': '.add_order_num',
+				'now_return_num': '.now_return_num',
 			},
 			bindings: {
 				'#order_count': 'order_count',
@@ -70,15 +72,22 @@ define([
 								if ($("input[name='now_size_cd" + i + "']").val()) {
 
 									var possible_num = $("input[name='possible_num" + i + "']").val();
-									$("#now_return_num" + i).val(possible_num);
-									return_count_num = parseInt(return_count_num) + parseInt(possible_num);
+									// $("#now_return_num" + i).val(possible_num);
+									// $("#now_return_num" + i).val('0');
+									// return_count_num = parseInt(return_count_num) + parseInt(possible_num);
 
 								} else {
 									$("#now_return_num" + i).val('0');
 								}
 							}
-							//返却枚数合計
-							$("input[name='now_return_count']").val(return_count_num);
+							// if(res_list['need_return_num_flg']){
+							// 	//返却枚数合計
+							// 	$("input[name='now_return_count']").val('0');
+							// }else{
+							// 	//返却枚数合計
+							// 	$("input[name='now_return_count']").val(return_count_num);
+							// }
+
 
 						}
 						$.unblockUI();
@@ -86,6 +95,64 @@ define([
 				});
 			},
 			events: {
+				'change @ui.target_flg': function(e){
+					var return_num = 0;
+					var name_no = e.target.id.replace( /now_target_flg/g , "" );
+					return_num = parseInt($('#now_return_num'+name_no).val());
+					if(e.target.checked){
+						return_num += 1;
+					}else{
+						return_num -= 1;
+					}
+					// $('#order_num'+e.target.value).val(order_num);
+					$('#now_return_num'+name_no).val(return_num);
+
+					var list_cnt = $('#now_list_cnt').val();
+					// var sum_order_num = 0;
+					var sum_return_num = 0;
+					for (var i=0; i<list_cnt; i++) {
+						var now_return_num = parseInt($('#now_return_num'+i).val());
+						if(isNaN(now_return_num)){
+							continue;
+						}
+						// sum_order_num += parseInt($('#order_num'+i).val());
+						sum_return_num += now_return_num;
+					}
+					// $('#order_count').val(sum_order_num);
+					$('#return_count').val(sum_return_num);
+				},
+				'change @ui.now_return_num': function(e){
+					var return_num = 0;
+					return_num = parseInt(e.target.value);
+					if(isNaN(return_num)){
+						return_num = 0;
+					}
+					$('#'+e.target.id).val(return_num);
+					var list_cnt = $('#now_list_cnt').val();
+					var sum_return_num = 0;
+					// var sum_return_num = 0;
+					for (var i=0; i<list_cnt; i++) {
+						sum_return_num += parseInt($('#now_return_num'+i).val());
+						// sum_return_num += parseInt($('#return_num'+i).val());
+					}
+					$('#return_count').val(sum_return_num);
+					// $('#return_count').val(sum_return_num);
+				},
+				'change @ui.add_order_num': function(e){
+					var order_num = 0;
+					order_num = parseInt(e.target.value);
+					if(isNaN(order_num)){
+						order_num = 0;
+					}
+					$('#'+e.target.id).val(order_num);
+					var list_cnt = $('#add_list_cnt').val();
+					var sum_order_num = 0;
+					// var sum_return_num = 0;
+					for (var i=0; i<list_cnt; i++) {
+						sum_order_num += parseInt($('#add_order_num'+i).val());
+					}
+					$('#order_count').val(sum_order_num);
+				},
 			},
 		});
 	});

@@ -557,19 +557,27 @@ define([
 						now_item[i]["now_color_cd"] = $("input[name='now_color_cd"+i+"']").val();
 						now_item[i]["now_choice_type"] = $("input[name='now_choice_type"+i+"']").val();
 						now_item[i]["now_std_input_qty"] = $("input[name='now_std_input_qty"+i+"']").val();
+						now_item[i]["now_possible_num"] = $("input[name='now_possible_num"+i+"']").val();
+						now_item[i]["now_need_num"] = $("input[name='now_need_return_num"+i+"']").val();
 						now_item[i]["now_size_cd"] = $("input[name='now_size_cd"+i+"']").val();
 						now_item[i]["individual_cnt"] = $("input[name='individual_cnt"+i+"']").val();
 						now_item[i]["possible_num"] = $("input[name='possible_num"+i+"']").val();
 						now_item[i]["individual_flg"] = $("input[name='individual_flg']").val();
+						now_item[i]["multi_arr_num"] = $("input[name='multi_arr_num"+i+"']").val();
 						now_item[i]["individual_data"] = new Object();
 						if (now_item[i]["individual_flg"]) {
 							now_item[i]["individual_cnt"] = $("input[name='individual_cnt"+i+"']").val();
 							var Name = 'now_target_flg'+i;
+							if(now_item[i]["now_choice_type"]=='2'){
+								Name = 'now_target_flg'+now_item[i]["multi_arr_num"];
+							}
 							var chk_num = 0;
-							for (var j=0; j<now_item[i]["individual_cnt"]; j++) {
+							for (var j=0; j<document.getElementsByName(Name).length; j++) {
 								var chk_val = document.getElementsByName(Name)[j].value;
+
 								now_item[i]["individual_data"][j] = new Object();
 								var checked = document.getElementsByName(Name)[j].checked;
+
 								if(checked == true){
 									now_item[i]["individual_data"][j]["now_target_flg"] = '1';
 									now_item[i]["individual_data"][j]["individual_ctrl_no"] = chk_val;
@@ -597,13 +605,14 @@ define([
 						add_item[i]["add_color_cd"] = $("input[name='add_color_cd"+i+"']").val();
 						add_item[i]["add_choice_type"] = $("input[name='add_choice_type"+i+"']").val();
 						add_item[i]["add_std_input_qty"] = $("input[name='add_std_input_qty"+i+"']").val();
+						add_item[i]["add_need_num"] = $("input[name='add_need_num"+i+"']").val();
 						add_item[i]["add_size_cd"] = $("select[name='add_size_cd"+i+"']").val();
+						if(!add_item[i]["add_size_cd"]){
+							add_item[i]["add_size_cd"] = $("input[name='add_size_cd"+i+"']").val();
+						}
 						add_item[i]["add_order_num"] = $("input[name='add_order_num"+i+"']").val();
 						add_item[i]["add_order_num_disable"] = $("input[name='add_order_num_disable"+i+"']").val();
 					}
-					//console.log(now_item);
-					//console.log(add_item);
-
 					var modelForUpdate = this.model;
 					modelForUpdate.url = App.api.WC0021;
 					var cond = {
@@ -703,19 +712,27 @@ define([
 						now_item[i]["now_color_cd"] = $("input[name='now_color_cd"+i+"']").val();
 						now_item[i]["now_choice_type"] = $("input[name='now_choice_type"+i+"']").val();
 						now_item[i]["now_std_input_qty"] = $("input[name='now_std_input_qty"+i+"']").val();
+						now_item[i]["now_possible_num"] = $("input[name='now_possible_num"+i+"']").val();
+						now_item[i]["now_need_num"] = $("input[name='now_need_return_num"+i+"']").val();
 						now_item[i]["now_size_cd"] = $("input[name='now_size_cd"+i+"']").val();
 						now_item[i]["individual_cnt"] = $("input[name='individual_cnt"+i+"']").val();
 						now_item[i]["possible_num"] = $("input[name='possible_num"+i+"']").val();
 						now_item[i]["individual_flg"] = $("input[name='individual_flg']").val();
+						now_item[i]["multi_arr_num"] = $("input[name='multi_arr_num"+i+"']").val();
 						now_item[i]["individual_data"] = new Object();
 						if (now_item[i]["individual_flg"]) {
 							now_item[i]["individual_cnt"] = $("input[name='individual_cnt"+i+"']").val();
 							var Name = 'now_target_flg'+i;
+							if(now_item[i]["now_choice_type"]=='2'){
+								Name = 'now_target_flg'+now_item[i]["multi_arr_num"];
+							}
 							var chk_num = 0;
-							for (var j=0; j<now_item[i]["individual_cnt"]; j++) {
+							for (var j=0; j<document.getElementsByName(Name).length; j++) {
 								var chk_val = document.getElementsByName(Name)[j].value;
+
 								now_item[i]["individual_data"][j] = new Object();
 								var checked = document.getElementsByName(Name)[j].checked;
+
 								if(checked == true){
 									now_item[i]["individual_data"][j]["now_target_flg"] = '1';
 									now_item[i]["individual_data"][j]["individual_ctrl_no"] = chk_val;
@@ -732,7 +749,6 @@ define([
 						now_item[i]["now_return_num"] = $("input[name='now_return_num"+i+"']").val();
 						now_item[i]["now_return_num_disable"] = $("input[name='now_return_num_disable"+i+"']").val();
 					}
-
 					var add_list_cnt = $("input[name='add_list_cnt']").val();
 					var add_item = new Object();
 					for (var i=0; i<add_list_cnt; i++) {
@@ -744,11 +760,14 @@ define([
 						add_item[i]["add_color_cd"] = $("input[name='add_color_cd"+i+"']").val();
 						add_item[i]["add_choice_type"] = $("input[name='add_choice_type"+i+"']").val();
 						add_item[i]["add_std_input_qty"] = $("input[name='add_std_input_qty"+i+"']").val();
+						add_item[i]["add_need_num"] = $("input[name='add_need_num"+i+"']").val();
 						add_item[i]["add_size_cd"] = $("select[name='add_size_cd"+i+"']").val();
+						if(!add_item[i]["add_size_cd"]){
+							add_item[i]["add_size_cd"] = $("input[name='add_size_cd"+i+"']").val();
+						}
 						add_item[i]["add_order_num"] = $("input[name='add_order_num"+i+"']").val();
 						add_item[i]["add_order_num_disable"] = $("input[name='add_order_num_disable"+i+"']").val();
 					}
-
 					var modelForUpdate = this.model;
 					modelForUpdate.url = App.api.WC0022;
 					var cond = {

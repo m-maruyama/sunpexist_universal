@@ -1317,11 +1317,9 @@ $app->post('/wearer_change/info', function ()use($app){
    array_push($query_list, "t_delivery_goods_state_details.corporate_id = '".$auth['corporate_id']."'");
    array_push($query_list, "t_delivery_goods_state_details.rntl_cont_no = '".$wearer_chg_post['rntl_cont_no']."'");
    array_push($query_list, "t_delivery_goods_state_details.werer_cd = '".$wearer_chg_post['werer_cd']."'");
-   //array_push($query_list, "m_input_item.job_type_cd = '".$wearer_chg_post['job_type_cd']."'");
+   array_push($query_list, "m_input_item.job_type_cd = '".$m_wearer_job_type_cd."'");
    array_push($query_list, "t_delivery_goods_state_details.rtn_ok_flg = '1'");
    array_push($query_list, "t_delivery_goods_state_details.receipt_status = '2'");
-     //自分の貸与パターンを絞り込み
-     $query_list[] = "m_input_item.job_type_cd = '".$m_wearer_job_type_cd."'";
    $query = implode(' AND ', $query_list);
 
    $arg_str = "";
@@ -1372,7 +1370,6 @@ $app->post('/wearer_change/info', function ()use($app){
      );
      $paginator = $paginator_model->getPaginate();
      $results = $paginator->items;
-     //ChromePhp::LOG($results);
      foreach ($results as $result) {
        // レンタル契約No
        $list["rntl_cont_no"] = $wearer_chg_post['rntl_cont_no'];
@@ -1404,10 +1401,11 @@ $app->post('/wearer_change/info', function ()use($app){
              "rntl_cont_no" => $wearer_chg_post['rntl_cont_no'],
              "werer_cd" => $result->as_werer_cd,
              "item_cd" => $result->as_item_cd,
-             "size_cd" => $result->as_size_cd);
+             "size_cd" => $result->as_size_cd,
+             "color_cd" => $result->as_color_cd);
          //返却予定数の総数
          $TDeliveryGoodsStateDetails = TDeliveryGoodsStateDetails::find(array(
-             'conditions'  => "corporate_id = :corporate_id: AND rntl_cont_no = :rntl_cont_no:  AND werer_cd = :werer_cd: AND item_cd = :item_cd: AND size_cd = :size_cd:",
+             'conditions'  => "corporate_id = :corporate_id: AND rntl_cont_no = :rntl_cont_no:  AND werer_cd = :werer_cd: AND item_cd = :item_cd: AND color_cd = :color_cd: AND size_cd = :size_cd:",
              "bind" => $parameter
          ));
          $each_item_count = $TDeliveryGoodsStateDetails->count();
@@ -1428,7 +1426,7 @@ $app->post('/wearer_change/info', function ()use($app){
          if($list["possible_num"] > 0){
             array_push($now_wearer_list, $list);
          }
-        //ChromePhp::log($now_wearer_list);
+
        /*
        // 数量
        $list["quantity"] = $result->as_quantity;
@@ -1442,10 +1440,9 @@ $app->post('/wearer_change/info', function ()use($app){
        */
      }
    }
-
    //ChromePhp::LOG('【変更前】商品リスト');
    //ChromePhp::LOG(count($now_wearer_list));
-   //ChromePhp::LOG($now_wearer_list);
+//   ChromePhp::LOG($now_wearer_list);
 
    //--【変更後】商品の取得--//
    if ($wearer_chg_post['wearer_tran_flg'] == "1") {
@@ -1707,108 +1704,116 @@ $app->post('/wearer_change/info', function ()use($app){
    //--新たに追加されるアイテム一覧リストの生成--//
    $chk_list = array();
    $add_list = array();
+     // 発注前後リストの商品比較処理
+     for ($i=0; $i<count($chg_wearer_list); $i++) {
+         $list = array();
+         $chg_wearer_list[$i]["overlap_flg"] = true;
+         for ($j=0; $j<count($now_wearer_list); $j++) {
 
-     if(individual_flg($auth['corporate_id'], $wearer_chg_post['rntl_cont_no'])){
-         // 発注前後リストの商品比較処理
-         for ($i=0; $i<count($chg_wearer_list); $i++) {
-             $list = array();
-             $chg_wearer_list[$i]["overlap_flg"] = true;
-             for ($j=0; $j<count($now_wearer_list); $j++) {
-
-                 if (
-                     $chg_wearer_list[$i]["item_cd"] == $now_wearer_list[$j]["item_cd"]
-                     && $chg_wearer_list[$i]["color_cd"] == $now_wearer_list[$j]["color_cd"]
-                     && ($chg_wearer_list[$i]["std_input_qty"] == $now_wearer_list[$j]["possible_num"]
-                         || $chg_wearer_list[$i]["std_input_qty"] < $now_wearer_list[$j]["possible_num"])
-                 )
-                 {
-                     $chg_wearer_list[$i]["overlap_flg"] = false;
-                 }
-             }
-             if ($chg_wearer_list[$i]["overlap_flg"]) {
-                 $list["item_cd"] = $chg_wearer_list[$i]["item_cd"];
-                 $list["color_cd"] = $chg_wearer_list[$i]["color_cd"];
-                 $list["size_cd"] = $chg_wearer_list[$i]["size_cd"];
-                 $list["item_name"] = $chg_wearer_list[$i]["item_name"];
-                 $list["job_type_cd"] = $chg_wearer_list[$i]["job_type_cd"];
-                 $list["rntl_sect_cd"] = $chg_wearer_list[$i]["rntl_sect_cd"];
-                 $list["job_type_item_cd"] = $chg_wearer_list[$i]["job_type_item_cd"];
-                 $list["size_two_cd"] = $chg_wearer_list[$i]["size_two_cd"];
-                 $list["std_input_qty"] = $chg_wearer_list[$i]["std_input_qty"];
-                 $list["input_item_name"] = $chg_wearer_list[$i]["input_item_name"];
-                 $list["add_flg"] = false;//数量追加ではない
-                 for ($m=0; $m<count($now_wearer_list); $m++) {
-                     if (//同じ商品cd、色コードで、交換枚数が増える商品
-                         $chg_wearer_list[$i]["item_cd"] == $now_wearer_list[$m]["item_cd"]
-                         && $chg_wearer_list[$i]["color_cd"] == $now_wearer_list[$m]["color_cd"]
-                         && $chg_wearer_list[$i]["std_input_qty"] > $now_wearer_list[$m]["possible_num"]
-                     ){
-                         $list["add_flg"] = true;
-                         $list["possible_num"] = $chg_wearer_list[$i]["std_input_qty"] - $now_wearer_list[$m]["possible_num"];
-                     }
-                 }
-
-
-                 array_push($chk_list, $list);
+             //同じ商品で数量が増えない商品は「新たに追加されるアイテム」に表示しない
+             if (
+                 $chg_wearer_list[$i]["item_cd"] == $now_wearer_list[$j]["item_cd"]
+                 && $chg_wearer_list[$i]["color_cd"] == $now_wearer_list[$j]["color_cd"]
+                 && ($chg_wearer_list[$i]["std_input_qty"] == $now_wearer_list[$j]["possible_num"]
+                     || $chg_wearer_list[$i]["std_input_qty"] < $now_wearer_list[$j]["possible_num"])
+             )
+             {
+                 $chg_wearer_list[$i]["overlap_flg"] = false;
              }
          }
-         ///ChromePhp::log($chg_wearer_job_type_cd);
-         //ChromePhp::log($m_wearer_job_type_cd);
-         //ChromePhp::log($chk_list);
+         //所持していない商品、または、所持していて数量が増える商品は「新たに追加されるアイテム」に表示する
+         if ($chg_wearer_list[$i]["overlap_flg"]) {
+             $list["item_cd"] = $chg_wearer_list[$i]["item_cd"];
+             $list["color_cd"] = $chg_wearer_list[$i]["color_cd"];
+             $list["size_cd"] = $chg_wearer_list[$i]["size_cd"];
+             $list["item_name"] = $chg_wearer_list[$i]["item_name"];
+             $list["job_type_cd"] = $chg_wearer_list[$i]["job_type_cd"];
+             $list["rntl_sect_cd"] = $chg_wearer_list[$i]["rntl_sect_cd"];
+             $list["job_type_item_cd"] = $chg_wearer_list[$i]["job_type_item_cd"];
+             $list["size_two_cd"] = $chg_wearer_list[$i]["size_two_cd"];
+             $list["std_input_qty"] = $chg_wearer_list[$i]["std_input_qty"];
+             $list["input_item_name"] = $chg_wearer_list[$i]["input_item_name"];
+             $list["add_flg"] = false;//数量追加ではない
+             for ($m=0; $m<count($now_wearer_list); $m++) {
+                 if (//同じ商品cd、色コードで、交換枚数が増える商品
+                     $chg_wearer_list[$i]["item_cd"] == $now_wearer_list[$m]["item_cd"]
+                     && $chg_wearer_list[$i]["color_cd"] == $now_wearer_list[$m]["color_cd"]
+                     && $chg_wearer_list[$i]["std_input_qty"] > $now_wearer_list[$m]["possible_num"]
+                 ){
+                     // サイズコード固定用
+                     $list["add_size_cd"] = $now_wearer_list[$m]['size_cd'];
+//                     $list["add_size_cd"] = $chg_wearer_list[$i]['size_cd'];
+                     $list["add_flg"] = true;
+                     $list["possible_num"] = $chg_wearer_list[$i]["std_input_qty"] - $now_wearer_list[$m]["possible_num"];
 
-
-     }else{
-         // 発注前後リストの商品比較処理
-         for ($i=0; $i<count($chg_wearer_list); $i++) {
-             $list = array();
-             $chg_wearer_list[$i]["overlap_flg"] = true;
-             for ($j=0; $j<count($now_wearer_list); $j++) {
-                 if (
-                     $chg_wearer_list[$i]["item_cd"] == $now_wearer_list[$j]["item_cd"]
-                     && $chg_wearer_list[$i]["color_cd"] == $now_wearer_list[$j]["color_cd"]
-                     && ($chg_wearer_list[$i]["std_input_qty"] == $now_wearer_list[$j]["possible_num"]
-                         || $chg_wearer_list[$i]["std_input_qty"] < $now_wearer_list[$j]["possible_num"])
-                 )
-                 {
-                     $chg_wearer_list[$i]["overlap_flg"] = false;
                  }
              }
-             if ($chg_wearer_list[$i]["overlap_flg"]) {
-                 $list["item_cd"] = $chg_wearer_list[$i]["item_cd"];
-                 $list["color_cd"] = $chg_wearer_list[$i]["color_cd"];
-                 $list["size_cd"] = $chg_wearer_list[$i]["size_cd"];
-                 $list["item_name"] = $chg_wearer_list[$i]["item_name"];
-                 $list["job_type_cd"] = $chg_wearer_list[$i]["job_type_cd"];
-                 $list["rntl_sect_cd"] = $chg_wearer_list[$i]["rntl_sect_cd"];
-                 $list["job_type_item_cd"] = $chg_wearer_list[$i]["job_type_item_cd"];
-                 $list["size_two_cd"] = $chg_wearer_list[$i]["size_two_cd"];
-                 $list["std_input_qty"] = $chg_wearer_list[$i]["std_input_qty"];
-                 $list["input_item_name"] = $chg_wearer_list[$i]["input_item_name"];
-                 $list["add_flg"] = false;//数量追加ではない
-                 for ($k=0; $k<count($now_wearer_list); $k++) {
-                     if (//同じ商品cd、色コードで、交換枚数が増える商品
-                         $chg_wearer_list[$i]["item_cd"] == $now_wearer_list[$k]["item_cd"]
-                         && $chg_wearer_list[$i]["color_cd"] == $now_wearer_list[$k]["color_cd"]
-                         && $chg_wearer_list[$i]["std_input_qty"] > $now_wearer_list[$k]["possible_num"]
-                     ){
-                         $list["add_flg"] = true;
-                         $list["possible_num"] = $chg_wearer_list[$i]["std_input_qty"] - $now_wearer_list[$k]["possible_num"];
-                     }
-                 }
-                 array_push($chk_list, $list);
-             }
+             array_push($chk_list, $list);
          }
      }
 
    //ChromePhp::LOG('発注後のみ商品リスト');
    //ChromePhp::LOG(count($chk_list));
-     //ChromePhp::LOG($chk_list);
+//     ChromePhp::LOG($chk_list);
 
+     $chk_list_new = array();
+     foreach ($chk_list as $chk_map) {
+
+         //--【変更前】商品の取得--//
+         $query_list = array();
+         $list = array();
+         array_push($query_list, "t_delivery_goods_state_details.corporate_id = '".$auth['corporate_id']."'");
+         array_push($query_list, "t_delivery_goods_state_details.rntl_cont_no = '".$wearer_chg_post['rntl_cont_no']."'");
+         array_push($query_list, "t_delivery_goods_state_details.item_cd = '".$chk_map['item_cd']."'");
+         array_push($query_list, "t_delivery_goods_state_details.werer_cd = '".$wearer_chg_post['werer_cd']."'");
+         array_push($query_list, "t_delivery_goods_state_details.color_cd = '".$chk_map['color_cd']."'");
+         array_push($query_list, "t_delivery_goods_state_details.rtn_ok_flg = '1'");
+         array_push($query_list, "t_delivery_goods_state_details.receipt_status = '2'");
+         $query = implode(' AND ', $query_list);
+
+         $arg_str = "";
+         $arg_str = "SELECT ";
+         $arg_str .= " * ";
+         $arg_str .= " FROM ";
+         $arg_str .= "(SELECT distinct on (as_item_cd, as_color_cd,as_size_cd) ";
+         $arg_str .= "t_delivery_goods_state_details.item_cd as as_item_cd,";
+         $arg_str .= "t_delivery_goods_state_details.color_cd as as_color_cd,";
+         $arg_str .= "t_delivery_goods_state_details.size_cd as as_size_cd";
+         $arg_str .= " FROM ";
+         $arg_str .= "t_delivery_goods_state_details ";
+         $arg_str .= " WHERE ";
+         $arg_str .= $query;
+         $arg_str .= ") as distinct_table";
+         $arg_str .= " ORDER BY as_item_cd ASC, as_color_cd ASC";
+         $t_delivery_goods_state_details = new TDeliveryGoodsStateDetails();
+         $results = new Resultset(null, $t_delivery_goods_state_details, $t_delivery_goods_state_details->getReadConnection()->query($arg_str));
+         $result_obj = (array)$results;
+         $results_cnt = $result_obj["\0*\0_count"];
+         if ($results_cnt>1) {
+             $chk_map['multi_size'] = true;
+//             $paginator = $paginator_model->getPaginate();
+//             $results = $paginator->items;
+             $add_size_codes = array();
+             foreach ($results as $result) {
+                 $list = array();
+                 array_push($add_size_codes,$result->as_size_cd);
+             }
+             $chk_map['add_size_codes'] = $add_size_codes;
+         }
+         array_push($chk_list_new,$chk_map);
+     }
+     if($chk_list_new){
+         $chk_list = $chk_list_new;
+     }
+//     $json_list["need_num_flg"] = false;
    // 上記比較リストをベースに、新たに追加されるアイテム一覧リストを生成する
    if (!empty($chk_list)) {
      $arr_cnt = 0;
      $list_cnt = 1;
-       $rowspan = '';
+     $rowspan = '';
+     $choice_cnt = 1;
+       $need_num = 0;
+       $item_cd = '';
      foreach ($chk_list as $chk_map) {
        $list = array();
        // name属性用カウント値
@@ -1817,6 +1822,12 @@ $app->post('/wearer_change/info', function ()use($app){
        $list["list_no"] = $list_cnt++;
        // アイテム
        $list["item_name"] = $chk_map["item_name"];
+         //アイテムが変わったら複数選択用rowspanを初期化
+         if($item_cd != $chk_map['item_cd']){
+             $rowspan = '';
+             $choice_cnt = 1;
+         }
+       $item_cd = $chk_map['item_cd'];
        // 選択方法
        //※着用者の職種マスタ.職種コードに紐づく投入商品マスタの職種アイテムコード単位で単一or複数判断
        $query_list = array();
@@ -1828,7 +1839,6 @@ $app->post('/wearer_change/info', function ()use($app){
        array_push($query_list, "m_input_item.job_type_cd = '".$chk_map['job_type_cd']."'");
        array_push($query_list, "m_input_item.item_cd = '".$chk_map['item_cd']."'");
        array_push($query_list, "m_input_item.job_type_item_cd = '".$chk_map['job_type_item_cd']."'");
-
 
        $query = implode(' AND ', $query_list);
 
@@ -1857,89 +1867,243 @@ $app->post('/wearer_change/info', function ()use($app){
                  $list["rowspan"] = $rowspan;
 
              }
-             $list["choice"] = "複数選択";
-             $list["choice_type"] = "2";
+             $list["need_num"] = 0;
+             $possible_num_sum = 0;
+             $continue_flg = false;
+             for ($i=0; $i<count($now_wearer_list); $i++) {
+
+                 //その商品を納品状況明細情報に現在何枚所持しているか検索する
+                 $parameter = array(
+                     "corporate_id" => $auth['corporate_id'],
+                     "rntl_cont_no" => $wearer_chg_post['rntl_cont_no'],
+                     "werer_cd" => $wearer_chg_post['werer_cd'],
+                     "item_cd" => $now_wearer_list[$i]['item_cd']);
+                 //返却予定数の総数
+                 $TDeliveryGoodsStateDetails = TDeliveryGoodsStateDetails::find(array(
+                     'conditions'  => "corporate_id = :corporate_id: AND rntl_cont_no = :rntl_cont_no:  AND werer_cd = :werer_cd: AND item_cd = :item_cd:",
+                     "bind" => $parameter
+                 ));
+                 $each_item_count = $TDeliveryGoodsStateDetails->count();
+                 // foreachでまわす
+                 $each_item_return_plan_qty = 0;
+                 $each_item_quantity = 0;
+                 for($m = 0; $m < $each_item_count; $m++){
+                     $each_item_return_plan_qty = $each_item_return_plan_qty + $TDeliveryGoodsStateDetails[$m]->return_plan__qty;
+                     $each_item_quantity = $each_item_quantity + $TDeliveryGoodsStateDetails[$m]->quantity;
+                 }
+
+                 $item_total_num = $each_item_quantity -$each_item_return_plan_qty;
+
+                 //商品単位で所持枚数と変更後の商品の標準投入数を比較して所持枚数の方が多いか同数の場合は発注しない
+                 if($chk_map["item_cd"] == $now_wearer_list[$i]["item_cd"]
+                     && $item_total_num >= $chk_map["std_input_qty"]){
+                     $continue_flg = true;
+                     continue;
+                 }
+
+                 //同じ商品cd、交換枚数が増える商品
+                 if ($chk_map["item_cd"] == $now_wearer_list[$i]["item_cd"]
+                     && $chk_map["std_input_qty"] > $now_wearer_list[$i]["possible_num"]
+                 ){
+//                     $json_list["need_num_flg"] = true;
+                     $possible_num_sum = $now_wearer_list[$i]["possible_num"] + $possible_num_sum;
+                 }
+             }
+             if($continue_flg){
+                 $arr_cnt--;
+                 $list_cnt--;
+                 continue;
+             }
+             $need_num = $chk_map["std_input_qty"] - $possible_num_sum;
+             if($need_num<=0){
+                 $need_num = $item_total_num;
+             }
+             $list["need_num"] = $need_num;
+             if($choice_cnt ==1){
+                 //複数選択商品が1行だった場合
+                 $list["choice"] = "単一選択";
+                 $list["choice_type"] = "1";
+                 $choice_cnt++;
+             }else{
+                 //複数選択商品が複数行だった場合
+                 if($choice_cnt ==2){
+                     $add_list[count($add_list)-1]["choice"] = "複数選択";
+                     $add_list[count($add_list)-1]["choice_type"] = "2";
+                     $add_list[count($add_list)-1]["order_num_disable"] = "";
+                     if ($t_order_tran_job_type_cd != $chg_wearer_job_type_cd) {
+                         // 着用者基本マスタトランの情報がない場合
+                         $add_list[count($add_list)-1]["order_num"] = 0;
+                         $list["order_num"] = 0;
+                     }
+//                     $add_list[count($add_list)-1]["need_num"] = $list["need_num"];
+                 }elseif($choice_cnt >2){
+                     if ($t_order_tran_job_type_cd != $chg_wearer_job_type_cd) {
+                         // 着用者基本マスタトランの情報がない場合
+                         $add_list[count($add_list) - 1]["order_num"] = 0;
+                         $list["order_num"] = 0;
+                     }
+//                     $add_list[count($add_list)-1]["need_num"] = $list["need_num"];
+                 }
+                 $list["choice"] = "複数選択";
+                 $list["choice_type"] = "2";
+                 $choice_cnt++;
+             }
          } else {
+             $list["need_num"] = 0;
+             $possible_num_sum = 0;
+             $continue_flg = false;
+             for ($i=0; $i<count($now_wearer_list); $i++) {
+
+                 //その商品を納品状況明細情報に現在何枚所持しているか検索する
+                 $parameter = array(
+                     "corporate_id" => $auth['corporate_id'],
+                     "rntl_cont_no" => $wearer_chg_post['rntl_cont_no'],
+                     "werer_cd" => $wearer_chg_post['werer_cd'],
+                     "item_cd" => $now_wearer_list[$i]['item_cd']);
+                 //返却予定数の総数
+                 $TDeliveryGoodsStateDetails = TDeliveryGoodsStateDetails::find(array(
+                     'conditions'  => "corporate_id = :corporate_id: AND rntl_cont_no = :rntl_cont_no:  AND werer_cd = :werer_cd: AND item_cd = :item_cd:",
+                     "bind" => $parameter
+                 ));
+                 $each_item_count = $TDeliveryGoodsStateDetails->count();
+                 // foreachでまわす
+                 $each_item_return_plan_qty = 0;
+                 $each_item_quantity = 0;
+                 for($m = 0; $m < $each_item_count; $m++){
+                     $each_item_return_plan_qty = $each_item_return_plan_qty + $TDeliveryGoodsStateDetails[$m]->return_plan__qty;
+                     $each_item_quantity = $each_item_quantity + $TDeliveryGoodsStateDetails[$m]->quantity;
+                 }
+
+                 $item_total_num = $each_item_quantity -$each_item_return_plan_qty;
+
+                 //商品単位で所持枚数と変更後の商品の標準投入数を比較して所持枚数の方が多いか同数の場合は発注しない
+                 if($chk_map["item_cd"] == $now_wearer_list[$i]["item_cd"]
+                     && $item_total_num >= $chk_map["std_input_qty"]){
+                     $continue_flg = true;
+                     continue;
+                 }
+
+                 //同じ商品cd、交換枚数が増える商品
+                 if ($chk_map["item_cd"] == $now_wearer_list[$i]["item_cd"]
+                     && $chk_map["std_input_qty"] > $now_wearer_list[$i]["possible_num"]
+                 ){
+//                     $json_list["need_num_flg"] = true;
+                     $possible_num_sum = $now_wearer_list[$i]["possible_num"] + $possible_num_sum;
+                 }
+             }
+             if($continue_flg){
+                 $arr_cnt--;
+                 $list_cnt--;
+                 continue;
+             }
+             $before_need_num = $need_num;
+             $need_num = $chk_map["std_input_qty"] - $possible_num_sum;
+             if($need_num<=0){
+                 $need_num = $item_total_num;
+             }
+             $list["need_num"] = $need_num + $before_need_num;
+             $list["need_num"] = $need_num;
              $list["choice"] = "単一選択";
              $list["choice_type"] = "1";
              $list["rowspan"] = null;
              $rowspan = '';
+             $choice_cnt = 1;
          }
-       // 標準枚数
-       $list["std_input_qty"] = $chk_map['std_input_qty'];
-       // 商品-色
-       $list["item_and_color"] = $chk_map['item_cd']."-".$chk_map['color_cd'];
-       // 商品名
-       $list["input_item_name"] = $chk_map['input_item_name'];
-       // サイズ
-       $list["size_cd"] = array();
-       $element = array();
-       $query_list = array();
-       $query_list[] = "m_item.item_cd = '".$chk_map['item_cd']."'";
-       $query_list[] = "m_item.color_cd = '".$chk_map['color_cd']."'";
-       $query = implode(' AND ', $query_list);
-       $arg_str = "";
-       $arg_str = "SELECT ";
-       $arg_str .= "size_cd,";
-       $arg_str .= "size_cd_display_order";
-       $arg_str .= " FROM ";
-       $arg_str .= "m_item";
-       $arg_str .= " WHERE ";
-       $arg_str .= $query;
-       $arg_str .= " ORDER BY size_cd_display_order ASC";//サイズコード表示順
-       $m_item = new MItem();
-       $results = new Resultset(NULL, $m_item, $m_item->getReadConnection()->query($arg_str));
-       $result_obj = (array)$results;
-       $results_cnt = $result_obj["\0*\0_count"];
-       if (!empty($results_cnt)) {
-         $paginator_model = new PaginatorModel(
-             array(
-                 "data"  => $results,
-                 "limit" => $results_cnt,
-                 "page" => 1
-             )
-         );
-         $paginator = $paginator_model->getPaginate();
-         $results = $paginator->items;
+         // 標準枚数
+         $list["std_input_qty"] = $chk_map['std_input_qty'];
+         // 商品-色
+         $list["item_and_color"] = $chk_map['item_cd']."-".$chk_map['color_cd'];
+         // 商品名
+         $list["input_item_name"] = $chk_map['input_item_name'];
+         // サイズ
+         $list['size_array'] = false;
+         if(isset($chk_map["multi_size"])||!isset($chk_map["add_size_cd"])){
+             $list['size_array'] = true;
+             if(isset($chk_map["multi_size"])){
+                 //サイズ追加などで複数サイズ所持している場合
+                 $results = $chk_map['add_size_codes'];
+                 $results_cnt = count($results);
+             }else{
+                 //同じ商品を所持していない場合
+                 $element = array();
+                 $query_list = array();
+                 $query_list[] = "m_item.item_cd = '".$chk_map['item_cd']."'";
+                 $query_list[] = "m_item.color_cd = '".$chk_map['color_cd']."'";
+                 $query = implode(' AND ', $query_list);
+                 $arg_str = "";
+                 $arg_str = "SELECT ";
+                 $arg_str .= "size_cd,";
+                 $arg_str .= "size_cd_display_order";
+                 $arg_str .= " FROM ";
+                 $arg_str .= "m_item";
+                 $arg_str .= " WHERE ";
+                 $arg_str .= $query;
+                 $arg_str .= " ORDER BY size_cd_display_order ASC";//サイズコード表示順
+                 $m_item = new MItem();
+                 $results = new Resultset(NULL, $m_item, $m_item->getReadConnection()->query($arg_str));
+                 $result_obj = (array)$results;
+                 $results_cnt = $result_obj["\0*\0_count"];
+             }
+             if (!empty($results_cnt)) {
+                 if(!isset($chk_map["multi_size"])){
+                     $paginator_model = new PaginatorModel(
+                         array(
+                             "data"  => $results,
+                             "limit" => $results_cnt,
+                             "page" => 1
+                         )
+                     );
+                     $paginator = $paginator_model->getPaginate();
+                     $results = $paginator->items;
 
-          //未選択のサイズを追加
-         $element["size"] = "";
-         $element["selected"] = "";
-         $list["size_cd"][] = $element;
-         foreach ($results as $result) {
-           $element["size"] = $result->size_cd;
-           //$element["size_sort"] = $result->size_cd_display_order;
-           $query_list = array();
-           $query_list[] = "rntl_cont_no = '".$wearer_chg_post['rntl_cont_no']."'";
-           $query_list[] = "rntl_sect_cd = '".$chk_map["rntl_sect_cd"]."'";
-           $query_list[] = "corporate_id = '".$auth['corporate_id']."'";
-           $query_list[] = "job_type_cd = '".$chk_map['job_type_cd']."'";
-           $query_list[] = "order_req_no = '".$wearer_chg_post['order_req_no']."'";
-           $query_list[] = "item_cd = '".$chk_map['item_cd']."'";
-           $query_list[] = "color_cd = '".$chk_map['color_cd']."'";
-           $query_list[] = "job_type_item_cd = '".$chk_map['job_type_item_cd']."'";
-           $query_list[] = "size_cd = '".$result->size_cd."'";
-           $query = implode(' AND ', $query_list);
-           $arg_str = "";
-           $arg_str .= "SELECT ";
-           $arg_str .= "*";
-           $arg_str .= " FROM ";
-           $arg_str .= "t_order_tran";
-           $arg_str .= " WHERE ";
-           $arg_str .= $query;
-             //ChromePhp::log($arg_str);
-           $t_order_tran = new TOrderTran();
-           $results = new Resultset(NULL, $t_order_tran, $t_order_tran->getReadConnection()->query($arg_str));
-           $result_obj = (array)$results;
-           $results_cnt = $result_obj["\0*\0_count"];
-             if ($results_cnt > 0) {
-             $element["selected"] = "selected";
-           } else {
-             $element["selected"] = "";
-           }
-           $list["size_cd"][] = $element;
+                 }
+                 //未選択のサイズを追加
+                 $element["size"] = "";
+                 $element["selected"] = "";
+                 $list["size_cd"][] = $element;
+                 foreach ($results as $result) {
+                     if(isset($chk_map["multi_size"])){
+                         $element["size"] = $result;
+                     }else{
+                         $element["size"] = $result->size_cd;
+                     }
+                     //$element["size_sort"] = $result->size_cd_display_order;
+                     $query_list = array();
+                     $query_list[] = "rntl_cont_no = '".$wearer_chg_post['rntl_cont_no']."'";
+                     $query_list[] = "rntl_sect_cd = '".$chk_map["rntl_sect_cd"]."'";
+                     $query_list[] = "corporate_id = '".$auth['corporate_id']."'";
+                     $query_list[] = "job_type_cd = '".$chk_map['job_type_cd']."'";
+                     $query_list[] = "order_req_no = '".$wearer_chg_post['order_req_no']."'";
+                     $query_list[] = "item_cd = '".$chk_map['item_cd']."'";
+                     $query_list[] = "color_cd = '".$chk_map['color_cd']."'";
+                     $query_list[] = "job_type_item_cd = '".$chk_map['job_type_item_cd']."'";
+                     $query_list[] = "size_cd = '".$element["size"]."'";
+                     $query = implode(' AND ', $query_list);
+                     $arg_str = "";
+                     $arg_str .= "SELECT ";
+                     $arg_str .= "*";
+                     $arg_str .= " FROM ";
+                     $arg_str .= "t_order_tran";
+                     $arg_str .= " WHERE ";
+                     $arg_str .= $query;
+                     //ChromePhp::log($arg_str);
+                     $t_order_tran = new TOrderTran();
+                     $results = new Resultset(NULL, $t_order_tran, $t_order_tran->getReadConnection()->query($arg_str));
+                     $result_obj = (array)$results;
+                     $results_cnt = $result_obj["\0*\0_count"];
+                     if ($results_cnt > 0) {
+                         $element["selected"] = "selected";
+                     } else {
+                         $element["selected"] = "";
+                     }
+                     $list["size_cd"][] = $element;
+                 }
+             }
+         }else{
+             //同じ商品を所持していてサイズが1種類（サイズ追加などされていない）の場合
+             $list["size_cd"] = $chk_map["add_size_cd"];
+
          }
-       }
 
        // 発注数(単一選択=入力不可、複数選択=入力可)
        if ($list["choice_type"] == "1") {
@@ -1950,8 +2114,7 @@ $app->post('/wearer_change/info', function ()use($app){
          } elseif ($chk_map['add_flg'] == false) {
              $list["order_num"] = $chk_map['std_input_qty'];
          }
-       } else {
-
+       }
 
 
          // 発注情報トラン参照
@@ -1963,6 +2126,7 @@ $app->post('/wearer_change/info', function ()use($app){
          array_push($query_list, "t_order_tran.job_type_cd = '".$chk_map["job_type_cd"]."'");
          array_push($query_list, "t_order_tran.item_cd = '".$chk_map["item_cd"]."'");
          array_push($query_list, "t_order_tran.color_cd = '".$chk_map["color_cd"]."'");
+//           array_push($query_list, "t_returned_plan_info_tran.order_req_no = '".$wearer_chg_post["order_req_no"]."'");
          array_push($query_list,"t_order_tran.order_sts_kbn = '5'");
          $reason_kbns = array();
          array_push($reason_kbns, "t_order_tran.order_reason_kbn = '09'");
@@ -1975,7 +2139,7 @@ $app->post('/wearer_change/info', function ()use($app){
 
          $arg_str = "";
          $arg_str = "SELECT ";
-         $arg_str .= "order_qty";
+         $arg_str .= "*";
          $arg_str .= " FROM ";
          $arg_str .= "t_order_tran";
          $arg_str .= " WHERE ";
@@ -1985,32 +2149,18 @@ $app->post('/wearer_change/info', function ()use($app){
          $result_obj = (array)$results;
          $results_cnt = $result_obj["\0*\0_count"];
          if (!empty($results_cnt)) {
-           $paginator_model = new PaginatorModel(
-               array(
-                   "data"  => $results,
-                   "limit" => $results_cnt,
-                   "page" => 1
-               )
-           );
-           $paginator = $paginator_model->getPaginate();
-           $results = $paginator->items;
-           //ChromePhp::LOG($results);
            foreach ($results as $result) {
-             $list["order_num_disable"] = "";
-             $list["order_num"] = $result->order_qty;
+               if ($list["choice_type"] == "2") {
+                   $list["order_num_disable"] = "";
+               }
+                   $list["order_num"] = $result->order_qty;
            }
-         } else {
-           $list["order_num_disable"] = "";
-//             //返却枚数の計算、新しい商品は標準貸与枚数、同じ商品で数量が増える場合は、異動先の標準貸与枚数引く、現在貸与中アイテムの数量
-//             if($chk_map['add_flg'] == true){
-//                 $list["order_num"] = $chk_map["possible_num"];
-//             } elseif ($chk_map['add_flg'] == false) {
-//                 $list["order_num"] = $chk_map['std_input_qty'];
-//             }
-             $list["order_num"] = '0';
-
+         }else{
+             if ($t_order_tran_job_type_cd == $chg_wearer_job_type_cd) {
+                 // 着用者基本マスタトランの情報がある場合
+                 $list["order_num"] = 0;
+             }
          }
-       }
 
        //--その他の必要hiddenパラメータ--//
        // 部門コード
@@ -2031,6 +2181,7 @@ $app->post('/wearer_change/info', function ()use($app){
      //元の職種と変更後の職種が一緒だったら空にする
      if($m_wearer_job_type_cd == $chg_wearer_job_type_cd){
          $add_list = array();
+//         $json_list["need_num_flg"] = false;
      }
    $json_list["add_list_disp_flg"] = true;
    if (count($add_list) == 0) {
@@ -2040,89 +2191,481 @@ $app->post('/wearer_change/info', function ()use($app){
    $json_list["add_list_cnt"] = count($add_list);
    $json_list["add_list"] = $add_list;
    //ChromePhp::LOG('新たに追加するアイテム一覧リスト');
+     //ChromePhp::LOG($json_list["add_list"]);
 
+//     ChromePhp::LOG($now_wearer_list);
    //--現在貸与中アイテム一覧リストの生成--//
    $chk_list = array();
    $now_list = array();
+     $json_list["need_return_num_flg"] = true;
+     $return_num_multi = 0;
    if (!empty($now_wearer_list) && empty($first_flg)) {
      $arr_cnt = 0;
      $list_cnt = 1;
        $rowspan = '';
+       $choice_cnt = 1;
+       $new_std_input_qty = 0;
+       $multi_arr_num = 0;
+       $item_cd = '';
+       $item_total_num_minus = 0;
      foreach ($now_wearer_list as $now_wearer_map) {
        $list = array();
+         $need_return_num = 0;
+         $list["need_return_num"] = 0;
 
+         //アイテムが変わったら複数選択用rowspanを初期化
+         if($item_cd != $now_wearer_map['item_cd']){
+             $rowspan = '';
+             $choice_cnt = 1;
+         }
+         $item_cd = $now_wearer_map['item_cd'];
        // 発注前後商品の比較チェック
        // 現在のアイテムと異動先の職種のアイテムを比較
        $overlap = true;
        for ($i=0; $i<count($chg_wearer_list); $i++) {
-         if (
-          $now_wearer_map['item_cd'] == $chg_wearer_list[$i]['item_cd']
-          && $now_wearer_map['color_cd'] == $chg_wearer_list[$i]['color_cd']
-          && ($now_wearer_map['possible_num'] == $chg_wearer_list[$i]['std_input_qty']
-          || $now_wearer_map['possible_num'] < $chg_wearer_list[$i]['std_input_qty'])
-         )
-         {
-           $overlap = false;
-         }
+
+           //その商品を納品状況明細情報に現在何枚所持しているか検索する
+           $parameter = array(
+               "corporate_id" => $auth['corporate_id'],
+               "rntl_cont_no" => $wearer_chg_post['rntl_cont_no'],
+               "werer_cd" => $wearer_chg_post['werer_cd'],
+               "item_cd" => $chg_wearer_list[$i]['item_cd']);
+           //返却予定数の総数
+           $TDeliveryGoodsStateDetails = TDeliveryGoodsStateDetails::find(array(
+               'conditions'  => "corporate_id = :corporate_id: AND rntl_cont_no = :rntl_cont_no:  AND werer_cd = :werer_cd: AND item_cd = :item_cd:",
+               "bind" => $parameter
+           ));
+           $each_item_count = $TDeliveryGoodsStateDetails->count();
+           // foreachでまわす
+           $each_item_return_plan_qty = 0;
+           $each_item_quantity = 0;
+           for($m = 0; $m < $each_item_count; $m++){
+               $each_item_return_plan_qty = $each_item_return_plan_qty + $TDeliveryGoodsStateDetails[$m]->return_plan__qty;
+               $each_item_quantity = $each_item_quantity + $TDeliveryGoodsStateDetails[$m]->quantity;
+           }
+           $item_total_num = $each_item_quantity -$each_item_return_plan_qty;
+
+           //商品単位で所持枚数と変更後の商品の標準投入数を比較して所持枚数の方が多い場合は発注しない
+           if($now_wearer_map["item_cd"] == $chg_wearer_list[$i]["item_cd"]
+               && $now_wearer_map["color_cd"] == $chg_wearer_list[$i]["color_cd"]
+               && $item_total_num <= $chg_wearer_list[$i]["std_input_qty"]){
+               $overlap = false;
+           }
        }
+//       ChromePhp::LOG($overlap);
        if (!$overlap) {
          // 上記重複の場合は以降の処理をしない
          continue;
        }
-
+//         $list["multi_arr_num"] = ++;
        // name属性用カウント値
        $list["arr_num"] = $arr_cnt++;
+       $list["multi_arr_num"] = $multi_arr_num++;
        // No
        $list["list_no"] = $list_cnt++;
        // アイテム
        $list["item_name"] = $now_wearer_map["item_name"];
        // 選択方法
        //※着用者の職種マスタ.職種コードに紐づく投入商品マスタの職種アイテムコード単位で単一or複数判断
-       $query_list = array();
-       array_push($query_list, "m_job_type.corporate_id = '".$auth['corporate_id']."'");
-       array_push($query_list, "m_job_type.rntl_cont_no = '".$now_wearer_map['rntl_cont_no']."'");
-       array_push($query_list, "m_job_type.job_type_cd = '".$now_wearer_map['job_type_cd']."'");
-       array_push($query_list, "m_input_item.rntl_cont_no = '".$now_wearer_map['rntl_cont_no']."'");
-       array_push($query_list, "m_input_item.corporate_id = '".$auth['corporate_id']."'");
-       array_push($query_list, "m_input_item.job_type_cd = '".$now_wearer_map['job_type_cd']."'");
-       array_push($query_list, "m_input_item.item_cd = '".$now_wearer_map['item_cd']."'");
-       array_push($query_list, "m_input_item.job_type_item_cd = '".$now_wearer_map['job_type_item_cd']."'");
-       $query = implode(' AND ', $query_list);
+//       $query_list = array();
+//       array_push($query_list, "m_job_type.corporate_id = '".$auth['corporate_id']."'");
+//       array_push($query_list, "m_job_type.rntl_cont_no = '".$now_wearer_map['rntl_cont_no']."'");
+//       array_push($query_list, "m_job_type.job_type_cd = '".$now_wearer_map['job_type_cd']."'");
+//       array_push($query_list, "m_input_item.rntl_cont_no = '".$now_wearer_map['rntl_cont_no']."'");
+//       array_push($query_list, "m_input_item.corporate_id = '".$auth['corporate_id']."'");
+//       array_push($query_list, "m_input_item.job_type_cd = '".$now_wearer_map['job_type_cd']."'");
+//       array_push($query_list, "m_input_item.item_cd = '".$now_wearer_map['item_cd']."'");
+//       array_push($query_list, "m_input_item.job_type_item_cd = '".$now_wearer_map['job_type_item_cd']."'");
+//       $query = implode(' AND ', $query_list);
+//
+//       $arg_str = "";
+//       $arg_str = "SELECT ";
+//       $arg_str .= "m_input_item.job_type_item_cd";
+//       $arg_str .= " FROM ";
+//       $arg_str .= "m_input_item";
+//       $arg_str .= " INNER JOIN ";
+//       $arg_str .= "m_job_type";
+//       $arg_str .= " ON ";
+//       $arg_str .= "m_input_item.m_job_type_comb_hkey=m_job_type.m_job_type_comb_hkey";
+//       $arg_str .= " WHERE ";
+//       $arg_str .= $query;
+//
+//       $m_input_item = new MInputItem();
+//       $results = new Resultset(NULL, $m_input_item, $m_input_item->getReadConnection()->query($arg_str));
+//       $result_obj = (array)$results;
+//       $results_cnt = $result_obj["\0*\0_count"];
+         $return_cnt = 0;
 
-       $arg_str = "";
-       $arg_str = "SELECT ";
-       $arg_str .= "m_input_item.job_type_item_cd";
-       $arg_str .= " FROM ";
-       $arg_str .= "m_input_item";
-       $arg_str .= " INNER JOIN ";
-       $arg_str .= "m_job_type";
-       $arg_str .= " ON ";
-       $arg_str .= "m_input_item.m_job_type_comb_hkey=m_job_type.m_job_type_comb_hkey";
-       $arg_str .= " WHERE ";
-       $arg_str .= $query;
+         //※着用者の職種マスタ.職種コードに紐づくアイテムコード単位で単一or複数判断
+         $query_list = array();
+         array_push($query_list, "t_delivery_goods_state_details.corporate_id = '".$auth['corporate_id']."'");
+         array_push($query_list, "t_delivery_goods_state_details.rntl_cont_no = '".$wearer_chg_post['rntl_cont_no']."'");
+         array_push($query_list, "t_delivery_goods_state_details.werer_cd = '".$wearer_chg_post['werer_cd']."'");
+         array_push($query_list, "t_delivery_goods_state_details.item_cd = '".$now_wearer_map['item_cd']."'");
+         array_push($query_list, "t_delivery_goods_state_details.rtn_ok_flg = '1'");
+         array_push($query_list, "t_delivery_goods_state_details.receipt_status = '2'");
+         $query = implode(' AND ', $query_list);
 
-       $m_input_item = new MInputItem();
-       $results = new Resultset(NULL, $m_input_item, $m_input_item->getReadConnection()->query($arg_str));
-       $result_obj = (array)$results;
-       $results_cnt = $result_obj["\0*\0_count"];
+         $arg_str = "";
+         $arg_str = "SELECT ";
+         $arg_str .= " * ";
+         $arg_str .= " FROM ";
+         $arg_str .= "(SELECT distinct on (item_cd, color_cd, size_cd) ";
+         $arg_str .= "t_delivery_goods_state_details.item_cd as as_item_cd,";
+         $arg_str .= "t_delivery_goods_state_details.color_cd as as_color_cd";
+         $arg_str .= " FROM ";
+         $arg_str .= "t_delivery_goods_state_details";
+         $arg_str .= " where ";
+         $arg_str .= $query;
+         $arg_str .= ") as distinct_table";
+         $arg_str .= " ORDER BY as_item_cd ASC, as_color_cd ASC";
+         //ChromePhp::LOG($arg_str);
+         $t_delivery_goods_state_details = new TDeliveryGoodsStateDetails();
+         $results = new Resultset(null, $t_delivery_goods_state_details, $t_delivery_goods_state_details->getReadConnection()->query($arg_str));
+         $result_obj = (array)$results;
+         $results_cnt = $result_obj["\0*\0_count"];
+
+
+         // 個体管理番号
+         if (individual_flg($auth['corporate_id'], $now_wearer_map['rntl_cont_no']) == "1") {
+
+             // 表示時チェックON/OFF設定
+             $query_list = array();
+             array_push($query_list, "t_returned_plan_info_tran.corporate_id = '".$auth['corporate_id']."'");
+             array_push($query_list, "t_returned_plan_info_tran.rntl_cont_no = '".$wearer_chg_post['rntl_cont_no']."'");
+             array_push($query_list, "t_returned_plan_info_tran.werer_cd = '".$wearer_chg_post['werer_cd']."'");
+             array_push($query_list, "t_returned_plan_info_tran.order_req_no = '".$wearer_chg_post["order_req_no"]."'");
+             array_push($query_list, "t_returned_plan_info_tran.item_cd = '".$now_wearer_map['item_cd']."'");
+             array_push($query_list, "t_order_tran.job_type_cd = '".$chg_wearer_job_type_cd."'");
+             $query = implode(' AND ', $query_list);
+
+             $arg_str = "";
+             $arg_str = "SELECT ";
+             $arg_str .= "individual_ctrl_no";
+             $arg_str .= " FROM ";
+             $arg_str .= "t_returned_plan_info_tran";
+             $arg_str .= " INNER JOIN t_order_tran";
+             $arg_str .= " ON t_returned_plan_info_tran.order_req_no = t_order_tran.order_req_no";
+             $arg_str .= " WHERE ";
+             $arg_str .= $query;
+             $arg_str .= " GROUP BY individual_ctrl_no";
+
+             $t_returned_plan_info_tran = new TReturnedPlanInfoTran();
+             $results = new Resultset(NULL, $t_returned_plan_info_tran, $t_returned_plan_info_tran->getReadConnection()->query($arg_str));
+             $result_obj = (array)$results;
+             $return_cnt = $result_obj["\0*\0_count"];
+         }else{
+             $list['possible_num_flg'] = true;
+             $json_list['possible_num_flg'] = true;
+         }
+         $item_flg = false;
          if ($results_cnt > 1) {
              if(!$rowspan){
                  $rowspan = 'rowspan='.$results_cnt;
-                 $list["rowspan"] = $rowspan;
-//                 if(individual_flg($auth['corporate_id'], $wearer_chg_post['rntl_cont_no'])){
-//                     $list["return_num_rowspan"] = $rowspan;
-//                 }
+                 if (individual_flg($auth['corporate_id'], $now_wearer_map['rntl_cont_no']) == "1") {
+                     $list["rowspan"] = $rowspan;
+                     $list["rowspan_return_num"] = $rowspan;
+                 }else{
+                     $list["rowspan"] = $rowspan;
+                 }
              }else{
                  $rowspan = 'style=display:none';
-                 $list["rowspan"] = $rowspan;
+                 if (individual_flg($auth['corporate_id'], $now_wearer_map['rntl_cont_no']) == "1") {
+                     $list["rowspan"] = $rowspan;
+                     $list["rowspan_return_num"] = $rowspan;
+                 }else{
+                     $list["rowspan"] = $rowspan;
+                 }
 
              }
-             $list["choice"] = "複数選択";
-             $list["choice_type"] = "2";
+
+             //その商品を納品状況明細情報に現在何枚所持しているか検索する(商品コード単位)
+             $parameter = array(
+                 "corporate_id" => $auth['corporate_id'],
+                 "rntl_cont_no" => $wearer_chg_post['rntl_cont_no'],
+                 "werer_cd" => $wearer_chg_post['werer_cd'],
+                 "item_cd" => $now_wearer_map['item_cd']);
+//                 "item_cd" => $now_wearer_map['item_cd'],
+//                 "color_cd" => $now_wearer_map['color_cd'],
+//                 "size_cd" => $now_wearer_map['size_cd']);
+             //返却予定数の総数
+             $TDeliveryGoodsStateDetails = TDeliveryGoodsStateDetails::find(array(
+                 'conditions'  => "corporate_id = :corporate_id: AND rntl_cont_no = :rntl_cont_no:  AND werer_cd = :werer_cd: AND item_cd = :item_cd:",
+                 "bind" => $parameter
+             ));
+             $each_item_count = $TDeliveryGoodsStateDetails->count();
+             // foreachでまわす
+             $each_item_return_plan_qty = 0;
+             $each_item_quantity = 0;
+             for($m = 0; $m < $each_item_count; $m++){
+                 $each_item_return_plan_qty = $each_item_return_plan_qty + $TDeliveryGoodsStateDetails[$m]->return_plan__qty;
+                 $each_item_quantity = $each_item_quantity + $TDeliveryGoodsStateDetails[$m]->quantity;
+             }
+             $item_total_num = $each_item_quantity -$each_item_return_plan_qty;
+
+             $possible_num_sum = 0;
+             $continue_flg = false;
+             for ($i=0; $i<count($chg_wearer_list); $i++) {
+                 //その商品を納品状況明細情報に現在何枚所持しているか検索する
+                 $parameter = array(
+                     "corporate_id" => $auth['corporate_id'],
+                     "rntl_cont_no" => $wearer_chg_post['rntl_cont_no'],
+                     "werer_cd" => $wearer_chg_post['werer_cd'],
+                     "item_cd" => $chg_wearer_list[$i]['item_cd'],
+                     "color_cd" => $chg_wearer_list[$i]['color_cd']);
+                 //返却予定数の総数
+                 $TDeliveryGoodsStateDetails = TDeliveryGoodsStateDetails::find(array(
+                     'conditions'  => "corporate_id = :corporate_id: AND rntl_cont_no = :rntl_cont_no:  AND werer_cd = :werer_cd: AND item_cd = :item_cd: AND color_cd = :color_cd:",
+                     "bind" => $parameter
+                 ));
+                 $each_item_count = $TDeliveryGoodsStateDetails->count();
+                 // foreachでまわす
+                 $each_item_return_plan_qty = 0;
+                 $each_item_quantity = 0;
+                 for($m = 0; $m < $each_item_count; $m++){
+                     $each_item_return_plan_qty = $each_item_return_plan_qty + $TDeliveryGoodsStateDetails[$m]->return_plan__qty;
+                     $each_item_quantity = $each_item_quantity + $TDeliveryGoodsStateDetails[$m]->quantity;
+                 }
+                 $possible_num_sum = $each_item_quantity -$each_item_return_plan_qty;
+
+                 if($now_wearer_map["item_cd"] == $chg_wearer_list[$i]["item_cd"]
+                     && $now_wearer_map["color_cd"] == $chg_wearer_list[$i]["color_cd"]) {
+                     $item_flg = true;
+
+                 }
+                 //商品単位で所持枚数と変更後の商品の標準投入数を比較して所持枚数の方が多い場合は返却
+                 if($now_wearer_map["item_cd"] == $chg_wearer_list[$i]["item_cd"]
+                     && $now_wearer_map["color_cd"] == $chg_wearer_list[$i]["color_cd"]
+                     && $possible_num_sum == $chg_wearer_list[$i]["std_input_qty"]
+                     && $item_total_num == $chg_wearer_list[$i]["std_input_qty"]){
+                     $continue_flg = true;
+                 }else{
+                     $new_std_input_qty = $chg_wearer_list[$i]["std_input_qty"];
+                 }
+
+//                 //同じ商品cd、枚数が減る商品
+//                 if ($now_wearer_map["item_cd"] == $chg_wearer_list[$i]["item_cd"]
+//                     && $now_wearer_map["possible_num"] > $chg_wearer_list[$i]["std_input_qty"]
+//                 ){
+//                     $possible_num_sum = $chg_wearer_list[$i]["std_input_qty"] + $possible_num_sum;
+//                 }
+             }
+             $new_std_input_qty = 0;
+             if($item_flg){
+                 $parameter = array(
+                     "corporate_id" => $auth['corporate_id'],
+                     "rntl_cont_no" => $wearer_chg_post['rntl_cont_no'],
+                     "job_type_cd" => $chg_wearer_job_type_cd,
+                     "item_cd" => $now_wearer_map['item_cd']);
+                 //返却予定数の総数
+                 $MInputItems = MInputItem::find(array(
+                     'conditions'  => "corporate_id = :corporate_id: AND rntl_cont_no = :rntl_cont_no:  AND job_type_cd = :job_type_cd: AND item_cd = :item_cd:",
+                     "bind" => $parameter
+                 ));
+                 foreach ($MInputItems as $MInputItem){
+                     $new_std_input_qty = $MInputItem->getStdInputQty();
+                 }
+
+             }
+             if($new_std_input_qty==0){
+                 //変更後の職種で変更前の職種の商品がない場合
+                 if($need_return_num==0){
+                     $list["need_return_num"] = $item_total_num;
+                 }else{
+                     $list["need_return_num"] = $need_return_num;
+                 }
+             }else{
+                 $need_return_num = $item_total_num - $new_std_input_qty;
+                 $list["need_return_num"] =  $need_return_num;
+             }
+             if($continue_flg){
+                 //全数から引く数値
+                 $item_total_num_minus += $now_wearer_map['possible_num'];
+                 $arr_cnt--;
+                 $list_cnt--;
+                 $multi_arr_num--;
+                 continue;
+             }
+             $item_total_num = $item_total_num - $item_total_num_minus;
+             $list["need_return_num"] = $list["need_return_num"] - $item_total_num_minus;
+             if($choice_cnt ==1){
+                 //複数選択商品が1行だった場合
+                 $list["choice"] = "単一選択";
+                 $list["choice_type"] = "1";
+                 $list["multi_flg"] = false;
+
+                 //個体管理番号あり
+                 if (individual_flg($auth['corporate_id'], $now_wearer_map['rntl_cont_no']) == "1") {
+                     $list["rowspan"] = '';
+                     $list["rowspan_return_num"] = '';
+                     //トランありなし
+                     if ($t_order_tran_job_type_cd == $chg_wearer_job_type_cd) {
+                         $list["return_num_disp"] = $list["need_return_num"];
+                     }else{
+                         $list["return_num_disp"] = 0;
+                     }
+                 }else{
+                     //個体管理番号なし
+                     $list["rowspan"] = '';
+                     $list["return_num_disp"] = $list["need_return_num"];
+                 }
+                 $choice_cnt++;
+             }else{
+                 //複数選択商品が複数行だった場合
+                 if($choice_cnt ==2){
+                     $now_list[count($now_list)-1]["choice"] = "複数選択";
+                     $now_list[count($now_list)-1]["choice_type"] = "2";
+                     $now_list[count($now_list)-1]["multi_flg"] = true;
+                     if (individual_flg($auth['corporate_id'], $now_wearer_map['rntl_cont_no']) == "1") {
+                         //個体管理番号あり
+                         $now_list[count($now_list)-1]["return_num_multi"] = $return_cnt;
+                         $now_list[count($now_list)-1]["return_num_disp"] = 0;
+                         $rowspan = 'rowspan='.$results_cnt;
+                         $now_list[count($now_list)-1]["rowspan"] = $rowspan;
+                         $now_list[count($now_list)-1]["rowspan_return_num"] = $rowspan;
+                     }else{
+                         if($list["need_return_num"]==$item_total_num){
+                             $now_list[count($now_list) - 1]["return_num_disable"] = "disabled";
+                         }else{
+                             if (!$wearer_chg_post['wearer_tran_flg'] == "1") {
+                                 // 着用者基本マスタトランの情報がない場合
+                                 $now_list[count($now_list) - 1]["return_num_multi"] = 0;
+                                 $now_list[count($now_list) - 1]["return_num_disp"] = 0;
+                             }
+                             $now_list[count($now_list) - 1]["return_num_disable"] = "";
+
+                         }
+                         $rowspan = 'rowspan='.$results_cnt;
+                         $now_list[count($now_list)-1]["rowspan"] = $rowspan;
+                     }
+                     $now_list[count($now_list)-1]["need_return_num"] = $list["need_return_num"];
+                     $list["multi_arr_num"]--;
+                     $multi_arr_num--;
+                 }elseif($choice_cnt >2){
+                     $now_list[count($now_list)-1]["need_return_num"] = $list["need_return_num"];
+                     $now_list[count($now_list)-($multi_arr_num - 1)]["need_return_num"] = $list["need_return_num"];
+                     if($list["need_return_num"]==$item_total_num){
+                         $now_list[count($now_list) - 1]["return_num_disable"] = "disabled";
+                     }else{
+                         $now_list[count($now_list) - 1]["return_num_disable"] = "";
+
+                     }
+                     $list["multi_arr_num"]--;
+                     $multi_arr_num--;
+
+                 }
+                 $list["choice"] = "複数選択";
+                 $list["choice_type"] = "2";
+                 $list["multi_flg"] = true;
+                 $choice_cnt++;
+             }
          } else {
+
+             for ($i=0; $i<count($chg_wearer_list); $i++) {
+                 //その商品を納品状況明細情報に現在何枚所持しているか検索する
+                 $parameter = array(
+                     "corporate_id" => $auth['corporate_id'],
+                     "rntl_cont_no" => $wearer_chg_post['rntl_cont_no'],
+                     "werer_cd" => $wearer_chg_post['werer_cd'],
+                     "item_cd" => $chg_wearer_list[$i]['item_cd'],
+                     "color_cd" => $chg_wearer_list[$i]['color_cd']);
+                 //返却予定数の総数
+                 $TDeliveryGoodsStateDetails = TDeliveryGoodsStateDetails::find(array(
+                     'conditions'  => "corporate_id = :corporate_id: AND rntl_cont_no = :rntl_cont_no:  AND werer_cd = :werer_cd: AND item_cd = :item_cd: AND color_cd = :color_cd:",
+                     "bind" => $parameter
+                 ));
+                 $each_item_count = $TDeliveryGoodsStateDetails->count();
+                 // foreachでまわす
+                 $each_item_return_plan_qty = 0;
+                 $each_item_quantity = 0;
+                 for($m = 0; $m < $each_item_count; $m++){
+                     $each_item_return_plan_qty = $each_item_return_plan_qty + $TDeliveryGoodsStateDetails[$m]->return_plan__qty;
+                     $each_item_quantity = $each_item_quantity + $TDeliveryGoodsStateDetails[$m]->quantity;
+                 }
+                 $possible_num_sum = $each_item_quantity -$each_item_return_plan_qty;
+
+                 if($now_wearer_map["item_cd"] == $chg_wearer_list[$i]["item_cd"]
+                     && $now_wearer_map["color_cd"] == $chg_wearer_list[$i]["color_cd"]) {
+                     $item_flg = true;
+
+                 }
+                 //商品単位で所持枚数と変更後の商品の標準投入数を比較して所持枚数の方が多い場合は返却
+                 if($now_wearer_map["item_cd"] == $chg_wearer_list[$i]["item_cd"]
+                     && $now_wearer_map["color_cd"] == $chg_wearer_list[$i]["color_cd"]
+                     && $possible_num_sum >= $chg_wearer_list[$i]["std_input_qty"]){
+                     $continue_flg = true;
+                 }else{
+                     $new_std_input_qty = $chg_wearer_list[$i]["std_input_qty"];
+                 }
+
+//                 //同じ商品cd、枚数が減る商品
+//                 if ($now_wearer_map["item_cd"] == $chg_wearer_list[$i]["item_cd"]
+//                     && $now_wearer_map["possible_num"] > $chg_wearer_list[$i]["std_input_qty"]
+//                 ){
+//                     $possible_num_sum = $chg_wearer_list[$i]["std_input_qty"] + $possible_num_sum;
+//                 }
+             }
+             //その商品を納品状況明細情報に現在何枚所持しているか検索する(商品コード単位)
+             $parameter = array(
+                 "corporate_id" => $auth['corporate_id'],
+                 "rntl_cont_no" => $wearer_chg_post['rntl_cont_no'],
+                 "werer_cd" => $wearer_chg_post['werer_cd'],
+                 "item_cd" => $now_wearer_map['item_cd']);
+//                 "item_cd" => $now_wearer_map['item_cd'],
+//                 "color_cd" => $now_wearer_map['color_cd'],
+//                 "size_cd" => $now_wearer_map['size_cd']);
+             //返却予定数の総数
+             $TDeliveryGoodsStateDetails = TDeliveryGoodsStateDetails::find(array(
+                 'conditions'  => "corporate_id = :corporate_id: AND rntl_cont_no = :rntl_cont_no:  AND werer_cd = :werer_cd: AND item_cd = :item_cd:",
+//                 'conditions'  => "corporate_id = :corporate_id: AND rntl_cont_no = :rntl_cont_no:  AND werer_cd = :werer_cd: AND item_cd = :item_cd: AND color_cd = :color_cd: AND size_cd = :size_cd:",
+                 "bind" => $parameter
+             ));
+             $each_item_count = $TDeliveryGoodsStateDetails->count();
+             // foreachでまわす
+             $each_item_return_plan_qty = 0;
+             $each_item_quantity = 0;
+             for($m = 0; $m < $each_item_count; $m++){
+                 $each_item_return_plan_qty = $each_item_return_plan_qty + $TDeliveryGoodsStateDetails[$m]->return_plan__qty;
+                 $each_item_quantity = $each_item_quantity + $TDeliveryGoodsStateDetails[$m]->quantity;
+             }
+             $item_total_num = $each_item_quantity -$each_item_return_plan_qty;
+
+             $new_std_input_qty = 0;
+             if($item_flg){
+                 $parameter = array(
+                     "corporate_id" => $auth['corporate_id'],
+                     "rntl_cont_no" => $wearer_chg_post['rntl_cont_no'],
+                     "job_type_cd" => $chg_wearer_job_type_cd,
+                     "item_cd" => $now_wearer_map['item_cd'],
+                     "color_cd" => $now_wearer_map['color_cd']);
+                 //返却予定数の総数
+                 $MInputItems = MInputItem::find(array(
+                     'conditions'  => "corporate_id = :corporate_id: AND rntl_cont_no = :rntl_cont_no:  AND job_type_cd = :job_type_cd: AND item_cd = :item_cd: AND color_cd = :color_cd:",
+                     "bind" => $parameter
+                 ));
+                 foreach ($MInputItems as $MInputItem){
+                     $new_std_input_qty = $MInputItem->getStdInputQty();
+                 }
+
+             }
+             $list["need_return_num"] = $item_total_num - $new_std_input_qty;
+
              $list["choice"] = "単一選択";
              $list["choice_type"] = "1";
              $list["rowspan"] = null;
+             $list["multi_flg"] = false;
+             //個体管理番号あり
+             if (individual_flg($auth['corporate_id'], $now_wearer_map['rntl_cont_no']) == "1") {
+                 //トランありなし
+                 if ($t_order_tran_job_type_cd == $chg_wearer_job_type_cd) {
+                     $list["return_num_disp"] = $list["need_return_num"];
+                 }else{
+                     $list["return_num_disp"] = 0;
+                 }
+             }else{
+                 //個体管理番号なし
+                 $list["return_num_disp"] = $list["need_return_num"];
+             }
              $rowspan = '';
          }
        // 標準枚数
@@ -2227,7 +2770,13 @@ $app->post('/wearer_change/info', function ()use($app){
                $individual["checked"] = "";
              }
              // 対象チェックname属性No
-             $individual["name_no"] = $list["arr_num"];
+               if($list["choice_type"] == "1"){
+                   $individual["multi_flg"] = false;
+                   $individual["arr_num"] = $list["arr_num"];
+               }else{
+                   $individual["multi_flg"] = true;
+                   $individual["name_no"] = $list["multi_arr_num"];
+               }
              // 対象チェックボックス改行設定
              if ($last_val == $cnt) {
                $individual["br"] = "";
@@ -2247,30 +2796,80 @@ $app->post('/wearer_change/info', function ()use($app){
            // 個体管理番号
            $list["individual_ctrl_no"] = implode("<br>", $individual_ctrl_no);
          }
+       }else{
+           // トラン情報がある場合は返却枚数を取得する
+           $query_list = array();
+           array_push($query_list, "t_returned_plan_info_tran.corporate_id = '".$auth['corporate_id']."'");
+           array_push($query_list, "t_returned_plan_info_tran.rntl_cont_no = '".$wearer_chg_post['rntl_cont_no']."'");
+           array_push($query_list, "t_returned_plan_info_tran.werer_cd = '".$wearer_chg_post['werer_cd']."'");
+           array_push($query_list, "t_returned_plan_info_tran.order_req_no = '".$wearer_chg_post["order_req_no"]."'");
+           array_push($query_list, "t_returned_plan_info_tran.item_cd = '".$now_wearer_map['item_cd']."'");
+           array_push($query_list, "t_returned_plan_info_tran.color_cd = '".$now_wearer_map['color_cd']."'");
+           array_push($query_list, "t_returned_plan_info_tran.size_cd = '".$list["size_cd"]."'");
+           array_push($query_list, "t_order_tran.job_type_cd = '".$chg_wearer_job_type_cd."'");
+           $query = implode(' AND ', $query_list);
+
+           $arg_str = "";
+           $arg_str = "SELECT ";
+           $arg_str .= "return_plan_qty";
+           $arg_str .= " FROM ";
+           $arg_str .= "t_returned_plan_info_tran";
+           $arg_str .= " INNER JOIN t_order_tran";
+           $arg_str .= " ON t_returned_plan_info_tran.order_req_no = t_order_tran.order_req_no";
+           $arg_str .= " WHERE ";
+           $arg_str .= $query;
+
+           $t_returned_plan_info_tran = new TReturnedPlanInfoTran();
+           $results = new Resultset(NULL, $t_returned_plan_info_tran, $t_returned_plan_info_tran->getReadConnection()->query($arg_str));
+           $result_obj = (array)$results;
+           $results_cnt = $result_obj["\0*\0_count"];
+           if ($results_cnt > 0) {
+               foreach ($results as $result) {
+                   $list["return_num_multi"] = $result->return_plan_qty;
+               }
+           }
        }
 
 
          // 返却枚数
 
          //異動先の職種には、無いアイテムの数を設定
+         //次に異動先の職種に同じアイテムがあり、数が少ないので、返すアイテムの数を設定
+         //異動先の職種には、無いアイテムの数を設定
          $list["possible_num"] = $now_wearer_map['possible_num'];
          $list["return_num"] = $now_wearer_map['possible_num'];
-         //次に異動先の職種に同じアイテムがあり、数が少ないので、返すアイテムの数を設定
          for ($i=0; $i<count($chg_wearer_list); $i++) {
              if (
                  $now_wearer_map['item_cd'] == $chg_wearer_list[$i]['item_cd']
                  && $now_wearer_map['color_cd'] == $chg_wearer_list[$i]['color_cd']
 
              ) {
-                 if($chg_wearer_list[$i]['std_input_qty'] < $now_wearer_map['possible_num']){$list["add_flg"] = true;
+                 if($chg_wearer_list[$i]['std_input_qty'] < $now_wearer_map['possible_num']){
+                     $list["add_flg"] = true;
                      $list["return_num"] = $now_wearer_map['possible_num'] - $chg_wearer_list[$i]['std_input_qty'];
-                     $list["possible_num"] = $list["return_num"];
+//                     $list["possible_num"] = $list["return_num"];
                      $same_item_flg = '1';
                  }
              }
          }
+         //返却必要枚数が指定される場合
+         if($json_list["need_return_num_flg"]){
+             $list["need_return_num_flg"] = true;
+             if(!isset($list["return_num_multi"])){
+                 $list["return_num_multi"] = 0;
+             }
+         }
 
-         $list["return_num_disable"] = "disabled";
+         // 個体管理番号
+         //数値入力可否
+         if (individual_flg($auth['corporate_id'], $now_wearer_map['rntl_cont_no']) == "1"
+             ||$list["choice_type"] == "1"
+             ||$list["need_return_num"]==$item_total_num){
+             $list["return_num_multi"] = $list["possible_num"];
+             $list["return_num_disable"] = "disabled";
+         }else{
+             $list["return_num_disable"] = '';
+         }
          $same_item_flg = "";
          $return_qty = "";
          //返却可能枚数の条件分岐
@@ -2307,7 +2906,6 @@ $app->post('/wearer_change/info', function ()use($app){
        $list["color_cd"] = $now_wearer_map['color_cd'];
        // 職種アイテムコード
        $list["job_type_item_cd"] = $now_wearer_map['job_type_item_cd'];
-
        //返す商品が１以上だったら追加
        if($list["return_num"] > 0){
             array_push($now_list, $list);
@@ -2318,6 +2916,7 @@ $app->post('/wearer_change/info', function ()use($app){
    //元の職種と変更後の職種が一緒だったら空にする
      if($m_wearer_job_type_cd == $chg_wearer_job_type_cd){
          $now_list = array();
+         $json_list["need_return_num_flg"] = false;
      }
    // 現在貸与中アイテム一覧内容の表示フラグ
    if (!empty($now_list)) {
@@ -2327,9 +2926,8 @@ $app->post('/wearer_change/info', function ()use($app){
    }
    $json_list["now_list_cnt"] = count($now_list);
    $json_list["now_list"] = $now_list;
-   //ChromePhp::LOG('現在貸与中アイテム一覧リスト');
-   //ChromePhp::LOG(count($now_list));
-   //ChromePhp::LOG($json_list["now_list"]);
+//   ChromePhp::LOG('現在貸与中アイテム一覧リスト');
+//   ChromePhp::LOG(count($now_list));
 
    //--発注総枚数、返却総枚数--//
    $sum_num = array();
@@ -2342,13 +2940,13 @@ $app->post('/wearer_change/info', function ()use($app){
      $multiples = array();
      foreach ($add_list as $add_map) {
        if ($add_map["choice_type"] == "2") {
-         if (in_array($add_map["item_cd"], $multiples)) {
-           continue;
-         } else {
+//         if (in_array($add_map["item_cd"], $multiples)) {
+//           continue;
+//         } else {
              //複数選択の時
            $list["sum_order_num"] += $add_map["order_num"];
-           array_push($multiples, $add_map["item_cd"]);
-         }
+//           array_push($multiples, $add_map["item_cd"]);
+//         }
        } else {
          $list["sum_order_num"] += $add_map["order_num"];
        }
@@ -2358,11 +2956,22 @@ $app->post('/wearer_change/info', function ()use($app){
    // 返却総枚数
    $list["sum_return_num"] = 0;
    if (!empty($now_list)) {
-     $list["sum_return_num"] = 0;
+       $multiples = array();
      foreach ($now_list as $now_map) {
-       if (!empty($now_map["return_num"])) {
-         $list["sum_return_num"] += $now_map["return_num"];
-       }
+         if ($now_map["choice_type"] == "2") {
+//             if (in_array($now_map["item_cd"], $multiples)) {
+//                 continue;
+//             } else {
+                 //複数選択の時
+                 $list["sum_return_num"] += $now_map["return_num_multi"];
+//                 ChromePhp::LOG($list["sum_return_num"]);
+                 array_push($multiples, $now_map["item_cd"]);
+//             }
+         } else {
+             if (!empty($now_map["return_num_disp"])) {
+                 $list["sum_return_num"] += $now_map["return_num_disp"];
+             }
+         }
      }
    }
    array_push($sum_num, $list);
@@ -2688,68 +3297,132 @@ $app->post('/wearer_change/complete', function ()use($app){
      }
      //
 
-
      // 現在貸与中のアイテム
      if (!empty($now_item_input)) {
-       foreach ($now_item_input as $now_item_input_map) {
-         // 返却枚数フォーマットチェック
-         if (!ctype_digit(strval($now_item_input_map["now_return_num"]))) {
-           if (empty($now_return_num_format_err)) {
-             $now_return_num_format_err = "err";
-             $json_list["error_code"] = "1";
-             $error_msg = "現在貸与中のアイテム：返却枚数には半角数字を入力してください。";
-             array_push($json_list["error_msg"], $error_msg);
-           }
-         }
-         // 返却枚数チェック
-         if ($now_item_input_map["individual_flg"] == "1") {
-           //※個体管理番号有りの場合
-           $target_cnt = 0;
-           for ($i=0; $i<count($now_item_input_map["individual_data"]); $i++) {
-             if ($now_item_input_map["individual_data"][$i]["now_target_flg"] == "1") {
-               $target_cnt = $target_cnt + 1;
-             }
-           }
-           if ($now_item_input_map["possible_num"] > $target_cnt) {
-             if (empty($now_return_num_err1)) {
-               $now_return_num_err1 = "err";
-               $json_list["error_code"] = "1";
-               $error_msg = "現在貸与中のアイテム：返却枚数が足りない商品があります。";
-               array_push($json_list["error_msg"], $error_msg);
-             }
-           }
-             if ($now_item_input_map["possible_num"] < $target_cnt) {
-                 if (empty($now_return_num_err1)) {
-                     $now_return_num_err1 = "err";
+         foreach ($now_item_input as $now_item_input_map) {
+             // 返却枚数フォーマットチェック
+             if (isset($now_item_input_map["now_return_num"]) && $now_item_input_map["now_return_num"] && !ctype_digit(strval($now_item_input_map["now_return_num"]))) {
+                 if (empty($now_return_num_format_err)) {
+                     $now_return_num_format_err = "err";
                      $json_list["error_code"] = "1";
-                     $error_msg = "現在貸与中のアイテム：返却枚数が超過している商品があります。";
+                     $error_msg = "現在貸与中のアイテム：返却枚数には半角数字を入力してください。";
                      array_push($json_list["error_msg"], $error_msg);
                  }
              }
-         } else {
-           //※個体管理番号なしの場合
-           if ($now_item_input_map["possible_num"] < $now_item_input_map["now_return_num"]) {
-             if (empty($now_return_num_err2)) {
-               $now_return_num_err2 = "err";
-               $json_list["error_code"] = "1";
-               $error_msg = "現在貸与中のアイテム：返却枚数が超過している商品があります。";
-               array_push($json_list["error_msg"], $error_msg);
+             // 返却枚数チェック
+             if ($now_item_input_map["individual_flg"] == "1") {
+                 //※個体管理番号有りの場合
+                 $target_cnt = 0;
+                 for ($i = 0; $i < count($now_item_input_map["individual_data"]); $i++) {
+                     if ($now_item_input_map["individual_data"][$i]["now_target_flg"] == "1") {
+                         $target_cnt = $target_cnt + 1;
+                     }
+                 }
+                 //返却必要枚数
+                 if (isset($now_item_input_map["now_need_num"])) {
+                     $now_need_num = $now_item_input_map["now_need_num"];
+                 } else {
+                     $now_need_num = $now_item_input_map["now_std_input_qty"];
+                 }
+                 if ($now_need_num > $target_cnt) {
+                     if (empty($now_return_num_err1)) {
+                         $now_return_num_err1 = "err";
+                         $json_list["error_code"] = "1";
+                         $error_msg = "現在貸与中のアイテム：返却枚数が足りない商品があります。";
+                         array_push($json_list["error_msg"], $error_msg);
+                     }
+                 }
+                 if ($now_need_num < $target_cnt) {
+                     if (empty($now_return_num_err1)) {
+                         $now_return_num_err1 = "err";
+                         $json_list["error_code"] = "1";
+                         $error_msg = "現在貸与中のアイテム：返却枚数が超過している商品があります。";
+                         array_push($json_list["error_msg"], $error_msg);
+                     }
+                 }
+             } else {
+                 //返却必要枚数
+                 if (isset($now_item_input_map["now_need_num"])) {
+                     $now_need_num = $now_item_input_map["now_need_num"];
+                 } else {
+                     $now_need_num = $now_item_input_map["now_std_input_qty"];
+                 }
+                 //※個体管理番号なしの場合
+                 // 複数選択の場合
+                 if (isset($now_item_input_map["now_choice_type"]) && $now_item_input_map["now_choice_type"] == "2") {
+
+                     $item_sum_num = 0;
+                     foreach ($now_item_input as $now_item_input_map_2) {
+                         $item_num = 0;
+                         if (isset($now_item_input_map_2["now_choice_type"]) &&
+                             $now_item_input_map_2["now_choice_type"] == "2" &&
+                             $now_item_input_map["now_item_cd"] == $now_item_input_map_2["now_item_cd"]
+                         ) {
+                             if (!empty($now_item_input_map_2["now_return_num"])) {
+                                 $item_num = $now_item_input_map_2["now_return_num"];
+                             }
+                             $item_sum_num = $item_sum_num + $item_num;
+
+                         }
+                     }
+                     if ($now_item_input_map["now_possible_num"] < $now_item_input_map["now_return_num"]) {
+                         $json_list["error_code"] = "1";
+                         $error_msg = "現在貸与中のアイテム：".$now_item_input_map["now_item_cd"]."-".$now_item_input_map["now_color_cd"]."-".$now_item_input_map["now_size_cd"]."の返却枚数が所持数を超過してます。";
+                         array_push($json_list["error_msg"], $error_msg);
+
+                     }
+                     if ($now_need_num < $item_sum_num) {
+                         if (empty($now_return_num_err3)) {
+                             $now_return_num_err3 = "err";
+                             $json_list["error_code"] = "1";
+                             $error_msg = "現在貸与中のアイテム：返却枚数が超過している商品があります。";
+                             array_push($json_list["error_msg"], $error_msg);
+                         }
+                     }
+//               if ($now_need_num > $now_item_input_map["now_return_num"]) {
+                     if ($now_need_num > $item_sum_num) {
+                         if (empty($now_return_num_err3)) {
+                             $now_return_num_err3 = "err";
+                             $json_list["error_code"] = "1";
+                             $error_msg = "現在貸与中のアイテム：返却枚数が足りない商品があります。";
+                             array_push($json_list["error_msg"], $error_msg);
+                         }
+                     }
+
+                 } else {
+
+                     if ($now_need_num < $now_item_input_map["now_return_num"]) {
+                         if (empty($now_return_num_err2)) {
+                             $now_return_num_err2 = "err";
+                             $json_list["error_code"] = "1";
+                             $error_msg = "現在貸与中のアイテム：返却枚数が超過している商品があります。";
+                             array_push($json_list["error_msg"], $error_msg);
+                         }
+                     }
+                     if ($now_need_num > $now_item_input_map["now_return_num"]) {
+                         if (empty($now_return_num_err2)) {
+                             ChromePhp::LOG($now_item_input_map);
+                             $now_return_num_err2 = "err";
+                             $json_list["error_code"] = "1";
+                             $error_msg = "現在貸与中のアイテム：返却枚数が足りない商品があります。";
+                             array_push($json_list["error_msg"], $error_msg);
+                         }
+                     }
+                 }
              }
-           }
-           if ($now_item_input_map["possible_num"] > $now_item_input_map["now_return_num"]) {
-             if (empty($now_return_num_err2)) {
-               $now_return_num_err2 = "err";
-               $json_list["error_code"] = "1";
-               $error_msg = "現在貸与中のアイテム：返却枚数が足りない商品があります。";
-               array_push($json_list["error_msg"], $error_msg);
-             }
-           }
          }
-       }
      }
      if (!empty($add_item_input)) {
        // 新たに追加されるアイテム
-       foreach ($add_item_input as $add_item_input_map) {
+         foreach ($add_item_input as $add_item_input_map) {
+             //サイズチェック
+             if ($add_item_input_map["add_order_num"]&&empty($add_item_input_map['add_size_cd'])) {
+                 $json_list["error_code"] = "1";
+                 $error_msg = $add_item_input_map['add_item_cd']."-".$add_item_input_map['add_color_cd']."のサイズを入力してください。";
+                 array_push($json_list["error_msg"], $error_msg);
+             }
+         }
+         foreach ($add_item_input as $add_item_input_map) {
          // 発注枚数フォーマットチェック
          if (!empty($add_item_input_map["add_order_num"])) {
            if (!ctype_digit(strval($add_item_input_map["add_order_num"]))) {
@@ -2760,12 +3433,6 @@ $app->post('/wearer_change/complete', function ()use($app){
                array_push($json_list["error_msg"], $error_msg);
              }
            }
-             //サイズチェック
-             if (empty($add_item_input_map['add_size_cd'])) {
-                 $json_list["error_code"] = "1";
-                 $error_msg = "サイズが未選択な商品があります。";
-                 array_push($json_list["error_msg"], $error_msg);
-             }
          }
          // 発注枚数チェック
          //※単一選択の場合
@@ -2803,22 +3470,30 @@ $app->post('/wearer_change/complete', function ()use($app){
                $item_sum_num = $item_sum_num + $item_num;
              }
            }
-           if ($add_item_input_map["add_std_input_qty"] < $item_sum_num) {
+             //発注必要枚数
+           if(isset($add_item_input_map["add_need_num"])){
+               $add_need_num = $add_item_input_map["add_need_num"];
+           }else{
+               $add_need_num = $add_item_input_map["add_std_input_qty"];
+           }
+           if ($add_need_num < $item_sum_num) {
              if (empty($add_order_num_err3)) {
                $add_order_num_err3 = "err";
                $json_list["error_code"] = "1";
-               $error_msg = "新たに追加されるアイテム：複数選択で発注枚数が超過している商品があります。";
+               $error_msg = "新たに追加されるアイテム：発注枚数が超過している商品があります。";
+//                 $error_msg = "新たに追加されるアイテム：複数選択で発注枚数が超過している商品があります。";
                array_push($json_list["error_msg"], $error_msg);
              }
            }
-             if ($add_item_input_map["add_std_input_qty"] > $item_sum_num) {
-                 if (empty($add_order_num_err3)) {
-                     $add_order_num_err3 = "err";
-                     $json_list["error_code"] = "1";
-                     $error_msg = "新たに追加されるアイテム：複数選択で発注枚数が足りない商品があります。";
-                     array_push($json_list["error_msg"], $error_msg);
-                 }
-             }
+           if ($add_need_num > $item_sum_num) {
+               if (empty($add_order_num_err3)) {
+                   $add_order_num_err3 = "err";
+                   $json_list["error_code"] = "1";
+                   $error_msg = "新たに追加されるアイテム：発注枚数が足りない商品があります。";
+//                   $error_msg = "新たに追加されるアイテム：複数選択で発注枚数が足りない商品があります。";
+                   array_push($json_list["error_msg"], $error_msg);
+               }
+           }
          }
        }
      }
@@ -2910,9 +3585,9 @@ $app->post('/wearer_change/complete', function ()use($app){
      $results = new Resultset(NULL, $t_order, $t_order->getReadConnection()->query($arg_str));
      $result_obj = (array)$results;
      $results_cnt = $result_obj["\0*\0_count"];
+       $order_item_list = array();
      if ($results_cnt > 0) {
        $list = array();
-       $order_item_list = array();
        foreach ($results as $result) {
          $list['item_cd'] = $result->as_item_cd;
          $list['color_cd'] = $result->as_color_cd;
@@ -3201,9 +3876,9 @@ $app->post('/wearer_change/complete', function ()use($app){
        $results = new Resultset(NULL, $t_order, $t_order->getReadConnection()->query($arg_str));
        $result_obj = (array)$results;
        $results_cnt = $result_obj["\0*\0_count"];
+         $order_item_list = array();
        if ($results_cnt > 0) {
          $list = array();
-         $order_item_list = array();
          foreach ($results as $result) {
            $list['item_cd'] = $result->as_item_cd;
            $list['color_cd'] = $result->as_color_cd;
@@ -4682,102 +5357,103 @@ $app->post('/wearer_change/send', function ()use($app){
   $json_list["error_msg"] = array();
 
   if ($mode == "check") {
-    //--入力内容確認--//
-    // 拠点・貸与パターン変更なしチェック
-    $query_list = array();
-    array_push($query_list, "corporate_id = '".$auth['corporate_id']."'");
-    array_push($query_list, "werer_cd = '".$wearer_chg_post['werer_cd']."'");
-    array_push($query_list, "rntl_sect_cd = '".$wearer_data_input['section']."'");
-    $job_type_cd = explode(':', $wearer_data_input['job_type']);
-    $job_type_cd = $job_type_cd[0];
-    array_push($query_list, "job_type_cd = '".$job_type_cd."'");
-    // 着用者状況区分(稼働)
-    array_push($query_list, "werer_sts_kbn = '1'");
-    $query = implode(' AND ', $query_list);
+      //--入力内容確認--//
+      // 拠点・貸与パターン変更なしチェック
+      $query_list = array();
+      array_push($query_list, "corporate_id = '".$auth['corporate_id']."'");
+      array_push($query_list, "werer_cd = '".$wearer_chg_post['werer_cd']."'");
+      array_push($query_list, "rntl_sect_cd = '".$wearer_data_input['section']."'");
+      $job_type_cd = explode(':', $wearer_data_input['job_type']);
+      $job_type_cd = $job_type_cd[0];
+      array_push($query_list, "job_type_cd = '".$job_type_cd."'");
+      // 着用者状況区分(稼働)
+      array_push($query_list, "werer_sts_kbn = '1'");
+      $query = implode(' AND ', $query_list);
 
-    $arg_str = "";
-    $arg_str = "SELECT ";
-    $arg_str .= "*";
-    $arg_str .= " FROM ";
-    $arg_str .= "m_wearer_std";
-    $arg_str .= " WHERE ";
-    $arg_str .= $query;
-    //ChromePhp::LOG($arg_str);
-    $m_wearer_std = new MWearerStd();
-    $results = new Resultset(NULL, $m_wearer_std, $m_wearer_std->getReadConnection()->query($arg_str));
-    $result_obj = (array)$results;
-    $results_cnt = $result_obj["\0*\0_count"];
-    //ChromePhp::LOG($results_cnt);
-    if (!empty($results_cnt)) {
-      $json_list["error_code"] = "1";
-      $error_msg = "拠点、又は貸与パターンを変更してください。";
-      array_push($json_list["error_msg"], $error_msg);
-    }
-/*
-    // 社員番号
-    if ($wearer_data_input['emply_cd_flg']) {
-      if (mb_strlen($wearer_data_input['member_no']) == 0) {
-        $json_list["error_code"] = "1";
-        $error_msg = "社員番号ありにチェックしている場合、社員番号を入力してください。";
-        array_push($json_list["error_msg"], $error_msg);
+      $arg_str = "";
+      $arg_str = "SELECT ";
+      $arg_str .= "*";
+      $arg_str .= " FROM ";
+      $arg_str .= "m_wearer_std";
+      $arg_str .= " WHERE ";
+      $arg_str .= $query;
+      //ChromePhp::LOG($arg_str);
+      $m_wearer_std = new MWearerStd();
+      $results = new Resultset(NULL, $m_wearer_std, $m_wearer_std->getReadConnection()->query($arg_str));
+      $result_obj = (array)$results;
+      $results_cnt = $result_obj["\0*\0_count"];
+      //ChromePhp::LOG($results_cnt);
+      if (!empty($results_cnt)) {
+          $json_list["error_code"] = "1";
+          $error_msg = "拠点、又は貸与パターンを変更してください。";
+          array_push($json_list["error_msg"], $error_msg);
       }
-    }
-    if (!$wearer_data_input['emply_cd_flg']) {
-      if (mb_strlen($wearer_data_input['member_no']) > 0) {
-        $json_list["error_code"] = "1";
-        $error_msg = "社員番号ありにチェックしていない場合、社員番号の入力は不要です。";
-        array_push($json_list["error_msg"], $error_msg);
+      /*
+           // 社員番号
+           if ($wearer_data_input['emply_cd_flg']) {
+             if (mb_strlen($wearer_data_input['member_no']) == 0) {
+               $json_list["error_code"] = "1";
+               $error_msg = "社員番号ありにチェックしている場合、社員番号を入力してください。";
+               array_push($json_list["error_msg"], $error_msg);
+             }
+           }
+           if (!$wearer_data_input['emply_cd_flg']) {
+             if (mb_strlen($wearer_data_input['member_no']) > 0) {
+               $json_list["error_code"] = "1";
+               $error_msg = "社員番号ありにチェックしていない場合、社員番号の入力は不要です。";
+               array_push($json_list["error_msg"], $error_msg);
+             }
+           }
+      */
+//     // 着用者名
+//     if (empty($wearer_data_input["member_name"])) {
+//       $json_list["error_code"] = "1";
+//       $error_msg = "着用者名を入力してください。";
+//       array_push($json_list["error_msg"], $error_msg);
+//     }
+//     if (mb_strlen($wearer_data_input['member_name']) > 0) {
+//        if (strlen(mb_convert_encoding($wearer_data_input['member_name'], "SJIS")) > 22) {
+//          $json_list["error_code"] = "1";
+//          $error_msg = "着用者名が規定の文字数をオーバーしています。";
+//          array_push($json_list["error_msg"], $error_msg);
+//        }
+//     }
+//     if (mb_strlen($wearer_data_input['member_name_kana']) > 0) {
+//        if (strlen(mb_convert_encoding($wearer_data_input['member_name_kana'], "SJIS")) > 25) {
+//          $json_list["error_code"] = "1";
+//          $error_msg = "着用者名(カナ)が規定の文字数をオーバーしています。";
+//          array_push($json_list["error_msg"], $error_msg);
+//        }
+//     }
+      // 着用開始日
+      if (empty($wearer_data_input["resfl_ymd"])) {
+          $json_list["error_code"] = "1";
+          $error_msg = "着用開始日を入力してください。";
+          array_push($json_list["error_msg"], $error_msg);
       }
-    }
-*/
-//    // 着用者名
-//    if (empty($wearer_data_input["member_name"])) {
-//      $json_list["error_code"] = "1";
-//      $error_msg = "着用者名を入力してください。";
-//      array_push($json_list["error_msg"], $error_msg);
-//    }
-//    if (mb_strlen($wearer_data_input['member_name']) > 0) {
-//       if (strlen(mb_convert_encoding($wearer_data_input['member_name'], "SJIS")) > 22) {
-//         $json_list["error_code"] = "1";
-//         $error_msg = "着用者名が規定の文字数をオーバーしています。";
-//         array_push($json_list["error_msg"], $error_msg);
-//       }
-//    }
-//
-//    if (mb_strlen($wearer_data_input['member_name_kana']) > 0) {
-//       if (strlen(mb_convert_encoding($wearer_data_input['member_name_kana'], "SJIS")) > 25) {
-//         $json_list["error_code"] = "1";
-//         $error_msg = "着用者名(カナ)が規定の文字数をオーバーしています。";
-//         array_push($json_list["error_msg"], $error_msg);
-//       }
-//    }
-    // 着用開始日
-    if (empty($wearer_data_input["resfl_ymd"])) {
-      $json_list["error_code"] = "1";
-      $error_msg = "着用開始日を入力してください。";
-      array_push($json_list["error_msg"], $error_msg);
-    }
-    // コメント欄
-    if (mb_strlen($wearer_data_input['comment']) > 0) {
-      if (strlen(mb_convert_encoding($wearer_data_input['comment'], "SJIS")) > 100) {
-        $json_list["error_code"] = "1";
-        $error_msg = "コメント欄は50文字以内で入力してください。";
-        array_push($json_list["error_msg"], $error_msg);
+      // コメント欄
+      if (mb_strlen($wearer_data_input['comment']) > 0) {
+          if (strlen(mb_convert_encoding($wearer_data_input['comment'], "SJIS")) > 100) {
+              $json_list["error_code"] = "1";
+              $error_msg = "コメント欄は50文字以内で入力してください。";
+              array_push($json_list["error_msg"], $error_msg);
+          }
+          //コメント欄使用不可文字
+          $str_utf8 = $wearer_data_input['comment'];
+          if (convert_not_sjis($str_utf8) !== true) {
+              $output_text = convert_not_sjis($str_utf8);
+              $json_list["error_code"] = "1";
+              $error_msg = 'コメント欄に使用できない文字が含まれています。' . "$output_text";
+              array_push($json_list["error_msg"], $error_msg);
+          };
       }
-        //コメント欄使用不可文字
-        $str_utf8 = $wearer_data_input['comment'];
-        if (convert_not_sjis($str_utf8) !== true) {
-            $output_text = convert_not_sjis($str_utf8);
-            $json_list["error_code"] = "1";
-            $error_msg = 'コメント欄に使用できない文字が含まれています。' . "$output_text";
-            array_push($json_list["error_msg"], $error_msg);
-        };
-    }
+
+
       // 現在貸与中のアイテム
       if (!empty($now_item_input)) {
           foreach ($now_item_input as $now_item_input_map) {
               // 返却枚数フォーマットチェック
-              if (!ctype_digit(strval($now_item_input_map["now_return_num"]))) {
+              if (isset($now_item_input_map["now_return_num"]) && $now_item_input_map["now_return_num"] && !ctype_digit(strval($now_item_input_map["now_return_num"]))) {
                   if (empty($now_return_num_format_err)) {
                       $now_return_num_format_err = "err";
                       $json_list["error_code"] = "1";
@@ -4789,12 +5465,18 @@ $app->post('/wearer_change/send', function ()use($app){
               if ($now_item_input_map["individual_flg"] == "1") {
                   //※個体管理番号有りの場合
                   $target_cnt = 0;
-                  for ($i=0; $i<count($now_item_input_map["individual_data"]); $i++) {
+                  for ($i = 0; $i < count($now_item_input_map["individual_data"]); $i++) {
                       if ($now_item_input_map["individual_data"][$i]["now_target_flg"] == "1") {
                           $target_cnt = $target_cnt + 1;
                       }
                   }
-                  if ($now_item_input_map["possible_num"] > $target_cnt) {
+                  //返却必要枚数
+                  if (isset($now_item_input_map["now_need_num"])) {
+                      $now_need_num = $now_item_input_map["now_need_num"];
+                  } else {
+                      $now_need_num = $now_item_input_map["now_std_input_qty"];
+                  }
+                  if ($now_need_num > $target_cnt) {
                       if (empty($now_return_num_err1)) {
                           $now_return_num_err1 = "err";
                           $json_list["error_code"] = "1";
@@ -4802,7 +5484,7 @@ $app->post('/wearer_change/send', function ()use($app){
                           array_push($json_list["error_msg"], $error_msg);
                       }
                   }
-                  if ($now_item_input_map["possible_num"] < $target_cnt) {
+                  if ($now_need_num < $target_cnt) {
                       if (empty($now_return_num_err1)) {
                           $now_return_num_err1 = "err";
                           $json_list["error_code"] = "1";
@@ -4811,255 +5493,315 @@ $app->post('/wearer_change/send', function ()use($app){
                       }
                   }
               } else {
+                  //返却必要枚数
+                  if (isset($now_item_input_map["now_need_num"])) {
+                      $now_need_num = $now_item_input_map["now_need_num"];
+                  } else {
+                      $now_need_num = $now_item_input_map["now_std_input_qty"];
+                  }
                   //※個体管理番号なしの場合
-                  if ($now_item_input_map["possible_num"] < $now_item_input_map["now_return_num"]) {
-                      if (empty($now_return_num_err2)) {
-                          $now_return_num_err2 = "err";
+                  // 複数選択の場合
+                  if (isset($now_item_input_map["now_choice_type"]) && $now_item_input_map["now_choice_type"] == "2") {
+
+                      $item_sum_num = 0;
+                      foreach ($now_item_input as $now_item_input_map_2) {
+                          $item_num = 0;
+                          if (isset($now_item_input_map_2["now_choice_type"]) &&
+                              $now_item_input_map_2["now_choice_type"] == "2" &&
+                              $now_item_input_map["now_item_cd"] == $now_item_input_map_2["now_item_cd"]
+                          ) {
+                              if (!empty($now_item_input_map_2["now_return_num"])) {
+                                  $item_num = $now_item_input_map_2["now_return_num"];
+                              }
+                              $item_sum_num = $item_sum_num + $item_num;
+
+                          }
+                      }
+                      if ($now_item_input_map["now_possible_num"] < $now_item_input_map["now_return_num"]) {
                           $json_list["error_code"] = "1";
-                          $error_msg = "現在貸与中のアイテム：返却枚数が超過している商品があります。";
+                          $error_msg = "現在貸与中のアイテム：".$now_item_input_map["now_item_cd"]."-".$now_item_input_map["now_color_cd"]."-".$now_item_input_map["now_size_cd"]."の返却枚数が所持数を超過してます。";
+                          array_push($json_list["error_msg"], $error_msg);
+
+                      }
+                      if ($now_need_num < $item_sum_num) {
+                          if (empty($now_return_num_err3)) {
+                              $now_return_num_err3 = "err";
+                              $json_list["error_code"] = "1";
+                              $error_msg = "現在貸与中のアイテム：返却枚数が超過している商品があります。";
+                              array_push($json_list["error_msg"], $error_msg);
+                          }
+                      }
+//               if ($now_need_num > $now_item_input_map["now_return_num"]) {
+                      if ($now_need_num > $item_sum_num) {
+                          if (empty($now_return_num_err3)) {
+                              $now_return_num_err3 = "err";
+                              $json_list["error_code"] = "1";
+                              $error_msg = "現在貸与中のアイテム：返却枚数が足りない商品があります。";
+                              array_push($json_list["error_msg"], $error_msg);
+                          }
+                      }
+
+                  } else {
+
+                      if ($now_need_num < $now_item_input_map["now_return_num"]) {
+                          if (empty($now_return_num_err2)) {
+                              $now_return_num_err2 = "err";
+                              $json_list["error_code"] = "1";
+                              $error_msg = "現在貸与中のアイテム：返却枚数が超過している商品があります。";
+                              array_push($json_list["error_msg"], $error_msg);
+                          }
+                      }
+                      if ($now_need_num > $now_item_input_map["now_return_num"]) {
+                          if (empty($now_return_num_err2)) {
+                              ChromePhp::LOG($now_item_input_map);
+                              $now_return_num_err2 = "err";
+                              $json_list["error_code"] = "1";
+                              $error_msg = "現在貸与中のアイテム：返却枚数が足りない商品があります。";
+                              array_push($json_list["error_msg"], $error_msg);
+                          }
+                      }
+                  }
+              }
+          }
+      }
+      if (!empty($add_item_input)) {
+          // 新たに追加されるアイテム
+          foreach ($add_item_input as $add_item_input_map) {
+              //サイズチェック
+              if ($add_item_input_map["add_order_num"]&&empty($add_item_input_map['add_size_cd'])) {
+                  $json_list["error_code"] = "1";
+                  $error_msg = $add_item_input_map['add_item_cd']."-".$add_item_input_map['add_color_cd']."のサイズを入力してください。";
+                  array_push($json_list["error_msg"], $error_msg);
+              }
+          }
+          foreach ($add_item_input as $add_item_input_map) {
+              // 発注枚数フォーマットチェック
+              if (!empty($add_item_input_map["add_order_num"])) {
+                  if (!ctype_digit(strval($add_item_input_map["add_order_num"]))) {
+                      if (empty($add_order_num_format_err)) {
+                          $add_return_num_format_err = "err";
+                          $json_list["error_code"] = "1";
+                          $error_msg = "新たに追加されるアイテム：発注枚数には半角数字を入力してください。";
                           array_push($json_list["error_msg"], $error_msg);
                       }
                   }
-                  if ($now_item_input_map["possible_num"] > $now_item_input_map["now_return_num"]) {
-                      if (empty($now_return_num_err2)) {
-                          $now_return_num_err2 = "err";
+              }
+              // 発注枚数チェック
+              //※単一選択の場合
+//         if ($add_item_input_map["add_choice_type"] == "1") {
+//           if ($add_item_input_map["add_std_input_qty"] < $add_item_input_map["add_order_num"]) {
+//             if (empty($add_order_num_err1)) {
+//               $add_order_num_err1 = "err";
+//               $json_list["error_code"] = "1";
+//               $error_msg = "新たに追加されるアイテム：単一選択で発注枚数が超過している商品があります。";
+//               array_push($json_list["error_msg"], $error_msg);
+//             }
+//           }
+//           if ($add_item_input_map["add_std_input_qty"] > $add_item_input_map["add_order_num"]) {
+//             if (empty($add_order_num_err2)) {
+//               $add_order_num_err2 = "err";
+//               $json_list["error_code"] = "1";
+//               $error_msg = "新たに追加されるアイテム：単一選択で発注枚数が足りない商品があります。";
+//               array_push($json_list["error_msg"], $error_msg);
+//             }
+//           }
+//         }
+              // 複数選択の場合
+              if ($add_item_input_map["add_choice_type"] == "2") {
+                  $item_sum_num = 0;
+                  foreach ($add_item_input as $add_item_input_map_2) {
+                      $item_num = 0;
+                      if (
+                          $add_item_input_map_2["add_choice_type"] == "2" &&
+                          $add_item_input_map["add_item_cd"] == $add_item_input_map_2["add_item_cd"]
+                      )
+                      {
+                          if (!empty($add_item_input_map_2["add_order_num"])) {
+                              $item_num = $add_item_input_map_2["add_order_num"];
+                          }
+                          $item_sum_num = $item_sum_num + $item_num;
+                      }
+                  }
+                  //発注必要枚数
+                  if(isset($add_item_input_map["add_need_num"])){
+                      $add_need_num = $add_item_input_map["add_need_num"];
+                  }else{
+                      $add_need_num = $add_item_input_map["add_std_input_qty"];
+                  }
+                  if ($add_need_num < $item_sum_num) {
+                      if (empty($add_order_num_err3)) {
+                          $add_order_num_err3 = "err";
                           $json_list["error_code"] = "1";
-                          $error_msg = "現在貸与中のアイテム：返却枚数が足りない商品があります。";
+                          $error_msg = "新たに追加されるアイテム：発注枚数が超過している商品があります。";
+//                 $error_msg = "新たに追加されるアイテム：複数選択で発注枚数が超過している商品があります。";
+                          array_push($json_list["error_msg"], $error_msg);
+                      }
+                  }
+                  if ($add_need_num > $item_sum_num) {
+                      if (empty($add_order_num_err3)) {
+                          $add_order_num_err3 = "err";
+                          $json_list["error_code"] = "1";
+                          $error_msg = "新たに追加されるアイテム：発注枚数が足りない商品があります。";
+//                   $error_msg = "新たに追加されるアイテム：複数選択で発注枚数が足りない商品があります。";
                           array_push($json_list["error_msg"], $error_msg);
                       }
                   }
               }
           }
       }
-    if (!empty($add_item_input)) {
-      // 新たに追加されるアイテム
-      foreach ($add_item_input as $add_item_input_map) {
-        // 発注枚数フォーマットチェック
-        if (!empty($add_item_input_map["add_order_num"])) {
-          if (!ctype_digit(strval($add_item_input_map["add_order_num"]))) {
-            if (empty($add_order_num_format_err)) {
-              $add_return_num_format_err = "err";
-              $json_list["error_code"] = "1";
-              $error_msg = "新たに追加されるアイテム：発注枚数には半角数字を入力してください。";
-              array_push($json_list["error_msg"], $error_msg);
-            }
-          }
-            //サイズチェック
-            if (empty($add_item_input_map['add_size_cd'])) {
-                $json_list["error_code"] = "1";
-                $error_msg = "サイズが未選択な商品があります。";
-                array_push($json_list["error_msg"], $error_msg);
-            }
-        }
-        // 発注枚数チェック
-        //※単一選択の場合
-//        if ($add_item_input_map["add_choice_type"] == "1") {
-//          if ($add_item_input_map["add_std_input_qty"] < $add_item_input_map["add_order_num"]) {
-//            if (empty($add_order_num_err1)) {
-//              $add_order_num_err1 = "err";
-//              $json_list["error_code"] = "1";
-//              $error_msg = "新たに追加されるアイテム：単一選択で発注枚数が超過している商品があります。";
-//              array_push($json_list["error_msg"], $error_msg);
-//            }
-//          }
-//          if ($add_item_input_map["add_std_input_qty"] > $add_item_input_map["add_order_num"]) {
-//            if (empty($add_order_num_err2)) {
-//              $add_order_num_err2 = "err";
-//              $json_list["error_code"] = "1";
-//              $error_msg = "新たに追加されるアイテム：単一選択で発注枚数が足りない商品があります。";
-//              array_push($json_list["error_msg"], $error_msg);
-//            }
-//          }
-//        }
-        // 複数選択の場合
-        if ($add_item_input_map["add_choice_type"] == "2") {
-          $item_sum_num = 0;
-          foreach ($add_item_input as $add_item_input_map_2) {
-            $item_num = 0;
-            if (
-             $add_item_input_map_2["add_choice_type"] == "2" &&
-             $add_item_input_map["add_item_cd"] == $add_item_input_map_2["add_item_cd"]
-            )
-            {
-              if (!empty($add_item_input_map_2["add_order_num"])) {
-                $item_num = $add_item_input_map_2["add_order_num"];
+      // ※発注情報状況・納品状況情報参照
+      $query_list = array();
+      array_push($query_list, "corporate_id = '".$auth['corporate_id']."'");
+      array_push($query_list, "rntl_cont_no = '".$wearer_chg_post['rntl_cont_no']."'");
+      array_push($query_list, "werer_cd = '".$wearer_chg_post['werer_cd']."'");
+      $query = implode(' AND ', $query_list);
+      $arg_str = "";
+      $arg_str = "SELECT ";
+      $arg_str .= " * ";
+      $arg_str .= " FROM ";
+      $arg_str .= "(SELECT distinct on (t_order_state.item_cd, t_order_state.color_cd, t_order_state.size_cd) ";
+      $arg_str .= "t_order_state.ship_qty as as_ship_qty,";
+      $arg_str .= "t_order_state.ship_ymd as as_ship_ymd,";
+      $arg_str .= "t_order_state.item_cd as as_item_cd,";
+      $arg_str .= "t_order_state.color_cd as as_color_cd,";
+      $arg_str .= "t_order_state.size_cd as as_size_cd,";
+      $arg_str .= "t_order_state.werer_cd as as_werer_cd";
+      $arg_str .= " FROM ";
+      $arg_str .= "t_order_state";
+      $arg_str .= " WHERE ";
+      $arg_str .= $query;
+      $arg_str .= ") as distinct_table";
+      //ChromePhp::LOG($arg_str);
+      $t_order_state = new TOrderState();
+      $results = new Resultset(NULL, $t_order_state, $t_order_state->getReadConnection()->query($arg_str));
+      $result_obj = (array)$results;
+      $results_cnt_ship_item = $result_obj["\0*\0_count"];
+      if ($results_cnt_ship_item > 0) {
+          $list = array();
+          $ship_item_list = array();
+          foreach ($results as $result) {
+              $list['ship_ymd'] = $result->as_ship_ymd;
+              $list['item_cd'] = $result->as_item_cd;
+              $list['color_cd'] = $result->as_color_cd;
+              $list['size_cd'] = $result->as_size_cd;
+
+              //商品ごとの発注数合計を計算
+              $parameter = array(
+                  "corporate_id" => $auth['corporate_id'],
+                  "rntl_cont_no" => $wearer_chg_post['rntl_cont_no'],
+                  "werer_cd" => $result->as_werer_cd,
+                  "item_cd" => $result->as_item_cd,
+                  "color_cd" => $result->as_color_cd,
+                  "size_cd" => $result->as_size_cd);
+              $TOrderState = TOrderState::find(array(
+                  'conditions'  => "corporate_id = :corporate_id: AND rntl_cont_no = :rntl_cont_no:  AND werer_cd = :werer_cd: AND item_cd = :item_cd: AND color_cd = :color_cd: AND size_cd = :size_cd:",
+                  "bind" => $parameter
+              ));
+              //商品数
+              $each_item_count = $TOrderState->count();
+              //商品ごとの発注数サマリ
+              $each_item_ship = 0;
+              for($i = 0; $i < $each_item_count; $i++){
+                  $each_item_ship = $each_item_ship + $TOrderState[$i]->ship_qty;
               }
-              $item_sum_num = $item_sum_num + $item_num;
-            }
+              $list['ship_qty'] = $each_item_ship;
+
+              array_push($ship_item_list, $list);
           }
-          if ($add_item_input_map["add_std_input_qty"] < $item_sum_num) {
-            if (empty($add_order_num_err3)) {
-              $add_order_num_err3 = "err";
-              $json_list["error_code"] = "1";
-              $error_msg = "新たに追加されるアイテム：複数選択で発注枚数が超過している商品があります。";
-              array_push($json_list["error_msg"], $error_msg);
-            }
-          }
-            if ($add_item_input_map["add_std_input_qty"] > $item_sum_num) {
-                if (empty($add_order_num_err3)) {
-                    $add_order_num_err3 = "err";
-                    $json_list["error_code"] = "1";
-                    $error_msg = "新たに追加されるアイテム：複数選択で発注枚数が足りない商品があります。";
-                    array_push($json_list["error_msg"], $error_msg);
-                }
-            }
-        }
       }
-    }
-    // ※発注情報状況・納品状況情報参照
-    $query_list = array();
-    array_push($query_list, "corporate_id = '".$auth['corporate_id']."'");
-    array_push($query_list, "rntl_cont_no = '".$wearer_chg_post['rntl_cont_no']."'");
-    array_push($query_list, "werer_cd = '".$wearer_chg_post['werer_cd']."'");
-    $query = implode(' AND ', $query_list);
-    $arg_str = "";
-    $arg_str = "SELECT ";
-    $arg_str .= " * ";
-    $arg_str .= " FROM ";
-    $arg_str .= "(SELECT distinct on (t_order_state.item_cd, t_order_state.color_cd, t_order_state.size_cd) ";
-    $arg_str .= "t_order_state.ship_qty as as_ship_qty,";
-    $arg_str .= "t_order_state.ship_ymd as as_ship_ymd,";
-    $arg_str .= "t_order_state.item_cd as as_item_cd,";
-    $arg_str .= "t_order_state.color_cd as as_color_cd,";
-    $arg_str .= "t_order_state.size_cd as as_size_cd,";
-    $arg_str .= "t_order_state.werer_cd as as_werer_cd";
-    $arg_str .= " FROM ";
-    $arg_str .= "t_order_state";
-    $arg_str .= " WHERE ";
-    $arg_str .= $query;
-    $arg_str .= ") as distinct_table";
-    //ChromePhp::LOG($arg_str);
-    $t_order_state = new TOrderState();
-    $results = new Resultset(NULL, $t_order_state, $t_order_state->getReadConnection()->query($arg_str));
-    $result_obj = (array)$results;
-    $results_cnt_ship_item = $result_obj["\0*\0_count"];
-    if ($results_cnt_ship_item > 0) {
-      $list = array();
-      $ship_item_list = array();
-      foreach ($results as $result) {
-        $list['ship_ymd'] = $result->as_ship_ymd;
-        $list['item_cd'] = $result->as_item_cd;
-        $list['color_cd'] = $result->as_color_cd;
-        $list['size_cd'] = $result->as_size_cd;
 
-        //商品ごとの発注数合計を計算
-        $parameter = array(
-        "corporate_id" => $auth['corporate_id'],
-        "rntl_cont_no" => $wearer_chg_post['rntl_cont_no'],
-        "werer_cd" => $result->as_werer_cd,
-        "item_cd" => $result->as_item_cd,
-        "color_cd" => $result->as_color_cd,
-        "size_cd" => $result->as_size_cd);
-        $TOrderState = TOrderState::find(array(
-        'conditions'  => "corporate_id = :corporate_id: AND rntl_cont_no = :rntl_cont_no:  AND werer_cd = :werer_cd: AND item_cd = :item_cd: AND color_cd = :color_cd: AND size_cd = :size_cd:",
-        "bind" => $parameter
-        ));
-        //商品数
-        $each_item_count = $TOrderState->count();
-        //商品ごとの発注数サマリ
-        $each_item_ship = 0;
-        for($i = 0; $i < $each_item_count; $i++){
-          $each_item_ship = $each_item_ship + $TOrderState[$i]->ship_qty;
-        }
-        $list['ship_qty'] = $each_item_ship;
-
-        array_push($ship_item_list, $list);
-      }
-    }
-
-    // ※発注情報状況・納品状況情報参照
-    $query_list = array();
-    array_push($query_list, "corporate_id = '".$auth['corporate_id']."'");
-    array_push($query_list, "rntl_cont_no = '".$wearer_chg_post['rntl_cont_no']."'");
-    array_push($query_list, "werer_cd = '".$wearer_chg_post['werer_cd']."'");
-    array_push($query_list, "item_cd IS NOT null");
-    $query = implode(' AND ', $query_list);
-    $arg_str = "";
-    $arg_str = "SELECT ";
-    $arg_str .= " * ";
-    $arg_str .= " FROM ";
-    $arg_str .= "(SELECT distinct on (t_order.item_cd, t_order.color_cd, t_order.size_cd) ";
-    $arg_str .= "t_order.order_qty as as_order_qty,";
-    $arg_str .= "t_order.item_cd as as_item_cd,";
-    $arg_str .= "t_order.color_cd as as_color_cd,";
-    $arg_str .= "t_order.size_cd as as_size_cd,";
-    $arg_str .= "t_order.werer_cd as as_werer_cd";
-    $arg_str .= " FROM ";
-    $arg_str .= "t_order";
-    $arg_str .= " WHERE ";
-    $arg_str .= $query;
-    $arg_str .= ") as distinct_table";
-    //ChromePhp::LOG($arg_str);
-    $t_order = new TOrder();
-    $results = new Resultset(NULL, $t_order, $t_order->getReadConnection()->query($arg_str));
-    $result_obj = (array)$results;
-    $results_cnt = $result_obj["\0*\0_count"];
-    if ($results_cnt > 0) {
-      $list = array();
+      // ※発注情報状況・納品状況情報参照
+      $query_list = array();
+      array_push($query_list, "corporate_id = '".$auth['corporate_id']."'");
+      array_push($query_list, "rntl_cont_no = '".$wearer_chg_post['rntl_cont_no']."'");
+      array_push($query_list, "werer_cd = '".$wearer_chg_post['werer_cd']."'");
+      array_push($query_list, "item_cd IS NOT null");
+      $query = implode(' AND ', $query_list);
+      $arg_str = "";
+      $arg_str = "SELECT ";
+      $arg_str .= " * ";
+      $arg_str .= " FROM ";
+      $arg_str .= "(SELECT distinct on (t_order.item_cd, t_order.color_cd, t_order.size_cd) ";
+      $arg_str .= "t_order.order_qty as as_order_qty,";
+      $arg_str .= "t_order.item_cd as as_item_cd,";
+      $arg_str .= "t_order.color_cd as as_color_cd,";
+      $arg_str .= "t_order.size_cd as as_size_cd,";
+      $arg_str .= "t_order.werer_cd as as_werer_cd";
+      $arg_str .= " FROM ";
+      $arg_str .= "t_order";
+      $arg_str .= " WHERE ";
+      $arg_str .= $query;
+      $arg_str .= ") as distinct_table";
+      //ChromePhp::LOG($arg_str);
+      $t_order = new TOrder();
+      $results = new Resultset(NULL, $t_order, $t_order->getReadConnection()->query($arg_str));
+      $result_obj = (array)$results;
+      $results_cnt = $result_obj["\0*\0_count"];
       $order_item_list = array();
-      foreach ($results as $result) {
-        $list['item_cd'] = $result->as_item_cd;
-        $list['color_cd'] = $result->as_color_cd;
-        $list['size_cd'] = $result->as_size_cd;
+      if ($results_cnt > 0) {
+          $list = array();
+          foreach ($results as $result) {
+              $list['item_cd'] = $result->as_item_cd;
+              $list['color_cd'] = $result->as_color_cd;
+              $list['size_cd'] = $result->as_size_cd;
 
-        //商品ごとの発注数合計を計算
-        $parameter = array(
-        "corporate_id" => $auth['corporate_id'],
-        "rntl_cont_no" => $wearer_chg_post['rntl_cont_no'],
-        "werer_cd" => $result->as_werer_cd,
-        "item_cd" => $result->as_item_cd,
-        "color_cd" => $result->as_color_cd,
-        "size_cd" => $result->as_size_cd);
-        $TOrder = TOrder::find(array(
-        'conditions'  => "corporate_id = :corporate_id: AND rntl_cont_no = :rntl_cont_no:  AND werer_cd = :werer_cd: AND item_cd = :item_cd: AND color_cd = :color_cd: AND size_cd = :size_cd:",
-        "bind" => $parameter
-        ));
-        //商品数
-        $each_item_count = $TOrder->count();
-        //商品ごとの発注数サマリ
-        $each_item_order = 0;
-        for($i = 0; $i < $each_item_count; $i++){
-          $each_item_order = $each_item_order + $TOrder[$i]->order_qty;
-        }
-        $list['order_qty'] = $each_item_order;
-        $list['unshipped_qty'] = null;
+              //商品ごとの発注数合計を計算
+              $parameter = array(
+                  "corporate_id" => $auth['corporate_id'],
+                  "rntl_cont_no" => $wearer_chg_post['rntl_cont_no'],
+                  "werer_cd" => $result->as_werer_cd,
+                  "item_cd" => $result->as_item_cd,
+                  "color_cd" => $result->as_color_cd,
+                  "size_cd" => $result->as_size_cd);
+              $TOrder = TOrder::find(array(
+                  'conditions'  => "corporate_id = :corporate_id: AND rntl_cont_no = :rntl_cont_no:  AND werer_cd = :werer_cd: AND item_cd = :item_cd: AND color_cd = :color_cd: AND size_cd = :size_cd:",
+                  "bind" => $parameter
+              ));
+              //商品数
+              $each_item_count = $TOrder->count();
+              //商品ごとの発注数サマリ
+              $each_item_order = 0;
+              for($i = 0; $i < $each_item_count; $i++){
+                  $each_item_order = $each_item_order + $TOrder[$i]->order_qty;
+              }
+              $list['order_qty'] = $each_item_order;
+              $list['unshipped_qty'] = null;
 
-        array_push($order_item_list, $list);
-      }
-    }
-    //出荷情報が0な時点で未出荷があるとみなし、未出荷エラー
-    if($results_cnt_ship_item == 0){
-      $json_list["error_code"] = "1";
-      $error_msg = "対象の方は未出荷の商品がある為、職種変更または異動の発注を完了できません。";
-      array_push($json_list["error_msg"], $error_msg);
-      echo json_encode($json_list);
-      return;
-    }
-    //出荷情報が1以上あった場合に、下記の処理に移行
-    if($results_cnt_ship_item > 0) {
-      $count_ship = count($ship_item_list);
-      $count_order = count($order_item_list);
-      //発注情報と、出荷商品の比較 同じ商品cd,色cd,サイズcdだったらお互いのサマリ数を比較
-      for($i = 0; $i < $count_order; $i++){
-        for($s = 0; $s < $count_ship; $s++){
-          if($order_item_list[$i]['item_cd'] == $ship_item_list[$s]['item_cd']
-          && $order_item_list[$i]['color_cd'] == $ship_item_list[$s]['color_cd']
-          && $order_item_list[$i]['size_cd'] == $ship_item_list[$s]['size_cd'])
-          {
-            $order_item_list[$i]['unshipped_qty'] = $order_item_list[$i]['order_qty'] - $ship_item_list[$s]['ship_qty'];
+              array_push($order_item_list, $list);
           }
-        }
-        //未出荷商品が0以上または、発注情報があるのに、出荷情報（発注状況）がない場合はエラー
-        if($order_item_list[$i]['unshipped_qty'] > 0 || is_null($order_item_list[$i]['unshipped_qty'])){
+      }
+      //出荷情報が0な時点で未出荷があるとみなし、未出荷エラー
+      if($results_cnt_ship_item == 0){
           $json_list["error_code"] = "1";
           $error_msg = "対象の方は未出荷の商品がある為、職種変更または異動の発注を完了できません。";
           array_push($json_list["error_msg"], $error_msg);
           echo json_encode($json_list);
           return;
-        }
       }
-    }
-
+      //出荷情報が1以上あった場合に、下記の処理に移行
+      if($results_cnt_ship_item > 0) {
+          $count_ship = count($ship_item_list);
+          $count_order = count($order_item_list);
+          //発注情報と、出荷商品の比較 同じ商品cd,色cd,サイズcdだったらお互いのサマリ数を比較
+          for($i = 0; $i < $count_order; $i++){
+              for($s = 0; $s < $count_ship; $s++){
+                  if($order_item_list[$i]['item_cd'] == $ship_item_list[$s]['item_cd']
+                      && $order_item_list[$i]['color_cd'] == $ship_item_list[$s]['color_cd']
+                      && $order_item_list[$i]['size_cd'] == $ship_item_list[$s]['size_cd'])
+                  {
+                      $order_item_list[$i]['unshipped_qty'] = $order_item_list[$i]['order_qty'] - $ship_item_list[$s]['ship_qty'];
+                  }
+              }
+              //未出荷商品が0以上または、発注情報があるのに、出荷情報（発注状況）がない場合はエラー
+              if($order_item_list[$i]['unshipped_qty'] > 0 || is_null($order_item_list[$i]['unshipped_qty'])){
+                  $json_list["error_code"] = "1";
+                  $error_msg = "対象の方は未出荷の商品がある為、職種変更または異動の発注を完了できません。";
+                  array_push($json_list["error_msg"], $error_msg);
+                  echo json_encode($json_list);
+                  return;
+              }
+          }
+      }
       $query_list = array();
       array_push($query_list, "corporate_id = '".$auth['corporate_id']."'");
       array_push($query_list, "rntl_cont_no = '".$wearer_chg_post['rntl_cont_no']."'");
@@ -5086,7 +5828,7 @@ $app->post('/wearer_change/send', function ()use($app){
           return;
       }
 
-    echo json_encode($json_list);
+      echo json_encode($json_list);
   } else if ($mode == "update") {
       //--発注NGパターンチェック--//
       //※着用者基本マスタトラン参照
@@ -5286,9 +6028,9 @@ $app->post('/wearer_change/send', function ()use($app){
           $results = new Resultset(NULL, $t_order, $t_order->getReadConnection()->query($arg_str));
           $result_obj = (array)$results;
           $results_cnt = $result_obj["\0*\0_count"];
+          $order_item_list = array();
           if ($results_cnt > 0) {
               $list = array();
-              $order_item_list = array();
               foreach ($results as $result) {
                   $list['item_cd'] = $result->as_item_cd;
                   $list['color_cd'] = $result->as_color_cd;
