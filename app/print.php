@@ -1284,6 +1284,7 @@ $app->post('/print/search', function ()use($app){
         $arg_str .= "t_returned_plan_info.return_plan_qty as as_return_plan__qty,";
         $arg_str .= "t_returned_plan_info.rntl_cont_no as as_rntl_cont_no,";
         $arg_str .= "t_returned_plan_info.rntl_sect_cd as as_trp_rntl_sect_cd,";
+        $arg_str .= "t_returned_plan_info.werer_cd as as_werer_cd,";
         $arg_str .= "m_wearer_std.rntl_sect_cd as as_mws_rntl_sect_cd,";
         $arg_str .= "m_contract.rntl_cont_name as as_rntl_cont_name";
         $arg_str .= " FROM t_returned_plan_info LEFT JOIN";
@@ -1364,6 +1365,7 @@ $app->post('/print/search', function ()use($app){
         $arg_str .= "t_returned_plan_info.rntl_cont_no as as_rntl_cont_no,";
         $arg_str .= "t_returned_plan_info.rntl_sect_cd as as_trp_rntl_sect_cd,";
         $arg_str .= "m_wearer_std.rntl_sect_cd as as_mws_rntl_sect_cd,";
+        $arg_str .= "t_returned_plan_info.werer_cd as as_werer_cd,";
         $arg_str .= "m_contract.rntl_cont_name as as_rntl_cont_name";
         $arg_str .= " FROM t_returned_plan_info LEFT JOIN";
         $arg_str .= " (t_order LEFT JOIN";

@@ -473,41 +473,48 @@ $app->post('/unreturn/search', function ()use($app){
         $arg_str .= "t_returned_plan_info.order_req_no as as_order_req_no,";
         $arg_str .= "t_returned_plan_info.order_date as as_order_req_ymd,";
         $arg_str .= "t_returned_plan_info.order_sts_kbn as as_order_sts_kbn,";
-        $arg_str .= "t_order.order_reason_kbn as as_order_reason_kbn,";
-        $arg_str .= "m_section.rntl_sect_name as as_rntl_sect_name,";
-        $arg_str .= "m_job_type.job_type_name as as_job_type_name,";
-        $arg_str .= "t_order.cster_emply_cd as as_cster_emply_cd,";
-        $arg_str .= "t_order.werer_name as as_werer_name,";
-        $arg_str .= "m_input_item.input_item_name as as_input_item_name,";
         $arg_str .= "t_returned_plan_info.item_cd as as_item_cd,";
         $arg_str .= "t_returned_plan_info.color_cd as as_color_cd,";
         $arg_str .= "t_returned_plan_info.size_cd as as_size_cd,";
         $arg_str .= "t_returned_plan_info.job_type_cd as as_return_job_type_cd,";
-        $arg_str .= "t_order.job_type_cd as as_job_type_cd,";
-        $arg_str .= "t_order.size_two_cd as as_size_two_cd,";
-        $arg_str .= "t_order.order_qty as as_order_qty,";
         $arg_str .= "t_returned_plan_info.order_date as as_re_order_date,";
         $arg_str .= "t_returned_plan_info.return_status as as_return_status,";
         $arg_str .= "t_returned_plan_info.return_date as as_return_date,";
-        $arg_str .= "t_delivery_goods_state.rec_order_no as as_rec_order_no,";
-        $arg_str .= "t_delivery_goods_state.ship_no as as_ship_no,";
-        $arg_str .= "t_delivery_goods_state.ship_ymd as as_ship_ymd,";
-        $arg_str .= "t_order_state.ship_qty as as_ship_qty,";
-        $arg_str .= "t_returned_plan_info.return_qty as as_return_qty,";
-        $arg_str .= "t_returned_plan_info.individual_ctrl_no as as_individual_ctrl_no,";
-        $arg_str .= "t_delivery_goods_state_details.receipt_date as as_receipt_date,";
         $arg_str .= "t_returned_plan_info.return_plan_qty as as_return_plan__qty,";
         $arg_str .= "t_returned_plan_info.rntl_cont_no as as_rntl_cont_no,";
         $arg_str .= "t_returned_plan_info.rntl_sect_cd as as_trp_rntl_sect_cd,";
+        $arg_str .= "t_returned_plan_info.werer_cd as as_werer_cd,";
+        $arg_str .= "t_returned_plan_info.return_qty as as_return_qty,";
+        $arg_str .= "t_returned_plan_info.individual_ctrl_no as as_individual_ctrl_no,";
+        $arg_str .= "t_order.order_reason_kbn as as_order_reason_kbn,";
+        $arg_str .= "t_order.cster_emply_cd as as_cster_emply_cd,";
+        $arg_str .= "t_order.werer_name as as_werer_name,";
+        $arg_str .= "t_order.job_type_cd as as_job_type_cd,";
+        $arg_str .= "t_order.size_two_cd as as_size_two_cd,";
+        $arg_str .= "t_order.order_qty as as_order_qty,";
+        $arg_str .= "t_order_state.ship_qty as as_ship_qty,";
+        $arg_str .= "t_delivery_goods_state.rec_order_no as as_rec_order_no,";
+        $arg_str .= "t_delivery_goods_state.ship_no as as_ship_no,";
+        $arg_str .= "t_delivery_goods_state.ship_ymd as as_ship_ymd,";
+        $arg_str .= "t_delivery_goods_state_details.receipt_date as as_receipt_date,";
+        $arg_str .= "m_section.rntl_sect_name as as_rntl_sect_name,";
+        $arg_str .= "m_job_type.job_type_name as as_job_type_name,";
+        $arg_str .= "m_input_item.input_item_name as as_input_item_name,";
         $arg_str .= "m_wearer_std.rntl_sect_cd as as_mws_rntl_sect_cd,";
         $arg_str .= "m_contract.rntl_cont_name as as_rntl_cont_name";
         $arg_str .= " FROM t_returned_plan_info LEFT JOIN";
         $arg_str .= " (t_order LEFT JOIN";
-        $arg_str .= " (t_order_state LEFT JOIN ";
-        $arg_str .= " (t_delivery_goods_state LEFT JOIN t_delivery_goods_state_details ON t_delivery_goods_state.ship_no = t_delivery_goods_state_details.ship_no AND t_delivery_goods_state.ship_line_no = t_delivery_goods_state_details.ship_line_no)";
-        $arg_str .= " ON t_order_state.t_order_state_comb_hkey = t_delivery_goods_state.t_order_state_comb_hkey)";
+        $arg_str .= " t_order_state";
         $arg_str .= " ON t_order.t_order_comb_hkey = t_order_state.t_order_comb_hkey)";
         $arg_str .= " ON t_order.order_req_no = t_returned_plan_info.order_req_no";
+        $arg_str .= " LEFT JOIN (t_delivery_goods_state_details";
+        $arg_str .= " LEFT JOIN t_delivery_goods_state";
+        $arg_str .= " ON t_delivery_goods_state_details.corporate_id = t_delivery_goods_state.corporate_id";
+        $arg_str .= " AND t_delivery_goods_state_details.ship_no = t_delivery_goods_state.ship_no";
+        $arg_str .= " AND t_delivery_goods_state_details.ship_line_no = t_delivery_goods_state.ship_line_no)";
+        $arg_str .= " ON t_returned_plan_info.corporate_id = t_delivery_goods_state_details.corporate_id";
+        $arg_str .= " AND t_returned_plan_info.rntl_cont_no = t_delivery_goods_state_details.rntl_cont_no";
+        $arg_str .= " AND t_returned_plan_info.individual_ctrl_no = t_delivery_goods_state_details.individual_ctrl_no";
 
         if ($rntl_sect_cd_zero_flg == 1) {
             $arg_str .= " INNER JOIN m_section";
@@ -551,35 +558,36 @@ $app->post('/unreturn/search', function ()use($app){
         //---SQLクエリー実行---//
         //$arg_str = "SELECT ";
         $arg_str .= "t_returned_plan_info.order_req_no as as_order_req_no,";
-        $arg_str .= "t_order.order_req_ymd as as_order_req_ymd,";
         $arg_str .= "t_returned_plan_info.order_sts_kbn as as_order_sts_kbn,";
-        $arg_str .= "t_order.order_reason_kbn as as_order_reason_kbn,";
-        $arg_str .= "m_section.rntl_sect_name as as_rntl_sect_name,";
-        $arg_str .= "m_job_type.job_type_name as as_job_type_name,";
-        $arg_str .= "m_wearer_std.cster_emply_cd as as_cster_emply_cd,";
-        $arg_str .= "m_wearer_std.werer_name as as_werer_name,";
         $arg_str .= "t_returned_plan_info.item_cd as as_item_cd,";
         $arg_str .= "t_returned_plan_info.color_cd as as_color_cd,";
         $arg_str .= "t_returned_plan_info.size_cd as as_size_cd,";
-        $arg_str .= "t_order.job_type_cd as as_job_type_cd,";
-        $arg_str .= "t_order.size_two_cd as as_size_two_cd,";
-        $arg_str .= "t_order.order_qty as as_order_qty,";
-        $arg_str .= "m_input_item.input_item_name as as_input_item_name,";
         $arg_str .= "t_returned_plan_info.order_date as as_re_order_date,";
         $arg_str .= "t_returned_plan_info.return_status as as_return_status,";
         $arg_str .= "t_returned_plan_info.return_date as as_return_date,";
         $arg_str .= "t_returned_plan_info.job_type_cd as as_return_job_type_cd,";
-        $arg_str .= "t_delivery_goods_state.rec_order_no as as_rec_order_no,";
-        $arg_str .= "t_delivery_goods_state.ship_no as as_ship_no,";
-        $arg_str .= "t_delivery_goods_state.ship_ymd as as_ship_ymd,";
-        $arg_str .= "t_order_state.ship_qty as as_ship_qty,";
         $arg_str .= "t_returned_plan_info.return_qty as as_return_qty,";
         $arg_str .= "t_returned_plan_info.individual_ctrl_no as as_individual_ctrl_no,";
-        $arg_str .= "t_delivery_goods_state_details.receipt_date as as_receipt_date,";
         $arg_str .= "t_returned_plan_info.return_plan_qty as as_return_plan__qty,";
         $arg_str .= "t_returned_plan_info.rntl_cont_no as as_rntl_cont_no,";
         $arg_str .= "t_returned_plan_info.rntl_sect_cd as as_trp_rntl_sect_cd,";
+        $arg_str .= "t_returned_plan_info.werer_cd as as_werer_cd,";
+        $arg_str .= "t_order.order_req_ymd as as_order_req_ymd,";
+        $arg_str .= "t_order.order_reason_kbn as as_order_reason_kbn,";
+        $arg_str .= "t_order.job_type_cd as as_job_type_cd,";
+        $arg_str .= "t_order.size_two_cd as as_size_two_cd,";
+        $arg_str .= "t_order.order_qty as as_order_qty,";
+        $arg_str .= "t_order_state.ship_qty as as_ship_qty,";
+        $arg_str .= "t_delivery_goods_state.rec_order_no as as_rec_order_no,";
+        $arg_str .= "t_delivery_goods_state.ship_no as as_ship_no,";
+        $arg_str .= "t_delivery_goods_state.ship_ymd as as_ship_ymd,";
+        $arg_str .= "t_delivery_goods_state_details.receipt_date as as_receipt_date,";
+        $arg_str .= "m_wearer_std.cster_emply_cd as as_cster_emply_cd,";
+        $arg_str .= "m_wearer_std.werer_name as as_werer_name,";
         $arg_str .= "m_wearer_std.rntl_sect_cd as as_mws_rntl_sect_cd,";
+        $arg_str .= "m_section.rntl_sect_name as as_rntl_sect_name,";
+        $arg_str .= "m_job_type.job_type_name as as_job_type_name,";
+        $arg_str .= "m_input_item.input_item_name as as_input_item_name,";
         $arg_str .= "m_contract.rntl_cont_name as as_rntl_cont_name";
         $arg_str .= " FROM t_returned_plan_info LEFT JOIN";
         $arg_str .= " (t_order LEFT JOIN";
@@ -625,6 +633,7 @@ $app->post('/unreturn/search', function ()use($app){
             $arg_str .= $q_sort_key . " " . $order;
         }
     }
+    //ChromePhp::log($arg_str);
     $t_order = new TOrder();
     $results = new Resultset(null, $t_order, $t_order->getReadConnection()->query($arg_str));
     $result_obj = (array)$results;
@@ -778,7 +787,7 @@ $app->post('/unreturn/search', function ()use($app){
             // 返却日
             $list['re_order_date'] = $result->as_re_order_date;
 
-            // メーカー伝票番号
+             //納品書番号
             if (!empty($result->as_ship_no)) {
                 $list['ship_no'] = $result->as_ship_no;
             } else {
@@ -893,6 +902,7 @@ $app->post('/unreturn/search', function ()use($app){
                 $i = 0;
                 $each_item_return_plan_qty = 0;
                 $each_item_returned_qty = 0;
+                $ship_no_list = array();
                 //ChromePhp::log($t_returned_results);
                 foreach ($t_returned_results as $t_returned_result) {
                     //個体管理番号
@@ -904,6 +914,25 @@ $app->post('/unreturn/search', function ()use($app){
                         $return_date = '-';
                     }
                     array_push($return_date_list, $return_date);
+                    if (individual_flg($auth['corporate_id'], $cond['agreement_no']) == 1) {
+                        //出荷noの割り出し
+                        $parameter = array(
+                        "corporate_id" => $auth['corporate_id'],
+                        "rntl_cont_no" => $cond['agreement_no'],
+                        "werer_cd" => $result->as_werer_cd,
+                        "individual_ctrl_no" => $t_returned_result->individual_ctrl_no
+                        );
+                        //出荷no配列作成
+                        $TDeliveryGoodsStateDetails = TDeliveryGoodsStateDetails::find(array(
+                        'conditions' => "corporate_id = :corporate_id: AND rntl_cont_no = :rntl_cont_no: AND werer_cd = :werer_cd: AND individual_ctrl_no = :individual_ctrl_no:",
+                        "bind" => $parameter
+                        ));
+                        foreach ($TDeliveryGoodsStateDetails as $TDeliveryGoodsStateDetailsResult) {
+                            //出荷noリスト
+                            array_push($ship_no_list, $TDeliveryGoodsStateDetailsResult->ship_no);
+                        }
+                    }
+
                     //返却予定数の合計
                     $each_item_return_plan_qty = $each_item_return_plan_qty + $t_returned_result->return_plan_qty;
                     //返却済み数の合計
@@ -912,6 +941,13 @@ $app->post('/unreturn/search', function ()use($app){
                     array_push($return_status_list, $t_returned_result->return_status);
                     $i++;
                 }
+                if (individual_flg($auth['corporate_id'], $cond['agreement_no']) == 1) {
+                    // 出荷no
+                    $ship_no = implode("<br>", $ship_no_list);
+                    $list['ship_no'] = $ship_no;
+                }
+
+
                 if(in_array('1', $return_status_list, true)){
                     // 返却ステータス
                     $list['return_status'] = '1';
@@ -945,12 +981,10 @@ $app->post('/unreturn/search', function ()use($app){
                 $return_date = implode("<br>", $return_date_list);
                 $list['return_date'] = $return_date;
 
-
             }
             array_push($all_list,$list);
         }
     }
-
 
     // 個体管理番号表示/非表示フラグ設定
     if (individual_flg($auth['corporate_id'], $cond['agreement_no']) == 1) {
