@@ -1030,9 +1030,9 @@ $app->post('/wearer_change/order_check', function ()use($app){
   $results = new Resultset(NULL, $t_order, $t_order->getReadConnection()->query($arg_str));
   $result_obj = (array)$results;
   $results_cnt = $result_obj["\0*\0_count"];
+    $order_item_list = array();
   if ($results_cnt > 0) {
     $list = array();
-    $order_item_list = array();
     foreach ($results as $result) {
       $list['item_cd'] = $result->as_item_cd;
       $list['color_cd'] = $result->as_color_cd;
