@@ -914,6 +914,8 @@ $app->post('/unreturn/search', function ()use($app){
                         $return_date = '-';
                     }
                     array_push($return_date_list, $return_date);
+
+                    //---納品書番号--//
                     if (individual_flg($auth['corporate_id'], $cond['agreement_no']) == 1) {
                         //出荷noの割り出し
                         $parameter = array(
