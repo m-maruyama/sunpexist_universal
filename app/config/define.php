@@ -33,3 +33,24 @@ define("return_address00", "【返却先住所】");
 define("return_address01", "〒374-0012  群馬県館林市羽附旭町  1210-1");
 define("return_address02", "㈱サンペックスイスト物流センター内  レンタル部  宛");
 define("return_address03", "TEL：0276-80-2733");
+
+
+//個あり 一括取込 理由区分設定
+//貸与
+define('order_kbn1_list','["01","02","04"]');
+//拠点異動のみ
+define("order_kbn5_ido", "10");
+
+//個なし 一括取込 理由区分設定
+//貸与 女性フリー以外
+define("order_kbn1_reason", "01");
+//貸与 女性フリー
+define("order_kbn1_free_reason", "03");
+//返却
+define("order_kbn2_reason", "07");
+//サイズ交換
+define("order_kbn3_reason", "13");
+//その他交換
+define("order_kbn4_reason", "14");
+//異動
+define('order_kbn5_list','["09","10","11"]');

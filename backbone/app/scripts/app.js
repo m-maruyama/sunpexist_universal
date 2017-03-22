@@ -147,6 +147,8 @@ define([
 			"CM0150": host + "/snd_kbn",
 			"CM0160": host + "/check/agreement_no",
 			"IM0010": host + "/import_csv",
+			"IM0030": host + "/import_csv_all",
+			"IM0031": host + "/import_csv_check",
 			"IM0020": host + "/csv",
 			"DL0010": host + "/csv_download",
 			"DL0020": host + "/common_download",
