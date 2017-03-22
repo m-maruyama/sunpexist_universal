@@ -2532,11 +2532,14 @@ $app->post('/wearer_change/info', function ()use($app){
                          if($list["need_return_num"]==$item_total_num){
                              $now_list[count($now_list) - 1]["return_num_disable"] = "disabled";
                          }else{
-                             if (!$wearer_chg_post['wearer_tran_flg'] == "1") {
-                                 // 着用者基本マスタトランの情報がない場合
-                                 $now_list[count($now_list) - 1]["return_num_multi"] = 0;
-                                 $now_list[count($now_list) - 1]["return_num_disp"] = 0;
-                             }
+//                             if (!$wearer_chg_post['wearer_tran_flg'] == "1") {
+//                                 // 着用者基本マスタトランの情報がない場合
+//                                 $now_list[count($now_list) - 1]["return_num_multi"] = 0;
+//                                 $now_list[count($now_list) - 1]["return_num_disp"] = 0;
+//                             }
+                             //個体管理番号なし
+                             $now_list[count($now_list) - 1] = $list["need_return_num"];
+                             $list["return_num_disp"] = $list["need_return_num"];
                              $now_list[count($now_list) - 1]["return_num_disable"] = "";
 
                          }
@@ -2560,11 +2563,14 @@ $app->post('/wearer_change/info', function ()use($app){
                          if ($list["need_return_num"] == $item_total_num) {
                              $now_list[count($now_list) - 1]["return_num_disable"] = "disabled";
                          } else {
-                             if (!$wearer_chg_post['wearer_tran_flg'] == "1") {
-                                 // 着用者基本マスタトランの情報がない場合
-                                 $now_list[count($now_list) - 1]["return_num_multi"] = 0;
-                                 $now_list[count($now_list) - 1]["return_num_disp"] = 0;
-                             }
+//                             if (!$wearer_chg_post['wearer_tran_flg'] == "1") {
+//                                 // 着用者基本マスタトランの情報がない場合
+//                                 $now_list[count($now_list) - 1]["return_num_multi"] = 0;
+//                                 $now_list[count($now_list) - 1]["return_num_disp"] = 0;
+//                             }
+                             //個体管理番号なし
+                             $now_list[count($now_list) - 1] = $list["need_return_num"];
+                             $list["return_num_disp"] = $list["need_return_num"];
 
                              $now_list[count($now_list) - 1]["return_num_disable"] = "";
 
