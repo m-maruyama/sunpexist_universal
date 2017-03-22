@@ -2520,6 +2520,8 @@ $app->post('/wearer_change/info', function ()use($app){
                          //個体管理番号あり
                          $now_list[count($now_list)-1]["return_num_multi"] = $return_cnt;
                          $now_list[count($now_list)-1]["return_num_disp"] = 0;
+                         $list["return_num_multi"] = $return_cnt;
+                         $list["return_num_disp"] = 0;
                          $rowspan = 'rowspan='.$results_cnt;
                          $now_list[count($now_list)-1]["rowspan"] = $rowspan;
                          $now_list[count($now_list)-1]["rowspan_return_num"] = $rowspan;
@@ -2542,13 +2544,28 @@ $app->post('/wearer_change/info', function ()use($app){
                      $list["multi_arr_num"]--;
                      $multi_arr_num--;
                  }elseif($choice_cnt >2){
-                     $now_list[count($now_list)-1]["need_return_num"] = $list["need_return_num"];
-                     $now_list[count($now_list)-($multi_arr_num - 1)]["need_return_num"] = $list["need_return_num"];
-                     if($list["need_return_num"]==$item_total_num){
-                         $now_list[count($now_list) - 1]["return_num_disable"] = "disabled";
-                     }else{
-                         $now_list[count($now_list) - 1]["return_num_disable"] = "";
+                     if (individual_flg($auth['corporate_id'], $now_wearer_map['rntl_cont_no']) == "1") {
+                         //個体管理番号あり
+                         $now_list[count($now_list)-1]["return_num_multi"] = $return_cnt;
+                         $now_list[count($now_list)-1]["return_num_disp"] = 0;
+                         $list["return_num_multi"] = $return_cnt;
+                         $list["return_num_disp"] = 0;
+                     }else {
 
+                         $now_list[count($now_list) - 1]["need_return_num"] = $list["need_return_num"];
+                         $now_list[count($now_list) - ($multi_arr_num - 1)]["need_return_num"] = $list["need_return_num"];
+                         if ($list["need_return_num"] == $item_total_num) {
+                             $now_list[count($now_list) - 1]["return_num_disable"] = "disabled";
+                         } else {
+                             if (!$wearer_chg_post['wearer_tran_flg'] == "1") {
+                                 // 着用者基本マスタトランの情報がない場合
+                                 $now_list[count($now_list) - 1]["return_num_multi"] = 0;
+                                 $now_list[count($now_list) - 1]["return_num_disp"] = 0;
+                             }
+
+                             $now_list[count($now_list) - 1]["return_num_disable"] = "";
+
+                         }
                      }
                      $list["multi_arr_num"]--;
                      $multi_arr_num--;
@@ -2865,7 +2882,7 @@ $app->post('/wearer_change/info', function ()use($app){
          if (individual_flg($auth['corporate_id'], $now_wearer_map['rntl_cont_no']) == "1"
              ||$list["choice_type"] == "1"
              ||$list["need_return_num"]==$item_total_num){
-             $list["return_num_multi"] = $list["possible_num"];
+//             $list["return_num_multi"] = $list["possible_num"];
              $list["return_num_disable"] = "disabled";
          }else{
              $list["return_num_disable"] = '';
@@ -2927,7 +2944,7 @@ $app->post('/wearer_change/info', function ()use($app){
    $json_list["now_list_cnt"] = count($now_list);
    $json_list["now_list"] = $now_list;
 //   ChromePhp::LOG('現在貸与中アイテム一覧リスト');
-//   ChromePhp::LOG(count($now_list));
+//   ChromePhp::LOG($now_list);
 
    //--発注総枚数、返却総枚数--//
    $sum_num = array();
@@ -2958,7 +2975,8 @@ $app->post('/wearer_change/info', function ()use($app){
    if (!empty($now_list)) {
        $multiples = array();
      foreach ($now_list as $now_map) {
-         if ($now_map["choice_type"] == "2") {
+         if (!individual_flg($auth['corporate_id'], $auth['rntl_cont_no']) == "1") {
+             if ($now_map["choice_type"] == "2") {
 //             if (in_array($now_map["item_cd"], $multiples)) {
 //                 continue;
 //             } else {
@@ -2967,9 +2985,10 @@ $app->post('/wearer_change/info', function ()use($app){
 //                 ChromePhp::LOG($list["sum_return_num"]);
                  array_push($multiples, $now_map["item_cd"]);
 //             }
-         } else {
-             if (!empty($now_map["return_num_disp"])) {
-                 $list["sum_return_num"] += $now_map["return_num_disp"];
+             } else {
+                 if (!empty($now_map["return_num_disp"])) {
+                     $list["sum_return_num"] += $now_map["return_num_disp"];
+                 }
              }
          }
      }
