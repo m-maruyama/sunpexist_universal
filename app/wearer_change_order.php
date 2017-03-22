@@ -1895,7 +1895,6 @@ $app->post('/wearer_change/info', function ()use($app){
 
                  $item_total_num = $each_item_quantity -$each_item_return_plan_qty;
 
-             }
                  //商品単位で所持枚数と変更後の商品の標準投入数を比較して所持枚数の方が多いか同数の場合は発注しない
                  if($chk_map["item_cd"] == $now_wearer_list[$i]["item_cd"]
                      && $item_total_num >= $chk_map["std_input_qty"]){
@@ -1910,6 +1909,7 @@ $app->post('/wearer_change/info', function ()use($app){
 //                     $json_list["need_num_flg"] = true;
                      $possible_num_sum = $now_wearer_list[$i]["possible_num"] + $possible_num_sum;
                  }
+             }
              if($continue_flg){
                  $arr_cnt--;
                  $list_cnt--;
