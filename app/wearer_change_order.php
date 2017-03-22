@@ -1877,10 +1877,11 @@ $app->post('/wearer_change/info', function ()use($app){
                      "corporate_id" => $auth['corporate_id'],
                      "rntl_cont_no" => $wearer_chg_post['rntl_cont_no'],
                      "werer_cd" => $wearer_chg_post['werer_cd'],
-                     "item_cd" => $now_wearer_list[$i]['item_cd']);
+                     "item_cd" => $now_wearer_list[$i]['item_cd'],
+                     "color_cd" => $now_wearer_list[$i]['color_cd']);
                  //返却予定数の総数
                  $TDeliveryGoodsStateDetails = TDeliveryGoodsStateDetails::find(array(
-                     'conditions'  => "corporate_id = :corporate_id: AND rntl_cont_no = :rntl_cont_no:  AND werer_cd = :werer_cd: AND item_cd = :item_cd:",
+                     'conditions'  => "corporate_id = :corporate_id: AND rntl_cont_no = :rntl_cont_no:  AND werer_cd = :werer_cd: AND item_cd = :item_cd: AND color_cd = :color_cd:",
                      "bind" => $parameter
                  ));
                  $each_item_count = $TDeliveryGoodsStateDetails->count();
@@ -1894,6 +1895,7 @@ $app->post('/wearer_change/info', function ()use($app){
 
                  $item_total_num = $each_item_quantity -$each_item_return_plan_qty;
 
+             }
                  //商品単位で所持枚数と変更後の商品の標準投入数を比較して所持枚数の方が多いか同数の場合は発注しない
                  if($chk_map["item_cd"] == $now_wearer_list[$i]["item_cd"]
                      && $item_total_num >= $chk_map["std_input_qty"]){
@@ -1908,7 +1910,6 @@ $app->post('/wearer_change/info', function ()use($app){
 //                     $json_list["need_num_flg"] = true;
                      $possible_num_sum = $now_wearer_list[$i]["possible_num"] + $possible_num_sum;
                  }
-             }
              if($continue_flg){
                  $arr_cnt--;
                  $list_cnt--;
@@ -1959,10 +1960,11 @@ $app->post('/wearer_change/info', function ()use($app){
                      "corporate_id" => $auth['corporate_id'],
                      "rntl_cont_no" => $wearer_chg_post['rntl_cont_no'],
                      "werer_cd" => $wearer_chg_post['werer_cd'],
-                     "item_cd" => $now_wearer_list[$i]['item_cd']);
+                     "item_cd" => $now_wearer_list[$i]['item_cd'],
+                     "color_cd" => $now_wearer_list[$i]['color_cd']);
                  //返却予定数の総数
                  $TDeliveryGoodsStateDetails = TDeliveryGoodsStateDetails::find(array(
-                     'conditions'  => "corporate_id = :corporate_id: AND rntl_cont_no = :rntl_cont_no:  AND werer_cd = :werer_cd: AND item_cd = :item_cd:",
+                     'conditions'  => "corporate_id = :corporate_id: AND rntl_cont_no = :rntl_cont_no:  AND werer_cd = :werer_cd: AND item_cd = :item_cd: AND color_cd = :color_cd:",
                      "bind" => $parameter
                  ));
                  $each_item_count = $TDeliveryGoodsStateDetails->count();
@@ -2193,7 +2195,6 @@ $app->post('/wearer_change/info', function ()use($app){
    //ChromePhp::LOG('新たに追加するアイテム一覧リスト');
      //ChromePhp::LOG($json_list["add_list"]);
 
-//     ChromePhp::LOG($now_wearer_list);
    //--現在貸与中アイテム一覧リストの生成--//
    $chk_list = array();
    $now_list = array();
@@ -2257,6 +2258,7 @@ $app->post('/wearer_change/info', function ()use($app){
          // 上記重複の場合は以降の処理をしない
          continue;
        }
+//         ChromePhp::LOG($chg_wearer_list);
 //         $list["multi_arr_num"] = ++;
        // name属性用カウント値
        $list["arr_num"] = $arr_cnt++;
@@ -2378,31 +2380,32 @@ $app->post('/wearer_change/info', function ()use($app){
                  }
 
              }
+             for ($i=0; $i<count($chg_wearer_list); $i++) {
 
-             //その商品を納品状況明細情報に現在何枚所持しているか検索する(商品コード単位)
-             $parameter = array(
-                 "corporate_id" => $auth['corporate_id'],
-                 "rntl_cont_no" => $wearer_chg_post['rntl_cont_no'],
-                 "werer_cd" => $wearer_chg_post['werer_cd'],
-                 "item_cd" => $now_wearer_map['item_cd']);
-//                 "item_cd" => $now_wearer_map['item_cd'],
-//                 "color_cd" => $now_wearer_map['color_cd'],
+                 //その商品を納品状況明細情報に現在何枚所持しているか検索する(商品コード単位)
+                 $parameter = array(
+                     "corporate_id" => $auth['corporate_id'],
+                     "rntl_cont_no" => $wearer_chg_post['rntl_cont_no'],
+                     "werer_cd" => $wearer_chg_post['werer_cd'],
+//                 "item_cd" => $now_wearer_map['item_cd']);
+                     "item_cd" => $chg_wearer_list[$i]['item_cd'],
+                     "color_cd" => $chg_wearer_list[$i]['color_cd']);
 //                 "size_cd" => $now_wearer_map['size_cd']);
-             //返却予定数の総数
-             $TDeliveryGoodsStateDetails = TDeliveryGoodsStateDetails::find(array(
-                 'conditions'  => "corporate_id = :corporate_id: AND rntl_cont_no = :rntl_cont_no:  AND werer_cd = :werer_cd: AND item_cd = :item_cd:",
-                 "bind" => $parameter
-             ));
-             $each_item_count = $TDeliveryGoodsStateDetails->count();
-             // foreachでまわす
-             $each_item_return_plan_qty = 0;
-             $each_item_quantity = 0;
-             for($m = 0; $m < $each_item_count; $m++){
-                 $each_item_return_plan_qty = $each_item_return_plan_qty + $TDeliveryGoodsStateDetails[$m]->return_plan__qty;
-                 $each_item_quantity = $each_item_quantity + $TDeliveryGoodsStateDetails[$m]->quantity;
+                 //返却予定数の総数
+                 $TDeliveryGoodsStateDetails = TDeliveryGoodsStateDetails::find(array(
+                     'conditions' => "corporate_id = :corporate_id: AND rntl_cont_no = :rntl_cont_no:  AND werer_cd = :werer_cd: AND item_cd = :item_cd: AND color_cd = :color_cd:",
+                     "bind" => $parameter
+                 ));
+                 $each_item_count = $TDeliveryGoodsStateDetails->count();
+                 // foreachでまわす
+                 $each_item_return_plan_qty = 0;
+                 $each_item_quantity = 0;
+                 for ($m = 0; $m < $each_item_count; $m++) {
+                     $each_item_return_plan_qty = $each_item_return_plan_qty + $TDeliveryGoodsStateDetails[$m]->return_plan__qty;
+                     $each_item_quantity = $each_item_quantity + $TDeliveryGoodsStateDetails[$m]->quantity;
+                 }
+                 $item_total_num = $each_item_quantity - $each_item_return_plan_qty;
              }
-             $item_total_num = $each_item_quantity -$each_item_return_plan_qty;
-
              $possible_num_sum = 0;
              $continue_flg = false;
              for ($i=0; $i<count($chg_wearer_list); $i++) {
