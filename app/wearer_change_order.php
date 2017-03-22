@@ -2979,14 +2979,14 @@ $app->post('/wearer_change/info', function ()use($app){
        $multiples = array();
      foreach ($now_list as $now_map) {
          if ($now_map["choice_type"] == "2") {
-//             if (in_array($now_map["item_cd"], $multiples)) {
-//                 continue;
-//             } else {
+             if (in_array($now_map["item_cd"], $multiples)) {
+                 continue;
+             } else {
              //複数選択の時
              $list["sum_return_num"] += $now_map["return_num_multi"];
 //                 ChromePhp::LOG($list["sum_return_num"]);
              array_push($multiples, $now_map["item_cd"]);
-//             }
+             }
          } else {
              if (!empty($now_map["return_num_disp"])) {
                  $list["sum_return_num"] += $now_map["return_num_disp"];
