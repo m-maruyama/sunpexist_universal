@@ -2557,9 +2557,9 @@ $app->post('/wearer_change/info', function ()use($app){
 
                          $now_list[count($now_list) - 1]["need_return_num"] = $list["need_return_num"];
                          $now_list[count($now_list) - ($multi_arr_num - 1)]["need_return_num"] = $list["need_return_num"];
-                         if ($list["need_return_num"] == $item_total_num) {
-                             $now_list[count($now_list) - 1]["return_num_disable"] = "disabled";
-                         } else {
+//                         if ($list["need_return_num"] == $item_total_num) {
+//                             $now_list[count($now_list) - 1]["return_num_disable"] = "disabled";
+//                         } else {
                              if (!$wearer_chg_post['wearer_tran_flg'] == "1") {
                                  // 着用者基本マスタトランの情報がない場合
                                  $now_list[count($now_list) - 1]["return_num_multi"] = 0;
@@ -2568,7 +2568,7 @@ $app->post('/wearer_change/info', function ()use($app){
 
                              $now_list[count($now_list) - 1]["return_num_disable"] = "";
 
-                         }
+//                         }
                      }
                      $list["multi_arr_num"]--;
                      $multi_arr_num--;
