@@ -1694,7 +1694,6 @@ $app->post('/import_csv_all', function () use ($app) {
             $arg_str .= "(" . $calum_query . ")";
             $arg_str .= " VALUES ";
             $arg_str .= $values_query;
-            ChromePhp::log($arg_str);
             $results = new Resultset(NULL, $t_import_job, $t_import_job->getReadConnection()->query($arg_str));
         }
 
