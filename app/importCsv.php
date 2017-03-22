@@ -807,7 +807,9 @@ $app->post('/import_csv', function () use ($app) {
     $arg_str8 .= " HAVING count(emply_order_req_no) > 1) as T3";
     $arg_str8 .= " ON T1.emply_order_req_no = T3.emply_order_req_no";
     $arg_str8 .= " WHERE T1.job_no = '" . $job_no . "' ";
+    $arg_str8 .= "AND T1.emply_order_req_no <> ''";
     //$arg_str8 .= "ORDER BY line_no ASC";
+    ChromePhp::log($arg_str8);
     $results8 = new Resultset(null, $t_import_job, $t_import_job->getReadConnection()->query($arg_str8));
     $result_obj8 = (array)$results8;
     $results_cnt8 = $result_obj8["\0*\0_count"];
