@@ -2978,22 +2978,21 @@ $app->post('/wearer_change/info', function ()use($app){
    if (!empty($now_list)) {
        $multiples = array();
      foreach ($now_list as $now_map) {
-         if (!individual_flg($auth['corporate_id'], $auth['rntl_cont_no']) == "1") {
-             if ($now_map["choice_type"] == "2") {
+         if ($now_map["choice_type"] == "2") {
 //             if (in_array($now_map["item_cd"], $multiples)) {
 //                 continue;
 //             } else {
-                 //複数選択の時
-                 $list["sum_return_num"] += $now_map["return_num_multi"];
+             //複数選択の時
+             $list["sum_return_num"] += $now_map["return_num_multi"];
 //                 ChromePhp::LOG($list["sum_return_num"]);
-                 array_push($multiples, $now_map["item_cd"]);
+             array_push($multiples, $now_map["item_cd"]);
 //             }
-             } else {
-                 if (!empty($now_map["return_num_disp"])) {
-                     $list["sum_return_num"] += $now_map["return_num_disp"];
-                 }
+         } else {
+             if (!empty($now_map["return_num_disp"])) {
+                 $list["sum_return_num"] += $now_map["return_num_disp"];
              }
          }
+
      }
    }
    array_push($sum_num, $list);
