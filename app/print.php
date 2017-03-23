@@ -1284,6 +1284,7 @@ $app->post('/print/search', function ()use($app){
         $arg_str .= "t_returned_plan_info.return_plan_qty as as_return_plan__qty,";
         $arg_str .= "t_returned_plan_info.rntl_cont_no as as_rntl_cont_no,";
         $arg_str .= "t_returned_plan_info.rntl_sect_cd as as_trp_rntl_sect_cd,";
+        $arg_str .= "t_returned_plan_info.werer_cd as as_werer_cd,";
         $arg_str .= "m_wearer_std.rntl_sect_cd as as_mws_rntl_sect_cd,";
         $arg_str .= "m_contract.rntl_cont_name as as_rntl_cont_name";
         $arg_str .= " FROM t_returned_plan_info LEFT JOIN";
@@ -1364,6 +1365,7 @@ $app->post('/print/search', function ()use($app){
         $arg_str .= "t_returned_plan_info.rntl_cont_no as as_rntl_cont_no,";
         $arg_str .= "t_returned_plan_info.rntl_sect_cd as as_trp_rntl_sect_cd,";
         $arg_str .= "m_wearer_std.rntl_sect_cd as as_mws_rntl_sect_cd,";
+        $arg_str .= "t_returned_plan_info.werer_cd as as_werer_cd,";
         $arg_str .= "m_contract.rntl_cont_name as as_rntl_cont_name";
         $arg_str .= " FROM t_returned_plan_info LEFT JOIN";
         $arg_str .= " (t_order LEFT JOIN";
@@ -1675,6 +1677,7 @@ $app->post('/print/search', function ()use($app){
                 $i = 0;
                 $each_item_return_plan_qty = 0;
                 $each_item_returned_qty = 0;
+                $ship_no_list = array();
                 foreach ($t_returned_results as $t_returned_result) {
                     //個体管理番号
                     array_push($num_list, $t_returned_result->individual_ctrl_no);
@@ -1685,6 +1688,27 @@ $app->post('/print/search', function ()use($app){
                         $return_date = '-';
                     }
                     array_push($return_date_list, $return_date);
+
+                    //---納品書番号--//
+                    if (individual_flg($auth['corporate_id'], $cond['agreement_no']) == 1) {
+                        //出荷noの割り出し
+                        $parameter = array(
+                        "corporate_id" => $auth['corporate_id'],
+                        "rntl_cont_no" => $cond['agreement_no'],
+                        "werer_cd" => $result->as_werer_cd,
+                        "individual_ctrl_no" => $t_returned_result->individual_ctrl_no
+                        );
+                        //出荷no配列作成
+                        $TDeliveryGoodsStateDetails = TDeliveryGoodsStateDetails::find(array(
+                        'conditions' => "corporate_id = :corporate_id: AND rntl_cont_no = :rntl_cont_no: AND werer_cd = :werer_cd: AND individual_ctrl_no = :individual_ctrl_no:",
+                        "bind" => $parameter
+                        ));
+                        foreach ($TDeliveryGoodsStateDetails as $TDeliveryGoodsStateDetailsResult) {
+                            //出荷noリスト
+                            array_push($ship_no_list, $TDeliveryGoodsStateDetailsResult->ship_no);
+                        }
+                    }
+
                     //返却予定数の合計
                     $each_item_return_plan_qty = $each_item_return_plan_qty + $t_returned_result->return_plan_qty;
                     //返却済み数の合計
@@ -1700,6 +1724,13 @@ $app->post('/print/search', function ()use($app){
                 }else{
                     $list['return_status'] = '2';
                 }
+                //---納品書番号--//
+                if (individual_flg($auth['corporate_id'], $cond['agreement_no']) == 1) {
+                    // 出荷no
+                    $ship_no = implode("<br>", $ship_no_list);
+                    $list['ship_no'] = $ship_no;
+                }
+
                 //---返却ステータス名称---//
                 $query_list = array();
                 // 汎用コードマスタ.分類コード
