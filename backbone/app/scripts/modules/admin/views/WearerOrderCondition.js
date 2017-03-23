@@ -119,6 +119,8 @@ define([
 									$('.inputButton').css('display', 'none');
 									$('.orderSend').css('display', 'none');
 								}
+								//発注画面 ナビ非表示
+								$('#pageNav').css('display', 'none');
 							}
 						});
 					}

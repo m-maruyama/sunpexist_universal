@@ -122,6 +122,8 @@ define([
 								if (CM0140_res['order_send_ok_flg'] == "1") {
 									$('.orderSend').css('display', '');
 								}
+								//発注画面 ナビ非表示
+								$('#pageNav').css('display', 'none');
 							}
 						});
 						if (res_list['wearer_info'][0]) {
