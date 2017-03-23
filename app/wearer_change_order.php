@@ -2281,35 +2281,6 @@ $app->post('/wearer_change/list', function ()use($app){
             $list["list_no"] = $list_cnt++;
             // アイテム
             $list["item_name"] = $now_wearer_map["item_name"];
-            // 選択方法
-            //※着用者の職種マスタ.職種コードに紐づく投入商品マスタの職種アイテムコード単位で単一or複数判断
-//       $query_list = array();
-//       array_push($query_list, "m_job_type.corporate_id = '".$auth['corporate_id']."'");
-//       array_push($query_list, "m_job_type.rntl_cont_no = '".$now_wearer_map['rntl_cont_no']."'");
-//       array_push($query_list, "m_job_type.job_type_cd = '".$now_wearer_map['job_type_cd']."'");
-//       array_push($query_list, "m_input_item.rntl_cont_no = '".$now_wearer_map['rntl_cont_no']."'");
-//       array_push($query_list, "m_input_item.corporate_id = '".$auth['corporate_id']."'");
-//       array_push($query_list, "m_input_item.job_type_cd = '".$now_wearer_map['job_type_cd']."'");
-//       array_push($query_list, "m_input_item.item_cd = '".$now_wearer_map['item_cd']."'");
-//       array_push($query_list, "m_input_item.job_type_item_cd = '".$now_wearer_map['job_type_item_cd']."'");
-//       $query = implode(' AND ', $query_list);
-//
-//       $arg_str = "";
-//       $arg_str = "SELECT ";
-//       $arg_str .= "m_input_item.job_type_item_cd";
-//       $arg_str .= " FROM ";
-//       $arg_str .= "m_input_item";
-//       $arg_str .= " INNER JOIN ";
-//       $arg_str .= "m_job_type";
-//       $arg_str .= " ON ";
-//       $arg_str .= "m_input_item.m_job_type_comb_hkey=m_job_type.m_job_type_comb_hkey";
-//       $arg_str .= " WHERE ";
-//       $arg_str .= $query;
-//
-//       $m_input_item = new MInputItem();
-//       $results = new Resultset(NULL, $m_input_item, $m_input_item->getReadConnection()->query($arg_str));
-//       $result_obj = (array)$results;
-//       $results_cnt = $result_obj["\0*\0_count"];
             $return_cnt = 0;
 
             //※着用者の職種マスタ.職種コードに紐づくアイテムコード単位で単一or複数判断
@@ -2341,7 +2312,7 @@ $app->post('/wearer_change/list', function ()use($app){
             $result_obj = (array)$results;
             $results_cnt = $result_obj["\0*\0_count"];
 
-
+            $return_num_multi_tran = 0;
             // 個体管理番号
             if (individual_flg($auth['corporate_id'], $now_wearer_map['rntl_cont_no']) == "1") {
 
@@ -2371,6 +2342,37 @@ $app->post('/wearer_change/list', function ()use($app){
                 $result_obj = (array)$results;
                 $return_cnt = $result_obj["\0*\0_count"];
             }else{
+                // トラン情報がある場合は返却枚数を取得する
+                $query_list = array();
+                array_push($query_list, "t_returned_plan_info_tran.corporate_id = '".$auth['corporate_id']."'");
+                array_push($query_list, "t_returned_plan_info_tran.rntl_cont_no = '".$wearer_chg_post['rntl_cont_no']."'");
+                array_push($query_list, "t_returned_plan_info_tran.werer_cd = '".$wearer_chg_post['werer_cd']."'");
+                array_push($query_list, "t_returned_plan_info_tran.order_req_no = '".$wearer_chg_post["order_req_no"]."'");
+                array_push($query_list, "t_returned_plan_info_tran.item_cd = '".$now_wearer_map['item_cd']."'");
+                array_push($query_list, "t_returned_plan_info_tran.color_cd = '".$now_wearer_map['color_cd']."'");
+                array_push($query_list, "t_returned_plan_info_tran.size_cd = '".$now_wearer_map["size_cd"]."'");
+                array_push($query_list, "t_order_tran.job_type_cd = '".$chg_wearer_job_type_cd."'");
+                $query = implode(' AND ', $query_list);
+
+                $arg_str = "";
+                $arg_str = "SELECT ";
+                $arg_str .= "return_plan_qty";
+                $arg_str .= " FROM ";
+                $arg_str .= "t_returned_plan_info_tran";
+                $arg_str .= " INNER JOIN t_order_tran";
+                $arg_str .= " ON t_returned_plan_info_tran.order_req_no = t_order_tran.order_req_no";
+                $arg_str .= " WHERE ";
+                $arg_str .= $query;
+
+                $t_returned_plan_info_tran = new TReturnedPlanInfoTran();
+                $results = new Resultset(NULL, $t_returned_plan_info_tran, $t_returned_plan_info_tran->getReadConnection()->query($arg_str));
+                $result_obj = (array)$results;
+                $t_returned_plan_info_tran_cnt = $result_obj["\0*\0_count"];
+                if ($t_returned_plan_info_tran_cnt > 0) {
+                    foreach ($results as $result) {
+                        $return_num_multi_tran = $result->return_plan_qty;
+                    }
+                }
                 $list['possible_num_flg'] = true;
                 $json_list['possible_num_flg'] = true;
             }
@@ -2465,10 +2467,40 @@ $app->post('/wearer_change/list', function ()use($app){
                     $list["need_return_num"] =  $need_return_num;
                     $ok_flg = true;
                 }
+
+                //その商品を納品状況明細情報に現在何枚所持しているか検索する(商品コード,色コード単位)
+                $parameter = array(
+                    "corporate_id" => $auth['corporate_id'],
+                    "rntl_cont_no" => $wearer_chg_post['rntl_cont_no'],
+                    "werer_cd" => $wearer_chg_post['werer_cd'],
+//                 "item_cd" => $now_wearer_map['item_cd']);
+                    "item_cd" => $now_wearer_map['item_cd'],
+                 "color_cd" => $now_wearer_map['color_cd']);
+                //返却予定数の総数
+                $TDeliveryGoodsStateDetails = TDeliveryGoodsStateDetails::find(array(
+                    'conditions' => "corporate_id = :corporate_id: AND rntl_cont_no = :rntl_cont_no:  AND werer_cd = :werer_cd: AND item_cd = :item_cd: AND color_cd = :color_cd:",
+                    "bind" => $parameter
+                ));
+                $each_item_count = $TDeliveryGoodsStateDetails->count();
+                // foreachでまわす
+                $each_item_return_plan_qty = 0;
+                $each_item_quantity = 0;
+                for ($m = 0; $m < $each_item_count; $m++) {
+                    $each_item_return_plan_qty = $each_item_return_plan_qty + $TDeliveryGoodsStateDetails[$m]->return_plan__qty;
+                    $each_item_quantity = $each_item_quantity + $TDeliveryGoodsStateDetails[$m]->quantity;
+                }
+                //商品cd,色cdが一緒の商品総数
+                $item_color_total_num = $each_item_quantity - $each_item_return_plan_qty;
+                $item_color_flg = false;
+                //所持数が変更後の職種の標準投入枚数と同じ場合か少ない場合持ち越し
+                if($new_std_input_qty>=$item_color_total_num){
+                    $item_color_flg = true;
+                }
                 //商品cdごとの所持数が変更後の職種の標準投入枚数より少ないか、or
                 //変更後の商品が単一選択商品で、商品cd & 色cdの所持数が変更後の職種の標準投入枚数と同じ場合か少ない場合、商品持ち越し
-                if(($continue_flg&&$new_std_input_qty>=$item_total_num)
-                    ||(!$chg_multi_flg&&$new_std_input_qty>=$now_wearer_map['possible_num'])){
+                if($item_color_flg
+                    &&(($continue_flg&&$new_std_input_qty>=$item_total_num)
+                        ||(!$chg_multi_flg&&$new_std_input_qty>=$now_wearer_map['possible_num']))){
                     //全数から引く数値
                     $item_total_num_minus += $now_wearer_map['possible_num'];
                     $arr_cnt--;
@@ -2477,7 +2509,7 @@ $app->post('/wearer_change/list', function ()use($app){
                     $rowspan_minus++;
                     for($i=0; $i<count($now_list); $i++){
                         if($now_list[$i]['rowspan']!='style=display:none'
-                        && $now_list[$i]['item_cd'] == $now_wearer_map['item_cd']){
+                            && $now_list[$i]['item_cd'] == $now_wearer_map['item_cd']){
                             $results_cnt = $results_cnt - $rowspan_minus;
                             $now_list[$i]['rowspan'] = 'rowspan='.$results_cnt;
 
@@ -2485,12 +2517,6 @@ $app->post('/wearer_change/list', function ()use($app){
                     }
                     continue;
                 }
-
-
-
-
-                //複数選択商品で、商品&色コードで数量チェック
-
 
 
                 if(!$ok_flg){
@@ -2517,7 +2543,11 @@ $app->post('/wearer_change/list', function ()use($app){
                         //個体管理番号なし
                         $list["rowspan"] = '';
                         $list["return_num_disp"] = $list["need_return_num"];
-                        $list["return_num_multi"] = $now_wearer_map['possible_num'];
+                        if ($t_order_tran_job_type_cd != $chg_wearer_job_type_cd) {
+                            $list["return_num_multi"] = 0;
+                        }else{
+                            $list["return_num_multi"] = $return_num_multi_tran;
+                        }
                     }
                     $choice_cnt++;
                 }else{
@@ -2543,16 +2573,19 @@ $app->post('/wearer_change/list', function ()use($app){
 //                                $now_list[count($now_list) - 1]["return_num_multi"] = $now_wearer_map['possible_num'];
                                 $list["return_num_multi"] = $now_wearer_map['possible_num'];
                             }else{
-                                if ($t_order_tran_job_type_cd != $chg_wearer_job_type_cd) {
+//                                if ($t_order_tran_job_type_cd != $chg_wearer_job_type_cd) {
                                     // 着用者基本マスタトランの情報がない場合
-                                    $now_list[count($now_list) - 1]["return_num_multi"] = 0;
+                                    $now_list[count($now_list) - 1]["return_num_disable"] = "";
                                     $now_list[count($now_list) - 1]["return_num_disp"] = 0;
-                                }else{
-                                    // 着用者基本マスタトランの情報がある場合
-                                    $now_list[count($now_list) - 1]["return_num_multi"] = $return_cnt;
-                                    $now_list[count($now_list) - 1]["return_num_disp"] = 0;
-
-                                }
+                                    $list["return_num_multi"] = $return_num_multi_tran;
+//                                }else{
+//                                    // 着用者基本マスタトランの情報がある場合
+//                                    $now_list[count($now_list) - 1]["return_num_disable"] = "";
+//                                    $now_list[count($now_list) - 1]["return_num_multi"] = $return_cnt;
+//                                    $now_list[count($now_list) - 1]["return_num_disp"] = 0;
+//                                    $list["return_num_multi"] = $return_cnt;
+//
+//                                }
                                 $now_list[count($now_list) - 1]["return_num_disable"] = "";
                                 $list["return_num_disable"] = "";
 
@@ -2573,35 +2606,27 @@ $app->post('/wearer_change/list', function ()use($app){
                             $list["return_num_disp"] = 0;
                         }else {
 
-//                            $now_list[count($now_list) - 1]["need_return_num"] = $list["need_return_num"];
-//                            $now_list[count($now_list) - ($multi_arr_num - 1)]["need_return_num"] = $list["need_return_num"];
-
-//                            if($list["need_return_num"]==$item_total_num){
-//                                $now_list[count($now_list) - 1]["return_num_disable"] = "disabled";
-//                                $now_list[count($now_list) - 1]["return_num_multi"] = $list["possible_num"];
-//                            }else{
                                 //返却数を固定する場合
                             if($list["need_return_num"]==$item_total_num){
                                 $now_list[count($now_list) - 1]["return_num_disable"] = "disabled";
 //                                $now_list[count($now_list) - 1]["return_num_multi"] = $now_wearer_map['possible_num'];
                                 $list["return_num_multi"] = $now_wearer_map['possible_num'];
                             }else{
-                                if ($t_order_tran_job_type_cd != $chg_wearer_job_type_cd) {
-                                    // 着用者基本マスタトランの情報がある場合
-                                    $now_list[count($now_list) - 1]["return_num_disable"] = "disabled";
-                                    $now_list[count($now_list) - 1]["return_num_multi"] = $now_wearer_map['possible_num'];
-                                    $list["return_num_multi"] = $now_wearer_map['possible_num'];
-                                }else{
+//                                if ($t_order_tran_job_type_cd != $chg_wearer_job_type_cd) {
                                     // 着用者基本マスタトランの情報がない場合
-                                    $now_list[count($now_list) - 1]["return_num_multi"] = $return_cnt;
+                                    $now_list[count($now_list) - 1]["return_num_disable"] = "";
+//                                    $now_list[count($now_list) - 1]["return_num_multi"] = $return_num_multi_tran;
                                     $now_list[count($now_list) - 1]["return_num_disp"] = 0;
-
-                                }
+                                    $list["return_num_multi"] = $return_num_multi_tran;
+//                                }else{
+//                                    // 着用者基本マスタトランの情報がある場合
+//                                    $now_list[count($now_list) - 1]["return_num_disable"] = "";
+//                                    $now_list[count($now_list) - 1]["return_num_multi"] = $return_cnt;
+//                                    $now_list[count($now_list) - 1]["return_num_disp"] = 0;
+//                                    $list["return_num_multi"] = $return_cnt;
+//
+//                                }
                             }
-
-//                            }
-//                            $now_list[count($now_list) - 1]["return_num_disable"] = "";
-//                            $list["return_num_disable"] = "";
                         }
                         $list["multi_arr_num"]--;
                         $multi_arr_num--;
@@ -2651,12 +2676,6 @@ $app->post('/wearer_change/list', function ()use($app){
                         $new_std_input_qty = $chg_wearer_list[$i]["std_input_qty"];
                     }
 
-//                 //同じ商品cd、枚数が減る商品
-//                 if ($now_wearer_map["item_cd"] == $chg_wearer_list[$i]["item_cd"]
-//                     && $now_wearer_map["possible_num"] > $chg_wearer_list[$i]["std_input_qty"]
-//                 ){
-//                     $possible_num_sum = $chg_wearer_list[$i]["std_input_qty"] + $possible_num_sum;
-//                 }
                 }
                 //その商品を納品状況明細情報に現在何枚所持しているか検索する(商品コード単位)
                 $parameter = array(
@@ -2664,13 +2683,9 @@ $app->post('/wearer_change/list', function ()use($app){
                     "rntl_cont_no" => $wearer_chg_post['rntl_cont_no'],
                     "werer_cd" => $wearer_chg_post['werer_cd'],
                     "item_cd" => $now_wearer_map['item_cd']);
-//                 "item_cd" => $now_wearer_map['item_cd'],
-//                 "color_cd" => $now_wearer_map['color_cd'],
-//                 "size_cd" => $now_wearer_map['size_cd']);
                 //返却予定数の総数
                 $TDeliveryGoodsStateDetails = TDeliveryGoodsStateDetails::find(array(
                     'conditions'  => "corporate_id = :corporate_id: AND rntl_cont_no = :rntl_cont_no:  AND werer_cd = :werer_cd: AND item_cd = :item_cd:",
-//                 'conditions'  => "corporate_id = :corporate_id: AND rntl_cont_no = :rntl_cont_no:  AND werer_cd = :werer_cd: AND item_cd = :item_cd: AND color_cd = :color_cd: AND size_cd = :size_cd:",
                     "bind" => $parameter
                 ));
                 $each_item_count = $TDeliveryGoodsStateDetails->count();
@@ -2850,39 +2865,7 @@ $app->post('/wearer_change/list', function ()use($app){
                     $list["individual_ctrl_no"] = implode("<br>", $individual_ctrl_no);
                 }
             }else{
-                // トラン情報がある場合は返却枚数を取得する
-                $query_list = array();
-                array_push($query_list, "t_returned_plan_info_tran.corporate_id = '".$auth['corporate_id']."'");
-                array_push($query_list, "t_returned_plan_info_tran.rntl_cont_no = '".$wearer_chg_post['rntl_cont_no']."'");
-                array_push($query_list, "t_returned_plan_info_tran.werer_cd = '".$wearer_chg_post['werer_cd']."'");
-                array_push($query_list, "t_returned_plan_info_tran.order_req_no = '".$wearer_chg_post["order_req_no"]."'");
-                array_push($query_list, "t_returned_plan_info_tran.item_cd = '".$now_wearer_map['item_cd']."'");
-                array_push($query_list, "t_returned_plan_info_tran.color_cd = '".$now_wearer_map['color_cd']."'");
-                array_push($query_list, "t_returned_plan_info_tran.size_cd = '".$list["size_cd"]."'");
-                array_push($query_list, "t_order_tran.job_type_cd = '".$chg_wearer_job_type_cd."'");
-                $query = implode(' AND ', $query_list);
-
-                $arg_str = "";
-                $arg_str = "SELECT ";
-                $arg_str .= "return_plan_qty";
-                $arg_str .= " FROM ";
-                $arg_str .= "t_returned_plan_info_tran";
-                $arg_str .= " INNER JOIN t_order_tran";
-                $arg_str .= " ON t_returned_plan_info_tran.order_req_no = t_order_tran.order_req_no";
-                $arg_str .= " WHERE ";
-                $arg_str .= $query;
-
-                $t_returned_plan_info_tran = new TReturnedPlanInfoTran();
-                $results = new Resultset(NULL, $t_returned_plan_info_tran, $t_returned_plan_info_tran->getReadConnection()->query($arg_str));
-                $result_obj = (array)$results;
-                $results_cnt = $result_obj["\0*\0_count"];
-                if ($results_cnt > 0) {
-                    foreach ($results as $result) {
-                        $list["return_num_multi"] = $result->return_plan_qty;
-                    }
-                }
             }
-
 
             // 返却枚数
 
