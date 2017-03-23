@@ -379,31 +379,31 @@ define([
 					}
 
 					if (sp_job_type_flg == "1") {
-						// JavaScript モーダルで表示
-						$('#myModalAlert').modal('show'); //追加
-						//メッセージの修正
-						document.getElementById("alert_txt").innerHTML=App.apply_msg;
-						//$('html,body').animate({ scrollTop: 0 }, '1');
-						// $('#myModal').modal('show'); //追加
+						// // JavaScript モーダルで表示
+						// $('#myModalAlert').modal('show'); //追加
 						// //メッセージの修正
-						// document.getElementById("confirm_txt").innerHTML=App.apply_msg; //追加　このメッセージはapp.jsで定義
-						// $("#btn_ok").off();
-						// $("#btn_cancel").off();
-						// $("#btn_ok").on('click',function() { //追加
-						// 	$('#myModal').modal('hide');
-						// // var msg = "社内申請手続きを踏んでいますか？";
-						// // if (window.confirm(msg)) {
-						// 	var reasonKbnConditionChangeView = new App.Admin.Views.ReasonKbnConditionChange({
-						// 		job_type: job_type
-						// 	});
-							// that.reason_kbn.show(reasonKbnConditionChangeView);
+						// document.getElementById("alert_txt").innerHTML=App.apply_msg;
+						//$('html,body').animate({ scrollTop: 0 }, '1');
+						$('#myModal').modal('show'); //追加
+						//メッセージの修正
+						document.getElementById("confirm_txt").innerHTML=App.apply_msg; //追加　このメッセージはapp.jsで定義
+						$("#btn_ok").off();
+						$("#btn_cancel").off();
+						$("#btn_ok").on('click',function() { //追加
+							$('#myModal').modal('hide');
+						// var msg = "社内申請手続きを踏んでいますか？";
+						// if (window.confirm(msg)) {
+							var reasonKbnConditionChangeView = new App.Admin.Views.ReasonKbnConditionChange({
+								job_type: job_type
+							});
+							that.reason_kbn.show(reasonKbnConditionChangeView);
 							that.triggerMethod('change:job_type', data);
-						// });
-						// $("#btn_cancel").on('click',function() { //追加
-						// 	$('#myModal').modal('hide');
-						// 	// that.reason_kbn.show(reasonKbnConditionChangeView);
-						// 	document.getElementById('job_type').value = before_vals;
-						// });
+						});
+						$("#btn_cancel").on('click',function() { //追加
+							$('#myModal').modal('hide');
+							// that.reason_kbn.show(reasonKbnConditionChangeView);
+							document.getElementById('job_type').value = before_vals;
+						});
 
 					} else {
 						window.sessionStorage.setItem("job_type_sec", after_vals);

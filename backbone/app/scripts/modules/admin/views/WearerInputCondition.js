@@ -162,10 +162,14 @@ define([
                             change_select(that.model, $('#agreement_no').val(), that.ui.section.val(), that.ui.m_shipment_to.val(), that.ui.m_shipment_to.children(':selected').text());
 
                         }
+                        //job_type
+                        var job_type_val = $('#job_type').val();
+                        window.sessionStorage.setItem("job_type_before", job_type_val);
                     }
                 });
             },
             onshow: function(){
+
             },
             insert_wearer: function (agreement_no) {
                 var that = this;
@@ -388,11 +392,21 @@ define([
                     //貸与パターン」のセレクトボックス変更時に、職種マスタ．特別職種フラグ＝ありの貸与パターンだった場合、アラートメッセージを表示する。
                     var sp_flg = this.ui.job_type.val().split(',');
                     if (sp_flg[1] === '1') {
+
+                        // はいだったら何もしない。いいえだったら元に戻す。
                         // JavaScript モーダルで表示
-                        $('#myModalAlert').modal(); //追加
+                        $('#myModal').modal('show'); //追加
                         //メッセージの修正
-                        document.getElementById("alert_txt").innerHTML=App.apply_msg;
-                        //$('html,body').animate({ scrollTop: 0 }, '1');
+                        document.getElementById("confirm_txt").innerHTML=App.apply_msg; //追加　このメッセージはapp.jsで定義
+                        $("#btn_ok").off();
+                        $("#btn_ok").on('click',function() { //追加
+
+                        });
+                        $("#btn_cancel").off();
+                        $("#btn_cancel").on('click',function() { //追加
+                            var job_type_before = window.sessionStorage.getItem("job_type_before");
+                            $('#job_type').val(job_type_before);
+                        });
                     }
                 },
             },
