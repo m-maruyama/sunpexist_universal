@@ -592,7 +592,6 @@ $app->post('/csv_download', function ()use($app){
 
         $arg_str .= " * ";
         $arg_str .= " FROM ";
-        ChromePhp::log($rntl_sect_cd_zero_flg);
         if (individual_flg($auth['corporate_id'], $cond['agreement_no']) == 1) {
             $arg_str .= "(SELECT distinct on (t_order.order_req_no, t_delivery_goods_state_details.individual_ctrl_no) ";
         }else {
