@@ -2544,7 +2544,12 @@ $app->post('/wearer_change/list', function ()use($app){
                         $list["rowspan"] = '';
                         $list["return_num_disp"] = $list["need_return_num"];
                         if ($t_order_tran_job_type_cd != $chg_wearer_job_type_cd) {
-                            $list["return_num_multi"] = 0;
+                            //返却数を固定する場合
+                            if($list["need_return_num"]==$item_total_num){
+                                $list["return_num_multi"] = $now_wearer_map['possible_num'];
+                            }else{
+                                $list["return_num_multi"] = 0;
+                            }
                         }else{
                             $list["return_num_multi"] = $return_num_multi_tran;
                         }
