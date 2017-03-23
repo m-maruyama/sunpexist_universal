@@ -256,8 +256,8 @@ $app->post('/home_count', function () use ($app) {
         $results_cnt = $result_obj["\0*\0_count"];
 
 
+        $emply_cd_no_regist_list = array();
         if (!empty($results_cnt)) {
-            $emply_cd_no_regist_list = array();
 
             foreach ($results as $result) {
                 // 発注区分=貸与で発注情報トランのデータが存在しない場合は対象外とする
