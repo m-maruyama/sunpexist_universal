@@ -37,17 +37,13 @@ define("return_address03", "TEL：0276-80-2733");
 
 //個あり 一括取込 理由区分設定
 //貸与
-define('order_kbn1_list','["01","02","04"]');
+define('order_kbn1_list','["01","02","03","04"]');
 //拠点異動のみ
 define("order_kbn5_ido", "10");
 
 //個なし 一括取込 理由区分設定
-//貸与 女性フリー以外
-define("order_kbn1_reason", "01");
-//貸与 女性フリー
-define("order_kbn1_free_reason", "03");
 //返却
-define("order_kbn2_reason", "07");
+define("order_kbn2_list", '["05","06","07","08"]');
 //サイズ交換
 define("order_kbn3_reason", "13");
 //その他交換
