@@ -1062,7 +1062,7 @@ $app->post('/wearer_add/delete', function ()use($app){
       // 発注状況区分(貸与)
       array_push($query_list,"m_wearer_std_tran.order_sts_kbn = '1'");
       // 着用者状況区分(その他（着用開始）)
-      array_push($query_list,"m_wearer_std_tran.werer_sts_kbn = '7'");
+      array_push($query_list,"m_wearer_std_tran.werer_sts_kbn IN ('7','1')");
       $query = implode(' AND ', $query_list);
 
       $arg_str = "";

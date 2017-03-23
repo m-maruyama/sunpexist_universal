@@ -152,6 +152,8 @@ define([
 								if (CM0140_res['order_send_ok_flg'] == "1") {
 									$('.orderSend').css('display', '');
 								}
+								//発注画面 ナビ非表示
+								$('#pageNav').css('display', 'none');
 							}
 						});
 						// 社員番号、着用者名、読みかな、コメント欄

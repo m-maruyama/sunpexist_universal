@@ -107,6 +107,24 @@ $app->post('/login', function ()use($app) {
             $account[0]->mAccount->save();
             $now = time();
             $last = strtotime($account[0]->mAccount->last_pass_word_upd_date."+ 90 day");
+
+
+            //予備フラグ1が一つでもあるか確認
+            $contract_list = MContract::query()
+                ->where("MContract.corporate_id = '" .$params['corporate_id']. "'")
+                ->columns("MContract.*")
+                ->execute();
+
+            //企業idで契約マスタを絞り込み、一つでも1があれば、$sub_cont_flg1をtrueにする。
+            $sub_cont_flg1 = false;
+            if(count($contract_list) > 0){
+                foreach($contract_list as $contract){
+                    if($contract->sub_cont_flg1 == 1){
+                        $sub_cont_flg1 = true;
+                    }
+                }
+            }
+
             if($now < $last) {
                 // 現在日付が、アカウント管理テーブル．パスワード最終変更時間＋８９日以下の場合
                 // ホーム画面を表示する。
@@ -158,9 +176,10 @@ $app->post('/login', function ()use($app) {
                     'receipt_flg' => $account[0]->mContract->receipt_flg,
                     'rntl_cont_flg' => $account[0]->mContract->rntl_cont_flg,
                     'purchase_cont_flg' => $account[0]->mContract->purchase_cont_flg,
-                    'sub_cont_flg1' => $account[0]->mContract->sub_cont_flg1,
+                    'sub_cont_flg1' => $account[0]->mContract->sub_cont_flg1,//こちらは各契約の予備フラグ1
                     'sub_cont_flg2' => $account[0]->mContract->sub_cont_flg2,
                     'sub_cont_flg3' => $account[0]->mContract->sub_cont_flg3,
+                    'sub_cont_flg1_exist' => $sub_cont_flg1,//こちらは企業単位で予備フラグ1が一つでもあるか
                 ));
                 echo json_encode($json_list);
 

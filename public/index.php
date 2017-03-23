@@ -77,6 +77,7 @@ try {
     include __DIR__.'/../app/wearer_other_change_order.php';
     include __DIR__.'/../app/wearer_exchange_order.php';
     include __DIR__.'/../app/importCsv.php';
+    include __DIR__.'/../app/importCsvOnly.php';
     include __DIR__.'/../app/ChromePhp.php';
 
     /*

@@ -1458,6 +1458,35 @@ $app->post('/wearer_order_delete', function ()use($app){
       $result_obj = (array)$results;
       $results_cnt = $result_obj["\0*\0_count"];
 
+      //個なしの一括取込後、発注送信処理からの発注取消ボタンからは、発注情報トランだけではなく、着用者基本マスタトランも削除する
+      if ($auth["sub_cont_flg1_exist"]) {
+          //--着用者基本マスタトラン削除--//
+          //ChromePhp::LOG("着用者基本マスタトラン削除");
+          $query_list = array();
+          array_push($query_list, "m_wearer_std_tran.corporate_id = '".$auth['corporate_id']."'");
+          if (!empty($cond["order_req_no"])) {
+              array_push($query_list, "m_wearer_std_tran.order_req_no = '".$cond['order_req_no']."'");
+          } else {
+              array_push($query_list, "m_wearer_std_tran.order_req_no = '".$wearer_odr_post['order_req_no']."'");
+          }
+          // 発注区分「貸与」
+          array_push($query_list, "m_wearer_std_tran.order_sts_kbn = '1'");
+          array_push($query_list, "m_wearer_std_tran.order_sts_kbn <> '6'");
+          $query = implode(' AND ', $query_list);
+
+
+          $arg_str = "";
+          $arg_str = "DELETE FROM ";
+          $arg_str .= "m_wearer_std_tran";
+          $arg_str .= " WHERE ";
+          $arg_str .= $query;
+          //ChromePhp::LOG($arg_str);
+          $m_wearer_std_tran = new MWearerStdTran();
+          $results = new Resultset(NULL, $m_wearer_std_tran, $m_wearer_std_tran->getReadConnection()->query($arg_str));
+          $result_obj = (array)$results;
+          $results_cnt = $result_obj["\0*\0_count"];
+      }
+
 //    $transaction->commit();
   } catch (Exception $e) {
       $results = new Resultset(NULL, $t_order_tran, $t_order_tran->getReadConnection()->query('rollback'));

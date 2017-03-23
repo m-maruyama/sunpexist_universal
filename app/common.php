@@ -100,6 +100,18 @@ $app->post('/global_menu', function () use ($app) {
     if($app->session->get("auth")['button29_use_flg']==1){$json_list['button29_use_flg']=1;};
     if($app->session->get("auth")['button30_use_flg']==1){$json_list['button30_use_flg']=1;};
 
+    //予備契約フラグ1の表示制御
+    //ログインしているアカウントの企業に紐付く契約の中に、１つでも下記条件を満たす契約があった場合、
+    //ホーム画面の特定のボタンを利用不可（非表示）に切り替える。
+    if ($auth["sub_cont_flg1_exist"]) {
+        $json_list['button1_use_flg']=0;//貸与開始
+        $json_list['button2_use_flg']=0;//交換
+        $json_list['button3_use_flg']=0;//職種変更または異動
+        $json_list['button4_use_flg']=0;//貸与終了
+        $json_list['button5_use_flg']=0;//その他貸与・不要品返却
+        $json_list['button12_use_flg']=0;//着用者編集
+    }
+
     json_encode($json_list);
 
     echo json_encode($json_list);
