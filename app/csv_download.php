@@ -740,7 +740,7 @@ $app->post('/csv_download', function ()use($app){
                 // 色コード
                 $list['color_cd'] = $result->as_color_cd;
                 // サイズコード
-                $list['size_cd'] = ".".$result->as_size_cd."";
+                $list['size_cd'] = "".$result->as_size_cd."";
                 // サイズ2コード
                 $list['size_two_cd'] = $result->as_size_two_cd;
                 $list['input_item_name'] = "-";
