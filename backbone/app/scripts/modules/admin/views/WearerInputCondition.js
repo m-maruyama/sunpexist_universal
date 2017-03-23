@@ -122,7 +122,10 @@ define([
                       }
                       var res_list = res.attributes;
 
-                      $('#agreement_no').prop("disabled", true);
+                        //発注画面 ナビ非表示
+                        $('#pageNav').css('display', 'none');
+
+                        $('#agreement_no').prop("disabled", true);
                       that.render();
                         if(res_list['order_flg']){
                             //着用者情報編集時(商品情報登録済み)は「着用者のみ登録して終了」ボタンを隠す
