@@ -703,7 +703,7 @@ $app->post('/wearer_order_list', function ()use($app){
         // 商品コード　AND
         array_push($m_item_query_list,"item_cd = '".$result->as_item_cd."'");
         // 色コード
-//        array_push($m_item_query_list,"color_cd = '".$result->as_color_cd."'");
+        array_push($m_item_query_list,"color_cd = '".$result->as_color_cd."'");
         $query = implode(' AND ', $m_item_query_list);
         //--- クエリー実行・取得 ---//
         $m_item_results = MItem::find(array(
