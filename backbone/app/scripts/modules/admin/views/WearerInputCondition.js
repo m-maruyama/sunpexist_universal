@@ -162,9 +162,6 @@ define([
                             change_select(that.model, $('#agreement_no').val(), that.ui.section.val(), that.ui.m_shipment_to.val(), that.ui.m_shipment_to.children(':selected').text());
 
                         }
-                        //job_type
-                        var job_type_val = $('#job_type').val();
-                        window.sessionStorage.setItem("job_type_before", job_type_val);
                     }
                 });
             },
@@ -390,9 +387,9 @@ define([
                 },
                 'change @ui.job_type': function () {
                     //貸与パターン」のセレクトボックス変更時に、職種マスタ．特別職種フラグ＝ありの貸与パターンだった場合、アラートメッセージを表示する。
+                    //job_type
                     var sp_flg = this.ui.job_type.val().split(',');
                     if (sp_flg[1] === '1') {
-
                         // はいだったら何もしない。いいえだったら元に戻す。
                         // JavaScript モーダルで表示
                         $('#myModal').modal('show'); //追加
@@ -404,9 +401,12 @@ define([
                         });
                         $("#btn_cancel").off();
                         $("#btn_cancel").on('click',function() { //追加
-                            var job_type_before = window.sessionStorage.getItem("job_type_before");
-                            $('#job_type').val(job_type_before);
+                            var job_type_set = window.sessionStorage.getItem("job_type_before");
+                            $('#job_type').val(job_type_set);
                         });
+                    }else{
+                        var before_job_type_val = $('#job_type').val();
+                        window.sessionStorage.setItem("job_type_before", before_job_type_val);
                     }
                 },
             },
