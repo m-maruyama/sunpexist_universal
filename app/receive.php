@@ -91,7 +91,7 @@ $app->post('/receive/search', function ()use($app){
     }
     //拠点
     if(!empty($cond['section'])){
-        array_push($query_list,"t_order.rntl_sect_cd = '".$cond['section']."'");
+        array_push($query_list,"(t_order.rntl_sect_cd = '".$cond['section']."' OR t_order.order_rntl_sect_cd = '".$cond['section']."')");
     }
     //貸与パターン
     if(!empty($cond['job_type'])){
