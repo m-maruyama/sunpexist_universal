@@ -140,9 +140,9 @@ $app->post('/unreturn/search', function ()use($app){
     //array_push($query_list,"m_wearer_std.werer_sts_kbn = '1'");
 
     //ゼロ埋めがない場合、ログインアカウントの条件追加
-    if($rntl_sect_cd_zero_flg == 0){
-        //array_push($query_list,"m_contract_resource.accnt_no = '$accnt_no'");
-    }
+//    if($rntl_sect_cd_zero_flg == 0){
+//        //array_push($query_list,"m_contract_resource.accnt_no = '$accnt_no'");
+//    }
 
     $status_kbn_list = array();
 
