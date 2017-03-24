@@ -91,7 +91,8 @@ $app->post('/receive/search', function ()use($app){
     }
     //拠点
     if(!empty($cond['section'])){
-        array_push($query_list,"(t_order.rntl_sect_cd = '".$cond['section']."' OR t_order.order_rntl_sect_cd = '".$cond['section']."')");
+        //array_push($query_list,"(t_order.rntl_sect_cd = '".$cond['section']."' OR t_order.order_rntl_sect_cd = '".$cond['section']."')");
+        array_push($query_list,"t_order.rntl_sect_cd = '".$cond['section']."'");
     }
     //貸与パターン
     if(!empty($cond['job_type'])){
@@ -494,9 +495,9 @@ $app->post('/receive/search', function ()use($app){
         $arg_str .= " AND m_section.rntl_cont_no = m_contract_resource.rntl_cont_no";
         $arg_str .= " AND m_section.rntl_sect_cd = m_contract_resource.rntl_sect_cd)";
         $arg_str .= " ON t_order.m_section_comb_hkey = m_section.m_section_comb_hkey";
-        $arg_str .= " OR (t_order.corporate_id = m_contract_resource.corporate_id";
-        $arg_str .= " AND t_order.rntl_cont_no = m_contract_resource.rntl_cont_no";
-        $arg_str .= " AND t_order.order_rntl_sect_cd = m_section.rntl_sect_cd)";
+//        $arg_str .= " OR (t_order.corporate_id = m_contract_resource.corporate_id";
+//        $arg_str .= " AND t_order.rntl_cont_no = m_contract_resource.rntl_cont_no";
+//        $arg_str .= " AND t_order.order_rntl_sect_cd = m_section.rntl_sect_cd)";
     }
     $arg_str .= " INNER JOIN m_wearer_std";
     $arg_str .= " ON t_order.werer_cd = m_wearer_std.werer_cd";
