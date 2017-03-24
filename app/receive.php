@@ -494,6 +494,9 @@ $app->post('/receive/search', function ()use($app){
         $arg_str .= " AND m_section.rntl_cont_no = m_contract_resource.rntl_cont_no";
         $arg_str .= " AND m_section.rntl_sect_cd = m_contract_resource.rntl_sect_cd)";
         $arg_str .= " ON t_order.m_section_comb_hkey = m_section.m_section_comb_hkey";
+        $arg_str .= " OR (t_order.corporate_id = m_contract_resource.corporate_id";
+        $arg_str .= " AND t_order.rntl_cont_no = m_contract_resource.rntl_cont_no";
+        $arg_str .= " AND t_order.order_rntl_sect_cd = m_section.rntl_sect_cd)";
     }
     $arg_str .= " INNER JOIN m_wearer_std";
     $arg_str .= " ON t_order.werer_cd = m_wearer_std.werer_cd";
@@ -525,7 +528,6 @@ $app->post('/receive/search', function ()use($app){
         $arg_str .= " ORDER BY ";
         $arg_str .= $q_sort_key." ".$order;
     }
-    ChromePhp::log($arg_str);
     $t_delivery_goods_state_details = new TDeliveryGoodsStateDetails();
     $results = new Resultset(null, $t_delivery_goods_state_details, $t_delivery_goods_state_details->getReadConnection()->query($arg_str));
     $result_obj = (array)$results;
