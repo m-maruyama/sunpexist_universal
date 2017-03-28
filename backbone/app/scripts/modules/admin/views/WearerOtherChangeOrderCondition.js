@@ -231,11 +231,19 @@ define([
 			events: {
 				// 「戻る」ボタン
 				'click @ui.back': function(){
-					// 検索画面の条件項目を取得
-					var cond = window.sessionStorage.getItem("wearer_size_change_cond");
-					window.sessionStorage.setItem("back_wearer_size_change_cond", cond);
-					// 検索一覧画面へ遷移
-					location.href="wearer_size_change.html";
+
+					$('#myModal').modal(); //追加
+					//メッセージの修正
+					document.getElementById("confirm_txt").innerHTML=App.cancel_msg; //追加　このメッセージはapp.jsで定義
+					$("#btn_ok").off();
+					$("#btn_ok").on('click',function() { //追加
+						hideModal();
+						// 検索画面の条件項目を取得
+						var cond = window.sessionStorage.getItem("wearer_size_change_cond");
+						window.sessionStorage.setItem("back_wearer_size_change_cond", cond);
+						// 検索一覧画面へ遷移
+						location.href="wearer_size_change.html";
+					});
 				},
 				// 「発注取消」ボタン
 				'click @ui.delete': function(){
