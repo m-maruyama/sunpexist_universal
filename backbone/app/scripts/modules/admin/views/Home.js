@@ -44,6 +44,19 @@ define([
 								$(".document").append("<li>" + "<a id='" + manual_list[i].name + "-" + manual_list[i].file + "-" + manual_list[i].corporate + "'>" + manual_list[i].name + "</a>" + "</li>");
 							}
 						}
+					},
+					complete:function () {
+						//ボタンの数を数えてゼロ個だったら、ホーム画面の１〜５の大項目を非表示にする。
+						for(var i=1;i<=5; i++){
+							var counter = 0;
+							$('#list-box-0'+i+' li').each(function () {
+								counter++;
+							});
+							console.log(counter);
+							if(counter == 0){
+								$('#box-0'+i).css('display', 'none');
+							}
+						}
 					}
 				});
 
