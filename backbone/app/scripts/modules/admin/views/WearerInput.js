@@ -20,7 +20,8 @@ define([
 				"input_insert": "#input_insert",
 				"input_insert_button": "#input_insert_button",
 				"input_item_button": "#input_item_button",
-				"input_item" : "#input_item"
+				"input_item" : "#input_item",
+				"input_next" : "#input_next"
 			},
 			regions: {
 				"agreement_no": ".agreement_no",
@@ -162,7 +163,19 @@ define([
 							}
 						}
 					});
+				},
+				'click @ui.input_next': function(e) {
+					e.preventDefault();
+					$('#myModal').modal(); //追加
+					//メッセージの修正
+					document.getElementById("confirm_txt").innerHTML=App.cancel_msg; //追加　このメッセージはapp.jsで定義
+					$("#btn_ok").off();
+					$("#btn_ok").on('click',function() { //追加
+						hideModal();
+					location.href ="wearer_search.html";
+					});
 				}
+
 			}
 		});
 	});
