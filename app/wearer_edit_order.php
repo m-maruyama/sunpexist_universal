@@ -489,7 +489,6 @@ $app->post('/wearer_edit_delete', function ()use($app){
   // フロントパラメータ取得
   $cond = $params['data'];
   //ChromePhp::LOG("フロント側パラメータ");
-  //ChromePhp::LOG($cond);
 
   $json_list = array();
   // DB更新エラーコード 0:正常 1:更新エラー
@@ -499,28 +498,28 @@ $app->post('/wearer_edit_delete', function ()use($app){
     //--着用者基本マスタトラン削除--//
     // 発注情報トランを参照
     //ChromePhp::LOG("発注情報トラン参照");
-    $query_list = array();
-    array_push($query_list, "corporate_id = '".$auth['corporate_id']."'");
-    array_push($query_list, "rntl_cont_no = '".$cond['rntl_cont_no']."'");
-    array_push($query_list, "werer_cd = '".$cond['werer_cd']."'");
-    $query = implode(' AND ', $query_list);
-
-    $arg_str = "";
-    $arg_str = "SELECT distinct on (order_req_no) ";
-    $arg_str .= "*";
-    $arg_str .= " FROM ";
-    $arg_str .= "t_order_tran";
-    $arg_str .= " WHERE ";
-    $arg_str .= $query;
-    $arg_str .= " ORDER BY order_req_no DESC";
-    //ChromePhp::LOG($arg_str);
-    $t_order_tran = new TOrderTran();
-    $results = new Resultset(NULL, $t_order_tran, $t_order_tran->getReadConnection()->query($arg_str));
-    $result_obj = (array)$results;
-    $results_cnt = $result_obj["\0*\0_count"];
-    //ChromePhp::LOG($results_cnt);
-
-    if ($results_cnt == 0) {
+//    $query_list = array();
+//    array_push($query_list, "corporate_id = '".$auth['corporate_id']."'");
+//    array_push($query_list, "rntl_cont_no = '".$cond['rntl_cont_no']."'");
+//    array_push($query_list, "werer_cd = '".$cond['werer_cd']."'");
+//    $query = implode(' AND ', $query_list);
+//
+//    $arg_str = "";
+//    $arg_str = "SELECT distinct on (order_req_no) ";
+//    $arg_str .= "*";
+//    $arg_str .= " FROM ";
+//    $arg_str .= "t_order_tran";
+//    $arg_str .= " WHERE ";
+//    $arg_str .= $query;
+//    $arg_str .= " ORDER BY order_req_no DESC";
+//    //ChromePhp::LOG($arg_str);
+//    $t_order_tran = new TOrderTran();
+//    $results = new Resultset(NULL, $t_order_tran, $t_order_tran->getReadConnection()->query($arg_str));
+//    $result_obj = (array)$results;
+//    $results_cnt = $result_obj["\0*\0_count"];
+//    //ChromePhp::LOG($results_cnt);
+//
+//    if ($results_cnt == 0) {
       // 上記発注情報トラン件数が0の場合に着用者基本マスタトランのデータを削除する
       //ChromePhp::LOG("着用者基本マスタトラン削除");
       $query_list = array();
@@ -529,6 +528,7 @@ $app->post('/wearer_edit_delete', function ()use($app){
       array_push($query_list, "m_wearer_std_tran.rntl_cont_no = '".$cond['rntl_cont_no']."'");
       array_push($query_list, "m_wearer_std_tran.rntl_sect_cd = '".$cond['rntl_sect_cd']."'");
       array_push($query_list, "m_wearer_std_tran.job_type_cd = '".$cond['job_type_cd']."'");
+      array_push($query_list, "m_wearer_std_tran.order_req_no = '".$cond['order_req_no']."'");
       // 発注区分「着用者編集」
       array_push($query_list, "m_wearer_std_tran.order_sts_kbn = '6'");
       $query = implode(' AND ', $query_list);
@@ -544,51 +544,51 @@ $app->post('/wearer_edit_delete', function ()use($app){
       $result_obj = (array)$results;
       $results_cnt = $result_obj["\0*\0_count"];
       //ChromePhp::LOG($results_cnt);
-    } else {
-      // 上記発注情報トラン件数が1件以上の場合、着用者基本マスタトラン情報を更新
-      $list = array();
-      $all_list = array();
-      $paginator_model = new PaginatorModel(
-          array(
-              "data"  => $results,
-              "limit" => 1,
-              "page" => 1
-          )
-      );
-      $paginator = $paginator_model->getPaginate();
-      $results = $paginator->items;
-      foreach ($results as $result) {
-        $order_sts_kbn = $result->order_sts_kbn;
-      }
-
-      // 着用者マスタトラン（発注状況区分）更新
-      $query_list = array();
-      array_push($query_list, "m_wearer_std_tran.corporate_id = '".$auth['corporate_id']."'");
-      array_push($query_list, "m_wearer_std_tran.werer_cd = '".$cond['werer_cd']."'");
-      array_push($query_list, "m_wearer_std_tran.rntl_cont_no = '".$cond['rntl_cont_no']."'");
-      array_push($query_list, "m_wearer_std_tran.rntl_sect_cd = '".$cond['rntl_sect_cd']."'");
-      array_push($query_list, "m_wearer_std_tran.job_type_cd = '".$cond['job_type_cd']."'");
-      // 発注区分「着用者編集」
-      array_push($query_list, "m_wearer_std_tran.order_sts_kbn = '6'");
-      $src_query = implode(' AND ', $query_list);
-
-      $up_query_list = array();
-      // 発注状況区分
-      array_push($up_query_list, "order_sts_kbn = '".$order_sts_kbn."'");
-      $up_query = implode(',', $up_query_list);
-
-      $arg_str = "";
-      $arg_str = "UPDATE m_wearer_std_tran SET ";
-      $arg_str .= $up_query;
-      $arg_str .= " WHERE ";
-      $arg_str .= $src_query;
-      //ChromePhp::LOG($arg_str);
-      $m_wearer_std_tran = new MWearerStdTran();
-      $results = new Resultset(NULL, $m_wearer_std_tran, $m_wearer_std_tran->getReadConnection()->query($arg_str));
-      $result_obj = (array)$results;
-      $results_cnt = $result_obj["\0*\0_count"];
-      //ChromePhp::LOG($results_cnt);
-    }
+//    } else {
+//      // 上記発注情報トラン件数が1件以上の場合、着用者基本マスタトラン情報を更新
+//      $list = array();
+//      $all_list = array();
+//      $paginator_model = new PaginatorModel(
+//          array(
+//              "data"  => $results,
+//              "limit" => 1,
+//              "page" => 1
+//          )
+//      );
+//      $paginator = $paginator_model->getPaginate();
+//      $results = $paginator->items;
+//      foreach ($results as $result) {
+//        $order_sts_kbn = $result->order_sts_kbn;
+//      }
+//
+//      // 着用者マスタトラン（発注状況区分）更新
+//      $query_list = array();
+//      array_push($query_list, "m_wearer_std_tran.corporate_id = '".$auth['corporate_id']."'");
+//      array_push($query_list, "m_wearer_std_tran.werer_cd = '".$cond['werer_cd']."'");
+//      array_push($query_list, "m_wearer_std_tran.rntl_cont_no = '".$cond['rntl_cont_no']."'");
+//      array_push($query_list, "m_wearer_std_tran.rntl_sect_cd = '".$cond['rntl_sect_cd']."'");
+//      array_push($query_list, "m_wearer_std_tran.job_type_cd = '".$cond['job_type_cd']."'");
+//      // 発注区分「着用者編集」
+//      array_push($query_list, "m_wearer_std_tran.order_sts_kbn = '6'");
+//      $src_query = implode(' AND ', $query_list);
+//
+//      $up_query_list = array();
+//      // 発注状況区分
+//      array_push($up_query_list, "order_sts_kbn = '".$order_sts_kbn."'");
+//      $up_query = implode(',', $up_query_list);
+//
+//      $arg_str = "";
+//      $arg_str = "UPDATE m_wearer_std_tran SET ";
+//      $arg_str .= $up_query;
+//      $arg_str .= " WHERE ";
+//      $arg_str .= $src_query;
+//      //ChromePhp::LOG($arg_str);
+//      $m_wearer_std_tran = new MWearerStdTran();
+//      $results = new Resultset(NULL, $m_wearer_std_tran, $m_wearer_std_tran->getReadConnection()->query($arg_str));
+//      $result_obj = (array)$results;
+//      $results_cnt = $result_obj["\0*\0_count"];
+//      //ChromePhp::LOG($results_cnt);
+//    }
   } catch (Exception $e) {
     $json_list["error_code"] = "1";
     //ChromePhp::LOG("発注取消処理エラー");
