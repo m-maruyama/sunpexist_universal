@@ -58,6 +58,7 @@ $app->post('/print/pdf', function ()use($app){
     $arg_str .= "m_input_item.input_item_name as as_input_item_name,";
     $arg_str .= "t_order.order_qty as as_order_qty,";
     $arg_str .= "t_order.size_two_cd as as_size_two_cd,";
+    $arg_str .= "t_order.order_rntl_sect_cd as as_order_rntl_sect_cd,";
     $arg_str .= "m_corporate.corporate_name as as_corporate_name,";
     $arg_str .= "m_wearer_std.cster_emply_cd as as_cster_emply_cd,";
     $arg_str .= "t_returned_plan_info.corporate_id as as_corporate_id,";
@@ -70,7 +71,7 @@ $app->post('/print/pdf', function ()use($app){
     $arg_str .= "t_returned_plan_info.order_date as as_re_order_date,";
     $arg_str .= "t_returned_plan_info.return_status as as_return_status,";
     $arg_str .= "t_returned_plan_info.return_date as as_return_date,";
-    $arg_str .= "t_returned_plan_info.rntl_sect_cd as as_rntl_sect_cd,";
+    $arg_str .= "t_order.order_rntl_sect_cd as as_rntl_sect_cd,";
     $arg_str .= "t_returned_plan_info.job_type_cd as as_job_type_cd,";
     $arg_str .= "t_returned_plan_info.werer_cd as as_werer_cd,";
     $arg_str .= "t_returned_plan_info.return_plan_qty as as_return_plan_qty,";
@@ -84,7 +85,10 @@ $app->post('/print/pdf', function ()use($app){
     $arg_str .= " ON t_returned_plan_info.order_req_no = t_order_state.order_req_no)";//返却予定情報.発注依頼No = 発注状況情報.発注依頼No
     $arg_str .= " ON t_order.order_req_no = t_returned_plan_info.order_req_no"; //発注情報.発注依頼No = 発注状況情報.発注依頼No
     $arg_str .= " INNER JOIN m_section";
-    $arg_str .= " ON t_order.m_section_comb_hkey = m_section.m_section_comb_hkey";//発注情報.部門マスタ_統合ハッシュキー = 部門マスタ.部門マスタ_統合ハッシュキー
+    $arg_str .= " ON t_order.corporate_id = m_section.corporate_id";
+    $arg_str .= " AND t_order.rntl_cont_no = m_section.rntl_cont_no";
+    $arg_str .= " AND t_order.order_rntl_sect_cd = m_section.rntl_sect_cd";
+    //発注情報.部門マスタ_統合ハッシュキー = 部門マスタ.部門マスタ_統合ハッシュキー
     //$arg_str .= " INNER JOIN (m_job_type INNER JOIN m_input_item ON m_job_type.m_job_type_comb_hkey = m_input_item.m_job_type_comb_hkey)"; //職種マスタ.職種マスタ_統合ハッシュキー = 投入商品マスタ.職種マスタ_統合ハッシュキー
     //$arg_str .= " ON t_order.m_job_type_comb_hkey = m_job_type.m_job_type_comb_hkey";
     $arg_str .= " LEFT JOIN (m_job_type INNER JOIN m_input_item";
@@ -153,7 +157,6 @@ $app->post('/print/pdf', function ()use($app){
     foreach ($gencode as $gencode_map) {
         $list['order_reason_kbn_name'] = $gencode_map->gen_name;
     }
-
 
     //FPDIのインスタンス化
     $pdf = new FPDI('L','mm','A4');
