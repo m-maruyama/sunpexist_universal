@@ -202,11 +202,13 @@ define([
 					var rntl_sect_cd = val[1];
 					var job_type_cd = val[2];
 					var werer_cd = val[3];
+					var order_req_no = $("button[name='complete_param']").val();
 					var data = {
 						"werer_cd": werer_cd,
 						"rntl_cont_no": rntl_cont_no,
 						"rntl_sect_cd": rntl_sect_cd,
-						"job_type_cd": job_type_cd
+						"job_type_cd": job_type_cd,
+						"order_req_no": order_req_no
 					};
 
 					var rntl_sect_cd = $("select[name='section']").val();
