@@ -20,10 +20,10 @@ $app->post('/import_csv_all', function () use ($app) {
     // アカウントセッション情報取得
     $auth = $app->session->get("auth");
     $accnt_no = $auth["accnt_no"];
+
     //ChromePhp::log('btmu');
     //契約リソースマスタゼロ埋め
     //（前処理）契約リソースマスタ参照、拠点コード「0」埋めデータ確認
-
     $query_list = array();
     $list = array();
     $all_list = array();
@@ -456,6 +456,114 @@ $app->post('/import_csv_all', function () use ($app) {
     //エラー1 発注区分1 追加貸与不要品返却フラグ0 理由区分03
     //エラー2 発注区分2 追加貸与不要品返却フラグ0 理由区分07
     //エラー3 発注区分2 追加貸与不要品返却フラグ1 理由区分07以外
+    //$reason_kbn_1_str = implode(' OR ', $reason_kbn_1);
+//    $reason_kbn = json_decode(jinin_order_kbn_list,true);
+//    $reason_kbn = json_decode(maisu_order_kbn_list,true);
+
+
+    $jinin_reason_kbn = json_decode(jinin_order_kbn_list,true);
+    $maisu_reason_kbn = json_decode(maisu_order_kbn_list,true);
+    $add_jinin_reason_kbn = json_decode(addflg_jinin_order_kbn_list,true);
+    $add_maisu_reason_kbn = json_decode(addflg_maisu_order_kbn_list,true);
+//    implode(' OR ', $reason_kbn);
+    //******* 貸与 ******//
+    //貸与 人員管理
+    if(count($jinin_reason_kbn['kbn']['1'])>1){
+        $jinin_taiyo_reason_kbn = "'".implode("','", $jinin_reason_kbn['kbn']['1'])."'";
+    }else{
+        $jinin_taiyo_reason_kbn = "'".$jinin_reason_kbn['kbn']['1'][0];
+    }
+    ChromePhp::log($jinin_taiyo_reason_kbn);
+    //貸与 貸与枚数管理
+    if(count($maisu_reason_kbn['kbn']['1'])>1){
+        $maisu_taiyo_reason_kbn = "'".implode(',', $maisu_reason_kbn['kbn']['1'])."'";
+    }else{
+        $maisu_taiyo_reason_kbn = "'".$maisu_reason_kbn['kbn']['1'][0]."'";
+    }
+    //******* 終了 ******//
+    // 人員管理
+    if(count($jinin_reason_kbn['kbn']['2'])>1){
+        $jinin_end_reason_kbn = "'".implode(',', $jinin_reason_kbn['kbn']['2'])."'";
+    }else{
+        $jinin_end_reason_kbn = "'".$jinin_reason_kbn['kbn']['2'][0]."'";
+    }
+    //返却 貸与枚数管理
+    if(count($maisu_reason_kbn['kbn']['2'])>1){
+        $maisu_end_reason_kbn = "'".implode(',', $maisu_reason_kbn['kbn']['2'])."'";
+    }else{
+        $maisu_end_reason_kbn = "'".$maisu_reason_kbn['kbn']['2'][0]."'";
+    }
+    //******* サイズ交換 ******//
+    //サイズ交換  人員管理
+    if(count($jinin_reason_kbn['kbn']['3'])>1){
+        $jinin_exchange_reason_kbn = "'".implode(',', $jinin_reason_kbn['kbn']['3'])."'";
+    }else{
+        $jinin_exchange_reason_kbn = "'".$jinin_reason_kbn['kbn']['3'][0]."'";
+    }
+    //サイズ交換  貸与枚数管理
+    if(count($maisu_reason_kbn['kbn']['3'])>1){
+        $maisu_exchange_reason_kbn = "'".implode(',', $maisu_reason_kbn['kbn']['3'])."'";
+    }else{
+        $maisu_exchange_reason_kbn = "'".$maisu_reason_kbn['kbn']['3'][0]."'";
+    }
+    //******* その他交換 ******//
+    //その他交換 人員管理
+    if(count($jinin_reason_kbn['kbn']['4'])>1){
+        $jinin_otherchange_reason_kbn = "'".implode(',', $jinin_reason_kbn['kbn']['4'])."'";
+    }else{
+        $jinin_otherchange_reason_kbn = "'".$jinin_reason_kbn['kbn']['4'][0]."'";
+    }
+    //その他交換 貸与枚数管理
+    if(count($maisu_reason_kbn['kbn']['4'])>1){
+        $maisu_otherchange_reason_kbn = "'".implode(',', $maisu_reason_kbn['kbn']['4'])."'";
+    }else{
+        $maisu_otherchange_reason_kbn = "'".$maisu_reason_kbn['kbn']['4'][0]."'";
+    }
+    //******* 異動 ******//
+    //異動 人員管理
+    if(count($jinin_reason_kbn['kbn']['5'])>1){
+        $jinin_move_reason_kbn = "'".implode(',', $jinin_reason_kbn['kbn']['5'])."'";
+    }else{
+        $jinin_move_reason_kbn = "'".$jinin_reason_kbn['kbn']['5'][0]."'";
+    }
+    //異動 貸与枚数管理
+    if(count($maisu_reason_kbn['kbn']['5'])>1){
+        $maisu_move_reason_kbn = "'".implode(',', $maisu_reason_kbn['kbn']['5'])."'";
+    }else{
+        $maisu_move_reason_kbn = "'".$maisu_reason_kbn['kbn']['5'][0]."'";
+    }
+
+    //追加貸与 人員管理
+    if(count($add_jinin_reason_kbn['kbn']['1'])>1){
+        $jinin_add_reason_kbn = "'".implode(',', $add_jinin_reason_kbn['kbn']['1'])."'";
+    }else{
+        $jinin_add_reason_kbn = "'".$add_jinin_reason_kbn['kbn']['1'][0]."'";
+    }
+
+    //不要品返却 人員管理
+    if(count($add_jinin_reason_kbn['kbn']['2'])>1){
+        $jinin_rtn_reason_kbn = "'".implode(',', $add_jinin_reason_kbn['kbn']['2'])."'";
+    }else{
+        $jinin_rtn_reason_kbn = "'".$add_jinin_reason_kbn['kbn']['2'][0]."'";
+    }
+
+    //追加貸与 貸与枚数管理
+    if(count($add_maisu_reason_kbn['kbn']['1'])>1){
+        $maisu_add_reason_kbn = "'".implode(',', $add_maisu_reason_kbn['kbn']['1'])."'";
+    }else{
+        $maisu_add_reason_kbn = "'".$add_maisu_reason_kbn['kbn']['1'][0]."'";
+    }
+
+    //不要品返却 貸与枚数管理
+    if(count($add_maisu_reason_kbn['kbn']['2'])>1){
+        $maisu_rtn_reason_kbn = "'".implode(',', $add_maisu_reason_kbn['kbn']['2'])."'";
+    }else{
+        $maisu_rtn_reason_kbn = "'".$add_maisu_reason_kbn['kbn']['2'][0]."'";
+    }
+
+
+
+    //m_job_type.order_control_unit IS '発注管理単位	 1:人員管理、2:貸与枚数管理';
 
     $arg_str = "";
     $arg_str = "SELECT";
@@ -465,25 +573,69 @@ $app->post('/import_csv_all', function () use ($app) {
     $arg_str .= " ON t_import_job.rent_pattern_code = m_job_type.job_type_cd";
     $arg_str .= " WHERE";
     $arg_str .= " t_import_job.job_no = '" . $job_no . "'";
-    $arg_str .= " AND t_import_job.order_kbn = '1'";
     $arg_str .= " AND m_job_type.corporate_id = '$corporate_id'";
     $arg_str .= " AND m_job_type.rntl_cont_no = '$agreement_no'";
-    $arg_str .= " AND (m_job_type.add_and_rtn_rntl_flg = '0' AND order_reason_kbn = '03')";
-    $arg_str .= " UNION";
-    $arg_str .= " SELECT";
-    $arg_str .= " * ";
-    $arg_str .= "FROM t_import_job";
-    $arg_str .= " INNER JOIN m_job_type";
-    $arg_str .= " ON t_import_job.rent_pattern_code = m_job_type.job_type_cd";
-    $arg_str .= " WHERE ";
-    $arg_str .= "t_import_job.job_no = '" . $job_no . "'";
-    $arg_str .= " AND t_import_job.order_kbn = '2'";
-    $arg_str .= " AND m_job_type.corporate_id = '$corporate_id'";
-    $arg_str .= " AND m_job_type.rntl_cont_no = '$agreement_no'";
-    $arg_str .= " AND ((m_job_type.add_and_rtn_rntl_flg = '0' AND order_reason_kbn = '07')";
-    $arg_str .= " OR (m_job_type.add_and_rtn_rntl_flg = '1' AND order_reason_kbn <> '07')) ";
+    //発注区分1用
+    $arg_str .= " AND((t_import_job.order_kbn = '1'";
+    $arg_str .= " AND((m_job_type.order_control_unit = '1'";
+    $arg_str .= " AND m_job_type.add_and_rtn_rntl_flg = '1'";
+    $arg_str .= " AND order_reason_kbn NOT IN ($jinin_add_reason_kbn))";
+    $arg_str .= " OR (";
+    $arg_str .= " m_job_type.order_control_unit = '2'";
+    $arg_str .= " AND m_job_type.add_and_rtn_rntl_flg = '1'";
+    $arg_str .= " AND order_reason_kbn NOT IN ($maisu_add_reason_kbn))";
+    $arg_str .= " OR (";
+    $arg_str .= " m_job_type.order_control_unit = '1'";
+    $arg_str .= " AND m_job_type.add_and_rtn_rntl_flg = '0'";
+    $arg_str .= " AND order_reason_kbn NOT IN ($jinin_taiyo_reason_kbn))";
+    $arg_str .= " OR (";
+    $arg_str .= " m_job_type.order_control_unit = '2'";
+    $arg_str .= " AND m_job_type.add_and_rtn_rntl_flg = '0'";
+    $arg_str .= " AND order_reason_kbn NOT IN ($maisu_taiyo_reason_kbn))";
+    $arg_str .= " )) OR";
+    //発注区分2用
+    $arg_str .= " (t_import_job.order_kbn = '2'";
+    $arg_str .= " AND((m_job_type.order_control_unit = '1'";
+    $arg_str .= " AND m_job_type.add_and_rtn_rntl_flg = '1'";
+    $arg_str .= " AND order_reason_kbn NOT IN ($jinin_rtn_reason_kbn))";
+    $arg_str .= " OR (";
+    $arg_str .= " m_job_type.order_control_unit = '2'";
+    $arg_str .= " AND m_job_type.add_and_rtn_rntl_flg = '1'";
+    $arg_str .= " AND order_reason_kbn NOT IN ($maisu_rtn_reason_kbn))";
+    $arg_str .= " OR (";
+    $arg_str .= " m_job_type.order_control_unit = '1'";
+    $arg_str .= " AND m_job_type.add_and_rtn_rntl_flg = '0'";
+    $arg_str .= " AND order_reason_kbn NOT IN ($jinin_end_reason_kbn))";
+    $arg_str .= " OR (";
+    $arg_str .= " m_job_type.order_control_unit = '2'";
+    $arg_str .= " AND m_job_type.add_and_rtn_rntl_flg = '0'";
+    $arg_str .= " AND order_reason_kbn NOT IN ($maisu_end_reason_kbn))";
+    $arg_str .= " )) OR";
+    //発注区分3用
+    $arg_str .= " (t_import_job.order_kbn = '3'";
+    $arg_str .= " AND((m_job_type.order_control_unit = '1'";
+    $arg_str .= " AND order_reason_kbn NOT IN ($jinin_exchange_reason_kbn))";
+    $arg_str .= " OR (";
+    $arg_str .= " m_job_type.order_control_unit = '2'";
+    $arg_str .= " AND order_reason_kbn NOT IN ($maisu_exchange_reason_kbn))";
+    $arg_str .= " )) OR";
+    //発注区分4用
+    $arg_str .= " (t_import_job.order_kbn = '4'";
+    $arg_str .= " AND((m_job_type.order_control_unit = '1'";
+    $arg_str .= " AND order_reason_kbn NOT IN ($jinin_otherchange_reason_kbn))";
+    $arg_str .= " OR (";
+    $arg_str .= " m_job_type.order_control_unit = '2'";
+    $arg_str .= " AND order_reason_kbn NOT IN ($maisu_otherchange_reason_kbn))";
+    $arg_str .= " )) OR";
+    //発注区分5用
+    $arg_str .= " (t_import_job.order_kbn = '5'";
+    $arg_str .= " AND((m_job_type.order_control_unit = '1'";
+    $arg_str .= " AND order_reason_kbn NOT IN ($jinin_move_reason_kbn))";
+    $arg_str .= " OR (";
+    $arg_str .= " m_job_type.order_control_unit = '2'";
+    $arg_str .= " AND order_reason_kbn NOT IN ($maisu_move_reason_kbn)";
+    $arg_str .= " ))))";
     $arg_str .= "ORDER BY line_no ASC";
-    //ChromePhp::log($arg_str);
     $results = new Resultset(null, $t_import_job, $t_import_job->getReadConnection()->query($arg_str));
     $result_obj = (array)$results;
     $results_cnt = $result_obj["\0*\0_count"];
@@ -615,7 +767,7 @@ $app->post('/import_csv_all', function () use ($app) {
     $arg_str .= "t_import_job.cster_emply_cd = m_wearer_std_tran.cster_emply_cd ";
     $arg_str .= "WHERE ";
     $arg_str .= "t_import_job.job_no = '" . $job_no . "' AND m_wearer_std_tran.corporate_id = '$corporate_id' AND m_wearer_std_tran.rntl_cont_no = '$agreement_no' ";
-    $arg_str .= "AND t_import_job.order_kbn <> '5'";
+    $arg_str .= "AND t_import_job.order_kbn = '1'";
     //$arg_str .= "ORDER BY line_no ASC";
     $results = new Resultset(null, $t_import_job, $t_import_job->getReadConnection()->query($arg_str));
     $result_obj = (array)$results;
@@ -864,7 +1016,7 @@ $app->post('/import_csv_all', function () use ($app) {
         $paginator = $paginator_model->getPaginate();
         $results = $paginator->items;
         foreach ($results as $result) {
-            if (count($error_list) < 20) {
+            if (count($errlist) < 20) {
                 $error_list[] = $result->line_no . '行目の色コードが不正です。';
             } else {
                 $json_list['errors'] = $error_list;
@@ -875,7 +1027,7 @@ $app->post('/import_csv_all', function () use ($app) {
         }
     }
 
-    //C-3-5 社員番号ごとのお客様発注no(emply_order_req_no)の重複 検索条件
+    //同じ社員番号、同じ発注区分でお客様発注Noが異なっていればエラー
     $arg_str8 = "";
     $arg_str8 .= "SELECT ";
     $arg_str8 .= " *";
@@ -913,7 +1065,7 @@ $app->post('/import_csv_all', function () use ($app) {
         $results = $paginator->items;
         foreach ($results as $result) {
             if (count($error_list) < 20) {
-                $error_list[] = $result->line_no . '行目のお客様発注Noが、社員番号違いで重複して使用されています。';
+                $error_list[] = $result->line_no . '行目のお客様発注Noが、同一の発注区分で異なっています。';
             } else {
 
                 $json_list['errors'] = $error_list;
@@ -924,21 +1076,85 @@ $app->post('/import_csv_all', function () use ($app) {
         }
     }
 
-    //同一社員番号内でお客様発注no違いがある場合はエラー出力
+    //同じ社員番号、違う発注区分で、発注番号が重複していればエラー
+
+    $arg_str8 = "";
+    $arg_str8 .= "SELECT ";
+    $arg_str8 .= " *";
+    $arg_str8 .= " FROM t_import_job as MainT";
+    $arg_str8 .= " INNER JOIN(";
+    $arg_str8 .= "SELECT ";
+    $arg_str8 .= " *";
+    //社員番号と発注区分単位のカウントを求めるSQL
+    $arg_str8 .= " FROM (SELECT cster_emply_cd as main_cster_emply_cd,count(cster_emply_cd) as count_kbn";
+    $arg_str8 .= " FROM";
+    $arg_str8 .= " (SELECT cster_emply_cd,order_kbn";
+    $arg_str8 .= " FROM t_import_job";
+    $arg_str8 .= " WHERE job_no = '" . $job_no . "' ";
+    $arg_str8 .= " GROUP by cster_emply_cd,order_kbn";
+    $arg_str8 .= " ORDER by cster_emply_cd) as T1";
+    $arg_str8 .= " GROUP by cster_emply_cd) as T2";
+    $arg_str8 .= " INNER JOIN (";
+    $arg_str8 .= " SELECT";
+    $arg_str8 .= " cster_emply_cd as sub_cster_emply_cd,count(emply_order_req_no) as count_order_req_no";
+    $arg_str8 .= " FROM (SELECT cster_emply_cd,emply_order_req_no";
+    $arg_str8 .= " FROM t_import_job";
+    $arg_str8 .= " WHERE job_no = '" . $job_no . "' ";
+    $arg_str8 .= " GROUP by cster_emply_cd,emply_order_req_no";
+    $arg_str8 .= " ORDER by cster_emply_cd) as T3";
+    $arg_str8 .= " GROUP by cster_emply_cd) as T4";
+    $arg_str8 .= " ON main_cster_emply_cd = sub_cster_emply_cd";
+    $arg_str8 .= " WHERE count_kbn <> count_order_req_no) as SubT";
+    $arg_str8 .= " ON MainT.cster_emply_cd = sub_cster_emply_cd";
+    $arg_str8 .= " WHERE job_no = '" . $job_no . "' ";
+    $arg_str8 .= "ORDER BY line_no ASC";
+
+    $results8 = new Resultset(null, $t_import_job, $t_import_job->getReadConnection()->query($arg_str8));
+    $result_obj8 = (array)$results8;
+    $results_cnt8 = $result_obj8["\0*\0_count"];
+    if (!empty($results_cnt8)) {
+        $results_count = (count($results8));
+        $paginator_model = new PaginatorModel(
+        array(
+        'data' => $results8,
+        'limit' => $results_count,
+        "page" => 1
+        )
+        );
+        $paginator = $paginator_model->getPaginate();
+        $results = $paginator->items;
+        foreach ($results as $result) {
+            if (count($error_list) < 20) {
+                $error_list[] = $result->line_no . '行目のお客様発注Noが、同一の社員番号内で重複して使用されています。';
+            } else {
+
+                $json_list['errors'] = $error_list;
+                $json_list["error_code"] = "1";
+                echo json_encode($json_list);
+                return;
+            }
+        }
+    }
+
+
+    //異なる社員番号内でお客様発注noが重複している場合はエラー
     $arg_str8_2 = "";
     $arg_str8_2 .= "SELECT ";
     $arg_str8_2 .= " *";
     $arg_str8_2 .= " FROM t_import_job as T1";
     $arg_str8_2 .= " INNER JOIN (";
     $arg_str8_2 .= " SELECT";
-    $arg_str8_2 .= " cster_emply_cd";
+    $arg_str8_2 .= " emply_order_req_no,count(emply_order_req_no) as count_order_req_no";
     $arg_str8_2 .= " FROM (SELECT cster_emply_cd,emply_order_req_no,count(cster_emply_cd)";
     $arg_str8_2 .= " FROM t_import_job";
     $arg_str8_2 .= " WHERE job_no = '" . $job_no . "' ";
-    $arg_str8_2 .= " GROUP BY cster_emply_cd,emply_order_req_no) as T2";
-    $arg_str8_2 .= " GROUP BY cster_emply_cd HAVING count(cster_emply_cd) > 1) as T3";
-    $arg_str8_2 .= " ON T1.cster_emply_cd = T3.cster_emply_cd";
-    $arg_str8_2 .= " WHERE T1.job_no = '" . $job_no . "' ";
+    $arg_str8_2 .= " GROUP BY cster_emply_cd,emply_order_req_no) as T2 ";
+    $arg_str8_2 .= " GROUP BY emply_order_req_no";
+    $arg_str8_2 .= " HAVING count(emply_order_req_no) > 1) as T4 ";
+    $arg_str8_2 .= "ON T1.emply_order_req_no = T4.emply_order_req_no ";
+    $arg_str8_2 .= " WHERE job_no = '" . $job_no . "' ";
+    $arg_str8_2 .= "ORDER BY line_no ASC";
+
     $results8_2 = new Resultset(null, $t_import_job, $t_import_job->getReadConnection()->query($arg_str8_2));
     $result_obj8_2 = (array)$results8_2;
     $results_cnt8_2 = $result_obj8_2["\0*\0_count"];
@@ -955,7 +1171,7 @@ $app->post('/import_csv_all', function () use ($app) {
         $results = $paginator->items;
         foreach ($results as $result) {
             if (count($error_list) < 20) {
-                $error_list[] = $result->line_no . '行目のお客様発注Noが、同一社員番号内で異なっています。';
+                $error_list[] = $result->line_no . '行目のお客様発注Noが、社員番号違いで重複して使用されています。';
             } else {
 
                 $json_list['errors'] = $error_list;
@@ -965,6 +1181,25 @@ $app->post('/import_csv_all', function () use ($app) {
             }
         }
     }
+
+
+//    //同一社員番号内でお客様発注no違いがある場合はエラー出力
+//    $arg_str8_2 = "";
+//    $arg_str8_2 .= "SELECT ";
+//    $arg_str8_2 .= " *";
+//    $arg_str8_2 .= " FROM t_import_job as T1";
+//    $arg_str8_2 .= " INNER JOIN (";
+//    $arg_str8_2 .= " SELECT";
+//    $arg_str8_2 .= " cster_emply_cd,order_kbn";
+//    $arg_str8_2 .= " FROM (SELECT cster_emply_cd,order_kbn,emply_order_req_no,count(cster_emply_cd)";
+//    $arg_str8_2 .= " FROM t_import_job";
+//    $arg_str8_2 .= " WHERE job_no = '" . $job_no . "' ";
+//    $arg_str8_2 .= " GROUP BY cster_emply_cd,order_kbn,emply_order_req_no) as T2";
+//    $arg_str8_2 .= " GROUP BY cster_emply_cd,order_kbn HAVING count(cster_emply_cd) > 1) as T3";
+//    $arg_str8_2 .= " ON T1.cster_emply_cd = T3.cster_emply_cd";
+//    $arg_str8_2 .= " WHERE T1.job_no = '" . $job_no . "' ";
+//    $arg_str8_2 .= "ORDER BY line_no ASC";
+
 
     //C-3-9 お客様発注Noが発注情報、発注情報トランに存在しないこと
     $arg_str9 = "SELECT ";
@@ -1314,7 +1549,8 @@ $app->post('/import_csv_all', function () use ($app) {
                 $result->werer_cd . "-" .
                 $agreement_no . "-" .
                 $result->rntl_sect_cd . "-" .
-                $result->rent_pattern_code
+                $result->rent_pattern_code . "-" .
+                $result->order_req_no
                 );
                 //発注区分前処理
 //                if ($result->order_kbn == '0') {
@@ -1448,7 +1684,7 @@ $app->post('/import_csv_all', function () use ($app) {
         $arg_str .= "(" . $calum_query . ")";
         $arg_str .= " VALUES ";
         $arg_str .= $values_query;
-        //ChromePhp::LOG($arg_str);
+        ChromePhp::LOG($arg_str);
         $results = new Resultset(NULL, $t_import_job, $t_import_job->getReadConnection()->query($arg_str));
         // 着用者基本マスタトラン登録 ここまで
 
@@ -1936,38 +2172,39 @@ function chk_format2($error_list, $line_list, $line_cnt)
         //理由区分
         if (!chk_pattern2($line_list[13], 11)) {
             array_push($error_list, error_msg_format2($line_cnt, '理由区分'));
-        }else {
-            $order_kbn1_reason = json_decode(order_kbn1_list,true);
-            //理由区分チェック
-            if ($line_list[7] == '1') {
-                if ($line_list[13] != $order_kbn1_reason[0] && $line_list[13] != $order_kbn1_reason[1] && $line_list[13] != $order_kbn1_reason[2] && $line_list[13] != $order_kbn1_reason[3]) {
-                    array_push($error_list, error_msg_format2($line_cnt, '理由区分'));
-                }
-            }
-            $order_kbn2_reason = json_decode(order_kbn2_list,true);
-            if ($line_list[7] == '2') {
-                if ($line_list[13] != $order_kbn2_reason[0] && $line_list[13] != $order_kbn2_reason[1] && $line_list[13] != $order_kbn2_reason[2] && $line_list[13] != $order_kbn2_reason[3]) {
-                    array_push($error_list, error_msg_format2($line_cnt, '理由区分'));
-                }
-            }
-            if ($line_list[7] == '3') {
-                if ($line_list[13] != order_kbn3_reason) {
-                    array_push($error_list, error_msg_format2($line_cnt, '理由区分'));
-                }
-            }
-            if ($line_list[7] == '4') {
-                if ($line_list[13] != order_kbn4_reason) {
-                    array_push($error_list, error_msg_format2($line_cnt, '理由区分'));
-                }
-            }
-            if ($line_list[7] == '5') {
-                //定数から呼び出し
-                $order_kbn5_reason = json_decode(order_kbn5_list,true);
-                if ($line_list[13] != $order_kbn5_reason[0] && $line_list[13] != $order_kbn5_reason[1] && $line_list[13] != $order_kbn5_reason[2]) {
-                    array_push($error_list, error_msg_format2($line_cnt, '理由区分'));
-                }
-            }
         }
+//        else {
+//            $order_kbn1_reason = json_decode(order_kbn1_list,true);
+//            //理由区分チェック
+//            if ($line_list[7] == '1') {
+//                if ($line_list[13] != $order_kbn1_reason[0] && $line_list[13] != $order_kbn1_reason[1] && $line_list[13] != $order_kbn1_reason[2] && $line_list[13] != $order_kbn1_reason[3]) {
+//                    array_push($error_list, error_msg_format2($line_cnt, '理由区分'));
+//                }
+//            }
+//            $order_kbn2_reason = json_decode(order_kbn2_list,true);
+//            if ($line_list[7] == '2') {
+//                if ($line_list[13] != $order_kbn2_reason[0] && $line_list[13] != $order_kbn2_reason[1] && $line_list[13] != $order_kbn2_reason[2] && $line_list[13] != $order_kbn2_reason[3]) {
+//                    array_push($error_list, error_msg_format2($line_cnt, '理由区分'));
+//                }
+//            }
+//            if ($line_list[7] == '3') {
+//                if ($line_list[13] != order_kbn3_reason) {
+//                    array_push($error_list, error_msg_format2($line_cnt, '理由区分'));
+//                }
+//            }
+//            if ($line_list[7] == '4') {
+//                if ($line_list[13] != order_kbn4_reason) {
+//                    array_push($error_list, error_msg_format2($line_cnt, '理由区分'));
+//                }
+//            }
+//            if ($line_list[7] == '5') {
+//                //定数から呼び出し
+//                $order_kbn5_reason = json_decode(order_kbn5_list,true);
+//                if ($line_list[13] != $order_kbn5_reason[0] && $line_list[13] != $order_kbn5_reason[1] && $line_list[13] != $order_kbn5_reason[2]) {
+//                    array_push($error_list, error_msg_format2($line_cnt, '理由区分'));
+//                }
+//            }
+//        }
     }
     if (!empty($line_list[14])) {
         //伝言欄

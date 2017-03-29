@@ -786,7 +786,7 @@ $app->post('/import_csv', function () use ($app) {
         }
     }
 
-    // 同一社員番号で発注番号違いの場合はエラー発生
+    //C-3-5 社員番号ごとのお客様発注no(emply_order_req_no)の重複 検索条件
     $arg_str8 = "";
     $arg_str8 .= "SELECT ";
     $arg_str8 .= " *";
@@ -807,9 +807,7 @@ $app->post('/import_csv', function () use ($app) {
     $arg_str8 .= " HAVING count(emply_order_req_no) > 1) as T3";
     $arg_str8 .= " ON T1.emply_order_req_no = T3.emply_order_req_no";
     $arg_str8 .= " WHERE T1.job_no = '" . $job_no . "' ";
-    $arg_str8 .= "AND T1.emply_order_req_no <> ''";
     //$arg_str8 .= "ORDER BY line_no ASC";
-    ChromePhp::log($arg_str8);
     $results8 = new Resultset(null, $t_import_job, $t_import_job->getReadConnection()->query($arg_str8));
     $result_obj8 = (array)$results8;
     $results_cnt8 = $result_obj8["\0*\0_count"];
@@ -818,6 +816,113 @@ $app->post('/import_csv', function () use ($app) {
         $paginator_model = new PaginatorModel(
         array(
         'data' => $results8,
+        'limit' => $results_count,
+        "page" => 1
+        )
+        );
+        $paginator = $paginator_model->getPaginate();
+        $results = $paginator->items;
+        foreach ($results as $result) {
+            if (count($error_list) < 20) {
+                $error_list[] = $result->line_no . '行目のお客様発注Noが、同一の発注区分で異なっています。';
+            } else {
+
+                $json_list['errors'] = $error_list;
+                $json_list["error_code"] = "1";
+                echo json_encode($json_list);
+                return;
+            }
+        }
+    }
+
+    //同じ社員番号、違う発注区分で、発注番号が重複してないか？
+    //行目のお客様発注Noが、同一社員番号で発注区分違いで重複してしようされています。
+
+    $arg_str8 = "";
+    $arg_str8 .= "SELECT ";
+    $arg_str8 .= " *";
+    $arg_str8 .= " FROM t_import_job as MainT";
+    $arg_str8 .= " INNER JOIN(";
+    $arg_str8 .= "SELECT ";
+    $arg_str8 .= " *";
+    //社員番号と発注区分単位のカウントを求めるSQL
+    $arg_str8 .= " FROM (SELECT cster_emply_cd as main_cster_emply_cd,count(cster_emply_cd) as count_kbn";
+    $arg_str8 .= " FROM";
+    $arg_str8 .= " (SELECT cster_emply_cd,order_kbn";
+    $arg_str8 .= " FROM t_import_job";
+    $arg_str8 .= " WHERE job_no = '" . $job_no . "' ";
+    $arg_str8 .= " GROUP by cster_emply_cd,order_kbn";
+    $arg_str8 .= " ORDER by cster_emply_cd) as T1";
+    $arg_str8 .= " GROUP by cster_emply_cd) as T2";
+    $arg_str8 .= " INNER JOIN (";
+    $arg_str8 .= " SELECT";
+    $arg_str8 .= " cster_emply_cd as sub_cster_emply_cd,count(emply_order_req_no) as count_order_req_no";
+    $arg_str8 .= " FROM (SELECT cster_emply_cd,emply_order_req_no";
+    $arg_str8 .= " FROM t_import_job";
+    $arg_str8 .= " WHERE job_no = '" . $job_no . "' ";
+    $arg_str8 .= " GROUP by cster_emply_cd,emply_order_req_no";
+    $arg_str8 .= " ORDER by cster_emply_cd) as T3";
+    $arg_str8 .= " GROUP by cster_emply_cd) as T4";
+    $arg_str8 .= " ON main_cster_emply_cd = sub_cster_emply_cd";
+    $arg_str8 .= " WHERE count_kbn <> count_order_req_no) as SubT";
+    $arg_str8 .= " ON MainT.cster_emply_cd = sub_cster_emply_cd";
+    $arg_str8 .= " WHERE job_no = '" . $job_no . "' ";
+    $arg_str8 .= "ORDER BY line_no ASC";
+
+    $results8 = new Resultset(null, $t_import_job, $t_import_job->getReadConnection()->query($arg_str8));
+    $result_obj8 = (array)$results8;
+    $results_cnt8 = $result_obj8["\0*\0_count"];
+    if (!empty($results_cnt8)) {
+        $results_count = (count($results8));
+        $paginator_model = new PaginatorModel(
+        array(
+        'data' => $results8,
+        'limit' => $results_count,
+        "page" => 1
+        )
+        );
+        $paginator = $paginator_model->getPaginate();
+        $results = $paginator->items;
+        foreach ($results as $result) {
+            if (count($error_list) < 20) {
+                $error_list[] = $result->line_no . '行目のお客様発注Noが、同一の社員番号内で重複して使用されています。';
+            } else {
+
+                $json_list['errors'] = $error_list;
+                $json_list["error_code"] = "1";
+                echo json_encode($json_list);
+                return;
+            }
+        }
+    }
+
+
+    //異なる社員番号内でお客様発注noが重複している場合は
+    $arg_str8_2 = "";
+    $arg_str8_2 .= "SELECT ";
+    $arg_str8_2 .= " *";
+    $arg_str8_2 .= " FROM t_import_job as T1";
+    $arg_str8_2 .= " INNER JOIN (";
+    $arg_str8_2 .= " SELECT";
+    $arg_str8_2 .= " emply_order_req_no,count(emply_order_req_no) as count_order_req_no";
+    $arg_str8_2 .= " FROM (SELECT cster_emply_cd,emply_order_req_no,count(cster_emply_cd)";
+    $arg_str8_2 .= " FROM t_import_job";
+    $arg_str8_2 .= " WHERE job_no = '" . $job_no . "' ";
+    $arg_str8_2 .= " GROUP BY cster_emply_cd,emply_order_req_no) as T2 ";
+    $arg_str8_2 .= " GROUP BY emply_order_req_no";
+    $arg_str8_2 .= " HAVING count(emply_order_req_no) > 1) as T4 ";
+    $arg_str8_2 .= "ON T1.emply_order_req_no = T4.emply_order_req_no ";
+    $arg_str8_2 .= " WHERE job_no = '" . $job_no . "' ";
+    $arg_str8_2 .= "ORDER BY line_no ASC";
+
+    $results8_2 = new Resultset(null, $t_import_job, $t_import_job->getReadConnection()->query($arg_str8_2));
+    $result_obj8_2 = (array)$results8_2;
+    $results_cnt8_2 = $result_obj8_2["\0*\0_count"];
+    if (!empty($results_cnt8_2)) {
+        $results_count = (count($results8_2));
+        $paginator_model = new PaginatorModel(
+        array(
+        'data' => $results8_2,
         'limit' => $results_count,
         "page" => 1
         )
@@ -837,47 +942,98 @@ $app->post('/import_csv', function () use ($app) {
         }
     }
 
-    //同一社員番号内でお客様発注no違いがある場合はエラー出力
-    $arg_str8_2 = "";
-    $arg_str8_2 .= "SELECT ";
-    $arg_str8_2 .= " *";
-    $arg_str8_2 .= " FROM t_import_job as T1";
-    $arg_str8_2 .= " INNER JOIN (";
-    $arg_str8_2 .= " SELECT";
-    $arg_str8_2 .= " cster_emply_cd";
-    $arg_str8_2 .= " FROM (SELECT cster_emply_cd,emply_order_req_no,count(cster_emply_cd)";
-    $arg_str8_2 .= " FROM t_import_job";
-    $arg_str8_2 .= " WHERE job_no = '" . $job_no . "' ";
-    $arg_str8_2 .= " GROUP BY cster_emply_cd,emply_order_req_no) as T2";
-    $arg_str8_2 .= " GROUP BY cster_emply_cd HAVING count(cster_emply_cd) > 1) as T3";
-    $arg_str8_2 .= " ON T1.cster_emply_cd = T3.cster_emply_cd";
-    $arg_str8_2 .= " WHERE T1.job_no = '" . $job_no . "' ";
-    $results8_2 = new Resultset(null, $t_import_job, $t_import_job->getReadConnection()->query($arg_str8_2));
-    $result_obj8_2 = (array)$results8_2;
-    $results_cnt8_2 = $result_obj8_2["\0*\0_count"];
-    if (!empty($results_cnt8_2)) {
-        $results_count = (count($results8_2));
-        $paginator_model = new PaginatorModel(
-        array(
-        'data' => $results8_2,
-        'limit' => $results_count,
-        "page" => 1
-        )
-        );
-        $paginator = $paginator_model->getPaginate();
-        $results = $paginator->items;
-        foreach ($results as $result) {
-            if (count($error_list) < 20) {
-                $error_list[] = $result->line_no . '行目のお客様発注Noが、同一の社員番号内で異なっています。';
-            } else {
-
-                $json_list['errors'] = $error_list;
-                $json_list["error_code"] = "1";
-                echo json_encode($json_list);
-                return;
-            }
-        }
-    }
+//    // 同一社員番号で発注番号違いの場合はエラー発生
+//    $arg_str8 = "";
+//    $arg_str8 .= "SELECT ";
+//    $arg_str8 .= " *";
+//    $arg_str8 .= " FROM t_import_job as T1";
+//    //インポート処理テーブルと、社員番号ごとの客先社員番号が重複している列との結合で、エラーメッセージ用のデータを作成する
+//    $arg_str8 .= " INNER JOIN (";
+//    $arg_str8 .= " SELECT";
+//    $arg_str8 .= " emply_order_req_no";
+//    $arg_str8 .= " FROM (SELECT cster_emply_cd,emply_order_req_no,count(emply_order_req_no)";
+//    $arg_str8 .= " FROM t_import_job";
+//    $arg_str8 .= " WHERE job_no = '" . $job_no . "' ";
+//    $arg_str8 .= " GROUP by cster_emply_cd,emply_order_req_no";
+//    //客先社員番号ごとにまとめる
+//    $arg_str8 .= " HAVING count(emply_order_req_no) > 1";
+//    $arg_str8 .= " ) as T2";
+//    $arg_str8 .= " GROUP by emply_order_req_no";
+//    //客先社員番号ごとにまとめた後、重複している行どうしがあるかチェック
+//    $arg_str8 .= " HAVING count(emply_order_req_no) > 1) as T3";
+//    $arg_str8 .= " ON T1.emply_order_req_no = T3.emply_order_req_no";
+//    $arg_str8 .= " WHERE T1.job_no = '" . $job_no . "' ";
+//    $arg_str8 .= "AND T1.emply_order_req_no <> ''";
+//    //$arg_str8 .= "ORDER BY line_no ASC";
+//    ChromePhp::log($arg_str8);
+//    $results8 = new Resultset(null, $t_import_job, $t_import_job->getReadConnection()->query($arg_str8));
+//    $result_obj8 = (array)$results8;
+//    $results_cnt8 = $result_obj8["\0*\0_count"];
+//    if (!empty($results_cnt8)) {
+//        $results_count = (count($results8));
+//        $paginator_model = new PaginatorModel(
+//        array(
+//        'data' => $results8,
+//        'limit' => $results_count,
+//        "page" => 1
+//        )
+//        );
+//        $paginator = $paginator_model->getPaginate();
+//        $results = $paginator->items;
+//        foreach ($results as $result) {
+//            if (count($error_list) < 20) {
+//                $error_list[] = $result->line_no . '行目のお客様発注Noが、社員番号違いで重複して使用されています。';
+//            } else {
+//
+//                $json_list['errors'] = $error_list;
+//                $json_list["error_code"] = "1";
+//                echo json_encode($json_list);
+//                return;
+//            }
+//        }
+//    }
+//
+//    //同一社員番号内でお客様発注no違いがある場合はエラー出力
+//    $arg_str8_2 = "";
+//    $arg_str8_2 .= "SELECT ";
+//    $arg_str8_2 .= " *";
+//    $arg_str8_2 .= " FROM t_import_job as T1";
+//    $arg_str8_2 .= " INNER JOIN (";
+//    $arg_str8_2 .= " SELECT";
+//    $arg_str8_2 .= " cster_emply_cd";
+//    $arg_str8_2 .= " FROM (SELECT cster_emply_cd,emply_order_req_no,count(cster_emply_cd)";
+//    $arg_str8_2 .= " FROM t_import_job";
+//    $arg_str8_2 .= " WHERE job_no = '" . $job_no . "' ";
+//    $arg_str8_2 .= " GROUP BY cster_emply_cd,emply_order_req_no) as T2";
+//    $arg_str8_2 .= " GROUP BY cster_emply_cd HAVING count(cster_emply_cd) > 1) as T3";
+//    $arg_str8_2 .= " ON T1.cster_emply_cd = T3.cster_emply_cd";
+//    $arg_str8_2 .= " WHERE T1.job_no = '" . $job_no . "' ";
+//    $results8_2 = new Resultset(null, $t_import_job, $t_import_job->getReadConnection()->query($arg_str8_2));
+//    $result_obj8_2 = (array)$results8_2;
+//    $results_cnt8_2 = $result_obj8_2["\0*\0_count"];
+//    if (!empty($results_cnt8_2)) {
+//        $results_count = (count($results8_2));
+//        $paginator_model = new PaginatorModel(
+//        array(
+//        'data' => $results8_2,
+//        'limit' => $results_count,
+//        "page" => 1
+//        )
+//        );
+//        $paginator = $paginator_model->getPaginate();
+//        $results = $paginator->items;
+//        foreach ($results as $result) {
+//            if (count($error_list) < 20) {
+//                $error_list[] = $result->line_no . '行目のお客様発注Noが、同一の社員番号内で異なっています。';
+//            } else {
+//
+//                $json_list['errors'] = $error_list;
+//                $json_list["error_code"] = "1";
+//                echo json_encode($json_list);
+//                return;
+//            }
+//        }
+//    }
 
 
     //こちらのコードは同一ファイル内に一つでも同じ客先発注番号があればエラー出力 仕様変更により未使用
@@ -1258,7 +1414,8 @@ $app->post('/import_csv', function () use ($app) {
                 $result->werer_cd . "-" .
                 $agreement_no . "-" .
                 $result->rntl_sect_cd . "-" .
-                $result->rent_pattern_code
+                $result->rent_pattern_code . "-" .
+                $result->order_req_no
                 );
                 //発注区分前処理
                 if ($result->order_kbn == '0') {
