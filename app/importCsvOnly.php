@@ -426,6 +426,7 @@ $app->post('/import_csv_all', function () use ($app) {
         $arg_str .= "(" . $calum_query . ")";
         $arg_str .= " VALUES ";
         $arg_str .= $values_query;
+
         //ChromePhp::LOG("インポートログ登録クエリー");
         $results = new Resultset(NULL, $t_import_job, $t_import_job->getReadConnection()->query($arg_str));
         // トランザクション-コミット
@@ -951,7 +952,7 @@ $app->post('/import_csv_all', function () use ($app) {
     $arg_str5 = "SELECT ";
     $arg_str5 .= " * ";
     $arg_str5 .= " FROM ";
-    $arg_str5 .= "(SELECT * FROM t_import_job WHERE order_kbn <> '2' AND order_reason_kbn <> '10' AND job_no = '" . $job_no . "') AS T1";
+    $arg_str5 .= "(SELECT * FROM t_import_job WHERE order_kbn <> '2' AND order_reason_kbn <> '10' AND (order_reason_kbn = '24' AND (item_cd <> '' AND item_cd IS NOT NULL)) AND job_no = '" . $job_no . "') AS T1";
     $arg_str5 .= " WHERE NOT EXISTS ";
     $arg_str5 .= "(SELECT ";
     $arg_str5 .= " * ";
@@ -988,7 +989,7 @@ $app->post('/import_csv_all', function () use ($app) {
     $arg_str6 = "SELECT ";
     $arg_str6 .= " * ";
     $arg_str6 .= " FROM ";
-    $arg_str6 .= "(SELECT * FROM t_import_job WHERE order_kbn <> '2' AND order_reason_kbn <> '10' AND job_no = '" . $job_no . "') AS T1";
+    $arg_str6 .= "(SELECT * FROM t_import_job WHERE order_kbn <> '2' AND order_reason_kbn <> '10' AND (order_reason_kbn = '24' AND (item_cd <> '' AND item_cd IS NOT NULL)) AND job_no = '" . $job_no . "') AS T1";
     $arg_str6 .= " WHERE NOT EXISTS ";
     $arg_str6 .= "(SELECT ";
     $arg_str6 .= " * ";
@@ -1010,7 +1011,7 @@ $app->post('/import_csv_all', function () use ($app) {
         $paginator = $paginator_model->getPaginate();
         $results = $paginator->items;
         foreach ($results as $result) {
-            if (count($errlist) < 20) {
+            if (count($error_list) < 20) {
                 $error_list[] = $result->line_no . '行目の色コードが不正です。';
             } else {
                 $json_list['errors'] = $error_list;
@@ -1678,7 +1679,6 @@ $app->post('/import_csv_all', function () use ($app) {
         $arg_str .= "(" . $calum_query . ")";
         $arg_str .= " VALUES ";
         $arg_str .= $values_query;
-        ChromePhp::LOG($arg_str);
         $results = new Resultset(NULL, $t_import_job, $t_import_job->getReadConnection()->query($arg_str));
         // 着用者基本マスタトラン登録 ここまで
 
@@ -1862,6 +1862,8 @@ $app->post('/import_csv_all', function () use ($app) {
                 $values_list[] = "'" . $result->ship_to_brnch_cd . "'";
                 if($result->order_kbn == '2' || $result->order_reason_kbn == '10'){
                     $values_list[] = 0; //返却と拠点異動のみの場合はゼロをセット
+                }elseif($result->order_reason_kbn == '24' && $result->item_cd == ''){
+                    $values_list[] = 0; //貸与枚数管理で職種変更異動で商品cdがない時数量は0をセット
                 }else{
                     $values_list[] = $result->quantity;
                 }
@@ -2026,6 +2028,7 @@ $app->post('/import_csv_all', function () use ($app) {
             $arg_str .= "(" . $calum_query . ")";
             $arg_str .= " VALUES ";
             $arg_str .= $values_query;
+            //ChromePhp::log($arg_str);
             $results = new Resultset(NULL, $t_import_job, $t_import_job->getReadConnection()->query($arg_str));
         }
 
@@ -2156,6 +2159,8 @@ function chk_format2($error_list, $line_list, $line_cnt)
             }
         }
     }
+
+
     if (!empty($line_list[12])) {
         //お客様発注No
         if (!chk_pattern2($line_list[12], 10)) {
@@ -2487,7 +2492,7 @@ function input_check2($line_list, $line_cnt)
     }
 
     //発注区分が貸与、サイズ交換、消耗交換、異動の場合は以下の必須チェックを行う　//拠点異動の理由区分10の時はチェックしない
-    if (($line_list[7] == '1' || $line_list[7] == '3' || $line_list[7] == '4' || $line_list[7] == '5') && $line_list[13] != '10') {
+    if (($line_list[7] == '1' || $line_list[7] == '3' || $line_list[7] == '4' || $line_list[7] == '5') && ($line_list[13] != '10' && $line_list[13] != '24')) {
         if (empty($line_list[8])) {
             if (count($error_list) < 20) {
                 $error_list[] = $line_cnt . '行目の商品コードを入力してください。';
@@ -2504,7 +2509,7 @@ function input_check2($line_list, $line_cnt)
     }
 
     //返却と拠点異動の理由区分10の時はチェックしない
-    if (($line_list[7] == '1' || $line_list[7] == '3' || $line_list[7] == '4' || $line_list[7] == '5') && $line_list[13] != '10') {
+    if (($line_list[7] == '1' || $line_list[7] == '3' || $line_list[7] == '4' || $line_list[7] == '5') && ($line_list[13] != '10' && $line_list[13] != '24')) {
         if (empty($line_list[9])) {
             if (count($error_list) < 20) {
                 $error_list[] = $line_cnt . '行目のサイズコードを入力してください。';
@@ -2521,7 +2526,7 @@ function input_check2($line_list, $line_cnt)
     }
 
     //返却と拠点異動の理由区分10の時はチェックしない
-    if (($line_list[7] == '1' || $line_list[7] == '3' || $line_list[7] == '4' || $line_list[7] == '5') && $line_list[13] != '10') {
+    if (($line_list[7] == '1' || $line_list[7] == '3' || $line_list[7] == '4' || $line_list[7] == '5') && ($line_list[13] != '10' && $line_list[13] != '24')) {
         if (empty($line_list[10])) {
             if (count($error_list) < 20) {
                 $error_list[] = $line_cnt . '行目の色コードを入力してください。';
@@ -2538,7 +2543,7 @@ function input_check2($line_list, $line_cnt)
     }
 
     //拠点異動の理由区分10の時はチェックしない
-    if (($line_list[7] == '1' || $line_list[7] == '3' || $line_list[7] == '4' || $line_list[7] == '5') && $line_list[13] != '10') {
+    if (($line_list[7] == '1' || $line_list[7] == '3' || $line_list[7] == '4' || $line_list[7] == '5') && ($line_list[13] != '10' && $line_list[13] != '24')) {
         if (empty($line_list[11])) {
             if (count($error_list) < 20) {
                 $error_list[] = $line_cnt . '行目の数量を入力してください。';
@@ -2552,6 +2557,34 @@ function input_check2($line_list, $line_cnt)
     } elseif ($line_list[7] == '2' || $line_list[13] == '10') {
         //発注区分が返却の場合は数量に0をセット
         $line_list[11] = 0;
+    }
+
+    //貸与枚数管理の職種変更または異動の理由区分24 の場合は、商品cd、サイズコード、色コード、数量が歯抜けでないこと
+    if($line_list[13] == '24'){
+        if (count($error_list) < 20) {
+            if (($line_list[8]) || ($line_list[9]) || ($line_list[10])) {
+                if ((empty($line_list[8]))) {
+                    $error_list[] = $line_cnt . '行目の商品コードを入力してください。';
+                }
+                if ((empty($line_list[9]))) {
+                    $error_list[] = $line_cnt . '行目のサイズコードを入力してください。';
+                }
+                if ((empty($line_list[10]))) {
+                    $error_list[] = $line_cnt . '行目の色コードを入力してください。';
+                }
+            }
+        }else{
+            $json_list['errors'] = $error_list;
+            $json_list["error_code"] = "1";
+            echo json_encode($json_list);
+            exit;
+        }
+        if((empty($line_list[8])) && (empty($line_list[9])) && (empty($line_list[10]))){
+            $line_list[8] = NULL;
+            $line_list[9] = NULL;
+            $line_list[10] = NULL;
+            $line_list[11] = 0;
+        }
     }
 
     if (empty($line_list[12])) {
@@ -2600,7 +2633,6 @@ function input_check2($line_list, $line_cnt)
             exit;
         }
     }
-
     //ChromePhp::log($error_list);
     if (count($error_list) > 0) {
         return $error_list;
