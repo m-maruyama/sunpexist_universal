@@ -153,13 +153,13 @@ $app->post('/print/pdf_tran', function ()use($app){
     }
 
 
-        $paginator_model = new PaginatorModel(
-            array(
-                "data" => $results,
-                "limit" => $page['records_per_page'],
-                "page" => $page['page_number']
-            )
-        );
+//        $paginator_model = new PaginatorModel(
+//            array(
+//                "data" => $results,
+//                "limit" => $page['records_per_page'],
+//                "page" => $page['page_number']
+//            )
+//        );
         $item_check = "";
         $list_array = array();
         $each_array = array();

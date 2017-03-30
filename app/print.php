@@ -18,7 +18,7 @@ $app->post('/print/pdf', function ()use($app){
     // アカウントセッション取得
     $auth = $app->session->get("auth");
     $cond = $params["cond"];
-    $page = $params['page'];
+//    $page = $params['page'];
     //個別管理番号あるなし　1:あり 0:なし
     $individual_check = individual_flg($auth['corporate_id'], $cond['rntl_cont_no']);
     //$individual_check = 1;
@@ -119,13 +119,13 @@ $app->post('/print/pdf', function ()use($app){
     $result_obj = (array)$results;
     $results_cnt = $result_obj["\0*\0_count"];
 
-    $paginator_model = new PaginatorModel(
-        array(
-            "data"  => $results,
-            "limit" => $page['records_per_page'],
-            "page" => $page['page_number']
-        )
-    );
+//    $paginator_model = new PaginatorModel(
+//        array(
+//            "data"  => $results,
+//            "limit" => $page['records_per_page'],
+//            "page" => $page['page_number']
+//        )
+//    );
     $item_check = "";
     $list_array = array();
     $each_array = array();
