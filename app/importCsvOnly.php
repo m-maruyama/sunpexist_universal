@@ -452,20 +452,15 @@ $app->post('/import_csv_all', function () use ($app) {
     $corporate_id = $auth["corporate_id"];
     $t_import_job = new TImportJob();
 
-    //追加貸与フラグパターン 2,6,7
-    //エラー1 発注区分1 追加貸与不要品返却フラグ0 理由区分03
-    //エラー2 発注区分2 追加貸与不要品返却フラグ0 理由区分07
-    //エラー3 発注区分2 追加貸与不要品返却フラグ1 理由区分07以外
-    //$reason_kbn_1_str = implode(' OR ', $reason_kbn_1);
-//    $reason_kbn = json_decode(jinin_order_kbn_list,true);
-//    $reason_kbn = json_decode(maisu_order_kbn_list,true);
 
+    /*
+     * 理油区分 整合チェック
+     */
 
     $jinin_reason_kbn = json_decode(jinin_order_kbn_list,true);
     $maisu_reason_kbn = json_decode(maisu_order_kbn_list,true);
     $add_jinin_reason_kbn = json_decode(addflg_jinin_order_kbn_list,true);
     $add_maisu_reason_kbn = json_decode(addflg_maisu_order_kbn_list,true);
-//    implode(' OR ', $reason_kbn);
     //******* 貸与 ******//
     //貸与 人員管理
     if(count($jinin_reason_kbn['kbn']['1'])>1){
