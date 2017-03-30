@@ -4,7 +4,7 @@
 	<div class="row" style="margin-bottom:20px">
 		<h1>ホーム</h1>
 		<!--↑適宜編集 -->
-		<div class="col-md-12 topmargin pull-left border_radius" style="border:1.8px solid #999;padding: 5px 20px 0px">
+		<div class="col-md-12 topmargin pull-left border_radius">
 			<div class="row block">
                 <h2 class="col-md-2">■ 処理状況</h2>
                 <div class="col-md-9">
@@ -28,9 +28,9 @@
 			</div>
 
 			<div class="block">
-				<div class="row btn_group border_radius">
-					<h2 class="col-md-2">１．入力</h2>
-					<ul class="col-md-10">
+				<div class="row btn_group border_radius" id="box-01">
+					<h2 class="col-md-2 homeTitle">１．入力</h2>
+					<ul class="col-md-10" id="list-box-01">
 						{{#if button1_use_flg}}<li class="col-md-3 col-pl-0 col-pb-5"><a class="btn btn-primary" id='wearer_input' title="貸与開始" onclick="window.sessionStorage.setItem('wearer_input_ref', 'home');">貸与開始</a><br>入社、復職、制服非着用部門からの異動等</li>{{/if}}
 						{{#if button2_use_flg}}<li class="col-md-3 col-pl-0 col-pb-5"><a href="wearer_size_change.html" class="btn btn-primary" title="交換">交換</a><br>サイズ交換、消耗交換、不良品交換等</li>{{/if}}
 						{{#if button3_use_flg}}<li class="col-md-3 col-pl-0 col-pb-5"><a href="wearer_change.html" class="btn btn-primary" title="職種変更または異動">職種変更または異動</a><br>貸与パターンの変更、異動（拠点変更）等</li>{{/if}}
@@ -39,9 +39,9 @@
 					</ul>
 				</div>
 
-				<div class="row btn_group border_radius">
-					<h2 class="col-md-2">２．検索・照会</h2>
-					<ul class="col-md-10">
+				<div class="row btn_group border_radius" id="box-02">
+					<h2 class="col-md-2 homeTitle">２．検索・照会</h2>
+					<ul class="col-md-10" id="list-box-02">
 						{{#if button6_use_flg}}<li><a href="history.html" class="col-md-3 btn btn-primary" title="発注状況照会">発注状況照会</a></li>{{/if}}
 						{{#if button7_use_flg}}<li><a href="unreturn.html" class="col-md-3 btn btn-primary" title="返却状況照会">返却状況照会</a></li>{{/if}}
 						{{#if button8_use_flg}}<li><a href="receive.html" class="col-md-3 btn btn-primary" title="受領確認照会">受領確認照会</a></li>{{/if}}
@@ -51,9 +51,9 @@
 					</ul>
 				</div>
 
-				<div class="row btn_group border_radius">
-					<h2 class="col-md-2">３．管理</h2>
-					<ul class="col-md-10">
+				<div class="row btn_group border_radius" id="box-03">
+					<h2 class="col-md-2 homeTitle">３．管理</h2>
+					<ul class="col-md-10" id="list-box-03">
 						{{#if button12_use_flg}}<li><a href="wearer_edit.html" class="col-md-3 btn btn-primary" title="着用者編集">着用者編集</a></li>{{/if}}
 						{{#if button13_use_flg}}<li><a href="print.html" class="col-md-3 btn btn-primary" title="返却伝票印刷">返却伝票印刷</a></li>{{/if}}
 						{{#if button14_use_flg}}<li><a href="order_send.html" class="col-md-3 btn btn-primary" title="発注送信処理">発注送信処理</a></li>{{/if}}
@@ -61,9 +61,9 @@
 					</ul>
 				</div>
 
-				<div class="row btn_group border_radius">
-					<h2 class="col-md-2">４．購買・その他</h2>
-					<ul class="col-md-10">
+				<div class="row btn_group border_radius" id="box-04">
+					<h2 class="col-md-2 homeTitle">４．購買・その他</h2>
+					<ul class="col-md-10" id="list-box-04">
 						{{#if button16_use_flg}}<li><a href="purchase_input.html" class="col-md-3 btn btn-primary" title="注文入力">注文入力</a></li>{{/if}}
 						{{#if button17_use_flg}}<li><a href="purchase_history.html" class="col-md-3 btn btn-primary" title="注文履歴">注文履歴</a></li>{{/if}}
 						{{#if button18_use_flg}}<li><a href="q_and_a.html" class="col-md-3 btn btn-primary" title="Q&amp;A">Q&amp;A</a></li>{{/if}}
@@ -71,9 +71,9 @@
 					</ul>
 				</div>
 
-				<div class="row btn_group border_radius">
-					<h2 class="col-md-2">５．管理者機能</h2>
-					<ul class="col-md-10">
+				<div class="row btn_group border_radius" id="box-05">
+					<h2 class="col-md-2 homeTitle">５．管理者機能</h2>
+					<ul class="col-md-10" id="list-box-05">
 						{{#if button20_use_flg}}<li><a href="importCsv.html" class="col-md-3 btn btn-primary" title="一括データ取込">一括データ取込</a></li>{{/if}}
 						{{#if button21_use_flg}}<li><a href="account.html" class="col-md-3 btn btn-primary" title="アカウント管理">アカウント管理</a></li>{{/if}}
 						{{#if button22_use_flg}}<li><a href="info.html" class="col-md-3 btn btn-primary" title="お知らせ管理">お知らせ管理</a></li>{{/if}}
@@ -83,8 +83,8 @@
 			</div>
 
 			<div class="row block">
-				<h2 class="col-md-2">■ ドキュメント</h2>
-				<div class="col-md-9">
+				<h2 class="col-md-3">【関連資料ダウンロード】<p>資料名をクリックしてください。</p></h2>
+				<div class="col-md-8">
 					<ul class="document">
 					</ul>
 				</div>

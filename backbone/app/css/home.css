@@ -626,3 +626,13 @@ label.allCheck {
 .news-text{
     margin:0 0 0 0;
 }
+.index .block .homeTitle{
+    font-size: 16px;
+    font-weight: bold;
+}
+ul.document {
+    padding-left: 0;
+}
+.document li {
+    list-style-type: none;
+}
