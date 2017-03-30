@@ -119,6 +119,46 @@ $app->post('/print/pdf', function ()use($app){
     $result_obj = (array)$results;
     $results_cnt = $result_obj["\0*\0_count"];
 
+    if($results_cnt == 0) {
+        //FPDIのインスタンス化
+        $pdf = new FPDI('L','mm','A4');
+        //TCPDFフォントのインスタンス化
+        $font = new TCPDF_FONTS();
+
+        //フォント設定
+        // フォントを登録
+        //ttfフォントをTCPDF用に変換
+        $regularFont = $font->addTTFfont(regular_font);
+        $boldFont = $font->addTTFfont(bold_font);
+
+        $pdf -> SetFont($regularFont, '', 8);
+
+        // PDFの余白(上左右)を設定
+        $pdf->SetMargins(0, 3.0, 0);
+
+        //自動改ページをしない
+        $pdf -> SetAutoPageBreak(false);
+        //ヘッダ、フッダを使用しない
+        $pdf -> setPrintHeader(false);
+        $pdf -> setPrintFooter(false);
+
+        //1ページ目を作成
+        $pdf -> AddPage();
+
+        //既存のテンプレート用PDFを読み込む
+        $pdf -> setSourceFile(pdf_template);
+
+        //既存のテンプレートの１枚目をテンプレートに設定する。
+        $page = $pdf -> importPage(1);
+        $pdf -> useTemplate($page);
+
+        //作成したPDFをダウンロードする I:ブラウザ D:ダウンロード
+        ob_end_clean();
+        $pdf -> Output('no_data.pdf' , 'D');
+
+        echo json_encode($json_list);
+        return true;
+    }
 //    $paginator_model = new PaginatorModel(
 //        array(
 //            "data"  => $results,
