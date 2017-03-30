@@ -952,13 +952,14 @@ $app->post('/import_csv_all', function () use ($app) {
     $arg_str5 = "SELECT ";
     $arg_str5 .= " * ";
     $arg_str5 .= " FROM ";
-    $arg_str5 .= "(SELECT * FROM t_import_job WHERE order_kbn <> '2' AND order_reason_kbn <> '10' AND (order_reason_kbn = '24' AND (item_cd <> '' AND item_cd IS NOT NULL)) AND job_no = '" . $job_no . "') AS T1";
+    $arg_str5 .= "(SELECT * FROM t_import_job WHERE order_kbn <> '2' AND order_reason_kbn <> '10' AND  order_reason_kbn <> '24' AND job_no = '" . $job_no . "') AS T1";
     $arg_str5 .= " WHERE NOT EXISTS ";
     $arg_str5 .= "(SELECT ";
     $arg_str5 .= " * ";
     $arg_str5 .= " FROM (SELECT * FROM m_input_item WHERE corporate_id = '$corporate_id' AND rntl_cont_no = '$agreement_no' AND job_type_cd = T1.rent_pattern_code ) AS T2 ";
     $arg_str5 .= " WHERE item_cd = T1.item_cd ) ";
     $arg_str5 .= "ORDER BY line_no ASC";
+    ChromePhp::log($arg_str5);
     $results5 = new Resultset(null, $t_import_job, $t_import_job->getReadConnection()->query($arg_str5));
     $result_obj5 = (array)$results5;
     $results_cnt5 = $result_obj5["\0*\0_count"];
@@ -989,7 +990,7 @@ $app->post('/import_csv_all', function () use ($app) {
     $arg_str6 = "SELECT ";
     $arg_str6 .= " * ";
     $arg_str6 .= " FROM ";
-    $arg_str6 .= "(SELECT * FROM t_import_job WHERE order_kbn <> '2' AND order_reason_kbn <> '10' AND (order_reason_kbn = '24' AND (item_cd <> '' AND item_cd IS NOT NULL)) AND job_no = '" . $job_no . "') AS T1";
+    $arg_str6 .= "(SELECT * FROM t_import_job WHERE order_kbn <> '2' AND order_reason_kbn <> '10' AND order_reason_kbn <> '24' AND job_no = '" . $job_no . "') AS T1";
     $arg_str6 .= " WHERE NOT EXISTS ";
     $arg_str6 .= "(SELECT ";
     $arg_str6 .= " * ";
@@ -1021,6 +1022,83 @@ $app->post('/import_csv_all', function () use ($app) {
             }
         }
     }
+
+    //マスターチェック4 発注区分はフォーマットチェックで実施済み
+    //マスターチェック5 商品マスタの検索条件
+    $arg_str5 = "SELECT ";
+    $arg_str5 .= " * ";
+    $arg_str5 .= " FROM ";
+    $arg_str5 .= "(SELECT * FROM t_import_job WHERE order_reason_kbn = '24' AND item_cd <> '' AND job_no = '" . $job_no . "') AS T1";
+    $arg_str5 .= " WHERE NOT EXISTS ";
+    $arg_str5 .= "(SELECT ";
+    $arg_str5 .= " * ";
+    $arg_str5 .= " FROM (SELECT * FROM m_input_item WHERE corporate_id = '$corporate_id' AND rntl_cont_no = '$agreement_no' AND job_type_cd = T1.rent_pattern_code ) AS T2 ";
+    $arg_str5 .= " WHERE item_cd = T1.item_cd ) ";
+    $arg_str5 .= "ORDER BY line_no ASC";
+    ChromePhp::log($arg_str5);
+    $results5 = new Resultset(null, $t_import_job, $t_import_job->getReadConnection()->query($arg_str5));
+    $result_obj5 = (array)$results5;
+    $results_cnt5 = $result_obj5["\0*\0_count"];
+    if (!empty($results_cnt5)) {
+        $results_count = (count($results5));
+        $paginator_model = new PaginatorModel(
+        array(
+        'data' => $results5,
+        'limit' => $results_count,
+        "page" => 1
+        )
+        );
+        $paginator = $paginator_model->getPaginate();
+        $results = $paginator->items;
+        foreach ($results as $result) {
+            if (count($error_list) < 20) {
+                $error_list[] = $result->line_no . '行目の商品コードが不正です。';
+            } else {
+                $json_list['errors'] = $error_list;
+                $json_list["error_code"] = "1";
+                echo json_encode($json_list);
+                return;
+            }
+        }
+    }
+
+    //マスターチェック6  商品マスタのカラーコード検索条件
+    $arg_str6 = "SELECT ";
+    $arg_str6 .= " * ";
+    $arg_str6 .= " FROM ";
+    $arg_str6 .= "(SELECT * FROM t_import_job WHERE order_reason_kbn = '24' AND item_cd <> '' AND job_no = '" . $job_no . "') AS T1";
+    $arg_str6 .= " WHERE NOT EXISTS ";
+    $arg_str6 .= "(SELECT ";
+    $arg_str6 .= " * ";
+    $arg_str6 .= " FROM (SELECT * FROM m_input_item WHERE corporate_id = '$corporate_id' AND rntl_cont_no = '$agreement_no' AND job_type_cd = T1.rent_pattern_code ) AS T2 ";
+    $arg_str6 .= " WHERE color_cd = T1.color_cd ) ";
+    $arg_str6 .= "ORDER BY line_no ASC";
+    $results6 = new Resultset(null, $t_import_job, $t_import_job->getReadConnection()->query($arg_str6));
+    $result_obj6 = (array)$results6;
+    $results_cnt6 = $result_obj6["\0*\0_count"];
+    if (!empty($results_cnt6)) {
+        $results_count = (count($results6));
+        $paginator_model = new PaginatorModel(
+        array(
+        'data' => $results6,
+        'limit' => $results_count,
+        "page" => 1
+        )
+        );
+        $paginator = $paginator_model->getPaginate();
+        $results = $paginator->items;
+        foreach ($results as $result) {
+            if (count($error_list) < 20) {
+                $error_list[] = $result->line_no . '行目の色コードが不正です。';
+            } else {
+                $json_list['errors'] = $error_list;
+                $json_list["error_code"] = "1";
+                echo json_encode($json_list);
+                return;
+            }
+        }
+    }
+    
 
     //同じ社員番号、同じ発注区分でお客様発注Noが異なっていればエラー
     $arg_str8 = "";
