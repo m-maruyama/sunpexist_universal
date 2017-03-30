@@ -52,7 +52,6 @@ define([
 							$('#list-box-0'+i+' li').each(function () {
 								counter++;
 							});
-							console.log(counter);
 							if(counter == 0){
 								$('#box-0'+i).css('display', 'none');
 							}

@@ -52,6 +52,7 @@ $app->post('/print/pdf_tran', function ()use($app){
     $arg_str .= "m_input_item.input_item_name as as_input_item_name,";
     $arg_str .= "t_order_tran.order_qty as as_order_qty,";
     $arg_str .= "t_order_tran.size_two_cd as as_size_two_cd,";
+    $arg_str .= "t_order_tran.order_rntl_sect_cd as as_order_rntl_sect_cd,";
     $arg_str .= "m_corporate.corporate_name as as_corporate_name,";
     $arg_str .= "t_returned_plan_info_tran.cster_emply_cd as as_cster_emply_cd,";
     $arg_str .= "t_returned_plan_info_tran.corporate_id as as_corporate_id,";
@@ -78,7 +79,9 @@ $app->post('/print/pdf_tran', function ()use($app){
     //$arg_str .= " ON t_returned_plan_info_tran.order_req_no = t_order_state.order_req_no)";//返却予定情報.発注依頼No = 発注状況情報.発注依頼No
     $arg_str .= " ON t_order_tran.order_req_no = t_returned_plan_info_tran.order_req_no"; //発注情報.発注依頼No = 発注状況情報.発注依頼No
     $arg_str .= " INNER JOIN m_section";
-    $arg_str .= " ON t_order_tran.m_section_comb_hkey = m_section.m_section_comb_hkey";//発注情報.部門マスタ_統合ハッシュキー = 部門マスタ.部門マスタ_統合ハッシュキー
+    $arg_str .= " ON t_order_tran.corporate_id = m_section.corporate_id";
+    $arg_str .= " AND t_order_tran.rntl_cont_no = m_section.rntl_cont_no";
+    $arg_str .= " AND t_order_tran.order_rntl_sect_cd = m_section.rntl_sect_cd";
     $arg_str .= " INNER JOIN (m_job_type INNER JOIN m_input_item";
     $arg_str .= " ON m_job_type.corporate_id = m_input_item.corporate_id";
     $arg_str .= " AND m_job_type.rntl_cont_no = m_input_item.rntl_cont_no";
@@ -102,6 +105,7 @@ $app->post('/print/pdf_tran', function ()use($app){
         $arg_str .= " ORDER BY ";
         $arg_str .= $q_sort_key." ".$order;
     }
+
     $t_returned_plan_info_tran = new TReturnedPlanInfoTran();
     $results = new Resultset(null, $t_returned_plan_info_tran, $t_returned_plan_info_tran->getReadConnection()->query($arg_str));
     $result_obj = (array)$results;
