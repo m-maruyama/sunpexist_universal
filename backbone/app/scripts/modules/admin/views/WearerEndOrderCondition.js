@@ -149,9 +149,16 @@ define([
 			},
 			events: {
 				'click @ui.back': function(){
-					var cond = window.sessionStorage.getItem("wearer_end_cond");
-					window.sessionStorage.setItem("back_wearer_end_cond", cond);
-					location.href="wearer_end.html";
+					$('#myModal').modal(); //追加
+					//メッセージの修正
+					document.getElementById("confirm_txt").innerHTML=App.cancel_msg; //追加　このメッセージはapp.jsで定義
+					$("#btn_ok").off();
+					$("#btn_ok").on('click',function() { //追加
+						hideModal();
+						var cond = window.sessionStorage.getItem("wearer_end_cond");
+						window.sessionStorage.setItem("back_wearer_end_cond", cond);
+						location.href="wearer_end.html";
+					});
 				},
 				'click @ui.delete': function(){
 					var that = this;
