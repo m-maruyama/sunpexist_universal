@@ -334,7 +334,7 @@ $app->post('/import_csv_all', function () use ($app) {
             // サイズコード
             $values_list[] = "'" . $line_new[9] . "'";
             // 着用者コード
-            if ($line_new[7] == "1" && $line_new[13] != "03") {
+            if ($line_new[7] == "1" && ($line_new[13] != "03" && $line_new[13] != "27")) {
                 // 貸与で女性フリー以外
                 if ($app->session->get("chk_cster_emply_cd_2") == $line_new[0]) {
                     $values_list[] = "'" . $app->session->get("chk_werer_cd") . "'";
@@ -670,7 +670,7 @@ $app->post('/import_csv_all', function () use ($app) {
     $arg_str = "SELECT ";
     $arg_str .= " * ";
     $arg_str .= " FROM ";
-    $arg_str .= "(SELECT * FROM t_import_job WHERE job_no = '" . $job_no . "' AND order_kbn = '1' AND order_reason_kbn <> '03') AS T1";
+    $arg_str .= "(SELECT * FROM t_import_job WHERE job_no = '" . $job_no . "' AND order_kbn = '1' AND (order_reason_kbn <> '03' AND order_reason_kbn <> '27')) AS T1";
     $arg_str .= " WHERE EXISTS ";
     $arg_str .= "(SELECT * FROM (SELECT * FROM m_wearer_std WHERE corporate_id = '$corporate_id' AND rntl_cont_no = '$agreement_no'  AND rntl_sect_cd = T1.rntl_sect_cd AND job_type_cd = T1.rent_pattern_code ) AS T2 ";
     $arg_str .= "WHERE T1.cster_emply_cd = T2.cster_emply_cd AND T2.werer_sts_kbn = '1') ";
@@ -679,7 +679,7 @@ $app->post('/import_csv_all', function () use ($app) {
     $arg_str .= "SELECT ";
     $arg_str .= " * ";
     $arg_str .= " FROM ";
-    $arg_str .= "(SELECT * FROM t_import_job WHERE job_no = '" . $job_no . "' AND order_kbn = '1' AND order_reason_kbn = '03') AS T1";
+    $arg_str .= "(SELECT * FROM t_import_job WHERE job_no = '" . $job_no . "' AND order_kbn = '1' AND (order_reason_kbn = '03' OR order_reason_kbn = '27')) AS T1";
     $arg_str .= " WHERE NOT EXISTS ";
     $arg_str .= "(SELECT * FROM (SELECT * FROM m_wearer_std WHERE corporate_id = '$corporate_id' AND rntl_cont_no = '$agreement_no'  AND rntl_sect_cd = T1.rntl_sect_cd AND job_type_cd = T1.rent_pattern_code ) AS T2 ";
     $arg_str .= "WHERE T1.cster_emply_cd = T2.cster_emply_cd AND T2.werer_sts_kbn = '1') ";
@@ -1043,6 +1043,8 @@ $app->post('/import_csv_all', function () use ($app) {
     $arg_str8 .= " HAVING count(emply_order_req_no) > 1) as T3";
     $arg_str8 .= " ON T1.emply_order_req_no = T3.emply_order_req_no";
     $arg_str8 .= " WHERE T1.job_no = '" . $job_no . "' ";
+    $arg_str8 .= "ORDER BY line_no ASC";
+
     //$arg_str8 .= "ORDER BY line_no ASC";
     $results8 = new Resultset(null, $t_import_job, $t_import_job->getReadConnection()->query($arg_str8));
     $result_obj8 = (array)$results8;
@@ -1558,26 +1560,33 @@ $app->post('/import_csv_all', function () use ($app) {
                 //着用者状況区分前処理
                 $wearer_sts_kbn = '';
                 //パターン1
-                if($result->order_kbn == '1' && $result->add_and_rtn_rntl_flg = '0' && $result->order_reason_kbn != '03'){
+                if($result->order_kbn == '1' && $result->add_and_rtn_rntl_flg = '0' && ($result->order_reason_kbn != '03' && $result->order_reason_kbn != '27')){
                     $wearer_sts_kbn = '7';
                 }
                 //パターン2
-                if($result->order_kbn == '1' && $result->add_and_rtn_rntl_flg = '1' && $result->order_reason_kbn != '03'){
+                if($result->order_kbn == '1' && $result->add_and_rtn_rntl_flg = '1' && ($result->order_reason_kbn != '03' && $result->order_reason_kbn != '27')){
                     $wearer_sts_kbn = '7';
                 }
                 //パターン3
-                if($result->order_kbn == '1' && $result->add_and_rtn_rntl_flg = '1' && $result->order_reason_kbn == '03'){
+                if($result->order_kbn == '1' && $result->add_and_rtn_rntl_flg = '1' && ($result->order_reason_kbn == '03' || $result->order_reason_kbn == '27')){
                     $wearer_sts_kbn = '1';
                 }
                 //着用者状況区分 返却            フラグ0で07以外 -> その他（着用終了）3 をセット
                 //パターン4
-                if($result->order_kbn == '2' && $result->add_and_rtn_rntl_flg = '0' && $result->order_reason_kbn != '07'){
+                if($result->order_kbn == '2'){
                     $wearer_sts_kbn = '3';
                 }
-                //パターン5                     フラグ1で07 -> 稼働を3 をセット
-                if($result->order_kbn == '2' && $result->add_and_rtn_rntl_flg = '1' && $result->order_reason_kbn == '07'){
-                    $wearer_sts_kbn = '3';
-                }
+//                if($result->order_kbn == '2' && $result->add_and_rtn_rntl_flg = '0' && ($result->order_reason_kbn != '07' && $result->order_reason_kbn != '28')){
+//                    $wearer_sts_kbn = '3';
+//                }
+//                //パターン5                     フラグ1で07 -> 稼働を3 をセット
+//                if($result->order_kbn == '2' && $result->add_and_rtn_rntl_flg = '1' && ($result->order_reason_kbn == '07' || $result->order_reason_kbn == '28')){
+//                    $wearer_sts_kbn = '3';
+//                }
+
+
+
+
                 //着用者状況区分 サイズ交換、消耗交換、     -> 稼働 1 をセット
                 //パターン6
                 if($result->order_kbn == '3' || $result->order_kbn == '4' || $result->order_kbn == '5'){
@@ -1797,26 +1806,29 @@ $app->post('/import_csv_all', function () use ($app) {
                 //着用者状況区分前処理
                 $wearer_sts_kbn = '';
                 //パターン1
-                if($result->order_kbn == '1' && $result->add_and_rtn_rntl_flg = '0' && $result->order_reason_kbn != '03'){
+                if($result->order_kbn == '1' && $result->add_and_rtn_rntl_flg = '0' && ($result->order_reason_kbn != '03' && $result->order_reason_kbn != '27')){
                     $wearer_sts_kbn = '7';
                 }
                 //パターン2
-                if($result->order_kbn == '1' && $result->add_and_rtn_rntl_flg = '1' && $result->order_reason_kbn != '03'){
+                if($result->order_kbn == '1' && $result->add_and_rtn_rntl_flg = '1' && ($result->order_reason_kbn != '03' && $result->order_reason_kbn != '27')){
                     $wearer_sts_kbn = '7';
                 }
                 //パターン3
-                if($result->order_kbn == '1' && $result->add_and_rtn_rntl_flg = '1' && $result->order_reason_kbn == '03'){
+                if($result->order_kbn == '1' && $result->add_and_rtn_rntl_flg = '1' && ($result->order_reason_kbn == '03' || $result->order_reason_kbn == '27')){
                     $wearer_sts_kbn = '1';
                 }
                 //着用者状況区分 返却            フラグ0で07以外 -> その他（着用終了）3 をセット
                 //パターン4
-                if($result->order_kbn == '2' && $result->add_and_rtn_rntl_flg = '0' && $result->order_reason_kbn != '07'){
+                 if($result->order_kbn == '2'){
                     $wearer_sts_kbn = '3';
                 }
-                //パターン5                     フラグ1で07 -> その他（着用終了）3 をセット
-                if($result->order_kbn == '2' && $result->add_and_rtn_rntl_flg = '1' && $result->order_reason_kbn == '07'){
-                    $wearer_sts_kbn = '3';
-                }
+//                if($result->order_kbn == '2' && $result->add_and_rtn_rntl_flg = '0' && ($result->order_reason_kbn != '07' && $result->order_reason_kbn != '28')){
+//                    $wearer_sts_kbn = '3';
+//                }
+//                //パターン5                     フラグ1で07 -> 稼働を3 をセット
+//                if($result->order_kbn == '2' && $result->add_and_rtn_rntl_flg = '1' && ($result->order_reason_kbn == '07' || $result->order_reason_kbn == '28')){
+//                $wearer_sts_kbn = '3';
+//                 }
                 //着用者状況区分 サイズ交換、消耗交換、     -> 稼働 1 をセット
                 //パターン6
                 if($result->order_kbn == '3' || $result->order_kbn == '4' || $result->order_kbn == '5'){
