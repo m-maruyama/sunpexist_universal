@@ -473,83 +473,82 @@ $app->post('/import_csv_all', function () use ($app) {
     }else{
         $jinin_taiyo_reason_kbn = "'".$jinin_reason_kbn['kbn']['1'][0];
     }
-    ChromePhp::log($jinin_taiyo_reason_kbn);
     //貸与 貸与枚数管理
     if(count($maisu_reason_kbn['kbn']['1'])>1){
-        $maisu_taiyo_reason_kbn = "'".implode(',', $maisu_reason_kbn['kbn']['1'])."'";
+        $maisu_taiyo_reason_kbn = "'".implode("','", $maisu_reason_kbn['kbn']['1'])."'";
     }else{
         $maisu_taiyo_reason_kbn = "'".$maisu_reason_kbn['kbn']['1'][0]."'";
     }
     //******* 終了 ******//
     // 人員管理
     if(count($jinin_reason_kbn['kbn']['2'])>1){
-        $jinin_end_reason_kbn = "'".implode(',', $jinin_reason_kbn['kbn']['2'])."'";
+        $jinin_end_reason_kbn = "'".implode("','", $jinin_reason_kbn['kbn']['2'])."'";
     }else{
         $jinin_end_reason_kbn = "'".$jinin_reason_kbn['kbn']['2'][0]."'";
     }
     //返却 貸与枚数管理
     if(count($maisu_reason_kbn['kbn']['2'])>1){
-        $maisu_end_reason_kbn = "'".implode(',', $maisu_reason_kbn['kbn']['2'])."'";
+        $maisu_end_reason_kbn = "'".implode("','", $maisu_reason_kbn['kbn']['2'])."'";
     }else{
         $maisu_end_reason_kbn = "'".$maisu_reason_kbn['kbn']['2'][0]."'";
     }
     //******* サイズ交換 ******//
     //サイズ交換  人員管理
     if(count($jinin_reason_kbn['kbn']['3'])>1){
-        $jinin_exchange_reason_kbn = "'".implode(',', $jinin_reason_kbn['kbn']['3'])."'";
+        $jinin_exchange_reason_kbn = "'".implode("','", $jinin_reason_kbn['kbn']['3'])."'";
     }else{
         $jinin_exchange_reason_kbn = "'".$jinin_reason_kbn['kbn']['3'][0]."'";
     }
     //サイズ交換  貸与枚数管理
     if(count($maisu_reason_kbn['kbn']['3'])>1){
-        $maisu_exchange_reason_kbn = "'".implode(',', $maisu_reason_kbn['kbn']['3'])."'";
+        $maisu_exchange_reason_kbn = "'".implode("','", $maisu_reason_kbn['kbn']['3'])."'";
     }else{
         $maisu_exchange_reason_kbn = "'".$maisu_reason_kbn['kbn']['3'][0]."'";
     }
     //******* その他交換 ******//
     //その他交換 人員管理
     if(count($jinin_reason_kbn['kbn']['4'])>1){
-        $jinin_otherchange_reason_kbn = "'".implode(',', $jinin_reason_kbn['kbn']['4'])."'";
+        $jinin_otherchange_reason_kbn = "'".implode("','", $jinin_reason_kbn['kbn']['4'])."'";
     }else{
         $jinin_otherchange_reason_kbn = "'".$jinin_reason_kbn['kbn']['4'][0]."'";
     }
     //その他交換 貸与枚数管理
     if(count($maisu_reason_kbn['kbn']['4'])>1){
-        $maisu_otherchange_reason_kbn = "'".implode(',', $maisu_reason_kbn['kbn']['4'])."'";
+        $maisu_otherchange_reason_kbn = "'".implode("','", $maisu_reason_kbn['kbn']['4'])."'";
     }else{
         $maisu_otherchange_reason_kbn = "'".$maisu_reason_kbn['kbn']['4'][0]."'";
     }
     //******* 異動 ******//
     //異動 人員管理
     if(count($jinin_reason_kbn['kbn']['5'])>1){
-        $jinin_move_reason_kbn = "'".implode(',', $jinin_reason_kbn['kbn']['5'])."'";
+        $jinin_move_reason_kbn = "'".implode("','", $jinin_reason_kbn['kbn']['5'])."'";
     }else{
         $jinin_move_reason_kbn = "'".$jinin_reason_kbn['kbn']['5'][0]."'";
     }
     //異動 貸与枚数管理
     if(count($maisu_reason_kbn['kbn']['5'])>1){
-        $maisu_move_reason_kbn = "'".implode(',', $maisu_reason_kbn['kbn']['5'])."'";
+        $maisu_move_reason_kbn = "'".implode("','", $maisu_reason_kbn['kbn']['5'])."'";
     }else{
         $maisu_move_reason_kbn = "'".$maisu_reason_kbn['kbn']['5'][0]."'";
     }
 
     //追加貸与 人員管理
     if(count($add_jinin_reason_kbn['kbn']['1'])>1){
-        $jinin_add_reason_kbn = "'".implode(',', $add_jinin_reason_kbn['kbn']['1'])."'";
+        $jinin_add_reason_kbn = "'".implode("','", $add_jinin_reason_kbn['kbn']['1'])."'";
     }else{
         $jinin_add_reason_kbn = "'".$add_jinin_reason_kbn['kbn']['1'][0]."'";
     }
 
     //不要品返却 人員管理
     if(count($add_jinin_reason_kbn['kbn']['2'])>1){
-        $jinin_rtn_reason_kbn = "'".implode(',', $add_jinin_reason_kbn['kbn']['2'])."'";
+        $jinin_rtn_reason_kbn = "'".implode("','", $add_jinin_reason_kbn['kbn']['2'])."'";
     }else{
         $jinin_rtn_reason_kbn = "'".$add_jinin_reason_kbn['kbn']['2'][0]."'";
     }
 
     //追加貸与 貸与枚数管理
     if(count($add_maisu_reason_kbn['kbn']['1'])>1){
-        $maisu_add_reason_kbn = "'".implode(',', $add_maisu_reason_kbn['kbn']['1'])."'";
+        $maisu_add_reason_kbn = "'".implode("','", $add_maisu_reason_kbn['kbn']['1'])."'";
     }else{
         $maisu_add_reason_kbn = "'".$add_maisu_reason_kbn['kbn']['1'][0]."'";
     }
