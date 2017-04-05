@@ -19,6 +19,7 @@ define([
 				'.text_1': 'text_1'
 			},
 			onShow: function () {
+				alert(1);
 				var that = this;
 				var cond = {
 					"scr": 'トップページ'
