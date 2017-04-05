@@ -1,5 +1,5 @@
 requirejs.config({
-	urlArgs: "ver=%timestamp%",
+	urlArgs: "ver=" + (new Date()).getTime(),
 	baseUrl: "/universal/scripts",
 	paths: {
 		"jquery": '../bower_components/jquery/dist/jquery.min',
