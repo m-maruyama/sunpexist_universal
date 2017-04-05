@@ -13,8 +13,8 @@
 	<ul class="nav navbar-nav" id="pageNav">
 		<li class="nav_home"><a href="home.html" title="ホーム">ホーム <span class="glyphicon glyphicon-home"></span></a></li>
 		<li class="dropdown">
-		<a href="#" class="dropdown-toggle" data-toggle="dropdown">入力 <span class="caret"></span></a>
-		<ul class="dropdown-menu">
+		<a href="#" class="dropdown-toggle" data-toggle="dropdown" id="nav-01">入力 <span class="caret"></span></a>
+		<ul class="dropdown-menu" id="list-nav-01" >
             {{#if button1_use_flg}}<li><a href="wearer_input.html" title="貸与開始" onclick="window.sessionStorage.removeItem('referrer');window.sessionStorage.setItem('wearer_input_ref', 'home');">貸与開始</a></li>{{/if}}
             {{#if button2_use_flg}}<li><a href="wearer_size_change.html" title="交換">交換</a></li>{{/if}}
             {{#if button3_use_flg}}<li><a href="wearer_change.html" title="職種変更または異動">職種変更または異動</a></li>{{/if}}
@@ -22,8 +22,8 @@
             {{#if button5_use_flg}}<li><a href="wearer_other.html" title="その他貸与/返却">その他貸与/返却</a></li>{{/if}}
 		</ul>
 		<li class="dropdown">
-		<a href="#" class="dropdown-toggle" data-toggle="dropdown">検索・照会 <span class="caret"></span></a>
-		<ul class="dropdown-menu">
+		<a href="#" class="dropdown-toggle" data-toggle="dropdown" id="nav-02">検索・照会 <span class="caret"></span></a>
+		<ul class="dropdown-menu" id="list-nav-02">
             {{#if button6_use_flg}}<li><a href="history.html" title="発注状況照会">発注状況照会</a></li>{{/if}}
             {{#if button7_use_flg}}<li><a href="unreturn.html" title="返却状況照会">返却状況照会</a></li>{{/if}}
             {{#if button8_use_flg}}<li><a href="receive.html" title="受領確認照会">受領確認照会</a></li>{{/if}}
@@ -33,24 +33,24 @@
 		</ul>
 
 		<li class="dropdown">
-		<a href="#" class="dropdown-toggle" data-toggle="dropdown">管理 <span class="caret"></span></a>
-		<ul class="dropdown-menu">
+		<a href="#" class="dropdown-toggle" data-toggle="dropdown" id="nav-03">管理 <span class="caret"></span></a>
+		<ul class="dropdown-menu" id="list-nav-03">
             {{#if button12_use_flg}}<li><a href="wearer_edit.html" title="着用者編集">着用者編集</a></li>{{/if}}
             {{#if button13_use_flg}}<li><a href="print.html" title="返却伝票印刷">返却伝票印刷</a></li>{{/if}}
             {{#if button14_use_flg}}<li><a href="order_send.html" title="発注送信処理">発注送信処理</a></li>{{/if}}
             {{#if button15_use_flg}}<li><a href="lend.html" title="貸与リスト">貸与リスト</a></li>{{/if}}
 		</ul>
 		<li class="dropdown">
-		<a href="#" class="dropdown-toggle" data-toggle="dropdown">購買・その他 <span class="caret"></span></a>
-		<ul class="dropdown-menu">
+		<a href="#" class="dropdown-toggle" data-toggle="dropdown" id="nav-04">その他 <span class="caret"></span></a>
+		<ul class="dropdown-menu" id="list-nav-04">
             {{#if button16_use_flg}}<li><a href="purchase_input.html" title="注文入力">注文入力</a></li>{{/if}}
             {{#if button17_use_flg}}<li><a href="purchase_history.html" title="注文履歴">注文履歴</a></li>{{/if}}
             {{#if button18_use_flg}}<li><a href="q_and_a.html" title="Q&amp;A">Q&amp;A</a></li>{{/if}}
             {{#if button19_use_flg}}<li><a href="inquiry.html" title="お問い合わせ">お問い合わせ</a></li>{{/if}}
 		</ul>
 		<li class="dropdown">
-		<a href="#" class="dropdown-toggle" data-toggle="dropdown">管理者機能 <span class="caret"></span></a>
-		<ul class="dropdown-menu">
+		<a href="#" class="dropdown-toggle" data-toggle="dropdown" id="nav-05">管理者機能 <span class="caret"></span></a>
+		<ul class="dropdown-menu" id="list-nav-05">
             {{#if button20_use_flg}}<li><a href="importCsv.html" title="一括データ取込">一括データ取込</a></li>{{/if}}
             {{#if button21_use_flg}}<li><a href="account.html" title="アカウント管理">アカウント管理</a></li>{{/if}}
             {{#if button22_use_flg}}<li><a href="info.html" title="お知らせ管理">お知らせ管理</a></li>{{/if}}

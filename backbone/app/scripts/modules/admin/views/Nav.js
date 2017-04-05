@@ -57,20 +57,32 @@ define([
 					"log_type": '2'
 				};
 				var modelForUpdate = this.model;
-					modelForUpdate.url = App.api.GL0010;
-					modelForUpdate.fetchMx({
-					 data: cond,
-					 success:function(res){
-						 var errors = res.get('errors');
-						 if(errors) {
-							 var errorMessages = errors.map(function(v){
-								 return v.error_message;
-							 });
-							 that.triggerMethod('showAlerts', errorMessages);
-						 }
-						 that.render();
-					 }
-					});
+				modelForUpdate.url = App.api.GL0010;
+				modelForUpdate.fetchMx({
+					data: cond,
+					success:function(res){
+						var errors = res.get('errors');
+						if(errors) {
+							var errorMessages = errors.map(function(v){
+								return v.error_message;
+							});
+							that.triggerMethod('showAlerts', errorMessages);
+						}
+						that.render();
+					},
+					complete:function () {
+						//ボタンの数を数えてゼロ個だったら、ホーム画面の１〜５の大項目を非表示にする。
+						for(var i=1;i<=5; i++){
+							var counter = 0;
+							$('#list-nav-0'+i+' li').each(function () {
+								counter++;
+							});
+							if(counter == 0){
+								$('#nav-0'+i).css('display', 'none');
+							}
+						}
+					}
+				});
 			},
 			onRender: function(){
 				if(this.options.active || typeof this.ui[this.options.active] !== 'undefined') {
